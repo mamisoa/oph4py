@@ -35,3 +35,9 @@ def index():
     user = auth.get_user()
     message = T("Hello {first_name}".format(**user) if user else "Hello")
     return dict(message=message)
+
+@action("test") # route
+@action.uses('paint.html') #template
+def test():
+    test="Test OK"
+    return dict( test=test )
