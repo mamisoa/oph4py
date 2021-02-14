@@ -34,3 +34,14 @@ success!
 timestamp: 2021-02-14T12:23:30.741621
 ALTER TABLE "facilities" ADD "hosp_id" INTEGER;
 success!
+timestamp: 2021-02-14T23:57:05.354818
+ALTER TABLE "facilities" ADD "created_on" TIMESTAMP;
+timestamp: 2021-02-14T23:57:05.382608
+ALTER TABLE "facilities" ADD "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2021-02-14T23:57:05.395561
+ALTER TABLE "facilities" ADD "modified_on" TIMESTAMP;
+timestamp: 2021-02-14T23:57:05.409466
+ALTER TABLE "facilities" ADD "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2021-02-14T23:57:05.425075
+ALTER TABLE "facilities" ADD "is_active" CHAR(1);
+success!

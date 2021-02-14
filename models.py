@@ -17,4 +17,5 @@ from pydal.validators import *
 db.define_table('facilities',
     Field('facility_name', 'string', required=True),
     Field('hosp_id',type='integer'),
+    auth.signature,
     format='%(facility_name)s')
