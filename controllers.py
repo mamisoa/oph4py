@@ -42,6 +42,7 @@ def index():
 @action.uses('test.html', T, auth, db, flash)
 def test():
     user = auth.get_user()
+    flash.set("Hello World", sanitize=True)   
     test="Test OK"
     return locals()
 

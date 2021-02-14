@@ -52,10 +52,15 @@
     </header>
     <!-- beginning of HTML inserted by extending template -->
     <section id="main">
-        <div class="sticky-top">
-            <!-- Flash alert messages, first optional one in data-alert -->
-            <flash-alerts class="" data-alert="[[=globals().get('flash','')]]"></flash-alerts>
+        [[if globals().get('flash'):]]
+        <div class="container">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <!-- Flash alert messages, first optional one in data-alert -->
+                <strong>[[=XML(globals().get('flash',{}).get('message'))]]</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         </div>
+        [[pass]]
         <div class="container">
             [[include]]
         </div>    <!-- content injected by extending page -->
@@ -69,7 +74,6 @@
     </body>
   <!-- You've gotta have utils.js -->
     <script src="js/utils.js"></script>
-    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
     <script src="js/bootstrap.bundle.min.js"></script> <!-- bootstrap 5.0 beta js -->
     <script type="text/javascript">
     </script>
