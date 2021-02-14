@@ -29,7 +29,7 @@ from py4web import action, request, abort, redirect, URL, Field
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
-from py4web.utils.form import Form, FormStyleBulma # added import Field Form and FormStyleBulma to get form working
+from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 
 
 @unauthenticated("index", "index.html")
@@ -53,7 +53,7 @@ def facilities():
     form = Form([
         Field('facility_name'),
         Field('hosp_id')],
-        formstyle=FormStyleBulma)
+        formstyle=FormStyleBootstrap4)
     if form.accepted:
         db.facilities.insert(facility_name=form.vars['facility_name'],hosp_id=form.vars['hosp_id'])
         redirect(URL('index'))
