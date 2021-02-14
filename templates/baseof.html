@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="[[=URL('static')]]/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAA=="/>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css"> <!-- bootstrap 5.0beta css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <style>.py4web-validation-error{margin-top:-16px; font-size:0.8em;color:red}</style>
+    [[block page_head]]<!-- individual pages can customize header here -->[[end]]
+  </head>
+  <body>
+    <header>
+      <!-- Navigation bar -->
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+            <a href="[[=URL('index')]]" class="navbar-brand">Oph4py</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a href="[[=URL('index')]]" class="nav-link active">Home</a>
+                    </li>
+                    [[block left_nav]]<!-- li a nav-item -->[[end]]
+                </ul>
+                <ul class="navbar ms-auto mb-2 mb-md-0">
+                    [[if globals().get('user'):]]
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="loginBtn" role="button" data-bs-toggle="dropdown" aria-expanded="false">[[=globals().get('user',{}).get('email')]]</a>
+                        <div class="dropdown-menu" aria-labelledby="loginBtn">
+                            <a href="[[=URL('auth/profile')]]" class="dropdown-item">Edit profile</a>
+                            <a href="[[=URL('auth/change_password')]]" class="dropdown-item">Change Password</a>
+                            <a href="[[=URL('auth/logout')]]" class="dropdown-item">Logout</a>
+                        </div>
+                    </li>
+                    [[else:]]
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="loginBtn" role="button" data-bs-toggle="dropdown" aria-expanded="false">Not logged</a>
+                        <div class="dropdown-menu" aria-labelledby="loginBtn">
+                            <a href="[[=URL('auth/register')]]" class="dropdown-item">Register</a>
+                            <a href="[[=URL('auth/login')]]" class="dropdown-item">Sign in</a>
+                        </div>
+                    </li>
+                    [[pass]]
+                </ul>
+            </div>
+        </div>
+      </nav>
+    </header>
+    <!-- beginning of HTML inserted by extending template -->
+    <section id="main">
+        <div class="sticky-top">
+            <!-- Flash alert messages, first optional one in data-alert -->
+            <flash-alerts class="" data-alert="[[=globals().get('flash','')]]"></flash-alerts>
+        </div>
+        <div class="container">
+            [[include]]
+        </div>    <!-- content injected by extending page -->
+    </section>
+    <!-- end of HTML inserted by extending template -->
+    <footer class="footer mt-auto py-3">
+        <div class="container">
+            <span class="text-muted">Powered by py4web</span>
+        </div>  
+    </footer>
+    </body>
+  <!-- You've gotta have utils.js -->
+    <script src="js/utils.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <script src="js/bootstrap.bundle.min.js"></script> <!-- bootstrap 5.0 beta js -->
+    <script type="text/javascript">
+    </script>
+    [[block page_scripts]]<!-- individual pages can add scripts here -->[[end]]
+</html>

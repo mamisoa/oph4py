@@ -19,3 +19,18 @@ CREATE TABLE "auth_user_tag_groups"(
     "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  
 );
 success!
+timestamp: 2021-02-14T11:55:55.777778
+CREATE TABLE "facility"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "facility_name" CHAR(512)
+);
+success!
+timestamp: 2021-02-14T12:14:52.586557
+CREATE TABLE "facilities"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "facility_name" CHAR(512)
+);
+success!
+timestamp: 2021-02-14T12:23:30.741621
+ALTER TABLE "facilities" ADD "hosp_id" INTEGER;
+success!

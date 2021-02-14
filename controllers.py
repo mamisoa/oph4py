@@ -25,9 +25,11 @@ session, db, T, auth, and tempates are examples of Fixtures.
 Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
 """
 
-from py4web import action, request, abort, redirect, URL
+from py4web import action, request, abort, redirect, URL, Field
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
+
+from py4web.utils.form import Form, FormStyleBulma # added import Field Form and FormStyleBulma to get form working
 
 
 @unauthenticated("index", "index.html")
@@ -37,7 +39,22 @@ def index():
     return dict(message=message)
 
 @action("test") # route
-@action.uses('paint.html') #template
+@action.uses('test.html', T, auth, db, flash)
 def test():
+    user = auth.get_user()
     test="Test OK"
-    return dict( test=test )
+    return locals()
+
+@action("facilities", method=['GET', 'POST'])
+@action.uses('facilities.html', session, auth.user, db) # add auth.user and db to get 
+def facilities():
+    user = auth.get_user()
+    form = Form([
+        Field('facility_name'),
+        Field('hosp_id')],
+        formstyle=FormStyleBulma)
+    if form.accepted:
+        db.facilities.insert(facility_name=form.vars['facility_name'],hosp_id=form.vars['hosp_id'])
+        redirect(URL('index'))
+    return dict(form=form, user=user)
+
