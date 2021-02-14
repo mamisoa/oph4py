@@ -45,3 +45,72 @@ ALTER TABLE "facilities" ADD "modified_by" INTEGER REFERENCES "auth_user" ("id")
 timestamp: 2021-02-14T23:57:05.425075
 ALTER TABLE "facilities" ADD "is_active" CHAR(1);
 success!
+timestamp: 2021-02-15T00:27:50.939687
+CREATE TABLE "gender"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "sex" CHAR(512)
+);
+success!
+timestamp: 2021-02-15T00:27:50.956231
+CREATE TABLE "ethny"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "ethny" CHAR(512)
+);
+success!
+timestamp: 2021-02-15T00:27:50.973503
+CREATE TABLE "marital"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "marital_status" CHAR(512)
+);
+success!
+timestamp: 2021-02-15T00:27:50.993039
+CREATE TABLE "photo_id"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "imagefile" CHAR(512)
+);
+success!
+timestamp: 2021-02-15T00:27:51.012461
+ALTER TABLE "auth_user" ADD "maiden_name_pid6" CHAR(512);
+timestamp: 2021-02-15T00:27:51.025685
+ALTER TABLE "auth_user" ADD "dob_pid7" DATE;
+timestamp: 2021-02-15T00:27:51.039194
+ALTER TABLE "auth_user" ADD "birth_town_pid23" CHAR(512);
+timestamp: 2021-02-15T00:27:51.053963
+ALTER TABLE "auth_user" ADD "birth_country_pid23" CHAR(512);
+timestamp: 2021-02-15T00:27:51.070010
+ALTER TABLE "auth_user" ADD "gender_pid8" INTEGER REFERENCES "gender" ("id") ON DELETE CASCADE  ;
+timestamp: 2021-02-15T00:27:51.085454
+ALTER TABLE "auth_user" ADD "marital_pid16" INTEGER REFERENCES "marital" ("id") ON DELETE CASCADE  ;
+timestamp: 2021-02-15T00:27:51.099894
+ALTER TABLE "auth_user" ADD "ethny_pid22" INTEGER REFERENCES "ethny" ("id") ON DELETE CASCADE  ;
+timestamp: 2021-02-15T00:27:51.115060
+ALTER TABLE "auth_user" ADD "idc_num" CHAR(512);
+timestamp: 2021-02-15T00:27:51.132860
+ALTER TABLE "auth_user" ADD "ssn_pid19" CHAR(512);
+timestamp: 2021-02-15T00:27:51.147733
+ALTER TABLE "auth_user" ADD "user_notes" CHAR(512);
+timestamp: 2021-02-15T00:27:51.162424
+ALTER TABLE "auth_user" ADD "photo_id" INTEGER REFERENCES "photo_id" ("id") ON DELETE CASCADE  ;
+timestamp: 2021-02-15T00:27:51.178321
+ALTER TABLE "auth_user" ADD "chipnumber" CHAR(512);
+timestamp: 2021-02-15T00:27:51.192061
+ALTER TABLE "auth_user" ADD "validfrom" DATE;
+timestamp: 2021-02-15T00:27:51.205865
+ALTER TABLE "auth_user" ADD "validtill" DATE;
+timestamp: 2021-02-15T00:27:51.221438
+ALTER TABLE "auth_user" ADD "initials" CHAR(512);
+timestamp: 2021-02-15T00:27:51.240791
+ALTER TABLE "auth_user" ADD "nationality" CHAR(512);
+timestamp: 2021-02-15T00:27:51.268215
+ALTER TABLE "auth_user" ADD "noblecondition" CHAR(512);
+timestamp: 2021-02-15T00:27:51.291914
+ALTER TABLE "auth_user" ADD "documenttype" INTEGER;
+timestamp: 2021-02-15T00:27:51.308282
+ALTER TABLE "auth_user" ADD "specialstatus" INTEGER;
+success!
+success!
+success!
+success!
+success!
+success!
+success!

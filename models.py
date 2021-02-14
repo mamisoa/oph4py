@@ -2,7 +2,7 @@
 This file defines the database models
 """
 
-from .common import db, Field, auth
+from .common import db, Field, auth # add auth for auto.signature
 from pydal.validators import *
 
 ### Define your table below

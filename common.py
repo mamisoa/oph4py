@@ -13,6 +13,9 @@ from py4web.utils.tags import Tags
 from py4web.utils.factories import ActionFactory
 from . import settings
 
+from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
+
+
 # #######################################################
 # implement custom loggers form settings.LOGGERS
 # #######################################################
@@ -78,7 +81,37 @@ elif settings.SESSION_TYPE == "database":
 # #######################################################
 # Instantiate the object and actions that handle auth
 # #######################################################
-auth = Auth(session, db, define_tables=False)
+
+db.define_table('gender',
+    Field('sex','string'))
+db.define_table('ethny',
+    Field('ethny','string'))
+db.define_table('marital',
+    Field('marital_status'))
+db.define_table('photo_id',
+    Field('imagefile', 'upload'))
+
+more_auth_fields = [    Field('maiden_name_pid6','string', label='Maiden name'),
+                        Field('dob_pid7','date', label='Date of birth'),
+                        Field('birth_town_pid23', 'string', label='Town of birth'),
+                        Field('birth_country_pid23', 'string', label='Country of birth'),
+                        Field('gender_pid8', 'reference gender', label='Gender'),
+                        Field('marital_pid16', 'reference marital', label='Marital status'),
+                        Field('ethny_pid22', 'reference ethny', label='Ethny'),
+                        Field('idc_num', 'string', label='ID card number'),
+                        Field('ssn_pid19', 'string', label='SSN'),
+                        Field('user_notes', 'string', label ='User notes'),
+                        Field('photo_id', 'reference photo_id'),
+                        Field('chipnumber', 'string', label ='Chipnumber'),
+                        Field('validfrom', 'date', label ='ID valid from'),
+                        Field('validtill', 'date', label ='ID valid til'),
+                        Field('initials', 'string', label ='ID initials'),
+                        Field('nationality', 'string', label ='Nationality'),
+                        Field('noblecondition', 'string', label ='ID noble condition'),
+                        Field('documenttype', 'integer', label ='ID doctype'),
+                        Field('specialstatus', 'integer', label ='ID specialstatus')]
+
+auth = Auth(session, db, define_tables=True, extra_fields=more_auth_fields)
 auth.use_username = True
 auth.param.registration_requires_confirmation = settings.VERIFY_EMAIL
 auth.param.registration_requires_approval = settings.REQUIRES_APPROVAL
@@ -86,6 +119,7 @@ auth.param.allowed_actions = settings.ALLOWED_ACTIONS
 auth.param.login_expiration_time = 3600
 auth.param.password_complexity = {"entropy": 50}
 auth.param.block_previous_password_num = 3
+auth.param.formstyle = FormStyleBootstrap4
 auth.define_tables()
 
 # #######################################################
