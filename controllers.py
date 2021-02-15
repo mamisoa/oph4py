@@ -25,7 +25,7 @@ session, db, T, auth, and tempates are examples of Fixtures.
 Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
 """
 
-from py4web import action, request, abort, redirect, URL, Field, response
+from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
@@ -87,6 +87,7 @@ policy = Policy()
 policy.set('*','GET', authorize=True, allowed_patterns=['*'])
 policy.set('*','POST', authorize=True)
 policy.set('*','PUT', authorize=True)
+policy.set('*','DELETE', authorize=True)
 
 @action('api/<tablename>/', method=['GET','POST'])
 @action('api/<tablename>/<rec_id>', method=['GET','PUT','DELETE'])
