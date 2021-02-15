@@ -57,6 +57,7 @@ def facilities():
     if form.accepted:
         db.facilities.insert(facility_name=form.vars['facility_name'],hosp_id=form.vars['hosp_id'])
         flash.set("Facility row added", sanitize=True)
+        db.commit()
         redirect(URL('index'))
     return dict(form=form, user=user)
 
@@ -73,6 +74,7 @@ def testtable():
         db.testtable.insert(test_name=form.vars['test_name'],
             test_id=form.vars['test_id'],
             test_gender=form.vars['test_gender'])
+        db.commit()
         flash.set("Testtable row added", sanitize=True)
         redirect(URL('index'))
     return dict(form=form, user=user)
@@ -95,6 +97,7 @@ def api(tablename, rec_id=None):
     try:
         json_resp = RestAPI(db,policy)(request.method,tablename,rec_id,request.GET,request.json)
         # json_resp RestAPI(db,policy)(request.method,tablename,rec_id,request.GET,request.POST) 
+        db.commit()
         return json_resp
     except ValueError: 
         response.status = 400
