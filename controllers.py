@@ -38,6 +38,13 @@ def index():
     message = T("Hello {first_name}".format(**user) if user else "Hello")
     return dict(message=message)
 
+@action("patients")
+@action.uses('patients.html', T, auth, db, flash)
+def patient():
+    user = auth.get_user()
+    # something
+    return locals()
+
 @action("test") # route
 @action.uses('test.html', T, auth, db, flash)
 def test():

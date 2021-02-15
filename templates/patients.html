@@ -1,0 +1,28 @@
+[[extend 'baseof.html']]
+[[ block left_nav ]]
+<li class="nav-item">
+    <a href="[[=URL('patients')]]" class="nav-link">Patients</a>
+</li>
+<li class="nav-item">
+    <a href="[[=URL('facilities')]]" class="nav-link">Facilities</a>
+</li>
+<li class="nav-item">
+    <a href="[[=URL('testtable')]]" class="nav-link">Testtable</a>
+</li>
+[[ end ]]
+[[ block page_head ]]
+<link rel="stylesheet" href="css/bootstrap-table.min.css">
+[[ end ]]
+<div class="container">
+    <p>[[ =user['username'] ]]</p>
+</div>
+<div class="">
+    [[=user]]
+</div>
+[[ block js_scripts ]]
+<script src="js/bootstrap-table/bootstrap-table.min.js"></script>
+
+<script type="text/javascript">
+
+</script>
+[[ end ]]
