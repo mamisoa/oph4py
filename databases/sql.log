@@ -191,3 +191,276 @@ success!
 success!
 success!
 success!
+success!
+timestamp: 2021-02-15T21:00:00.688743
+ALTER TABLE "facility" ADD "created_on" TIMESTAMP;
+timestamp: 2021-02-15T21:00:00.704151
+ALTER TABLE "facility" ADD "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2021-02-15T21:00:00.721157
+ALTER TABLE "facility" ADD "modified_on" TIMESTAMP;
+timestamp: 2021-02-15T21:00:00.738322
+ALTER TABLE "facility" ADD "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2021-02-15T21:00:00.756199
+ALTER TABLE "facility" ADD "is_active" CHAR(1);
+success!
+timestamp: 2021-02-15T21:00:00.781367
+CREATE TABLE "modality"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "modality_name" CHAR(512),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+timestamp: 2021-02-15T21:00:00.811052
+ALTER TABLE "address" ADD "home_num_pid11_1" INTEGER;
+timestamp: 2021-02-15T21:00:00.839432
+ALTER TABLE "address" ADD "box_num_pid11_2" CHAR(512);
+timestamp: 2021-02-15T21:00:00.861985
+ALTER TABLE "address" ADD "address1_pid11_3" CHAR(512);
+timestamp: 2021-02-15T21:00:00.879162
+ALTER TABLE "address" ADD "address2_pid11_4" CHAR(512);
+timestamp: 2021-02-15T21:00:00.896028
+ALTER TABLE "address" ADD "zipcode_pid11_5" CHAR(512);
+timestamp: 2021-02-15T21:00:00.914814
+ALTER TABLE "address" ADD "town_pid11_6" CHAR(512);
+timestamp: 2021-02-15T21:00:00.938688
+ALTER TABLE "address" ADD "country_pid11_7" CHAR(512);
+timestamp: 2021-02-15T21:00:00.955785
+ALTER TABLE "address" ADD "address_rank" INTEGER;
+success!
+timestamp: 2021-02-15T21:00:00.983151
+CREATE TABLE "data_origin"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "origin" CHAR(512)
+);
+success!
+timestamp: 2021-02-15T21:00:01.006260
+CREATE TABLE "phone"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "phone_prefix_pid13_1" INTEGER,
+    "phone_pid13_2" CHAR(512),
+    "phone_origin" CHAR(512),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+timestamp: 2021-02-15T21:00:01.022733
+CREATE TABLE "insurance_sector"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "sector" CHAR(512)
+);
+success!
+timestamp: 2021-02-15T21:00:01.041126
+CREATE TABLE "insurance"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "insurance_name_in1" CHAR(512),
+    "insurance_plan_in2" CHAR(512),
+    "insurance_type_in3" CHAR(512),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+timestamp: 2021-02-15T21:00:01.058309
+CREATE TABLE "exam2do_OBR4"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "loinc_code" CHAR(512),
+    "exam_description" CHAR(512),
+    "cycle_num" INTEGER,
+    "procedure_seq" CHAR(512),
+    "controller" CHAR(512),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+success!
+success!
+success!
+success!
+timestamp: 2021-02-15T21:12:19.122343
+CREATE TABLE "worklist"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "sending_app_msh3" CHAR(512),
+    "sending_facility_msh4" INTEGER REFERENCES "facility" ("id") ON DELETE CASCADE  ,
+    "receving_app_msh5" CHAR(512),
+    "receving_facility_msh6" INTEGER REFERENCES "facility" ("id") ON DELETE CASCADE  ,
+    "message_unique_id_msh10" CHAR(512),
+    "exam2do_obr4" INTEGER REFERENCES "exam2do_OBR4" ("id") ON DELETE CASCADE  ,
+    "provider_obr16" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "requested_time_obr6" TIMESTAMP,
+    "modality_dest_obr24" INTEGER REFERENCES "modality" ("id") ON DELETE CASCADE  ,
+    "laterality" TEXT,
+    "status_flag" TEXT,
+    "counter" INTEGER,
+    "warning" CHAR(512),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2021-02-15T22:31:31.281536
+CREATE TABLE "tono"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "id_worklist" INTEGER REFERENCES "worklist" ("id") ON DELETE CASCADE  ,
+    "tonometry" DOUBLE,
+    "pachymetry" INTEGER,
+    "techno" TEXT,
+    "laterality" TEXT,
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+timestamp: 2021-02-15T22:31:31.295655
+CREATE TABLE "topography"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "id_worklist" INTEGER REFERENCES "worklist" ("id") ON DELETE CASCADE  ,
+    "k1" DOUBLE,
+    "k2" DOUBLE,
+    "axis1" DOUBLE,
+    "axis2" DOUBLE,
+    "laterality" TEXT,
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+timestamp: 2021-02-15T22:31:31.308937
+CREATE TABLE "capsulotomy"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "id_worklist" INTEGER REFERENCES "worklist" ("id") ON DELETE CASCADE  ,
+    "power_intensity" DOUBLE,
+    "spot_size" DOUBLE,
+    "laterality" TEXT,
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+timestamp: 2021-02-15T22:31:31.322270
+CREATE TABLE "optotype"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "distance" TEXT,
+    "opto" CHAR(512),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+timestamp: 2021-02-15T22:31:31.335762
+CREATE TABLE "rx"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "id_worklist" INTEGER REFERENCES "worklist" ("id") ON DELETE CASCADE  ,
+    "rx_origin" TEXT,
+    "glass_type" TEXT,
+    "va_far" DOUBLE,
+    "opto_far" CHAR(512),
+    "sph_far" DOUBLE,
+    "cyl_far" DOUBLE,
+    "axis_far" INTEGER,
+    "opto_int" CHAR(512),
+    "va_int" DOUBLE,
+    "sph_int" DOUBLE,
+    "cyl_int" DOUBLE,
+    "axis_int" INTEGER,
+    "opto_close" CHAR(512),
+    "va_close" DOUBLE,
+    "sph_close" DOUBLE,
+    "cyl_close" DOUBLE,
+    "axis_close" INTEGER,
+    "note" CHAR(512),
+    "laterality" TEXT,
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+timestamp: 2021-02-15T22:31:31.353590
+CREATE TABLE "ant_biom"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "id_worklist" INTEGER REFERENCES "worklist" ("id") ON DELETE CASCADE  ,
+    "laterality" TEXT,
+    "cornea" CHAR(512),
+    "ant_chamb" CHAR(512),
+    "iris" CHAR(512),
+    "lens" CHAR(512),
+    "other" CHAR(512),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+timestamp: 2021-02-15T22:31:31.371697
+CREATE TABLE "post_biom"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "id_worklist" INTEGER REFERENCES "worklist" ("id") ON DELETE CASCADE  ,
+    "laterality" TEXT,
+    "vitreous" CHAR(512),
+    "retina" CHAR(512),
+    "macula" CHAR(512),
+    "papil" CHAR(512),
+    "other" CHAR(512),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+timestamp: 2021-02-15T22:31:31.388598
+CREATE TABLE "phistory"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "id_worklist" INTEGER REFERENCES "worklist" ("id") ON DELETE CASCADE  ,
+    "phistory" CHAR(512),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
