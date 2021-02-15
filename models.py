@@ -26,3 +26,9 @@ db.define_table('testtable',
     auth.signature
     )
 
+db.define_table('address',
+    Field('id_auth_user', 'reference auth_user'),
+    Field('town','string',label="Town"),
+    Field('zip','integer',label="Zip Code"),
+    auth.signature
+    )

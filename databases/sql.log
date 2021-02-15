@@ -152,3 +152,27 @@ success!
 success!
 success!
 success!
+success!
+timestamp: 2021-02-15T16:32:08.930436
+CREATE TABLE "address"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "town" CHAR(512),
+    "zip" INTEGER,
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
