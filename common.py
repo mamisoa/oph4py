@@ -83,11 +83,11 @@ elif settings.SESSION_TYPE == "database":
 # #######################################################
 
 db.define_table('gender',
-    Field('sex','string'))
+    Field('sex','string'), format='%(sex)s')
 db.define_table('ethny',
     Field('ethny','string'))
 db.define_table('marital',
-    Field('marital_status'))
+    Field('marital_status'), format='%(marital_status)s')
 db.define_table('photo_id',
     Field('imagefile', 'upload'))
 

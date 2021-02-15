@@ -1,4 +1,12 @@
 [[extend 'baseof.html']]
+[[ block left_nav ]]
+<li class="nav-item">
+    <a href="[[=URL('facilities')]]" class="nav-link">facilities</a>
+</li>
+<li class="nav-item">
+    <a href="[[=URL('testtable')]]" class="nav-link">testtable</a>
+</li>
+[[ end]]
 [[ =form ]]
 <div>
     <p>User is: [[= user ]]</p>

@@ -47,15 +47,32 @@ def test():
     return locals()
 
 @action("facilities", method=['GET', 'POST'])
-@action.uses('facilities.html', session, auth.user, db) # add auth.user and db to get 
+@action.uses('facilities.html', session, auth.user, db, flash) # add auth.user and db to get 
 def facilities():
-    user = auth.get_user()
+    user = auth.get_user() # needed to transfer globals to view
     form = Form([
         Field('facility_name'),
         Field('hosp_id')],
         formstyle=FormStyleBootstrap4)
     if form.accepted:
         db.facilities.insert(facility_name=form.vars['facility_name'],hosp_id=form.vars['hosp_id'])
+        flash.set("Facility row added", sanitize=True)
         redirect(URL('index'))
     return dict(form=form, user=user)
 
+@action("testtable", method=['GET', 'POST'])
+@action.uses('testtable.html', session, auth.user, db, flash)
+def testtable():
+    user = auth.get_user()
+    form = Form([
+        Field('test_name'),
+        Field('test_id'),
+        Field('test_gender')],        
+        formstyle=FormStyleBootstrap4)
+    if form.accepted:
+        db.testtable.insert(test_name=form.vars['test_name'],
+            test_id=form.vars['test_id'],
+            test_gender=form.vars['test_gender'])
+        flash.set("Testtable row added", sanitize=True)
+        redirect(URL('index'))
+    return dict(form=form, user=user)

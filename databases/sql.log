@@ -114,3 +114,41 @@ success!
 success!
 success!
 success!
+success!
+success!
+success!
+timestamp: 2021-02-15T13:38:48.075826
+CREATE TABLE "testtable"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "test_name" CHAR(512),
+    "test_id" INTEGER,
+    "test_gender" INTEGER REFERENCES "gender" ("id") ON DELETE CASCADE  ,
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "modified_on" TIMESTAMP,
+    "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "is_active" CHAR(1)
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

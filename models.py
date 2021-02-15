@@ -17,5 +17,12 @@ from pydal.validators import *
 db.define_table('facilities',
     Field('facility_name', 'string', required=True),
     Field('hosp_id',type='integer'),
-    auth.signature,
-    format='%(facility_name)s')
+    auth.signature)
+
+db.define_table('testtable',
+    Field('test_name', 'string', required=True),
+    Field('test_id',type='integer'),
+    Field('test_gender', 'reference gender'),
+    auth.signature
+    )
+

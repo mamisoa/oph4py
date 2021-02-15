@@ -7,8 +7,7 @@
     <a href="[[=URL('testtable')]]" class="nav-link">testtable</a>
 </li>
 [[ end]]
-<div class="section">
-  <div class="vars">
-      [[=message]]
-  </div>
+[[=form]]
+<div>
+    <p>User is: [[= globals().get('user',{}) ]]</p>
 </div>
