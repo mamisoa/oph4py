@@ -8,9 +8,8 @@ from .models import db
 
 # by importing controllers you expose the actions defined in it
 from . import controllers
-
-#
-# from . import rest
+from . import manage
+from . import rest
 
 # optional parameters
 __version__ = "0.0.0"

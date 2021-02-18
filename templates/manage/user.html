@@ -1,0 +1,18 @@
+[[extend 'baseof.html']]
+[[ block left_nav ]]
+<li class="nav-item">
+    <a href="[[=URL('facilities')]]" class="nav-link">facilities</a>
+</li>
+<li class="nav-item">
+    <a href="[[=URL('testtable')]]" class="nav-link">testtable</a>
+</li>
+[[ end]]
+
+
+
+
+<div>
+    <p>Record is: [[= rec_id ]]</p>
+    <p>User is: [[= user ]]</p>
+    <p>Global are: [[=globals().get('user',{})]]</p>
+</div>
