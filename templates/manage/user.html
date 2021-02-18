@@ -8,11 +8,151 @@
 </li>
 [[ end]]
 
-
-
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form id="userForm" action="" onsubmit="return checkForm(this);">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username:</label>
+                    <input id="username" type="text" class="form-control" title="Username must not be blank and contain only letters, numbers and underscores." name="username" required pattern="\w+">
+                    <div id="usernameHelp" class="form-text">Enter your username</div>
+                </div>
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First name:</label>
+                    <input id="firstName" type="text" class="form-control" name="lastName">
+                    <div id="firstNameHelp" class="form-text">Enter your first name</div>
+                </div>
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last name:</label>
+                    <input id="lastName" type="text" class="form-control" name="lastName">
+                    <div id="lastNameHelp" class="form-text">Enter your last name</div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input id="email" type="email" class="form-control"  name="email">
+                    <div id="emailHelp" class="form-text">Enter your email</div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password:</label>
+                    <input id="password" type="password" class="form-control" title="Password must contain at least 6 characters, including UPPER/lowercase and numbers." name="password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}">
+                    <div id="passwordHelp" class="form-text">Enter your password</div>
+                </div>
+                <div class="mb-3">
+                    <label for="passwordCheck" class="form-label">Password check:</label>
+                    <input id="passwordCheck" type="password" class="form-control" title="Please enter the same Password as above." name="passwordCheck">
+                    <div id="passwordCheckHelp" class="form-text">Retype your password</div>
+                </div>
+                <button class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
 
 <div>
     <p>Record is: [[= rec_id ]]</p>
     <p>User is: [[= user ]]</p>
     <p>Global are: [[=globals().get('user',{})]]</p>
 </div>
+
+[[ block js_scripts ]]
+
+<script type="text/javascript">
+
+// polyfill for RegExp.escape
+////////////////////////////////////////
+if(!RegExp.escape) {
+    RegExp.escape = function(s) {
+      return String(s).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+    };
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+
+////////////////////////////////////////
+// JavaScript form validation
+////////////////////////////////////////
+var checkPassword = function(str) {
+    var re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    return re.test(str);
+    };
+
+var checkForm = function(e) {
+    if(this.username.value == "") {
+        alert("Error: Username cannot be blank!");
+        this.username.focus();
+        e.preventDefault(); // equivalent to return false
+        return;
+    }
+    re = /^\w+$/;
+    if(!re.test(this.username.value)) {
+        alert("Error: Username must contain only letters, numbers and underscores!");
+        this.username.focus();
+        e.preventDefault();
+        return;
+    }
+    if(this.password.value != "" && this.password.value == this.passwordCheck.value) {
+        if(!checkPassword(this.password.value)) {
+        alert("The password you have entered is not valid!");
+        this.password.focus();
+        e.preventDefault();
+        return;
+    }
+    } else {
+    alert("Error: Please check that you've entered and confirmed your password!");
+    this.password.focus();
+    e.preventDefault();
+    return;
+    };
+    // alert("Both username and password are VALID!");
+};
+
+var userForm = document.getElementById("userForm");
+userForm.addEventListener("submit", checkForm, true);
+
+////////////////////////////////////////
+// HTML5 form validation
+////////////////////////////////////////
+var supports_input_validity = function() {
+    var i = document.createElement("input");
+    return "setCustomValidity" in i;
+    }
+
+    if(supports_input_validity()) {
+    var usernameInput = document.getElementById("username");
+    usernameInput.setCustomValidity(usernameInput.title);
+
+    var pwd1Input = document.getElementById("password");
+    pwd1Input.setCustomValidity(pwd1Input.title);
+
+    var pwd2Input = document.getElementById("passwordCheck");
+
+    // input key handlers
+
+    usernameInput.addEventListener("keyup", function(e) {
+        usernameInput.setCustomValidity(this.validity.patternMismatch ? usernameInput.title : "");
+    }, false);
+
+    pwd1Input.addEventListener("keyup", function(e) {
+        this.setCustomValidity(this.validity.patternMismatch ? pwd1Input.title : "");
+        if(this.checkValidity()) {
+        pwd2Input.pattern = RegExp.escape(this.value);
+        pwd2Input.setCustomValidity(pwd2Input.title);
+        } else {
+        pwd2Input.pattern = this.pattern;
+        pwd2Input.setCustomValidity("");
+        }
+    }, false);
+
+    pwd2Input.addEventListener("keyup", function(e) {
+        this.setCustomValidity(this.validity.patternMismatch ? pwd2Input.title : "");
+    }, false);
+
+    }
+
+    }, false);
+
+////////////////////////////////////////
+
+</script>
+    
+[[ end ]]
