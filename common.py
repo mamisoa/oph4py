@@ -90,8 +90,13 @@ db.define_table('marital',
     Field('marital_status'), format='%(marital_status)s')
 db.define_table('photo_id',
     Field('imagefile', 'upload'))
+db.define_table('membership',
+    Field('membership','string'),
+    Field('hierarchy','integer'), format='%(membership)s')
 
-more_auth_fields = [    Field('maiden_name_pid6','string', label='Maiden name'),
+auth = Auth(session, db, define_tables=False)
+more_auth_fields = [    Field('membership', 'reference membership'),
+                        Field('maiden_name_pid6','string', label='Maiden name'),
                         Field('dob_pid7','date', label='Date of birth'),
                         Field('birth_town_pid23', 'string', label='Town of birth'),
                         Field('birth_country_pid23', 'string', label='Country of birth'),
@@ -109,9 +114,10 @@ more_auth_fields = [    Field('maiden_name_pid6','string', label='Maiden name'),
                         Field('nationality', 'string', label ='Nationality'),
                         Field('noblecondition', 'string', label ='ID noble condition'),
                         Field('documenttype', 'integer', label ='ID doctype'),
-                        Field('specialstatus', 'integer', label ='ID specialstatus')]
+                        Field('specialstatus', 'integer', label ='ID specialstatus'),
+                        auth.signature]
+auth.extra_auth_user_fields = more_auth_fields
 
-auth = Auth(session, db, define_tables=True, extra_fields=more_auth_fields)
 auth.use_username = True
 auth.param.registration_requires_confirmation = settings.VERIFY_EMAIL
 auth.param.registration_requires_approval = settings.REQUIRES_APPROVAL

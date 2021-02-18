@@ -466,3 +466,28 @@ CREATE TABLE "phistory"(
 success!
 success!
 success!
+timestamp: 2021-02-18T13:00:25.736501
+ALTER TABLE "auth_user" ADD "created_on" TIMESTAMP;
+timestamp: 2021-02-18T13:00:25.750427
+ALTER TABLE "auth_user" ADD "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2021-02-18T13:00:25.763479
+ALTER TABLE "auth_user" ADD "modified_on" TIMESTAMP;
+timestamp: 2021-02-18T13:00:25.776824
+ALTER TABLE "auth_user" ADD "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2021-02-18T13:00:25.790216
+ALTER TABLE "auth_user" ADD "is_active" CHAR(1);
+success!
+success!
+success!
+timestamp: 2021-02-18T13:20:04.346640
+CREATE TABLE "membership"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "membership" CHAR(512),
+    "hierarchy" INTEGER
+);
+success!
+timestamp: 2021-02-18T13:20:04.386729
+ALTER TABLE "auth_user" ADD "membership" INTEGER REFERENCES "membership" ("id") ON DELETE CASCADE  ;
+success!
+success!
+success!
