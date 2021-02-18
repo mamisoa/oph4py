@@ -491,3 +491,5 @@ ALTER TABLE "auth_user" ADD "membership" INTEGER REFERENCES "membership" ("id") 
 success!
 success!
 success!
+success!
+success!
