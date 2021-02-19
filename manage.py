@@ -9,6 +9,17 @@ from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added 
 from py4web.utils.grid import Grid
 
 
+def dropdownSelect(table,fieldId,defaultId): ## eg table=db.gender fieldId=db.gender.fields[0] defaultId=0
+    selectOptions=""
+    for selection in db(table.id>0).select(table.ALL):
+        if selection.id == defaultId:
+            selectOptions += "<option selected value='"
+        else:
+            selectOptions += "<option value='"
+        selectOptions += str(selection.id)+"'>"+selection[fieldId]+"</option>"
+        selectOptions = XML(selectOptions)
+    return selectOptions # html <option value=""></option>
+
 def check_duplicate(form):
     if not form.errors:
         query_email = (db.auth_user.email == form.vars['email'])
@@ -38,22 +49,15 @@ def user(rec_id=None):
         Field('gender')],
         validation=check_duplicate
         )
-    roleOption=""
+    roleOptions=""
     for role in db(db.membership.id>0).select(db.membership.ALL):
-        if len(roleOption) == 0:
-            roleOption += "<option selected value='"
+        if role.membership == "Patient": # make "Patient" as default option
+            roleOptions += "<option selected value='"
         else:
-            roleOption += "<option value='"
-        roleOption += str(role.id) + "'>" + role.membership + " (level " + str(role.hierarchy) + ")</option>"
-        roleOption = XML(roleOption)
-    genderOption=""
-    for gender in db(db.gender.id>0).select(db.gender.ALL):
-        if len(genderOption) == 0:
-            genderOption += "<option selected value='"
-        else:
-            genderOption += "<option value='"
-        genderOption += str(gender.id) + "'>" + gender.sex+"</option>"
-        genderOption = XML(genderOption)
+            roleOptions += "<option value='"
+        roleOptions += str(role.id) + "'>" + role.membership + " (level " + str(role.hierarchy) + ")</option>"
+        roleOptions = XML(roleOptions)
+    genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
     form_key=form.formkey # identify the form, formname="None"
     if form.accepted:
         db.auth_user.insert(first_name=form.vars['first_name'],
@@ -65,9 +69,7 @@ def user(rec_id=None):
             gender=form.vars['gender'],
             )
         db.commit()
-        passwordRow = db(db.auth_user.email == form.vars['email']).select(db.auth_user.password)
-        password = passwordRow[0].password
-        flash.set("User added with password: "+ password, sanitize=True)
+        flash.set("User "+form.vars['username']+" added", sanitize=True)
         redirect(URL('index'))
     elif form.errors:
         flash.set(form.errors['email']+' '+form.errors['username'])

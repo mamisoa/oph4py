@@ -122,6 +122,7 @@ if db(db.membership.id > 1).count() == 0:
     db.membership.insert(membership="Doctor", hierarchy="1")
     db.membership.insert(membership="Medical assistant", hierarchy="2")
     db.membership.insert(membership="Administrative", hierarchy="3")
+    db.membership.insert(membership="Patient", hierarchy="99")
 
 auth = Auth(session, db, define_tables=False)
 more_auth_fields = [    Field('membership', 'reference membership'),
