@@ -87,9 +87,9 @@ db.define_table('gender',
 
 if db(db.gender.id > 1).count() == 0:
     db.gender.truncate()
-    db.gender.insert(sex="male")
-    db.gender.insert(sex="female")
-    db.gender.insert(sex="undetermined")
+    db.gender.insert(sex="Male")
+    db.gender.insert(sex="Female")
+    db.gender.insert(sex="Other")
 
 db.define_table('ethny',
     Field('ethny','string'), format='%(ethny)s')

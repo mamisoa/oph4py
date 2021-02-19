@@ -576,3 +576,20 @@ DELETE FROM "membership";
 DELETE FROM sqlite_sequence WHERE name='membership'
 success!
 success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+success!
+success!
+success!
+success!
