@@ -23,7 +23,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-8">
             <table class="table align-middle">
                 <thead>
                     <tr>
@@ -98,15 +98,14 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Delete backup csv file</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
           </button>
         </div> <!-- modal header -->
         <div class="modal-body">
           <p>Are you sure you want to delete this backup csv file: <strong id="file2del"></strong>?</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-danger" onclick="delcsv(filename);">Delete</button>
         </div>
       </div> <!--modal content -->
@@ -161,10 +160,18 @@ var filename ="";
 
 function confirm_savedb() {
     time_counter = Date.now();
-    // ajax(CTRL_SAVE_DB,[], ':eval'); # return an evalstring
+    $.ajax({
+      url: CTRL_SAVE_DB,
+      success: function(result) {
+        arr = result.split(" ");
+        if (arr[1] == 'True') {
+            create_toast(toast_counter,time_counter,'DB saved')
+        } else {
+            create_toast(toast_counter,time_counter,'Error trying to save DB!')
+        }
+      }
+    });
     $('#saveModal').modal('hide');
-    // document.getElementById("toastContainer").innerHTML = "DB saved";
-    create_toast("1",time_counter,'DB saved')
 }
 
 function list_csv() {
@@ -172,11 +179,36 @@ function list_csv() {
   $.ajax({
       url: CTRL_LISTDIR,
       success: function(result) {
-        document.getElementById("toastContainer").innerHTML = result;
+        // document.getElementById("toastContainer").innerHTML = result;
         show_csv_dir(result.split(" "));
       }
   });
 }
+
+function confirm_delcsv(datafile) {
+  time_counter = Date.now();
+  $('#file2del').html(datafile);
+  filename=datafile;
+  $('#delModal').modal('show');
+}
+
+function delcsv(datafile) {
+  $.ajax({
+      url: CTRL_DELCSV+'?datafile='+datafile,
+      success: function(result) {
+        $('#delModal').modal('hide');
+        document.getElementById("toastContainer").innerHTML = result;
+        arr = result.split(" ");
+        if (arr[1] == 'True') {
+            create_toast(toast_counter,time_counter,arr[0]+' backup DELETED')
+        } else {
+            create_toast(toast_counter,time_counter,"Couldn't delete "+arr[0]+' file!')
+        }
+        list_csv();
+      }
+  });
+}
+
 
 function show_csv_dir(arr) { // arr is a python list of filenames
   var flag=arr.pop(); // last item from array  
@@ -184,16 +216,15 @@ function show_csv_dir(arr) { // arr is a python list of filenames
   if (flag) {
     if (arr.length >0) {
       for (const i in arr) {
-        //console.log(arr[i]);
         displayItem('listDir',i,arr[i]);
       }
     } else {
       console.log('FLAG no file');
-      displayItem('listDir','none','No file found');
+      displayItem('listDir','-1','No file found');
     }
   } else {
     console.log('flag: FALSE');
-    displayItem('listDir','none','No file found');
+    displayItem('listDir','-1','No file found');
   }
 }
 
@@ -201,7 +232,7 @@ function show_csv_dir(arr) { // arr is a python list of filenames
 function displayItem (id,index,value) {
   // console.log((value =='init_db.csv')||(typeof(index) =='none'));
   filenum = parseInt(index)+1;
-  if ((value !='init_db.csv')){
+  if ((value !='init_db.csv')&&(filenum != 0)){
     $('#'+id).append('<tr>');
     $('#'+id).append('<th scope="row">'+filenum+'</th>');
     $('#'+id).append('<th class="csv">'+value+'</th>');
@@ -211,7 +242,7 @@ function displayItem (id,index,value) {
     $('#'+id).append('</th>');
   } else {
     $('#'+id).append('<tr>');
-    $('#'+id).append('<th scope="row">'+(index+1)+'</th>');
+    $('#'+id).append('<th scope="row">'+filenum+'</th>');
     $('#'+id).append('<th class="csv">'+value+'</th>');
   };
   $('#'+id).append('</tr>');
@@ -224,14 +255,14 @@ function create_toast(id,start,txt) { // id number of toast, start = time at exe
   //console.log(row_id);
   $("<div/>").attr('id',row_id).attr('class','mb-1').appendTo('#toastContainer');
   $("<div/>").attr('id','col'+id).appendTo('#'+row_id);
-  $("<div/>").attr('id','toast'+id).attr('data-autohide','true').attr('data-delay',20000).attr('class','toast').appendTo('#col'+id);
-  $("<div/>").attr('id','toastHeader'+id).attr('class','toast-header').appendTo('#toast'+id);
-  $("<strong/>").attr('id','statusHeader'+id).attr('class','mr-auto text-primary').appendTo('#toastHeader'+id);
-  $('#statusHeader'+id).append('Status');
-  $("<small/>").attr('id','timeHeader'+id).attr('class','text-muted').appendTo('#toastHeader'+id);
-  $('#timeHeader'+id).append(time_elapsed(time_counter));
-  $("<button/>").attr('id','btnHeader'+id).attr('class','ml-2 mb-1 close').attr('data-dismiss','toast').appendTo('#toastHeader'+id);
-  $('#btnHeader'+id).append('&times;');
+  $("<div/>").attr('id','toast'+id).attr('data-autohide','true').attr('data-delay',2000).attr('class','toast').appendTo('#col'+id);
+  $("<div/>").attr('id','toastHeader'+id).attr('class','toast-header d-flex').appendTo('#toast'+id);
+  $("<span/>").attr('id','statusHeader'+id).attr('class','text-primary flex-fill align-self-center').appendTo('#toastHeader'+id);
+  $('#statusHeader'+id).append('<strong>Status</strong>');
+  $("<span/>").attr('id','timeHeader'+id).attr('class','text-muted align-self-center pr-2').appendTo('#toastHeader'+id);
+  $('#timeHeader'+id).append('<small>'+time_elapsed(time_counter)+'</small>');
+  $("<button/>").attr('id','btnHeader'+id).attr('class','btn-close align-self-center').attr('data-dismiss','toast').appendTo('#toastHeader'+id);
+//   $('#btnHeader'+id).append('&times;');
   $("<div/>").attr('id','txtBody'+id).attr('class','toast-body').appendTo('#toast'+id);
   $('#txtBody'+id).append(txt);
   $('#toast'+id).toast('show');

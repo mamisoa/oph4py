@@ -98,14 +98,16 @@ def list_dir_csv():
         folder = ['uploads/csv','false']
         return "%s" % repr(folder)
 
-@action("del_csv")
+@action("del_csv", method=['GET'])
 def del_csv():
     import os
+    file2del = request.query.datafile
     try:
-        os.remove(request.folder+'/uploads/csv/'+request.vars.datafile)
-        return "show_file_deleted(%s,true);" % repr(request.vars.datafile)
+        fullPath=os.path.join(os.path.dirname(__file__),'uploads/csv/')+file2del
+        os.remove(fullPath)
+        return file2del+" "+"True"
     except:
-        return "show_file_deleted(%s,false);" % repr(request.vars.datafile)
+        return file2del+" "+"False"
 
 @action("save_db")
 def save_db():
@@ -113,13 +115,16 @@ def save_db():
     import os
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
-    backup_path = os.path.join(request.folder,'uploads/csv')
+    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
     filename = date_backup+'_backup.csv'
-    backup_path_file = backup_path+'/'+filename
-    with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
-        db.export_to_csv_file(dumpfile)
-    evalstr = "saved('"+filename+"',true);"
-    return evalstr
+    backup_path_file = backup_path+filename
+    try:
+        with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
+            db.export_to_csv_file(dumpfile)
+        evalstr = filename+" "+"True"
+        return evalstr
+    except:
+        return filename+" "+"False"
 
 @action("init_db")
 def init_db():
