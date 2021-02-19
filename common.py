@@ -84,15 +84,44 @@ elif settings.SESSION_TYPE == "database":
 
 db.define_table('gender',
     Field('sex','string'), format='%(sex)s')
+
+if db(db.gender.id > 1).count() == 0:
+    db.gender.truncate()
+    db.gender.insert(sex="male")
+    db.gender.insert(sex="female")
+    db.gender.insert(sex="undetermined")
+
 db.define_table('ethny',
-    Field('ethny','string'))
+    Field('ethny','string'), format='%(ethny)s')
+
+if db(db.ethny.id > 1).count() == 0:
+    db.ethny.truncate()
+    db.ethny.insert(ethny="Caucasian")
+    db.ethny.insert(ethny="Black")
+    db.ethny.insert(ethny="Hispanic")
+    db.ethny.insert(ethny="Arabic")
+
 db.define_table('marital',
     Field('marital_status'), format='%(marital_status)s')
+
+if db(db.marital.id > 1).count() == 0:
+    db.marital.truncate()
+    db.marital.insert(marital_status="single")
+    db.marital.insert(marital_status="married")
+
 db.define_table('photo_id',
     Field('imagefile', 'upload'))
+
 db.define_table('membership',
     Field('membership','string'),
     Field('hierarchy','integer'), format='%(membership)s')
+
+if db(db.membership.id > 1).count() == 0:
+    db.membership.truncate()
+    db.membership.insert(membership="Admin")
+    db.membership.insert(membership="Doctor")
+    db.membership.insert(membership="Medical assistant")
+    db.membership.insert(membership="Administrative")
 
 auth = Auth(session, db, define_tables=False)
 more_auth_fields = [    Field('membership', 'reference membership'),

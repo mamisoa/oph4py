@@ -563,3 +563,12 @@ success!
 success!
 success!
 success!
+success!
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+success!
