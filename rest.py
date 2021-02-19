@@ -13,7 +13,7 @@ policy.set('*','PUT', authorize=True)
 policy.set('*','DELETE', authorize=True)
 
 @action('api/<tablename>/', method=['GET','POST'])
-@action('api/<tablename>/<rec_id>', method=['GET','PUT','DELETE'])
+@action('api/<tablename>/<rec_id>', method=['GET','PUT','DELETE']) # delete OK get OK post OK put OK
 def api(tablename, rec_id=None):
     try:
         json_resp = RestAPI(db,policy)(request.method,tablename,rec_id,request.GET,request.json)

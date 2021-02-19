@@ -7,9 +7,251 @@
     <a href="[[=URL('testtable')]]" class="nav-link">testtable</a>
 </li>
 [[ end]]
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <button id="save" name="save" type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#saveModal"><span>Save DB </span><i class="fas fa-save"></i></button>
+            <button id="reset" name="reset" type="button" class="btn btn-danger  m-2" data-bs-toggle="modal" data-bs-target="#resetModal"><span>Reset DB </span><i class="fas fa-undo"></i></button>
+        </div>
+        <div class="col-md-8">
+            <div aria-live="polite" aria-atomic="true" style="position: relative;">
+              <!-- Position it -->
+              <div id="toastContainer" class="toast-top-full-width" style="position: absolute; top: 0; right: 0;">
+                  <!-- Then put toasts within -->
+              </div> <!-- toast container -->
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Filename</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="listDir">
+                    <tr>
+                        <th scope="row">1</th>
+                        <th>file1kkkkkkk.csv</th>
+                        <th>
+                            <button type="button" class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>
+                            <button type="button" class="btn btn-danger  m-2"><i class="fas fa-trash-alt"></i></button>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <th>file2jjjjjjjjj.csv</th>
+                        <th>
+                            <button type="button" class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>
+                            <button type="button" class="btn btn-danger  m-2"><i class="fas fa-trash-alt"></i></button>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- modals -->
+<div class="modal" id="saveModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Save database</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div> <!-- modal header -->
+        <div class="modal-body">
+          <p>Are you sure you want save the database?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="confirm_savedb();">Save Database</button>
+        </div>
+      </div> <!--modal content -->
+    </div>
+</div>
+
+<div class="modal" id="resetModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Reset database</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          </button>
+        </div> <!-- modal header -->
+        <div class="modal-body">
+          <p>Are you sure you want to delete and reinit the database?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger" onclick="confirm_init();">Reset Database</button>
+        </div>
+      </div> <!--modal content -->
+    </div>
+</div>
+  
+<div class="modal" id="delModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete backup csv file</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div> <!-- modal header -->
+        <div class="modal-body">
+          <p>Are you sure you want to delete this backup csv file: <strong id="file2del"></strong>?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger" onclick="delcsv(filename);">Delete</button>
+        </div>
+      </div> <!--modal content -->
+    </div>
+</div>
+  
+  
+  <div class="modal" id="restoreModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Restore backup csv file</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div> <!-- modal header -->
+        <div class="modal-body">
+          <p>Are you sure you want to delete this database and restore: <strong id="file2restore"></strong>?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger" onclick="restoreCsv(filename);">Restore</button>
+        </div>
+      </div> <!--modal content -->
+    </div>
+</div>
+
 <div>
     <p>Value is : [[=test]]</p>
 </div>
 <div>
     <p>User is: [[= globals().get('user',{}) ]]</p>
 </div>
+
+[[ block js_scripts]]
+
+<script src="js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript">
+  const CTRL_INITDB = '[[=URL('init_db')]]';
+  const CTRL_SAVE_DB = '[[=URL('save_db')]]';
+  const CTRL_LISTDIR = '[[=URL('list_dir_csv')]]';
+  const CTRL_DELCSV = '[[=URL('del_csv')]]';
+  const CTRL_RESTOREDB = '[[=URL('restore_db')]]';
+  $(function() {
+    $('.toast').toast('');
+    list_csv();
+  });
+
+var toast_counter = 0;
+var time_counter = 0;
+var filename ="";
+
+function confirm_savedb() {
+    time_counter = Date.now();
+    // ajax(CTRL_SAVE_DB,[], ':eval'); # return an evalstring
+    $('#saveModal').modal('hide');
+    // document.getElementById("toastContainer").innerHTML = "DB saved";
+    create_toast("1",time_counter,'DB saved')
+}
+
+function list_csv() {
+  time_counter = Date.now();
+  $.ajax({
+      url: CTRL_LISTDIR,
+      success: function(result) {
+        document.getElementById("toastContainer").innerHTML = result;
+        show_csv_dir(result.split(" "));
+      }
+  });
+}
+
+function show_csv_dir(arr) { // arr is a python list of filenames
+  var flag=arr.pop(); // last item from array  
+  $('#listDir').html('');
+  if (flag) {
+    if (arr.length >0) {
+      for (const i in arr) {
+        //console.log(arr[i]);
+        displayItem('listDir',i,arr[i]);
+      }
+    } else {
+      console.log('FLAG no file');
+      displayItem('listDir','none','No file found');
+    }
+  } else {
+    console.log('flag: FALSE');
+    displayItem('listDir','none','No file found');
+  }
+}
+
+
+function displayItem (id,index,value) {
+  // console.log((value =='init_db.csv')||(typeof(index) =='none'));
+  filenum = parseInt(index)+1;
+  if ((value !='init_db.csv')){
+    $('#'+id).append('<tr>');
+    $('#'+id).append('<th scope="row">'+filenum+'</th>');
+    $('#'+id).append('<th class="csv">'+value+'</th>');
+    $('#'+id).append('<th>');
+    $('#'+id).append('<button type="button" data-file="'+value+'" onclick="confirm_delcsv(&apos;'+value+'&apos;);" class="btn btn-danger m-2"><i class="fas fa-trash-alt"></i></button>');
+    $('#'+id).append('<button type="button" data-file="' +value+ '" onclick="confirm_restorecsv(&apos;' +value+ '&apos;);" class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>');
+    $('#'+id).append('</th>');
+  } else {
+    $('#'+id).append('<tr>');
+    $('#'+id).append('<th scope="row">'+(index+1)+'</th>');
+    $('#'+id).append('<th class="csv">'+value+'</th>');
+  };
+  $('#'+id).append('</tr>');
+}
+
+
+
+function create_toast(id,start,txt) { // id number of toast, start = time at execution, txt = notification msg
+  let row_id = 'toastRow'+id;
+  //console.log(row_id);
+  $("<div/>").attr('id',row_id).attr('class','mb-1').appendTo('#toastContainer');
+  $("<div/>").attr('id','col'+id).appendTo('#'+row_id);
+  $("<div/>").attr('id','toast'+id).attr('data-autohide','true').attr('data-delay',20000).attr('class','toast').appendTo('#col'+id);
+  $("<div/>").attr('id','toastHeader'+id).attr('class','toast-header').appendTo('#toast'+id);
+  $("<strong/>").attr('id','statusHeader'+id).attr('class','mr-auto text-primary').appendTo('#toastHeader'+id);
+  $('#statusHeader'+id).append('Status');
+  $("<small/>").attr('id','timeHeader'+id).attr('class','text-muted').appendTo('#toastHeader'+id);
+  $('#timeHeader'+id).append(time_elapsed(time_counter));
+  $("<button/>").attr('id','btnHeader'+id).attr('class','ml-2 mb-1 close').attr('data-dismiss','toast').appendTo('#toastHeader'+id);
+  $('#btnHeader'+id).append('&times;');
+  $("<div/>").attr('id','txtBody'+id).attr('class','toast-body').appendTo('#toast'+id);
+  $('#txtBody'+id).append(txt);
+  $('#toast'+id).toast('show');
+  toast_counter++;
+}
+
+function time_elapsed(from) {
+  let current = Date.now();
+  //console.log('execution time:'+from);
+  //console.log('current time:'+current);
+  let elapsed_ms = current -from;
+  let elapsed_sec = (elapsed_ms/1000).toFixed(2);
+  let elapsed_min = Math.round((current - from)/1000/60);
+  if (elapsed_ms > 1000) {
+    return elapsed_sec+'sec';
+  } else {
+    return elapsed_ms+'ms';
+  }
+}
+
+</script>
+
+[[ end ]]

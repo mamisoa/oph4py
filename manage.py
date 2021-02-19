@@ -82,3 +82,75 @@ def user(rec_id=None):
 def users(path=None):
     grid = Grid (path, query = db.auth_user.id > 0, formstyle=FormStyleBootstrap4)
     return locals()
+
+## manage_db
+
+@action("list_dir_csv")
+def list_dir_csv():
+    import os
+    try:
+        upload_folder = os.path.join(os.path.dirname(__file__),'uploads/csv')
+        dir_array=os.listdir(upload_folder)
+        dir_array.append('true')
+        return " ".join(dir_array) # return in string to convert in array in js
+        # return "show_csv_dir(%s,true);" % repr(dir_array)
+    except:
+        folder = ['uploads/csv','false']
+        return "%s" % repr(folder)
+
+@action("del_csv")
+def del_csv():
+    import os
+    try:
+        os.remove(request.folder+'/uploads/csv/'+request.vars.datafile)
+        return "show_file_deleted(%s,true);" % repr(request.vars.datafile)
+    except:
+        return "show_file_deleted(%s,false);" % repr(request.vars.datafile)
+
+@action("save_db")
+def save_db():
+    from datetime import datetime
+    import os
+    now = datetime.now()
+    date_backup = now.strftime("%y%m%d-%H%M%S")
+    backup_path = os.path.join(request.folder,'uploads/csv')
+    filename = date_backup+'_backup.csv'
+    backup_path_file = backup_path+'/'+filename
+    with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
+        db.export_to_csv_file(dumpfile)
+    evalstr = "saved('"+filename+"',true);"
+    return evalstr
+
+@action("init_db")
+def init_db():
+    import os
+    for table_name in db.tables():
+        db[table_name].truncate()
+    backup_path = os.path.join(request.folder,'uploads/csv')
+    backup_path_file = backup_path+'/init_db.csv'
+    try:
+        with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+            db.import_from_csv_file(dumpfile)
+        return "reset(true);"
+    except:
+        return "reset(false);"
+
+@action("restore_db")
+def restore_db():
+    import os
+    for table_name in db.tables():
+        db[table_name].truncate()
+    backup_path = os.path.join(request.folder,'uploads/csv')
+    backup_path_file = backup_path+'/'+request.vars.datafile
+    try:
+        with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+            db.import_from_csv_file(dumpfile)
+        return "restored(%s,true);" % repr(request.vars.datafile)
+    except:
+        return "restored(%s,false);" % repr(backup_path_file)
+
+@action("manage_db")
+@action.uses('manage/manage_db.html', T, auth.user, db, flash)
+def manage_db():
+    user = auth.get_user()
+    return locals()

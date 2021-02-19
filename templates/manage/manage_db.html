@@ -1,0 +1,163 @@
+[[ extend 'baseof.html']]
+[[block page_head]]
+<script src="[[=URL('static/js/manage_db.js')]]"></script>
+[[end]]
+[[ block left_nav ]]
+<li class="nav-item">
+    <a href="[[=URL('user')]]" class="nav-link">Users</a>
+</li>
+<li class="nav-item">
+    <a href="[[=URL('patients')]]" class="nav-link">Patients</a>
+</li>
+<li class="nav-item">
+    <a href="[[=URL('facilities')]]" class="nav-link">Facilities</a>
+</li>
+<li class="nav-item">
+    <a href="[[=URL('manage_db')]]" class="nav-link">Manage DB</a>
+</li>
+<li class="nav-item">
+    <a href="[[=URL('testtable')]]" class="nav-link">Testtable</a>
+</li>
+[[ end]]
+
+<div class="container-fluid">
+  <div class="row ">
+    <div class="col-md-4">
+      <h1>Database management</h1>
+      <section>
+        <p>Please choose <mark>wisely</mark> an action on database:</p>
+      </section>
+      <button type="button" id="save" name="save" class="btn btn-info" data-toggle="modal" data-target="#saveModal" >Save</button>
+      <button type="button" id="reset" name="reset"  class="btn btn-danger" data-toggle="modal" data-target="#resetModal">Reset database</button>
+    </div>
+    <div class="col-md-8">
+      <div aria-live="polite" aria-atomic="true" style="position: relative;">
+        <!-- Position it -->
+        <div id="toastContainer" class="toast-top-full-width" style="position: absolute; top: 0; right: 0;">
+            <!-- Then put toasts within -->
+        </div> <!-- toast container -->
+      </div>
+    </div>
+  </div>
+  <div class="row d-none" id="results">
+    <div class="col-md-4">
+      <span id="text_result" class="alert alert-primary">Last action status: </span>
+    </div>
+    <div class="col-md-8">
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid my-3">
+  <div class="row">
+    <div class="col-md-4" >
+      <h2>csv backup files:</h2>
+      <ul id="listDir" class="list-group">
+      </ul>
+    </div>
+  </div>
+</div> <!-- list dir -->
+
+<div class="container-fluid">
+  <div id="test">
+  </div>
+</div>
+
+<!-- modals -->
+<div class="modal" id="saveModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Save database</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> <!-- modal header -->
+      <div class="modal-body">
+        <p>Are you sure you want save the database?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-warning" onclick="confirm_savedb();">Save Database</button>
+      </div>
+    </div> <!--modal content -->
+  </div>
+</div>
+
+
+<div class="modal" id="resetModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Reset database</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> <!-- modal header -->
+      <div class="modal-body">
+        <p>Are you sure you want to delete and reinit the database?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" onclick="confirm_init();">Init Database</button>
+      </div>
+    </div> <!--modal content -->
+  </div>
+</div>
+
+<div class="modal" id="delModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete backup csv file</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> <!-- modal header -->
+      <div class="modal-body">
+        <p>Are you sure you want to delete this backup csv file: <strong id="file2del"></strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" onclick="delcsv(filename);">Delete</button>
+      </div>
+    </div> <!--modal content -->
+  </div>
+</div>
+
+
+<div class="modal" id="restoreModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Restore backup csv file</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> <!-- modal header -->
+      <div class="modal-body">
+        <p>Are you sure you want to delete this database and restore: <strong id="file2restore"></strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" onclick="restoreCsv(filename);">Restore</button>
+      </div>
+    </div> <!--modal content -->
+  </div>
+</div>
+
+
+[[ block js_scripts ]]
+<script src="js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript">
+  const CTRL_INITDB = '[[=URL('init_db')]]';
+  const CTRL_SAVE_DB = '[[=URL('save_db')]]';
+  const CTRL_LISTDIR = '[[=URL('list_dir_csv')]]';
+  const CTRL_DELCSV = '[[=URL('del_csv')]]';
+  const CTRL_RESTOREDB = '[[=URL('restore_db')]]';
+  $(function() {
+    $('.toast').toast('');
+    list_csv();
+  });
+</script>
+[[ end ]]
