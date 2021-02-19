@@ -5,6 +5,8 @@ from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
+from py4web.utils.grid import Grid
+
 
 def check_duplicate(form):
     query_email = (db.auth_user.email == form.vars['email'])
@@ -46,4 +48,11 @@ def user(rec_id=None):
     elif form.errors:
         flash.set(form.errors['email']+' '+form.errors['username'])
         redirect(URL('index'))
+    return locals()
+
+@action('users', method=['POST','GET'])
+@action('users/<path:path>', method=['POST', 'GET'])
+@action.uses('manage/users.html', session, db, auth.user, flash)
+def users(path=None):
+    grid = Grid (path, query = db.auth_user.id > 0, formstyle=FormStyleBootstrap4)
     return locals()
