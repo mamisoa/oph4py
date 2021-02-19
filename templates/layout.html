@@ -15,13 +15,13 @@
       <nav class="black">
         <!-- Logo -->
         <a href="[[=URL('index')]]">
-          <b>py4web <script>document.write(window.location.href.split('/')[3]);</script></b>
+          <b>Oph4py</b>
         </a>
         <!-- Do not touch this -->
         <label for="hamburger">☰</label>
         <input type="checkbox" id="hamburger">
         <!-- Left menu ul/li -->
-        [[block page_left_menu]][[end]]
+        [[block left_nav]][[end]]
         <!-- Right menu ul/li -->
         <ul>
           [[if globals().get('user'):]]
