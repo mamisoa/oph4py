@@ -572,3 +572,7 @@ DELETE FROM "marital";
 DELETE FROM sqlite_sequence WHERE name='marital'
 success!
 success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+success!
