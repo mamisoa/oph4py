@@ -7,7 +7,38 @@
     <a href="[[=URL('testtable')]]" class="nav-link">testtable</a>
 </li>
 [[ end]]
-[[=form]]
+
+<div class="container">
+    <form action="http://localhost:8000/myapp/testtable" enctype="multipart/form-data" method="POST">
+        <div class="row">
+            <div class="col">
+                <label for="none_test_name" class="form-label">Test name:</label>
+                <input autocomplete="on" id="none_test_name" type="text" class="form-control" name="test_name">
+                <div id="firstNameHelp" class="form-text">Enter your name</div> 
+            </div>
+            <div class="col">
+                <label for="none_test_id" class="form-label">Test id:</label>
+                <input autocomplete="on" id="none_test_id" type="text" class="form-control" name="test_id">
+                <div id="testIdHelp" class="form-text">Enter test id</div> 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label for="none_test_gender" class="form-label">Test gender:</label>
+                <input autocomplete="on" id="none_test_gender" type="text" class="form-control" name="test_gender">
+                <div id="testGenderHelp" class="form-text">Enter gender</div> 
+            </div>
+        </div>
+        <input name="_formname" type="hidden" value="none"/><input name="_formkey" type="hidden" value="[[ = form_key ]]"/>
+        <button class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<div class="container">
+    key: [[ = form_key ]]
+</div>
+
+
 <div>
     <p>User is: [[= globals().get('user',{}) ]]</p>
 </div>

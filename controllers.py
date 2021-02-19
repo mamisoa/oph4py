@@ -75,8 +75,9 @@ def testtable():
     form = Form([
         Field('test_name'),
         Field('test_id'),
-        Field('test_gender')],        
+        Field('test_gender')],
         formstyle=FormStyleBootstrap4)
+    form_key=form.formkey
     if form.accepted:
         db.testtable.insert(test_name=form.vars['test_name'],
             test_id=form.vars['test_id'],
@@ -84,4 +85,4 @@ def testtable():
         db.commit()
         flash.set("Testtable row added", sanitize=True)
         redirect(URL('index'))
-    return dict(form=form, user=user)
+    return dict(form=form, user=user, form_key=form_key)
