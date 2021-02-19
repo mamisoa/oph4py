@@ -3,23 +3,25 @@
 from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
+from pydal.validators import CRYPT # to encrypt passwords
 
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 from py4web.utils.grid import Grid
 
 
 def check_duplicate(form):
-    query_email = (db.auth_user.email == form.vars['email'])
-    query_username = (db.auth_user.username == form.vars['username'])
-    form.errors['email'] = ""
-    form.errors['username'] = ""
-    if (db(query_email).count() + db(query_username).count() == 2):
-        form.errors['email'] = T('Email already taken')
-        form.errors['username'] = T('and username already taken')
-    elif (db(query_email).count() != 0):
-        form.errors['email'] = T('Email already taken')
-    elif (db(query_username).count() != 0):
-        form.errors['username'] = T('Username already taken')
+    if not form.errors:
+        query_email = (db.auth_user.email == form.vars['email'])
+        query_username = (db.auth_user.username == form.vars['username'])
+        if (db(query_email).count() + db(query_username).count() == 2):
+            form.errors['email'] = T('Email already taken')
+            form.errors['username'] = T('and username already taken')
+        elif (db(query_email).count() != 0):
+            form.errors['email'] = T('Email already taken')
+            form.errors['username'] = ""
+        elif (db(query_username).count() != 0):
+            form.errors['username'] = T('Username already taken')
+            form.errors['email'] = ""
 
 @action('user', method=['POST','GET'])
 @action('user/<rec_id>', method=['POST','GET','PUT','DELETE'])
@@ -40,10 +42,12 @@ def user(rec_id=None):
             last_name=form.vars['last_name'],
             username=form.vars['username'],
             email=form.vars['email'],
-            password=form.vars['password']
+            password=str(CRYPT()(form.vars['password'])[0])
             )
         db.commit()
-        flash.set("User added", sanitize=True)
+        passwordRow = db(db.auth_user.email == form.vars['email']).select(db.auth_user.password)
+        password = passwordRow[0].password
+        flash.set("User added with password: "+ password, sanitize=True)
         redirect(URL('index'))
     elif form.errors:
         flash.set(form.errors['email']+' '+form.errors['username'])
