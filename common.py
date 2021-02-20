@@ -109,9 +109,6 @@ if db(db.marital.id > 1).count() == 0:
     db.marital.insert(marital_status="single")
     db.marital.insert(marital_status="married")
 
-db.define_table('photo_id',
-    Field('imagefile', 'upload'))
-
 db.define_table('membership',
     Field('membership','string'),
     Field('hierarchy','integer'), format='%(membership)s')
@@ -136,7 +133,6 @@ more_auth_fields = [    Field('membership', 'reference membership'),
                         Field('idc_num', 'string', label='ID card number'),
                         Field('ssn_pid19', 'string', label='SSN'),
                         Field('user_notes', 'string', label ='User notes'),
-                        Field('photo_id', 'reference photo_id'),
                         Field('chipnumber', 'string', label ='Chipnumber'),
                         Field('validfrom', 'date', label ='ID valid from'),
                         Field('validtill', 'date', label ='ID valid til'),

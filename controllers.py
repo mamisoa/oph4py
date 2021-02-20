@@ -40,13 +40,6 @@ def index():
     db_doctors_count = db(db.auth_user.membership==2).count()
     return locals()
 
-@action("patients")
-@action.uses('patients.html', T, auth, db, flash)
-def patient():
-    user = auth.get_user()
-    # something
-    return locals()
-
 @action("test") # route
 @action.uses('test.html', T, auth, db, flash)
 def test():

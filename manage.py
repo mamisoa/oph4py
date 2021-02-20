@@ -8,6 +8,24 @@ from pydal.validators import CRYPT # to encrypt passwords
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 from py4web.utils.grid import Grid
 
+# table rows query to json string
+def rows2json (tablename,rows):
+    import datetime
+    import json
+    def date_handler(obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime(str(T('%d/%m/%Y %T')))
+        elif isinstance(obj, datetime.date):
+            return obj.strftime(str(T('%d/%m/%Y')))
+        else:
+            return False
+    rows = rows.as_list()
+    concat = '{ "'+tablename+'": ['
+    for row in rows:
+        concat = concat + json.dumps(row, default=date_handler)+","
+    concat = concat.strip(',')
+    concat = concat + ']}'
+    return concat
 
 def dropdownSelect(table,fieldId,defaultId): ## eg table=db.gender fieldId=db.gender.fields[0] defaultId=0
     selectOptions=""
@@ -76,11 +94,51 @@ def user(rec_id=None):
         redirect(URL('index'))
     return locals()
 
-@action('users', method=['POST','GET'])
-@action('users/<path:path>', method=['POST', 'GET'])
-@action.uses('manage/users.html', session, db, auth.user, flash)
-def users(path=None):
+@action('users_grid', method=['POST','GET'])
+@action('users_grid/<path:path>', method=['POST', 'GET'])
+@action.uses('manage/users_grid.html', session, db, auth.user, flash)
+def users_grid(path=None):
     grid = Grid (path, query = db.auth_user.id > 0, formstyle=FormStyleBootstrap4)
+    return locals()
+
+@action("patients")
+@action.uses('patients.html', T, auth, db, flash)
+def patient():
+    user = auth.get_user()
+    # something
+    return locals()
+
+## manage users 
+@action('manage/users', method=['POST','GET'])
+@action('manage/users/<membership>')
+@action.uses('patients.html', T, auth.user, db)
+def patient(membership=5):
+    user = auth.get_user()
+    try: # check if membership exists
+        check_group= db(db.membership.id == membership).isempty()
+    except ValueError:
+        membership = 5
+    else:
+        if check_group is True: # if does not exist
+            membership = 5
+    def group_icon(membership):
+        dict_icon = {
+            1:'fa-users-cog',
+            2:'fa-user-md',
+            3:'fa-user-nurse',
+            4:'fa-user-nurse',
+            5:'fa-user',
+        }
+        return dict_icon[int(membership)]
+    class_icon = group_icon(membership)
+    group = (db(db.membership.id == membership).select().first()).membership #name of membership
+    exams = XML(rows2json('content',db(db.exam2do).select(db.exam2do.id,db.exam2do.exam_description)))
+    facilities = XML(rows2json('content',db(db.facility).select(db.facility.id,db.facility.facility_name)))
+    modalities = XML(rows2json('content',db(db.modality).select(db.modality.id,db.modality.modality_name)))
+    query_sessions = ((db.auth_user.membership == 2)|(db.auth_user.membership == 3)|(db.auth_user.membership == 4)) # query all possible providers
+    providers = XML(rows2json('content',db(query_sessions).select(db.auth_user.id,db.auth_user.first_name,db.auth_user.last_name)))
+    origin_rows = db(db.data_origin).select(db.data_origin.origin)
+    origin_json = XML(rows2json('phones',origin_rows))
     return locals()
 
 ## manage_db
@@ -132,6 +190,27 @@ def save_db():
     except:
         return filename+" "+"False"
 
+def set_defaults_db():
+    db.gender.insert(sex="Male")
+    db.gender.insert(sex="Female")
+    db.gender.insert(sex="Other")
+    db.ethny.insert(ethny="Caucasian")
+    db.ethny.insert(ethny="Black")
+    db.ethny.insert(ethny="Hispanic")
+    db.ethny.insert(ethny="Arabic")
+    db.marital.insert(marital_status="single")
+    db.marital.insert(marital_status="married")
+    db.membership.insert(membership="Admin", hierarchy="0")
+    db.membership.insert(membership="Doctor", hierarchy="1")
+    db.membership.insert(membership="Medical assistant", hierarchy="2")
+    db.membership.insert(membership="Administrative", hierarchy="3")
+    db.membership.insert(membership="Patient", hierarchy="99")
+    db.data_origin.insert(origin="Home")
+    db.data_origin.insert(origin="Mobile")
+    db.data_origin.insert(origin="Work")
+    db.commit()
+    return
+
 @action("init_db")
 def init_db():
     import os
@@ -140,8 +219,9 @@ def init_db():
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
     backup_path_file = backup_path+'init_db.csv'
     try:
-        with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
-            db.import_from_csv_file(dumpfile)
+        # with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+        #     db.import_from_csv_file(dumpfile)
+        set_defaults_db()
         return "reset"+" "+"True"
     except:
         return "reset"+" "+"False"

@@ -1,0 +1,21 @@
+[[extend 'layout.html']]
+[[ block left_nav ]]
+<ul>
+    <li class="nav-item">
+        <a href="[[=URL('users')]]" class="nav-link">Users</a>
+    </li>
+    <li class="nav-item">
+        <a href="[[=URL('facilities')]]" class="nav-link">facilities</a>
+    </li>
+    <li class="nav-item">
+        <a href="[[=URL('testtable')]]" class="nav-link">testtable</a>
+    </li>
+</ul>
+[[ end]]
+<div class="container-fluid mb-5 pb-5">
+    [[=grid.render()]]
+</div>
+
+
+[[ block js_scripts ]]
+[[ end]]

@@ -157,7 +157,7 @@ function displayItem (id,index,value) {
     $('#row'+filenum+' td[data-file="'+value+'"]').append('<button type="button" onclick="confirm_restorecsv(&apos;' +value+ '&apos;);" class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>');
   } else {
     $('#row'+filenum+' td[data-file="'+value+'"]').append('<button type="button" onclick="confirm_delcsv(&apos;'+value+'&apos;);" disabled class="btn btn-danger m-2"><i class="fas fa-trash-alt"></i></button>');
-    $('#row'+filenum+' td[data-file="'+value+'"]').append('<button type="button" onclick="confirm_restorecsv(&apos;' +value+ '&apos;);" disabled class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>');
+    $('#row'+filenum+' td[data-file="'+value+'"]').append('<button type="button" onclick="confirm_restorecsv(&apos;' +value+ '&apos;);" class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>');
   };
   $('#row'+filenum).append('</td>');
   $('#'+id).append('</tr>');
