@@ -39,13 +39,14 @@
         <div class="col-md-8">
             <table class="table align-middle">
                 <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Filename</th>
-                        <th scope="col">Action</th>
-                    </tr>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Filename</th>
+                    <th scope="col">Action</th>
+                  </tr>
                 </thead>
                 <tbody id="listDir">
+                  <!-- List of csv backups here -->
                 </tbody>
             </table>
         </div>
@@ -272,7 +273,6 @@ function delcsv(datafile) {
   });
 }
 
-
 function show_csv_dir(arr) { // arr is a python list of filenames
   var flag=arr.pop(); // last item from array  
   $('#listDir').html('');
@@ -295,19 +295,18 @@ function show_csv_dir(arr) { // arr is a python list of filenames
 function displayItem (id,index,value) {
   // console.log((value =='init_db.csv')||(typeof(index) =='none'));
   filenum = parseInt(index)+1;
+  $('#'+id).append('<tr id="row'+filenum+'">');
   if ((value !='init_db.csv')&&(filenum != 0)){
-    $('#'+id).append('<tr>');
-    $('#'+id).append('<td scope="row">'+filenum+'</td>');
-    $('#'+id).append('<td class="csv">'+value+'</td>');
-    $('#'+id).append('<td>');
-    $('#'+id).append('<button type="button" data-file="'+value+'" onclick="confirm_delcsv(&apos;'+value+'&apos;);" class="btn btn-danger m-2"><i class="fas fa-trash-alt"></i></button>');
-    $('#'+id).append('<button type="button" data-file="' +value+ '" onclick="confirm_restorecsv(&apos;' +value+ '&apos;);" class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>');
-    $('#'+id).append('</td>');
+    $('#row'+filenum).append('<td scope="row">'+filenum+'</td>');
+    $('#row'+filenum).append('<td class="csv">'+value+'</td>');
+    $('#row'+filenum).append('<td data-file="'+value+'" >');
+    $('#row'+filenum+' td[data-file="'+value+'"]').append('<button type="button" onclick="confirm_delcsv(&apos;'+value+'&apos;);" class="btn btn-danger m-2"><i class="fas fa-trash-alt"></i></button>');
+    $('#row'+filenum+' td[data-file="'+value+'"]').append('<button type="button" onclick="confirm_restorecsv(&apos;' +value+ '&apos;);" class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>');
+    $('#row'+filenum).append('</td>');
   } else {
-    $('#'+id).append('<tr>');
-    $('#'+id).append('<td scope="row">'+filenum+'</td>');
-    $('#'+id).append('<td class="csv">'+value+'</td>');
-    $('#'+id).append('<td class="csv">kk</td>');
+    $('#row'+filenum).append('<td scope="row">'+filenum+'</td>');
+    $('#row'+filenum).append('<td class="csv">'+value+'</td>');
+    $('#row'+filenum).append('<td class="csv">kk</td>');
   };
   $('#'+id).append('</tr>');
 }
