@@ -307,7 +307,7 @@ function displayItem (id,index,value) {
     $('#'+id).append('<tr>');
     $('#'+id).append('<td scope="row">'+filenum+'</td>');
     $('#'+id).append('<td class="csv">'+value+'</td>');
-    $('#'+id).append('<td class="csv"></td>');
+    $('#'+id).append('<td class="csv">kk</td>');
   };
   $('#'+id).append('</tr>');
 }
@@ -324,7 +324,6 @@ function create_toast(id,start,txt) { // id number of toast, start = time at exe
   $("<span/>").attr('id','timeHeader'+id).attr('class','text-muted align-self-center pr-2').appendTo('#toastHeader'+id);
   $('#timeHeader'+id).append('<small>'+time_elapsed(time_counter)+'</small>');
   $("<button/>").attr('id','btnHeader'+id).attr('class','btn-close align-self-center').attr('data-dismiss','toast').appendTo('#toastHeader'+id);
-//   $('#btnHeader'+id).append('&times;');
   $("<div/>").attr('id','txtBody'+id).attr('class','toast-body').appendTo('#toast'+id);
   $('#txtBody'+id).append(txt);
   $('#toast'+id).toast('show');
