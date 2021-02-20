@@ -85,6 +85,12 @@ def users(path=None):
 
 ## manage_db
 
+@action("manage/db")
+@action.uses('manage/manage_db.html', T, auth.user, db, flash)
+def manage_db():
+    user = auth.get_user()
+    return locals()
+
 @action("list_dir_csv")
 def list_dir_csv():
     import os
@@ -154,9 +160,3 @@ def restore_db():
         return file2restore +" "+"True"
     except:
         return file2restore +" "+"False"
-
-@action("manage_db")
-@action.uses('manage/manage_db.html', T, auth.user, db, flash)
-def manage_db():
-    user = auth.get_user()
-    return locals()

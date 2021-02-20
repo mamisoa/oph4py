@@ -1,6 +1,5 @@
 *.pyc
 __pycache__/
 databases/*
-uploads/*
 *.csv
 !init_db.csv

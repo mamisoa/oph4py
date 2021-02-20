@@ -1,0 +1,99 @@
+TABLE gender
+gender.id,gender.sex
+1,Male
+2,Female
+3,Other
+
+
+TABLE ethny
+ethny.id,ethny.ethny
+1,Caucasian
+2,Black
+3,Hispanic
+4,Arabic
+
+
+TABLE marital
+marital.id,marital.marital_status
+1,single
+2,married
+
+
+TABLE photo_id
+
+
+TABLE membership
+membership.id,membership.membership,membership.hierarchy
+1,Admin,0
+2,Doctor,1
+3,Medical assistant,2
+4,Administrative,3
+5,Patient,99
+
+
+TABLE auth_user
+auth_user.id,auth_user.username,auth_user.email,auth_user.password,auth_user.first_name,auth_user.last_name,auth_user.sso_id,auth_user.action_token,auth_user.last_password_change,auth_user.past_passwords_hash,auth_user.membership,auth_user.maiden_name_pid6,auth_user.dob_pid7,auth_user.birth_town_pid23,auth_user.birth_country_pid23,auth_user.gender_pid8,auth_user.marital_pid16,auth_user.ethny_pid22,auth_user.idc_num,auth_user.ssn_pid19,auth_user.user_notes,auth_user.photo_id,auth_user.chipnumber,auth_user.validfrom,auth_user.validtill,auth_user.initials,auth_user.nationality,auth_user.noblecondition,auth_user.documenttype,auth_user.specialstatus,auth_user.created_on,auth_user.created_by,auth_user.modified_on,auth_user.modified_by,auth_user.is_active
+1,mamisoa,mamisoa@gmail.com,"pbkdf2(1000,20,sha512)$bea0c9f33ea2898f$0bc22cf93a252ff1bb55a9e8771210ea882f60b1",Andriantafika,Raberahona,<NULL>,,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,Virginal-Samme,Belgique,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,2021-02-20 00:21:52,<NULL>,2021-02-20 00:21:52,<NULL>,True
+
+
+TABLE auth_user_tag_groups
+
+
+TABLE facilities
+
+
+TABLE testtable
+
+
+TABLE facility
+
+
+TABLE modality
+
+
+TABLE address
+
+
+TABLE data_origin
+
+
+TABLE phone
+
+
+TABLE insurance_sector
+
+
+TABLE insurance
+
+
+TABLE exam2do_OBR4
+
+
+TABLE worklist
+
+
+TABLE tono
+
+
+TABLE topography
+
+
+TABLE capsulotomy
+
+
+TABLE optotype
+
+
+TABLE rx
+
+
+TABLE ant_biom
+
+
+TABLE post_biom
+
+
+TABLE phistory
+
+
+END
