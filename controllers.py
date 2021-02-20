@@ -35,8 +35,10 @@ from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added 
 @unauthenticated("index", "index.html")
 def index():
     user = auth.get_user()
-    message = T("Hello {first_name}".format(**user) if user else "Hello")
-    return dict(message=message)
+    message = T("Hello {first_name}!".format(**user) if user else "Hello. You should sign in!")
+    db_patients_count = db(db.auth_user.membership==5).count()
+    db_doctors_count = db(db.auth_user.membership==2).count()
+    return locals()
 
 @action("patients")
 @action.uses('patients.html', T, auth, db, flash)

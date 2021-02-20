@@ -3,5 +3,18 @@
 
 [[ end]]
 <div class="container">
-    <p>[[=message]]</p>
+    <div class="row">
+        <div class="col"><p>[[=message]]</p></div>
+    </div>
+    <div class="row">
+        <div class="col my-2"><h2>Dashboard</h2></div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <ul class="list-group">
+                <li class="list-group-item">Number of patients in DB: [[=db_patients_count]]</li>
+                <li class="list-group-item">Number of doctors in DB: [[=db_doctors_count]]</li>
+            </ul>
+        </div>
+    </div>
 </div>
