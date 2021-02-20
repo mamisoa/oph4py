@@ -2,3 +2,5 @@
 __pycache__/
 databases/*
 uploads/*
+*.csv
+!init_db.csv

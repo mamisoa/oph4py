@@ -2,73 +2,84 @@ var toast_counter = 0;
 var time_counter = 0;
 var filename ="";
 
-function saved(file,flag){
-  let txt ="";
-  if (flag) {
-    txt = "Database saved in "+file;
-    create_toast(toast_counter,time_counter,txt);
-    // $("#text_result").removeClass().addClass("alert alert-success");
-    // $("#text_result").append(txt);
-  } else {
-    txt = "Error saving database";
-    create_toast(toast_counter,time_counter,txt);
-  }
-  list_csv();
+// throw an ajax request to update list of backup files
+function list_csv() {
+  time_counter = Date.now();
+  $.ajax({
+    url: CTRL_LISTDIR,
+    success: function(result) {
+    show_csv_dir(result.split(" "));
+    }
+  });
 }
 
-function reset(flag){
-  let txt="";
+function show_csv_dir(arr) { // arr is a python list of filenames
+  var flag=arr.pop(); // last item from array  
+  $('#listDir').html('');
   if (flag) {
-    txt = "Database reset done";
-    create_toast(toast_counter,time_counter,txt);
+    if (arr.length >0) {
+      for (const i in arr) {
+        displayItem('listDir',i,arr[i]);
+      }
+    } else {
+      console.log('FLAG no file');
+      displayItem('listDir','-1','No file found');
+    }
   } else {
-    txt = "Error resetting database";
-    create_toast(toast_counter,time_counter,txt);
+    console.log('flag: FALSE');
+    displayItem('listDir','-1','No file found');
   }
-  list_csv();
 }
 
-function restored(file,flag){
-  let txt ="";
-  if (flag) {
-    txt = "Restored database from file: "+file;
-    create_toast(toast_counter,time_counter,txt);
-    // $("#text_result").removeClass().addClass("alert alert-success");
-    // $("#text_result").append(txt);
-  } else {
-    txt = "Error restoring database";
-    create_toast(toast_counter,time_counter,txt);
-  }
-  list_csv();
+// throw an ajax request to make a csv backup file after modal confirmation in view
+function confirm_savedb() {
+    time_counter = Date.now();
+    $.ajax({
+      url: CTRL_SAVE_DB,
+      success: function(result) {
+        arr = result.split(" ");
+        if (arr[1] == 'True') {
+            create_toast(toast_counter,time_counter,'DB saved')
+        } else {
+            create_toast(toast_counter,time_counter,'Error trying to save DB!')
+        }
+      }
+    });
+    $('#saveModal').modal('hide');
+    list_csv();
 }
 
+// throw an ajax request 1) to backup DB and if successful 2) clear/reset DB - after modal confirmation in view
 function confirm_init() {
   time_counter = Date.now();
-  ajax(CTRL_SAVE_DB,[], ':eval');
-  time_counter = Date.now();
-  ajax(CTRL_INITDB, [], ':eval');
+  $.ajax({
+      url: CTRL_SAVE_DB,
+      success: function(result) {
+        arr = result.split(" ");
+        if (arr[1] == 'True') {
+            create_toast(toast_counter,time_counter,'DB saved')
+            $.ajax({
+                url: CTRL_INIT_DB,
+                success: function(result) {
+                arr = result.split(" ");
+                if (arr[1] == 'True') {
+                create_toast(toast_counter,time_counter,'DB blanked')
+                } else {
+                create_toast(toast_counter,time_counter,'Error trying to blank DB!')
+                }
+                }
+            });
+        } else {
+            create_toast(toast_counter,time_counter,'Error trying to save DB!')
+        }
+      }
+    });
+    time_counter = Date.now();
   $('#resetModal').modal('hide');
+  list_csv();
 }
 
-function confirm_savedb() {
-  time_counter = Date.now();
-  ajax(CTRL_SAVE_DB,[], ':eval');
-  $('#saveModal').modal('hide');
-}
-
-// del button -> show delModal and set global filename = file2del -> ajax call -> hide modal, show toast, refresh list
-
-function confirm_delcsv(datafile) {
-  time_counter = Date.now();
-  $('#file2del').html(datafile);
-  filename=datafile;
-  $('#delModal').modal('show');
-}
-
-function delcsv(datafile) {
-  ajax(CTRL_DELCSV+'?datafile='+datafile,[],':eval');
-}
-
+// open modal for restore confirmation
 function confirm_restorecsv(datafile) {
   time_counter = Date.now();
   $('#file2restore').html(datafile);
@@ -76,85 +87,103 @@ function confirm_restorecsv(datafile) {
   $('#restoreModal').modal('show');
 }
 
+// throw an ajax request to restore a csv backup file after modal confirmation in view
 function restoreCsv(datafile) {
-  time_counter = Date.now();
-  console.log('file in restoreCsv function:'+datafile);
-  ajax(CTRL_SAVE_DB,[], ':eval');
-  time_counter = Date.now();
-  ajax(CTRL_RESTOREDB+'?datafile='+datafile,[],':eval');
-  $('#restoreModal').modal('hide');
+    time_counter = Date.now();
+    console.log('file in restoreCsv function:'+datafile);
+    $.ajax({
+        url: CTRL_SAVE_DB,
+        success: function(result) {
+            arr = result.split(" ");
+            if (arr[1] == 'True') {
+            create_toast(toast_counter,time_counter,'DB saved');
+            time_counter = Date.now();
+            $.ajax({
+                url: CTRL_RESTORE_DB+'?datafile='+datafile,
+                success: function(result) {
+                    $('#delModal').modal('hide');
+                    arr = result.split(" ");
+                    if (arr[1] == 'True') {
+                    create_toast(toast_counter,time_counter,arr[0]+' restored')
+                    } else {
+                    create_toast(toast_counter,time_counter,"Couldn't restore"+arr[0]+' file!')
+                    }
+                }
+            });
+            } else {
+            create_toast(toast_counter,time_counter,'Error trying to save DB!')
+            };
+        list_csv();
+        }
+    });
+    $('#restoreModal').modal('hide');
 }
 
-function show_file_deleted(csvfile,flag) {
-  let txt="";
-  if (flag) {
-    txt = "File "+csvfile+" deleted";
-    create_toast(toast_counter,time_counter,txt);
-  } else {
-    txt = "Error deleting "+csvfile+" !";
-    create_toast(toast_counter,time_counter,txt);
-  }
-  $('#delModal').modal('hide');
-  list_csv();
-}
-
-
-function list_csv() {
+// open modal for delete confirmation
+function confirm_delcsv(datafile) {
   time_counter = Date.now();
-  ajax(CTRL_LISTDIR,[],':eval');
+  $('#file2del').html(datafile);
+  filename=datafile;
+  $('#delModal').modal('show');
 }
 
-function show_csv_dir(arr,flag) {
-  // console.log(arr);
-  $('#listDir').html('');
-  if (flag) {
-    if (arr.length >0) {
-      for (const i in arr) {
-        //console.log(arr[i]);
-        displayItem('listDir',i,arr[i]);
+// throw an ajax request to delete a csv backup file after modal confirmation in view
+function delcsv(datafile) {
+  $.ajax({
+      url: CTRL_DELCSV+'?datafile='+datafile,
+      success: function(result) {
+        $('#delModal').modal('hide');
+        arr = result.split(" ");
+        if (arr[1] == 'True') {
+            create_toast(toast_counter,time_counter,arr[0]+' backup DELETED')
+        } else {
+            create_toast(toast_counter,time_counter,"Couldn't delete "+arr[0]+' file!')
+        }
+        list_csv();
       }
-    } else {
-      console.log('FLAG no file');
-      displayItem('listDir','none','No file found');
-    }
-  } else {
-    console.log('flag: FALSE');
-    displayItem('listDir','none','No file found');
-  }
+  });
 }
 
+// add one row in the table list of files
+// difficult to append a cell at the right place ...
 function displayItem (id,index,value) {
-  // console.log((value =='init_db.csv')||(typeof(index) =='none'));
-  if ((value !='init_db.csv')){
-    $('#'+id).append('<li id="csv'+index+'" class="list-group-item"><span class="">'+value+'</span></li>');
-    $('#csv'+index).append('<button type="button" data-file="'+value+'" onclick="confirm_delcsv(&apos;'+value+'&apos;);" class="btn btn-danger fas fa-trash-alt float-right ml-1"></button>');
-    $('#csv'+index).append('<button type="button" data-file="'+value+'" onclick="confirm_restorecsv(&apos;'+value+'&apos;);" class="btn btn-warning fas fa-trash-restore float-right ml-1"></button>');
+  filenum = parseInt(index)+1;
+  $('#'+id).append('<tr id="row'+filenum+'">');
+  $('#row'+filenum).append('<td scope="row">'+filenum+'</td>');
+  $('#row'+filenum).append('<td class="csv">'+value+'</td>');
+  $('#row'+filenum).append('<td data-file="'+value+'" >');
+  if ((value !='init_db.csv')&&(filenum != 0)){
+    $('#row'+filenum+' td[data-file="'+value+'"]').append('<button type="button" onclick="confirm_delcsv(&apos;'+value+'&apos;);" class="btn btn-danger m-2"><i class="fas fa-trash-alt"></i></button>');
+    $('#row'+filenum+' td[data-file="'+value+'"]').append('<button type="button" onclick="confirm_restorecsv(&apos;' +value+ '&apos;);" class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>');
   } else {
-    $('#'+id).append('<li id="csv'+index+'" class="list-group-item"><span class="">'+value+'</span></li>');
-  }
+    $('#row'+filenum+' td[data-file="'+value+'"]').append('<button type="button" onclick="confirm_delcsv(&apos;'+value+'&apos;);" disabled class="btn btn-danger m-2"><i class="fas fa-trash-alt"></i></button>');
+    $('#row'+filenum+' td[data-file="'+value+'"]').append('<button type="button" onclick="confirm_restorecsv(&apos;' +value+ '&apos;);" disabled class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>');
+  };
+  $('#row'+filenum).append('</td>');
+  $('#'+id).append('</tr>');
 }
 
-
-
+// jQuery toast - to update 
 function create_toast(id,start,txt) { // id number of toast, start = time at execution, txt = notification msg
   let row_id = 'toastRow'+id;
   //console.log(row_id);
   $("<div/>").attr('id',row_id).attr('class','mb-1').appendTo('#toastContainer');
   $("<div/>").attr('id','col'+id).appendTo('#'+row_id);
-  $("<div/>").attr('id','toast'+id).attr('data-autohide','true').attr('data-delay',20000).attr('class','toast').appendTo('#col'+id);
-  $("<div/>").attr('id','toastHeader'+id).attr('class','toast-header').appendTo('#toast'+id);
-  $("<strong/>").attr('id','statusHeader'+id).attr('class','mr-auto text-primary').appendTo('#toastHeader'+id);
-  $('#statusHeader'+id).append('Status');
-  $("<small/>").attr('id','timeHeader'+id).attr('class','text-muted').appendTo('#toastHeader'+id);
-  $('#timeHeader'+id).append(time_elapsed(time_counter));
-  $("<button/>").attr('id','btnHeader'+id).attr('class','ml-2 mb-1 close').attr('data-dismiss','toast').appendTo('#toastHeader'+id);
-  $('#btnHeader'+id).append('&times;');
+  $("<div/>").attr('id','toast'+id).attr('data-autohide','true').attr('data-delay',6000).attr('class','toast').appendTo('#col'+id);
+  $("<div/>").attr('id','toastHeader'+id).attr('class','toast-header d-flex').appendTo('#toast'+id);
+  $("<span/>").attr('id','statusHeader'+id).attr('class','text-primary flex-fill align-self-center').appendTo('#toastHeader'+id);
+  $('#statusHeader'+id).append('<strong>Status</strong>');
+  $("<span/>").attr('id','timeHeader'+id).attr('class','text-muted align-self-center pr-2').appendTo('#toastHeader'+id);
+  $('#timeHeader'+id).append('<small>'+time_elapsed(time_counter)+'</small>');
+  $("<button/>").attr('id','btnHeader'+id).attr('class','btn-close align-self-center').attr('data-dismiss','toast').appendTo('#toastHeader'+id);
   $("<div/>").attr('id','txtBody'+id).attr('class','toast-body').appendTo('#toast'+id);
   $('#txtBody'+id).append(txt);
   $('#toast'+id).toast('show');
   toast_counter++;
 }
 
+// time elaspe between initialisation with 
+// time_counter = Date.now(); to function call
 function time_elapsed(from) {
   let current = Date.now();
   //console.log('execution time:'+from);
@@ -167,5 +196,4 @@ function time_elapsed(from) {
   } else {
     return elapsed_ms+'ms';
   }
-
 }
