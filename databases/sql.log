@@ -644,3 +644,875 @@ success!
 success!
 success!
 success!
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "photo_id";
+DELETE FROM sqlite_sequence WHERE name='photo_id'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+DELETE FROM "auth_user";
+DELETE FROM sqlite_sequence WHERE name='auth_user'
+success!
+DELETE FROM "auth_user_tag_groups";
+DELETE FROM sqlite_sequence WHERE name='auth_user_tag_groups'
+success!
+DELETE FROM "facilities";
+DELETE FROM sqlite_sequence WHERE name='facilities'
+success!
+DELETE FROM "testtable";
+DELETE FROM sqlite_sequence WHERE name='testtable'
+success!
+DELETE FROM "facility";
+DELETE FROM sqlite_sequence WHERE name='facility'
+success!
+DELETE FROM "modality";
+DELETE FROM sqlite_sequence WHERE name='modality'
+success!
+DELETE FROM "address";
+DELETE FROM sqlite_sequence WHERE name='address'
+success!
+DELETE FROM "data_origin";
+DELETE FROM sqlite_sequence WHERE name='data_origin'
+success!
+DELETE FROM "phone";
+DELETE FROM sqlite_sequence WHERE name='phone'
+success!
+DELETE FROM "insurance_sector";
+DELETE FROM sqlite_sequence WHERE name='insurance_sector'
+success!
+DELETE FROM "insurance";
+DELETE FROM sqlite_sequence WHERE name='insurance'
+success!
+DELETE FROM "exam2do_OBR4";
+DELETE FROM sqlite_sequence WHERE name='exam2do_OBR4'
+success!
+DELETE FROM "worklist";
+DELETE FROM sqlite_sequence WHERE name='worklist'
+success!
+DELETE FROM "tono";
+DELETE FROM sqlite_sequence WHERE name='tono'
+success!
+DELETE FROM "topography";
+DELETE FROM sqlite_sequence WHERE name='topography'
+success!
+DELETE FROM "capsulotomy";
+DELETE FROM sqlite_sequence WHERE name='capsulotomy'
+success!
+DELETE FROM "optotype";
+DELETE FROM sqlite_sequence WHERE name='optotype'
+success!
+DELETE FROM "rx";
+DELETE FROM sqlite_sequence WHERE name='rx'
+success!
+DELETE FROM "ant_biom";
+DELETE FROM sqlite_sequence WHERE name='ant_biom'
+success!
+DELETE FROM "post_biom";
+DELETE FROM sqlite_sequence WHERE name='post_biom'
+success!
+DELETE FROM "phistory";
+DELETE FROM sqlite_sequence WHERE name='phistory'
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "photo_id";
+DELETE FROM sqlite_sequence WHERE name='photo_id'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+DELETE FROM "auth_user";
+DELETE FROM sqlite_sequence WHERE name='auth_user'
+success!
+DELETE FROM "auth_user_tag_groups";
+DELETE FROM sqlite_sequence WHERE name='auth_user_tag_groups'
+success!
+DELETE FROM "facilities";
+DELETE FROM sqlite_sequence WHERE name='facilities'
+success!
+DELETE FROM "testtable";
+DELETE FROM sqlite_sequence WHERE name='testtable'
+success!
+DELETE FROM "facility";
+DELETE FROM sqlite_sequence WHERE name='facility'
+success!
+DELETE FROM "modality";
+DELETE FROM sqlite_sequence WHERE name='modality'
+success!
+DELETE FROM "address";
+DELETE FROM sqlite_sequence WHERE name='address'
+success!
+DELETE FROM "data_origin";
+DELETE FROM sqlite_sequence WHERE name='data_origin'
+success!
+DELETE FROM "phone";
+DELETE FROM sqlite_sequence WHERE name='phone'
+success!
+DELETE FROM "insurance_sector";
+DELETE FROM sqlite_sequence WHERE name='insurance_sector'
+success!
+DELETE FROM "insurance";
+DELETE FROM sqlite_sequence WHERE name='insurance'
+success!
+DELETE FROM "exam2do_OBR4";
+DELETE FROM sqlite_sequence WHERE name='exam2do_OBR4'
+success!
+DELETE FROM "worklist";
+DELETE FROM sqlite_sequence WHERE name='worklist'
+success!
+DELETE FROM "tono";
+DELETE FROM sqlite_sequence WHERE name='tono'
+success!
+DELETE FROM "topography";
+DELETE FROM sqlite_sequence WHERE name='topography'
+success!
+DELETE FROM "capsulotomy";
+DELETE FROM sqlite_sequence WHERE name='capsulotomy'
+success!
+DELETE FROM "optotype";
+DELETE FROM sqlite_sequence WHERE name='optotype'
+success!
+DELETE FROM "rx";
+DELETE FROM sqlite_sequence WHERE name='rx'
+success!
+DELETE FROM "ant_biom";
+DELETE FROM sqlite_sequence WHERE name='ant_biom'
+success!
+DELETE FROM "post_biom";
+DELETE FROM sqlite_sequence WHERE name='post_biom'
+success!
+DELETE FROM "phistory";
+DELETE FROM sqlite_sequence WHERE name='phistory'
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "photo_id";
+DELETE FROM sqlite_sequence WHERE name='photo_id'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+DELETE FROM "auth_user";
+DELETE FROM sqlite_sequence WHERE name='auth_user'
+success!
+DELETE FROM "auth_user_tag_groups";
+DELETE FROM sqlite_sequence WHERE name='auth_user_tag_groups'
+success!
+DELETE FROM "facilities";
+DELETE FROM sqlite_sequence WHERE name='facilities'
+success!
+DELETE FROM "testtable";
+DELETE FROM sqlite_sequence WHERE name='testtable'
+success!
+DELETE FROM "facility";
+DELETE FROM sqlite_sequence WHERE name='facility'
+success!
+DELETE FROM "modality";
+DELETE FROM sqlite_sequence WHERE name='modality'
+success!
+DELETE FROM "address";
+DELETE FROM sqlite_sequence WHERE name='address'
+success!
+DELETE FROM "data_origin";
+DELETE FROM sqlite_sequence WHERE name='data_origin'
+success!
+DELETE FROM "phone";
+DELETE FROM sqlite_sequence WHERE name='phone'
+success!
+DELETE FROM "insurance_sector";
+DELETE FROM sqlite_sequence WHERE name='insurance_sector'
+success!
+DELETE FROM "insurance";
+DELETE FROM sqlite_sequence WHERE name='insurance'
+success!
+DELETE FROM "exam2do_OBR4";
+DELETE FROM sqlite_sequence WHERE name='exam2do_OBR4'
+success!
+DELETE FROM "worklist";
+DELETE FROM sqlite_sequence WHERE name='worklist'
+success!
+DELETE FROM "tono";
+DELETE FROM sqlite_sequence WHERE name='tono'
+success!
+DELETE FROM "topography";
+DELETE FROM sqlite_sequence WHERE name='topography'
+success!
+DELETE FROM "capsulotomy";
+DELETE FROM sqlite_sequence WHERE name='capsulotomy'
+success!
+DELETE FROM "optotype";
+DELETE FROM sqlite_sequence WHERE name='optotype'
+success!
+DELETE FROM "rx";
+DELETE FROM sqlite_sequence WHERE name='rx'
+success!
+DELETE FROM "ant_biom";
+DELETE FROM sqlite_sequence WHERE name='ant_biom'
+success!
+DELETE FROM "post_biom";
+DELETE FROM sqlite_sequence WHERE name='post_biom'
+success!
+DELETE FROM "phistory";
+DELETE FROM sqlite_sequence WHERE name='phistory'
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "photo_id";
+DELETE FROM sqlite_sequence WHERE name='photo_id'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+DELETE FROM "auth_user";
+DELETE FROM sqlite_sequence WHERE name='auth_user'
+success!
+DELETE FROM "auth_user_tag_groups";
+DELETE FROM sqlite_sequence WHERE name='auth_user_tag_groups'
+success!
+DELETE FROM "facilities";
+DELETE FROM sqlite_sequence WHERE name='facilities'
+success!
+DELETE FROM "testtable";
+DELETE FROM sqlite_sequence WHERE name='testtable'
+success!
+DELETE FROM "facility";
+DELETE FROM sqlite_sequence WHERE name='facility'
+success!
+DELETE FROM "modality";
+DELETE FROM sqlite_sequence WHERE name='modality'
+success!
+DELETE FROM "address";
+DELETE FROM sqlite_sequence WHERE name='address'
+success!
+DELETE FROM "data_origin";
+DELETE FROM sqlite_sequence WHERE name='data_origin'
+success!
+DELETE FROM "phone";
+DELETE FROM sqlite_sequence WHERE name='phone'
+success!
+DELETE FROM "insurance_sector";
+DELETE FROM sqlite_sequence WHERE name='insurance_sector'
+success!
+DELETE FROM "insurance";
+DELETE FROM sqlite_sequence WHERE name='insurance'
+success!
+DELETE FROM "exam2do_OBR4";
+DELETE FROM sqlite_sequence WHERE name='exam2do_OBR4'
+success!
+DELETE FROM "worklist";
+DELETE FROM sqlite_sequence WHERE name='worklist'
+success!
+DELETE FROM "tono";
+DELETE FROM sqlite_sequence WHERE name='tono'
+success!
+DELETE FROM "topography";
+DELETE FROM sqlite_sequence WHERE name='topography'
+success!
+DELETE FROM "capsulotomy";
+DELETE FROM sqlite_sequence WHERE name='capsulotomy'
+success!
+DELETE FROM "optotype";
+DELETE FROM sqlite_sequence WHERE name='optotype'
+success!
+DELETE FROM "rx";
+DELETE FROM sqlite_sequence WHERE name='rx'
+success!
+DELETE FROM "ant_biom";
+DELETE FROM sqlite_sequence WHERE name='ant_biom'
+success!
+DELETE FROM "post_biom";
+DELETE FROM sqlite_sequence WHERE name='post_biom'
+success!
+DELETE FROM "phistory";
+DELETE FROM sqlite_sequence WHERE name='phistory'
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "photo_id";
+DELETE FROM sqlite_sequence WHERE name='photo_id'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+DELETE FROM "auth_user";
+DELETE FROM sqlite_sequence WHERE name='auth_user'
+success!
+DELETE FROM "auth_user_tag_groups";
+DELETE FROM sqlite_sequence WHERE name='auth_user_tag_groups'
+success!
+DELETE FROM "facilities";
+DELETE FROM sqlite_sequence WHERE name='facilities'
+success!
+DELETE FROM "testtable";
+DELETE FROM sqlite_sequence WHERE name='testtable'
+success!
+DELETE FROM "facility";
+DELETE FROM sqlite_sequence WHERE name='facility'
+success!
+DELETE FROM "modality";
+DELETE FROM sqlite_sequence WHERE name='modality'
+success!
+DELETE FROM "address";
+DELETE FROM sqlite_sequence WHERE name='address'
+success!
+DELETE FROM "data_origin";
+DELETE FROM sqlite_sequence WHERE name='data_origin'
+success!
+DELETE FROM "phone";
+DELETE FROM sqlite_sequence WHERE name='phone'
+success!
+DELETE FROM "insurance_sector";
+DELETE FROM sqlite_sequence WHERE name='insurance_sector'
+success!
+DELETE FROM "insurance";
+DELETE FROM sqlite_sequence WHERE name='insurance'
+success!
+DELETE FROM "exam2do_OBR4";
+DELETE FROM sqlite_sequence WHERE name='exam2do_OBR4'
+success!
+DELETE FROM "worklist";
+DELETE FROM sqlite_sequence WHERE name='worklist'
+success!
+DELETE FROM "tono";
+DELETE FROM sqlite_sequence WHERE name='tono'
+success!
+DELETE FROM "topography";
+DELETE FROM sqlite_sequence WHERE name='topography'
+success!
+DELETE FROM "capsulotomy";
+DELETE FROM sqlite_sequence WHERE name='capsulotomy'
+success!
+DELETE FROM "optotype";
+DELETE FROM sqlite_sequence WHERE name='optotype'
+success!
+DELETE FROM "rx";
+DELETE FROM sqlite_sequence WHERE name='rx'
+success!
+DELETE FROM "ant_biom";
+DELETE FROM sqlite_sequence WHERE name='ant_biom'
+success!
+DELETE FROM "post_biom";
+DELETE FROM sqlite_sequence WHERE name='post_biom'
+success!
+DELETE FROM "phistory";
+DELETE FROM sqlite_sequence WHERE name='phistory'
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "photo_id";
+DELETE FROM sqlite_sequence WHERE name='photo_id'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+DELETE FROM "auth_user";
+DELETE FROM sqlite_sequence WHERE name='auth_user'
+success!
+DELETE FROM "auth_user_tag_groups";
+DELETE FROM sqlite_sequence WHERE name='auth_user_tag_groups'
+success!
+DELETE FROM "facilities";
+DELETE FROM sqlite_sequence WHERE name='facilities'
+success!
+DELETE FROM "testtable";
+DELETE FROM sqlite_sequence WHERE name='testtable'
+success!
+DELETE FROM "facility";
+DELETE FROM sqlite_sequence WHERE name='facility'
+success!
+DELETE FROM "modality";
+DELETE FROM sqlite_sequence WHERE name='modality'
+success!
+DELETE FROM "address";
+DELETE FROM sqlite_sequence WHERE name='address'
+success!
+DELETE FROM "data_origin";
+DELETE FROM sqlite_sequence WHERE name='data_origin'
+success!
+DELETE FROM "phone";
+DELETE FROM sqlite_sequence WHERE name='phone'
+success!
+DELETE FROM "insurance_sector";
+DELETE FROM sqlite_sequence WHERE name='insurance_sector'
+success!
+DELETE FROM "insurance";
+DELETE FROM sqlite_sequence WHERE name='insurance'
+success!
+DELETE FROM "exam2do_OBR4";
+DELETE FROM sqlite_sequence WHERE name='exam2do_OBR4'
+success!
+DELETE FROM "worklist";
+DELETE FROM sqlite_sequence WHERE name='worklist'
+success!
+DELETE FROM "tono";
+DELETE FROM sqlite_sequence WHERE name='tono'
+success!
+DELETE FROM "topography";
+DELETE FROM sqlite_sequence WHERE name='topography'
+success!
+DELETE FROM "capsulotomy";
+DELETE FROM sqlite_sequence WHERE name='capsulotomy'
+success!
+DELETE FROM "optotype";
+DELETE FROM sqlite_sequence WHERE name='optotype'
+success!
+DELETE FROM "rx";
+DELETE FROM sqlite_sequence WHERE name='rx'
+success!
+DELETE FROM "ant_biom";
+DELETE FROM sqlite_sequence WHERE name='ant_biom'
+success!
+DELETE FROM "post_biom";
+DELETE FROM sqlite_sequence WHERE name='post_biom'
+success!
+DELETE FROM "phistory";
+DELETE FROM sqlite_sequence WHERE name='phistory'
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "photo_id";
+DELETE FROM sqlite_sequence WHERE name='photo_id'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+DELETE FROM "auth_user";
+DELETE FROM sqlite_sequence WHERE name='auth_user'
+success!
+DELETE FROM "auth_user_tag_groups";
+DELETE FROM sqlite_sequence WHERE name='auth_user_tag_groups'
+success!
+DELETE FROM "facilities";
+DELETE FROM sqlite_sequence WHERE name='facilities'
+success!
+DELETE FROM "testtable";
+DELETE FROM sqlite_sequence WHERE name='testtable'
+success!
+DELETE FROM "facility";
+DELETE FROM sqlite_sequence WHERE name='facility'
+success!
+DELETE FROM "modality";
+DELETE FROM sqlite_sequence WHERE name='modality'
+success!
+DELETE FROM "address";
+DELETE FROM sqlite_sequence WHERE name='address'
+success!
+DELETE FROM "data_origin";
+DELETE FROM sqlite_sequence WHERE name='data_origin'
+success!
+DELETE FROM "phone";
+DELETE FROM sqlite_sequence WHERE name='phone'
+success!
+DELETE FROM "insurance_sector";
+DELETE FROM sqlite_sequence WHERE name='insurance_sector'
+success!
+DELETE FROM "insurance";
+DELETE FROM sqlite_sequence WHERE name='insurance'
+success!
+DELETE FROM "exam2do_OBR4";
+DELETE FROM sqlite_sequence WHERE name='exam2do_OBR4'
+success!
+DELETE FROM "worklist";
+DELETE FROM sqlite_sequence WHERE name='worklist'
+success!
+DELETE FROM "tono";
+DELETE FROM sqlite_sequence WHERE name='tono'
+success!
+DELETE FROM "topography";
+DELETE FROM sqlite_sequence WHERE name='topography'
+success!
+DELETE FROM "capsulotomy";
+DELETE FROM sqlite_sequence WHERE name='capsulotomy'
+success!
+DELETE FROM "optotype";
+DELETE FROM sqlite_sequence WHERE name='optotype'
+success!
+DELETE FROM "rx";
+DELETE FROM sqlite_sequence WHERE name='rx'
+success!
+DELETE FROM "ant_biom";
+DELETE FROM sqlite_sequence WHERE name='ant_biom'
+success!
+DELETE FROM "post_biom";
+DELETE FROM sqlite_sequence WHERE name='post_biom'
+success!
+DELETE FROM "phistory";
+DELETE FROM sqlite_sequence WHERE name='phistory'
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "photo_id";
+DELETE FROM sqlite_sequence WHERE name='photo_id'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+DELETE FROM "auth_user";
+DELETE FROM sqlite_sequence WHERE name='auth_user'
+success!
+DELETE FROM "auth_user_tag_groups";
+DELETE FROM sqlite_sequence WHERE name='auth_user_tag_groups'
+success!
+DELETE FROM "facilities";
+DELETE FROM sqlite_sequence WHERE name='facilities'
+success!
+DELETE FROM "testtable";
+DELETE FROM sqlite_sequence WHERE name='testtable'
+success!
+DELETE FROM "facility";
+DELETE FROM sqlite_sequence WHERE name='facility'
+success!
+DELETE FROM "modality";
+DELETE FROM sqlite_sequence WHERE name='modality'
+success!
+DELETE FROM "address";
+DELETE FROM sqlite_sequence WHERE name='address'
+success!
+DELETE FROM "data_origin";
+DELETE FROM sqlite_sequence WHERE name='data_origin'
+success!
+DELETE FROM "phone";
+DELETE FROM sqlite_sequence WHERE name='phone'
+success!
+DELETE FROM "insurance_sector";
+DELETE FROM sqlite_sequence WHERE name='insurance_sector'
+success!
+DELETE FROM "insurance";
+DELETE FROM sqlite_sequence WHERE name='insurance'
+success!
+DELETE FROM "exam2do_OBR4";
+DELETE FROM sqlite_sequence WHERE name='exam2do_OBR4'
+success!
+DELETE FROM "worklist";
+DELETE FROM sqlite_sequence WHERE name='worklist'
+success!
+DELETE FROM "tono";
+DELETE FROM sqlite_sequence WHERE name='tono'
+success!
+DELETE FROM "topography";
+DELETE FROM sqlite_sequence WHERE name='topography'
+success!
+DELETE FROM "capsulotomy";
+DELETE FROM sqlite_sequence WHERE name='capsulotomy'
+success!
+DELETE FROM "optotype";
+DELETE FROM sqlite_sequence WHERE name='optotype'
+success!
+DELETE FROM "rx";
+DELETE FROM sqlite_sequence WHERE name='rx'
+success!
+DELETE FROM "ant_biom";
+DELETE FROM sqlite_sequence WHERE name='ant_biom'
+success!
+DELETE FROM "post_biom";
+DELETE FROM sqlite_sequence WHERE name='post_biom'
+success!
+DELETE FROM "phistory";
+DELETE FROM sqlite_sequence WHERE name='phistory'
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "photo_id";
+DELETE FROM sqlite_sequence WHERE name='photo_id'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+DELETE FROM "auth_user";
+DELETE FROM sqlite_sequence WHERE name='auth_user'
+success!
+DELETE FROM "auth_user_tag_groups";
+DELETE FROM sqlite_sequence WHERE name='auth_user_tag_groups'
+success!
+DELETE FROM "facilities";
+DELETE FROM sqlite_sequence WHERE name='facilities'
+success!
+DELETE FROM "testtable";
+DELETE FROM sqlite_sequence WHERE name='testtable'
+success!
+DELETE FROM "facility";
+DELETE FROM sqlite_sequence WHERE name='facility'
+success!
+DELETE FROM "modality";
+DELETE FROM sqlite_sequence WHERE name='modality'
+success!
+DELETE FROM "address";
+DELETE FROM sqlite_sequence WHERE name='address'
+success!
+DELETE FROM "data_origin";
+DELETE FROM sqlite_sequence WHERE name='data_origin'
+success!
+DELETE FROM "phone";
+DELETE FROM sqlite_sequence WHERE name='phone'
+success!
+DELETE FROM "insurance_sector";
+DELETE FROM sqlite_sequence WHERE name='insurance_sector'
+success!
+DELETE FROM "insurance";
+DELETE FROM sqlite_sequence WHERE name='insurance'
+success!
+DELETE FROM "exam2do_OBR4";
+DELETE FROM sqlite_sequence WHERE name='exam2do_OBR4'
+success!
+DELETE FROM "worklist";
+DELETE FROM sqlite_sequence WHERE name='worklist'
+success!
+DELETE FROM "tono";
+DELETE FROM sqlite_sequence WHERE name='tono'
+success!
+DELETE FROM "topography";
+DELETE FROM sqlite_sequence WHERE name='topography'
+success!
+DELETE FROM "capsulotomy";
+DELETE FROM sqlite_sequence WHERE name='capsulotomy'
+success!
+DELETE FROM "optotype";
+DELETE FROM sqlite_sequence WHERE name='optotype'
+success!
+DELETE FROM "rx";
+DELETE FROM sqlite_sequence WHERE name='rx'
+success!
+DELETE FROM "ant_biom";
+DELETE FROM sqlite_sequence WHERE name='ant_biom'
+success!
+DELETE FROM "post_biom";
+DELETE FROM sqlite_sequence WHERE name='post_biom'
+success!
+DELETE FROM "phistory";
+DELETE FROM sqlite_sequence WHERE name='phistory'
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "photo_id";
+DELETE FROM sqlite_sequence WHERE name='photo_id'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+DELETE FROM "auth_user";
+DELETE FROM sqlite_sequence WHERE name='auth_user'
+success!
+DELETE FROM "auth_user_tag_groups";
+DELETE FROM sqlite_sequence WHERE name='auth_user_tag_groups'
+success!
+DELETE FROM "facilities";
+DELETE FROM sqlite_sequence WHERE name='facilities'
+success!
+DELETE FROM "testtable";
+DELETE FROM sqlite_sequence WHERE name='testtable'
+success!
+DELETE FROM "facility";
+DELETE FROM sqlite_sequence WHERE name='facility'
+success!
+DELETE FROM "modality";
+DELETE FROM sqlite_sequence WHERE name='modality'
+success!
+DELETE FROM "address";
+DELETE FROM sqlite_sequence WHERE name='address'
+success!
+DELETE FROM "data_origin";
+DELETE FROM sqlite_sequence WHERE name='data_origin'
+success!
+DELETE FROM "phone";
+DELETE FROM sqlite_sequence WHERE name='phone'
+success!
+DELETE FROM "insurance_sector";
+DELETE FROM sqlite_sequence WHERE name='insurance_sector'
+success!
+DELETE FROM "insurance";
+DELETE FROM sqlite_sequence WHERE name='insurance'
+success!
+DELETE FROM "exam2do_OBR4";
+DELETE FROM sqlite_sequence WHERE name='exam2do_OBR4'
+success!
+DELETE FROM "worklist";
+DELETE FROM sqlite_sequence WHERE name='worklist'
+success!
+DELETE FROM "tono";
+DELETE FROM sqlite_sequence WHERE name='tono'
+success!
+DELETE FROM "topography";
+DELETE FROM sqlite_sequence WHERE name='topography'
+success!
+DELETE FROM "capsulotomy";
+DELETE FROM sqlite_sequence WHERE name='capsulotomy'
+success!
+DELETE FROM "optotype";
+DELETE FROM sqlite_sequence WHERE name='optotype'
+success!
+DELETE FROM "rx";
+DELETE FROM sqlite_sequence WHERE name='rx'
+success!
+DELETE FROM "ant_biom";
+DELETE FROM sqlite_sequence WHERE name='ant_biom'
+success!
+DELETE FROM "post_biom";
+DELETE FROM sqlite_sequence WHERE name='post_biom'
+success!
+DELETE FROM "phistory";
+DELETE FROM sqlite_sequence WHERE name='phistory'
+success!
+DELETE FROM "gender";
+DELETE FROM sqlite_sequence WHERE name='gender'
+success!
+DELETE FROM "ethny";
+DELETE FROM sqlite_sequence WHERE name='ethny'
+success!
+DELETE FROM "marital";
+DELETE FROM sqlite_sequence WHERE name='marital'
+success!
+DELETE FROM "photo_id";
+DELETE FROM sqlite_sequence WHERE name='photo_id'
+success!
+DELETE FROM "membership";
+DELETE FROM sqlite_sequence WHERE name='membership'
+success!
+DELETE FROM "auth_user";
+DELETE FROM sqlite_sequence WHERE name='auth_user'
+success!
+DELETE FROM "auth_user_tag_groups";
+DELETE FROM sqlite_sequence WHERE name='auth_user_tag_groups'
+success!
+DELETE FROM "facilities";
+DELETE FROM sqlite_sequence WHERE name='facilities'
+success!
+DELETE FROM "testtable";
+DELETE FROM sqlite_sequence WHERE name='testtable'
+success!
+DELETE FROM "facility";
+DELETE FROM sqlite_sequence WHERE name='facility'
+success!
+DELETE FROM "modality";
+DELETE FROM sqlite_sequence WHERE name='modality'
+success!
+DELETE FROM "address";
+DELETE FROM sqlite_sequence WHERE name='address'
+success!
+DELETE FROM "data_origin";
+DELETE FROM sqlite_sequence WHERE name='data_origin'
+success!
+DELETE FROM "phone";
+DELETE FROM sqlite_sequence WHERE name='phone'
+success!
+DELETE FROM "insurance_sector";
+DELETE FROM sqlite_sequence WHERE name='insurance_sector'
+success!
+DELETE FROM "insurance";
+DELETE FROM sqlite_sequence WHERE name='insurance'
+success!
+DELETE FROM "exam2do_OBR4";
+DELETE FROM sqlite_sequence WHERE name='exam2do_OBR4'
+success!
+DELETE FROM "worklist";
+DELETE FROM sqlite_sequence WHERE name='worklist'
+success!
+DELETE FROM "tono";
+DELETE FROM sqlite_sequence WHERE name='tono'
+success!
+DELETE FROM "topography";
+DELETE FROM sqlite_sequence WHERE name='topography'
+success!
+DELETE FROM "capsulotomy";
+DELETE FROM sqlite_sequence WHERE name='capsulotomy'
+success!
+DELETE FROM "optotype";
+DELETE FROM sqlite_sequence WHERE name='optotype'
+success!
+DELETE FROM "rx";
+DELETE FROM sqlite_sequence WHERE name='rx'
+success!
+DELETE FROM "ant_biom";
+DELETE FROM sqlite_sequence WHERE name='ant_biom'
+success!
+DELETE FROM "post_biom";
+DELETE FROM sqlite_sequence WHERE name='post_biom'
+success!
+DELETE FROM "phistory";
+DELETE FROM sqlite_sequence WHERE name='phistory'
+success!

@@ -131,28 +131,29 @@ def init_db():
     import os
     for table_name in db.tables():
         db[table_name].truncate()
-    backup_path = os.path.join(request.folder,'uploads/csv')
-    backup_path_file = backup_path+'/init_db.csv'
+    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
+    backup_path_file = backup_path+'init_db.csv'
     try:
         with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
             db.import_from_csv_file(dumpfile)
-        return "reset(true);"
+        return "reset"+" "+"True"
     except:
-        return "reset(false);"
+        return "reset"+" "+"False"
 
-@action("restore_db")
+@action("restore_db", method=['GET'])
 def restore_db():
     import os
+    file2restore = request.query.datafile
     for table_name in db.tables():
         db[table_name].truncate()
-    backup_path = os.path.join(request.folder,'uploads/csv')
-    backup_path_file = backup_path+'/'+request.vars.datafile
+    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
+    backup_path_file = backup_path+file2restore
     try:
         with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
             db.import_from_csv_file(dumpfile)
-        return "restored(%s,true);" % repr(request.vars.datafile)
+        return file2restore +" "+"True"
     except:
-        return "restored(%s,false);" % repr(backup_path_file)
+        return file2restore +" "+"False"
 
 @action("manage_db")
 @action.uses('manage/manage_db.html', T, auth.user, db, flash)

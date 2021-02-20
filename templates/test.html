@@ -1,4 +1,17 @@
 [[extend "baseof.html"]]
+
+[[ block page_head]]
+<style>
+    .table td {
+        text-align: center;
+    }
+    .table th {
+        text-align: center;
+    }
+</style>
+
+[[ end ]]
+
 [[ block left_nav ]]
 <li class="nav-item">
     <a href="[[=URL('facilities')]]" class="nav-link">facilities</a>
@@ -33,22 +46,6 @@
                     </tr>
                 </thead>
                 <tbody id="listDir">
-                    <tr>
-                        <th scope="row">1</th>
-                        <th>file1kkkkkkk.csv</th>
-                        <th>
-                            <button type="button" class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>
-                            <button type="button" class="btn btn-danger  m-2"><i class="fas fa-trash-alt"></i></button>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <th>file2jjjjjjjjj.csv</th>
-                        <th>
-                            <button type="button" class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>
-                            <button type="button" class="btn btn-danger  m-2"><i class="fas fa-trash-alt"></i></button>
-                        </th>
-                    </tr>
                 </tbody>
             </table>
         </div>
@@ -118,15 +115,14 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Restore backup csv file</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
           </button>
         </div> <!-- modal header -->
         <div class="modal-body">
           <p>Are you sure you want to delete this database and restore: <strong id="file2restore"></strong>?</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-danger" onclick="restoreCsv(filename);">Restore</button>
         </div>
       </div> <!--modal content -->
@@ -144,11 +140,11 @@
 
 <script src="js/jquery-3.5.1.min.js"></script>
 <script type="text/javascript">
-  const CTRL_INITDB = '[[=URL('init_db')]]';
+  const CTRL_INIT_DB = '[[=URL('init_db')]]';
   const CTRL_SAVE_DB = '[[=URL('save_db')]]';
   const CTRL_LISTDIR = '[[=URL('list_dir_csv')]]';
   const CTRL_DELCSV = '[[=URL('del_csv')]]';
-  const CTRL_RESTOREDB = '[[=URL('restore_db')]]';
+  const CTRL_RESTORE_DB = '[[=URL('restore_db')]]';
   $(function() {
     $('.toast').toast('');
     list_csv();
@@ -172,18 +168,86 @@ function confirm_savedb() {
       }
     });
     $('#saveModal').modal('hide');
+    list_csv();
 }
 
 function list_csv() {
   time_counter = Date.now();
   $.ajax({
-      url: CTRL_LISTDIR,
-      success: function(result) {
-        // document.getElementById("toastContainer").innerHTML = result;
-        show_csv_dir(result.split(" "));
-      }
+    url: CTRL_LISTDIR,
+    success: function(result) {
+    show_csv_dir(result.split(" "));
+    }
   });
 }
+
+function confirm_init() {
+  time_counter = Date.now();
+  $.ajax({
+      url: CTRL_SAVE_DB,
+      success: function(result) {
+        arr = result.split(" ");
+        if (arr[1] == 'True') {
+            create_toast(toast_counter,time_counter,'DB saved')
+            $.ajax({
+                url: CTRL_INIT_DB,
+                success: function(result) {
+                arr = result.split(" ");
+                if (arr[1] == 'True') {
+                create_toast(toast_counter,time_counter,'DB blanked')
+                } else {
+                create_toast(toast_counter,time_counter,'Error trying to blank DB!')
+                }
+                }
+            });
+        } else {
+            create_toast(toast_counter,time_counter,'Error trying to save DB!')
+        }
+      }
+    });
+    time_counter = Date.now();
+  $('#resetModal').modal('hide');
+  list_csv();
+}
+
+function confirm_restorecsv(datafile) {
+  time_counter = Date.now();
+  $('#file2restore').html(datafile);
+  filename=datafile;
+  $('#restoreModal').modal('show');
+}
+
+function restoreCsv(datafile) {
+    time_counter = Date.now();
+    console.log('file in restoreCsv function:'+datafile);
+    $.ajax({
+        url: CTRL_SAVE_DB,
+        success: function(result) {
+            arr = result.split(" ");
+            if (arr[1] == 'True') {
+            create_toast(toast_counter,time_counter,'DB saved');
+            time_counter = Date.now();
+            $.ajax({
+                url: CTRL_RESTORE_DB+'?datafile='+datafile,
+                success: function(result) {
+                    $('#delModal').modal('hide');
+                    arr = result.split(" ");
+                    if (arr[1] == 'True') {
+                    create_toast(toast_counter,time_counter,arr[0]+' restored')
+                    } else {
+                    create_toast(toast_counter,time_counter,"Couldn't restore"+arr[0]+' file!')
+                    }
+                }
+            });
+            } else {
+            create_toast(toast_counter,time_counter,'Error trying to save DB!')
+            };
+        list_csv();
+        }
+    });
+    $('#restoreModal').modal('hide');
+}
+
 
 function confirm_delcsv(datafile) {
   time_counter = Date.now();
@@ -197,7 +261,6 @@ function delcsv(datafile) {
       url: CTRL_DELCSV+'?datafile='+datafile,
       success: function(result) {
         $('#delModal').modal('hide');
-        document.getElementById("toastContainer").innerHTML = result;
         arr = result.split(" ");
         if (arr[1] == 'True') {
             create_toast(toast_counter,time_counter,arr[0]+' backup DELETED')
@@ -234,28 +297,27 @@ function displayItem (id,index,value) {
   filenum = parseInt(index)+1;
   if ((value !='init_db.csv')&&(filenum != 0)){
     $('#'+id).append('<tr>');
-    $('#'+id).append('<th scope="row">'+filenum+'</th>');
-    $('#'+id).append('<th class="csv">'+value+'</th>');
-    $('#'+id).append('<th>');
+    $('#'+id).append('<td scope="row">'+filenum+'</td>');
+    $('#'+id).append('<td class="csv">'+value+'</td>');
+    $('#'+id).append('<td>');
     $('#'+id).append('<button type="button" data-file="'+value+'" onclick="confirm_delcsv(&apos;'+value+'&apos;);" class="btn btn-danger m-2"><i class="fas fa-trash-alt"></i></button>');
     $('#'+id).append('<button type="button" data-file="' +value+ '" onclick="confirm_restorecsv(&apos;' +value+ '&apos;);" class="btn btn-warning m-2"><i class="fas fa-trash-restore-alt"></i></button>');
-    $('#'+id).append('</th>');
+    $('#'+id).append('</td>');
   } else {
     $('#'+id).append('<tr>');
-    $('#'+id).append('<th scope="row">'+filenum+'</th>');
-    $('#'+id).append('<th class="csv">'+value+'</th>');
+    $('#'+id).append('<td scope="row">'+filenum+'</td>');
+    $('#'+id).append('<td class="csv">'+value+'</td>');
+    $('#'+id).append('<td class="csv"></td>');
   };
   $('#'+id).append('</tr>');
 }
-
-
 
 function create_toast(id,start,txt) { // id number of toast, start = time at execution, txt = notification msg
   let row_id = 'toastRow'+id;
   //console.log(row_id);
   $("<div/>").attr('id',row_id).attr('class','mb-1').appendTo('#toastContainer');
   $("<div/>").attr('id','col'+id).appendTo('#'+row_id);
-  $("<div/>").attr('id','toast'+id).attr('data-autohide','true').attr('data-delay',2000).attr('class','toast').appendTo('#col'+id);
+  $("<div/>").attr('id','toast'+id).attr('data-autohide','true').attr('data-delay',6000).attr('class','toast').appendTo('#col'+id);
   $("<div/>").attr('id','toastHeader'+id).attr('class','toast-header d-flex').appendTo('#toast'+id);
   $("<span/>").attr('id','statusHeader'+id).attr('class','text-primary flex-fill align-self-center').appendTo('#toastHeader'+id);
   $('#statusHeader'+id).append('<strong>Status</strong>');
