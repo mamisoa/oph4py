@@ -57,25 +57,28 @@
 [[ block js_scripts ]]
 <script src="js/bootstrap-table/bootstrap-table.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
 
 <script type="text/javascript">
+var HOSTURL = 'http://localhost:8000';
 var membership = [[=membership]];
 var facilities = [[=facilities]], exams = [[=exams]], modalities = [[=modalities]], providers_req = [[=providers]];
 const origin = [[=origin_json]];
 var uid = "error uid";
 
-const API_USER_LIST= '[[=URL('api','auth_user?membership.eq='+membership)]]'; // check users with membership -> OK
-const API_URL_USER = '[[=URL('api','auth_user')]]/'; // used to check duplicates w/dob fn ln
-const API_URL_AUTH = '[[=URL('api','auth_user')]]/'; // to remove and post users -> OK
-const API_URL_MEMBERSHIP = '[[=URL('api','auth_user')]]/'; // PUT a membership to a user from rec_id -> OK
-const URL_USER_FORM = '[[=URL('manage','user_form')]]/'; // to link to user edit page form
-const API_URL_ADDRESS = '[[=URL('api','address')]]/'; // to POST | GET an address from row.id -> OK by giving id_auth_user
-const API_URL_PHONE = '[[=URL('api','phone')]]/'; // to POST | GET an address from row.id
-const API_UNIQUE_ID = '[[=URL('api','uuid')/]]'; // to get a unique ID in Json {'unique_id': 'xxxxxx'} -> OK
-const API_WL = '[[=URL('api','wl')]]'; // GET the wl -> check if it supports date queries
-const API_URL_EXAMS = '[[=URL('exams','none')]]'; // link to the exam to do from row.id -> OK (page to create)
-const API_BEID= '[[=URL('api','beid')]]'; // GET eid info
-const API_URL_PHOTO='[[=URL('api','users/photo_id')]]'; // GET photo_id
+const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender!:gender[sex]'; // check users with membership -> OK
+console.log(API_USER_LIST);
+const API_URL_USER = HOSTURL+'[[=URL('api','auth_user')]]/'; // used to check duplicates w/dob fn ln
+const API_URL_AUTH = HOSTURL+'[[=URL('api','auth_user')]]/'; // to remove and post users -> OK
+const API_URL_MEMBERSHIP = HOSTURL+'[[=URL('api','auth_user')]]/'; // PUT a membership to a user from rec_id -> OK
+const URL_USER_FORM = HOSTURL+'[[=URL('manage','user_form')]]/'; // to link to user edit page form
+const API_URL_ADDRESS = HOSTURL+'[[=URL('api','address')]]/'; // to POST | GET an address from row.id -> OK by giving id_auth_user
+const API_URL_PHONE = HOSTURL+'[[=URL('api','phone')]]/'; // to POST | GET an address from row.id
+const API_UNIQUE_ID = HOSTURL+'[[=URL('api','uuid')]]/'; // to get a unique ID in Json {'unique_id': 'xxxxxx'} -> OK
+const API_WL = HOSTURL+'[[=URL('api','wl')]]'; // GET the wl -> check if it supports date queries
+const API_URL_EXAMS = HOSTURL+'[[=URL('exams','none')]]'; // link to the exam to do from row.id -> OK (page to create)
+const API_BEID= HOSTURL+'[[=URL('api','beid')]]'; // GET eid info
+const API_URL_PHOTO=HOSTURL+'[[=URL('api','users/photo_id')]]'; // GET photo_id
 
 // global vars
 var $alert = $('.alert_listing').hide();
@@ -83,6 +86,320 @@ var $alert_wl = $('.alert_wl').hide();
 var timer_id = [];
 var toast_counter = 0, time_counter = 0;
 var providers = concatFirstLastname(providers_req);
+var data = {
+    "api_version": "0.1",
+    "code": 200,
+    "count": 10,
+    "items": [
+        {
+            "birth_country": null,
+            "birth_town": null,
+            "chipnumber": null,
+            "created_by": null,
+            "created_on": "2021-02-21T08:17:19",
+            "dob": null,
+            "documenttype": null,
+            "email": "mamisoa@gmail.com",
+            "ethny": null,
+            "first_name": "Mamisoa",
+            "gender.sex": null,
+            "id": 1,
+            "idc_num": null,
+            "initials": null,
+            "last_name": "Andriantafika",
+            "maiden_name": null,
+            "marital": null,
+            "membership": 1,
+            "modified_by": null,
+            "modified_on": "2021-02-21T08:17:19",
+            "nationality": null,
+            "noblecondition": null,
+            "specialstatus": null,
+            "ssn": null,
+            "user_notes": null,
+            "username": "mamisoa",
+            "validfrom": null,
+            "validtill": null
+        },
+        {
+            "birth_country": null,
+            "birth_town": null,
+            "chipnumber": "TTX50SMN4TB",
+            "created_by": 1,
+            "created_on": "2021-10-11T17:10:49",
+            "dob": null,
+            "documenttype": 7,
+            "email": "mo55qt88193nx44@jthbc.gth",
+            "ethny": null,
+            "first_name": "Duncan",
+            "gender.sex": null,
+            "id": 2,
+            "idc_num": "ZPZ20BOP4RS",
+            "initials": "B",
+            "last_name": "Kline",
+            "maiden_name": null,
+            "marital": null,
+            "membership": 1,
+            "modified_by": 1,
+            "modified_on": "2021-11-03T06:08:05",
+            "nationality": "Slovakia",
+            "noblecondition": "Compte",
+            "specialstatus": 2,
+            "ssn": null,
+            "user_notes": "D5Y 1P2",
+            "username": "flkrvv140",
+            "validfrom": "2016-09-28",
+            "validtill": "2021-01-10"
+        },
+        {
+            "birth_country": null,
+            "birth_town": null,
+            "chipnumber": "RXL55UUI4VD",
+            "created_by": 1,
+            "created_on": "2021-01-11T07:49:23",
+            "dob": null,
+            "documenttype": 1,
+            "email": "ny85nn77942le94@wtgsn.tdl",
+            "ethny": null,
+            "first_name": "Scarlet",
+            "gender.sex": null,
+            "id": 3,
+            "idc_num": "JSD53XIK5TP",
+            "initials": "K",
+            "last_name": "Wilkerson",
+            "maiden_name": null,
+            "marital": null,
+            "membership": 1,
+            "modified_by": 1,
+            "modified_on": "2021-02-27T02:30:19",
+            "nationality": "Argentina",
+            "noblecondition": "",
+            "specialstatus": 2,
+            "ssn": null,
+            "user_notes": "D2G 2W3",
+            "username": "jsgfyh926",
+            "validfrom": "2019-02-17",
+            "validtill": "2021-10-09"
+        },
+        {
+            "birth_country": null,
+            "birth_town": null,
+            "chipnumber": "QNE58ZSR9IE",
+            "created_by": 1,
+            "created_on": "2021-05-31T13:22:19",
+            "dob": null,
+            "documenttype": 3,
+            "email": "ne42ih26039ht04@gdxzy.xmn",
+            "ethny": null,
+            "first_name": "Christopher",
+            "gender.sex": null,
+            "id": 4,
+            "idc_num": "ZSL07VXV9QL",
+            "initials": "O",
+            "last_name": "Forbes",
+            "maiden_name": null,
+            "marital": null,
+            "membership": 1,
+            "modified_by": 1,
+            "modified_on": "2021-07-14T15:32:45",
+            "nationality": "Myanmar",
+            "noblecondition": "Compte",
+            "specialstatus": 4,
+            "ssn": null,
+            "user_notes": "Z7R 7M1",
+            "username": "iqvzxw488",
+            "validfrom": "2015-09-08",
+            "validtill": "2020-07-22"
+        },
+        {
+            "birth_country": null,
+            "birth_town": null,
+            "chipnumber": "TYA42XUN1JO",
+            "created_by": 1,
+            "created_on": "2022-02-06T19:06:34",
+            "dob": null,
+            "documenttype": 10,
+            "email": "ep99oc08179ot24@qwxxe.zis",
+            "ethny": null,
+            "first_name": "Owen",
+            "gender.sex": null,
+            "id": 5,
+            "idc_num": "XCH83OHK3UY",
+            "initials": "V",
+            "last_name": "Welch",
+            "maiden_name": null,
+            "marital": null,
+            "membership": 1,
+            "modified_by": 1,
+            "modified_on": "2020-05-09T05:37:52",
+            "nationality": "Macedonia",
+            "noblecondition": "Baron",
+            "specialstatus": 8,
+            "ssn": null,
+            "user_notes": "B1X 9E3",
+            "username": "mfayvg867",
+            "validfrom": "2018-11-09",
+            "validtill": "2020-06-17"
+        },
+        {
+            "birth_country": null,
+            "birth_town": null,
+            "chipnumber": "ZQJ22UXV2OG",
+            "created_by": 1,
+            "created_on": "2020-09-03T12:24:41",
+            "dob": null,
+            "documenttype": 10,
+            "email": "jw83vc83216vs89@dumxx.okl",
+            "ethny": null,
+            "first_name": "Chancellor",
+            "gender.sex": null,
+            "id": 6,
+            "idc_num": "YAY31XYM3ML",
+            "initials": "E",
+            "last_name": "Palmer",
+            "maiden_name": null,
+            "marital": null,
+            "membership": 1,
+            "modified_by": 1,
+            "modified_on": "2020-12-21T05:23:21",
+            "nationality": "Belize",
+            "noblecondition": "Compte",
+            "specialstatus": 1,
+            "ssn": null,
+            "user_notes": "V9H 7P5",
+            "username": "oqmdiy237",
+            "validfrom": "2015-08-19",
+            "validtill": "2022-02-08"
+        },
+        {
+            "birth_country": null,
+            "birth_town": null,
+            "chipnumber": "PQC34YUT3OO",
+            "created_by": 1,
+            "created_on": "2022-01-06T20:10:41",
+            "dob": null,
+            "documenttype": 4,
+            "email": "zp70ar75081yw96@zbmli.ymr",
+            "ethny": null,
+            "first_name": "Cheryl",
+            "gender.sex": null,
+            "id": 7,
+            "idc_num": "WXU56LCB7YM",
+            "initials": "B",
+            "last_name": "Barnett",
+            "maiden_name": null,
+            "marital": null,
+            "membership": 1,
+            "modified_by": 1,
+            "modified_on": "2020-11-24T10:59:30",
+            "nationality": "United Kingdom (Great Britain)",
+            "noblecondition": "SAS",
+            "specialstatus": 9,
+            "ssn": null,
+            "user_notes": "T7D 5D9",
+            "username": "piwagp638",
+            "validfrom": "2017-10-17",
+            "validtill": "2021-10-12"
+        },
+        {
+            "birth_country": null,
+            "birth_town": null,
+            "chipnumber": "NQK04OVJ9FT",
+            "created_by": 1,
+            "created_on": "2021-08-01T02:48:33",
+            "dob": null,
+            "documenttype": 2,
+            "email": "mc98vc15258xv26@iqthr.xto",
+            "ethny": null,
+            "first_name": "Paloma",
+            "gender.sex": null,
+            "id": 8,
+            "idc_num": "FSM55ZHQ5LQ",
+            "initials": "R",
+            "last_name": "Dunn",
+            "maiden_name": null,
+            "marital": null,
+            "membership": 1,
+            "modified_by": 1,
+            "modified_on": "2020-06-16T17:31:39",
+            "nationality": "Timor-Leste",
+            "noblecondition": "SAS",
+            "specialstatus": 1,
+            "ssn": null,
+            "user_notes": "H0B 0R0",
+            "username": "maxqgo406",
+            "validfrom": "2018-10-01",
+            "validtill": "2021-10-15"
+        },
+        {
+            "birth_country": null,
+            "birth_town": null,
+            "chipnumber": "EXX52XHM8KR",
+            "created_by": 1,
+            "created_on": "2021-10-15T09:49:35",
+            "dob": null,
+            "documenttype": 1,
+            "email": "zr40oc09114ct96@dlhxu.kxc",
+            "ethny": null,
+            "first_name": "Shelly",
+            "gender.sex": null,
+            "id": 9,
+            "idc_num": "GSW36BPW1XA",
+            "initials": "R",
+            "last_name": "Boyd",
+            "maiden_name": null,
+            "marital": null,
+            "membership": 1,
+            "modified_by": 1,
+            "modified_on": "2021-01-10T05:40:01",
+            "nationality": "Poland",
+            "noblecondition": "",
+            "specialstatus": 7,
+            "ssn": null,
+            "user_notes": "Y3R 4M5",
+            "username": "dcndwv837",
+            "validfrom": "2017-05-19",
+            "validtill": "2021-05-24"
+        },
+        {
+            "birth_country": null,
+            "birth_town": null,
+            "chipnumber": "RZQ21ZTF4WL",
+            "created_by": 1,
+            "created_on": "2021-06-05T19:02:19",
+            "dob": null,
+            "documenttype": 7,
+            "email": "wh33lg33262qt17@xdnmw.doz",
+            "ethny": null,
+            "first_name": "Avye",
+            "gender.sex": null,
+            "id": 10,
+            "idc_num": "OIG86SRM9XT",
+            "initials": "D",
+            "last_name": "Hansen",
+            "maiden_name": null,
+            "marital": null,
+            "membership": 1,
+            "modified_by": 1,
+            "modified_on": "2021-12-02T22:33:58",
+            "nationality": "Ecuador",
+            "noblecondition": "SAS",
+            "specialstatus": 5,
+            "ssn": null,
+            "user_notes": "R1S 9A3",
+            "username": "pxrddt348",
+            "validfrom": "2018-06-07",
+            "validtill": "2022-02-10"
+        }
+    ],
+    "status": "success",
+    "timestamp": "2021-02-21T21:25:29.903103"
+}
+
+// init bootstrat-tables
+
+var $table = $('#table').bootstrapTable({
+        url: data.items });
 
 // bootstrap # table setup ------------------------------------------------------------------------------
 // queryParams, responseHandler, detailFormatter, actionFormatter, remove_user, windowAction
@@ -93,24 +410,24 @@ function queryParams(params) {
 
 // responseHandler formats the way fields are displayed
 function responseHandler(res) {
-  list = res.content;
+  list = res.items;
   display = [];
   $.each(list, function(i) {
     display.push({
-      'id': list[i].user.id,
-      'first_name': list[i].user.first_name,
-      'last_name': list[i].user.last_name,
-      'dob': list[i].user.dob,
-      'gender': list[i].gender.sex,
-      'UID': shorter5(list[i].user.unique_id),
-      'age': getAge(list[i].user.dob),
+      'id': list[i].id,
+      'first_name': list[i].first_name,
+      'last_name': list[i].last_name,
+      'dob': list[i].dob,
+      'gender': list[i]['gender.sex'],
+      'UID': shorter5(list[i].unique_id),
+      'age': getAge(list[i].dob),
       'created_by': list[i].creator.first_name+' '+list[i].creator.last_name,
-      'created_on': list[i].user.created_on,
+      'created_on': list[i].created_on,
       'modified_by': list[i].editor.first_name+' '+list[i].editor.last_name,
-      'modified_on': list[i].user.modified_on,
+      'modified_on': list[i].modified_on,
     });
   });
-  //console.log(display);
+  console.log(display);
   return display;
 } // end function responseHandler
 
@@ -158,6 +475,7 @@ function actionFormatter(value, row, index) {
   ].join('');
 } // end actionFormatter
 
+// event linked to action - via class
 window.actionEvents = {
   'click .like': function(e, value, row, index) {
     alert('You click like action, row: ' + JSON.stringify(row));
@@ -165,7 +483,7 @@ window.actionEvents = {
   'click .remove': function(e, value, row, index) {
     remove_user(row.id);
   },
-  'click .worklist':function (e,value,row) {
+  'click .worklist':function (e,value,row) { // set modal defaults
         resetForm($('#form_wl'));
         setSelect('#form_wl select.exam2do', exams, 'exam_description','7'); // rx
         setSelect('#form_wl select.sending_facility', facilities, 'facility_name','2'); // desk1
@@ -184,8 +502,9 @@ window.actionEvents = {
   }
 }; // end actionEvents
 
+// Remove auth_user.id call
 function remove_user(id) {
-  let API_URL = API_URL_AUTH+id;
+  let API_URL = API_URL_AUTH+id; // slash bar already in variable
   let modalDelete = bootbox.confirm ({
     message: "<h5>Are you sure you want to delete user #"+ id+ " ?<h5>",
     show: true,
@@ -310,6 +629,7 @@ function actionFormatter_wl(value,row) {
     ].join('');
 }
 
+// badges to adjust !
 function modalityFormatter(value,row) {
   let html = [];
   let lastmodif = Date.parse(row.modified_on);
@@ -327,6 +647,7 @@ function modalityFormatter(value,row) {
   return html.join('');
 }
 
+// badges to adjust !
 function examFormatter(value,row) {
   let html = [];
   html.push('<div class="float-left">'+value+'</div><div class="float-right ">');
@@ -528,11 +849,6 @@ $(function() {
   $('.date_selection').hide();
   $('.today').text(flatpickr.formatDate(new Date(), "d/m/Y"));
 
-/*
-  $("body").tooltip({
-    selector: '[data-toggle=tooltip]'
-  });
-*/
   $modal.on('hidden.bs.modal', function() {
     $('.submit').show();
     $duplicate.hide();
@@ -557,10 +873,6 @@ $(function() {
     $('#new_patient input.phone_prefix').val('+32');
   });
 
-  // $('#edit_user').click(function() {
-  //   $('#postget').replaceWith('<span id="postget">Edit</span>');
-  //   $modal.modal('show');
-  // });
 
   $('#eId').click(function () {
     $.ajax({
@@ -606,10 +918,6 @@ $(function() {
       }
     });
 });
-//not used?
-  function edit_user(id) {
-    console.log('EDITING USER' + id);
-  }
 
   // procedure count
   $(".btn.counter_down").click(function() {

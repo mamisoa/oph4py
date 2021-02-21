@@ -14,7 +14,11 @@ from py4web.utils.factories import ActionFactory
 from . import settings
 
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
+import uuid
 
+def str_uuid():
+    unique_id = str(uuid.uuid4().hex)
+    return unique_id
 
 # #######################################################
 # implement custom loggers form settings.LOGGERS
@@ -116,23 +120,24 @@ db.define_table('membership',
 if db(db.membership.id > 1).count() == 0:
     # db.membership.truncate()
     db.membership.insert(membership="Admin", hierarchy="0")
-    db.membership.insert(membership="Doctor", hierarchy="1")
+    db.membership.insert(membership="Doctor", hierarchy="1") # 2
     db.membership.insert(membership="Nurse", hierarchy="2")
     db.membership.insert(membership="Medical assistant", hierarchy="2")
     db.membership.insert(membership="Administrative", hierarchy="3")
-    db.membership.insert(membership="Patient", hierarchy="99")
+    db.membership.insert(membership="Patient", hierarchy="99") # 6
 
 auth = Auth(session, db, define_tables=False)
-more_auth_fields = [    Field('membership', 'reference membership'),
-                        Field('maiden_name_pid6','string', label='Maiden name'),
-                        Field('dob_pid7','date', label='Date of birth'),
-                        Field('birth_town_pid23', 'string', label='Town of birth'),
-                        Field('birth_country_pid23', 'string', label='Country of birth'),
-                        Field('gender_pid8', 'reference gender', label='Gender'),
-                        Field('marital_pid16', 'reference marital', label='Marital status'),
-                        Field('ethny_pid22', 'reference ethny', label='Ethny'),
+more_auth_fields = [    Field('UID', 'string', default=str_uuid()),
+                        Field('membership', 'reference membership'),
+                        Field('maiden_name','string', label='Maiden name'),
+                        Field('dob','date', label='Date of birth'),
+                        Field('birth_town', 'string', label='Town of birth'),
+                        Field('birth_country', 'string', label='Country of birth'),
+                        Field('gender', 'reference gender', label='Gender'),
+                        Field('marital', 'reference marital', label='Marital status'),
+                        Field('ethny', 'reference ethny', label='Ethny'),
                         Field('idc_num', 'string', label='ID card number'),
-                        Field('ssn_pid19', 'string', label='SSN'),
+                        Field('ssn', 'string', label='SSN'),
                         Field('user_notes', 'string', label ='User notes'),
                         Field('chipnumber', 'string', label ='Chipnumber'),
                         Field('validfrom', 'date', label ='ID valid from'),

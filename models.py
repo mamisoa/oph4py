@@ -21,6 +21,11 @@ rd.seed(0)
 # db.commit()
 #
 
+
+def str_uuid():
+    unique_id = str(uuid.uuid4().hex)
+    return unique_id
+
 db.define_table('facilities',
     Field('facility_name', 'string', required=True),
     Field('hosp_id',type='integer'),
@@ -97,15 +102,15 @@ if db(db.modality.id > 1).count() == 0:
     db.modality.insert(modality_name="CEM-500")
     modality_types.add(11, ['Imaging'])
 
-db.define_table('address',
+db.define_table('address',  #PID11
     Field('id_auth_user', 'reference auth_user', writable = False, readable = False),
-    Field('home_num_pid11_1', 'integer', required=True),
-    Field('box_num_pid11_2', 'string'),
-    Field('address1_pid11_3', 'string', required=True),
-    Field('address2_pid11_4', 'string'),
-    Field('zipcode_pid11_5', 'string', required=True),
-    Field('town_pid11_6', 'string', required=True),
-    Field('country_pid11_7', 'string', required=True),
+    Field('home_num', 'string', required=True), #PID11_1
+    Field('box_num', 'string'), # pid11_2
+    Field('address1', 'string', required=True), #pid11_3
+    Field('address2', 'string'), # pid11_4
+    Field('zipcode', 'string', required=True), #pid11_5
+    Field('town', 'string', required=True), # pid11_6
+    Field('country', 'string', required=True), # pid11_7
     Field('address_rank','integer'),
     auth.signature)
 
@@ -119,10 +124,10 @@ if db(db.data_origin.id > 1).count() == 0:
     db.data_origin.insert(origin="Mobile")
     db.data_origin.insert(origin="Work")
 
-db.define_table('phone',
+db.define_table('phone', # pid13
     Field('id_auth_user', 'reference auth_user', writable= False, readable= False),
-    Field('phone_prefix_pid13_1', 'integer', required=True, default = '32'),
-    Field('phone_pid13_2', 'string', required=True),
+    Field('phone_prefix', 'integer', required=True, default = '32'), # pid13_1
+    Field('phone', 'string', required=True), # pid13_2
     Field('phone_origin', 'string', required=True ),
     auth.signature)
 
@@ -135,14 +140,14 @@ db.define_table('insurance_sector',
 
 db.define_table('insurance',
     Field('id_auth_user', 'reference auth_user', writable= False, readable= False),
-    Field('insurance_name_IN1', 'string', required=True),
-    Field('insurance_plan_IN2', 'string'),
-    Field('insurance_type_IN3', 'string'),
+    Field('insurance_name', 'string', required=True),
+    Field('insurance_plan', 'string'),
+    Field('insurance_type', 'string'),
     auth.signature)
 
-db.insurance.insurance_type_IN3.requires=IS_IN_DB(db,'insurance_sector.sector','%(sector)s')
+db.insurance.insurance_type.requires=IS_IN_DB(db,'insurance_sector.sector','%(sector)s')
 
-db.define_table('exam2do_OBR4',
+db.define_table('exam2do',
     Field('loinc_code', 'string'),
     Field('exam_description','string'),
     Field('cycle_num','integer', default='1'),
@@ -152,15 +157,15 @@ db.define_table('exam2do_OBR4',
 
 db.define_table('worklist',
     Field('id_auth_user', 'reference auth_user'),
-    Field('sending_app_MSH3','string', default = 'Oph2Py'),
-    Field('sending_facility_MSH4','reference facility', default = '1'),
-    Field('receving_app_MSH5','string', default = 'Receving App'),
-    Field('receving_facility_MSH6','reference facility', default = '1'),
-    Field('message_unique_id_MSH10','string', default=str(uuid.UUID(int=rd.getrandbits(128), version=4)), required=True),
-    Field('exam2do_OBR4', 'reference exam2do_OBR4', required=True),
-    Field('provider_OBR16', 'reference auth_user', required=True),
-    Field('requested_time_OBR6', 'datetime', required=True),
-    Field('modality_dest_OBR24', 'reference modality', required=True),
+    Field('sending_app','string', default = 'ECapp19'),
+    Field('sending_facility','reference facility', default = '1'),
+    Field('receving_app','string', default = 'Receving App'),
+    Field('receving_facility','reference facility', default = '1'),
+    Field('message_unique_id','string', default=str_uuid(), required=True),
+    Field('exam2do', 'reference exam2do', required=True),
+    Field('provider', 'reference auth_user', required=True),
+    Field('requested_time', 'datetime', required=True),
+    Field('modality_dest', 'reference modality', required=True),
     Field('laterality', 'list:string', default ='both', required=True),
     Field('status_flag', 'list:string', required=True),
     Field('counter', 'integer', default='0'),
@@ -169,14 +174,15 @@ db.define_table('worklist',
 
 db.worklist.laterality.requires=IS_IN_SET(['both', 'right', 'left', 'none'])
 
-# query_sessions = ((db(groups.find['doctor']))&(db(groups.find['nurse']))&(db(groups.find['assistant'])))
+query_sessions = db((db.auth_user.membership == 2)|(db.auth_user.membership == 3)|(db.auth_user.membership == 4))
 
 db.worklist.id_auth_user.requires=IS_IN_DB(db,'auth_user.id','%(first_name)s'+' '+'%(last_name)s')
-db.worklist.provider_OBR16.requires=IS_IN_DB(db, 'auth_user.id', '%(first_name)s'+' '+'%(last_name)s' )
-db.worklist.status_flag.requires=IS_IN_SET(('requested', 'in process', 'done', 'cancelled'))
-db.worklist.exam2do_OBR4.requires=IS_IN_DB(db,'exam2do_OBR4.id', '%(exam_description)s')
-db.worklist.receving_facility_MSH6.requires=IS_IN_DB(db,'facility.id', '%(facility_name)s' + ' ('+'%(id)s)')
-db.worklist.modality_dest_OBR24.requires=IS_IN_DB(db,'modality.id', '%(modality_name)s')
+db.worklist.provider.requires=IS_IN_DB(db(query_sessions), 'auth_user.id', '%(first_name)s'+' '+'%(last_name)s' )
+db.worklist.status_flag.requires=IS_IN_SET(('requested', 'processing', 'done', 'cancelled'))
+db.worklist.exam2do.requires=IS_IN_DB(db,'exam2do.id', '%(exam_description)s')
+db.worklist.receving_facility.requires=IS_IN_DB(db,'facility.id', '%(facility_name)s' + ' ('+'%(id)s)')
+db.worklist.modality_dest.requires=IS_IN_DB(db,'modality.id', '%(modality_name)s')
+
 
 ################################################################
 #               EXAM2DO                                        #
@@ -282,3 +288,30 @@ db.define_table('phistory',
     Field('id_worklist', 'reference worklist'),
     Field('phistory','string'),
     auth.signature)
+
+db.define_table('mx',
+    Field('id_auth_user', 'reference auth_user', writable = False, readable = False),
+    Field('name','string'),
+    Field('brand','string'),
+    Field('active_ingredient','string'),
+    Field('dosage','string'),
+    Field('form','string'),
+    Field('unit_per_intake','string'),
+    Field('frequency','string'),
+    Field('onset','date'),
+    Field('ended','date'),
+    auth.signature
+    )
+
+db.define_table('alerts',
+    Field('id_auth_user', 'reference auth_user', writable = False, readable = False),
+    Field('typ','string'),
+    Field('agent','string'),
+    Field('description','string'),
+    Field('agent_id','string'),
+    Field('description_id','string'),
+    Field('onset','date'),
+    auth.signature
+    )
+
+db.alerts.typ.requires=IS_IN_SET(['allergy','intolerance', 'atopy'])

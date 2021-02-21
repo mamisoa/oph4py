@@ -120,23 +120,24 @@ def import_users():
 
 @action('manage/users', method=['POST','GET'])
 @action('manage/users/<membership>')
-@action.uses('patients.html', T, auth.user, db)
-def patient(membership=5):
+@action.uses('manage/users.html', T, auth.user, db)
+def patient(membership=6):
     user = auth.get_user()
     try: # check if membership exists
         check_group= db(db.membership.id == membership).isempty()
     except ValueError:
-        membership = 5
+        membership = 6
     else:
         if check_group is True: # if does not exist
-            membership = 5
+            membership = 6
     def group_icon(membership):
         dict_icon = {
             1:'fa-users-cog',
             2:'fa-user-md',
             3:'fa-user-nurse',
             4:'fa-user-nurse',
-            5:'fa-user',
+            5:'fa-user-edit',
+            6:'fa-user'
         }
         return dict_icon[int(membership)]
     class_icon = group_icon(membership)
@@ -236,8 +237,8 @@ def init_db():
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
     backup_path_file = backup_path+'init_db.csv'
     try:
-        with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
-            db.import_from_csv_file(dumpfile)
+        # with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+        #     db.import_from_csv_file(dumpfile)
         # set_defaults_db()
         return "reset"+" "+"True"
     except:
