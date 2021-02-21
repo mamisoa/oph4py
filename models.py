@@ -50,6 +50,17 @@ db.define_table('facility',
     auth.signature,
     format='%(facility_name)s')
 
+if db(db.facility.id > 1).count() == 0:
+    db.facility.insert(facility_name="Desk1")
+    db.facility.insert(facility_name="Desk2")
+    db.facility.insert(facility_name="Iris")
+    db.facility.insert(facility_name="Cornea")
+    db.facility.insert(facility_name="Cristalline")
+    db.facility.insert(facility_name="Retina")
+    db.facility.insert(facility_name="Exam1")
+    db.facility.insert(facility_name="Exam2")
+    db.facility.insert(facility_name="Reunion")
+
 db.define_table('modality_type',
     Field('family', 'string', required=True),
     auth.signature,

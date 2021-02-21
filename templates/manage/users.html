@@ -91,6 +91,7 @@ function queryParams(params) {
   return {};
 } // end queryParams - if not present, queryParams are add after url
 
+// responseHandler formats the way fields are displayed
 function responseHandler(res) {
   list = res.content;
   display = [];
@@ -113,6 +114,7 @@ function responseHandler(res) {
   return display;
 } // end function responseHandler
 
+// detailFormater formats the (+) details display
 function detailFormatter(index, row) {
   var html = [];
   label = { // key : description
@@ -142,6 +144,7 @@ function detailFormatter(index, row) {
 
 // data-events --------------------------------
 
+// actionFormatter formats the right column actions
 function actionFormatter(value, row, index) {
   return [
     '<ul class="nav">',
