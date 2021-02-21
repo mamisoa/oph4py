@@ -204,14 +204,14 @@ function remove_user(id) {
           beforeSend: function () {time_counter = Date.now();},
           success: function(text) {
             if (text.indexOf('CANNOT') != -1) {
-              create_toast('Status', 'User '+id+' not deleted!','error',); // OK
+              create_toast(time_counter,'Status', 'User '+id+' not deleted!','error',); // OK
             } else {
               $table.bootstrapTable('refresh');
-              create_toast('Status','User '+id+' deleted','success'); // OK
+              create_toast(time_counter,'Status','User '+id+' deleted','success'); // OK
             }
           },
           error: function() {
-            create_toast('Status','User '+id+' not deleted!','error'); // OK
+            create_toast(time_counter,'Status','User '+id+' not deleted!','error'); // OK
           }
         });
       } else {}
@@ -373,14 +373,14 @@ window.actionEvents_wl = {
       success: function (text) {
         id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
         if ( id == 'None') {
-          create_toast('Status error','Unable to modify task#'+simple_row['id']+' status!','error'); // OK
+          create_toast(time_counter,'Status error','Unable to modify task#'+simple_row['id']+' status!','error'); // OK
         } else {
           $table_wl.bootstrapTable('refresh');
-          create_toast('Status info','Task #'+id+'set as done.','success'); // OK
+          create_toast(time_counter,'Status info','Task #'+id+'set as done.','success'); // OK
         }
         },
         error: function () {
-          create_toast('Status error','Unable to modify task#'+simple_row['id']+' status!','error'); // OK
+          create_toast(time_counter,'Status error','Unable to modify task#'+simple_row['id']+' status!','error'); // OK
         }
       });
   },
@@ -405,14 +405,14 @@ window.actionEvents_wl = {
       success: function (text) {
         id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
         if ( id == 'None') {
-          create_toast('Status error','Unable to modify task#'+simple_row['id']+' status!','error'); // OK
+          create_toast(time_counter,'Status error','Unable to modify task#'+simple_row['id']+' status!','error'); // OK
         } else {
           $table_wl.bootstrapTable('refresh');
-          create_toast('Status info','Task #'+id+'set as processing.','success'); // OK
+          create_toast(time_counter,'Status info','Task #'+id+'set as processing.','success'); // OK
         }
         },
         error: function () {
-          create_toast('Status error','Unable to modify task#'+simple_row['id']+' status!', 'error'); // OK
+          create_toast(time_counter,'Status error','Unable to modify task#'+simple_row['id']+' status!', 'error'); // OK
         }
     });
   },
@@ -440,10 +440,10 @@ window.actionEvents_wl = {
               beforeSend: function () {time_counter = Date.now();},
               success: function () {
                   $table_wl.bootstrapTable('refresh');
-                  create_toast('Status info','Worlisk task #'+row.id+' deleted!','success'); // OK
+                  create_toast(time_counter,'Status info','Worlisk task #'+row.id+' deleted!','success'); // OK
               },
               error: function () {
-                  create_toast('Status error','Unable to delete worlist task#'+row.id+' !','error'); // OK
+                  create_toast(time_counter,'Status error','Unable to delete worlist task#'+row.id+' !','error'); // OK
               }
           });
         } else {}
@@ -567,7 +567,7 @@ $(function() {
       beforeSend: function () {time_counter = Date.now();},
       success: function(data) {
         if (Object.keys(data).length==0) {
-          create_toast('Status error','Cannot read eId informations','error'); // OK
+          create_toast(time_counter,'Status error','Cannot read eId informations','error'); // OK
         } else {
           let home_num = data.adresse.match(/\d+/)[0];
           let adresse = data.adresse.replace(/\d+/g,'');
@@ -594,11 +594,11 @@ $(function() {
           newImage.height = "200";
           document.querySelector('#photo_container').innerHTML = newImage.outerHTML;
           $('#new_patient input.b64img').val(src);
-          create_toast('Status info','eId informations read','success'); // OK
+          create_toast(time_counter,'Status info','eId informations read','success'); // OK
         }
       },
       error: function () {
-        create_toast('Status error','Cannot read eId informations','error');
+        create_toast(time_counter,'Status error','Cannot read eId informations','error');
       }
     });
 });
@@ -684,7 +684,7 @@ $(function() {
           }
           html.push('</ul>');
           $modal.modal('hide');
-          create_toast('Status error','<span>Unable to add user!<span>'+html.join(''),'error'); // OK
+          create_toast(time_counter,'Status error','<span>Unable to add user!<span>'+html.join(''),'error'); // OK
         } else {
           add_membership(id,membership); // default membership is patient
           rowAddress.id_auth_user = id; // add id to post address
@@ -697,12 +697,12 @@ $(function() {
           $modal.modal('hide');
           resetForm($('#new_patient'));
           $table.bootstrapTable('refresh');
-          create_toast('Status info','New user #'+id+' successfully added.','success'); // OK
+          create_toast(time_counter,'Status info','New user #'+id+' successfully added.','success'); // OK
         }
       },
       error: function(text) {
         $modal.modal('hide');
-        create_toast('Status error','Unable to add user!', 'error'); // OK
+        create_toast(time_counter,'Status error','Unable to add user!', 'error'); // OK
       }
     });
   }
@@ -719,13 +719,13 @@ $(function() {
         success: function (text) {
             id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
             if ( id == 'None') {
-                create_toast('Status','Unable to '+mode+' address!', 'error'); // OK
+                create_toast(time_counter,'Status','Unable to '+mode+' address!', 'error'); // OK
             } else {
-                create_toast('Status','Address '+mode+'ed','success'); // OK
+                create_toast(time_counter,'Status','Address '+mode+'ed','success'); // OK
             }
         },
         error: function () {
-            create_toast('Status','Unable to '+mode+' address!', 'error'); // OK
+            create_toast(time_counter,'Status','Unable to '+mode+' address!', 'error'); // OK
         }
     });
   }
@@ -742,13 +742,13 @@ $(function() {
         success: function (text) {
             id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
             if ( id == 'None') {
-                create_toast('Status','Unable to '+mode+' phone', 'error'); // OK
+                create_toast(time_counter,'Status','Unable to '+mode+' phone', 'error'); // OK
             } else {
-                create_toast('Status','Phone '+mode+'ed', 'success'); // OK
+                create_toast(time_counter,'Status','Phone '+mode+'ed', 'success'); // OK
             }
         },
         error: function () {
-            create_toast('Status','Unable to '+mode+' phone', 'error'); // OK
+            create_toast(time_counter,'Status','Unable to '+mode+' phone', 'error'); // OK
         }
     });
   }
@@ -765,13 +765,13 @@ $(function() {
         success: function (text) {
             id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
             if ( id == 'None') {
-            create_toast('Status','Unable to '+mode+' photo','error'); // OK
+            create_toast(time_counter,'Status','Unable to '+mode+' photo','error'); // OK
             } else {
-            create_toast('Status','Photo '+mode+'ed','success'); // OK
+            create_toast(time_counter,'Status','Photo '+mode+'ed','success'); // OK
             }
         },
         error: function () {
-            create_toast('Status','Unable to '+mode+' photo','error'); // OK
+            create_toast(time_counter,'Status','Unable to '+mode+' photo','error'); // OK
         }
     });
   }
@@ -790,7 +790,7 @@ $(function() {
         })
         .fail(function(jqxhr, textStatus, error) {
             $modal.modal('hide');
-            create_toast('Status', 'Unable to add new patient!', 'error'); // OK
+            create_toast(time_counter,'Status', 'Unable to add new patient!', 'error'); // OK
         });
   }
 
@@ -806,10 +806,10 @@ $(function() {
       beforeSend: function () {time_counter = Date.now();},
       data: JSON.stringify(row),
       success: function(text) {
-        create_toast('Status info','New user #'+row.user_id+' affected to group #'+row.group_id,'success'); // OK
+        create_toast(time_counter,'Status info','New user #'+row.user_id+' affected to group #'+row.group_id,'success'); // OK
       },
       error: function() {
-        create_toast('Status info','Unable to affect user #'+row.user_id+' to group #'+row.group_id, 'danger'); // OK
+        create_toast(time_counter,'Status info','Unable to affect user #'+row.user_id+' to group #'+row.group_id, 'danger'); // OK
       }
     });
   }
@@ -838,7 +838,7 @@ $(function() {
         }
       },
       error: function() {
-        create_toast('Status','Unable to check if duplicate!','error'); // OK 
+        create_toast(time_counter,'Status','Unable to check if duplicate!','error'); // OK 
       }
     });
   }
