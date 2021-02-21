@@ -1,6 +1,7 @@
 [[extend 'baseof.html']]
 [[ block page_head ]]
 <link rel="stylesheet" href="css/bootstrap-table.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 [[ end ]]
 [[ block left_nav ]]
 [[ end ]]
@@ -12,39 +13,38 @@
     <div class="row">
       <div class="col-md-12 mt-3">
         <div>
-          <h2><span class=""><i class="fas [[=class_icon]]"></i> [[=group]]s<span></h2>
-          <div id="toolbar">
+            <h2><span class=""><i class="fas [[=class_icon]]"></i> [[=group]]s<span></h2>
+            <div id="toolbar">
             <a href="javascript:" class="create btn btn-dark">New [[=group]]</a>
             <span class="alert_listing"></span>
-          </div>
+            </div>
         </div>
         <table id="table"
-          data-toggle="table"
-          data-query-params="queryParams"
-          data-id-field="id"
-          data-toolbar="#toolbar"
-          data-response-handler="responseHandler"
-          data-row-attributes="rowAttributes"
-          data-show-refresh="true"
-          data-show-columns="true"
-          data-search="true"
-          data-detail-view="true"
-          data-detail-formatter="detailFormatter">
-          <thead class="thead-dark">
-            <th data-field="id" data-sortable="true">ID</th>
-            <th data-field="UID" data-sortable="true">UID</th>
-            <th data-field="first_name" data-title="First name" data-sortable="true">First name:</th>
-            <th data-field="last_name" data-sortable="true">Last name:</th>
-            <th data-field="gender" data-sortable="true">Gender:</th>
-            <th data-field="dob" data-sortable="true">Date of birth:</th>
-            <th data-field="age" data-sortable="true">Age:</th>
-            <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action:</th>
-          </thead>
+            data-toggle="table"
+            data-query-params="queryParams"
+            data-id-field="id"
+            data-toolbar="#toolbar"
+            data-response-handler="responseHandler"
+            data-row-attributes="rowAttributes"
+            data-show-refresh="true"
+            data-show-columns="true"
+            data-search="true"
+            data-detail-view="true"
+            data-detail-formatter="detailFormatter">
+            <thead class="thead-dark">
+                <th data-field="id" data-sortable="true">ID</th>
+                <th data-field="UID" data-sortable="true">UID</th>
+                <th data-field="first_name" data-title="First name" data-sortable="true">First name:</th>
+                <th data-field="last_name" data-sortable="true">Last name:</th>
+                <th data-field="gender" data-sortable="true">Gender:</th>
+                <th data-field="dob" data-sortable="true">Date of birth:</th>
+                <th data-field="age" data-sortable="true">Age:</th>
+                <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action:</th>
+            </thead>
         </table>
       </div>
-  
     </div> <!-- end row -->
-  </div> <!-- end container fluid -->
+</div> <!-- end container fluid -->
 
 <div class="container">
     <p>[[ =user['username'] ]]</p>
@@ -52,8 +52,10 @@
 <div class="">
     [[=user]]
 </div>
+
 [[ block js_scripts ]]
 <script src="js/bootstrap-table/bootstrap-table.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <script type="text/javascript">
     var membership = [[=membership]];
@@ -61,18 +63,18 @@
     const origin = [[=origin_json]];
     var uid = "error uid";
   
-    const API_USER_LIST= '[[=URL('api','users_list/'+membership)]]';
-    const API_URL_USER = '[[=URL('api','users/user')]]/';
-    const API_URL_AUTH = '[[=URL('api','users/auth_user')]]/';
-    const API_URL_MEMBERSHIP = '[[=URL('api','users/auth_membership')]]/';
-    const URL_USER_FORM = '[[=URL('manage','user_form')]]/';
-    const API_URL_ADDRESS = '[[=URL('api','users/address')]]/';
-    const API_URL_PHONE = '[[=URL('api','users/phone')]]/';
-    const API_UNIQUE_ID = '[[=URL('api','generate_unique_id)]]/';
-    const API_WL = '[[=URL('api','wl')]]';
-    const API_URL_EXAMS = '[[=URL('exams','none')]]';
-    const API_BEID= '[[=URL('api','beid')]]';
-    const API_URL_PHOTO='[[=URL('api','users/photo_id')]]';
-  </script>
+    const API_USER_LIST= '[[=URL('api','auth_user?membership.eq'+membership)]]'; // check users with membership
+    const API_URL_USER = '[[=URL('api','auth_user')]]/'; // used to check duplicates w/dob fn ln
+    const API_URL_AUTH = '[[=URL('api','auth_user')]]/'; // to remove and post users
+    const API_URL_MEMBERSHIP = '[[=URL('api','users/auth_membership')]]/'; // to set a membership to a user
+    const URL_USER_FORM = '[[=URL('manage','user_form')]]/'; // to link to user edit page form
+    const API_URL_ADDRESS = '[[=URL('api','users/address')]]/'; // to POST | GET an address from row.id
+    const API_URL_PHONE = '[[=URL('api','users/phone')]]/'; // to POST | GET an address from row.id
+    const API_UNIQUE_ID = '[[=URL('api','generate_unique_id')/]]'; // to get a unique ID 
+    const API_WL = '[[=URL('api','wl')]]'; // GET the wl
+    const API_URL_EXAMS = '[[=URL('exams','none')]]'; // GET the exam to do from row.id
+    const API_BEID= '[[=URL('api','beid')]]'; // GET eid info
+    const API_URL_PHOTO='[[=URL('api','users/photo_id')]]'; // GET photo_id
+</script>
   
 [[ end ]]

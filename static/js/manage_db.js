@@ -5,10 +5,12 @@ var filename ="";
 // throw an ajax request to update list of backup files
 function list_csv() {
   time_counter = Date.now();
+  create_toast(toast_counter,time_counter,'Listing csv files...');
   $.ajax({
     url: CTRL_LISTDIR,
     success: function(result) {
     show_csv_dir(result.split(" "));
+    create_toast(toast_counter,time_counter,'Listing generated');
     }
   });
 }
@@ -34,6 +36,7 @@ function show_csv_dir(arr) { // arr is a python list of filenames
 // throw an ajax request to make a csv backup file after modal confirmation in view
 function confirm_savedb() {
     time_counter = Date.now();
+    create_toast(toast_counter,time_counter,'Saving DB...');
     $.ajax({
       url: CTRL_SAVE_DB,
       success: function(result) {
@@ -52,12 +55,13 @@ function confirm_savedb() {
 // throw an ajax request 1) to backup DB and if successful 2) clear/reset DB - after modal confirmation in view
 function confirm_init() {
   time_counter = Date.now();
+  create_toast(toast_counter,time_counter,'Saving DB...');
   $.ajax({
       url: CTRL_SAVE_DB,
       success: function(result) {
         arr = result.split(" ");
         if (arr[1] == 'True') {
-            create_toast(toast_counter,time_counter,'DB saved')
+            create_toast(toast_counter,time_counter,'DB saved, resetting DB...')
             $.ajax({
                 url: CTRL_INIT_DB,
                 success: function(result) {
@@ -91,12 +95,13 @@ function confirm_restorecsv(datafile) {
 function restoreCsv(datafile) {
     time_counter = Date.now();
     console.log('file in restoreCsv function:'+datafile);
+    create_toast(toast_counter,time_counter,'Saving DB...');
     $.ajax({
         url: CTRL_SAVE_DB,
         success: function(result) {
             arr = result.split(" ");
             if (arr[1] == 'True') {
-            create_toast(toast_counter,time_counter,'DB saved');
+            create_toast(toast_counter,time_counter,'DB saved, beginning restore...');
             time_counter = Date.now();
             $.ajax({
                 url: CTRL_RESTORE_DB+'?datafile='+datafile,
@@ -106,7 +111,7 @@ function restoreCsv(datafile) {
                     if (arr[1] == 'True') {
                     create_toast(toast_counter,time_counter,arr[0]+' restored')
                     } else {
-                    create_toast(toast_counter,time_counter,"Couldn't restore"+arr[0]+' file!')
+                    create_toast(toast_counter,time_counter,"Couldn't restore "+arr[0]+' file!')
                     }
                 }
             });
@@ -129,6 +134,7 @@ function confirm_delcsv(datafile) {
 
 // throw an ajax request to delete a csv backup file after modal confirmation in view
 function delcsv(datafile) {
+  create_toast(toast_counter,time_counter,'Deleting backup...');
   $.ajax({
       url: CTRL_DELCSV+'?datafile='+datafile,
       success: function(result) {
@@ -169,7 +175,7 @@ function create_toast(id,start,txt) { // id number of toast, start = time at exe
   //console.log(row_id);
   $("<div/>").attr('id',row_id).attr('class','mb-1').appendTo('#toastContainer');
   $("<div/>").attr('id','col'+id).appendTo('#'+row_id);
-  $("<div/>").attr('id','toast'+id).attr('data-autohide','true').attr('data-delay',6000).attr('class','toast').appendTo('#col'+id);
+  $("<div/>").attr('id','toast'+id).attr('data-autohide','true').attr('data-delay',10000).attr('class','toast').appendTo('#col'+id);
   $("<div/>").attr('id','toastHeader'+id).attr('class','toast-header d-flex').appendTo('#toast'+id);
   $("<span/>").attr('id','statusHeader'+id).attr('class','text-primary flex-fill align-self-center').appendTo('#toastHeader'+id);
   $('#statusHeader'+id).append('<strong>Status</strong>');

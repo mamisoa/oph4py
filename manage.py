@@ -109,6 +109,15 @@ def patient():
     return locals()
 
 ## manage users 
+@action('import_users')
+@action.uses('generic.html', T, db)
+def import_users():
+    import os
+    rows = db(db.auth_user).select()
+    with open(os.path.join(os.path.dirname(__file__),'uploads/csv/')+'dummy_auth_user.csv', 'r', encoding='utf-8', newline='') as dumpfile:
+        db.auth_user.import_from_csv_file(dumpfile)
+    return locals()
+
 @action('manage/users', method=['POST','GET'])
 @action('manage/users/<membership>')
 @action.uses('patients.html', T, auth.user, db)
