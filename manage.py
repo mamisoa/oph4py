@@ -114,7 +114,7 @@ def patient():
 def import_users():
     import os
     rows = db(db.auth_user).select()
-    with open(os.path.join(os.path.dirname(__file__),'uploads/csv/')+'dummy_auth_user.csv', 'r', encoding='utf-8', newline='') as dumpfile:
+    with open(os.path.join(os.path.dirname(__file__),'uploads/csv/')+'dummy_auth_users_7.csv', 'r', encoding='utf-8', newline='') as dumpfile:
         db.auth_user.import_from_csv_file(dumpfile)
     return locals()
 
@@ -151,6 +151,13 @@ def patient(membership=5):
     return locals()
 
 ## manage_db
+
+@action('db_truncate')
+@action.uses('generic.html', T, db, auth.user)
+def import_users():
+    for table_name in db.tables():
+        db[table_name].truncate('RESTART IDENTITY CASCADE')
+    return locals()
 
 @action("manage/db")
 @action.uses('manage/manage_db.html', T, auth.user, db, flash)
@@ -211,6 +218,7 @@ def set_defaults_db():
     db.marital.insert(marital_status="married")
     db.membership.insert(membership="Admin", hierarchy="0")
     db.membership.insert(membership="Doctor", hierarchy="1")
+    db.membership.insert(membership="Nurse", hierarchy="2")
     db.membership.insert(membership="Medical assistant", hierarchy="2")
     db.membership.insert(membership="Administrative", hierarchy="3")
     db.membership.insert(membership="Patient", hierarchy="99")
@@ -224,13 +232,13 @@ def set_defaults_db():
 def init_db():
     import os
     for table_name in db.tables():
-        db[table_name].truncate()
+        db[table_name].truncate('RESTART IDENTITY CASCADE')
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
     backup_path_file = backup_path+'init_db.csv'
     try:
-        # with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
-        #     db.import_from_csv_file(dumpfile)
-        set_defaults_db()
+        with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+            db.import_from_csv_file(dumpfile)
+        # set_defaults_db()
         return "reset"+" "+"True"
     except:
         return "reset"+" "+"False"
@@ -240,7 +248,7 @@ def restore_db():
     import os
     file2restore = request.query.datafile
     for table_name in db.tables():
-        db[table_name].truncate()
+        db[table_name].truncate('RESTART IDENTITY CASCADE')
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
     backup_path_file = backup_path+file2restore
     try:

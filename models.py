@@ -71,6 +71,11 @@ db.define_table('data_origin',
     format=lambda r: r.origin or 'Home'
 )
 
+if db(db.data_origin.id > 1).count() == 0:
+    db.data_origin.insert(origin="Home")
+    db.data_origin.insert(origin="Mobile")
+    db.data_origin.insert(origin="Work")
+
 db.define_table('phone',
     Field('id_auth_user', 'reference auth_user', writable= False, readable= False),
     Field('phone_prefix_pid13_1', 'integer', required=True, default = '32'),

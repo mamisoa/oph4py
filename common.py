@@ -86,7 +86,7 @@ db.define_table('gender',
     Field('sex','string'), format='%(sex)s')
 
 if db(db.gender.id > 1).count() == 0:
-    db.gender.truncate()
+    # db.gender.truncate()
     db.gender.insert(sex="Male")
     db.gender.insert(sex="Female")
     db.gender.insert(sex="Other")
@@ -95,7 +95,7 @@ db.define_table('ethny',
     Field('ethny','string'), format='%(ethny)s')
 
 if db(db.ethny.id > 1).count() == 0:
-    db.ethny.truncate()
+    # db.ethny.truncate()
     db.ethny.insert(ethny="Caucasian")
     db.ethny.insert(ethny="Black")
     db.ethny.insert(ethny="Hispanic")
@@ -105,7 +105,7 @@ db.define_table('marital',
     Field('marital_status'), format='%(marital_status)s')
 
 if db(db.marital.id > 1).count() == 0:
-    db.marital.truncate()
+    # db.marital.truncate()
     db.marital.insert(marital_status="single")
     db.marital.insert(marital_status="married")
 
@@ -114,9 +114,10 @@ db.define_table('membership',
     Field('hierarchy','integer'), format='%(membership)s')
 
 if db(db.membership.id > 1).count() == 0:
-    db.membership.truncate()
+    # db.membership.truncate()
     db.membership.insert(membership="Admin", hierarchy="0")
     db.membership.insert(membership="Doctor", hierarchy="1")
+    db.membership.insert(membership="Nurse", hierarchy="2")
     db.membership.insert(membership="Medical assistant", hierarchy="2")
     db.membership.insert(membership="Administrative", hierarchy="3")
     db.membership.insert(membership="Patient", hierarchy="99")

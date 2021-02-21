@@ -36,8 +36,13 @@ from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added 
 def index():
     user = auth.get_user()
     message = T("Hello {first_name}!".format(**user) if user else "Hello. You should sign in!")
-    db_patients_count = db(db.auth_user.membership==5).count()
+    db_admins_count = db(db.auth_user.membership==1).count()
     db_doctors_count = db(db.auth_user.membership==2).count()
+    db_nurses_count = db(db.auth_user.membership==3).count()
+    db_massistants_count = db(db.auth_user.membership==4).count()
+    db_assistants_count = db(db.auth_user.membership==5).count()
+    db_patients_count = db(db.auth_user.membership==6).count()
+    db_entries_count = db(db.auth_user).count()
     return locals()
 
 @action("test") # route
