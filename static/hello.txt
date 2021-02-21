@@ -1,3 +1,20 @@
 Hello Mamisoa 
 flatpickr
 bootstrap-table
+
+@staticmethod
+    def make_query(field, condition, value):
+        expression = {
+            "eq": lambda: field == value,
+            "ne": lambda: field != value,
+            "lt": lambda: field < value,
+            "gt": lambda: field > value,
+            "le": lambda: field <= value,
+            "ge": lambda: field >= value,
+            "startswith": lambda: field.startswith(str(value)),
+            "in": lambda: field.belongs(
+                value.split(",") if isinstance(value, str) else list(value)
+            ),
+            "contains": lambda: field.contains(value),
+        }
+        return expression[condition]()
