@@ -15,7 +15,7 @@ APP_NAME = os.path.split(APP_FOLDER)[-1]
 #               and is the store location for SQLite databases
 DB_FOLDER = required_folder(APP_FOLDER, "databases")
 # DB_URI = "sqlite://storage.db"
-DB_URI = "postgres://mamisoa:mamisoaC66@localhost:5432/dbposgres"
+DB_URI = "postgres://mamisoa:mamisoaC66@localhost:5432/dbpostgres"
 DB_POOL_SIZE = 8
 DB_MIGRATE = True
 DB_FAKE_MIGRATE = False  # maybe?

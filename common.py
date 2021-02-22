@@ -127,7 +127,7 @@ if db(db.membership.id > 1).count() == 0:
     db.membership.insert(membership="Patient", hierarchy="99") # 6
 
 auth = Auth(session, db, define_tables=False)
-more_auth_fields = [    Field('UID', 'string', default=str_uuid()),
+more_auth_fields = [    Field('uid', 'string', default=str_uuid()),
                         Field('membership', 'reference membership'),
                         Field('maiden_name','string', label='Maiden name'),
                         Field('dob','date', label='Date of birth'),

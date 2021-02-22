@@ -114,7 +114,7 @@ def patient():
 def import_users():
     import os
     rows = db(db.auth_user).select()
-    with open(os.path.join(os.path.dirname(__file__),'uploads/csv/')+'dummy_auth_users_7.csv', 'r', encoding='utf-8', newline='') as dumpfile:
+    with open(os.path.join(os.path.dirname(__file__),'uploads/csv/')+'1.csv', 'r', encoding='utf-8', newline='') as dumpfile:
         db.auth_user.import_from_csv_file(dumpfile)
     return locals()
 

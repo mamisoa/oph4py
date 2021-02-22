@@ -30,8 +30,8 @@ membership.id,membership.membership,membership.hierarchy
 
 
 TABLE auth_user
-auth_user.id,auth_user.username,auth_user.email,auth_user.password,auth_user.first_name,auth_user.last_name,auth_user.sso_id,auth_user.action_token,auth_user.last_password_change,auth_user.past_passwords_hash,auth_user.membership,auth_user.maiden_name_pid6,auth_user.dob_pid7,auth_user.birth_town_pid23,auth_user.birth_country_pid23,auth_user.gender_pid8,auth_user.marital_pid16,auth_user.ethny_pid22,auth_user.idc_num,auth_user.ssn_pid19,auth_user.user_notes,auth_user.chipnumber,auth_user.validfrom,auth_user.validtill,auth_user.initials,auth_user.nationality,auth_user.noblecondition,auth_user.documenttype,auth_user.specialstatus,auth_user.created_on,auth_user.created_by,auth_user.modified_on,auth_user.modified_by,auth_user.is_active
-1,mamisoa,mamisoa@gmail.com,"pbkdf2(1000,20,sha512)$b2a2b64dd81a2e29$f07b0e71ae52a59b5e0f8e51b63dd53e65a9543e",Mamisoa,Andriantafika,<NULL>,,<NULL>,<NULL>,1,<NULL>,<NULL>,Virginal-Samme,Belgique,1,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,2021-02-21 08:17:19,<NULL>,2021-02-21 08:17:19,<NULL>,True
+auth_user.id,auth_user.username,auth_user.email,auth_user.password,auth_user.first_name,auth_user.last_name,auth_user.sso_id,auth_user.action_token,auth_user.last_password_change,auth_user.past_passwords_hash,auth_user.uid,auth_user.membership,auth_user.maiden_name,auth_user.dob,auth_user.birth_town,auth_user.birth_country,auth_user.gender,auth_user.marital,auth_user.ethny,auth_user.idc_num,auth_user.ssn,auth_user.user_notes,auth_user.chipnumber,auth_user.validfrom,auth_user.validtill,auth_user.initials,auth_user.nationality,auth_user.noblecondition,auth_user.documenttype,auth_user.specialstatus,auth_user.created_on,auth_user.created_by,auth_user.modified_on,auth_user.modified_by,auth_user.is_active
+1,mamisoa,mamisoa@gmail.com,"pbkdf2(1000,20,sha512)$b8ec77e627e112a3$46ae70f3dcc5fe44e5ef49c077dc1cbc110d77bb",Mamisoa,Andriantafika,<NULL>,,<NULL>,<NULL>,ca72ac93a0874cdeb25381b8cbb3e2a5,1,<NULL>,<NULL>,Virginal-Samme,Belgique,1,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,2021-02-21 23:39:19,<NULL>,2021-02-21 23:39:19,<NULL>,True
 
 
 TABLE auth_user_tag_groups
@@ -47,9 +47,56 @@ TABLE photo_id
 
 
 TABLE facility
+facility.id,facility.facility_name,facility.created_on,facility.created_by,facility.modified_on,facility.modified_by,facility.is_active
+1,Desk1,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+2,Desk2,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+3,Iris,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+4,Cornea,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+5,Cristalline,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+6,Retina,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+7,Exam1,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+8,Exam2,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+9,Reunion,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+
+
+TABLE modality_type
 
 
 TABLE modality
+modality.id,modality.modality_name,modality.created_on,modality.created_by,modality.modified_on,modality.modified_by,modality.is_active
+1,L80,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+2,VX-120,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+3,TonoRef,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+4,TonoCan,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+5,Octopus 900,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+6,FDT,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+7,OCT Maestro,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+8,Pentacam,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+9,Anterion,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+10,Visucam,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+11,CEM-500,2021-02-21 23:37:06,<NULL>,2021-02-21 23:37:06,<NULL>,True
+
+
+TABLE modality_tag_default
+modality_tag_default.id,modality_tag_default.path,modality_tag_default.record_id
+1,/Rx/,1
+2,/Rx/,2
+3,/Tono/,3
+4,/Tono/,4
+5,/VF/,5
+6,/VF/,6
+7,/Imaging/,7
+8,/OCT/,7
+9,/Imaging/,8
+10,/Biometry/,8
+11,/Topo/,8
+12,/Imaging/,9
+13,/Biometry/,9
+14,/Topo/,9
+15,/Imaging/,10
+16,/Angiography/,10
+17,/Fluo/,10
+18,/Imaging/,11
 
 
 TABLE address
@@ -71,7 +118,7 @@ TABLE insurance_sector
 TABLE insurance
 
 
-TABLE exam2do_OBR4
+TABLE exam2do
 
 
 TABLE worklist
@@ -99,6 +146,12 @@ TABLE post_biom
 
 
 TABLE phistory
+
+
+TABLE mx
+
+
+TABLE alerts
 
 
 END
