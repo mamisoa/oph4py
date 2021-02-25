@@ -16,6 +16,40 @@
 [[ include 'partials/nav-test.html' ]]
 [[ end]]
 
+<!-- bootstrap ok for table -->
+<div class="container-fluid"> <!-- #table list -->
+    <div class="row">
+      <div class="col-md-12 mt-3">
+        <div>
+            <h2><span class=""><i class="fas [[=class_icon]]"></i> [[=group]]s<span></h2>
+            <div id="toolbar">
+            <a href="javascript:" class="create btn btn-dark">New [[=group]]</a>
+            <span class="alert_listing"></span>
+            </div>
+        </div>
+        <table id="table"
+            data-toolbar="#toolbar"
+            data-id-field="id"
+            data-toggle="table"
+            data-ajax="get"
+            data-show-refresh="true"
+            data-response-handler="responseHandler"
+            data-show-columns="true"
+            data-search="false">
+            <thead class="thead-dark">
+                <th data-field="id" data-sortable="true">ID</th>
+                <th data-field="uid" data-sortable="true">UID</th>
+                <th data-field="first_name" data-title="First name" data-sortable="true">First name:</th>
+                <th data-field="last_name" data-sortable="true">Last name:</th>
+                <th data-field="gender" data-sortable="true">Gender:</th>
+                <th data-field="dob" data-sortable="true">Date of birth:</th>
+            </thead>
+        </table>
+      </div>
+    </div> <!-- end row -->
+</div> <!-- end container fluid -->
+
+
 <div>
     <p>Value is : [[=test]]</p>
 </div>
@@ -25,7 +59,30 @@
 
 [[ block js_scripts]]
 <script src="js/jquery-3.5.1.min.js"></script>
+<script src="js/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
 <script type="text/javascript">
+
+// init bootstrat-tables
+var membership = '6';
+var HOSTURL = 'http://localhost:8000';
+
+const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership; // check users with membership -> OK
+
+console.log(API_USER_LIST);
+
+var $table = $('#table').bootstrapTable({
+        URL: API_USER_LIST,
+        responseHandler: function (res) {
+            return res.items
+        }
+    });
+
+
+
 </script>
+
+
 
 [[ end ]]

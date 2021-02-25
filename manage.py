@@ -116,7 +116,7 @@ def import_users():
     rows = db(db.auth_user).select()
     with open(os.path.join(os.path.dirname(__file__),'uploads/csv/')+'1.csv', 'r', encoding='utf-8', newline='') as dumpfile:
         db.auth_user.import_from_csv_file(dumpfile)
-    return locals()
+    return dict(message="OK")
 
 @action('manage/users', method=['POST','GET'])
 @action('manage/users/<membership>')

@@ -46,6 +46,8 @@ db = DAL(
     pool_size=settings.DB_POOL_SIZE,
     migrate=settings.DB_MIGRATE,
     fake_migrate=settings.DB_FAKE_MIGRATE,
+    ignore_field_case=False, # added for postgres
+    entity_quoting = True
 )
 
 # #######################################################
@@ -87,13 +89,15 @@ elif settings.SESSION_TYPE == "database":
 # #######################################################
 
 db.define_table('gender',
-    Field('sex','string'), format='%(sex)s')
+    Field('sex','string'),
+    format='%(sex)s')
 
 if db(db.gender.id > 1).count() == 0:
     # db.gender.truncate()
     db.gender.insert(sex="Male")
     db.gender.insert(sex="Female")
     db.gender.insert(sex="Other")
+
 
 db.define_table('ethny',
     Field('ethny','string'), format='%(ethny)s')

@@ -55,17 +55,6 @@ db.define_table('facility',
     auth.signature,
     format='%(facility_name)s')
 
-if db(db.facility.id > 1).count() == 0:
-    db.facility.insert(facility_name="Desk1")
-    db.facility.insert(facility_name="Desk2")
-    db.facility.insert(facility_name="Iris")
-    db.facility.insert(facility_name="Cornea")
-    db.facility.insert(facility_name="Cristalline")
-    db.facility.insert(facility_name="Retina")
-    db.facility.insert(facility_name="Exam1")
-    db.facility.insert(facility_name="Exam2")
-    db.facility.insert(facility_name="Reunion")
-
 db.define_table('modality_type',
     Field('family', 'string', required=True),
     auth.signature,
@@ -76,31 +65,6 @@ db.define_table('modality',
     auth.signature,
     format='%(modality_name)s')
 
-modality_types = Tags(db.modality)
-
-if db(db.modality.id > 1).count() == 0:
-    db.modality.insert(modality_name="L80")
-    modality_types.add(1, ['Rx'])
-    db.modality.insert(modality_name="VX-120")
-    modality_types.add(2, ['Rx'])
-    db.modality.insert(modality_name="TonoRef")
-    modality_types.add(3, ['Tono'])
-    db.modality.insert(modality_name="TonoCan")
-    modality_types.add(4, ['Tono'])
-    db.modality.insert(modality_name="Octopus 900")
-    modality_types.add(5, ['VF'])
-    db.modality.insert(modality_name="FDT")
-    modality_types.add(6, ['VF'])
-    db.modality.insert(modality_name="OCT Maestro")
-    modality_types.add(7, ['Imaging','OCT'])
-    db.modality.insert(modality_name="Pentacam")
-    modality_types.add(8, ['Imaging','Biometry','Topo'])
-    db.modality.insert(modality_name="Anterion")
-    modality_types.add(9, ['Imaging','Biometry','Topo'])
-    db.modality.insert(modality_name="Visucam")
-    modality_types.add(10, ['Imaging','Angiography','Fluo'])
-    db.modality.insert(modality_name="CEM-500")
-    modality_types.add(11, ['Imaging'])
 
 db.define_table('address',  #PID11
     Field('id_auth_user', 'reference auth_user', writable = False, readable = False),
@@ -119,10 +83,6 @@ db.define_table('data_origin',
     format=lambda r: r.origin or 'Home'
 )
 
-if db(db.data_origin.id > 1).count() == 0:
-    db.data_origin.insert(origin="Home")
-    db.data_origin.insert(origin="Mobile")
-    db.data_origin.insert(origin="Work")
 
 db.define_table('phone', # pid13
     Field('id_auth_user', 'reference auth_user', writable= False, readable= False),
