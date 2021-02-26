@@ -91,17 +91,17 @@ def index():
 @action("test") # route
 @action('test/<membership>')
 @action.uses('test.html', T, auth, db, flash)
-def test(membership=6):
+def test(membership=2):
     user = auth.get_user()
     flash.set("Hello World", sanitize=True)   
     test="Test OK"
     try: # check if membership exists
         check_group= db(db.membership.id == membership).isempty()
     except ValueError:
-        membership = 6
+        membership = 2
     else:
         if check_group is True: # if does not exist
-            membership = 6
+            membership = 2
     def group_icon(membership):
         dict_icon = {
             1:'fa-users-cog',
