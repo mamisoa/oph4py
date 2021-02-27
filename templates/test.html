@@ -34,7 +34,12 @@
             data-response-handler="responseHandler"
             data-show-refresh="true"
             data-pagination="true"
+            data-side-pagination="client"
+            data-page-size="50"
+            data-virtual-scroll="true"
             data-show-columns="true"
+            data-query-params="queryParams"
+            data-query-params-type=""
             data-search="false">
             <thead class="thead-dark">
                 <th data-field="id" data-sortable="true">ID</th>
@@ -43,6 +48,7 @@
                 <th data-field="last_name" data-sortable="true">Last name:</th>
                 <th data-field="gender" data-sortable="true">Gender:</th>
                 <th data-field="dob" data-sortable="true">Date of birth:</th>
+                <th data-field="TotalRows" data-sortable="true">Total rows:</th>
             </thead>
         </table>
       </div>
@@ -71,7 +77,7 @@
 var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
-const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender!:gender[sex]'; // check users with membership -> OK
+const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender!:gender[sex]&@limit=1000'; // check users with membership -> OK
 
 console.log(API_USER_LIST);
 
@@ -157,27 +163,46 @@ var result=[];
 
 console.log(result);
 
+$.getJSON( API_USER_LIST, function (data) {
+    results = data.items;
+    console.log(results);
+    console.log('Counted rows: '+results.length);
+})
+
 /* result = [{"id":225,"last_name":"Andrian"}, { "id": 226, "last_name": "Andrian226" }]
  */
+
 var $table = $('#table').bootstrapTable({
     url: API_USER_LIST
 });
 
-    function responseHandler(res) {
-        list = res.items;
-        display = [];
-        $.each(list, function (i) {
-            display.push({
-                'id': list[i].id,
-                'uid': list[i].uid,
-                'first_name': list[i].first_name,
-                'last_name': list[i].last_name,
-                'dob': list[i]['dob'],
-                'gender': list[i]['gender.sex'],
-            });
+function responseHandler(res) {
+    list = res.items;
+    nbrows = Object.keys(list).length;
+    display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'uid': list[i].uid,
+            'first_name': list[i].first_name,
+            'last_name': list[i].last_name,
+            'dob': list[i]['dob'],
+            'gender': list[i]['gender.sex'],
+            'TotalRows': nbrows
         });
-        return display;
+    });
+    return display;
+}
+
+function queryParams(params) {
+    return {
+      page: params.pageNumber,
+      pageLimit: params.pageSize,
+      searchRecord: params.searchText,
+      sortName: params.sortName,
+      sortOrder: params.sortOrder
     }
+}
 
 </script>
 
