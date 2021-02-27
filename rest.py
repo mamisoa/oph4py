@@ -7,7 +7,7 @@ from .common import db, session, T, cache, auth, logger, authenticated, unauthen
 from pydal.restapi import RestAPI, Policy
 
 policy = Policy()
-policy.set('*','GET', authorize=True, allowed_patterns=['*'])
+policy.set('*','GET', authorize=True, limit=1000, allowed_patterns=['*'])
 policy.set('*','POST', authorize=True)
 policy.set('*','PUT', authorize=True)
 policy.set('*','DELETE', authorize=True)
