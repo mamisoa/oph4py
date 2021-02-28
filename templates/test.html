@@ -30,7 +30,7 @@
             data-toolbar="#toolbar"
             data-id-field="id"
             data-toggle="table"
-            data-side-pagination="client"
+            data-side-pagination="server"
             data-show-refresh="true"
             data-pagination="true"
             data-page-size="20"
@@ -38,7 +38,8 @@
             data-search="true"
             data-visible-search="false"
             data-data-field="items"
-            data-query-params=""
+            data-query-params="queryParams"
+            data-total-field="count"
             >
             <thead class="thead-dark">
                 <th data-field="id" data-sortable="true">ID</th>
@@ -157,38 +158,14 @@ var result=[];
         result.push(data.items[i]);
     }
 
-// console.log(result);
 
-// $.getJSON( API_USER_LIST, function (data) {
-//     results = data.items;
-//     console.log(results);
-//     console.log('Counted rows: '+results.length);
-// })
+var $table = $('#table').bootstrapTable({
+    url: API_USER_LIST,
+    formatSearch: function () {
+    return 'Last name,first name, gender'
+    }
+});
 
-/* result = [{"id":225,"last_name":"Andrian"}, { "id": 226, "last_name": "Andrian226" }]
- */
-
-// $(function() {
-
-// var $table = $('#table').bootstrapTable({
-//         data: data,
-//         formatSearch: function () {
-//         return 'Hello'
-//       }
-// });
-
-// });
-
-// $(function() {
-
-    var $table = $('#table').bootstrapTable({
-        url: API_USER_LIST,
-        formatSearch: function () {
-        return 'Hello'
-      }
-    });
-
-// });
 
 
 

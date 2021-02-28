@@ -37,3 +37,20 @@ function ajaxRequest(params) {
         }
     });
 }
+
+function queryParams(params) {
+    search = params.search.split(",");
+    console.log('Initial');
+    console.log(search);
+    if (search[0] == "") {
+        params.search="";
+    } else if (search[1] == undefined) {
+        params.search="last_name.startswith="+search[0]
+        console.log("1 undefined:" + params.search);
+    } else if (search[2] == undefined) {
+        params.search="last_name.startswith="+search[0]+"&first_name.startswith="+search[1]
+    } else {
+        params.search="last_name.startswith="+search[0]+"&first_name.startswith="+search[1]+"&(gender.sex).startwith="+search[2];
+    }
+    return params.search;
+}
