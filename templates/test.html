@@ -33,6 +33,7 @@
             data-side-pagination="server"
             data-show-refresh="true"
             data-pagination="true"
+            data-page-size="25"
             data-show-columns="true"
             data-search="true"
             data-visible-search="false"
@@ -75,7 +76,7 @@
 var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
-const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender:gender[id,sex]&@limit=100&@order=last_name'; // check users with membership -> OK
+const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender:gender[id,sex]&@limit=25'; // check users with membership -> OK
 
 console.log(API_USER_LIST);
 
