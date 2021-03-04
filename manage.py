@@ -78,8 +78,8 @@ def user(rec_id=None):
     genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
     form_key=form.formkey # identify the form, formname="None"
     if form.accepted:
-        db.auth_user.insert(first_name=form.vars['first_name'],
-            last_name=form.vars['last_name'],
+        db.auth_user.insert(first_name=form.vars['first_name'].capitalize(),
+            last_name=form.vars['last_name'].capitalize(),
             username=form.vars['username'],
             email=form.vars['email'],
             password=str(CRYPT()(form.vars['password'])[0]),

@@ -38,6 +38,12 @@ function ajaxRequest(params) {
     });
 }
 
+// normalize accented characters
+function norm(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+
 // set parameters for ajax request from bootstrap-table
 var s="";
 var toggle=""
@@ -83,5 +89,6 @@ function queryParams(params) {
         console.log(params.offset);
         s += "&@limit="+params.limit;
     }
-    return s;
+    console.log(s);
+    return decodeURI(encodeURI(s));
 }

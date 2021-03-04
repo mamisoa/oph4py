@@ -36,6 +36,7 @@
             data-page-size="10"
             data-show-columns="true"
             data-search="true"
+            data-search-accent-neutralise="true"
             data-visible-search="false"
             data-data-field="items"
             data-query-params="queryParams"
@@ -160,7 +161,7 @@ var result=[];
 
 
 var $table = $('#table').bootstrapTable({
-    url: API_USER_LIST,
+    url: decodeURI(encodeURI(API_USER_LIST)),
     formatSearch: function () {
     return 'Last name,first name, gender'
     }
