@@ -43,6 +43,10 @@ function norm(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
+// Capitalize first character
+function capitalize(str) {
+    return str.trim().replace(/^\w/, (c) => c.toUpperCase());
+}
 
 // set parameters for ajax request from bootstrap-table
 var s="";
@@ -53,17 +57,17 @@ function queryParams(params) {
         s =""
     } else {
         if (search[0]!= undefined) {
-            s = "last_name.startswith=" + search[0];
+            s = "last_name.startswith=" + capitalize(search[0]);
         } else {
             s = "";
         }
         if (search[1]!= undefined) {
-            s += "&first_name.startswith=" + search[1];
+            s += "&first_name.startswith=" + capitalize(search[1]);
         } else {
             s +="";
         }
         if (search[2] != undefined) {
-            s += "&gender.sex.startswith=" + search[2];
+            s += "&gender.sex.startswith=" + capitalize(search[2]);
         } else {
             s += "";
         }
