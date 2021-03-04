@@ -40,6 +40,7 @@ function ajaxRequest(params) {
 
 var s="";
 var toggle=""
+var limit="25"
 
 function queryParams(params) {
     search = params.search.split(",");
@@ -74,6 +75,11 @@ function queryParams(params) {
     if (params.offset != "0") {
         console.log(params.offset);
         s += "&@offset="+params.offset;
+    }
+
+    if (params.limit != "0") {
+        console.log(params.offset);
+        s += "&@limit="+params.limit;
     }
     return s;
 }
