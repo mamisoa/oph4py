@@ -39,6 +39,7 @@ function ajaxRequest(params) {
 }
 
 var s="";
+var toggle=""
 
 function queryParams(params) {
     search = params.search.split(",");
@@ -61,6 +62,18 @@ function queryParams(params) {
             s += "";
         }
     }
-    console.log(s);
+    if (params.sort != undefined) {
+        if (toggle=="") {
+            s += "&@order="+params.sort;
+            toggle="~";
+        } else {
+            s += "&@order=~"+params.sort;
+            toggle="";
+        }
+    }
+    if (params.offset != "0") {
+        console.log(params.offset);
+        s += "&@offset="+params.offset;
+    }
     return s;
 }
