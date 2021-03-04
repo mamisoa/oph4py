@@ -38,10 +38,9 @@ function ajaxRequest(params) {
     });
 }
 
+// set parameters for ajax request from bootstrap-table
 var s="";
 var toggle=""
-var limit="25"
-
 function queryParams(params) {
     search = params.search.split(",");
     if (search == [""]) {
@@ -64,6 +63,9 @@ function queryParams(params) {
         }
     }
     if (params.sort != undefined) {
+        if (params.sort == "gender.sex") {
+            params.sort = "gender";
+        }
         if (toggle=="") {
             s += "&@order="+params.sort;
             toggle="~";
