@@ -115,17 +115,17 @@ def check_duplicate(form):
 @action("test") # route
 @action('test/<membership>')
 @action.uses('test.html', session, T, auth, db, flash)
-def test(membership=2):
+def test(membership=6):
     user = auth.get_user()
     flash.set("Hello World", sanitize=True)   
     test="Test OK"
     try: # check if membership exists
         check_group= db(db.membership.id == membership).isempty()
     except ValueError:
-        membership = 2
+        membership = 6
     else:
         if check_group is True: # if does not exist
-            membership = 2
+            membership = 6
     def group_icon(membership):
         dict_icon = {
             1:'fa-users-cog',
