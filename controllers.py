@@ -32,6 +32,8 @@ from .common import db, session, T, cache, auth, logger, authenticated, unauthen
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 from py4web.utils.tags import Tags
 
+from pydal.validators import CRYPT # to encrypt passwords
+
 
 if db(db.facility.id > 1).count() == 0:
     db.facility.insert(facility_name="Desk1")
@@ -112,7 +114,7 @@ def check_duplicate(form):
             form.errors['username'] = T('Username already taken')
             form.errors['email'] = ""
 
-@action("test") # route
+@action("test", method=['POST','GET']) # route
 @action('test/<membership>')
 @action.uses('test.html', session, T, auth, db, flash)
 def test(membership=6):
