@@ -26,7 +26,7 @@ Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app w
 """
 
 from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
-from yatl.helpers import A, XML
+from yatl.helpers import A, XML, OPTION, CAT
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
@@ -92,11 +92,10 @@ def dropdownSelect(table,fieldId,defaultId): ## eg table=db.gender fieldId=db.ge
     selectOptions=""
     for selection in db(table.id>0).select(table.ALL):
         if selection.id == defaultId:
-            selectOptions += "<option selected value='"
+            selectOptions = CAT(selectOptions, OPTION(selection[fieldId],_selected="selected",_value=str(selection.id)))
         else:
-            selectOptions += "<option value='"
-        selectOptions += str(selection.id)+"'>"+selection[fieldId]+"</option>"
-        selectOptions = XML(selectOptions)
+            selectOptions = CAT(selectOptions, OPTION(selection[fieldId],_value=str(selection.id)))
+    selectOptions = XML(selectOptions)
     return selectOptions # html <option value=""></option>
 
 def check_duplicate(form):
@@ -152,11 +151,10 @@ def test(membership=2):
     roleOptions=""
     for role in db(db.membership.id>0).select(db.membership.ALL):
         if role.membership == "Patient": # make "Patient" as default option
-            roleOptions += "<option selected value='"
+            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_selected="selected",_value=str(role.id)))
         else:
-            roleOptions += "<option value='"
-        roleOptions += str(role.id) + "'>" + role.membership + " (level " + str(role.hierarchy) + ")</option>"
-        roleOptions = XML(roleOptions)
+            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
+    roleOptions = XML(roleOptions)
     genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
     form_key=form.formkey # identify the form, formname="None"
     if form.accepted:
