@@ -83,11 +83,12 @@ function crudUser(id='0',req='POST',data) {
                     errors += data.errors[i]+'</br>';
                 };
                 text = errors;
-                displayToast('error',data.message,errors,true);
+                displayToast('error',data.message,errors,'6000');
             };
             if (data.status == "success") {
                 text='User id: '+(req == 'DELETE'? id : data.id)+mode;
-                displayToast('success','User '+mode,text,true);
+                $table.bootstrapTable('refresh');
+                displayToast('success','User '+mode,text,'6000');
             };
         });
 }
@@ -131,7 +132,6 @@ function delUser (id) {
             if (result == true) {
                 crudUser(id,req='DELETE');
                 console.log('Row.id deleted:'+id);
-                $table.bootstrapTable('refresh');
             } else {
                 console.log('This was logged in the callback: ' + result);
             }
