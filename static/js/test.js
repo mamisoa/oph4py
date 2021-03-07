@@ -97,12 +97,37 @@ function queryParams(params) {
     return decodeURI(encodeURI(s));
 }
 
-
-// catch submit userForm button
+// catch submit userForm
 $('#userForm').submit(function(e) {
     e.preventDefault();
-    var formData = $('#userForm').serializeArray();
-    console.log(formData);
+    var formData = $('#userForm').serializeJSON();
+    formData = JSON.parse(formData); // change to object
+    delete formData['passwordCheck']; // remove passwordCheck field
+    formData = JSON.stringify(formData); // change to string
+    $.ajax({
+        url: HOSTURL+"/myapp/api/auth_user",
+        data: formData,
+        contentType: 'application/json',
+        dataType: 'json',
+        method: 'POST'
+        })
+        .done(function(data) {
+            console.log(data);
+            status = data.status;
+            message = data.message;
+            errors = "";
+            if (data.status == "error") {
+                for (i in data.errors) {
+                    errors += data.errors[i]+'</br>';
+                };
+                text = errors;
+                displayToast('error',data.message,errors,true);
+            };
+            if (data.status == "success") {
+                text='Added user id: '+data.id;
+                displayToast('success','User added',text,true);
+            };
+        });
     $('#newUserModal').modal('toggle');
     return false;
 });
