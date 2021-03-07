@@ -140,16 +140,6 @@ def test(membership=6):
         return dict_icon[int(membership)]
     class_icon = group_icon(membership)
     group = (db(db.membership.id == membership).select().first()).membership #name of membership
-    form = Form([
-        Field('first_name'),
-        Field('last_name'),
-        Field('email'),
-        Field('username'),
-        Field('password'),
-        Field('membership'),
-        Field('gender')],
-        validation=check_duplicate
-        )
     roleOptions=""
     for role in db(db.membership.id>0).select(db.membership.ALL):
         if role.membership == "Patient": # make "Patient" as default option
@@ -158,22 +148,6 @@ def test(membership=6):
             roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
     roleOptions = XML(roleOptions)
     genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
-    form_key=form.formkey # identify the form, formname="None"
-    if form.accepted:
-        db.auth_user.insert(first_name=form.vars['first_name'].capitalize(),
-            last_name=form.vars['last_name'].capitalize(),
-            username=form.vars['username'],
-            email=form.vars['email'],
-            password=str(CRYPT()(form.vars['password'])[0]),
-            membership=form.vars['membership'],
-            gender=form.vars['gender'],
-            )
-        db.commit()
-        flash.set("User "+form.vars['username']+" added", sanitize=True)
-        redirect(URL('index'))
-    elif form.errors:
-        flash.set(form.errors['email']+' '+form.errors['username'])
-        redirect(URL('index'))
     return locals()
 
 @action("facilities", method=['GET', 'POST'])
