@@ -132,3 +132,16 @@ $('#userForm').submit(function(e) {
     return false;
 });
 
+// btn new user
+$( "#btnNewUser" ).click(function() {
+    document.getElementById('userForm').reset();
+    pass = passGen();
+    console.log(pass);
+    document.querySelector("#userForm input[name='password']").value = pass;
+    document.querySelector("#userForm input[name='passwordCheck']").value = pass;
+});
+
+// password generator
+function passGen() {
+    return Math.random().toString(36)+Math.random().toString(36).toUpperCase().split('').sort(function(){return 0.5-Math.random()}).join('')
+}
