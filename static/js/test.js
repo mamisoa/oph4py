@@ -97,6 +97,8 @@ function queryParams(params) {
     return decodeURI(encodeURI(s));
 }
 
+
+// catch submit userForm button
 $('#userForm').submit(function(e) {
     e.preventDefault();
     var formData = $('#userForm').serializeArray();
@@ -104,3 +106,4 @@ $('#userForm').submit(function(e) {
     $('#newUserModal').modal('toggle');
     return false;
 });
+
