@@ -1,52 +1,3 @@
-function responseHandler(res) { // used if data-response-handler="responseHandler"
-    list = res.items;
-    nbrows = Object.keys(list).length;
-    display = [];
-    $.each(list, function (i) {
-        display.push({
-            'id': list[i].id,
-            'uid': list[i].uid,
-            'first_name': list[i].first_name,
-            'last_name': list[i].last_name,
-            'dob': list[i]['dob'],
-            'gender': list[i]['gender.sex'],
-        });
-    });
-    return display;
-}
-
-// use:
-// data-ajax="ajaxRequest"
-// data-side-pagination="client"
-// to be able to use search in javascript
-// or just use: data-query-params=""
-function ajaxRequest(params) {
-    $.ajax({
-        type: "GET",
-        url: API_USER_LIST,
-        dataType: "json",
-        success: function (data) { 
-			console.log(data);
-			params.success({ 
-			"rows": data.items, 
-			"total": data.items.length 
-		    }) 
-        }, 
-        error: function (er) {
-            params.error(er);
-        }
-    });
-}
-
-// normalize accented characters
-function norm(str) {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-// Capitalize first character
-function capitalize(str) {
-    return str.trim().replace(/^\w/, (c) => c.toUpperCase());
-}
 
 // set parameters for ajax request from bootstrap-table
 var s="";
@@ -104,12 +55,23 @@ $('#userForm').submit(function(e) {
     formData = JSON.parse(formData); // change to object
     delete formData['passwordCheck']; // remove passwordCheck field
     formData = JSON.stringify(formData); // change to string
+    console.log('Hello');
+    crudUser('0','POST',data=formData);
+    $('#newUserModal').modal('toggle');
+    return false;
+});
+
+// crudUser(id,req): req = 'POST' without id,  'PUT' 'DELETE' with id
+function crudUser(id='0',req='POST',data) {
+    console.log(data);
+    var API_URL = (req == 'POST'? HOSTURL+"/myapp/api/auth_user" : HOSTURL+"/myapp/api/auth_user/"+ id );
+    var mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
     $.ajax({
-        url: HOSTURL+"/myapp/api/auth_user",
-        data: formData,
+        url: API_URL,
+        data: data,
         contentType: 'application/json',
         dataType: 'json',
-        method: 'POST'
+        method: req
         })
         .done(function(data) {
             console.log(data);
@@ -124,24 +86,126 @@ $('#userForm').submit(function(e) {
                 displayToast('error',data.message,errors,true);
             };
             if (data.status == "success") {
-                text='Added user id: '+data.id;
-                displayToast('success','User added',text,true);
+                text='User id: '+(req == 'DELETE'? id : data.id)+mode;
+                displayToast('success','User '+mode,text,true);
             };
         });
-    $('#newUserModal').modal('toggle');
-    return false;
-});
+}
 
-// btn new user
+
+function operateFormatter(value, row, index) {
+    return [
+      '<a class="edit" href="javascript:void(0)" title="Edit user">',
+      '<i class="fas fa-edit"></i>',
+      '</a>  ',
+      '<a class="remove" href="javascript:void(0)" title="Remove">',
+      '<i class="fas fa-trash-alt"></i>',
+      '</a>'
+    ].join('')
+  };
+
+window.operateEvents = {
+    'click .like': function (e, value, row, index) {
+      alert('You click like action, row: ' + JSON.stringify(row))
+    },
+    'click .remove': function (e, value, row, index) {
+        delUser(row.id);
+    }
+  };
+
+function delUser (id) {
+    bootbox.confirm({
+        message: "Are you sure you want to delete this user?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-danger'
+            }
+        },
+        callback: function (result) {
+            if (result == true) {
+                crudUser(id,req='DELETE');
+                console.log('Row.id deleted:'+id);
+                $table.bootstrapTable('refresh');
+            } else {
+                console.log('This was logged in the callback: ' + result);
+            }
+        }
+    });
+}
+
+
+// btn new user before opening modal : clear form, set default generated password
+// password should be sent by email in future
 $( "#btnNewUser" ).click(function() {
     document.getElementById('userForm').reset();
     pass = passGen();
-    console.log(pass);
     document.querySelector("#userForm input[name='password']").value = pass;
     document.querySelector("#userForm input[name='passwordCheck']").value = pass;
 });
 
+
+// useful functions //
+
+// normalize accented characters
+function norm(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// Capitalize first character
+function capitalize(str) {
+    return str.trim().replace(/^\w/, (c) => c.toUpperCase());
+}
+
 // password generator
 function passGen() {
     return Math.random().toString(36)+Math.random().toString(36).toUpperCase().split('').sort(function(){return 0.5-Math.random()}).join('')
+}
+
+
+/// Bootstrap-table options not used here
+
+function responseHandler(res) { // used if data-response-handler="responseHandler"
+    list = res.items;
+    nbrows = Object.keys(list).length;
+    display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'uid': list[i].uid,
+            'first_name': list[i].first_name,
+            'last_name': list[i].last_name,
+            'dob': list[i]['dob'],
+            'gender': list[i]['gender.sex'],
+        });
+    });
+    return display;
+}
+
+// use:
+// data-ajax="ajaxRequest"
+// data-side-pagination="client"
+// to be able to use search in javascript
+// or just use: data-query-params=""
+function ajaxRequest(params) {
+    $.ajax({
+        type: "GET",
+        url: API_USER_LIST,
+        dataType: "json",
+        success: function (data) { 
+			console.log(data);
+			params.success({ 
+			"rows": data.items, 
+			"total": data.items.length 
+		    }) 
+        }, 
+        error: function (er) {
+            params.error(er);
+        }
+    });
 }
