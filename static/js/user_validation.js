@@ -9,7 +9,7 @@ if(!RegExp.escape) {
   document.addEventListener("DOMContentLoaded", function() {
 
 ////////////////////////////////////////
-// JavaScript form validation
+// JavaScript form validation on SUBMIT
 ////////////////////////////////////////
 var checkPassword = function(str) {
     var re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;

@@ -1,6 +1,9 @@
 Hello Mamisoa 
 flatpickr
 bootstrap-table
+bootbox (easy modal)
+
+
 
 @staticmethod
     def make_query(field, condition, value):
@@ -18,3 +21,43 @@ bootstrap-table
             "contains": lambda: field.contains(value),
         }
         return expression[condition]()
+
+api reponses 
+
+{
+    "api_version": "0.1",
+    "code": 200,
+    "errors": {},
+    "id": 270143,
+    "status": "success",
+    "timestamp": "2021-03-07T12:59:09.718424"
+}
+
+{
+    "api_version": "0.1",
+    "code": 422,
+    "errors": {
+        "email": "Enter a valid email address",
+        "first_name": "Enter a value",
+        "last_name": "Enter a value",
+        "password": "Password too simple (0.0/50)",
+        "username": "Enter a value"
+    },
+    "id": null,
+    "message": "Validation Errors",
+    "status": "error",
+    "timestamp": "2021-03-07T11:55:34.516300"
+}
+
+{
+    "api_version": "0.1",
+    "code": 422,
+    "errors": {
+        "email": "Value already in database or empty",
+        "username": "Value already in database or empty"
+    },
+    "id": null,
+    "message": "Validation Errors",
+    "status": "error",
+    "timestamp": "2021-03-07T12:34:49.076925"
+}
