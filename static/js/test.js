@@ -54,8 +54,10 @@ $('#userForm').submit(function(e) {
     var formData = $('#userForm').serializeJSON();
     formData = JSON.parse(formData); // change to object
     delete formData['passwordCheck']; // remove passwordCheck field
+    formData['first_name'] = capitalize(formData['first_name']);
+    formData['last_name'] = capitalize(formData['last_name']);
     formData = JSON.stringify(formData); // change to string
-    console.log('Hello');
+    console.log(formData);
     crudUser('0','POST',data=formData);
     $('#newUserModal').modal('toggle');
     return false;
