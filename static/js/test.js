@@ -96,3 +96,11 @@ function queryParams(params) {
     console.log(s);
     return decodeURI(encodeURI(s));
 }
+
+$('#userForm').submit(function(e) {
+    e.preventDefault();
+    var formData = $('#userForm').serializeArray();
+    console.log(formData);
+    $('#newUserModal').modal('toggle');
+    return false;
+});

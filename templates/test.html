@@ -70,7 +70,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col">
-                            <form id="userForm" action="http://localhost:8000/myapp/test" enctype="multipart/form-data" method="POST" action="" onsubmit="return checkForm(this);">
+                            <form id="userForm" enctype="multipart/form-data" method="POST">
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="firstName" class="form-label">First name:</label>
@@ -123,8 +123,7 @@
                                         <div id="membershipHelp" class="form-text">Choose gender</div>
                                     </div>
                                 </div>
-                                <input name="_formname" type="hidden" value="none"/><input name="_formkey" type="hidden" value="[[ =form_key ]]"/>
-                                <input type="submit" id="submit-form" class="visually-hidden" />
+                                <input id="btnNewUserSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
                     </div>
@@ -132,7 +131,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label for="submit-form" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="labelSubmit"for="btnNewUserSubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>
@@ -154,6 +153,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/user_validation.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
 <script src="js/test.js"></script>
 <script type="text/javascript">
 
