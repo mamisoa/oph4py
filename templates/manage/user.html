@@ -3,74 +3,94 @@
 [[ include 'partials/nav-test.html' ]]
 [[ end]]
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <form id="userForm" action="http://localhost:8000/myapp/user" enctype="multipart/form-data" method="POST" action="" onsubmit="return checkForm(this);">
-                <div class="row mb-3">
-                    <div class="col">
-                        <label for="firstName" class="form-label">First name:</label>
-                        <input id="firstName" type="text" class="form-control" name="first_name">
-                        <div id="firstNameHelp" class="form-text">Enter your first name</div>
-                    </div>
-                    <div class="col">
-                        <label for="lastName" class="form-label">Last name:</label>
-                        <input id="lastName" type="text" class="form-control" name="last_name">
-                        <div id="lastNameHelp" class="form-text">Enter your last name</div>
+
+<!-- Modal -->
+<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New user</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="userForm" enctype="multipart/form-data" method="POST">
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="firstName" class="form-label">First name:</label>
+                                        <input id="firstName" type="text" class="form-control" name="first_name">
+                                        <div id="firstNameHelp" class="form-text">Enter your first name</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="lastName" class="form-label">Last name:</label>
+                                        <input id="lastName" type="text" class="form-control" name="last_name">
+                                        <div id="lastNameHelp" class="form-text">Enter your last name</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="username" class="form-label">Username:</label>
+                                        <input id="username" type="text" class="form-control"
+                                            title="Username must not be blank and contain only letters, numbers and underscores."
+                                            name="username" required pattern="\w+" autocomplete="username" />
+                                        <div id="usernameHelp" class="form-text">Enter your username</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="email" class="form-label">Email:</label>
+                                        <input id="email" type="email" class="form-control" name="email">
+                                        <div id="emailHelp" class="form-text">Enter your email</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="password" class="form-label">Password:</label>
+                                        <input id="password" type="password" class="form-control"
+                                            autocomplete="new-password"
+                                            title="Password must contain at least 6 characters, including UPPER/lowercase and numbers."
+                                            name="password" required>
+                                        <div id="passwordHelp" class="form-text">Enter your password</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="passwordCheck" class="form-label">Password check:</label>
+                                        <input id="passwordCheck" type="password" class="form-control"
+                                            title="Please enter the same Password" name="passwordCheck">
+                                        <div id="passwordCheckHelp" class="form-text">Retype your password</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="membership" class="form-label">Role:</label>
+                                        <select id="membershipSelect" class="form-select" name="membership">
+                                            [[ =roleOptions ]]
+                                        </select>
+                                        <div id="membershipHelp" class="form-text">Choose your role</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="gender" class="form-label">Gender:</label>
+                                        <select id="genderSelect" class="form-select" name="gender">
+                                            [[ =genderOptions ]]
+                                        </select>
+                                        <div id="membershipHelp" class="form-text">Choose gender</div>
+                                    </div>
+                                </div>
+                                <input id="btnNewUserSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
                     </div>
                 </div>
-                <div class="row mb-3">
-                    <div class="col">
-                        <label for="username" class="form-label">Username:</label>
-                        <input id="username" type="text" class="form-control" title="Username must not be blank and contain only letters, numbers and underscores." name="username" required pattern="\w+">
-                        <div id="usernameHelp" class="form-text">Enter your username</div>
-                    </div>
-                    <div class="col">
-                        <label for="email" class="form-label">Email:</label>
-                        <input id="email" type="email" class="form-control"  name="email">
-                        <div id="emailHelp" class="form-text">Enter your email</div>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col">
-                        <label for="password" class="form-label">Password:</label>
-                        <input id="password" type="password" class="form-control" title="Password must contain at least 6 characters, including UPPER/lowercase and numbers." name="password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}">
-                        <div id="passwordHelp" class="form-text">Enter your password</div>
-                    </div>
-                    <div class="col">
-                        <label for="passwordCheck" class="form-label">Password check:</label>
-                        <input id="passwordCheck" type="password" class="form-control" title="Please enter the same Password as above." name="passwordCheck">
-                        <div id="passwordCheckHelp" class="form-text">Retype your password</div>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col">
-                        <label for="membership" class="form-label">Role:</label>
-                        <select id="membershipSelect" class="form-select" name="membership">
-                            [[ =roleOptions ]]
-                        </select>
-                        <div id="membershipHelp" class="form-text">Choose your role</div>
-                    </div>
-                    <div class="col">
-                        <label for="gender" class="form-label">Gender:</label>
-                        <select id="genderSelect" class="form-select" name="gender">
-                            [[ =genderOptions ]]
-                        </select>
-                        <div id="membershipHelp" class="form-text">Choose your role</div>
-                    </div>
-                </div>
-                <input name="_formname" type="hidden" value="none"/><input name="_formkey" type="hidden" value="[[ =form_key ]]"/>
-                <button class="btn btn-primary">Submit</button>
-            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="labelSubmit" for="btnNewUserSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
         </div>
     </div>
 </div>
 
 <div>
-    <div>
-    </div>
     <p>Record is: [[ =rec_id ]]</p>
-    <p>key is: [[ =form_key ]]</p>
     <p>User is: [[= user ]]</p>
     <p>Global are: [[=globals().get('user',{})]]</p>
 </div>
@@ -78,7 +98,25 @@
 
 [[ block js_scripts ]]
 <script src="js/user_validation.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/test.js"></script>
 <script type="text/javascript">
+
+// init bootstrat-tables
+var membership = [[=membership]];
+var HOSTURL = 'http://localhost:8000';
+
+const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender:gender[id,sex]&@count=true'; // check users with membership -> OK
+
+var $table = $('#table').bootstrapTable({
+    url: decodeURI(encodeURI(API_USER_LIST)),
+    formatSearch: function () {
+    return 'Last name,first name, gender'
+    }
+});
 
 </script>
     
