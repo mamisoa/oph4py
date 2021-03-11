@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col">photo</div>
         <div class="col">
-            <ul>
+            <ul id="ulUserItems">
                 <li>Last name:</li>
                 <li>First name:</li>
             </ul>
@@ -113,13 +113,36 @@
 <script src="js/user_validation.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
-<script src="js/test.js"></script>
 <script type="text/javascript">
 
+var id = [[ =rec_id ]]
 var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
-const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender:gender[id,sex]&@count=true'; // check users with membership -> OK
+const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender!:gender[id,sex]&@count=true'; // check users with membership -> OK
+
+function getUser(id) {
+    return Promise.resolve(
+        $.ajax({
+            type: "GET",
+            url: API_USER_LIST,
+            dataType: "json",
+            success: function (data) {
+                displayToast('info', 'GET user request', 'GET ' + data.items[0].username, '6000')
+            },
+            error: function (er) {
+                console.log(er);
+            }
+        }));
+}
+
+var userData = getUser(id);
+
+userData.then(function(userData){
+    $('#ulUserItems').append('<li>Username: ' + userData.items[0].username+'</li>');
+    console.log(userData);
+;})
+
 
 
 </script>
