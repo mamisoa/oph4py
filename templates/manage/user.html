@@ -3,6 +3,17 @@
 [[ include 'partials/nav-test.html' ]]
 [[ end]]
 
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">photo</div>
+        <div class="col">
+            <ul>
+                <li>Last name:</li>
+                <li>First name:</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
@@ -91,32 +102,25 @@
 
 <div>
     <p>Record is: [[ =rec_id ]]</p>
-    <p>User is: [[= user ]]</p>
+    <p>User is: [[ =username ]]</p>
+    <p>Membership is: [[ =membership ]]</p>
     <p>Global are: [[=globals().get('user',{})]]</p>
+    <p>Row: [[ =globals().get('row',{}) ]]</p>
 </div>
 
 
 [[ block js_scripts ]]
 <script src="js/user_validation.js"></script>
-<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
 <script src="js/test.js"></script>
 <script type="text/javascript">
 
-// init bootstrat-tables
 var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
-const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender:gender[id,sex]&@count=true'; // check users with membership -> OK
+const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender:gender[id,sex]&@count=true'; // check users with membership -> OK
 
-var $table = $('#table').bootstrapTable({
-    url: decodeURI(encodeURI(API_USER_LIST)),
-    formatSearch: function () {
-    return 'Last name,first name, gender'
-    }
-});
 
 </script>
     
