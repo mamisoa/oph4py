@@ -7,14 +7,37 @@
     <div class="row">
         <div class="col">photo</div>
         <div class="col">
-            <ul id="ulUserItems" class="list-group">
+            <ul id="ulUserTitle" class="list-group">
                 <!-- <li> fields </li>-->
             </ul>
         </div>
     </div>
 </div>
 
-
+<div class="my-2 container">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    Details
+                </div>
+                <ul id="ulUserItems" class="list-group list-group-flush">
+                    <!-- li fields-->
+                </ul>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    Address
+                </div>
+                <ul id="ulUserAddress" class="list-group list-group-flush">
+                    <!-- li fields-->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
@@ -120,7 +143,7 @@ var id = [[ =rec_id ]]
 var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
-const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender!:gender[id,sex]&@count=true'; // check users with membership -> OK
+const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender:gender[id,sex]&@count=true'; // check users with membership -> OK
 
 function getUser(id) {
     return Promise.resolve(
@@ -140,9 +163,16 @@ function getUser(id) {
 var userData = getUser(id);
 
 userData.then(function(userData){
-    $('#ulUserItems').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + userData.items[0].last_name+'</span></li>');
-    $('#ulUserItems').append('<li class="list-group-item">First name: <span class="fw-bold">' + userData.items[0].first_name+'</span></li>');
-    $('#ulUserItems').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + userData.items[0].dob+'</span></li>');
+    $('#ulUserTitle').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + userData.items[0].last_name+'</span></li>');
+    $('#ulUserTitle').append('<li class="list-group-item">First name: <span class="fw-bold">' + userData.items[0].first_name+'</span></li>');
+    $('#ulUserTitle').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + userData.items[0].dob+'</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + userData.items[0].last_name + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Maiden name: <span class="text-uppercase fw-bold">' + userData.items[0].maiden_name + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">First name: <span class="fw-bold">' + userData.items[0].first_name + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + userData.items[0].dob + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Gender: <span class="fw-bold">' + userData.items[0].gender['sex'] + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Country of birth: <span class="fw-bold">' + userData.items[0].birth_country + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Nationaliy: <span class="fw-bold">' + userData.items[0].nationality + '</span></li>');
     console.log(userData);
 ;})
 
