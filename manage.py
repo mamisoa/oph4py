@@ -68,6 +68,7 @@ def user(rec_id="1"):
             roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
     roleOptions = XML(roleOptions)
     genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
+    originOptions = dropdownSelect(db.data_origin,db.data_origin.fields[1],1)
     return locals()
 
 @action('users_grid', method=['POST','GET'])
