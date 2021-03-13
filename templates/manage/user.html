@@ -156,24 +156,29 @@
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="origin" class="form-label">Origin:</label>
-                                        <select id="originSelect" class="form-select" name="phone_origin">
+                                        <select id="originPhoneSelect" class="form-select" name="phone_origin">
                                             [[ =originOptions ]]
                                         </select>
                                         <div id="membershipHelp" class="form-text">Choose phone's origin</div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <div class="col">
+                                    <div class="col-4">
                                         <label for="phone_prefix" class="form-label">Prefix:</label>
-                                        <input id="phone_prefix" type="text" class="form-control" name="phone_prefix">
+                                        <div class="input-group">
+                                            <span class="input-group-text">+</span>
+                                            <input id="phone_prefix" type="text" class="form-control" name="phone_prefix">
+                                        </div>
                                         <div id="prefixHelp" class="form-text">Enter country's prefix</div>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-8">
                                         <label for="phone" class="form-label">Phone:</label>
                                         <input id="phone" type="text" class="form-control" name="phone">
                                         <div id="phoneHelp" class="form-text">Enter phone number</div>
                                     </div>
                                 </div>
+                                <input id="idPhoneSubmit" type="text" class="visually-hidden" name="idPhoneSubmit"/>
+                                <input id="methodPhoneSubmit" type="text" class="visually-hidden" name="methodPhoneSubmit" value="POST"/>
                                 <input id="btnPhoneSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -188,6 +193,54 @@
     </div>
 </div>
 
+<!-- addressModal -->
+<div class="modal fade" id="userAddressModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="userAddressForm" enctype="multipart/form-data">
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="origin" class="form-label">Origin:</label>
+                                        <select id="originSelect" class="form-select" name="phone_origin">
+                                            [[ =originOptions ]]
+                                        </select>
+                                        <div id="membershipHelp" class="form-text">Choose phone's origin</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="home_num" class="form-label">N°:</label>
+                                        <input id="home_num" type="text" class="form-control" name="home_num">
+                                        <div id="home_numHelp" class="form-text">Door number</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="address1" class="form-label">Address:</label>
+                                        <input id="address1" type="text" class="form-control" name="address1">
+                                        <div id="address1Help" class="form-text">Enter address line 1</div>
+                                    </div>
+                                </div>
+                                <input id="methodAddressSubmit" type="text" class="visually-hidden" name="methodAddressSubmit" value="POST"/>
+                                <input id="btnAddressSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="addressSubmit" for="btnAddresSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div>
     <p>Record is: [[ =rec_id ]]</p>
