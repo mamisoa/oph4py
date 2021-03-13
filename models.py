@@ -66,6 +66,11 @@ db.define_table('modality',
     format='%(modality_name)s')
 
 
+db.define_table('data_origin',
+    Field('origin', 'string', default='Home'),
+    format=lambda r: r.origin or 'Home'
+    )
+
 db.define_table('address',  #PID11
     Field('id_auth_user', 'reference auth_user', writable = False, readable = False),
     Field('home_num', 'string', required=True), #PID11_1
@@ -76,13 +81,10 @@ db.define_table('address',  #PID11
     Field('town', 'string', required=True), # pid11_6
     Field('country', 'string', required=True), # pid11_7
     Field('address_rank','integer'),
+    Field('address_origin', 'string', required=True),
     auth.signature)
 
-db.define_table('data_origin',
-    Field('origin', 'string', default='Home'),
-    format=lambda r: r.origin or 'Home'
-)
-
+db.address.address_origin.requires = IS_IN_DB(db, 'data_origin.origin', '%(origin)s')
 
 db.define_table('phone', # pid13
     Field('id_auth_user', 'reference auth_user', writable= False, readable= False),
