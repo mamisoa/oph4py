@@ -29,7 +29,10 @@
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    Addresses
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <h5 class="mb-1">Addresses</h5>
+                        <button id="btnNewAddress" type="button" class="btn btn-outline-dark btn-sm"><i class="fas fa-plus"></i></button>
+                    </div>
                 </div>
                 <ul id="ulUserAddresses" class="list-group list-group-flush">
                     <!-- li fields-->
@@ -39,7 +42,10 @@
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    Phones
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <h5 class="mb-1">Phones</h5>
+                        <button id="btnNewPhone" type="button" class="btn btn-outline-dark btn-sm"><i class="fas fa-plus"></i></button>
+                    </div>
                 </div>
                 <ul id="ulUserPhones" class="list-group list-group-flush">
                     <!-- li fields-->
@@ -49,12 +55,12 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+<!-- userModal -->
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">New user</h5>
+                <h5 class="modal-title">Edit user details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -134,6 +140,55 @@
     </div>
 </div>
 
+<!-- phoneModal -->
+<div class="modal fade" id="userPhoneModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New phone</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="userPhoneForm" enctype="multipart/form-data" method="POST">
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="origin" class="form-label">Origin:</label>
+                                        <select id="originSelect" class="form-select" name="origin">
+                                            [[ =originOptions ]]
+                                        </select>
+                                        <div id="membershipHelp" class="form-text">Choose phone's origin</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="phone_prefix" class="form-label">Prefix:</label>
+                                        <input id="phone_prefix" type="text" class="form-control" name="phone_prefix">
+                                        <div id="prefixHelp" class="form-text">Enter country's prefix</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="phone" class="form-label">Phone:</label>
+                                        <input id="phone" type="text" class="form-control" name="phone">
+                                        <div id="phoneHelp" class="form-text">Enter phone number</div>
+                                    </div>
+                                </div>
+                                <input id="btnPhoneSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="phoneSubmit" for="btnPhoneSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div>
     <p>Record is: [[ =rec_id ]]</p>
     <p>User is: [[ =username ]]</p>
@@ -155,7 +210,7 @@ var HOSTURL = 'http://localhost:8000';
 
 const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender&@count=true'; 
 const API_USER_PHONE = HOSTURL + '[[=URL('api','phone')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true'; 
-
+const API_USER_ADDRESS = HOSTURL + '[[=URL('api','address')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true&@order=address_rank'; 
 
 function getUser(id) {
     return Promise.resolve(
@@ -165,9 +220,9 @@ function getUser(id) {
             dataType: "json",
             success: function (data) {
                 if (data.status == 'error' || data.count == 0) {
-                    displayToast('error', 'GET error', 'Cannot retrieve user phones', '6000');    
+                    displayToast('error', 'GET error', 'Cannot retrieve user details', '6000');    
                 } else {
-                    displayToast('info', 'GET phone request', 'GET ' + data.items[0].username, '6000');
+                    displayToast('info', 'GET user request', 'GET ' + data.items[0].username, '6000');
                 }
             },
             error: function (er) {
@@ -186,7 +241,7 @@ function getUserPhones(id) {
                 console.log(data); if (data.status == 'error' || data.count == 0) {
                     displayToast('error', 'GET error', 'Cannot retrieve phones', '6000');
                 } else {
-                    displayToast('info', 'GET user request', 'GET ' + data.items[0].id_auth_user['username'], '6000')
+                    displayToast('info', 'GET phone request', 'GET ' + data.items[0].id_auth_user['username'], '6000')
                 }
             },
             error: function (er) {
@@ -205,7 +260,7 @@ function getUserAddresses(id) {
                 console.log(data); if (data.status == 'error' || data.count == 0) {
                     displayToast('error', 'GET error', 'Cannot retrieve addresses', '6000');
                 } else {
-                    displayToast('info', 'GET user request', 'GET ' + data.items[0].id_auth_user['username'], '6000')
+                    displayToast('info', 'GET address request', 'GET ' + data.items[0].id_auth_user['username'], '6000')
                 }
             },
             error: function (er) {
@@ -220,9 +275,12 @@ function checkIfDataIsNull(data, dft='n/a') {
 
 var userData = getUser(id);
 var userPhone = getUserPhones(id);
+var userAddress = getUserAddresses(id);
 
 // do when promise.success
 userData.then(function(userData){
+    $('#userPhoneModal h5.modal-title').html('New phone for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].first_name) + ' '+ checkIfDataIsNull(userData.items[0].last_name)+'</span>')
+    // fills lists
     $('#ulUserTitle').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(userData.items[0].last_name)+'</span></li>');
     $('#ulUserTitle').append('<li class="list-group-item">First name: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name)+'</span></li>');
     $('#ulUserTitle').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].dob)+'</span></li>');
@@ -233,15 +291,24 @@ userData.then(function(userData){
     $('#ulUserItems').append('<li class="list-group-item">Gender: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].gender['sex']) + '</span></li>');
     $('#ulUserItems').append('<li class="list-group-item">Country of birth: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].birth_country) + '</span></li>');
     $('#ulUserItems').append('<li class="list-group-item">Nationality: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].nationality) + '</span></li>');
-    console.log(userData);
+    $('#ulUserItems').append('<li class="list-group-item">Email: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].email) + '</span></li>');
 })
 
 userPhone.then(function(userData){
-    console.log(userData.items);
     for (const item of userData.items) {
-        $('#ulUserPhones').append('<li class="list-group-item phone" data-phone-id="'+item.id+'">Phone: <span class="fw-bold">+' + checkIfDataIsNull(item.phone_prefix,'') +'-' + checkIfDataIsNull(item.phone) +' ('+ checkIfDataIsNull(item.phone_origin) + ')</span></li>');
-        console.log(item);
+        $('#ulUserPhones').append('<li class="list-group-item phone" data-phone-id="'+item.id+'">' + checkIfDataIsNull(item.phone_origin) + ': <span class="fw-bold">+' + checkIfDataIsNull(item.phone_prefix,'') +'-' + checkIfDataIsNull(item.phone) + '</span></li>');
     }
+})
+
+userAddress.then(function (userData) {
+    for (const item of userData.items) {
+        $('#ulUserAddresses').append('<li class="list-group-item address" data-address-id="' + item.id + '">'+ checkIfDataIsNull(item.address_origin, '') + ' : <span class="fw-bold"> ' + checkIfDataIsNull(item.home_num, '') + ' ' + checkIfDataIsNull(item.address1) + ', ' + checkIfDataIsNull(item.country) + '</span></li>');
+    }
+})
+
+
+$('#btnNewPhone').click(function() {
+    $('#userPhoneModal').modal('show');
 })
 
 </script>
