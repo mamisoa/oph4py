@@ -27,14 +27,17 @@ def rows2json (tablename,rows):
     concat = concat + ']}'
     return concat
 
-def dropdownSelect(table,fieldId,defaultId): ## eg table=db.gender fieldId=db.gender.fields[0] defaultId=0
+def dropdownSelect(table,fieldId,defaultId,val="index"): ## eg table=db.gender fieldId=db.gender.fields[0] defaultId=0 val = index ou value
     selectOptions=""
     for selection in db(table.id>0).select(table.ALL):
         if selection.id == defaultId:
             selectOptions += "<option selected value='"
         else:
             selectOptions += "<option value='"
-        selectOptions += str(selection.id)+"'>"+selection[fieldId]+"</option>"
+        if val == 'index':
+            selectOptions += str(selection.id)+"'>"+selection[fieldId]+"</option>"
+        else:
+            selectOptions += selection[fieldId]+"'>"+selection[fieldId]+"</option>"
         selectOptions = XML(selectOptions)
     return selectOptions # html <option value=""></option>
 
@@ -68,7 +71,7 @@ def user(rec_id="1"):
             roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
     roleOptions = XML(roleOptions)
     genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
-    originOptions = dropdownSelect(db.data_origin,db.data_origin.fields[1],1)
+    originOptions = dropdownSelect(db.data_origin,db.data_origin.fields[1],1,"value")
     return locals()
 
 @action('users_grid', method=['POST','GET'])
