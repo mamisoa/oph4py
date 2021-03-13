@@ -4,9 +4,9 @@
 [[ end]]
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col">photo</div>
-        <div class="col">
+    <div class="row justify-content-center">
+        <div class="col-4">photo</div>
+        <div class="col-4">
             <ul id="ulUserTitle" class="list-group">
                 <!-- <li> fields </li>-->
             </ul>
@@ -31,7 +31,17 @@
                 <div class="card-header">
                     Address
                 </div>
-                <ul id="ulUserAddress" class="list-group list-group-flush">
+                <ul id="ulUserAddresses" class="list-group list-group-flush">
+                    <!-- li fields-->
+                </ul>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    Phones
+                </div>
+                <ul id="ulUserPhones" class="list-group list-group-flush">
                     <!-- li fields-->
                 </ul>
             </div>
@@ -143,16 +153,22 @@ var id = [[ =rec_id ]]
 var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
-const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender:gender[id,sex]&@count=true'; // check users with membership -> OK
+const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender&@count=true'; 
+const API_USER_PHONE = HOSTURL + '[[=URL('api','phone')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true'; 
+
 
 function getUser(id) {
     return Promise.resolve(
         $.ajax({
             type: "GET",
-            url: API_USER_LIST,
+            url: API_USER,
             dataType: "json",
             success: function (data) {
-                displayToast('info', 'GET user request', 'GET ' + data.items[0].username, '6000')
+                if (data.status == 'error' || data.count == 0) {
+                    displayToast('error', 'GET error', 'Cannot retrieve user phones', '6000');    
+                } else {
+                    displayToast('info', 'GET phone request', 'GET ' + data.items[0].username, '6000');
+                }
             },
             error: function (er) {
                 console.log(er);
@@ -160,19 +176,44 @@ function getUser(id) {
         }));
 }
 
-var userData = getUser(id);
+function getUserPhone(id) {
+    return Promise.resolve(
+        $.ajax({
+            type: "GET",
+            url: API_USER_PHONE,
+            dataType: "json",
+            success: function (data) {
+                console.log(data); if (data.status == 'error' || data.count == 0) {
+                    displayToast('error', 'GET error', 'Cannot retrieve phone details', '6000');
+                } else {
+                    displayToast('info', 'GET user request', 'GET ' + data.items[0].id_auth_user['username'], '6000')
+                }
+            },
+            error: function (er) {
+                console.log(er);
+            }
+        }));
+}
 
+function checkIfDataIsNull(data) {
+    return data == null? 'Not available': data ; 
+}
+
+var userData = getUser(id);
+var userPhone = getUserPhone(id);
+
+// do when promise.success
 userData.then(function(userData){
-    $('#ulUserTitle').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + userData.items[0].last_name+'</span></li>');
-    $('#ulUserTitle').append('<li class="list-group-item">First name: <span class="fw-bold">' + userData.items[0].first_name+'</span></li>');
-    $('#ulUserTitle').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + userData.items[0].dob+'</span></li>');
-    $('#ulUserItems').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + userData.items[0].last_name + '</span></li>');
-    $('#ulUserItems').append('<li class="list-group-item">Maiden name: <span class="text-uppercase fw-bold">' + userData.items[0].maiden_name + '</span></li>');
-    $('#ulUserItems').append('<li class="list-group-item">First name: <span class="fw-bold">' + userData.items[0].first_name + '</span></li>');
-    $('#ulUserItems').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + userData.items[0].dob + '</span></li>');
-    $('#ulUserItems').append('<li class="list-group-item">Gender: <span class="fw-bold">' + userData.items[0].gender['sex'] + '</span></li>');
-    $('#ulUserItems').append('<li class="list-group-item">Country of birth: <span class="fw-bold">' + userData.items[0].birth_country + '</span></li>');
-    $('#ulUserItems').append('<li class="list-group-item">Nationaliy: <span class="fw-bold">' + userData.items[0].nationality + '</span></li>');
+    $('#ulUserTitle').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(userData.items[0].last_name)+'</span></li>');
+    $('#ulUserTitle').append('<li class="list-group-item">First name: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name)+'</span></li>');
+    $('#ulUserTitle').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].dob)+'</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(userData.items[0].last_name) + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Maiden name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(userData.items[0].maiden_name) + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">First name: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name) + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].dob) + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Gender: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].gender['sex']) + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Country of birth: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].birth_country) + '</span></li>');
+    $('#ulUserItems').append('<li class="list-group-item">Nationality: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].nationality) + '</span></li>');
     console.log(userData);
 ;})
 
