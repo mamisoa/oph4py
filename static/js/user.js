@@ -78,7 +78,7 @@ function refreshList(listName){
         userData.then(function(userData){
             $('#ulUserTitle').html('');
             $('#ulUserItems').html('');
-            $('#userPhoneModal h5.modal-title').html('New phone for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].first_name) + ' '+ checkIfDataIsNull(userData.items[0].last_name)+'</span>')
+            $('#userModal h5.modal-title').html('New phone for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].first_name) + ' '+ checkIfDataIsNull(userData.items[0].last_name)+'</span>')
             // fills lists
             $('#ulUserTitle').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(userData.items[0].last_name)+'</span></li>');
             $('#ulUserTitle').append('<li class="list-group-item">First name: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name)+'</span></li>');
@@ -96,6 +96,7 @@ function refreshList(listName){
         userPhone = getUserPhones(id);
         userPhone.then(function(userData){
             $('#ulUserPhones').html('');
+            $('#userPhoneModal h5.modal-title').html('New phone for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].id_auth_user.first_name) + ' '+ checkIfDataIsNull(userData.items[0].id_auth_user.last_name)+'</span>')
             for (const item of userData.items) {
                 $('#ulUserPhones').append('<li class="list-group-item phone d-flex w-100 justify-content-between align-items-center" data-phone-id="'+item.id+'"><span class="">' + checkIfDataIsNull(item.phone_origin) + ': <span class="fw-bold">+' + checkIfDataIsNull(item.phone_prefix,'') + '-' + checkIfDataIsNull(item.phone) + '</span></span><span class=""><button type="button" onclick="confirmDelPhone(&apos;'+item.id+'&apos;);" class="btn btn-danger btn-sm m-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="confirmEditPhone(&apos;'+item.id+'&apos;);" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span></li>');
             }
@@ -104,12 +105,13 @@ function refreshList(listName){
         userAddress = getUserAddresses(id);
         $('#ulUserAddresses').html('');
         userAddress.then(function (userData) {
+            $('#userAddressModal h5.modal-title').html('New address for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].id_auth_user.first_name) + ' '+ checkIfDataIsNull(userData.items[0].id_auth_user.last_name)+'</span>')
             for (const item of userData.items) {
                 let html = '<li class="list-group-item address" data-address-id="' + item.id + '">';
-                html += '<div class="container"><div class="row">';
-                html += '<div class="col-8">'+ checkIfDataIsNull(item.address_origin, '') + ' : <br><span class="fw-bold"> ' + checkIfDataIsNull(item.home_num, '') + ' ' + checkIfDataIsNull(item.address1) + '<br>' + checkIfDataIsNull(item.zipcode) + ', ' + checkIfDataIsNull(item.town)+ '<br>' + checkIfDataIsNull(item.country) + '</span></div>';
-                html += '<div class="col-4"><span class="float-end"><button type="button" onclick="confirmDelAddress(&apos;'+item.id+'&apos;);" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="confirmEditAddress(&apos;'+item.id+'&apos;);" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span></div>';
-                html +='</div></div></li>';
+                // html += '<div class="container"><div class="row">';
+                html += checkIfDataIsNull(item.address_origin, '') + ' : <br><span class="fw-bold"> ' + checkIfDataIsNull(item.home_num, '') + ' ' + checkIfDataIsNull(item.address1) + '<br>' + checkIfDataIsNull(item.zipcode) + ', ' + checkIfDataIsNull(item.town)+ '<br>' + checkIfDataIsNull(item.country) + '</span>';
+                html += '<span class="float-end"><button type="button" onclick="confirmDelAddress(&apos;'+item.id+'&apos;);" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="confirmEditAddress(&apos;'+item.id+'&apos;);" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span>';
+                html +='</li>';
                 $('#ulUserAddresses').append(html);
             }
         });
@@ -191,13 +193,14 @@ function confirmDelAddress(id='0',req='') {
 function confirmEditAddress(addressid) {
     console.log(addressid);
     $.ajax({
-        url: HOSTURL+"/myapp/api/address/"+addressid,
+        url: HOSTURL+"/myapp/api/address/"+addressid+"?@lookup=name!:id_auth_user[first_name,last_name]",
         dataType: 'json',
         type: 'GET',
         success: function (data) {
             if (data.status != 'error' || data.count != 0) {
                 item = data.items[0];
                 console.log(item.id);
+                $("#userAddressModal h5.modal-title").html('Edit address for '+item['name.first_name']+' '+item['name.last_name']);
                 document.getElementById("userAddressForm").reset();
                 document.getElementById("originAddressSelect").value= item.address_origin;
                 document.getElementById("address_rank").value= item.address_rank;
@@ -219,6 +222,7 @@ function confirmEditAddress(addressid) {
 // userPhoneForm //
 
 $('#btnNewPhone').click(function() {
+    refreshList('userPhone');
     $('#userPhoneModal').modal('show');
 })
 
@@ -273,13 +277,14 @@ function confirmDelPhone(id='0',req='') {
 function confirmEditPhone(phoneid) {
     console.log(phoneid);
     $.ajax({
-        url: HOSTURL+"/myapp/api/phone/"+phoneid,
+        url: HOSTURL+"/myapp/api/phone/"+phoneid+"?@lookup=name!:id_auth_user[first_name,last_name]",
         dataType: 'json',
         type: 'GET',
         success: function (data) {
             if (data.status != 'error' || data.count != 0) {
                 item = data.items[0];
                 console.log(item.id);
+                $("#userPhoneModal h5.modal-title").html('Edit phone for '+item['name.first_name']+' '+item['name.last_name']);
                 document.getElementById("userPhoneForm").reset();
                 document.getElementById("originPhoneSelect").value= item.phone_origin;
                 document.getElementById("phone_prefix").value= item.phone_prefix;
