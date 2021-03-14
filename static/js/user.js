@@ -170,31 +170,6 @@ $('#userAddressForm').submit(function(e) {
 });
 
 
-// confirm address DELETION
-function confirmDelAddress(id='0',req='') {
-    bootbox.confirm({
-        message: "Are you sur you want to delete this address?",
-        closeButton: false ,
-        buttons: {
-            confirm: {
-                label: 'Yes',
-                className: 'btn-danger'
-            },
-            cancel: {
-                label: 'No',
-                className: 'btn-primary'
-            }
-        },
-        callback: function (result) {
-            if (result == false) {
-                console.log(id.toString()+' not deleted');
-            } else {
-                crud('address',id,'DELETE');
-                console.log(id.toString()+' DELETED');
-            }
-        }
-    });
-}
 
 // userPhoneForm //
 
@@ -224,31 +199,6 @@ $('#userPhoneForm').submit(function(e) {
     return false;
 });
 
-// confirm phone DELETION
-function confirmDelPhone(id='0',req='') {
-    bootbox.confirm({
-        message: "Are you sur you want to delete this phone number?",
-        closeButton: false ,
-        buttons: {
-            confirm: {
-                label: 'Yes',
-                className: 'btn-danger'
-            },
-            cancel: {
-                label: 'No',
-                className: 'btn-primary'
-            }
-        },
-        callback: function (result) {
-            if (result == false) {
-                console.log(id.toString()+' not deleted');
-            } else {
-                crud('phone',id,'DELETE');
-                console.log(id.toString()+' DELETED');
-            }
-        }
-    });
-}
 
 // COMMON confirm DELETION
 function confirmDel(id='0', table) {
