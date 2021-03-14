@@ -352,7 +352,7 @@ var id = [[ =rec_id ]]
 var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
-const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender&@count=true'; 
+const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender,marital,membership,ethny&@count=true'; 
 const API_USER_PHONE = HOSTURL + '[[=URL('api','phone')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true'; 
 const API_USER_ADDRESS = HOSTURL + '[[=URL('api','address')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true&@order=address_rank'; 
 </script>
