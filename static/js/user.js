@@ -78,7 +78,9 @@ function refreshList(listName){
         userData.then(function(userData){
             $('#ulUserTitle').html('');
             $('#ulUserItems').html('');
-            $('#userModal h5.modal-title').html('New phone for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].first_name) + ' '+ checkIfDataIsNull(userData.items[0].last_name)+'</span>')
+            $('#userModal h5.modal-title').html('New phone for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].first_name) + ' '+ checkIfDataIsNull(userData.items[0].last_name)+'</span>');
+            $('#userPhoneModal h5.modal-title').html('New phone for <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name) + ' ' + checkIfDataIsNull(userData.items[0].last_name) + '</span>');
+            $('#userAddressModal h5.modal-title').html('New address for <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name) + ' ' + checkIfDataIsNull(userData.items[0].last_name) + '</span>');
             // fills lists
             $('#ulUserTitle').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(userData.items[0].last_name)+'</span></li>');
             $('#ulUserTitle').append('<li class="list-group-item">First name: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name)+'</span></li>');
@@ -96,7 +98,6 @@ function refreshList(listName){
         userPhone = getUserPhones(id);
         userPhone.then(function(userData){
             $('#ulUserPhones').html('');
-            $('#userPhoneModal h5.modal-title').html('New phone for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].id_auth_user.first_name) + ' '+ checkIfDataIsNull(userData.items[0].id_auth_user.last_name)+'</span>')
             for (const item of userData.items) {
                 let listElement ='';
                 listElement += '<li class="list-group-item phone d-flex w-100 justify-content-between align-items-center" data-phone-id="'+item.id+'">';
@@ -111,7 +112,6 @@ function refreshList(listName){
         userAddress = getUserAddresses(id);
         $('#ulUserAddresses').html('');
         userAddress.then(function (userData) {
-            $('#userAddressModal h5.modal-title').html('New address for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].id_auth_user.first_name) + ' '+ checkIfDataIsNull(userData.items[0].id_auth_user.last_name)+'</span>')
             for (const item of userData.items) {
                 let funcEdit = "confirmEdit(\'"+item.id+"\',\'address\');";
                 let funcDel = "confirmDel(\'"+item.id+"\',\'address\');";
