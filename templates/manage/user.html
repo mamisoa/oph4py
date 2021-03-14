@@ -23,7 +23,7 @@
                         <h5 class="mb-1">Details</h5>
                         <span>
                             <button id="btnEditUser" type="button" class="btn btn-outline-dark btn-sm m-1"><i class="fas fa-edit"></i></button>
-                            <button id="btnGetUserId" type="button" class="btn btn-outline-dark btn-sm m-1"><i class="fas fa-id-card"></i></button>
+                            <button id="btnSendPwd" type="button" class="btn btn-outline-dark btn-sm m-1"><i class="fas fa-lock-open"></i></button>
                         </span>
                     </div>
                 </div>
@@ -67,56 +67,37 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Edit user details</h5>
+                <button id="btnGetUserId" type="button" class="btn btn-outline-dark btn-sm m-3"><i class="fas fa-id-card"></i></button>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="container">
                     <div class="row">
                         <div class="col">
-                            <form id="userForm" enctype="multipart/form-data" method="POST">
+                            <form id="userAuth_userForm" enctype="multipart/form-data" method="POST">
                                 <div class="row mb-3">
-                                    <div class="col">
+                                    <div class="col-3">
                                         <label for="firstName" class="form-label">First name:</label>
                                         <input id="firstName" type="text" class="form-control" name="first_name">
                                         <div id="firstNameHelp" class="form-text">Enter your first name</div>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-5">
                                         <label for="lastName" class="form-label">Last name:</label>
                                         <input id="lastName" type="text" class="form-control" name="last_name">
                                         <div id="lastNameHelp" class="form-text">Enter your last name</div>
                                     </div>
+                                    <div class="col-4">
+                                        <label for="maidenName" class="form-label">Maiden name:</label>
+                                        <input id="maidenName" type="text" class="form-control" name="maiden_name">
+                                        <div id="maidenNameHelp" class="form-text">Enter maiden name</div>
+                                    </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <div class="col">
-                                        <label for="username" class="form-label">Username:</label>
-                                        <input id="username" type="text" class="form-control"
-                                            title="Username must not be blank and contain only letters, numbers and underscores."
-                                            name="username" required pattern="\w+" autocomplete="username" />
-                                        <div id="usernameHelp" class="form-text">Enter your username</div>
-                                    </div>
                                     <div class="col">
                                         <label for="email" class="form-label">Email:</label>
                                         <input id="email" type="email" class="form-control" name="email">
                                         <div id="emailHelp" class="form-text">Enter your email</div>
                                     </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col">
-                                        <label for="password" class="form-label">Password:</label>
-                                        <input id="password" type="password" class="form-control"
-                                            autocomplete="new-password"
-                                            title="Password must contain at least 6 characters, including UPPER/lowercase and numbers."
-                                            name="password" required>
-                                        <div id="passwordHelp" class="form-text">Enter your password</div>
-                                    </div>
-                                    <div class="col">
-                                        <label for="passwordCheck" class="form-label">Password check:</label>
-                                        <input id="passwordCheck" type="password" class="form-control"
-                                            title="Please enter the same Password" name="passwordCheck">
-                                        <div id="passwordCheckHelp" class="form-text">Retype your password</div>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
                                     <div class="col">
                                         <label for="membership" class="form-label">Role:</label>
                                         <select id="membershipSelect" class="form-select" name="membership">
@@ -124,16 +105,89 @@
                                         </select>
                                         <div id="membershipHelp" class="form-text">Choose your role</div>
                                     </div>
+                                </div>
+                                <div class="row mb-3">
                                     <div class="col">
                                         <label for="gender" class="form-label">Gender:</label>
                                         <select id="genderSelect" class="form-select" name="gender">
                                             [[ =genderOptions ]]
                                         </select>
-                                        <div id="membershipHelp" class="form-text">Choose gender</div>
+                                        <div id="genderpHelp" class="form-text">Choose gender</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="marital" class="form-label">Marital status:</label>
+                                        <select id="maritalSelect" class="form-select" name="marital">
+                                            [[ =maritalOptions ]]
+                                        </select>
+                                        <div id="maritalHelp" class="form-text">Choose marital status</div>
                                     </div>
                                 </div>
-                                <input id="idDetailsSubmit" type="text" class="visually-hidden" name="idDetailsSubmit"/>
-                                <input id="methodDetailsSubmit" type="text" class="visually-hidden" name="methodDetailsSubmit" value="POST"/>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="dob" class="form-label">dob:</label>
+                                        <input id="dob" type="date" class="form-control" name="dob">
+                                        <div id="dobHelp" class="form-text">Enter your dob</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="nationality" class="form-label">Nationality:</label>
+                                        <input id="nationality" type="text" class="form-control" name="nationality">
+                                        <div id="nationalityHelp" class="form-text">Enter your nationality</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="birthCountry" class="form-label">Birth country:</label>
+                                        <input id="birthCountry" type="text" class="form-control" name="birth_country">
+                                        <div id="birthCountryHelp" class="form-text">Enter your birth country</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="birthTown" class="form-label">Birth town:</label>
+                                        <input id="birthTown" type="text" class="form-control" name="birth_country">
+                                        <div id="birthCountryHelp" class="form-text">Enter your birth town</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="ethny" class="form-label">Ethny:</label>
+                                        <select id="ethnySelect" class="form-select" name="ethny">
+                                            [[ =ethnyOptions ]]
+                                        </select>
+                                        <div id="ethnyHelp" class="form-text">Choose your ethny</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="idcNum" class="form-label">ID card number:</label>
+                                        <input id="idcNum" type="text" class="form-control" name="idc_num">
+                                        <div id="idcNumHelp" class="form-text">Enter your ID card number</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="noblecondition" class="form-label">Noble condition:</label>
+                                        <input id="noblecondition" type="text" class="form-control" name="noblecondition">
+                                        <div id="nobleconditionHelp" class="form-text">Enter your noble condition</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="specialstatus" class="form-label">Special status:</label>
+                                        <input id="specialstatus" type="text" class="form-control" name="specialstatus">
+                                        <div id="specialstatusHelp" class="form-text">Enter your special status</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="ssn" class="form-label">Social number:</label>
+                                        <input id="ssn" type="text" class="form-control" name="ssn">
+                                        <div id="ssnHelp" class="form-text">Enter your social number</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="user_notes" class="form-label">Notes:</label>
+                                        <input id="user_notes" type="text" class="form-control" name="user_notes" size="255">
+                                        <div id="user_notesHelp" class="form-text">Enter notes</div>
+                                    </div>
+                                </div>
+                                <input id="username" type="text" class="visually-hidden" name="username"/>
+                                <input id="initials" type="text" class="visually-hidden" name="initials"/>
+                                <input id="chipNumber" type="text" class="visually-hidden" name="chipnumber"/>
+                                <input id="validfrom" type="text" class="visually-hidden" name="validfrom"/>
+                                <input id="validfrom" type="text" class="visually-hidden" name="validfrom"/>
+                                <input id="validtill" type="text" class="visually-hidden" name="validtill"/>
                                 <input id="btnDetailsSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -290,10 +344,9 @@
 
 
 [[ block js_scripts ]]
-<script src="js/user_validation.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
-<script src="js/user_validation.js"></script>
+<!-- <script src="js/user_validation.js"></script> -->
 <script type="text/javascript">
 var id = [[ =rec_id ]]
 var membership = [[=membership]];

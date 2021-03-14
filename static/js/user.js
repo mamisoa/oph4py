@@ -64,7 +64,7 @@ var userData, userPhone, userAddress;
 refreshAll();
 
 function refreshAll(){
-    arr = ['userData','userPhone','userAddress'];
+    arr = ['userauth_user','userPhone','userAddress'];
     for (const table of arr) {
         console.log(table);
         refreshList(table);
@@ -73,14 +73,14 @@ function refreshAll(){
 
 // do when promise.success
 function refreshList(listName){
-    if (listName=='userData') {
+    if (listName=='userauth_user') {
         userData = getUser(id);
         userData.then(function(userData){
             $('#ulUserTitle').html('');
             $('#ulUserItems').html('');
-            $('#userDetailsModal h5.modal-title').html('New phone for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].first_name) + ' '+ checkIfDataIsNull(userData.items[0].last_name)+'</span>');
-            $('#userPhoneModal h5.modal-title').html('New phone for <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name) + ' ' + checkIfDataIsNull(userData.items[0].last_name) + '</span>');
-            $('#userAddressModal h5.modal-title').html('New address for <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name) + ' ' + checkIfDataIsNull(userData.items[0].last_name) + '</span>');
+            $('#userDetailsModal h5.modal-title').html('Edit patient: <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].first_name) + ' '+ checkIfDataIsNull(userData.items[0].last_name)+'</span>');
+            $('#userPhoneModal h5.modal-title').html('New phone for: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name) + ' ' + checkIfDataIsNull(userData.items[0].last_name) + '</span>');
+            $('#userAddressModal h5.modal-title').html('New address for: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name) + ' ' + checkIfDataIsNull(userData.items[0].last_name) + '</span>');
             // fills lists
             $('#ulUserTitle').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(userData.items[0].last_name)+'</span></li>');
             $('#ulUserTitle').append('<li class="list-group-item">First name: <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name)+'</span></li>');
@@ -126,18 +126,61 @@ function refreshList(listName){
 }
 
 
-// catch submit userForm
-$('#userForm').submit(function(e) {
+// userDetailsForm //
+$('#btnEditUser').click(function() {
+    $.ajax({
+        url: HOSTURL+"/myapp/api/auth_user/"+id+"?@lookup=gender!:gender,marital!:marital,ethny!:ethny,membership!:membership",
+        dataType: 'json',
+        type: 'GET',
+        success: function(data) {
+            if (data.status != 'error' || data.count != 0) {
+                item = data.items[0];
+                console.log(item);
+                document.getElementById("userAuth_userForm").reset();
+                document.getElementById("firstName").value= item.first_name;
+                document.getElementById("lastName").value= item.last_name;
+                document.getElementById("maidenName").value= checkIfDataIsNull(item.maiden_name,'');
+                document.getElementById("email").value= item.email;
+                document.getElementById("membershipSelect").value= checkIfDataIsNull(item['membership.id'],'6');
+                document.getElementById("genderSelect").value= checkIfDataIsNull(item['gender.id'],'Male');
+                document.getElementById("maritalSelect").value= checkIfDataIsNull(item['marital.id'],'1');
+                document.getElementById("dob").value= checkIfDataIsNull(item.dob,'');
+                document.getElementById("nationality").value= checkIfDataIsNull(item.nationality,'');
+                document.getElementById("birthCountry").value= checkIfDataIsNull(item.birth_country,'');
+                document.getElementById("birthTown").value= checkIfDataIsNull(item.birth_town,'');
+                document.getElementById("ethnySelect").value= checkIfDataIsNull(item['ethny.id'],'1');
+                document.getElementById("idcNum").value= checkIfDataIsNull(item.idc_num,'');
+                document.getElementById("noblecondition").value= checkIfDataIsNull(item.noblecondition,'');
+                document.getElementById("specialstatus").value= checkIfDataIsNull(item.specialstatus,'');
+                document.getElementById("ssn").value= checkIfDataIsNull(item.ssn,'');
+                document.getElementById("user_notes").value= checkIfDataIsNull(item.user_notes,'');
+                document.getElementById("birthTown").value= checkIfDataIsNull(item.birth_town,'');
+                document.getElementById("username").value= item.username;
+            }
+        }
+    });
+    $('#userDetailsModal').modal('show');
+});
+
+// catch submit userAuth_userForm
+$('#userAuth_userForm').submit(function(e) {
     e.preventDefault();
-    var formData = $('#userForm').serializeJSON();
+    var formData = $('#userAuth_userForm').serializeJSON();
     formData = JSON.parse(formData); // change to object
-    delete formData['passwordCheck']; // remove passwordCheck field
     formData['first_name'] = capitalize(formData['first_name']);
     formData['last_name'] = capitalize(formData['last_name']);
+    for (let [key,value] of Object.entries(formData)) { // to avoid resetting existing fields
+        if (value == '') {
+            console.log(key,':empty');
+            delete formData[key];
+        }
+    };
+    formData['password']='c66C525qA';
     formData = JSON.stringify(formData); // change to string
     console.log(formData);
-    crud('auth_user','0','POST',data=formData);
-    $('#newUserModal').modal('toggle');
+    crud('auth_user',id,'PUT',data=formData);
+    $('#userDetailsModal').modal('toggle');
+    refreshList('userauth_user')
     return false;
 });
 

@@ -72,6 +72,8 @@ def user(rec_id="1"):
     roleOptions = XML(roleOptions)
     genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
     originOptions = dropdownSelect(db.data_origin,db.data_origin.fields[1],1,"value")
+    ethnyOptions = dropdownSelect(db.ethny,db.ethny.fields[1],1,"index")
+    maritalOptions = dropdownSelect(db.marital,db.marital.fields[1],1,"index")
     return locals()
 
 @action('users_grid', method=['POST','GET'])
