@@ -148,27 +148,10 @@ $('#btnNewAddress').click(function() {
     $('#userAddressModal').modal('show');
 })
 
-// catch submit userAddressForm
 $('#userAddressForm').submit(function(e) {
     e.preventDefault();
-    var rec = '0';
-    var formData = $('#userAddressForm').serializeJSON();
-    formData = JSON.parse(formData); // change to object
-    var req = formData['methodAddressSubmit']; // get method
-    formData['id_auth_user']=id;
-    if (formData['methodAddressSubmit'] =='PUT') {
-        formData['id'] = parseInt(formData['idAddressSubmit']); // add id field if put
-        rec = formData['id'];
-    }
-    delete formData['methodAddressSubmit']; 
-    delete formData['idAddressSubmit'];
-    formData = JSON.stringify(formData); // change to string
-    console.log(formData);
-    crud('address',rec,req,data=formData); // already sending an info toast and reset form
-    $('#userAddressModal').modal('toggle');
-    return false;
+    userFormSubmit('address');
 });
-
 
 
 // userPhoneForm //
@@ -181,24 +164,28 @@ $('#btnNewPhone').click(function() {
 // catch submit userPhoneForm
 $('#userPhoneForm').submit(function(e) {
     e.preventDefault();
-    var rec = '0';
-    var formData = $('#userPhoneForm').serializeJSON();
-    formData = JSON.parse(formData); // change to object
-    var req = formData['methodPhoneSubmit']; // get method
-    formData['id_auth_user']=id;
-    if (formData['methodPhoneSubmit'] =='PUT') {
-        formData['id'] = parseInt(formData['idPhoneSubmit']); // add id field if put
-        rec = formData['id'];
-    }
-    delete formData['methodPhoneSubmit']; 
-    delete formData['idPhoneSubmit'];
-    formData = JSON.stringify(formData); // change to string
-    // console.log(formData);
-    crud('phone',rec,req,data=formData); // already sending an info toast and reset form
-    $('#userPhoneModal').modal('toggle');
-    return false;
+    userFormSubmit('phone');
 });
 
+// COMMON catching submit
+function userFormSubmit(table) {
+    var rec = '0'; // default
+    var formData = $('#user'+capitalize(table)+'Form').serializeJSON();
+    formData = JSON.parse(formData); // change to object
+    var req = formData['method'+capitalize(table)+'Submit']; // get method
+    formData['id_auth_user']=id;
+    if (formData['method'+capitalize(table)+'Submit'] =='PUT') {
+        formData['id'] = parseInt(formData['id'+capitalize(table)+'Submit']); // add id field if put
+        rec = formData['id'];
+    }
+    delete formData['method'+capitalize(table)+'Submit']; 
+    delete formData['id'+capitalize(table)+'Submit'];
+    formData = JSON.stringify(formData); // change to string
+    console.log(formData);
+    crud(table,rec,req,data=formData); // already sending an info toast and reset form
+    $('#user'+capitalize(table)+'Modal').modal('toggle');
+    return false;
+}
 
 // COMMON confirm DELETION
 function confirmDel(id='0', table) {
@@ -227,7 +214,7 @@ function confirmDel(id='0', table) {
 }
 
 
-// COMMON confirm edition form
+// COMMON confirm EDITION
 function confirmEdit(recid, table) {
     console.log(recid);
     $.ajax({
