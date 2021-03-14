@@ -98,7 +98,13 @@ function refreshList(listName){
             $('#ulUserPhones').html('');
             $('#userPhoneModal h5.modal-title').html('New phone for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].id_auth_user.first_name) + ' '+ checkIfDataIsNull(userData.items[0].id_auth_user.last_name)+'</span>')
             for (const item of userData.items) {
-                $('#ulUserPhones').append('<li class="list-group-item phone d-flex w-100 justify-content-between align-items-center" data-phone-id="'+item.id+'"><span class="">' + checkIfDataIsNull(item.phone_origin) + ': <span class="fw-bold">+' + checkIfDataIsNull(item.phone_prefix,'') + '-' + checkIfDataIsNull(item.phone) + '</span></span><span class=""><button type="button" onclick="confirmDelPhone(&apos;'+item.id+'&apos;);" class="btn btn-danger btn-sm m-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="confirmEditPhone(&apos;'+item.id+'&apos;);" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span></li>');
+                let listElement ='';
+                listElement += '<li class="list-group-item phone d-flex w-100 justify-content-between align-items-center" data-phone-id="'+item.id+'">';
+                listElement += '<span class="">' + checkIfDataIsNull(item.phone_origin) + ': <span class="fw-bold">+' + checkIfDataIsNull(item.phone_prefix,'') + '-' + checkIfDataIsNull(item.phone) + '</span></span>';
+                let funcEdit = "confirmEdit(\'"+item.id+"\',\'phone\');";
+                let funcDel = "confirmDelPhone(\'"+item.id+"\');";
+                listElement += '<span class=""><button type="button" onclick="'+funcDel+'" class="btn btn-danger btn-sm m-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="'+funcEdit+'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span></li>';
+                $('#ulUserPhones').append(listElement);
             }
         });
     } else if (listName=='userAddress') {
@@ -107,10 +113,11 @@ function refreshList(listName){
         userAddress.then(function (userData) {
             $('#userAddressModal h5.modal-title').html('New address for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].id_auth_user.first_name) + ' '+ checkIfDataIsNull(userData.items[0].id_auth_user.last_name)+'</span>')
             for (const item of userData.items) {
+                let funcEdit = "confirmEdit(\'"+item.id+"\',\'address\');";
+                let funcDel = "confirmDelAddress(\'"+item.id+"\');";
                 let html = '<li class="list-group-item address" data-address-id="' + item.id + '">';
-                // html += '<div class="container"><div class="row">';
                 html += checkIfDataIsNull(item.address_origin, '') + ' : <br><span class="fw-bold"> ' + checkIfDataIsNull(item.home_num, '') + ' ' + checkIfDataIsNull(item.address1) + '<br>' + checkIfDataIsNull(item.zipcode) + ', ' + checkIfDataIsNull(item.town)+ '<br>' + checkIfDataIsNull(item.country) + '</span>';
-                html += '<span class="float-end"><button type="button" onclick="confirmDelAddress(&apos;'+item.id+'&apos;);" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="confirmEditAddress(&apos;'+item.id+'&apos;);" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span>';
+                html += '<span class="float-end"><button type="button" onclick="'+funcDel+'" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="'+funcEdit+'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span>';
                 html +='</li>';
                 $('#ulUserAddresses').append(html);
             }
@@ -189,36 +196,6 @@ function confirmDelAddress(id='0',req='') {
     });
 }
 
-// confirm address edition
-function confirmEditAddress(addressid) {
-    console.log(addressid);
-    $.ajax({
-        url: HOSTURL+"/myapp/api/address/"+addressid+"?@lookup=name!:id_auth_user[first_name,last_name]",
-        dataType: 'json',
-        type: 'GET',
-        success: function (data) {
-            if (data.status != 'error' || data.count != 0) {
-                item = data.items[0];
-                console.log(item.id);
-                $("#userAddressModal h5.modal-title").html('Edit address for '+item['name.first_name']+' '+item['name.last_name']);
-                document.getElementById("userAddressForm").reset();
-                document.getElementById("originAddressSelect").value= item.address_origin;
-                document.getElementById("address_rank").value= item.address_rank;
-                document.getElementById("home_num").value= item.home_num;
-                document.getElementById("address1").value= item.address1;
-                document.getElementById("address2").value= item.address2;
-                document.getElementById("zipcode").value= item.zipcode;
-                document.getElementById("town").value= item.town;
-                document.getElementById("country").value= item.country;
-                document.getElementById("methodAddressSubmit").value= 'PUT';
-                document.getElementById("idAddressSubmit").value= item.id;
-                $("#userAddressModal").modal('show');
-            }
-        }
-    });
-}
-
-
 // userPhoneForm //
 
 $('#btnNewPhone').click(function() {
@@ -273,25 +250,38 @@ function confirmDelPhone(id='0',req='') {
     });
 }
 
-// confirm phone edition
-function confirmEditPhone(phoneid) {
-    console.log(phoneid);
+
+// COMMON confirm edition form
+function confirmEdit(recid, table) {
+    console.log(recid);
     $.ajax({
-        url: HOSTURL+"/myapp/api/phone/"+phoneid+"?@lookup=name!:id_auth_user[first_name,last_name]",
+        url: HOSTURL+"/myapp/api/"+table+"/"+recid+"?@lookup=name!:id_auth_user[first_name,last_name]",
         dataType: 'json',
         type: 'GET',
         success: function (data) {
             if (data.status != 'error' || data.count != 0) {
                 item = data.items[0];
                 console.log(item.id);
-                $("#userPhoneModal h5.modal-title").html('Edit phone for '+item['name.first_name']+' '+item['name.last_name']);
-                document.getElementById("userPhoneForm").reset();
-                document.getElementById("originPhoneSelect").value= item.phone_origin;
-                document.getElementById("phone_prefix").value= item.phone_prefix;
-                document.getElementById("phone").value= item.phone;
-                document.getElementById("methodPhoneSubmit").value= 'PUT';
-                document.getElementById("idPhoneSubmit").value= item.id;
-                $("#userPhoneModal").modal('show');
+                $("#user"+capitalize(table)+"Modal h5.modal-title").html('Edit '+table+' for '+item['name.first_name']+' '+item['name.last_name']);
+                document.getElementById("user"+capitalize(table)+"Form").reset();
+                if (table == 'phone') {
+                    document.getElementById("originPhoneSelect").value= item.phone_origin;
+                    document.getElementById("phone_prefix").value= item.phone_prefix;
+                    document.getElementById("phone").value= item.phone;
+                    
+                } else if (table == 'address') {
+                    document.getElementById("originAddressSelect").value= item.address_origin;
+                    document.getElementById("address_rank").value= item.address_rank;
+                    document.getElementById("home_num").value= item.home_num;
+                    document.getElementById("address1").value= item.address1;
+                    document.getElementById("address2").value= item.address2;
+                    document.getElementById("zipcode").value= item.zipcode;
+                    document.getElementById("town").value= item.town;
+                    document.getElementById("country").value= item.country;
+                }
+                document.getElementById("method"+capitalize(table)+"Submit").value= 'PUT';
+                document.getElementById("id"+capitalize(table)+"Submit").value= item.id;
+                $("#user"+capitalize(table)+"Modal").modal('show');
             }
         }
     });
