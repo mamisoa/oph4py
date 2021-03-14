@@ -97,14 +97,20 @@ function refreshList(listName){
         userPhone.then(function(userData){
             $('#ulUserPhones').html('');
             for (const item of userData.items) {
-                $('#ulUserPhones').append('<li class="list-group-item phone d-flex w-100 justify-content-between align-items-center" data-phone-id="'+item.id+'"><span class="">' + checkIfDataIsNull(item.phone_origin) + ': <span class="fw-bold">+' + checkIfDataIsNull(item.phone_prefix,'') + '-' + checkIfDataIsNull(item.phone) + '</span></span><span class=""><button type="button" onclick="confirmDelPhone(&apos;'+item.id+'&apos;);" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="confirmEditPhone(&apos;'+item.id+'&apos;);" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span></li>');
+                $('#ulUserPhones').append('<li class="list-group-item phone d-flex w-100 justify-content-between align-items-center" data-phone-id="'+item.id+'"><span class="">' + checkIfDataIsNull(item.phone_origin) + ': <span class="fw-bold">+' + checkIfDataIsNull(item.phone_prefix,'') + '-' + checkIfDataIsNull(item.phone) + '</span></span><span class=""><button type="button" onclick="confirmDelPhone(&apos;'+item.id+'&apos;);" class="btn btn-danger btn-sm m-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="confirmEditPhone(&apos;'+item.id+'&apos;);" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span></li>');
             }
         });
     } else if (listName=='userAddress') {
         userAddress = getUserAddresses(id);
+        $('#ulUserAddresses').html('');
         userAddress.then(function (userData) {
             for (const item of userData.items) {
-                $('#ulUserAddresses').append('<li class="list-group-item address" data-address-id="' + item.id + '">'+ checkIfDataIsNull(item.address_origin, '') + ' : <span class="fw-bold"> ' + checkIfDataIsNull(item.home_num, '') + ' ' + checkIfDataIsNull(item.address1) + ', ' + checkIfDataIsNull(item.country) + '</span></li>');
+                let html = '<li class="list-group-item address" data-address-id="' + item.id + '">';
+                html += '<div class="container"><div class="row">';
+                html += '<div class="col-8">'+ checkIfDataIsNull(item.address_origin, '') + ' : <br><span class="fw-bold"> ' + checkIfDataIsNull(item.home_num, '') + ' ' + checkIfDataIsNull(item.address1) + '<br>' + checkIfDataIsNull(item.zipcode) + ', ' + checkIfDataIsNull(item.town)+ '<br>' + checkIfDataIsNull(item.country) + '</span></div>';
+                html += '<div class="col-4"><span class="float-end"><button type="button" onclick="confirmDelAddress(&apos;'+item.id+'&apos;);" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="confirmEditAddress(&apos;'+item.id+'&apos;);" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span></div>';
+                html +='</div></div></li>';
+                $('#ulUserAddresses').append(html);
             }
         });
     } else { }
@@ -125,6 +131,89 @@ $('#userForm').submit(function(e) {
     $('#newUserModal').modal('toggle');
     return false;
 });
+
+
+// userAddressForm //
+
+$('#btnNewAddress').click(function() {
+    $('#userAddressModal').modal('show');
+})
+
+// catch submit userAddressForm
+$('#userAddressForm').submit(function(e) {
+    e.preventDefault();
+    var rec = '0';
+    var formData = $('#userAddressForm').serializeJSON();
+    formData = JSON.parse(formData); // change to object
+    var req = formData['methodAddressSubmit']; // get method
+    formData['id_auth_user']=id;
+    if (formData['methodAddressSubmit'] =='PUT') {
+        formData['id'] = parseInt(formData['idAddressSubmit']); // add id field if put
+        rec = formData['id'];
+    }
+    delete formData['methodAddressSubmit']; 
+    delete formData['idAddressSubmit'];
+    formData = JSON.stringify(formData); // change to string
+    console.log(formData);
+    crud('address',rec,req,data=formData); // already sending an info toast and reset form
+    $('#userAddressModal').modal('toggle');
+    return false;
+});
+
+
+// confirm address DELETION
+function confirmDelAddress(id='0',req='') {
+    bootbox.confirm({
+        message: "Are you sur you want to delete this address?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-danger'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-primary'
+            }
+        },
+        callback: function (result) {
+            if (result == false) {
+                console.log(id.toString()+' not deleted');
+            } else {
+                crud('address',id,'DELETE');
+                console.log(id.toString()+' DELETED');
+            }
+        }
+    });
+}
+
+// confirm address edition
+function confirmEditAddress(addressid) {
+    console.log(addressid);
+    $.ajax({
+        url: HOSTURL+"/myapp/api/address/"+addressid,
+        dataType: 'json',
+        type: 'GET',
+        success: function (data) {
+            if (data.status != 'error' || data.count != 0) {
+                item = data.items[0];
+                console.log(item.id);
+                document.getElementById("userAddressForm").reset();
+                document.getElementById("originAddressSelect").value= item.address_origin;
+                document.getElementById("address_rank").value= item.address_rank;
+                document.getElementById("home_num").value= item.home_num;
+                document.getElementById("address1").value= item.address1;
+                document.getElementById("address2").value= item.address2;
+                document.getElementById("zipcode").value= item.zipcode;
+                document.getElementById("town").value= item.town;
+                document.getElementById("country").value= item.country;
+                document.getElementById("methodAddressSubmit").value= 'PUT';
+                document.getElementById("idAddressSubmit").value= item.id;
+                $("#userAddressModal").modal('show');
+            }
+        }
+    });
+}
 
 
 // userPhoneForm //
@@ -180,7 +269,6 @@ function confirmDelPhone(id='0',req='') {
     });
 }
 
-
 // confirm phone edition
 function confirmEditPhone(phoneid) {
     console.log(phoneid);
@@ -203,6 +291,7 @@ function confirmEditPhone(phoneid) {
         }
     });
 }
+
 
 // crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id
 function crud(table,id='0',req='POST',data) {
