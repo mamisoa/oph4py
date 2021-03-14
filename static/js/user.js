@@ -102,7 +102,7 @@ function refreshList(listName){
                 listElement += '<li class="list-group-item phone d-flex w-100 justify-content-between align-items-center" data-phone-id="'+item.id+'">';
                 listElement += '<span class="">' + checkIfDataIsNull(item.phone_origin) + ': <span class="fw-bold">+' + checkIfDataIsNull(item.phone_prefix,'') + '-' + checkIfDataIsNull(item.phone) + '</span></span>';
                 let funcEdit = "confirmEdit(\'"+item.id+"\',\'phone\');";
-                let funcDel = "confirmDelPhone(\'"+item.id+"\');";
+                let funcDel = "confirmDel(\'"+item.id+"\',\'phone\');";
                 listElement += '<span class=""><button type="button" onclick="'+funcDel+'" class="btn btn-danger btn-sm m-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="'+funcEdit+'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span></li>';
                 $('#ulUserPhones').append(listElement);
             }
@@ -114,7 +114,7 @@ function refreshList(listName){
             $('#userAddressModal h5.modal-title').html('New address for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].id_auth_user.first_name) + ' '+ checkIfDataIsNull(userData.items[0].id_auth_user.last_name)+'</span>')
             for (const item of userData.items) {
                 let funcEdit = "confirmEdit(\'"+item.id+"\',\'address\');";
-                let funcDel = "confirmDelAddress(\'"+item.id+"\');";
+                let funcDel = "confirmDel(\'"+item.id+"\',\'address\');";
                 let html = '<li class="list-group-item address" data-address-id="' + item.id + '">';
                 html += checkIfDataIsNull(item.address_origin, '') + ' : <br><span class="fw-bold"> ' + checkIfDataIsNull(item.home_num, '') + ' ' + checkIfDataIsNull(item.address1) + '<br>' + checkIfDataIsNull(item.zipcode) + ', ' + checkIfDataIsNull(item.town)+ '<br>' + checkIfDataIsNull(item.country) + '</span>';
                 html += '<span class="float-end"><button type="button" onclick="'+funcDel+'" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="'+funcEdit+'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span>';
@@ -244,6 +244,32 @@ function confirmDelPhone(id='0',req='') {
                 console.log(id.toString()+' not deleted');
             } else {
                 crud('phone',id,'DELETE');
+                console.log(id.toString()+' DELETED');
+            }
+        }
+    });
+}
+
+// COMMON confirm DELETION
+function confirmDel(id='0', table) {
+    bootbox.confirm({
+        message: "Are you sur you want to delete this "+table+"?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-danger'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-primary'
+            }
+        },
+        callback: function (result) {
+            if (result == false) {
+                console.log(id.toString()+' not deleted');
+            } else {
+                crud(table,id,'DELETE');
                 console.log(id.toString()+' DELETED');
             }
         }
