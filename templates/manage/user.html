@@ -14,7 +14,7 @@
     </div>
 </div>
 
-<div class="my-2 container">
+<div class="my-2 container-fluid">
     <div class="row">
         <div class="col">
             <div class="card">
@@ -195,7 +195,7 @@
 
 <!-- addressModal -->
 <div class="modal fade" id="userAddressModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">New address</h5>
@@ -209,24 +209,54 @@
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="origin" class="form-label">Origin:</label>
-                                        <select id="originSelect" class="form-select" name="phone_origin">
+                                        <select id="originAddressSelect" class="form-select" name="address_origin">
                                             [[ =originOptions ]]
                                         </select>
-                                        <div id="membershipHelp" class="form-text">Choose phone's origin</div>
+                                        <div id="address_originHelp" class="form-text">Choose address' origin</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="address_rank" class="form-label">Address rank:</label>
+                                        <input id="address_rank" type="text" class="form-control" name="address_rank">
+                                        <div id="address_rankHelp" class="form-text">Set address rank</div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <div class="col">
+                                    <div class="col-2">
                                         <label for="home_num" class="form-label">N°:</label>
                                         <input id="home_num" type="text" class="form-control" name="home_num">
                                         <div id="home_numHelp" class="form-text">Door number</div>
                                     </div>
-                                    <div class="col">
-                                        <label for="address1" class="form-label">Address:</label>
+                                    <div class="col-10">
+                                        <label for="address1" class="form-label">Address line 1:</label>
                                         <input id="address1" type="text" class="form-control" name="address1">
                                         <div id="address1Help" class="form-text">Enter address line 1</div>
                                     </div>
                                 </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="address2" class="form-label">Address line 2:</label>
+                                        <input id="address2" type="text" class="form-control" name="address2">
+                                        <div id="address2Help" class="form-text">Enter address line 2</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-2">
+                                        <label for="zipcode" class="form-label">Zip:</label>
+                                        <input id="zipcode" type="text" class="form-control" name="zipcode">
+                                        <div id="zipcodeHelp" class="form-text">Enter zip code</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="town" class="form-label">Town:</label>
+                                        <input id="town" type="text" class="form-control" name="town">
+                                        <div id="townHelp" class="form-text">Enter town</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="country" class="form-label">Country:</label>
+                                        <input id="country" type="text" class="form-control" name="country">
+                                        <div id="countryHelp" class="form-text">Enter country</div>
+                                    </div>
+                                </div>
+                                <input id="idAddressSubmit" type="text" class="visually-hidden" name="idAddressSubmit"/>
                                 <input id="methodAddressSubmit" type="text" class="visually-hidden" name="methodAddressSubmit" value="POST"/>
                                 <input id="btnAddressSubmit" type="submit" class="visually-hidden" />
                             </form>
@@ -236,7 +266,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="addressSubmit" for="btnAddresSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="addressSubmit" for="btnAddressSubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>

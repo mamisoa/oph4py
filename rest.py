@@ -52,7 +52,7 @@ def generate_unique_id():
 @action('api/<tablename>/', method=['GET','POST'])
 @action('api/<tablename>/<rec_id>', method=['GET','PUT','DELETE']) # delete OK get OK post OK put OK
 def api(tablename, rec_id=None):
-    db.auth_user.password.writable= db.phone.id_auth_user.writable = True
+    db.auth_user.password.writable= db.phone.id_auth_user.writable= db.address.id_auth_user.writable = True
     db.phone.id_auth_user.readable = db.address.id_auth_user.readable = True
     db.address.created_by.readable = db.address.modified_by.readable = db.address.created_on.readable = db.address.modified_on.readable = db.address.id_auth_user.readable = True
     db.auth_user.created_by.readable = db.auth_user.modified_by.readable = db.auth_user.created_on.readable = db.auth_user.modified_on.readable = True
