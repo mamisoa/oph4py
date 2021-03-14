@@ -78,7 +78,7 @@ function refreshList(listName){
         userData.then(function(userData){
             $('#ulUserTitle').html('');
             $('#ulUserItems').html('');
-            $('#userModal h5.modal-title').html('New phone for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].first_name) + ' '+ checkIfDataIsNull(userData.items[0].last_name)+'</span>');
+            $('#userDetailsModal h5.modal-title').html('New phone for <span class="fw-bold">'+ checkIfDataIsNull(userData.items[0].first_name) + ' '+ checkIfDataIsNull(userData.items[0].last_name)+'</span>');
             $('#userPhoneModal h5.modal-title').html('New phone for <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name) + ' ' + checkIfDataIsNull(userData.items[0].last_name) + '</span>');
             $('#userAddressModal h5.modal-title').html('New address for <span class="fw-bold">' + checkIfDataIsNull(userData.items[0].first_name) + ' ' + checkIfDataIsNull(userData.items[0].last_name) + '</span>');
             // fills lists
