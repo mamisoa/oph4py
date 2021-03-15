@@ -46,6 +46,27 @@ def generate_unique_id():
     unique_id = str(uuid.uuid4().hex)
     return json.dumps({"unique_id: ": unique_id})
 
+@action('api/beid', method=['GET'])
+def beid():
+    import json, bottle
+    from base64 import b64encode
+    from .beid import scan_readers, read_infos, triggered_decorator
+    from time import sleep
+    r = scan_readers()[0]
+    infos_json = {}
+    response = bottle.response
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    try:
+        # sleep(2)
+        infos = read_infos(r, read_photo=True)
+        infos['photo'] =  b64encode(infos['photo']).decode('utf8')
+        infos_json = json.dumps(infos)
+    except Exception as e:
+        infos = { 'results': 'cannot read card', 'erreur': e}
+        # infos_json = {}
+    return infos_json
+
+
 # 
 #  http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=phone:id_auth_user -> get phone from auth_user_id
 # http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=identity!:id_auth_user[first_name,last_name] -> denormalised (flat)

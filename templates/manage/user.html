@@ -5,8 +5,10 @@
 
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-4">photo</div>
-        <div class="col-4">
+        <div class="col photoDiv">
+            <img id="photoTitle" class="photoId" src="" alt="Photo from EID">
+        </div>
+        <div class="col">
             <ul id="ulUserTitle" class="list-group">
                 <!-- <li> fields </li>-->
             </ul>
@@ -76,6 +78,11 @@
                         <div class="col">
                             <form id="userAuth_userForm" enctype="multipart/form-data" method="POST">
                                 <div class="row mb-3">
+                                    <div class="col photoDiv">
+                                        <img id="photo" class="photoId" src="" alt="Photo from EID">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
                                     <div class="col-3">
                                         <label for="firstName" class="form-label">First name:</label>
                                         <input id="firstName" type="text" class="form-control" name="first_name">
@@ -140,7 +147,7 @@
                                     </div>
                                     <div class="col">
                                         <label for="birthTown" class="form-label">Birth town:</label>
-                                        <input id="birthTown" type="text" class="form-control" name="birth_country">
+                                        <input id="birthTown" type="text" class="form-control" name="birth_town">
                                         <div id="birthCountryHelp" class="form-text">Enter your birth town</div>
                                     </div>
                                 </div>
@@ -182,6 +189,7 @@
                                         <div id="user_notesHelp" class="form-text">Enter notes</div>
                                     </div>
                                 </div>
+                                <input id="photob64" type="text" class="visually-hidden" name="photob64"/>
                                 <input id="username" type="text" class="visually-hidden" name="username"/>
                                 <input id="initials" type="text" class="visually-hidden" name="initials"/>
                                 <input id="chipNumber" type="text" class="visually-hidden" name="chipnumber"/>

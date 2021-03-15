@@ -45,7 +45,6 @@ db.define_table('testtable',
 
 db.define_table('photo_id',
     Field('imagefile', 'upload'),
-    # Field('b64img','blob'),
     Field('b64img','text'),
     Field('id_auth_user', 'reference auth_user', writable = False, readable = False),
     auth.signature)
