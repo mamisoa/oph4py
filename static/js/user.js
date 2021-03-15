@@ -77,12 +77,20 @@ function refreshList(listName){
         userData = getUser(id);
         userData.then(function(userData){
             let item = userData.items[0];
+            console.log('refresh:', item.photob64);
             $('#ulUserTitle').html('');
             $('#ulUserItems').html('');
             $('#userDetailsModal h5.modal-title').html('Edit patient: <span class="fw-bold">'+ checkIfDataIsNull(item.first_name) + ' '+ checkIfDataIsNull(item.last_name)+'</span>');
             $('#userPhoneModal h5.modal-title').html('New phone for: <span class="fw-bold">' + checkIfDataIsNull(item.first_name) + ' ' + checkIfDataIsNull(item.last_name) + '</span>');
             $('#userAddressModal h5.modal-title').html('New address for: <span class="fw-bold">' + checkIfDataIsNull(item.first_name) + ' ' + checkIfDataIsNull(item.last_name) + '</span>');
             // fills title
+            if (item.photob64 != null) {
+                document.getElementById("photo").setAttribute("src",checkIfDataIsNull(item.photob64,''));
+                document.getElementById("photoTitle").setAttribute("src",checkIfDataIsNull(item.photob64,''));
+                $(".photoDiv").toggleClass( "visually-hidden" );
+            } else {
+                $(".photoDiv").toggleClass("visually-hidden");
+            }
             $('#ulUserTitle').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(item.last_name)+'</span></li>');
             $('#ulUserTitle').append('<li class="list-group-item">First name: <span class="fw-bold">' + checkIfDataIsNull(item.first_name)+'</span></li>');
             $('#ulUserTitle').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + checkIfDataIsNull(item.dob)+'</span></li>');
@@ -143,6 +151,7 @@ $('#btnEditUser').click(function() {
                 item = data.items[0];
                 console.log(item);
                 document.getElementById("userAuth_userForm").reset();
+                document.getElementById("photob64").setAttribute("src",checkIfDataIsNull(item.photob64,''));
                 document.getElementById("firstName").value= item.first_name;
                 document.getElementById("lastName").value= item.last_name;
                 document.getElementById("maidenName").value= checkIfDataIsNull(item.maiden_name,'');
@@ -160,13 +169,36 @@ $('#btnEditUser').click(function() {
                 document.getElementById("specialstatus").value= checkIfDataIsNull(item.specialstatus,'');
                 document.getElementById("ssn").value= checkIfDataIsNull(item.ssn,'');
                 document.getElementById("user_notes").value= checkIfDataIsNull(item.user_notes,'');
-                document.getElementById("birthTown").value= checkIfDataIsNull(item.birth_town,'');
                 document.getElementById("username").value= item.username;
             }
         }
     });
     $('#userDetailsModal').modal('show');
 });
+
+$('#btnGetUserId').click(function(e) {
+    $.ajax({
+        url: HOSTURL+"/myapp/api/beid",
+        dataType: 'json',
+        type: 'GET',
+        success: function (item) {
+            console.log(item);
+            document.getElementById("firstName").value= item.prenoms;
+            document.getElementById("lastName").value= item.nom;
+            let sex = item.sexe == 'M'? 'Male':'Female';
+            document.getElementById("genderSelect").value= checkIfDataIsNull(sex,'Male');
+            dob = item.date_naissance.split('/').reverse().join('-');
+            document.getElementById("dob").value= checkIfDataIsNull(dob,'');
+            document.getElementById("nationality").value= checkIfDataIsNull(item.nationale,'');
+            document.getElementById("birthTown").value= checkIfDataIsNull(item.lieu_naissance,'');
+            document.getElementById("idcNum").value= checkIfDataIsNull(item.num_carte,'');
+            document.getElementById("ssn").value= checkIfDataIsNull(item.num_nat,'');
+            document.getElementById("photo").setAttribute("src", "data:image/jpg;base64,"+item.photo);
+            document.getElementById("photob64").value=checkIfDataIsNull("data:image/jpg;base64,"+item.photo,'');
+        }
+    })
+});
+
 
 // catch submit userAuth_userForm
 $('#userAuth_userForm').submit(function(e) {

@@ -130,6 +130,7 @@ if db(db.membership.id > 1).count() == 0:
     db.membership.insert(membership="Administrative", hierarchy="3")
     db.membership.insert(membership="Patient", hierarchy="99") # 6
 
+
 auth = Auth(session, db, define_tables=False)
 more_auth_fields = [    Field('uid', 'string', default=str_uuid()),
                         Field('membership', 'reference membership'),
@@ -151,6 +152,7 @@ more_auth_fields = [    Field('uid', 'string', default=str_uuid()),
                         Field('noblecondition', 'string', label ='ID noble condition'),
                         Field('documenttype', 'integer', label ='ID doctype'),
                         Field('specialstatus', 'integer', label ='ID specialstatus'),
+                        Field('photob64', 'blob', label ='photo ID'),
                         auth.signature]
 auth.extra_auth_user_fields = more_auth_fields
 
