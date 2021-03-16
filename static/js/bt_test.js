@@ -69,6 +69,17 @@ window.operateEvents = {
     }
   };
 
+function ageFormatter(value, row) {
+    if ( row.dob==null )
+    {
+        return 'n/a';
+    } else {
+        return getAge(row.dob)+' yo';
+    }
+    // console.log(row);
+    // return true;
+}
+
   /// Bootstrap-table options not used here
 
 function responseHandler(res) { // used if data-response-handler="responseHandler"
