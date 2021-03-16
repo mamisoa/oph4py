@@ -88,9 +88,7 @@ function refreshList(listName){
                 document.getElementById("photo").setAttribute("src",checkIfDataIsNull(item.photob64,''));
                 document.getElementById("photoTitle").setAttribute("src",checkIfDataIsNull(item.photob64,''));
                 $(".photoDiv").toggleClass( "visually-hidden" );
-            } else {
-                $(".photoDiv").toggleClass("visually-hidden");
-            }
+            };
             $('#ulUserTitle').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(item.last_name)+'</span></li>');
             $('#ulUserTitle').append('<li class="list-group-item">First name: <span class="fw-bold">' + checkIfDataIsNull(item.first_name)+'</span></li>');
             $('#ulUserTitle').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + checkIfDataIsNull(item.dob)+'</span></li>');
