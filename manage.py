@@ -100,11 +100,12 @@ def import_users():
         db.auth_user.import_from_csv_file(dumpfile)
     return dict(message="OK")
 
-@action('manage/users', method=['POST','GET'])
+@action('manage/users', method=['POST','GET']) # route
 @action('manage/users/<membership>')
-@action.uses('manage/users.html', T, auth.user, db)
-def patient(membership=6):
+@action.uses('manage/users.html', session, T, auth, db)
+def users(membership=6):
     user = auth.get_user()
+    test="Test OK"
     try: # check if membership exists
         check_group= db(db.membership.id == membership).isempty()
     except ValueError:
@@ -124,13 +125,14 @@ def patient(membership=6):
         return dict_icon[int(membership)]
     class_icon = group_icon(membership)
     group = (db(db.membership.id == membership).select().first()).membership #name of membership
-    exams = XML(rows2json('content',db(db.exam2do).select(db.exam2do.id,db.exam2do.exam_description)))
-    facilities = XML(rows2json('content',db(db.facility).select(db.facility.id,db.facility.facility_name)))
-    modalities = XML(rows2json('content',db(db.modality).select(db.modality.id,db.modality.modality_name)))
-    query_sessions = ((db.auth_user.membership == 2)|(db.auth_user.membership == 3)|(db.auth_user.membership == 4)) # query all possible providers
-    providers = XML(rows2json('content',db(query_sessions).select(db.auth_user.id,db.auth_user.first_name,db.auth_user.last_name)))
-    origin_rows = db(db.data_origin).select(db.data_origin.origin)
-    origin_json = XML(rows2json('phones',origin_rows))
+    roleOptions=""
+    for role in db(db.membership.id>0).select(db.membership.ALL):
+        if role.membership == group: # make "Patient" as default option
+            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_selected="selected",_value=str(role.id)))
+        else:
+            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
+    roleOptions = XML(roleOptions)
+    genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
     return locals()
 
 ## manage_db
