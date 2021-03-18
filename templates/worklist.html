@@ -208,7 +208,7 @@
 var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
-const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // check users with membership -> OK
+const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
 const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@order=~created_on'
 
 var $table = $('#table').bootstrapTable({
