@@ -16,6 +16,53 @@
 [[ include 'partials/nav-test.html' ]]
 [[ end]]
 
+<!-- bootstrap ok for table-wl -->
+<div class="container-fluid"> <!-- #table-wl list -->
+    <div class="row">
+      <div class="col-md-12 mt-3">
+        <div>
+            <h2><span class=""><i class="fas [[=class_icon]]"></i> [[=group]]s<span></h2>
+            <div id="toolbar-wl">
+                <button type="button" id="btnNewWl" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#newWlModal">
+                    New worklist procedure
+                </button>
+            </div>
+        </div>
+        <table id="table-wl"
+            data-toolbar="#toolbar-wl"
+            data-id-field="id"
+            data-toggle="table"
+            data-side-pagination="server"
+            data-show-refresh="true"
+            data-pagination="true"
+            data-page-size="10"
+            data-show-columns="true"
+            data-search="true"
+            data-search-accent-neutralise="true"
+            data-visible-search="false"
+            data-data-field="items"
+            data-query-params="queryParams-wl"
+            data-total-field="count"
+            >
+            <thead class="thead-dark">
+                <th data-field="id" data-sortable="true">ID</th>
+                <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
+                <th data-field="receving_facility" data-title="Receving facility" data-sortable="true">Receving facility:</th>
+                <th data-field="exam2do" data-searchable= "true" data-sortable="true">Procedure:</th>
+                <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
+                <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
+                <th data-field="laterality" data-sortable="true" data-searchable= "true">Laterality:</th>
+                <th data-field="requested_time" data-sortable="true" data-searchable= "true">Timeslot:</th>
+                <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
+                <th data-field="counter" data-searchable= "true" data-sortable="true">Counter:</th>
+                <th data-field="warning" data-searchable= "true" data-sortable="false">Warning:</th>
+                <th data-field="operate" data-formatter="operateFormatter-wl" data-events="operateEvents-wl">Action</th>
+            </thead>
+        </table>
+      </div>
+    </div> <!-- end row -->
+</div> <!-- end container fluid -->
+
 <!-- bootstrap ok for table -->
 <div class="container-fluid"> <!-- #table list -->
     <div class="row">
@@ -45,7 +92,6 @@
             data-total-field="count"
             >
             <thead class="thead-dark">
-                <th data-field="id" data-sortable="true">ID</th>
                 <th data-field="last_name" data-sortable="true">Last name:</th>
                 <th data-field="first_name" data-title="First name" data-sortable="true">First name:</th>
                 <th data-field="gender.sex" data-searchable= "true" data-sortable="true">Gender:</th>
@@ -162,15 +208,22 @@
 var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
-const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender:gender[id,sex]&@count=true'; // check users with membership -> OK
+const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // check users with membership -> OK
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@order=~created_on'
 
 var $table = $('#table').bootstrapTable({
-    url: decodeURI(encodeURI(API_USER_LIST)),
+    url: API_USER_LIST,
     formatSearch: function () {
     return 'Last name,first name, gender'
     }
 });
 
+var $table = $('#table').bootstrapTable({
+    url: API_PROCEDURE_LIST,
+    formatSearch: function () {
+    return 'Exam, provider'
+    }
+});
 
 </script>
 [[ end ]]
