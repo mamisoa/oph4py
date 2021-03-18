@@ -4,7 +4,16 @@
 <li class="nav-item dropdown">
     <a href="" class="nav-link dropdown-toggle" id="dd-manage" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
     <ul class="dropdown-menu" aria-labelledby="dd-manage">
-        <li><a class="dropdown-item" href="[[=URL('user')]]">Add user</a></li>
+        <li><a class="dropdown-item" href="[[=URL('manage/users')]]/2">Doctors<i class="fas fa-user-md ms-1"></i></a></li>
+        <li><a class="dropdown-item" href="[[=URL('manage/users')]]/3">Nurses<i class="fas fa-user-nurse ms-1"></i></a></li>
+        <li><a class="dropdown-item" href="[[=URL('manage/users')]]/4">Medical Assistant<i class="fas fa-user-nurse ms-1"></i></a></li>
+        <li><a class="dropdown-item" href="[[=URL('manage/users')]]/5">Administrative<i class="fas fa-user-edit ms-1"></i></a></li>
+        <li><a class="dropdown-item" href="[[=URL('manage/users')]]/1">Admins<i class="fas fa-user-cog ms-1"></i></a></li>
+    </ul>
+</li>
+<li class="nav-item dropdown">
+    <a href="" class="nav-link dropdown-toggle" id="dd-settings" role="button" data-bs-toggle="dropdown" aria-expanded="false">Settings</a>
+    <ul class="dropdown-menu" aria-labelledby="dd-manage">
         <li><a class="dropdown-item" href="[[=URL('manage/db')]]">DB management</a></li>
         <li><a class="dropdown-item" href="[[=URL('import_users')]]">Import auth_user CSV</a></li>
     </ul>
