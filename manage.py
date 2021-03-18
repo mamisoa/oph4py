@@ -55,6 +55,7 @@ def check_duplicate(form):
             form.errors['username'] = T('Username already taken')
             form.errors['email'] = ""
 
+## edit user/id from auth_user
 @action('user')
 @action('user/<rec_id>')
 @action.uses('manage/user.html', session, auth, db, flash)
@@ -76,30 +77,7 @@ def user(rec_id="1"):
     maritalOptions = dropdownSelect(db.marital,db.marital.fields[1],1,"index")
     return locals()
 
-@action('users_grid', method=['POST','GET'])
-@action('users_grid/<path:path>', method=['POST', 'GET'])
-@action.uses('manage/users_grid.html', session, db, auth.user, flash)
-def users_grid(path=None):
-    grid = Grid (path, query = db.auth_user.id > 0, formstyle=FormStyleBootstrap4)
-    return locals()
-
-@action("patients")
-@action.uses('patients.html', T, auth, db, flash)
-def patient():
-    user = auth.get_user()
-    # something
-    return locals()
-
-## manage users 
-@action('import_users')
-@action.uses('generic.html', T, db)
-def import_users():
-    import os
-    rows = db(db.auth_user).select()
-    with open(os.path.join(os.path.dirname(__file__),'uploads/csv/')+'1.csv', 'r', encoding='utf-8', newline='') as dumpfile:
-        db.auth_user.import_from_csv_file(dumpfile)
-    return dict(message="OK")
-
+# list users from membership
 @action('manage/users', method=['POST','GET']) # route
 @action('manage/users/<membership>')
 @action.uses('manage/users.html', session, T, auth, db)
@@ -136,6 +114,16 @@ def users(membership=6):
     return locals()
 
 ## manage_db
+
+## import users 
+@action('import_users')
+@action.uses('generic.html', T, db)
+def import_users():
+    import os
+    rows = db(db.auth_user).select()
+    with open(os.path.join(os.path.dirname(__file__),'uploads/csv/')+'1.csv', 'r', encoding='utf-8', newline='') as dumpfile:
+        db.auth_user.import_from_csv_file(dumpfile)
+    return dict(message="OK")
 
 @action('db_truncate')
 @action.uses('generic.html', T, db, auth.user)
