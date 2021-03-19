@@ -49,12 +49,15 @@ function queryParams(params) {
 
 function operateFormatter(value, row, index) {
     return [
-      '<a class="edit" href="javascript:void(0)" title="Edit user">',
-      '<i class="fas fa-edit"></i>',
-      '</a>  ',
-      '<a class="remove" href="javascript:void(0)" title="Remove">',
-      '<i class="fas fa-trash-alt"></i>',
-      '</a>'
+        '<a class="edit" href="javascript:void(0)" title="Edit user">',
+        '<i class="fas fa-edit"></i>',
+        '</a>  ',
+        '<a class="remove ms-1" href="javascript:void(0)" title="Remove">',
+        '<i class="fas fa-trash-alt"></i>',
+        '</a>',
+        '<a class="worklist ms-2" href="javascript:void(0)" title="Worklist">',
+        '<i class="fas fa-list"></i>',
+        '</a>'
     ].join('')
   };
 
@@ -66,6 +69,9 @@ window.operateEvents = {
     },
     'click .remove': function (e, value, row, index) {
         delUser(row.id);
+    },
+    'click .worklist': function (e, value, row, index) {
+        addToWorklist(row.id);
     }
   };
 
