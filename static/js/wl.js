@@ -41,6 +41,9 @@ function modality_destSelectInit(){
     setModalityOptions(choice);
 }
 
+// set default request time to now
+$("#request_time").val(new Date().toJSON().slice(0,19));
+
 // change modality options on exam2do select
 modality_destSelectInit();
 $('#exam2doSelect').change(function(){
