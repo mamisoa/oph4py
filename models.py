@@ -91,6 +91,8 @@ if db(db.modality_controller.id > 1).count() == 0:
     db.modality_controller.insert(modality_controller_name="oct")
     db.modality_controller.insert(modality_controller_name="fluo")
     db.modality_controller.insert(modality_controller_name="cem500")
+    db.modality_controller.insert(modality_controller_name="anterion")
+    db.modality_controller.insert(modality_controller_name="lenstar")
 
 db.define_table('modality',
     Field('modality_name', 'string', required=True),
@@ -175,6 +177,7 @@ if db(db.exam2do_family.id > 1).count() == 0:
     db.exam2do_family.insert(id_exam2do="2", id_modality="8",id_modality_family="2")
     db.exam2do_family.insert(id_exam2do="2", id_modality="9",id_modality_family="2")
     db.exam2do_family.insert(id_exam2do="3", id_modality="9",id_modality_family="3")
+    db.exam2do_family.insert(id_exam2do="3", id_modality="12",id_modality_family="3")
 
 db.define_table('worklist',
     Field('id_auth_user', 'reference auth_user'),
