@@ -43,6 +43,7 @@ function modality_destSelectInit(){
 
 // set default request time to now
 $("#request_time").val(new Date().toJSON().slice(0,19));
+$("[name=laterality]").val(["both"]);
 
 // change modality options on exam2do select
 modality_destSelectInit();
