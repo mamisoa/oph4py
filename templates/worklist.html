@@ -23,7 +23,7 @@
         <div>
             <h2><span class=""><i class="fas [[=class_icon]]"></i> [[=group]]s<span></h2>
             <div id="toolbar-wl">
-                <button type="button" id="btnNewWl" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#newWlModal">
+                <button type="button" id="btnNewItemWl" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#newWlItemModal">
                     New worklist procedure
                 </button>
             </div>
@@ -63,7 +63,7 @@
     </div> <!-- end row -->
 </div> <!-- end container fluid -->
 
-<!-- bootstrap ok for table -->
+<!-- bootstrap ok for auth_user table -->
 <div class="container-fluid"> <!-- #table list -->
     <div class="row">
       <div class="col-md-12 mt-3">
@@ -105,8 +105,8 @@
 </div> <!-- end container fluid -->
 
 
-<!-- Modal -->
-<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+<!-- Modal newUserModal -->
+<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -185,6 +185,92 @@
 </div>
 
 
+<!-- Modal newWlItemModal -->
+<div class="modal fade" id="newWlItemModal" tabindex="-1" role="dialog" aria-labelledby="modalWlTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New worklist item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="newWlItemForm" enctype="multipart/form-data" method="POST">
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="sending_facility" class="form-label">From:</label>
+                                        <select id="sendingFacilitySelect" class="form-select" name="sending_facility">
+                                            [[ =sendingFacilityOptions ]]
+                                        </select>
+                                        <div id="sendingFacilityHelp" class="form-text">Sending facility</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="receiving_facility" class="form-label">To:</label>
+                                        <select id="receivingFacilitySelect" class="form-select" name="receiving_facility">
+                                            [[ =receivingFacilityOptions ]]
+                                        </select>
+                                        <div id="receivingFacilityHelp" class="form-text">Receiving facility</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="exam2do" class="form-label">Procedure:</label>
+                                        <select id="exam2doSelect" class="form-select" name="exam2do">
+                                            [[ =exam2doOptions ]]
+                                        </select>
+                                        <div id="exam2doHelp" class="form-text">Choose procedure</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="provider" class="form-label">Provider:</label>
+                                        <select id="providerSelect" class="form-select" name="provider">
+                                            [[ =providerOptions ]]
+                                        </select>
+                                        <div id="providerHelp" class="form-text">Choose provider</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="request_time" class="form-label">Timeslot:</label>
+                                        <input id="request_time" type="datetime-local" class="form-control" name="request_time">
+                                        <div id="requestTimeHelp" class="form-text">Choose timeslot</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="modality_dest" class="form-label">Modality:</label>
+                                        <select id="modality_destSelect" class="form-select" name="modality_dest">
+                                            <option value="text exam1">Exam test 1</option>
+                                            <option value="text exam2" selected>Exam test 2</option>
+                                        </select>
+                                        <div id="modality_destHelp" class="form-text">Choose modality</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="username" class="form-label">Username:</label>
+                                        <input id="username" type="text" class="form-control" title="Username must not be blank and contain only letters, numbers and underscores." name="username" required pattern="\w+" autocomplete="username" />
+                                        <div id="usernameHelp" class="form-text">Enter your username</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="email" class="form-label">Email:</label>
+                                        <input id="email" type="email" class="form-control"  name="email">
+                                        <div id="emailHelp" class="form-text">Enter your email</div>
+                                    </div>
+                                </div>
+                                <input id="idWlItemSubmit" type="text" class="visually-hidden" name="id_auth_user"/>
+                                <input id="methodWlItemSubmit" type="text" class="visually-hidden" name="methodWlItemSubmit" value="POST"/>
+                                <input id="btnNewWlItemSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="labelSubmit"for="btnNewUserSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div>
     <p>Value is : [[=test]]</p>
 </div>
@@ -201,7 +287,6 @@
 <script src="js/jquery.serialize-object.min.js"></script>
 <script src="js/users_bt.js"></script>
 <script src="js/users.js"></script>
-<script src="js/wl.js"></script>
 <script src="js/wl_bt.js"></script>
 <script type="text/javascript">
 // init bootstrat-tables
@@ -226,4 +311,5 @@ var $table = $('#table').bootstrapTable({
 });
 
 </script>
+<script src="js/wl.js"></script>
 [[ end ]]
