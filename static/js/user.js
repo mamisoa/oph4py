@@ -43,7 +43,8 @@ function getUserAddresses(id) {
             url: API_USER_ADDRESS,
             dataType: "json",
             success: function (data) {
-                console.log(data); if (data.status == 'error' || data.count == 0) {
+                console.log(data); 
+                if (data.status == 'error' || data.count == 0) {
                     displayToast('error', 'GET error', 'Cannot retrieve addresses', '6000');
                 } else {
                     displayToast('info', 'GET address request', 'GET ' + data.items[0].id_auth_user['username'], '6000')

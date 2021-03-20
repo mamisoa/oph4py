@@ -61,7 +61,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">New user</h5>
@@ -124,7 +124,9 @@
                                         <div id="membershipHelp" class="form-text">Choose gender</div>
                                     </div>
                                 </div>
-                                <input id="btnNewUserSubmit" type="submit" class="visually-hidden" />
+                                <input id="idWlItemSubmit" type="text" class="visually-hidden" name="idWlItemSubmit"/>
+                                <input id="methodWlItemSubmit" type="text" class="visually-hidden" name="methodWlItemSubmit" value="POST"/>
+                                <input id="btnNewWlItemSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
                     </div>
@@ -132,7 +134,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="labelSubmit"for="btnNewUserSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="labelWlItemSubmit"for="btnNewWlItemSubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>

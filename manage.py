@@ -121,15 +121,25 @@ def worklist():
     test="Test OK"
     membership = 6
     class_icon = 'fa-user'
-    roleOptions=""
     group = "Patient"
+    roleOptions=""
     for role in db(db.membership.id>0).select(db.membership.ALL):
         if role.membership == group: # make "Patient" as default option
             roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_selected="selected",_value=str(role.id)))
         else:
             roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
     roleOptions = XML(roleOptions)
-    genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
+    genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1)
+    sendingFacilityOptions = dropdownSelect(db.facility,db.facility.fields[1],1) # defaultId = 1 (desk1)
+    receivingFacilityOptions = dropdownSelect(db.facility,db.facility.fields[1],3) # defaultId = 3 (iris)
+    exam2doOptions = dropdownSelect(db.exam2do,db.exam2do.fields[2],1) # field exam_name
+    providerOptions=""
+    for provider in db((db.auth_user.membership>=1)&(db.auth_user.membership<=4)).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
+        if provider.last_name == 'Lloyd': # make "House" as default option
+            providerOptions = CAT(providerOptions, OPTION(provider.last_name + ' '+ provider.first_name,_selected="selected",_value=str(provider.id)))
+        else:
+            providerOptions = CAT(providerOptions, OPTION(provider.last_name + ' '+ provider.first_name,_value=str(provider.id)))
+    providerOptions = XML(providerOptions) 
     return locals()
 
 ## manage_db

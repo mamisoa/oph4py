@@ -54,16 +54,62 @@ db.define_table('facility',
     auth.signature,
     format='%(facility_name)s')
 
-db.define_table('modality_type',
+if db(db.facility.id > 1).count() == 0:
+    db.facility.insert(facility_name="Desk1")
+    db.facility.insert(facility_name="Desk1")
+    db.facility.insert(facility_name="Iris")
+    db.facility.insert(facility_name="Cornea")
+    db.facility.insert(facility_name="Cristalline")
+    db.facility.insert(facility_name="Retina")
+    db.facility.insert(facility_name="Exam1")
+    db.facility.insert(facility_name="Exam2")
+    db.facility.insert(facility_name="Reunion")
+
+db.define_table('modality_family',
     Field('family', 'string', required=True),
     auth.signature,
-    format='%(modality_name)s')
+    format='%(family)s')
+
+if db(db.modality_family.id > 1).count() == 0:
+    db.modality_family.insert(family="refraction")
+    db.modality_family.insert(family="corneal mapping")
+    db.modality_family.insert(family="biometry")
+    db.modality_family.insert(family="visual field")
+    db.modality_family.insert(family="angiography")
+    db.modality_family.insert(family="OCT")
+
+db.define_table('modality_controller',
+    Field('modality_controller_name', 'string', required=True),
+    auth.signature,
+    format='%(modality_controller_name)s')
+
+if db(db.modality_controller.id > 1).count() == 0:
+    db.modality_controller.insert(modality_controller_name="autorx")
+    db.modality_controller.insert(modality_controller_name="tono")
+    db.modality_controller.insert(modality_controller_name="topo")
+    db.modality_controller.insert(modality_controller_name="visualfield")
+    db.modality_controller.insert(modality_controller_name="oct")
+    db.modality_controller.insert(modality_controller_name="fluo")
+    db.modality_controller.insert(modality_controller_name="cem500")
 
 db.define_table('modality',
     Field('modality_name', 'string', required=True),
+    Field('id_modality_controller','reference modality_controller'),
     auth.signature,
     format='%(modality_name)s')
 
+if db(db.modality.id > 1).count() == 0:
+    db.modality.insert(modality_name="L80", id_modality_controller="1")
+    db.modality.insert(modality_name="VX-120", id_modality_controller="1")
+    db.modality.insert(modality_name="TonoRef", id_modality_controller="2")
+    db.modality.insert(modality_name="TonoCan", id_modality_controller="2")
+    db.modality.insert(modality_name="Octopus 900", id_modality_controller="4")
+    db.modality.insert(modality_name="FDT", id_modality_controller="4")
+    db.modality.insert(modality_name="OCT Maestro", id_modality_controller="5")
+    db.modality.insert(modality_name="Pentacam", id_modality_controller="3")
+    db.modality.insert(modality_name="Anterion", id_modality_controller="3")
+    db.modality.insert(modality_name="Visucam", id_modality_controller="6")
+    db.modality.insert(modality_name="CEM-500", id_modality_controller="7")
 
 db.define_table('data_origin',
     Field('origin', 'string', default='Home'),
@@ -110,15 +156,29 @@ db.insurance.insurance_type.requires=IS_IN_DB(db,'insurance_sector.sector','%(se
 
 db.define_table('exam2do',
     Field('loinc_code', 'string'),
+    Field('exam_name','string'),
     Field('exam_description','string'),
     Field('cycle_num','integer', default='1'),
     Field('procedure_seq','string'),
-    Field('controller','string'),
+    auth.signature,
+    format='%(exam_name)s')
+
+db.define_table('exam2do_family', # many to many
+    Field('id_exam2do', 'reference exam2do'),
+    Field('id_modality', 'reference modality'),
+    Field('id_modality_family', 'reference modality_family'),
     auth.signature)
+
+if db(db.exam2do_family.id > 1).count() == 0:
+    db.exam2do_family.insert(id_exam2do="1", id_modality="1",id_modality_family="1")
+    db.exam2do_family.insert(id_exam2do="1", id_modality="2",id_modality_family="1")
+    db.exam2do_family.insert(id_exam2do="2", id_modality="8",id_modality_family="2")
+    db.exam2do_family.insert(id_exam2do="2", id_modality="9",id_modality_family="2")
+    db.exam2do_family.insert(id_exam2do="3", id_modality="9",id_modality_family="3")
 
 db.define_table('worklist',
     Field('id_auth_user', 'reference auth_user'),
-    Field('sending_app','string', default = 'ECapp19'),
+    Field('sending_app','string', default = 'Oph4Py'),
     Field('sending_facility','reference facility', default = '1'),
     Field('receving_app','string', default = 'Receving App'),
     Field('receving_facility','reference facility', default = '1'),
