@@ -16,7 +16,7 @@ function setModalityOptions(exam2doId){
             for (let item of items) {
                 html += '<option value="'+ item.id + '">'+ item.modality_name+'</option>';
             };
-            console.log(html);
+            // console.log(html);
             $('#modality_destSelect').html(html);
         };
     });
@@ -30,7 +30,7 @@ function getModalityOptions(exam2doId) {
             url: HOSTURL+"/myapp/api/modality?id_modality.exam2do_family.id_exam2do.eq="+exam2doId,
             dataType: "json",
             success: function (data) {
-                console.log(data); 
+                // console.log(data); 
                 if (data.status == 'error' || data.count == 0) {
                     displayToast('error', 'GET error', 'Cannot retrieve modality options', '6000');
                 } else {                    
@@ -43,7 +43,7 @@ function getModalityOptions(exam2doId) {
         }));
 }
 
-
+// reset add new item in worklist modal
 function resetWlForm() {
     // set default value for form
     $("#request_time").val(new Date().addHours(1).toJSON().slice(0,19));
@@ -53,7 +53,7 @@ function resetWlForm() {
     setModalityOptions(choice);
 }
 
-// init form
+// init worklist form
 
 // change modality options on exam2do select
 $('#exam2doSelect').change(function(){
@@ -68,10 +68,26 @@ $(".btn.counter_down").click(function() {
         $("input.counter").val(value-1);
     } else {};
 });
-
 $(".btn.counter_up").click(function() {
     value = parseInt($("input.counter").val());
     if (value >= 0) {
         $("input.counter").val(value+1);
     } else {};
 });
+
+var wlItems = [];
+// add new item in worklist format
+// TODO: on submit: clear wlItems
+$('#btnWlItemAdd').click(function() {
+    let formData = $('#newWlItemForm').serializeJSON();
+    formData = JSON.parse(formData);
+    console.log('formData:',formData);
+    wlItems.push(formData);
+    console.log('wlItems:',wlItems);
+});
+
+function addToWorklist(userId) {
+    resetWlForm();
+    $('#idWlItemSubmit').val(userId);
+    $('#newWlItemModal').modal('show');
+}

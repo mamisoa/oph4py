@@ -277,22 +277,21 @@
                                             <label for="counter" class="form-label">Counter:</label>
                                             <div class="input-group mb-3">
                                                 <button class="btn btn-outline-secondary counter_down" type="button">-</button>
-                                                <input type="text" class="form-control counter text-center" value ="1" aria-label="Counter">
+                                                <input type="text" class="form-control counter text-center" value ="1" aria-label="Counter" name="counter">
                                                 <button class="btn btn-outline-secondary counter_up" type="button">+</button>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="Warning" class="form-label">Warning:</label>
+                                            <label for="warning" class="form-label">Warning:</label>
                                             <input id="warning" type="text" class="form-control" name="warning">
                                             <div id="warningHelp" class="form-text">Signal any warning message</div>
                                         </div>
+                                    </div>
+                                    <div class="row mb-3">
                                         <div class="col">
-                                            <label for="counter" class="form-label">Add worklist item</label>
-                                            <div class="input-group mb-3">
-                                                <button class="btn btn-primary" type="button"><i class="fas fa-plus"></i></button>
-                                            </div>
+                                            <button id="btnWlItemAdd" class="btn btn-primary" type="button">Add item to worklist <i class="fas fa-plus"></i></button>
                                         </div>                                        
                                     </div>
                                     <input id="idWlItemSubmit" type="text" class="visually-hidden" name="id_auth_user"/>
