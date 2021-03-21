@@ -195,87 +195,134 @@
             </div>
             <div class="modal-body">
                 <div class="container">
-                    <div class="row">
+                    <div class="row mb-2" style="border: solid blue;">
                         <div class="col">
                             <form id="newWlItemForm" enctype="multipart/form-data" method="POST">
-                                <div class="row mb-3">
-                                    <div class="col">
-                                        <label for="sending_facility" class="form-label">From:</label>
-                                        <select id="sendingFacilitySelect" class="form-select" name="sending_facility">
-                                            [[ =sendingFacilityOptions ]]
-                                        </select>
-                                        <div id="sendingFacilityHelp" class="form-text">Sending facility</div>
+                                <div class="container">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="sending_facility" class="form-label">From:</label>
+                                            <select id="sendingFacilitySelect" class="form-select" name="sending_facility">
+                                                [[ =sendingFacilityOptions ]]
+                                            </select>
+                                            <div id="sendingFacilityHelp" class="form-text">Sending facility</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="receiving_facility" class="form-label">To:</label>
+                                            <select id="receivingFacilitySelect" class="form-select" name="receiving_facility">
+                                                [[ =receivingFacilityOptions ]]
+                                            </select>
+                                            <div id="receivingFacilityHelp" class="form-text">Receiving facility</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="exam2do" class="form-label">Procedure:</label>
+                                            <select id="exam2doSelect" class="form-select" name="exam2do">
+                                                [[ =exam2doOptions ]]
+                                            </select>
+                                            <div id="exam2doHelp" class="form-text">Choose procedure</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="provider" class="form-label">Provider:</label>
+                                            <select id="providerSelect" class="form-select" name="provider">
+                                                [[ =providerOptions ]]
+                                            </select>
+                                            <div id="providerHelp" class="form-text">Choose provider</div>
+                                        </div>
                                     </div>
-                                    <div class="col">
-                                        <label for="receiving_facility" class="form-label">To:</label>
-                                        <select id="receivingFacilitySelect" class="form-select" name="receiving_facility">
-                                            [[ =receivingFacilityOptions ]]
-                                        </select>
-                                        <div id="receivingFacilityHelp" class="form-text">Receiving facility</div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="request_time" class="form-label">Timeslot:</label>
+                                            <input id="request_time" type="datetime-local" class="form-control" name="request_time">
+                                            <div id="requestTimeHelp" class="form-text">Choose timeslot</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="modality_dest" class="form-label">Modality:</label>
+                                            <select id="modality_destSelect" class="form-select" name="modality_dest">
+                                                <option value="text exam1">Exam test 1</option>
+                                                <option value="text exam2" selected>Exam test 2</option>
+                                            </select>
+                                            <div id="modality_destHelp" class="form-text">Choose modality</div>
+                                        </div>
                                     </div>
-                                    <div class="col">
-                                        <label for="exam2do" class="form-label">Procedure:</label>
-                                        <select id="exam2doSelect" class="form-select" name="exam2do">
-                                            [[ =exam2doOptions ]]
-                                        </select>
-                                        <div id="exam2doHelp" class="form-text">Choose procedure</div>
-                                    </div>
-                                    <div class="col">
-                                        <label for="provider" class="form-label">Provider:</label>
-                                        <select id="providerSelect" class="form-select" name="provider">
-                                            [[ =providerOptions ]]
-                                        </select>
-                                        <div id="providerHelp" class="form-text">Choose provider</div>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col">
-                                        <label for="request_time" class="form-label">Timeslot:</label>
-                                        <input id="request_time" type="datetime-local" class="form-control" name="request_time">
-                                        <div id="requestTimeHelp" class="form-text">Choose timeslot</div>
-                                    </div>
-                                    <div class="col">
-                                        <label for="modality_dest" class="form-label">Modality:</label>
-                                        <select id="modality_destSelect" class="form-select" name="modality_dest">
-                                            <option value="text exam1">Exam test 1</option>
-                                            <option value="text exam2" selected>Exam test 2</option>
-                                        </select>
-                                        <div id="modality_destHelp" class="form-text">Choose modality</div>
-                                    </div>
-                                    <div class="col align-self-center">
-                                        <div class="input-group">
-                                            <div class="btn-group laterality">                                                
-                                                <input type="radio" id="laterality_both" name="laterality" class="btn-check" value="both" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="laterality_both">Both</label>
-                                                <input type="radio" id="laterality_left" name="laterality" class="btn-check" value="left" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="laterality_left">Left</label>
-                                                <input type="radio" id="laterality_right" name="laterality" class="btn-check" value="right" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="laterality_right">Right</label>
-                                                <input type="radio" id="laterality_none" name="laterality" class="btn-check" value="none" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="laterality_none">None</label>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="laterality" class="form-label">Side:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group laterality">                                                
+                                                    <input type="radio" id="laterality_both" name="laterality" class="btn-check" value="both" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="laterality_both">Both</label>
+                                                    <input type="radio" id="laterality_left" name="laterality" class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="laterality_left">Left</label>
+                                                    <input type="radio" id="laterality_right" name="laterality" class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="laterality_right">Right</label>
+                                                    <input type="radio" id="laterality_none" name="laterality" class="btn-check" value="none" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="laterality_none">None</label>
+                                                </div>
                                             </div>
-                                         </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="status_flag" class="form-label">Status:</label>
+                                            <div class="btn-group statusFlag">                                                
+                                                <input type="radio" id="status_requested" name="status_flag" class="btn-check" value="requested" autocomplete="off">
+                                                <label class="btn btn-outline-primary" for="status_requested">Request</label>
+                                                <input type="radio" id="status_processing" name="status_flag" class="btn-check" value="processing" autocomplete="off">
+                                                <label class="btn btn-outline-warning" for="status_processing">Process</label>
+                                                <input type="radio" id="status_done" name="status_flag" class="btn-check" value="done" autocomplete="off">
+                                                <label class="btn btn-outline-success" for="status_done">Done</label>
+                                                <input type="radio" id="status_cancelled" name="status_flag" class="btn-check" value="cancelled" autocomplete="off">
+                                                <label class="btn btn-outline-secondary" for="status_cancelled">Cancel</label>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="counter" class="form-label">Counter:</label>
+                                            <div class="input-group mb-3">
+                                                <button class="btn btn-outline-secondary counter_down" type="button">-</button>
+                                                <input type="text" class="form-control counter text-center" value ="1" aria-label="Counter">
+                                                <button class="btn btn-outline-secondary counter_up" type="button">+</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col">
-                                        <label for="username" class="form-label">Username:</label>
-                                        <input id="username" type="text" class="form-control" title="Username must not be blank and contain only letters, numbers and underscores." name="username" required pattern="\w+" autocomplete="username" />
-                                        <div id="usernameHelp" class="form-text">Enter your username</div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="Warning" class="form-label">Warning:</label>
+                                            <input id="warning" type="text" class="form-control" name="warning">
+                                            <div id="warningHelp" class="form-text">Signal any warning message</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="counter" class="form-label">Add worklist item</label>
+                                            <div class="input-group mb-3">
+                                                <button class="btn btn-primary" type="button"><i class="fas fa-plus"></i></button>
+                                            </div>
+                                        </div>                                        
                                     </div>
-                                    <div class="col">
-                                        <label for="email" class="form-label">Email:</label>
-                                        <input id="email" type="email" class="form-control"  name="email">
-                                        <div id="emailHelp" class="form-text">Enter your email</div>
-                                    </div>
-                                </div>
-                                <input id="idWlItemSubmit" type="text" class="visually-hidden" name="id_auth_user"/>
-                                <input id="methodWlItemSubmit" type="text" class="visually-hidden" name="methodWlItemSubmit" value="POST"/>
-                                <input id="btnNewWlItemSubmit" type="submit" class="visually-hidden" />
+                                    <input id="idWlItemSubmit" type="text" class="visually-hidden" name="id_auth_user"/>
+                                    <input id="methodWlItemSubmit" type="text" class="visually-hidden" name="methodWlItemSubmit" value="POST"/>
+                                    <input id="btnNewWlItemSubmit" type="submit" class="visually-hidden" />
+                                </div>    <!--end container form  -->                            
                             </form>
-                        </div>
-                    </div>
-                </div>
+                        </div> <!--end col row  -->
+                    </div> <!--end div row  -->
+                    <div class="row" id="wlItems" style="border: solid red;">
+                        <div class="col">
+                            <ol>
+                                <li>
+                                    <ul class="list-group list-group-horizontal">
+                                        <li class="list-group-item">From: Desk1</li>
+                                        <li class="list-group-item">To: Iris</li>
+                                        <li class="list-group-item">Procedure: AutoRx</li>
+                                        <li class="list-group-item">Modality: L80</li>
+                                        <li class="list-group-item">Timeslot: 2021-03-21 11:30:00</li>
+                                        <li class="list-group-item">Side: Both</li>
+                                        <li class="list-group-item">Status: Requested</li>
+                                        <li class="list-group-item">Counter: 1</li>
+                                        <li class="list-group-item"><button type="button" class="btn btn-danger btn-sm"><i class="far fa-trash-alt"></i></button>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>                        
+                    </div> <!--end div row  -->
+                </div> <!--end div container -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
