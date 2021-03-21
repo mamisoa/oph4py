@@ -165,6 +165,11 @@ db.define_table('exam2do',
     auth.signature,
     format='%(exam_name)s')
 
+if db(db.exam2do.id > 1).count() == 0:
+    db.exam2do.insert(loinc_code="autorxc66", exam_name="AutoRx",exam_description="Automatic refraction",cycle_num="1", procedure_seq="1")
+    db.exam2do.insert(loinc_code="topoc66", exam_name="Corneal mapping",exam_description="Corneal mapping",cycle_num="1", procedure_seq="1")
+    db.exam2do.insert(loinc_code="biometryc66", exam_name="Optical biometry",exam_description="Optical biometry",cycle_num="1", procedure_seq="1")
+
 db.define_table('exam2do_family', # many to many
     Field('id_exam2do', 'reference exam2do'),
     Field('id_modality', 'reference modality'),
