@@ -1,3 +1,12 @@
+
+// useful functions 
+
+Date.prototype.addHours = function(h) {
+    this.setTime(this.getTime() + (h*60*60*1000));
+    return this;
+  }
+
+// set modality options
 function setModalityOptions(exam2doId){
     let modalityOptions = getModalityOptions(exam2doId);
     modalityOptions.then(function(data){
@@ -41,8 +50,10 @@ function modality_destSelectInit(){
     setModalityOptions(choice);
 }
 
+
 // set default request time to now
-$("#request_time").val(new Date().toJSON().slice(0,19));
+// add Date function to add hours
+$("#request_time").val(new Date().addHours(1).toJSON().slice(0,19));
 $("[name=laterality]").val(["both"]);
 
 // change modality options on exam2do select
@@ -50,3 +61,10 @@ modality_destSelectInit();
 $('#exam2doSelect').change(function(){
     setModalityOptions(this.value);
 }); 
+
+// useful functions 
+
+Date.prototype.addHours = function(h) {
+    this.setTime(this.getTime() + (h*60*60*1000));
+    return this;
+  }
