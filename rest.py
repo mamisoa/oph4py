@@ -70,16 +70,31 @@ def beid():
 # 
 #  http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=phone:id_auth_user -> get phone from auth_user_id
 # http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=identity!:id_auth_user[first_name,last_name] -> denormalised (flat)
-@action('api/<tablename>/', method=['GET','POST'])
+@action('api/<tablename>/', method=['GET','POST','PUT'])
 @action('api/<tablename>/<rec_id>', method=['GET','PUT','DELETE']) # delete OK get OK post OK put OK
 def api(tablename, rec_id=None):
-    db.auth_user.password.writable= db.phone.id_auth_user.writable= db.address.id_auth_user.writable = True
-    db.auth_user.password.readable= db.phone.id_auth_user.readable = db.address.id_auth_user.readable = True
+    db.phone.id_auth_user.writable= db.address.id_auth_user.writable = True
+    db.phone.id_auth_user.readable = db.address.id_auth_user.readable = True
+    db.auth_user.password.readable = True
+    db.auth_user.password.writable  = True
     db.address.created_by.readable = db.address.modified_by.readable = db.address.created_on.readable = db.address.modified_on.readable = db.address.id_auth_user.readable = True
     db.auth_user.created_by.readable = db.auth_user.modified_by.readable = db.auth_user.created_on.readable = db.auth_user.modified_on.readable = True
     db.phone.created_by.readable = db.phone.modified_by.readable = db.phone.created_on.readable = db.phone.modified_on.readable = db.phone.id_auth_user.readable = True
     db.worklist.created_by.readable = db.worklist.modified_by.readable = db.worklist.created_on.readable = db.worklist.modified_on.readable = db.worklist.id_auth_user.readable = True
     db.photo_id.created_by.readable = db.photo_id.modified_by.readable = db.photo_id.created_on.readable = db.photo_id.modified_on.readable = db.photo_id.id_auth_user.readable = True
+    if (tablename == "auth_user" and request.method == "PUT" and "id" in request.json): # check if email, password, first_name, last_name 
+        # request.json["password"]=db(db.auth_user.id == 1).select(db.auth_user.password).first()[0]
+        row=db(db.auth_user.id == request.json["id"]).select(db.auth_user.ALL).first()
+        if "password" not in request.json:
+            request.json["password"]= row.password
+        if "email" not in request.json:
+            request.json["email"]= row.email
+        if "first_name" not in request.json:
+            request.json["first_name"]= row.first_name
+        if "last_name" not in request.json:
+            request.json["last_name"]= row.last_name
+        if "username" not in request.json:
+            request.json["username"]= row.username
     try:
         json_resp = RestAPI(db,policy)(request.method,tablename,rec_id,request.GET,request.json)
         # json_resp RestAPI(db,policy)(request.method,tablename,rec_id,request.GET,request.POST) 
