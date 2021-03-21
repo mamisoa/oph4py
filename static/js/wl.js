@@ -44,27 +44,34 @@ function getModalityOptions(exam2doId) {
 }
 
 
-// init modality options for default exam2do select
-function modality_destSelectInit(){
+function resetWlForm() {
+    // set default value for form
+    $("#request_time").val(new Date().addHours(1).toJSON().slice(0,19));
+    $("[name=laterality]").val(["both"]);
+    $("[name=status_flag]").val(["requested"]);
     let choice = $('select#exam2doSelect option:checked').val();
     setModalityOptions(choice);
 }
 
-
-// set default request time to now
-// add Date function to add hours
-$("#request_time").val(new Date().addHours(1).toJSON().slice(0,19));
-$("[name=laterality]").val(["both"]);
+// init form
 
 // change modality options on exam2do select
-modality_destSelectInit();
 $('#exam2doSelect').change(function(){
     setModalityOptions(this.value);
 }); 
+// reset form
+resetWlForm();
 
-// useful functions 
+$(".btn.counter_down").click(function() {
+    value = parseInt($("input.counter").val());
+    if (value >= 1) {
+        $("input.counter").val(value-1);
+    } else {};
+});
 
-Date.prototype.addHours = function(h) {
-    this.setTime(this.getTime() + (h*60*60*1000));
-    return this;
-  }
+$(".btn.counter_up").click(function() {
+    value = parseInt($("input.counter").val());
+    if (value >= 0) {
+        $("input.counter").val(value+1);
+    } else {};
+});

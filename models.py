@@ -77,6 +77,7 @@ if db(db.modality_family.id > 1).count() == 0:
     db.modality_family.insert(family="visual field")
     db.modality_family.insert(family="angiography")
     db.modality_family.insert(family="OCT")
+    db.modality_family.insert(family="Multiple")
 
 db.define_table('modality_controller',
     Field('modality_controller_name', 'string', required=True),
@@ -93,6 +94,7 @@ if db(db.modality_controller.id > 1).count() == 0:
     db.modality_controller.insert(modality_controller_name="cem500")
     db.modality_controller.insert(modality_controller_name="anterion")
     db.modality_controller.insert(modality_controller_name="lenstar")
+    db.modality_controller.insert(modality_controller_name="none")
 
 db.define_table('modality',
     Field('modality_name', 'string', required=True),
@@ -112,6 +114,8 @@ if db(db.modality.id > 1).count() == 0:
     db.modality.insert(modality_name="Anterion", id_modality_controller="3")
     db.modality.insert(modality_name="Visucam", id_modality_controller="6")
     db.modality.insert(modality_name="CEM-500", id_modality_controller="7")
+    db.modality.insert(modality_name="Lenstar", id_modality_controller="9")
+    db.modality.insert(modality_name="Multiple", id_modality_controller="10")
 
 db.define_table('data_origin',
     Field('origin', 'string', default='Home'),
@@ -169,6 +173,9 @@ if db(db.exam2do.id > 1).count() == 0:
     db.exam2do.insert(loinc_code="autorxc66", exam_name="AutoRx",exam_description="Automatic refraction",cycle_num="1", procedure_seq="1")
     db.exam2do.insert(loinc_code="topoc66", exam_name="Corneal mapping",exam_description="Corneal mapping",cycle_num="1", procedure_seq="1")
     db.exam2do.insert(loinc_code="biometryc66", exam_name="Optical biometry",exam_description="Optical biometry",cycle_num="1", procedure_seq="1")
+    db.exam2do.insert(loinc_code="routinec66", exam_name="Routine consultation",exam_description="Routine consultation",cycle_num="1", procedure_seq="4")
+    db.exam2do.insert(loinc_code="glaucoma1c66", exam_name="Glaucoma consultation",exam_description="Glaucoma consultation with visual field and OCT",cycle_num="1", procedure_seq="6")
+    db.exam2do.insert(loinc_code="routinec66", exam_name="Keratoconus consultation",exam_description="Keratoconus consultation with corneal mapping",cycle_num="1", procedure_seq="5")
 
 db.define_table('exam2do_family', # many to many
     Field('id_exam2do', 'reference exam2do'),
@@ -183,6 +190,9 @@ if db(db.exam2do_family.id > 1).count() == 0:
     db.exam2do_family.insert(id_exam2do="2", id_modality="9",id_modality_family="2")
     db.exam2do_family.insert(id_exam2do="3", id_modality="9",id_modality_family="3")
     db.exam2do_family.insert(id_exam2do="3", id_modality="12",id_modality_family="3")
+    db.exam2do_family.insert(id_exam2do="4", id_modality="13",id_modality_family="7")
+    db.exam2do_family.insert(id_exam2do="5", id_modality="13",id_modality_family="7")
+    db.exam2do_family.insert(id_exam2do="6", id_modality="13",id_modality_family="7")
 
 db.define_table('worklist',
     Field('id_auth_user', 'reference auth_user'),
