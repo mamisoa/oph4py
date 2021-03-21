@@ -212,7 +212,7 @@ $('#userAuth_userForm').submit(function(e) {
             delete formData[key];
         }
     };
-    formData['password']='c66C525qA';
+    formData['id']=id;
     formData = JSON.stringify(formData); // change to string
     console.log(formData);
     crud('auth_user',id,'PUT',data=formData);
@@ -334,7 +334,7 @@ function confirmEdit(recid, table) {
 // crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id
 function crud(table,id='0',req='POST',data) {
     console.log(data);
-    var API_URL = (req == 'POST'? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
+    var API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
     var mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
     $.ajax({
         url: API_URL,
