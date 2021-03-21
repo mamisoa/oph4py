@@ -79,22 +79,22 @@ var wlItemsJson = [];
 var wlItemsHtml = [];
 var wlItemsCounter = 0;
 // add new item in worklist format
-// TODO: on submit: clear wlItems and counter
+// TODO: remove status_flag -> only needed when modification
 $('#btnWlItemAdd').click(function() {
     let formData = $('#newWlItemForm').serializeJSON();
     formData = JSON.parse(formData); // from string to object
     console.log('formData:',formData);
     wlItemsJson.push(formData);
     console.log('wlItems:',wlItemsJson);
-    // wlItemsHtml['from'] = $('#sendingFacilitySelect :selected').text();
-    // wlItemsHtml['to'] = $('#receivingFacilitySelect :selected').text();
+    wlItemsHtml['From'] = $('#sendingFacilitySelect :selected').text();
+    wlItemsHtml['To'] = $('#receivingFacilitySelect :selected').text();
     wlItemsHtml['Procedure'] = $('#exam2doSelect :selected').text();
-    wlItemsHtml['provider'] = $('#providerSelect :selected').text();
+    wlItemsHtml['Provider'] = $('#providerSelect :selected').text();
     wlItemsHtml['Timeslot'] = $('#request_time').val();
-    wlItemsHtml['Modality'] = $('#modality_destSelect :selected').text();
+    // wlItemsHtml['Modality'] = $('#modality_destSelect :selected').text();
     // wlItemsHtml['side'] = $('input[name="laterality"]:checked').val();
-    wlItemsHtml['status'] = $('input[name="status_flag"]:checked').val();
-    wlItemsHtml['counter'] = $('input[name="counter"]').val();
+    wlItemsHtml['Status'] = $('input[name="status_flag"]:checked').val();
+    wlItemsHtml['Counter'] = $('input[name="counter"]').val();
     wlItemsHtml['warning'] = $('input[name="warning"]').val();
     console.log('wlItemsHtml',wlItemsHtml);
     wlItemsCounter += 1;
@@ -102,18 +102,26 @@ $('#btnWlItemAdd').click(function() {
 });
 
 function appendWlItem(arr,cnt) {
-    let html = '<li id="wlItem'+ cnt + '" class="list-group-item"><ul class="list-group list-group-horizontal">';
+    let html = '<tr id="wlItem'+ cnt + '">';
     for (item in arr) {
-        html += '<li class="list-group-item">'+ item + ':<br>' + arr[item] + '</li>';
+        html += '<td>' + arr[item] + '</td>';
     };
-    html +='<li class="list-group-item"><button type="button" class="btn btn-danger btn-sm"><i class="far fa-trash-alt"></i></button></li>'
-    html += '</ul></li>';
+    html +='<td class="list-group-item"><button type="button" class="btn btn-danger btn-sm" onclick="delWlItemModal(\''+ cnt +'\');" data-index='+cnt+'><i class="far fa-trash-alt"></i></button></td>'
+    html += '</tr>';
     console.log(html);
-    $('#wlItemsOl').append(html);
+    $('#tbodyItems').append(html);
+}
+
+function delWlItemModal(itemId){
+    $('#wlItem'+itemId).remove();
 }
 
 function addToWorklist(userId) {
+    // init form
     resetWlForm();
+    wlItemsCounter = 0;
+    $('#tbodyItems').html('');
     $('#idWlItemSubmit').val(userId);
+    // open modal
     $('#newWlItemModal').modal('show');
 }

@@ -305,17 +305,23 @@
                         <div class="col">
                             <ol class="list-group" id="wlItemsOl">
                                 <li class="list-group-item">
-                                    <ul class="list-group list-group-horizontal">
-                                        <li class="list-group-item">From: Desk1</li>
-                                        <li class="list-group-item">To: Iris</li>
-                                        <li class="list-group-item">Procedure: AutoRx</li>
-                                        <li class="list-group-item">Modality: L80</li>
-                                        <li class="list-group-item">Timeslot: 2021-03-21 11:30:00</li>
-                                        <li class="list-group-item">Side: Both</li>
-                                        <li class="list-group-item">Status: Requested</li>
-                                        <li class="list-group-item">Counter: 1</li>
-                                        <li class="list-group-item"><button type="button" class="btn btn-danger btn-sm"><i class="far fa-trash-alt"></i></button></li>                                        
-                                    </ul>
+                                    <table class="table">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">From</th>
+                                            <th scope="col">To</th>
+                                            <th scope="col">Procedure</th>
+                                            <th scope="col">Provider</th>
+                                            <th scope="col">Timeslot</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Counter</th>
+                                            <th scope="col">Warning</th>
+                                            <th scope="col"></th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="tbodyItems">                                          
+                                        </tbody>
+                                    </table>
                                 </li>                                
                             </ol>
                         </div>                        
