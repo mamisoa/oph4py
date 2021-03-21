@@ -75,16 +75,42 @@ $(".btn.counter_up").click(function() {
     } else {};
 });
 
-var wlItems = [];
+var wlItemsJson = [];
+var wlItemsHtml = [];
+var wlItemsCounter = 0;
 // add new item in worklist format
-// TODO: on submit: clear wlItems
+// TODO: on submit: clear wlItems and counter
 $('#btnWlItemAdd').click(function() {
     let formData = $('#newWlItemForm').serializeJSON();
-    formData = JSON.parse(formData);
+    formData = JSON.parse(formData); // from string to object
     console.log('formData:',formData);
-    wlItems.push(formData);
-    console.log('wlItems:',wlItems);
+    wlItemsJson.push(formData);
+    console.log('wlItems:',wlItemsJson);
+    // wlItemsHtml['from'] = $('#sendingFacilitySelect :selected').text();
+    // wlItemsHtml['to'] = $('#receivingFacilitySelect :selected').text();
+    wlItemsHtml['Procedure'] = $('#exam2doSelect :selected').text();
+    wlItemsHtml['provider'] = $('#providerSelect :selected').text();
+    wlItemsHtml['Timeslot'] = $('#request_time').val();
+    wlItemsHtml['Modality'] = $('#modality_destSelect :selected').text();
+    // wlItemsHtml['side'] = $('input[name="laterality"]:checked').val();
+    wlItemsHtml['status'] = $('input[name="status_flag"]:checked').val();
+    wlItemsHtml['counter'] = $('input[name="counter"]').val();
+    wlItemsHtml['warning'] = $('input[name="warning"]').val();
+    console.log('wlItemsHtml',wlItemsHtml);
+    wlItemsCounter += 1;
+    appendWlItem(wlItemsHtml,wlItemsCounter);
 });
+
+function appendWlItem(arr,cnt) {
+    let html = '<li id="wlItem'+ cnt + '" class="list-group-item"><ul class="list-group list-group-horizontal">';
+    for (item in arr) {
+        html += '<li class="list-group-item">'+ item + ':<br>' + arr[item] + '</li>';
+    };
+    html +='<li class="list-group-item"><button type="button" class="btn btn-danger btn-sm"><i class="far fa-trash-alt"></i></button></li>'
+    html += '</ul></li>';
+    console.log(html);
+    $('#wlItemsOl').append(html);
+}
 
 function addToWorklist(userId) {
     resetWlForm();
