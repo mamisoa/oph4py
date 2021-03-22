@@ -108,7 +108,7 @@ function appendWlItem(arr,cnt) {
     };
     html +='<td class="list-group-item"><button type="button" class="btn btn-danger btn-sm" onclick="delWlItemModal(\''+ cnt +'\');" data-index='+cnt+'><i class="far fa-trash-alt"></i></button></td>'
     html += '</tr>';
-    console.log(html);
+    // console.log(html);
     $('#tbodyItems').append(html);
 }
 
@@ -120,8 +120,32 @@ function addToWorklist(userId) {
     // init form
     resetWlForm();
     wlItemsCounter = 0;
+    // show all input
+    let show = ['wlItemAddDiv', 'wlItemsDiv']
+    for (i in show) {
+        hideDiv('#'+show[i],'visually-hidden','remove');
+    };
     $('#tbodyItems').html('');
     $('#idWlItemSubmit').val(userId);
     // open modal
+    $('#newWlItemModal').modal('show');
+}
+
+// hide or remove class ; e = DOM id element c= classe req = remove or add
+function hideDiv(e,c,req) {
+    req == 'add' ? $(e).addClass(c) : $(e).removeClass(c);
+}
+
+function putWlModal(userId){
+    // init form
+    resetWlForm();
+    wlItemsCounter = 0;
+    // TODO: set inputs
+    // hide useless input
+    let hide = ['wlItemAddDiv', 'wlItemsDiv']
+    for (i in hide) {
+        hideDiv('#'+hide[i],'visually-hidden','add');
+    };
+    $('#newWlItemModal h5.modal-title').html('Edit worklist item #'+userId);
     $('#newWlItemModal').modal('show');
 }
