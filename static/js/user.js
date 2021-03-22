@@ -331,7 +331,7 @@ function confirmEdit(recid, table) {
 }
 
 
-// crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id
+// crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
 function crud(table,id='0',req='POST',data) {
     console.log(data);
     var API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );

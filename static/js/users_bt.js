@@ -86,7 +86,7 @@ function ageFormatter(value, row) {
     // return true;
 }
 
-  /// Bootstrap-table options not used here
+/// Bootstrap-table options not used here
 
 function responseHandler(res) { // used if data-response-handler="responseHandler"
 list = res.items;

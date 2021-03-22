@@ -22,6 +22,37 @@ function setModalityOptions(exam2doId){
     });
 }
 
+// crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
+function crud(table,id='0',req='POST',data) {
+    console.log(data);
+    var API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
+    var mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
+    $.ajax({
+        url: API_URL,
+        data: data,
+        contentType: 'application/json',
+        dataType: 'json',
+        method: req
+        })
+        .done(function(data) {
+            console.log(data);
+            status = data.status;
+            message = data.message;
+            errors = "";
+            if (data.status == "error") {
+                for (i in data.errors) {
+                    errors += data.errors[i]+'</br>';
+                };
+                text = errors;
+                displayToast('error',data.message,errors,'6000');
+            };
+            if (data.status == "success") {
+                text='User id: '+(req == 'DELETE'? id : data.id)+mode;
+                displayToast('success', table+' '+mode,text,'6000');
+            };
+        });
+}
+
 // get json data for modality options
 function getModalityOptions(exam2doId) {
     return Promise.resolve(
@@ -46,7 +77,7 @@ function getModalityOptions(exam2doId) {
 // reset add new item in worklist modal
 function resetWlForm() {
     // set default value for form
-    $("#request_time").val(new Date().addHours(1).toJSON().slice(0,19));
+    $("#requested_time").val(new Date().addHours(1).toJSON().slice(0,16)); // or 19
     $("[name=laterality]").val(["both"]);
     $("[name=status_flag]").val(["requested"]);
     let choice = $('select#exam2doSelect option:checked').val();
@@ -81,16 +112,16 @@ var wlItemsCounter = 0;
 // add new item in worklist format
 // TODO: remove status_flag -> only needed when modification
 $('#btnWlItemAdd').click(function() {
-    let formData = $('#newWlItemForm').serializeJSON();
-    formData = JSON.parse(formData); // from string to object
-    console.log('formData:',formData);
-    wlItemsJson.push(formData);
+    let formDataStr = $('#newWlItemForm').serializeJSON();
+    formDataObj = JSON.parse(formDataStr); // from string to object
+    console.log('formDataStr:',formDataStr);
+    wlItemsJson.push(formDataObj);
     console.log('wlItems:',wlItemsJson);
     wlItemsHtml['From'] = $('#sendingFacilitySelect :selected').text();
     wlItemsHtml['To'] = $('#receivingFacilitySelect :selected').text();
     wlItemsHtml['Procedure'] = $('#exam2doSelect :selected').text();
     wlItemsHtml['Provider'] = $('#providerSelect :selected').text();
-    wlItemsHtml['Timeslot'] = $('#request_time').val();
+    wlItemsHtml['Timeslot'] = $('#requested_time').val();
     // wlItemsHtml['Modality'] = $('#modality_destSelect :selected').text();
     // wlItemsHtml['side'] = $('input[name="laterality"]:checked').val();
     wlItemsHtml['Status'] = $('input[name="status_flag"]:checked').val();
@@ -98,18 +129,19 @@ $('#btnWlItemAdd').click(function() {
     wlItemsHtml['warning'] = $('input[name="warning"]').val();
     console.log('wlItemsHtml',wlItemsHtml);
     wlItemsCounter += 1;
-    appendWlItem(wlItemsHtml,wlItemsCounter);
+    appendWlItem(wlItemsHtml,wlItemsCounter,formDataStr);
 });
 
-function appendWlItem(arr,cnt) {
+function appendWlItem(arr,cnt,dataStr) {
     let html = '<tr id="wlItem'+ cnt + '">';
     for (item in arr) {
         html += '<td>' + arr[item] + '</td>';
     };
     html +='<td class="list-group-item"><button type="button" class="btn btn-danger btn-sm" onclick="delWlItemModal(\''+ cnt +'\');" data-index='+cnt+'><i class="far fa-trash-alt"></i></button></td>'
     html += '</tr>';
-    // console.log(html);
     $('#tbodyItems').append(html);
+    // set data-json attribute with row formDataStr
+    $('#wlItem'+cnt).data('json',dataStr);
 }
 
 function delWlItemModal(itemId){
@@ -149,3 +181,19 @@ function putWlModal(userId){
     $('#newWlItemModal h5.modal-title').html('Edit worklist item #'+userId);
     $('#newWlItemModal').modal('show');
 }
+
+// submit each wl items in wlItemsJson
+$('#newWlItemForm').submit(function(e) {
+    e.preventDefault();
+    for (let i = 1; i<=wlItemsCounter; i++) {
+        let el = "#wlItem"+parseInt(i);
+        if ($(el).length != 0) {
+            let itemDataObj = JSON.parse($(el).data().json);
+            let req = itemDataObj['methodWlItemSubmit'];
+            delete itemDataObj['methodWlItemSubmit'];
+            let itemDataStr = JSON.stringify(itemDataObj);
+            crud('worklist','0', req, itemDataStr);
+        }
+    };
+    $('#newWlItemModal').modal('hide');
+}); // end submit function
