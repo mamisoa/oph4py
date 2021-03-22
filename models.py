@@ -194,12 +194,15 @@ if db(db.exam2do_family.id > 1).count() == 0:
     db.exam2do_family.insert(id_exam2do="5", id_modality="13",id_modality_family="7")
     db.exam2do_family.insert(id_exam2do="6", id_modality="13",id_modality_family="7")
 
+
+# db.worklist.truncate()
+
 db.define_table('worklist',
     Field('id_auth_user', 'reference auth_user'),
     Field('sending_app','string', default = 'Oph4Py'),
     Field('sending_facility','reference facility', default = '1'),
-    Field('receving_app','string', default = 'Receving App'),
-    Field('receving_facility','reference facility', default = '1'),
+    Field('receiving_app','string', default = 'Receiving App'),
+    Field('receiving_facility','reference facility', default = '1'),
     Field('message_unique_id','string', default=str_uuid(), required=True),
     Field('exam2do', 'reference exam2do', required=True),
     Field('provider', 'reference auth_user', required=True),
@@ -212,15 +215,15 @@ db.define_table('worklist',
     auth.signature)
 
 db.worklist.laterality.requires=IS_IN_SET(['both', 'right', 'left', 'none'])
-
-query_sessions = db((db.auth_user.membership == 2)|(db.auth_user.membership == 3)|(db.auth_user.membership == 4))
-
-db.worklist.id_auth_user.requires=IS_IN_DB(db,'auth_user.id','%(first_name)s'+' '+'%(last_name)s')
-db.worklist.provider.requires=IS_IN_DB(db(query_sessions), 'auth_user.id', '%(first_name)s'+' '+'%(last_name)s' )
 db.worklist.status_flag.requires=IS_IN_SET(('requested', 'processing', 'done', 'cancelled'))
-db.worklist.exam2do.requires=IS_IN_DB(db,'exam2do.id', '%(exam_description)s')
-db.worklist.receving_facility.requires=IS_IN_DB(db,'facility.id', '%(facility_name)s' + ' ('+'%(id)s)')
-db.worklist.modality_dest.requires=IS_IN_DB(db,'modality.id', '%(modality_name)s')
+
+# query_sessions = db((db.auth_user.membership == 2)|(db.auth_user.membership == 3)|(db.auth_user.membership == 4))
+
+#  db.worklist.id_auth_user.requires=IS_IN_DB(db,'auth_user.id','%(first_name)s'+' '+'%(last_name)s')
+#  db.worklist.provider.requires=IS_IN_DB(db(query_sessions), 'auth_user.id', '%(first_name)s'+' '+'%(last_name)s' )
+# db.worklist.exam2do.requires=IS_IN_DB(db,'exam2do.id', '%(exam_description)s')
+# db.worklist.receiving_facility.requires=IS_IN_DB(db,'facility.id', '%(facility_name)s' + ' ('+'%(id)s)')
+# db.worklist.modality_dest.requires=IS_IN_DB(db,'modality.id', '%(modality_name)s')
 
 
 ################################################################

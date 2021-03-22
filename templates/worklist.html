@@ -41,13 +41,13 @@
             data-search-accent-neutralise="true"
             data-visible-search="false"
             data-data-field="items"
-            data-query-params="queryParams-wl"
+            data-query-params="queryParams_wl"
             data-total-field="count"
             >
             <thead class="thead-dark">
                 <th data-field="id" data-sortable="true">ID</th>
                 <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
-                <th data-field="receving_facility" data-title="Receving facility" data-sortable="true">Receving facility:</th>
+                <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">Receving facility:</th>
                 <th data-field="exam2do" data-searchable= "true" data-sortable="true">Procedure:</th>
                 <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
                 <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
@@ -231,8 +231,8 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="request_time" class="form-label">Timeslot:</label>
-                                            <input id="request_time" type="datetime-local" class="form-control" name="request_time">
+                                            <label for="requested_time" class="form-label">Timeslot:</label>
+                                            <input id="requested_time" type="datetime-local" step="1" class="form-control" name="requested_time">
                                             <div id="requestTimeHelp" class="form-text">Choose timeslot</div>
                                         </div>
                                         <div class="col">
@@ -330,7 +330,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="labelSubmit"for="btnNewUserSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="labelSubmit"for="btnNewWlItemSubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>
@@ -359,19 +359,21 @@ var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
 const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@order=~created_on'
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@order=~created_on@count=true';
+
+console.log(API_PROCEDURE_LIST);
 
 var $table = $('#table').bootstrapTable({
     url: API_USER_LIST,
     formatSearch: function () {
-    return 'Last name,first name, gender'
+    return 'Last name,first name, gender';
     }
 });
 
-var $table = $('#table').bootstrapTable({
+var $table_wl = $('#table-wl').bootstrapTable({
     url: API_PROCEDURE_LIST,
     formatSearch: function () {
-    return 'Exam, provider'
+    return 'Exam, provider';
     }
 });
 
