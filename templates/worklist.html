@@ -40,15 +40,14 @@
             data-search="true"
             data-search-accent-neutralise="true"
             data-visible-search="false"
-            data-data-field="items"
             data-query-params="queryParams_wl"
-            data-total-field="count"
+            data-response-handler="responseHandler_wl"
             >
             <thead class="thead-dark">
                 <th data-field="id" data-sortable="true">ID</th>
                 <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
                 <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">Receving facility:</th>
-                <th data-field="exam2do" data-searchable= "true" data-sortable="true">Procedure:</th>
+                <th data-field="procedure" data-searchable= "true" data-sortable="true">Procedure:</th>
                 <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
                 <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
                 <th data-field="laterality" data-sortable="true" data-searchable= "true">Laterality:</th>
@@ -56,7 +55,6 @@
                 <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
                 <th data-field="counter" data-searchable= "true" data-sortable="true">Counter:</th>
                 <th data-field="warning" data-searchable= "true" data-sortable="false">Warning:</th>
-                <th data-field="operate" data-formatter="operateFormatter-wl" data-events="operateEvents-wl">Action</th>
             </thead>
         </table>
       </div>
@@ -359,9 +357,10 @@ var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
 const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@order=~created_on@count=true';
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@order=~created_on&@count=true&@lookup=provider!:provider[first_name,last_name],exam2do!:exam2do,modality!:modality_dest[modality_name],receiving_facility!:receiving_facility[facility_name],sending_facility!:sending_facility[facility_name]';
 
 console.log(API_PROCEDURE_LIST);
+
 
 var $table = $('#table').bootstrapTable({
     url: API_USER_LIST,
@@ -373,9 +372,14 @@ var $table = $('#table').bootstrapTable({
 var $table_wl = $('#table-wl').bootstrapTable({
     url: API_PROCEDURE_LIST,
     formatSearch: function () {
-    return 'Exam, provider';
+        console.log("Hello");
+        return 'Procedure, provider';
     }
 });
+
+$(function(){
+});
+
 
 </script>
 <script src="js/wl.js"></script>

@@ -7,7 +7,7 @@ function queryParams_wl(params) {
         s_wl =""
     } else {
         if (search[0]!= undefined) {
-            s_wl = "exam2do.startswith=" + search[0];
+            s_wl = "exam2do.exam_name.startswith=" + capitalize(search[0]);
         } else {
             s_wl = "";
         }
@@ -31,11 +31,41 @@ function queryParams_wl(params) {
     }
     if (params.offset != "0") {
         console.log(params.offset);
-        s += "&@offset="+params.offset;
+        s_wl += "&@offset="+params.offset;
     }
     if (params.limit != "0") {
         console.log(params.offset);
-        s += "&@limit="+params.limit;
+        s_wl += "&@limit="+params.limit;
     }
+    console.log(s_wl);
     return decodeURI(encodeURI(s_wl));
+}
+
+function responseHandler_wl(res) { // used if data-response-handler="responseHandler_wl"
+    let list = res.items;
+    let nbrows = Object.keys(list).length;
+    let display = [];
+    $.each(list, function (i) {
+        // console.log('id',list[i].id);
+        display.push({
+            'id': list[i].id,
+            'sending_facility': list[i]['sending_facility.facility_name'],
+            'receiving_facility': list[i]['receiving_facility.facility_name'],
+            'provider': list[i]['provider.last_name']+' '+list[i]['provider.first_name'],
+            'procedure': list[i]['exam2do.exam_name'],
+            'modality': list[i]['modality.modality_name'],
+            'laterality': list[i]['laterality'],
+            'requested_time': list[i]['requested_time'],
+            'status_flag': list[i]['status_flag'],
+            'counter': list[i]['counter'],
+            'warning': list[i]['warning'],
+        });
+    });
+    console.log('display',display);
+    let test = [{"total": res.count, "items": display}];
+    console.log('test',test);
+    console.log(test[0]['items']);
+    return {    rows: display, 
+                total: res.count,
+                };
 }
