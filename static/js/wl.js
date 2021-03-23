@@ -191,6 +191,7 @@ $('#newWlItemForm').submit(function(e) {
             let itemDataObj = JSON.parse($(el).data().json);
             let req = itemDataObj['methodWlItemSubmit'];
             delete itemDataObj['methodWlItemSubmit'];
+            // TODO: get Routine and Glaucoma procedure -> multiple wl items
             let itemDataStr = JSON.stringify(itemDataObj);
             crud('worklist','0', req, itemDataStr);
             $table_wl.bootstrapTable('refresh');
