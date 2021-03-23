@@ -193,6 +193,7 @@ $('#newWlItemForm').submit(function(e) {
             delete itemDataObj['methodWlItemSubmit'];
             let itemDataStr = JSON.stringify(itemDataObj);
             crud('worklist','0', req, itemDataStr);
+            $table_wl.bootstrapTable('refresh');
         }
     };
     $('#newWlItemModal').modal('hide');
