@@ -115,6 +115,9 @@ $('#btnWlItemAdd').click(function() {
     let formDataStr = $('#newWlItemForm').serializeJSON();
     formDataObj = JSON.parse(formDataStr); // from string to object
     console.log('formDataStr:',formDataStr);
+    if (formDataObj['modality_dest'] == 13) { // get multiple modalities item
+        console.log('Multiple!');
+    };
     wlItemsJson.push(formDataObj);
     console.log('wlItems:',wlItemsJson);
     wlItemsHtml['From'] = $('#sendingFacilitySelect :selected').text();
