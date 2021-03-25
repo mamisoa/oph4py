@@ -140,6 +140,15 @@ def worklist():
         else:
             providerOptions = CAT(providerOptions, OPTION(provider.last_name + ' '+ provider.first_name,_value=str(provider.id)))
     providerOptions = XML(providerOptions) 
+    seniorOptions = ""
+    for senior in db((db.auth_user.membership >= 1) & (db.auth_user.membership <= 4)).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
+        if provider.last_name == 'Lloyd':  # make "House" as default option
+            seniorOptions = CAT(seniorrOptions, OPTION(
+                senior.last_name + ' ' + senior.first_name, _selected="selected", _value=str(senior.id)))
+        else:
+            seniorOptions = CAT(providerOptions, OPTION(
+                senior.last_name + ' ' + senior.first_name, _value=str(senior.id)))
+    seniorOptions = XML(seniorOptions)
     return locals()
 
 ## manage_db
