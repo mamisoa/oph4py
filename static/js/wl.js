@@ -146,6 +146,7 @@ function appendWlItem(dataStr,cnt) {
     // set data-json attribute with row formDataStr
     $('#wlItem'+cnt).data('json',dataStr);
     wlItemsCounter += 1;
+    console.log('wlItemsCounter',wlItemsCounter);
 }
 
 function delWlItemModal(itemId){
@@ -155,7 +156,7 @@ function delWlItemModal(itemId){
 function addToWorklist(userId) {
     // init form
     resetWlForm();
-    wlItemsCounter = 0;
+    // wlItemsCounter = 0;
     // show all input
     let show = ['wlItemAddDiv', 'wlItemsDiv']
     for (i in show) {
@@ -189,7 +190,7 @@ function putWlModal(userId){
 // submit each wl items in wlItemsJson
 $('#newWlItemForm').submit(function(e) {
     e.preventDefault();
-    for (let i = 1; i<=wlItemsCounter; i++) {
+    for (let i = 0; i<=wlItemsCounter+1; i++) {
         let el = "#wlItem"+parseInt(i);
         if ($(el).length != 0) {
             let itemDataObj = JSON.parse($(el).data().json);
@@ -198,8 +199,9 @@ $('#newWlItemForm').submit(function(e) {
             // TODO: get Routine and Glaucoma procedure -> multiple wl items
             let itemDataStr = JSON.stringify(itemDataObj);
             crud('worklist','0', req, itemDataStr);
-            $table_wl.bootstrapTable('refresh');
-        }
+            $(el).remove(); // remove wl item element when posted
+        };
+    $table_wl.bootstrapTable('refresh');
     };
     $('#newWlItemModal').modal('hide');
 }); // end submit function

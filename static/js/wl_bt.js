@@ -61,10 +61,10 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'warning': list[i]['warning'],
         });
     });
-    console.log('display',display);
+    // console.log('display',display);
     let test = [{"total": res.count, "items": display}];
-    console.log('test',test);
-    console.log(test[0]['items']);
+    // console.log('test',test);
+    // console.log(test[0]['items']);
     return {    rows: display, 
                 total: res.count,
                 };
