@@ -118,9 +118,45 @@ $('#btnWlItemAdd').click(function() {
     if (formDataObj['modality_dest'] == 13 ) {
         console.log('Multiple!');
         console.log('formDataObj',formDataObj);
+        getCombo(formDataObj['exam2do']).then(function(data) {
+            let arr = [];
+            console.log('dataitem:',data);
+            for (let i in data.items) {
+                console.log('multiple modality item:',data.items[i]['id_modality.id']);
+                arr.push(data.items[i]['id_modality.id']);
+            };
+            console.log(arr);
+            for (let a in arr) {
+                console.log('arr',a);
+                console.log('avant',formDataObj);
+                formDataObj['modality_dest']=arr[a];
+                console.log('après',formDataObj);
+            }
+        });
     };
     appendWlItem(formDataStr, wlItemsCounter);
 });
+
+function getCombo(id_exam2do) {
+    return Promise.resolve(
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: HOSTURL+"/myapp/api/combo?@lookup=id_exam2do!:id_exam2do[exam_name],id_modality!:id_modality&@count=true&id_exam2do="+id_exam2do,
+            success: function(data) {
+                if (data.status != 'error' || data.count) {
+                    displayToast('success', 'GET combo exams', 'GET'+data.items[0]['id_exam2do.exam_name']);
+                } else {
+                    displayToast('error', 'GET error', 'Cannot retrieve combo exams');
+                }
+            }, // success
+            error: function (er) {
+                console.log(er);
+            }
+        })
+    ); // promise
+};
+
 
 // arr = field content, cnt = row counter, dataStr = json data string type
 function appendWlItem(dataStr,cnt) {

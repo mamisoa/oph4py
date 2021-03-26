@@ -175,7 +175,7 @@ if db(db.exam2do.id > 1).count() == 0:
     db.exam2do.insert(loinc_code="biometryc66", exam_name="Optical biometry",exam_description="Optical biometry",cycle_num="1", procedure_seq="1")
     db.exam2do.insert(loinc_code="routinec66", exam_name="Routine consultation",exam_description="Routine consultation",cycle_num="1", procedure_seq="4")
     db.exam2do.insert(loinc_code="glaucoma1c66", exam_name="Glaucoma consultation",exam_description="Glaucoma consultation with visual field and OCT",cycle_num="1", procedure_seq="6")
-    db.exam2do.insert(loinc_code="routinec66", exam_name="Keratoconus consultation",exam_description="Keratoconus consultation with corneal mapping",cycle_num="1", procedure_seq="5")
+    db.exam2do.insert(loinc_code="keratoconusc66", exam_name="Keratoconus consultation",exam_description="Keratoconus consultation with corneal mapping",cycle_num="1", procedure_seq="5")
 
 db.define_table('exam2do_family', # many to many
     Field('id_exam2do', 'reference exam2do'),
@@ -194,6 +194,10 @@ if db(db.exam2do_family.id > 1).count() == 0:
     db.exam2do_family.insert(id_exam2do="5", id_modality="13",id_modality_family="7")
     db.exam2do_family.insert(id_exam2do="6", id_modality="13",id_modality_family="7")
 
+db.define_table('combo',
+    Field('id_exam2do','reference exam2do'),
+    Field('id_modality','reference modality'),
+    auth.signature)
 
 # db.worklist.truncate()
 
