@@ -117,6 +117,7 @@ $('#btnWlItemAdd').click(function() {
     wlItemsJson.push(formDataObj);
     if (formDataObj['modality_dest'] == 13 ) {
         console.log('Multiple!');
+        console.log('formDataObj',formDataObj);
     };
     appendWlItem(formDataStr, wlItemsCounter);
 });
