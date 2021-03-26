@@ -113,13 +113,14 @@ var wlItemsCounter = 0;
 // TODO: remove status_flag -> only needed when modification
 $('#btnWlItemAdd').click(function() {
     let formDataStr = $('#newWlItemForm').serializeJSON();
-    formDataObj = JSON.parse(formDataStr); // from string to object
-    console.log('formDataStr:',formDataStr);
-    if (formDataObj['modality_dest'] == 13) { // get multiple modalities item
-        console.log('Multiple!');
-    };
+    appendWlItem(formDataStr, wlItemsCounter);
+});
+
+// arr = field content, cnt = row counter, dataStr = json data string type
+function appendWlItem(dataStr,cnt) {
+    let formDataObj = JSON.parse(dataStr);
     wlItemsJson.push(formDataObj);
-    console.log('wlItems:',wlItemsJson);
+    console.log('wlItems:', wlItemsJson);
     wlItemsHtml['From'] = $('#sendingFacilitySelect :selected').text();
     wlItemsHtml['To'] = $('#receivingFacilitySelect :selected').text();
     wlItemsHtml['Procedure'] = $('#exam2doSelect :selected').text();
@@ -130,21 +131,17 @@ $('#btnWlItemAdd').click(function() {
     wlItemsHtml['Status'] = $('input[name="status_flag"]:checked').val();
     wlItemsHtml['Counter'] = $('input[name="counter"]').val();
     wlItemsHtml['warning'] = $('input[name="warning"]').val();
-    console.log('wlItemsHtml',wlItemsHtml);
-    wlItemsCounter += 1;
-    appendWlItem(wlItemsHtml,wlItemsCounter,formDataStr);
-});
-
-function appendWlItem(arr,cnt,dataStr) {
+    console.log('wlItemsHtml', wlItemsHtml);
     let html = '<tr id="wlItem'+ cnt + '">';
-    for (item in arr) {
-        html += '<td>' + arr[item] + '</td>';
+    for (item in wlItemsHtml) {
+        html += '<td>' + wlItemsHtml[item] + '</td>';
     };
     html +='<td class="list-group-item"><button type="button" class="btn btn-danger btn-sm" onclick="delWlItemModal(\''+ cnt +'\');" data-index='+cnt+'><i class="far fa-trash-alt"></i></button></td>'
     html += '</tr>';
     $('#tbodyItems').append(html);
     // set data-json attribute with row formDataStr
     $('#wlItem'+cnt).data('json',dataStr);
+    wlItemsCounter += 1;
 }
 
 function delWlItemModal(itemId){
