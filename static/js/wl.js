@@ -199,7 +199,7 @@ $('#newWlItemForm').submit(function(e) {
             // TODO: get Routine and Glaucoma procedure -> multiple wl items
             let itemDataStr = JSON.stringify(itemDataObj);
             crud('worklist','0', req, itemDataStr);
-            $(el).remove(); // remove wl item element when posted
+            $(el).remove(); // remove wl item element node when posted
         };
     $table_wl.bootstrapTable('refresh');
     };
