@@ -113,13 +113,16 @@ var wlItemsCounter = 0;
 // TODO: remove status_flag -> only needed when modification
 $('#btnWlItemAdd').click(function() {
     let formDataStr = $('#newWlItemForm').serializeJSON();
+    let formDataObj = JSON.parse(formDataStr);
+    wlItemsJson.push(formDataObj);
+    if (formDataObj['modality_dest'] == 13 ) {
+        console.log('Multiple!');
+    };
     appendWlItem(formDataStr, wlItemsCounter);
 });
 
 // arr = field content, cnt = row counter, dataStr = json data string type
 function appendWlItem(dataStr,cnt) {
-    let formDataObj = JSON.parse(dataStr);
-    wlItemsJson.push(formDataObj);
     console.log('wlItems:', wlItemsJson);
     wlItemsHtml['From'] = $('#sendingFacilitySelect :selected').text();
     wlItemsHtml['To'] = $('#receivingFacilitySelect :selected').text();
