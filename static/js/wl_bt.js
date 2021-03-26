@@ -1,6 +1,6 @@
 // set parameters for ajax request from bootstrap-table
 var s_wl="";
-var toggle_wl=""
+var toggle_wl="";
 function queryParams_wl(params) {
     search = params.search.split(",");
     if (search == [""]) {
@@ -39,7 +39,7 @@ function queryParams_wl(params) {
     }
     console.log(s_wl);
     return decodeURI(encodeURI(s_wl));
-}
+};
 
 function responseHandler_wl(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
@@ -68,4 +68,50 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
     return {    rows: display, 
                 total: res.count,
                 };
-}
+};
+
+function operateFormatter_wl(value, row, index) {
+    return [
+        '<a class="edit" href="javascript:void(0)" title="Edit user">',
+        '<i class="fas fa-edit"></i>',
+        '</a>  ',
+        '<a class="remove ms-1" href="javascript:void(0)" title="Remove">',
+        '<i class="fas fa-trash-alt"></i>',
+        '</a>'
+    ].join('')
+  };
+
+window.operateEvents_wl = {
+    'click .edit': function (e, value, row, index) {
+      console.log('You click action EDIT on row: ' + JSON.stringify(row));
+    },
+    'click .remove': function (e, value, row, index) {
+        delWlItem(row.id);
+    }
+};
+
+function delWlItem (id) {
+    bootbox.confirm({
+        message: "Are you sure you want to delete this worklist item?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-danger'
+            }
+        },
+        callback: function (result) {
+            if (result == true) {
+                crud('worklist',id,'DELETE');
+                // console.log('Row.id deleted:'+id);
+                $table_wl.bootstrapTable('refresh');
+            } else {
+                console.log('This was logged in the callback: ' + result);
+            }
+        }
+    });
+};

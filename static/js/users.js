@@ -43,7 +43,7 @@ function crudUser(id='0',req='POST',data) {
                 displayToast('success','User '+mode,text,'6000');
             };
         });
-}
+};
 
 function delUser (id) {
     bootbox.confirm({
@@ -68,7 +68,7 @@ function delUser (id) {
             }
         }
     });
-}
+};
 
 
 // btn new user before opening modal : clear form, set default generated password
@@ -86,17 +86,17 @@ $( "#btnNewUser" ).click(function() {
 // normalize accented characters
 function norm(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
+};
 
 // Capitalize first character
 function capitalize(str) {
     return str.trim().replace(/^\w/, (c) => c.toUpperCase());
-}
+};
 
 // password generator
 function passGen() {
     return Math.random().toString(36)+Math.random().toString(36).toUpperCase().split('').sort(function(){return 0.5-Math.random()}).join('')
-}
+};
 
 // get age
 function getAge(dateString) {
@@ -108,4 +108,4 @@ function getAge(dateString) {
         age--;
     }
     return age;
-}
+};
