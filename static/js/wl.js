@@ -178,6 +178,7 @@ function appendWlItem(dataStr,cnt) {
     wlItemsHtml['To'] = $('#receivingFacilitySelect :selected').text();
     wlItemsHtml['Procedure'] = $('#exam2doSelect :selected').text();
     wlItemsHtml['Provider'] = $('#providerSelect :selected').text();
+    wlItemsHtml['Senior'] = $('#seniorSelect :selected').text();
     wlItemsHtml['Timeslot'] = $('#requested_time').val();
     // wlItemsHtml['Modality'] = $('#modality_destSelect :selected').text();
     // wlItemsHtml['side'] = $('input[name="laterality"]:checked').val();
@@ -185,13 +186,17 @@ function appendWlItem(dataStr,cnt) {
     wlItemsHtml['Counter'] = $('input[name="counter"]').val();
     wlItemsHtml['warning'] = $('input[name="warning"]').val();
     console.log('wlItemsHtml', wlItemsHtml);
+    let head = '<tr>';
     let html = '<tr id="wlItem'+ cnt + '">';
     for (item in wlItemsHtml) {
+        head += '<th scope="col">'+ item + '</th>'
         html += '<td>' + wlItemsHtml[item] + '</td>';
     };
     html +='<td class="list-group-item"><button type="button" class="btn btn-danger btn-sm" onclick="delWlItemModal(\''+ cnt +'\');" data-index='+cnt+'><i class="far fa-trash-alt"></i></button></td>'
     html += '</tr>';
+    head += '<tr>';
     $('#tbodyItems').append(html);
+    $('#theadItems').html(head);
     // set data-json attribute with row formDataStr
     $('#wlItem'+cnt).data('json',dataStr);
     wlItemsCounter += 1;

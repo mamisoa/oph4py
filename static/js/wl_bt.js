@@ -7,12 +7,12 @@ function queryParams_wl(params) {
         s_wl =""
     } else {
         if (search[0]!= undefined) {
-            s_wl = "exam2do.exam_name.startswith=" + capitalize(search[0]);
+            s_wl = "id_auth_user.last_name.startswith=" + capitalize(search[0]);
         } else {
             s_wl = "";
         }
         if (search[1]!= undefined) {
-            s_wl += "&provider.last_name.startswith=" + capitalize(search[1]);
+            s_wl += "&id_auth_user.first_name.startswith=" + capitalize(search[1]);
         } else {
             s_wl +="";
         }
@@ -21,12 +21,21 @@ function queryParams_wl(params) {
         if (params.sort == "id") {
             params.sort = "id";
         }
-        if (toggle=="") {
-            s += "&@order="+params.sort;
-            toggle="~";
+        if (params.sort == "modality") {
+            params.sort = "modality_dest";
+        }
+        if (params.sort == "procedure") {
+            params.sort = "exam2do";
+        }
+        if (params.sort == "patient") {
+            params.sort = "id_auth_user";
+        }
+        if (toggle_wl=="") {
+            s_wl += "&@order="+params.sort;
+            toggle_wl="~";
         } else {
-            s += "&@order=~"+params.sort;
-            toggle="";
+            s_wl += "&@order=~"+params.sort;
+            toggle_wl="";
         }
     }
     if (params.offset != "0") {
@@ -37,7 +46,7 @@ function queryParams_wl(params) {
         console.log(params.offset);
         s_wl += "&@limit="+params.limit;
     }
-    console.log(s_wl);
+    console.log('s_wl',s_wl);
     return decodeURI(encodeURI(s_wl));
 };
 
@@ -51,7 +60,9 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'id': list[i].id,
             'sending_facility': list[i]['sending_facility.facility_name'],
             'receiving_facility': list[i]['receiving_facility.facility_name'],
+            'patient': list[i]['id_auth_user.last_name']+' '+list[i]['id_auth_user.first_name'],
             'provider': list[i]['provider.last_name']+' '+list[i]['provider.first_name'],
+            'senior': list[i]['senior.last_name']+' '+list[i]['senior.first_name'],
             'procedure': list[i]['exam2do.exam_name'],
             'modality': list[i]['modality.modality_name'],
             'laterality': list[i]['laterality'],
