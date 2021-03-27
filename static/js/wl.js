@@ -109,32 +109,45 @@ $(".btn.counter_up").click(function() {
 var wlItemsJson = [];
 var wlItemsHtml = [];
 var wlItemsCounter = 0;
+var temp;
 // add new item in worklist format
 // TODO: remove status_flag -> only needed when modification
 $('#btnWlItemAdd').click(function() {
     let formDataStr = $('#newWlItemForm').serializeJSON();
     let formDataObj = JSON.parse(formDataStr);
+    let formDataObjMultiple = [];
     wlItemsJson.push(formDataObj);
+    // console.log('wlItemsJson',wlItemsJson); // not used
+    // console.log('formDataObj before',formDataObj);
     if (formDataObj['modality_dest'] == 13 ) {
         console.log('Multiple!');
-        console.log('formDataObj',formDataObj);
-        getCombo(formDataObj['exam2do']).then(function(data) {
-            let arr = [];
-            console.log('dataitem:',data);
-            for (let i in data.items) {
-                console.log('multiple modality item:',data.items[i]['id_modality.id']);
-                arr.push(data.items[i]['id_modality.id']);
-            };
-            console.log(arr);
-            for (let a in arr) {
-                console.log('arr',a);
-                console.log('avant',formDataObj);
-                formDataObj['modality_dest']=arr[a];
-                console.log('après',formDataObj);
-            }
-        });
-    };
-    appendWlItem(formDataStr, wlItemsCounter);
+        // console.log('formDataObj in if',formDataObj);
+        getCombo(formDataObj['exam2do'])
+            .then(function(data) {
+                let arr = [];
+                console.log('dataitem:',data);
+                for (let i in data.items) {
+                    console.log('multiple modality item:',data.items[i]['id_modality.id']);
+                    arr.push(data.items[i]['id_modality.id']);
+                };
+                console.log('arr=',arr);
+                let o;
+                for (let a in arr) {
+                    o = Object.assign({},formDataObj);
+                    // console.log('arr=',arr[a]);
+                    o['modality_dest']=arr[a];
+                    formDataObjMultiple.push(o);
+                    // console.log('Object:',o);
+                };
+                for (let f in formDataObjMultiple) {
+                    console.log('formDataObjMultiple['+f+']', JSON.stringify(formDataObjMultiple[f]));
+                    appendWlItem(JSON.stringify(formDataObjMultiple[f]), wlItemsCounter);
+                };
+            }); // end getCombo
+        console.log('formDataObjMultiple:',formDataObjMultiple);
+    } else {
+        appendWlItem(formDataStr, wlItemsCounter);
+    }
 });
 
 function getCombo(id_exam2do) {
@@ -154,7 +167,7 @@ function getCombo(id_exam2do) {
                 console.log(er);
             }
         })
-    ); // promise
+    ); // promise return data
 };
 
 
