@@ -52,7 +52,7 @@
                 <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
                 <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
                 <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
-                <th data-field="laterality" data-sortable="true" data-searchable= "false">Laterality:</th>
+                <th data-field="laterality" data-sortable="false" data-searchable= "false">Laterality:</th>
                 <th data-field="requested_time" data-sortable="true" data-searchable= "true">Timeslot:</th>
                 <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
                 <th data-field="counter" data-searchable= "true" data-sortable="true">Counter:</th>
@@ -357,7 +357,7 @@ var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
 const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@order=~created_on@count=true&@lookup=id_auth_user!:id_auth_user[first_name,last_name],provider!:provider[first_name,last_name],exam2do!:exam2do,modality!:modality_dest[modality_name],receiving_facility!:receiving_facility[facility_name],sending_facility!:sending_facility[facility_name],senior!:senior[first_name,last_name]&@order=~created_on';
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[first_name,last_name],provider!:provider[first_name,last_name],exam2do!:exam2do,modality!:modality_dest[modality_name],receiving_facility!:receiving_facility[facility_name],sending_facility!:sending_facility[facility_name],senior!:senior[first_name,last_name]&@order=~created_on';
 
 console.log(API_PROCEDURE_LIST);
 
