@@ -174,6 +174,7 @@ function getCombo(id_exam2do) {
     ); // promise return data
 };
 
+// TODO: put in useful functions
 function getUuid() {
     return Promise.resolve(
         $.ajax({
