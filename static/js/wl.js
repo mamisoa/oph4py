@@ -128,7 +128,7 @@ $('#btnWlItemAdd').click(function() {
                 console.log('dataitem:',data);
                 for (let i in data.items) {
                     console.log('multiple modality item:',data.items[i]['id_modality.id']);
-                    arr.push(data.items[i]['id_modality.id']);
+                    arr[data.items[i]['id_modality.modality_name']]=data.items[i]['id_modality.id'];
                 };
                 console.log('arr=',arr);
                 let o;
@@ -136,12 +136,16 @@ $('#btnWlItemAdd').click(function() {
                     o = Object.assign({},formDataObj);
                     // console.log('arr=',arr[a]);
                     o['modality_dest']=arr[a];
+                    o['modality_name']= a;
                     formDataObjMultiple.push(o);
                     // console.log('Object:',o);
                 };
                 for (let f in formDataObjMultiple) {
-                    console.log('formDataObjMultiple['+f+']', JSON.stringify(formDataObjMultiple[f]));
-                    appendWlItem(JSON.stringify(formDataObjMultiple[f]), wlItemsCounter);
+                    let modalityName = formDataObjMultiple[f]['modality_name'];
+                    delete formDataObjMultiple[f]['modality_name'];
+                    let formDataObjMultipleStr = JSON.stringify(formDataObjMultiple[f]);
+                    console.log('formDataObjMultiple['+f+']', formDataObjMultipleStr);
+                    appendWlItem(JSON.stringify(formDataObjMultiple[f]), wlItemsCounter, modalityName);
                 };
             }); // end getCombo
         console.log('formDataObjMultiple:',formDataObjMultiple);
@@ -172,15 +176,20 @@ function getCombo(id_exam2do) {
 
 
 // arr = field content, cnt = row counter, dataStr = json data string type
-function appendWlItem(dataStr,cnt) {
+function appendWlItem(dataStr,cnt, modalityName) {
     console.log('wlItems:', wlItemsJson);
+    console.log('modality Name:', modalityName );
     wlItemsHtml['From'] = $('#sendingFacilitySelect :selected').text();
     wlItemsHtml['To'] = $('#receivingFacilitySelect :selected').text();
     wlItemsHtml['Procedure'] = $('#exam2doSelect :selected').text();
     wlItemsHtml['Provider'] = $('#providerSelect :selected').text();
     wlItemsHtml['Senior'] = $('#seniorSelect :selected').text();
     wlItemsHtml['Timeslot'] = $('#requested_time').val();
-    // wlItemsHtml['Modality'] = $('#modality_destSelect :selected').text();
+    if (modalityName != undefined) {
+        wlItemsHtml['Modality'] = modalityName;
+    } else {
+        wlItemsHtml['Modality'] = $('#modality_destSelect :selected').text();
+    }
     // wlItemsHtml['side'] = $('input[name="laterality"]:checked').val();
     wlItemsHtml['Status'] = $('input[name="status_flag"]:checked').val();
     wlItemsHtml['Counter'] = $('input[name="counter"]').val();
