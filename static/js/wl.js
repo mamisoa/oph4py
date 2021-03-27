@@ -174,6 +174,26 @@ function getCombo(id_exam2do) {
     ); // promise return data
 };
 
+function getUuid() {
+    return Promise.resolve(
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: HOSTURL+"/myapp/api/uuid",
+            success: function(data) {
+                if (data.unique_id != undefined) {
+                    displayToast('success', 'GET uuid', 'GET uuid:'+data.items['unique_id']);
+                } else {
+                    displayToast('error', 'GET error', 'Cannot retrieve uuid');
+                }
+            }, // success
+            error: function (er) {
+                console.log(er);
+            }
+        })
+    ); // promise return data
+};
+
 
 // arr = field content, cnt = row counter, dataStr = json data string type
 function appendWlItem(dataStr,cnt, modalityName) {
@@ -259,10 +279,13 @@ $('#newWlItemForm').submit(function(e) {
             let itemDataObj = JSON.parse($(el).data().json);
             let req = itemDataObj['methodWlItemSubmit'];
             delete itemDataObj['methodWlItemSubmit'];
-            // TODO: get Routine and Glaucoma procedure -> multiple wl items
-            let itemDataStr = JSON.stringify(itemDataObj);
-            crud('worklist','0', req, itemDataStr);
-            $(el).remove(); // remove wl item element node when posted
+            getUuid().then(function(uuid) {
+                itemDataObj["message_unique_id"] = uuid.unique_id;
+                console.log('messageuuid:',itemDataObj["message_unique_id"]);
+                let itemDataStr = JSON.stringify(itemDataObj);
+                crud('worklist','0', req, itemDataStr);
+                $(el).remove(); // remove wl item element node when posted
+            })
         };
     $table_wl.bootstrapTable('refresh');
     };

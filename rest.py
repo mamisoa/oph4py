@@ -44,7 +44,7 @@ def generate_unique_id():
     response = bottle.response
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     unique_id = str(uuid.uuid4().hex)
-    return json.dumps({"unique_id: ": unique_id})
+    return json.dumps({"unique_id": unique_id})
 
 @action('api/beid', method=['GET'])
 def beid():
