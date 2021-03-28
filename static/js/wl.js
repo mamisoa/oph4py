@@ -139,7 +139,6 @@ $('#btnWlItemAdd').click(function() {
     let formDataObj = JSON.parse(formDataStr);
     delete formDataObj['modality_destPut']; // used for PUT request
     delete formDataObj['idWl']; // no Id when new Item
-    formDataStr = JSON.stringify(formDataObj);
     let formDataObjMultiple = [];
     wlItemsJson.push(formDataObj);
     // console.log('wlItemsJson',wlItemsJson); // not used
@@ -179,6 +178,9 @@ $('#btnWlItemAdd').click(function() {
             }); // end getCombo
         console.log('formDataObjMultiple:',formDataObjMultiple);
     } else {
+        delete formDataObj['modality_name']; // only to get modality name
+        delete formDataObj['id']; // only for put request
+        formDataStr = JSON.stringify(formDataObj);
         appendWlItem(formDataStr, wlItemsCounter);
     }
 });
