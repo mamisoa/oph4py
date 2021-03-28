@@ -95,6 +95,7 @@ function operateFormatter_wl(value, row, index) {
 window.operateEvents_wl = {
     'click .edit': function (e, value, row, index) {
       console.log('You click action EDIT on row: ' + JSON.stringify(row));
+      putWlModal(row.id);
     },
     'click .remove': function (e, value, row, index) {
         delWlItem(row.id);
