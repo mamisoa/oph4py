@@ -149,6 +149,7 @@ def worklist():
             seniorOptions = CAT(seniorOptions, OPTION(
                 senior.last_name + ' ' + senior.first_name, _value=str(senior.id)))
     seniorOptions = XML(seniorOptions)
+    everyModalityOptions = dropdownSelect(db.modality,db.modality.fields[1],1)
     return locals()
 
 ## manage_db

@@ -115,6 +115,9 @@ var temp;
 $('#btnWlItemAdd').click(function() {
     let formDataStr = $('#newWlItemForm').serializeJSON();
     let formDataObj = JSON.parse(formDataStr);
+    delete formDataObj['modality_destPut']; // used for PUT request
+    delete formDataObj['idWl']; // no Id when new Item
+    formDataStr = JSON.stringify(formDataObj);
     let formDataObjMultiple = [];
     wlItemsJson.push(formDataObj);
     // console.log('wlItemsJson',wlItemsJson); // not used
@@ -133,7 +136,7 @@ $('#btnWlItemAdd').click(function() {
                 console.log('arr=',arr);
                 let o;
                 for (let a in arr) {
-                    o = Object.assign({},formDataObj);
+                    o = Object.assign({},formDataObj); // clone formDataObj
                     // console.log('arr=',arr[a]);
                     o['modality_dest']=arr[a];
                     o['modality_name']= a; // only to get modality name
@@ -143,6 +146,7 @@ $('#btnWlItemAdd').click(function() {
                 for (let f in formDataObjMultiple) {
                     let modalityName = formDataObjMultiple[f]['modality_name'];
                     delete formDataObjMultiple[f]['modality_name']; // only to get modality name
+                    delete formDataObjMultiple[f]['id']; // only for put request
                     let formDataObjMultipleStr = JSON.stringify(formDataObjMultiple[f]);
                     console.log('formDataObjMultiple['+f+']', formDataObjMultipleStr);
                     appendWlItem(JSON.stringify(formDataObjMultiple[f]), wlItemsCounter, modalityName);
@@ -197,6 +201,8 @@ function getUuid() {
 
 
 // arr = field content, cnt = row counter, dataStr = json data string type
+// create wlItemsHtml for display
+// create wlItemsHtml for display
 function appendWlItem(dataStr,cnt, modalityName) {
     console.log('wlItems:', wlItemsJson);
     console.log('modality Name:', modalityName );
@@ -237,6 +243,7 @@ function delWlItemModal(itemId){
     $('#wlItem'+itemId).remove();
 }
 
+// not used ?
 function addToWorklist(userId) {
     // init form
     resetWlForm();
@@ -247,7 +254,7 @@ function addToWorklist(userId) {
         hideDiv('#'+show[i],'visually-hidden','remove');
     };
     $('#tbodyItems').html('');
-    $('#idWlItemSubmit').val(userId);
+    $('#idPatientWl').val(userId);
     // open modal
     $('#newWlItemModal').modal('show');
 }
@@ -257,7 +264,29 @@ function hideDiv(e,c,req) {
     req == 'add' ? $(e).addClass(c) : $(e).removeClass(c);
 }
 
-function putWlModal(userId){
+// get item details for put request
+function getWlItemDetails(wl_id) {
+    return Promise.resolve(
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: HOSTURL+"/myapp/api/worklist/"+wl_id+"?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name]",
+            success: function(data) {
+                if (data.status != 'error') {
+                    displayToast('success', 'GET wl details', 'GET wl details from id :'+wl_id,6000);
+                } else {
+                    displayToast('error', 'GET error', 'Cannot retrieve wl details');
+                }
+            }, // success
+            error: function (er) {
+                console.log(er);
+            }
+        })
+    ); // promise return data
+};
+
+// set modal for PUT request wl
+function putWlModal(wlId){
     // init form
     resetWlForm();
     wlItemsCounter = 0;
@@ -267,28 +296,63 @@ function putWlModal(userId){
     for (i in hide) {
         hideDiv('#'+hide[i],'visually-hidden','add');
     };
-    $('#newWlItemModal h5.modal-title').html('Edit worklist item #'+userId);
+    $('#newWlItemModal h5.modal-title').html('Edit worklist item #'+wlId);
+    hideDiv('#modality_destDiv', 'visually-hidden','add');
+    hideDiv('#modality_destPutDiv', 'visually-hidden','remove');
+    getWlItemDetails(wlId)
+        .then(function (data) {
+            let field=data.items[0];
+            document.getElementById("newWlItemForm").reset();
+            document.getElementById("sendingFacilitySelect").value= field['sending_facility.id'];
+            document.getElementById("receivingFacilitySelect").value= field['receiving_facility.id'];
+            document.getElementById("exam2doSelect").value= field['exam2do.id'];
+            document.getElementById("providerSelect").value= field['provider.id'];
+            document.getElementById("seniorSelect").value= field['senior.id'];
+            document.getElementById("requested_time").value= field['requested_time'];
+            document.getElementById("modality_destSelectPut").value= field['modality.id'];
+            $("[name=laterality]").val([field.laterality]);
+            $("[name=status_flag]").val([field.status_flag]);
+            $("[name=counter]").val([field.counter]);
+            document.getElementById("warning").value= field['warning'];
+            document.getElementById("idPatientWl").value= field['id_auth_user.id'];
+            document.getElementById("idWl").value= wlId;
+            document.getElementById("methodWlItemSubmit").value= 'PUT';
+        });
     $('#newWlItemModal').modal('show');
 }
 
 // submit each wl items in wlItemsJson
 $('#newWlItemForm').submit(function(e) {
     e.preventDefault();
-    for (let i = 0; i<=wlItemsCounter+1; i++) {
-        let el = "#wlItem"+parseInt(i);
-        if ($(el).length != 0) {
-            let itemDataObj = JSON.parse($(el).data().json);
-            let req = itemDataObj['methodWlItemSubmit'];
-            delete itemDataObj['methodWlItemSubmit'];
-            getUuid().then(function(uuid) {
-                itemDataObj["message_unique_id"] = uuid.unique_id;
-                console.log('messageuuid:',itemDataObj["message_unique_id"]);
-                let itemDataStr = JSON.stringify(itemDataObj);
-                crud('worklist','0', req, itemDataStr);
-                $(el).remove(); // remove wl item element node when posted
-            })
-        };
-    };
+    let req = $('#methodWlItemSubmit').val();
+    if (req =='POST') {
+        for (let i = 0; i<=wlItemsCounter+1; i++) {
+            let el = "#wlItem"+parseInt(i);
+            if ($(el).length != 0) {
+                let itemDataObj = JSON.parse($(el).data().json);
+                delete itemDataObj['methodWlItemSubmit'];
+                getUuid().then(function(uuid) {
+                    itemDataObj["message_unique_id"] = uuid.unique_id;
+                    console.log('messageuuid:',itemDataObj["message_unique_id"]);
+                    let itemDataStr = JSON.stringify(itemDataObj);
+                    crud('worklist','0', req, itemDataStr);
+                    $(el).remove(); // remove wl item element node when posted
+                })
+            };
+        }; // end for loop
+    } else if (req=='PUT') {
+        let itemDataPutStr = $('#newWlItemForm').serializeJSON();
+        let itemDataPutObj = JSON.parse(itemDataPutStr);
+        delete itemDataPutObj['methodWlItemSubmit'];
+        delete itemDataPutObj['modality_dest'];
+        itemDataPutObj['modality_dest']=itemDataPutObj['modality_destPut'];
+        delete itemDataPutObj['modality_destPut'];
+        itemDataPutStr = JSON.stringify(itemDataPutObj);
+        console.log('PUT data:',itemDataPutObj);
+        crud('worklist','0','PUT',itemDataPutStr);
+        hideDiv('#modality_destPutDiv', 'visually-hidden','add');
+        hideDiv('#modality_destDiv', 'visually-hidden','remove');
+    }
     $table_wl.bootstrapTable('refresh');
     $('#newWlItemModal').modal('hide');
 }); // end submit function

@@ -243,13 +243,18 @@
                                             <input id="requested_time" type="datetime-local" step="1" class="form-control" name="requested_time">
                                             <div id="requestTimeHelp" class="form-text">Choose timeslot</div>
                                         </div>
-                                        <div class="col">
+                                        <div class="col" id="modality_destDiv">
                                             <label for="modality_dest" class="form-label">Modality:</label>
                                             <select id="modality_destSelect" class="form-select" name="modality_dest">
-                                                <option value="text exam1">Exam test 1</option>
-                                                <option value="text exam2" selected>Exam test 2</option>
                                             </select>
                                             <div id="modality_destHelp" class="form-text">Choose modality</div>
+                                        </div>
+                                        <div class="col visually-hidden" id="modality_destPutDiv">
+                                            <label for="modality_destPut" class="form-label">Modality:</label>
+                                            <select id="modality_destSelectPut" class="form-select" name="modality_destPut">
+                                                [[ =everyModalityOptions]]
+                                            </select>
+                                            <div id="modality_destHelpPUT" class="form-text">Choose modality</div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -302,7 +307,8 @@
                                             <button id="btnWlItemAdd" class="btn btn-primary" type="button">Add item to worklist <i class="fas fa-plus"></i></button>
                                         </div>                                        
                                     </div>
-                                    <input id="idWlItemSubmit" type="text" class="visually-hidden" name="id_auth_user"/>
+                                    <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                                    <input id="idWl" type="text" class="visually-hidden" name="id"/>
                                     <input id="methodWlItemSubmit" type="text" class="visually-hidden" name="methodWlItemSubmit" value="POST"/>
                                     <input id="btnNewWlItemSubmit" type="submit" class="visually-hidden" />
                                 </div>    <!--end container form  -->                            
