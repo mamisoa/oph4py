@@ -91,6 +91,9 @@ function operateFormatter_wl(value, row, index) {
         '</a>',
         '<a class="done ms-1" href="javascript:void(0)" title="Remove">',
         '<i class="fas fa-check"></i>',
+        '</a>',
+        '<a class="stopwatch ms-1" href="javascript:void(0)" title="Remove">',
+        '<i class="fas fa-stopwatch"></i>',
         '</a>'
     ].join('')
   };
@@ -103,13 +106,29 @@ window.operateEvents_wl = {
     'click .remove': function (e, value, row, index) {
         delWlItem(row.id);
     },
+    'click .stopwatch': function (e, value, row, index) {
+        let dataObj = { 'laterality': row.laterality, 'id': row.id };
+        let dataStr;
+        if ( (row.counter > 0) && (row.status_flag != 'cancelled') ) {
+            if (row.counter == 1) {
+                dataObj['status_flag'] = 'done';
+                dataObj['counter'] = 0;
+            } else if (row.counter > 1) {
+                dataObj['counter'] = row.counter-1;
+                dataObj['status_flag'] = 'processing';
+            }
+            dataStr = JSON.stringify(dataObj);
+            setWlItemStatus(dataStr);
+        }
+    },
     'click .done': function (e, value, row, index) {
         let dataObj = { 'laterality': row.laterality, 'id': row.id };
         let dataStr;
         if (row.status_flag != 'done') {
             dataObj['status_flag'] = 'done';
+            dataObj['counter'] = 0;
             dataStr = JSON.stringify(dataObj);
-            setWlItemToDone(dataStr);
+            setWlItemStatus(dataStr);
         }
     }
 };
