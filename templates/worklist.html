@@ -35,7 +35,7 @@
             data-side-pagination="server"
             data-show-refresh="true"
             data-pagination="true"
-            data-page-size="10"
+            data-page-size="100"
             data-show-columns="true"
             data-search="true"
             data-search-accent-neutralise="true"
@@ -385,6 +385,11 @@ var $table_wl = $('#table-wl').bootstrapTable({
         return 'Last name,first name,procedure';
     }
 });
+
+// hide columns in wl table: id, sending_facility, receiving_facility
+$table_wl.bootstrapTable('hideColumn','id');
+$table_wl.bootstrapTable('hideColumn','sending_facility');
+$table_wl.bootstrapTable('hideColumn','receiving_facility');
 
 $(function(){
 });
