@@ -150,6 +150,10 @@ def worklist():
                 senior.last_name + ' ' + senior.first_name, _value=str(senior.id)))
     seniorOptions = XML(seniorOptions)
     everyModalityOptions = dropdownSelect(db.modality,db.modality.fields[1],1)
+    modalityRows = db(db.modality).select(db.modality.modality_name,db.modality.id_modality_controller)
+    modalityDict = {}
+    for row in modalityRows:
+        modalityDict[row.modality_name] = row.id_modality_controller
     return locals()
 
 ## manage_db
