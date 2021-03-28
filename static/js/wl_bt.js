@@ -182,3 +182,19 @@ function counterFormatter_wl(value,row){
     html.push('</div>');
     return html.join('');
 }
+
+function rowAttributes_wl(row,index) { // set tooltip values
+    row.created_by == '' ? createdby = 'created by <strong>unknown</strong>' : createdby = 'created by <strong>'+row.created_by+'</strong>';
+    row.created_on == '' ? createdon = ' on <strong>unknown date</strong>' : createdon = ' on <strong>'+row.created_on+'</strong>';
+    row.modified_by == '' ? modifiedby = ' modified by <strong>unknown</strong>' : modifiedby = ' modified by <strong>'+row.modified_by+'</strong>';
+    row.modified_on == '' ? modifiedon = ' on <strong>unknown date</strong>' : modifiedon = ' on <strong>'+row.modified_on+'</strong>';
+    let html = ['<div class="container"><div class="row">'];
+    html.push(['<div class="col">'+createdby+createdon+'</div>']);
+    html.push(['<div class="col">'+modifiedby+modifiedon+'</div>']);
+    html.push('</div></div>');
+    html.join('');
+    return { 
+        "data-bs-html": html,
+        "data-bs-toggle": "tooltip"
+    };
+}
