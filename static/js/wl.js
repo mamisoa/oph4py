@@ -136,13 +136,13 @@ $('#btnWlItemAdd').click(function() {
                     o = Object.assign({},formDataObj);
                     // console.log('arr=',arr[a]);
                     o['modality_dest']=arr[a];
-                    o['modality_name']= a;
+                    o['modality_name']= a; // only to get modality name
                     formDataObjMultiple.push(o);
                     // console.log('Object:',o);
                 };
                 for (let f in formDataObjMultiple) {
                     let modalityName = formDataObjMultiple[f]['modality_name'];
-                    delete formDataObjMultiple[f]['modality_name'];
+                    delete formDataObjMultiple[f]['modality_name']; // only to get modality name
                     let formDataObjMultipleStr = JSON.stringify(formDataObjMultiple[f]);
                     console.log('formDataObjMultiple['+f+']', formDataObjMultipleStr);
                     appendWlItem(JSON.stringify(formDataObjMultiple[f]), wlItemsCounter, modalityName);
@@ -183,7 +183,7 @@ function getUuid() {
             url: HOSTURL+"/myapp/api/uuid",
             success: function(data) {
                 if (data.unique_id != undefined) {
-                    displayToast('success', 'GET uuid', 'GET uuid:'+data.items['unique_id']);
+                    displayToast('success', 'GET uuid', 'GET uuid:'+data['unique_id'],6000);
                 } else {
                     displayToast('error', 'GET error', 'Cannot retrieve uuid');
                 }
@@ -288,7 +288,7 @@ $('#newWlItemForm').submit(function(e) {
                 $(el).remove(); // remove wl item element node when posted
             })
         };
-    $table_wl.bootstrapTable('refresh');
     };
+    $table_wl.bootstrapTable('refresh');
     $('#newWlItemModal').modal('hide');
 }); // end submit function
