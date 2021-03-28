@@ -86,20 +86,13 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
 };
 
 function operateFormatter_wl(value, row, index) {
-    return [
-        '<a class="edit" href="javascript:void(0)" title="Edit user">',
-        '<i class="fas fa-edit"></i>',
-        '</a>  ',
-        '<a class="remove ms-1" href="javascript:void(0)" title="Remove">',
-        '<i class="fas fa-trash-alt"></i>',
-        '</a>',
-        '<a class="done ms-1" href="javascript:void(0)" title="Remove">',
-        '<i class="fas fa-check"></i>',
-        '</a>',
-        '<a class="stopwatch ms-1" href="javascript:void(0)" title="Remove">',
-        '<i class="fas fa-stopwatch"></i>',
-        '</a>'
-    ].join('')
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="edit" href="javascript:void(0)" title="Edit worklist item"><i class="fas fa-edit"></i></a>');
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete worklist item"><i class="fas fa-trash-alt"></i></a>');
+    html.push('<a class="done ms-1" href="javascript:void(0)" title="Set to done"><i class="fas fa-check"></i></a>');
+    html.push('<a class="stopwatch ms-1" href="javascript:void(0)" title="Counter minus 1"><i class="fas fa-stopwatch"></i></a>');
+    html.push('</div>');
+    return html.join('');
   };
 
 window.operateEvents_wl = {
