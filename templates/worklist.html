@@ -21,11 +21,8 @@
     <div class="row">
       <div class="col-md-12 mt-3">
         <div>
-            <h2><span class=""><i class="fas [[=class_icon]]"></i> [[=group]]s<span></h2>
             <div id="toolbar-wl">
-                <button type="button" id="btnNewItemWl" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#newWlItemModal">
-                    New worklist procedure
-                </button>
+                <h2><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h2>
             </div>
         </div>
         <table id="table-wl"
@@ -46,7 +43,7 @@
             data-detail-view="true"
             data-detail-view-icon="true"
             data-detail-formatter="detailFormatter_wl"
-            data-detail-view-by-click="true"
+            data-detail-view-by-click="false"
             >
             <thead class="thead-dark">
                 <th data-field="id" data-sortable="true">ID</th>
@@ -368,7 +365,7 @@ var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
 const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~created_on';
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
 
 var timer_id = []; // for timer
 

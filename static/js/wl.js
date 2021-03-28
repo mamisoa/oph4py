@@ -101,6 +101,7 @@ function resetWlForm() {
     $("#requested_time").val(new Date().addHours(1).toJSON().slice(0,16)); // or 19
     $("[name=laterality]").val(["both"]);
     $("[name=status_flag]").val(["requested"]);
+    $("[name=warning]").val([""]);
     let choice = $('select#exam2doSelect option:checked').val();
     setModalityOptions(choice);
 }
@@ -161,6 +162,9 @@ $('#btnWlItemAdd').click(function() {
                     // console.log('arr=',arr[a]);
                     o['modality_dest']=arr[a];
                     o['modality_name']= a; // only to get modality name
+                    if (a == 'MD') {
+                        o['provider']=o['senior'];
+                    }
                     formDataObjMultiple.push(o);
                     // console.log('Object:',o);
                 };
@@ -264,7 +268,7 @@ function delWlItemModal(itemId){
     $('#wlItem'+itemId).remove();
 }
 
-// not used ?
+// show modal from wl button in patient table
 function addToWorklist(userId) {
     // init form
     resetWlForm();
@@ -352,13 +356,17 @@ $('#newWlItemForm').submit(function(e) {
             if ($(el).length != 0) {
                 let itemDataObj = JSON.parse($(el).data().json);
                 delete itemDataObj['methodWlItemSubmit'];
-                getUuid().then(function(uuid) {
-                    itemDataObj["message_unique_id"] = uuid.unique_id;
-                    console.log('messageuuid:',itemDataObj["message_unique_id"]);
-                    let itemDataStr = JSON.stringify(itemDataObj);
-                    crud('worklist','0', req, itemDataStr);
-                    $(el).remove(); // remove wl item element node when posted
-                })
+                getUuid()
+                    .then(function(uuid) {
+                        itemDataObj["message_unique_id"] = uuid.unique_id;
+                        console.log('messageuuid:',itemDataObj["message_unique_id"]);
+                        let itemDataStr = JSON.stringify(itemDataObj);
+                        crud('worklist','0', req, itemDataStr);
+                        $(el).remove(); // remove wl item element node when posted
+                    })
+                    .then(function(){
+                        $table_wl.bootstrapTable('refresh');
+                    });
             };
         }; // end for loop
     } else if (req=='PUT') {
@@ -373,7 +381,7 @@ $('#newWlItemForm').submit(function(e) {
         crud('worklist','0','PUT',itemDataPutStr);
         hideDiv('#modality_destPutDiv', 'visually-hidden','add');
         hideDiv('#modality_destDiv', 'visually-hidden','remove');
-    }
+    };
     $table_wl.bootstrapTable('refresh');
     $('#newWlItemModal').modal('hide');
 }); // end submit function
