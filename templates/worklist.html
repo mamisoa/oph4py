@@ -60,7 +60,7 @@
                 <th data-field="laterality" data-sortable="false" data-searchable= "false">Laterality:</th>
                 <th data-field="requested_time" data-sortable="true" data-searchable= "true">Timeslot:</th>
                 <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
-                <th data-field="counter" data-searchable= "true" data-sortable="true">Counter:</th>
+                <th data-field="counter" data-searchable= "true" data-sortable="false" data-formatter="counterFormatter_wl">Counter:</th>
                 <th data-field="warning" data-searchable= "true" data-sortable="false">Warning:</th>
                 <th data-field="operate" data-formatter="operateFormatter_wl" data-events="operateEvents_wl">Action</th>
             </thead>
@@ -355,22 +355,22 @@
 <!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
 <!-- <script src="js/bootstrap-table/bootstrap-table.js"></script> -->
 <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/timer.jquery.min.js"></script>
 <script src="js/users_bt.js"></script>
 <script src="js/users.js"></script>
 <script src="js/wl_bt.js"></script>
 <script type="text/javascript">
+
 // init bootstrat-tables
 var membership = [[=membership]];
 var HOSTURL = 'http://localhost:8000';
 
 const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[first_name,last_name],provider!:provider[first_name,last_name],exam2do!:exam2do,modality!:modality_dest[modality_name],receiving_facility!:receiving_facility[facility_name],sending_facility!:sending_facility[facility_name],senior!:senior[first_name,last_name]&@order=~created_on';
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~created_on';
 
-console.log(API_PROCEDURE_LIST);
-
+var timer_id = []; // for timer
 
 var $table = $('#table').bootstrapTable({
     url: API_USER_LIST,
@@ -391,9 +391,16 @@ $table_wl.bootstrapTable('hideColumn','id');
 $table_wl.bootstrapTable('hideColumn','sending_facility');
 $table_wl.bootstrapTable('hideColumn','receiving_facility');
 
-$(function(){
+// timeOffset 'Europe/Brussels' GMT+2:00
+const timeOffset = 3600*2; // in sec
+
+// Fires after the table body is rendered and available in the DOM, the parameters contain data
+$('#table-wl').on('post-body.bs.table', function () {
+      set_timers(timer_id);
 });
 
+$(function(){
+});
 
 </script>
 <script src="js/wl.js"></script>

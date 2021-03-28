@@ -70,6 +70,10 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'status_flag': list[i]['status_flag'],
             'counter': list[i]['counter'],
             'warning': list[i]['warning'],
+            'modified_by': list[i]['modified_by.last_name']+' '+list[i]['modified_by.first_name'],
+            'modified_on': list[i]['modified_on'],
+            'created_by': list[i]['created_by.last_name']+' '+list[i]['created_by.first_name'],
+            'created_on': list[i]['created_on']
         });
     });
     // console.log('display',display);
@@ -141,8 +145,15 @@ function rowStyle_wl(row,value) {
 };
 
 function detailFormatter_wl(index, row) {
+    let lastmodif = Date.parse(row.created_on);
+    var rightnow = new Date();
+    let elapse = Math.round((rightnow-lastmodif)/1000)-timeOffset;
+    let waiting =secondsToHMS(elapse);
+    timer_id.push('#waiting_'+row.id);
     let html = ['<div class="container-fluid"><div class="row">'];
     html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'<span class="badge rounded-pill bg-light text-dark">'+waiting+'</span></p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by+'</p>');
     html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
     html.push('<p class=""><span class="fw-bold">Sending: </span>'+ row.sending_facility+'</p>');
     html.push('<p class=""><span class="fw-bold">Receiving: </span>'+ row.receiving_facility+'</p>');
@@ -163,3 +174,18 @@ function detailFormatter_wl(index, row) {
     html.push('</div></div>');
     return html.join('');
 };
+
+function counterFormatter_wl(value,row){ 
+    let html = [];
+    let lastmodif = Date.parse(row.modified_on);
+    var rightnow = new Date();
+    // console.log('Rightnow:',rightnow);
+    // console.log('Lastmodif:',lastmodif);
+    let elapse = Math.round((rightnow-lastmodif)/1000)-timeOffset;
+    // console.log('elapse:',elapse);
+    timer_id.push('#timer_'+row.id);
+    html.push('<div class="d-flex justify-content-between"><span class="badge rounded-pill bg-primary mx-1">'+row.counter+'</span>');
+    html.push('<span id="timer_'+row.id+'" class="badge rounded-pill bg-light text-dark mx-1">'+elapse+'</span>');
+    html.push('</div>');
+    return html.join('');
+}

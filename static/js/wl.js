@@ -4,7 +4,28 @@
 Date.prototype.addHours = function(h) {
     this.setTime(this.getTime() + (h*60*60*1000));
     return this;
-  }
+};
+
+// Convert seconds to hh:mm:ss
+// Allow for -ve time values
+function secondsToHMS(secs) {
+    function z(n){return (n<10?'0':'') + n;}
+    var sign = secs < 0? '-':'';
+    secs = Math.abs(secs);
+    return sign + z(secs/3600 |0) + ':' + z((secs%3600) / 60 |0) + ':' + z(secs%60);
+};
+
+// Convert H:M:S to seconds
+// Seconds are optional (i.e. n:n is treated as h:s)
+function hmsToSeconds(s) {
+    var b = s.split(':');
+    return b[0]*3600 + b[1]*60 + (+b[2] || 0);
+};
+
+// convert in TZ time eg 
+function convertTZ(date, tzString='Europe/Brussels') {
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
+}
 
 // set modality options
 function setModalityOptions(exam2doId){
@@ -386,6 +407,17 @@ function delWlItem (id) {
 // set wlItem status: done processing and counter adjustment
 // id is in the dataStr
 function setWlItemStatus (dataStr) {
+    console.log('dataStrPut:',dataStr);
     crud('worklist','0','PUT', dataStr);
     $table_wl.bootstrapTable('refresh');    
+};
+
+// set timers 
+function set_timers(timers) {
+    $.each(timers, function(i){
+      $(timers[i]).timer({
+        seconds: $(timers[i]).text()
+      });
+    });
+    timer_id = [];
 };

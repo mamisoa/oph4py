@@ -2,7 +2,7 @@
 This file defines cache, session, and translator T object for the app
 These are fixtures that every app needs so probably you will not be editing this file
 """
-import os
+import os, time # add time to set local time
 import sys
 import logging
 from py4web import Session, Cache, Translator, Flash, DAL, Field, action
@@ -15,6 +15,10 @@ from . import settings
 
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 import uuid
+
+# set local tz
+os.environ['TZ'] = 'Europe/Brussels'
+time.tzset()
 
 def str_uuid():
     unique_id = str(uuid.uuid4().hex)
