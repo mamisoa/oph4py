@@ -102,28 +102,9 @@ window.operateEvents_wl = {
     }
 };
 
-function delWlItem (id) {
-    bootbox.confirm({
-        message: "Are you sure you want to delete this worklist item?",
-        closeButton: false ,
-        buttons: {
-            confirm: {
-                label: 'Yes',
-                className: 'btn-success'
-            },
-            cancel: {
-                label: 'No',
-                className: 'btn-danger'
-            }
-        },
-        callback: function (result) {
-            if (result == true) {
-                crud('worklist',id,'DELETE');
-                // console.log('Row.id deleted:'+id);
-                $table_wl.bootstrapTable('refresh');
-            } else {
-                console.log('This was logged in the callback: ' + result);
-            }
-        }
-    });
+function rowStyle(row,value) {
+    let statusColor = {'requested':'lightblue', 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999'};
+    return { 
+                css: { 'background-color': statusColor[row.status_flag] }
+            };
 };

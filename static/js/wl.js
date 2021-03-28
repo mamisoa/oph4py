@@ -356,3 +356,29 @@ $('#newWlItemForm').submit(function(e) {
     $table_wl.bootstrapTable('refresh');
     $('#newWlItemModal').modal('hide');
 }); // end submit function
+
+function delWlItem (id) {
+    bootbox.confirm({
+        message: "Are you sure you want to delete this worklist item?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-danger'
+            }
+        },
+        callback: function (result) {
+            if (result == true) {
+                crud('worklist',id,'DELETE');
+                // console.log('Row.id deleted:'+id);
+                $table_wl.bootstrapTable('refresh');
+            } else {
+                console.log('This was logged in the callback: ' + result);
+            }
+        }
+    });
+};
