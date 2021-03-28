@@ -102,9 +102,33 @@ window.operateEvents_wl = {
     }
 };
 
-function rowStyle(row,value) {
+function rowStyle_wl(row,value) {
     let statusColor = {'requested':'lightblue', 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999'};
     return { 
                 css: { 'background-color': statusColor[row.status_flag] }
             };
+};
+
+function detailFormatter_wl(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Sending: </span>'+ row.sending_facility+'</p>');
+    html.push('<p class=""><span class="fw-bold">Receiving: </span>'+ row.receiving_facility+'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Patient: </span>'+ row.patient +'</p>');
+    html.push('<p class=""><span class="fw-bold">Provider: </span>'+ row.provider +'</p>');
+    html.push('<p class=""><span class="fw-bold">Procedure: </span>'+ row.procedure +'</p>');
+    html.push('<p class=""><span class="fw-bold">Modality: </span>'+ row.modality +'</p>');
+    html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ row.laterality +'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Timeslot: </span>'+ row.requested_time +'</p>');
+    html.push('<p class=""><span class="fw-bold">Status: </span>'+ row.status_flag +'</p>');
+    html.push('<p class=""><span class="fw-bold">Counter: </span>'+ row.counter +'</p>');
+    html.push('<p class=""><span class="fw-bold">Warning: </span>'+ row.counter +'</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
 };
