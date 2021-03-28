@@ -382,3 +382,30 @@ function delWlItem (id) {
         }
     });
 };
+
+// set wlItem to done
+// id is in the dataStr
+function setWlItemToDone (dataStr) {
+    bootbox.confirm({
+        message: "Are you sure you want to set this worklist item to DONE?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-danger'
+            }
+        },
+        callback: function (result) {
+            if (result == true) {
+                crud('worklist','0','PUT', dataStr);
+                $table_wl.bootstrapTable('refresh');
+            } else {
+                console.log('This was logged in the callback: ' + result);
+            }
+        }
+    });
+};

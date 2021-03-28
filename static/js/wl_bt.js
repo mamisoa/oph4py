@@ -88,6 +88,9 @@ function operateFormatter_wl(value, row, index) {
         '</a>  ',
         '<a class="remove ms-1" href="javascript:void(0)" title="Remove">',
         '<i class="fas fa-trash-alt"></i>',
+        '</a>',
+        '<a class="done ms-1" href="javascript:void(0)" title="Remove">',
+        '<i class="fas fa-check"></i>',
         '</a>'
     ].join('')
   };
@@ -99,6 +102,15 @@ window.operateEvents_wl = {
     },
     'click .remove': function (e, value, row, index) {
         delWlItem(row.id);
+    },
+    'click .done': function (e, value, row, index) {
+        let dataObj = { 'laterality': row.laterality, 'id': row.id };
+        let dataStr;
+        if (row.status_flag != 'done') {
+            dataObj['status_flag'] = 'done';
+            dataStr = JSON.stringify(dataObj);
+            setWlItemToDone(dataStr);
+        }
     }
 };
 
