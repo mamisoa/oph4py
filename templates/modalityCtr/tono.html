@@ -1,0 +1,27 @@
+[[extend "baseof.html"]]
+
+[[ block page_head]]
+[[ end ]]
+
+[[ block left_nav ]]
+[[ include 'partials/nav-test.html' ]]
+[[ end]]
+
+<div id="wldetails">
+    <p>Worklist id: [[= wlId ]]</p>
+</div>
+
+[[ block js_scripts]]
+<!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
+<!-- <script src="js/bootstrap-table/bootstrap-table.js"></script> -->
+<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
+<script type="text/javascript">
+
+const HOSTURL = 'http://localhost:8000';
+const wlId = [[= wlId ]];
+
+</script>
+<script src="js/tono.js"></script>
+[[ end ]]

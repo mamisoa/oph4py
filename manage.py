@@ -58,7 +58,7 @@ def check_duplicate(form):
 ## edit user/id from auth_user
 @action('user')
 @action('user/<rec_id>')
-@action.uses('manage/user.html', session, auth, db, flash)
+@action.uses('manage/user.html', session, auth, db)
 def user(rec_id="1"):
     user = auth.get_user()
     row = db(db.auth_user.id == rec_id).select().first()
