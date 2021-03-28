@@ -132,6 +132,10 @@ window.operateEvents_wl = {
     'click .modality_ctr': function (e, value, row, index) {
         let idModalityCtr = modalityDict[row.modality];
         console.log(row.modality, idModalityCtr);
+        // link needs: wlId, patientId
+        // todo: left joint in python to get modality_ctr_name
+        link = HOSTURL+'/myapp/modalityCtr/tono/'+row.id
+        window.location.href = link;
     }
 };
 

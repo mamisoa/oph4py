@@ -10,6 +10,7 @@ from .models import db
 from . import controllers
 from . import manage
 from . import rest
+from . import modalityctr
 
 # optional parameters
 __version__ = "0.0.0"
