@@ -393,7 +393,11 @@ const timeOffset = 3600*2; // in sec
 
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
 $('#table-wl').on('post-body.bs.table', function () {
-      set_timers(timer_id);
+    set_timers(timer_id);
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
 });
 
 $(function(){
