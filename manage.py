@@ -152,8 +152,9 @@ def worklist():
     everyModalityOptions = dropdownSelect(db.modality,db.modality.fields[1],1)
     modalityRows = db(db.modality).select(db.modality.modality_name,db.modality.id_modality_controller)
     modalityDict = {}
-    for row in modalityRows:
-        modalityDict[row.modality_name] = row.id_modality_controller
+    rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
+    for row in rows:
+        modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
     return locals()
 
 ## manage_db

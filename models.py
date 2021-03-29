@@ -95,6 +95,7 @@ if db(db.modality_controller.id > 1).count() == 0:
     db.modality_controller.insert(modality_controller_name="anterion")
     db.modality_controller.insert(modality_controller_name="lenstar")
     db.modality_controller.insert(modality_controller_name="none")
+    db.modality_controller.insert(modality_controller_name="md")
 
 db.define_table('modality',
     Field('modality_name', 'string', required=True),
@@ -116,6 +117,7 @@ if db(db.modality.id > 1).count() == 0:
     db.modality.insert(modality_name="CEM-500", id_modality_controller="7")
     db.modality.insert(modality_name="Lenstar", id_modality_controller="9")
     db.modality.insert(modality_name="Multiple", id_modality_controller="10")
+    db.modality.insert(modality_name="MD", id_modality_controller="11")
 
 db.define_table('data_origin',
     Field('origin', 'string', default='Home'),
