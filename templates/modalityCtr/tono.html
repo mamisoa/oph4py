@@ -7,6 +7,76 @@
 [[ include 'partials/nav-test.html' ]]
 [[ end]]
 
+<div class="container-fluid">
+    <div class="row d-flex justify-content-evenly align-items-center">
+        <div class="col">
+            <button class="btn btn-primary" type="button">Back</button>
+        </div>
+        <div class="col d-flex flex-column text-center" >
+            <h2>John DOE</h2>
+            <h3 class="text-muted">1985-08-01</h3>
+        </div>
+        <div class="col d-flex justify-content-end align-items-center">
+            <div>Task planned for 2020-01-21 12:30</div>
+            <button class="btn btn-primary mx-2" type="button">Done</button>
+          </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-2">
+    <div class="row g-0 text-center" style="background-color: #f8f5f0;">
+        <div class="col">
+            <h1>AIR TONOMETRY</h1>
+        </div>
+    </div>
+    <div class="row mt-3 text-center">
+            <div class="col">
+                <div class="col" style="background-color: #D5E3EE;"><h2>RIGHT EYE</h2></div>
+            </div>    
+            <div class="col">
+                <div class="col" style="background-color: #EED9D5;"><h2>LEFT EYE</h2></div>
+            </div>                
+    </div>
+    <div class="row text-center">
+        <div class="col">
+            <div class="row mb-3">
+                <div class="col">
+                    <form action="" id="airRightForm">
+                    <label for="counter" class="form-label">Air tonometry (RE):</label>
+                    <div class="input-group mb-3">
+                        <button class="btn btn-outline-secondary airRight_down" type="button">-</button>
+                        <input type="text" class="form-control airRight text-center" value ="15" aria-label="Air tonometry" name="airRight">
+                        <button class="btn btn-outline-secondary airRight_up" type="button">+</button>
+                    </div>
+                    <label for="pachyRight" class="form-label">Pachymetry (RE):</label>
+                    <div class="input-group mb-3">
+                        <button class="btn btn-outline-secondary pachyRight_down" type="button">-</button>
+                        <input type="text" class="form-control pachyRight text-center" value ="15" aria-label="Optical pachymetry" name="pachyRight">
+                        <button class="btn btn-outline-secondary pachyRight_up" type="button">+</button>
+                    </div>
+                    </form>                   
+                </div>
+                <div class="col">
+                    <form action="" id="airLeftForm">
+                    <label for="counter" class="form-label">Air tonometry (LE):</label>
+                    <div class="input-group mb-3">
+                        <button class="btn btn-outline-secondary airLeft_down" type="button">-</button>
+                        <input type="text" class="form-control airLeft text-center" value ="15" aria-label="Air tonometry" name="airLeft">
+                        <button class="btn btn-outline-secondary airLeft_up" type="button">+</button>
+                    </div>                        
+                    <label for="pachyLeft" class="form-label">Pachymetry (LE):</label>
+                    <div class="input-group mb-3">
+                        <button class="btn btn-outline-secondary pachyLeft_down" type="button">-</button>
+                        <input type="text" class="form-control pachyLeft text-center" value ="15" aria-label="Optical pachymetry" name="pachyLeft">
+                        <button class="btn btn-outline-secondary pachyLeft_up" type="button">+</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="wldetails">
     <p>Worklist id: [[= wlId ]]</p>
 </div>

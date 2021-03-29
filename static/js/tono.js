@@ -4,10 +4,10 @@ function getWlDetails(wlId){
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: HOSTURL+"/myapp/api/worklist/"+wlId+"?@lookup=user!:id_auth_user[id,last_name,first_name]",
+            url: HOSTURL+"/myapp/api/worklist/"+wlId+"?@lookup=user!:id_auth_user[id,last_name,first_name,dob]",
             success: function(data) {
                 if (data.status != 'error' || data.count) {
-                    displayToast('success', 'GET combo exams', 'GET'+data.items[0]['id_exam2do.exam_name']);
+                    displayToast('success', 'GET combo exams', 'GET'+data.items[0]['user.first_name']+' '+data.items[0]['user.last_name'],3000);
                 } else {
                     displayToast('error', 'GET error', 'Cannot retrieve combo exams');
                 }
