@@ -130,6 +130,14 @@ window.operateEvents_wl = {
         }
     },
     'click .modality_ctr': function (e, value, row, index) {
+        let dataObj = { 'laterality': row.laterality, 'id': row.id };
+        let dataStr;
+        if (row.status_flag == 'requested') {
+            dataObj['status_flag'] = 'processing';
+            dataObj['counter'] = row.counter;
+            dataStr = JSON.stringify(dataObj);
+            setWlItemStatus(dataStr);
+        }
         let controller = modalityDict[row.modality];
         link = HOSTURL+'/myapp/modalityCtr/'+controller+'/'+row.id
         window.location.href = link;
