@@ -103,14 +103,18 @@
                 <div class="col">
                     <table
                         id="airPachyRight_tbl"
-                        data-toggle="table"
-                        data-flat="true"
-                        data-url="json/data3.json">
+                        data-side-pagination="server"
+                        data-pagination="true"
+                        data-page-size="10"
+                        data-search="false"
+                        data-query-params="queryParams_airPachy"
+                        data-response-handler="responseHandler_airPachy"
+                        >
                         <thead>
                             <tr>
-                                <th data-field="id" data-sortable="true">Id</th>
-                                <th data-field="tonometry" data-sortable="true">Tono(air)</th>
-                                <th data-field="pachymetry" data-sortable="true">Pachy</th>
+                                <th data-field="id" data-sortable="false">Id</th>
+                                <th data-field="tonometry" data-sortable="false">Tono(air)</th>
+                                <th data-field="pachymetry" data-sortable="false">Pachy</th>
                             </tr>
                         </thead>
                     </table>
@@ -119,8 +123,12 @@
                     <table
                         id="airPachyLeft_tbl"
                         data-toggle="table"
-                        data-flat="true"
-                        data-url="json/data3.json">
+                        data-side-pagination="server"
+                        data-pagination="true"
+                        data-page-size="10"
+                        data-query-params="queryParams_airPachy"
+                        data-response-handler="responseHandler_airPachy"
+                        >
                         <thead>
                             <tr>
                                 <th data-field="id" data-sortable="true">Id</th>
@@ -145,10 +153,23 @@
 <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/tono_bt.js"></script>
 <script type="text/javascript">
 
 const HOSTURL = 'http://localhost:8000';
 const wlId = [[= wlId ]];
+const API_AIRRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=air&@count=true";
+const API_AIRLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=air&@count=true";
+
+console.log(API_AIRRIGHT);
+
+var $table_airRight = $('#airPachyRight_tbl').bootstrapTable({
+    url: API_AIRRIGHT
+});
+
+var $table_airLeft = $('#airPachyLeft_tbl').bootstrapTable({
+    url: API_AIRLEFT
+});
 
 </script>
 <script src="js/tono.js"></script>
