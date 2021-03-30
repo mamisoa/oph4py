@@ -19,16 +19,25 @@ function getWlDetails(wlId){
     ); // promise return data
 };
 
+let wlItemObj;
 
 getWlDetails(wlId)
     .then(function (data) {
+        console.log(data.items[0]);
         let html = [];
         let dataWl = data.items[0];
         for (item in dataWl) {
             html.push('<p>Key: '+item+' - Value: '+dataWl[item]+'</p>');
         }
         $('#wldetails').append(html.join(''));
-    });
+        return data.items[0];
+    })
+    .then(function (itemObj){ // set patient ID in top bar
+        wlItemObj = Object.assign({},itemObj); // clone wltitemobj in global        
+        $('#patientName').html(itemObj['user.first_name']+' '+itemObj['user.last_name']);
+        $('#patientDob').html(itemObj['user.dob']);
+        $('#wlTimeslot').html(itemObj['requested_time'].split('T').join(' '));
+    })
 
 
 // set counters
@@ -45,8 +54,6 @@ setCounter('#form_tn','pachy',2,300,700);
 setCounter('#form_left_apla','tono',0.5,0,80);
 setCounter('#form_right_apla','tono',0.5,0,80);
 
-
-
 function setCounter (id_count, count_class,step, min, max) {
     $(id_count+' .btn.counter_down_'+count_class).click(function() {
         value = parseFloat($(id_count+' input.counter_'+count_class).val());
@@ -62,3 +69,66 @@ function setCounter (id_count, count_class,step, min, max) {
         } else {};
     });
     }
+
+// submit airPachy
+$('#airRightForm').submit(function(e){
+    e.preventDefault();
+    tonoPachyInsert(this,'right');
+});
+
+$('#airLeftForm').submit(function(e){
+    e.preventDefault();
+    tonoPachyInsert(this,'left');
+})
+
+// domId eg #airRightForm , laterality eg 'right'
+function tonoPachyInsert(domId,laterality, techno='air') {
+    let dataStr = $(domId).serializeJSON();
+    let dataObj = JSON.parse(dataStr);
+    let o ={};
+    o['tonometry'] = dataObj['air'+capitalize(laterality)];
+    o['pachymetry'] = dataObj['pachy'+capitalize(laterality)];
+    o['id_auth_user'] = wlItemObj['user.id'];
+    o['id_worklist'] = wlItemObj['id'];
+    o['laterality'] = laterality;
+    o['techno'] = techno;
+    console.log('o',o);
+    oStr = JSON.stringify(o);
+    crud('tono','0','POST', oStr); 
+}
+
+// crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
+function crud(table,id='0',req='POST',data) {
+    console.log(data);
+    var API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
+    var mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
+    $.ajax({
+        url: API_URL,
+        data: data,
+        contentType: 'application/json',
+        dataType: 'json',
+        method: req
+        })
+        .done(function(data) {
+            console.log(data);
+            status = data.status;
+            message = data.message;
+            errors = "";
+            if (data.status == "error") {
+                for (i in data.errors) {
+                    errors += data.errors[i]+'</br>';
+                };
+                text = errors;
+                displayToast('error',data.message,errors,'6000');
+            };
+            if (data.status == "success") {
+                text='User id: '+(req == 'DELETE'? id : data.id)+mode;
+                displayToast('success', table+' '+mode,text,'6000');
+            };
+        });
+}
+
+// Capitalize first character
+function capitalize(str) {
+    return str.trim().replace(/^\w/, (c) => c.toUpperCase());
+}
