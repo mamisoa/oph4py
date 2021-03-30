@@ -10,14 +10,14 @@
 <div class="container-fluid">
     <div class="row d-flex justify-content-evenly align-items-center">
         <div class="col">
-            <button class="btn btn-primary" type="button">Back</button>
+            <a class="btn btn-primary" href="/myapp/worklist" role="button">Back</a>
         </div>
         <div class="col d-flex flex-column text-center" >
-            <h2>John DOE</h2>
-            <h3 class="text-muted">1985-08-01</h3>
+            <h2 id="patientName">John DOE</h2>
+            <h3 id="patientDob" class="text-muted">1985-08-01</h3>
         </div>
         <div class="col d-flex justify-content-end align-items-center">
-            <div>Task planned for 2020-01-21 12:30</div>
+            <div>Task planned for <span id="wlTimeslot">2020-01-21 12:30</span></div>
             <button class="btn btn-primary mx-2" type="button">Done</button>
           </div>
     </div>
@@ -63,9 +63,10 @@
                             </div>
                             <div class="row mb-3" id="tonoPachyRight">
                                 <div class="col">
-                                    <button id="btnAddTonoPachyRight" class="btn btn-primary" type="button">Submit right TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
+                                    <button id="btnAddTonoPachyRight" class="btn btn-primary" type="submit">Submit right TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
                                 </div>                                                                    
                             </div>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
                         </div>
                     </form>                   
                 </div>  <!-- end airRight col -->
@@ -91,8 +92,9 @@
                         </div>
                         <div class="row mb-3" id="tonoPachyLeft">
                             <div class="col">
-                                <button id="btnAddTonoPachyLeft" class="btn btn-primary" type="button">Submit left TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
-                            </div>                                                                    
+                                <button id="btnAddTonoPachyLeft" class="btn btn-primary" type="submit">Submit left TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
+                            </div>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
                         </div>
                     </form>
                 </div> <!-- end airLeft col -->
