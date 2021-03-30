@@ -17,7 +17,7 @@ function getWlDetails(wlId){
             }
         })
     ); // promise return data
-}
+};
 
 
 getWlDetails(wlId)
@@ -28,4 +28,37 @@ getWlDetails(wlId)
             html.push('<p>Key: '+item+' - Value: '+dataWl[item]+'</p>');
         }
         $('#wldetails').append(html.join(''));
-    })
+    });
+
+
+// set counters
+// id_count : form id , count_class: tono pachy (counter_tono) 
+setCounter('#airRightForm','tono',0.5,0,80);
+setCounter('#airRightForm','pachy',2,300,700);
+
+setCounter('#airLeftForm','tono',0.5,0,80);
+setCounter('#airLeftForm','pachy',2,300,700);
+
+setCounter('#form_tn','tono',0.5,0,80);
+setCounter('#form_tn','pachy',2,300,700);
+
+setCounter('#form_left_apla','tono',0.5,0,80);
+setCounter('#form_right_apla','tono',0.5,0,80);
+
+
+
+function setCounter (id_count, count_class,step, min, max) {
+    $(id_count+' .btn.counter_down_'+count_class).click(function() {
+        value = parseFloat($(id_count+' input.counter_'+count_class).val());
+        if (value >= (min+step)) {
+        $(id_count+' input.counter_'+count_class).val(value-step);
+        } else {};
+    });
+    
+    $(id_count+' .btn.counter_up_'+count_class).click(function() {
+        value = parseFloat($(id_count+' input.counter_'+count_class).val());
+        if (value <= (max-step)) {
+        $(id_count+' input.counter_'+count_class).val(value+step);
+        } else {};
+    });
+    }
