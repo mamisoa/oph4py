@@ -1,6 +1,5 @@
 function responseHandler_airPachy(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
-    let nbrows = Object.keys(list).length;
     let display = [];
     $.each(list, function (i) {
         display.push({
@@ -31,3 +30,4 @@ function queryParams_airPachy(params) {
     console.log('s_wl',s.slice(1-s.length));
     return decodeURI(encodeURI(s.slice(1-s.length)));
 };
+
