@@ -112,7 +112,6 @@
                         >
                         <thead>
                             <tr>
-                                <th data-field="id" data-sortable="false">Id</th>
                                 <th data-field="tonometry" data-sortable="false">Tono(air)</th>
                                 <th data-field="pachymetry" data-sortable="false">Pachy</th>
                             </tr>
@@ -158,8 +157,8 @@
 
 const HOSTURL = 'http://localhost:8000';
 const wlId = [[= wlId ]];
-const API_AIRRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=air&@count=true";
-const API_AIRLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=air&@count=true";
+const API_AIRRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=air&@count=true&id_worklist.eq="+wlId;
+const API_AIRLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=air&@count=true&id_worklist.eq="+wlId;
 
 console.log(API_AIRRIGHT);
 
@@ -169,6 +168,11 @@ var $table_airRight = $('#airPachyRight_tbl').bootstrapTable({
 
 var $table_airLeft = $('#airPachyLeft_tbl').bootstrapTable({
     url: API_AIRLEFT
+});
+
+// Fires after the table body is rendered and available in the DOM, the parameters contain data
+$('#airPachyRight_tbl').on('post-body.bs.table', function () {
+    $('.loading-wrap').addClass('visually-hidden'); // loading bug?
 });
 
 </script>

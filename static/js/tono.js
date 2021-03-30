@@ -94,7 +94,8 @@ function tonoPachyInsert(domId,laterality, techno='air') {
     o['techno'] = techno;
     console.log('o',o);
     oStr = JSON.stringify(o);
-    crud('tono','0','POST', oStr); 
+    crud('tono','0','POST', oStr);
+    $('#airPachy'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
 }
 
 // crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
