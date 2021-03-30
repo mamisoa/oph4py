@@ -242,8 +242,8 @@ db.define_table('tono',
     Field('id_worklist', 'reference worklist'),
     Field('tonometry','decimal(2,2)'),
     Field('pachymetry','integer'),
-    Field('techno','list:string'),
-    Field('laterality', 'list:string', required=True),
+    Field('techno','string'),
+    Field('laterality', 'string', required=True),
     auth.signature)
 
 db.define_table('topography',
@@ -253,7 +253,7 @@ db.define_table('topography',
     Field('k2','decimal(2,2)'),
     Field('axis1','decimal(2,2)'),
     Field('axis2','decimal(2,2)'),
-    Field('laterality','list:string', required=True),
+    Field('laterality','string', required=True),
     auth.signature)
 
 db.define_table('capsulotomy',
@@ -261,7 +261,7 @@ db.define_table('capsulotomy',
     Field('id_worklist','reference worklist'),
     Field('power_intensity','decimal(2,2)'),
     Field('spot_size','decimal(2,2)'),
-    Field('laterality','list:string', required=True),
+    Field('laterality','string', required=True),
     auth.signature)
 
 db.tono.id_auth_user.requires = IS_IN_DB(db, 'auth_user.id', '%(first_name)s'+' '+'%(last_name)s')
@@ -299,7 +299,7 @@ db.define_table('rx',
     Field('cyl_close','decimal(2,2)'),
     Field('axis_close', 'integer'),
     Field('note','string'),
-    Field('laterality','list:string', required=True),
+    Field('laterality','string', required=True),
     auth.signature)
 
 db.rx.rx_origin.requires = IS_IN_SET(('autorx','glass','trial','cyclo','dil'))
@@ -309,7 +309,7 @@ db.rx.glass_type.requires = IS_IN_SET(('monofocal','progressive','bifocal','degr
 db.define_table('ant_biom',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist', 'reference worklist'),
-    Field('laterality','list:string', required=True),
+    Field('laterality','string', required=True),
     Field('cornea','string'),
     Field('ant_chamb','string'),
     Field('iris','string'),
@@ -322,7 +322,7 @@ db.ant_biom.laterality.requires = IS_IN_SET(('right','left'))
 db.define_table('post_biom',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist', 'reference worklist'),
-    Field('laterality','list:string', required=True),
+    Field('laterality','string', required=True),
     Field('vitreous','string'),
     Field('retina','string'),
     Field('macula','string'),
