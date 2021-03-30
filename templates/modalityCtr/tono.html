@@ -41,35 +41,59 @@
         <div class="col">
             <div class="row mb-3">
                 <div class="col">
-                    <form action="" id="airRightForm">
-                    <label for="counter" class="form-label">Air tonometry (RE):</label>
-                    <div class="input-group mb-3">
-                        <button class="btn btn-outline-secondary airRight_down" type="button">-</button>
-                        <input type="text" class="form-control airRight text-center" value ="15" aria-label="Air tonometry" name="airRight">
-                        <button class="btn btn-outline-secondary airRight_up" type="button">+</button>
-                    </div>
-                    <label for="pachyRight" class="form-label">Pachymetry (RE):</label>
-                    <div class="input-group mb-3">
-                        <button class="btn btn-outline-secondary pachyRight_down" type="button">-</button>
-                        <input type="text" class="form-control pachyRight text-center" value ="15" aria-label="Optical pachymetry" name="pachyRight">
-                        <button class="btn btn-outline-secondary pachyRight_up" type="button">+</button>
-                    </div>
+                    <form action="" class="row" id="airRightForm">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="airRight" class="form-label">Air tonometry (RE):</label>
+                                    <div class="input-group mb-3">
+                                        <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
+                                        <input type="text" class="form-control airRight counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="airRight">
+                                        <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label for="pachyRight" class="form-label">Pachymetry (RE):</label>
+                                    <div class="input-group mb-3">
+                                        <button class="btn btn-outline-secondary counter_down_pachy" type="button">-</button>
+                                        <input type="text" class="form-control pachyRight counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachyRight">
+                                        <button class="btn btn-outline-secondary counter_up_pachy" type="button">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3" id="tonoPachyRight">
+                                <div class="col">
+                                    <button id="btnAddTonoPachyRight" class="btn btn-primary" type="button">Submit right TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
+                                </div>                                                                    
+                            </div>
+                        </div>
                     </form>                   
                 </div>
                 <div class="col">
                     <form action="" id="airLeftForm">
-                    <label for="counter" class="form-label">Air tonometry (LE):</label>
-                    <div class="input-group mb-3">
-                        <button class="btn btn-outline-secondary airLeft_down" type="button">-</button>
-                        <input type="text" class="form-control airLeft text-center" value ="15" aria-label="Air tonometry" name="airLeft">
-                        <button class="btn btn-outline-secondary airLeft_up" type="button">+</button>
-                    </div>                        
-                    <label for="pachyLeft" class="form-label">Pachymetry (LE):</label>
-                    <div class="input-group mb-3">
-                        <button class="btn btn-outline-secondary pachyLeft_down" type="button">-</button>
-                        <input type="text" class="form-control pachyLeft text-center" value ="15" aria-label="Optical pachymetry" name="pachyLeft">
-                        <button class="btn btn-outline-secondary pachyLeft_up" type="button">+</button>
-                    </div>
+                        <div class="row">
+                            <div class="col">
+                                <label for="airRight" class="form-label">Air tonometry (LE):</label>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
+                                    <input type="text" class="form-control airLeft text-center counter_tono" value ="15" aria-label="Air tonometry" name="airLeft">
+                                    <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
+                                </div>                        
+                            </div>
+                            <div class="col">
+                                <label for="pachyLeft" class="form-label">Pachymetry (LE):</label>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary counter_down_pachy" type="button">-</button>
+                                    <input type="text" class="form-control pachyLeft counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachyLeft">
+                                    <button class="btn btn-outline-secondary counter_up_pachy" type="button">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3" id="tonoPachyLeft">
+                            <div class="col">
+                                <button id="btnAddTonoPachyLeft" class="btn btn-primary" type="button">Submit left TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
+                            </div>                                                                    
+                        </div>
                     </form>
                 </div>
             </div>
