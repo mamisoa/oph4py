@@ -112,6 +112,7 @@
                         >
                         <thead>
                             <tr>
+                                <th data-field="timestamp" data-sortable="false">Timestamp</th>
                                 <th data-field="tonometry" data-sortable="false">Tono(air)</th>
                                 <th data-field="pachymetry" data-sortable="false">Pachy</th>
                             </tr>
@@ -130,7 +131,7 @@
                         >
                         <thead>
                             <tr>
-                                <th data-field="id" data-sortable="true">Id</th>
+                                <th data-field="timestamp" data-sortable="false">Timestamp</th>
                                 <th data-field="tonometry" data-sortable="true">Tono(air)</th>
                                 <th data-field="pachymetry" data-sortable="true">Pachy</th>
                             </tr>
@@ -169,6 +170,11 @@ var $table_airRight = $('#airPachyRight_tbl').bootstrapTable({
 var $table_airLeft = $('#airPachyLeft_tbl').bootstrapTable({
     url: API_AIRLEFT
 });
+
+// timeOffset 'Europe/Brussels' GMT+2:00
+const timeOffsetInHours = 2;
+const timeOffset = 3600*timeOffsetInHours; // in sec
+
 
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
 $('#airPachyRight_tbl').on('post-body.bs.table', function () {
