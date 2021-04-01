@@ -1,3 +1,27 @@
+
+// useful functions 
+
+Date.prototype.addHours = function(h) {
+    this.setTime(this.getTime() + (h*60*60*1000));
+    return this;
+};
+
+// Convert seconds to hh:mm:ss
+// Allow for -ve time values
+function secondsToHMS(secs) {
+    function z(n){return (n<10?'0':'') + n;}
+    var sign = secs < 0? '-':'';
+    secs = Math.abs(secs);
+    return sign + z(secs/3600 |0) + ':' + z((secs%3600) / 60 |0) + ':' + z(secs%60);
+};
+
+// Convert H:M:S to seconds
+// Seconds are optional (i.e. n:n is treated as h:s)
+function hmsToSeconds(s) {
+    var b = s.split(':');
+    return b[0]*3600 + b[1]*60 + (+b[2] || 0);
+};
+
 // get wl details
 function getWlDetails(wlId){
     return Promise.resolve(
@@ -92,6 +116,8 @@ function tonoPachyInsert(domId,laterality, techno='air') {
     o['id_worklist'] = wlItemObj['id'];
     o['laterality'] = laterality;
     o['techno'] = techno;
+    o['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
+    console.log(o['timestamp']);
     console.log('o',o);
     oStr = JSON.stringify(o);
     crud('tono','0','POST', oStr);

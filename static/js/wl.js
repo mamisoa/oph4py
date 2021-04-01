@@ -98,7 +98,7 @@ function getModalityOptions(exam2doId) {
 // reset add new item in worklist modal
 function resetWlForm() {
     // set default value for form
-    $("#requested_time").val(new Date().addHours(1).toJSON().slice(0,16)); // or 19
+    $("#requested_time").val(new Date().addHours(timeOffsetInHours).toJSON().slice(0,16)); // or 19
     $("[name=laterality]").val(["both"]);
     $("[name=status_flag]").val(["requested"]);
     $("[name=warning]").val([""]);
