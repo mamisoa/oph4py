@@ -19,7 +19,7 @@ def tono(wlId):
 # helloworld controller
 @action('hello')
 @action.uses('modalityCtr/hello.html', session, auth, db)
-def tono():
+def hello():
     user = auth.get_user()
     string = "Hello World!"
     return locals()
