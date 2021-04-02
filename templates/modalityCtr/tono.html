@@ -115,6 +115,7 @@
                                 <th data-field="timestamp" data-sortable="false">Timestamp</th>
                                 <th data-field="tonometry" data-sortable="false">Tono(air)</th>
                                 <th data-field="pachymetry" data-sortable="false">Pachy</th>
+                                <th data-field="operate" data-formatter="operateFormatter_airPachy" data-events="operateEvents_airPachy">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -134,6 +135,7 @@
                                 <th data-field="timestamp" data-sortable="false">Timestamp</th>
                                 <th data-field="tonometry" data-sortable="true">Tono(air)</th>
                                 <th data-field="pachymetry" data-sortable="true">Pachy</th>
+                                <th data-field="operate" data-formatter="operateFormatter_airPachy" data-events="operateEvents_airPachy">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -142,6 +144,87 @@
         </div>
     </div>
 </div>
+
+<!-- Modal tonoPachyModal -->
+<div class="modal fade" id="tonoPachyModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit tono/pachy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="tonoPachyForm" enctype="multipart/form-data" method="POST">
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="laterality" class="form-label">Side:</label>
+                                        <div class="input-group">
+                                            <div class="btn-group laterality">                                                
+                                                <input type="radio" id="laterality_left" name="laterality" class="btn-check" value="left" autocomplete="off">
+                                                <label class="btn btn-outline-primary" for="laterality_left">Left</label>
+                                                <input type="radio" id="laterality_right" name="laterality" class="btn-check" value="right" autocomplete="off">
+                                                <label class="btn btn-outline-primary" for="laterality_right">Right</label>
+                                            </div>
+                                        </div>
+                                    </div>                                    
+                                    <div class="col">
+                                        <label for="techno" class="form-label">Method:</label>
+                                        <div class="input-group">
+                                            <div class="btn-group techno">                                                
+                                                <input type="radio" id="techno_air" name="techno" class="btn-check" value="air" autocomplete="off">
+                                                <label class="btn btn-outline-primary" for="techno_air">Air</label>
+                                                <input type="radio" id="techno_apla" name="techno" class="btn-check" value="apla" autocomplete="off">
+                                                <label class="btn btn-outline-primary" for="techno_apla">Apla</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="tono" class="form-label">Tonometry:</label>
+                                        <div class="input-group mb-3">
+                                            <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
+                                            <input type="text" class="form-control tono counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="tono">
+                                            <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="pachy" class="form-label">Pachymetry:</label>
+                                        <div class="input-group mb-3">
+                                            <button class="btn btn-outline-secondary counter_down_pachy" type="button">-</button>
+                                            <input type="text" class="form-control pachy counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachy">
+                                            <button class="btn btn-outline-secondary counter_up_pachy" type="button">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="timestamp" class="form-label">Timestamp:</label>
+                                        <input id="timestamp" type="datetime-local" step="1" class="form-control" name="timestamp">
+                                        <div id="requestTimeHelp" class="form-text">Adjust timestamp</div>
+                                    </div>                                
+                                </div>
+                                <input id="idPatient" type="text" class="visually-hidden" name="id_auth_user"/>
+                                <input id="idWl" type="text" class="visually-hidden" name="id_worklist"/>
+                                <input id="methodTonoPachySubmit" type="text" class="visually-hidden" name="methodTonoPachySubmit" value="POST"/>
+                                <input id="btnTonoPachySubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="labelSubmit"for="btnTonoPachySubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <div id="wldetails">
     <p>Worklist id: [[= wlId ]]</p>
@@ -158,8 +241,9 @@
 
 const HOSTURL = 'http://localhost:8000';
 const wlId = [[= wlId ]];
-const API_AIRRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=air&@count=true&id_worklist.eq="+wlId;
-const API_AIRLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=air&@count=true&id_worklist.eq="+wlId;
+const API_AIRRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_AIRLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+
 
 console.log(API_AIRRIGHT);
 

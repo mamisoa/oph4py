@@ -43,7 +43,7 @@ function getWlDetails(wlId){
     ); // promise return data
 };
 
-let wlItemObj;
+var wlItemObj;
 
 getWlDetails(wlId)
     .then(function (data) {
@@ -72,8 +72,8 @@ setCounter('#airRightForm','pachy',2,300,700);
 setCounter('#airLeftForm','tono',0.5,0,80);
 setCounter('#airLeftForm','pachy',2,300,700);
 
-setCounter('#form_tn','tono',0.5,0,80);
-setCounter('#form_tn','pachy',2,300,700);
+setCounter('#tonoPachyForm','tono',0.5,0,80);
+setCounter('#tonoPachyForm','pachy',2,300,700);
 
 setCounter('#form_left_apla','tono',0.5,0,80);
 setCounter('#form_right_apla','tono',0.5,0,80);
@@ -122,6 +122,36 @@ function tonoPachyInsert(domId,laterality, techno='air') {
     oStr = JSON.stringify(o);
     crud('tono','0','POST', oStr);
     $('#airPachy'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
+}
+
+function delTonoPachy (id) {
+    bootbox.confirm({
+        message: "Are you sure you want to delete this tono/pachy?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-danger'
+            }
+        },
+        callback: function (result) {
+            if (result == true) {
+                crud('tono',id,'DELETE');
+                $table_airRight.bootstrapTable('refresh');
+                $table_airLeft.bootstrapTable('refresh');
+            } else {
+                console.log('This was logged in the callback: ' + result);
+            }
+        }
+    });
+};
+
+function putTonoPachy (tonoId) {
+    $('#tonoPachyModal').modal('show');
 }
 
 // crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
