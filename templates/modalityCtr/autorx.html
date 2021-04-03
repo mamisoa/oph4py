@@ -10,7 +10,465 @@
 [[ include 'partials/patient-bar.html' ]]
 
 <div class="container-fluid">
-
+    <div class="row g-0 text-center" style="background-color: #f8f5f0;">
+        <div class="col">
+            <h1>REFRACTION</h1>
+        </div>
+    </div>
+    <div class="row mt-3 text-center">
+        <div class="col">
+            <div class="col" style="background-color: #D5E3EE;"><h2>RIGHT EYE</h2></div>
+        </div>    
+        <div class="col">
+            <div class="col" style="background-color: #EED9D5;"><h2>LEFT EYE</h2></div>
+        </div>                
+    </div>
+    <div class="row">
+        <div class="col">
+            <form id="idRightRx" enctype="multipart/form-data" method="POST">
+                <div class="container-fluid" style="background-color: #F0F8FF;">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="rx_origin" class="form-label">From:</label>
+                            <div class="input-group">
+                                <div class="btn-group rx_origin">
+                                    <input type="radio" id="rx_origin_autorx" name="rx_origin" class="btn-check" value="autorx" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="rx_origin_autorx">AutoRx</label>
+                                    <input type="radio" id="rx_origin_glass" name="rx_origin" class="btn-check" value="glass" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="rx_origin_glass">Glass</label>
+                                    <input type="radio" id="rx_origin_trial" name="rx_origin" class="btn-check" value="trial" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="rx_origin_trial">Trial</label>
+                                    <input type="radio" id="rx_origin_cyclo" name="rx_origin" class="btn-check" value="cyclo" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="rx_origin_cyclo">Cyclo</label>
+                                    <input type="radio" id="rx_origin_dil" name="rx_origin" class="btn-check" value="dil" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="rx_origin_dil">Dil</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col" id="rightTypeDiv">
+                            <label for="glass_type" class="form-label">Type:</label>
+                            <div class="input-group">
+                                <div class="btn-group glass_type">
+                                    <input type="radio" id="glass_type_mono" name="glass_type" class="btn-check" value="monofocal" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="glass_type_mono">Monofocal</label>
+                                    <input type="radio" id="glass_type_prog" name="glass_type" class="btn-check" value="progressive" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="glass_type_prog">Progressive</label>
+                                    <input type="radio" id="glass_type_bif" name="glass_type" class="btn-check" value="bifocal" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="glass_type_bif">Bifocal</label>
+                                    <input type="radio" id="glass_type_deg" name="glass_type" class="btn-check" value="bifocal" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="glass_type_deg">Degressive</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end row -->
+                    <div class="row mb-3" id="farRight">
+                        <div class="col-2">FAR</div>
+                        <div class="col-2">
+                            <label for="sph_far" class="form-label">Sph:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_sph_far" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm sph_far counter_sph_far text-center" value ="0.00" aria-label="Sphere right" name="sph_far">
+                                <button class="btn btn-outline-secondary counter_up_sph_far" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="cyl_far" class="form-label">Cyl:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_cyl_far" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm cyl_far counter_cyl_far text-center" value ="0.00" aria-label="Cylinder right" name="cyl_far">
+                                <button class="btn btn-outline-secondary counter_up_cyl_far" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="axis_far" class="form-label">Axis:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_axis_far" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm axis_far counter_axis_far text-center" value ="0.00" aria-label="Cylinder right" name="axis_far">
+                                <button class="btn btn-outline-secondary counter_up_axis_far" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="va_far" class="form-label">VA:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_va_far" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm va_far counter_va_far text-center" value ="0.00" aria-label="Visual acuity" name="va_far">
+                                <button class="btn btn-outline-secondary counter_up_va_far" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="opto_far" class="form-label">Opto:</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" aria-label="Default select example" name="opto_far">
+                                    <option value="letters">Letters</option>
+                                    <option value="E">E</option>
+                                    <option value="Pigassou">Pigassou</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="row mb-3" id="intRight">
+                        <div class="col-2">
+                            <label for="add_int" class="form-label">Add for int:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_add_int" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm add_int counter_add_int text-center" value ="0.00" aria-label="Intermediate addition" name="add_int">
+                                <button class="btn btn-outline-secondary counter_up_add_int" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="sph_in-" class="form-label">Sph:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_sph_int" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm sph_far counter_sph_int text-center" value ="0.00" aria-label="Sphere right" name="sph_far">
+                                <button class="btn btn-outline-secondary counter_up_sph_int" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="cyl_int" class="form-label">Cyl:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_cyl_int" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm cyl_int counter_cyl_int text-center" value ="0.00" aria-label="Cylinder right" name="cyl_int">
+                                <button class="btn btn-outline-secondary counter_up_cyl_int" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="axis_int" class="form-label">Axis:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_axis_int" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="0.00" aria-label="Cylinder right" name="axis_int">
+                                <button class="btn btn-outline-secondary counter_up_axis_int" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="va_int" class="form-label">VA:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_va_int" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm va_int counter_va_int text-center" value ="0.00" aria-label="Visual acuity" name="va_int">
+                                <button class="btn btn-outline-secondary counter_up_va_int" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="opto_int" class="form-label">Opto:</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" aria-label="Optotype used for intermediate distance" name="opto_int">
+                                    <option value="letters">Letters</option>
+                                    <option value="E">E</option>
+                                    <option value="Pigassou">Pigassou</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3" id="closeRight">
+                        <div class="col-2">
+                            <label for="add_close" class="form-label">Add for int:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_add_close" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm add_close counter_add_close text-center" value ="0.00" aria-label="Intermediate addition" name="add_close">
+                                <button class="btn btn-outline-secondary counter_up_add_close" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="sph_close" class="form-label">Sph:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_sph_close" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="0.00" aria-label="Sphere right" name="sph_far">
+                                <button class="btn btn-outline-secondary counter_up_sph_close" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="cyl_close" class="form-label">Cyl:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_cyl_close" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm cyl_close counter_cyl_close text-center" value ="0.00" aria-label="Cylinder right" name="cyl_close">
+                                <button class="btn btn-outline-secondary counter_up_cyl_close" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="axis_close" class="form-label">Axis:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_axis_close" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm axis_close counter_axis_close text-center" value ="0.00" aria-label="Cylinder right" name="axis_close">
+                                <button class="btn btn-outline-secondary counter_up_axis_close" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="va_close" class="form-label">VA:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_va_close" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm va_close counter_va_close text-center" value ="0.00" aria-label="Visual acuity" name="va_close">
+                                <button class="btn btn-outline-secondary counter_up_va_close" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="opto_close" class="form-label">Opto:</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" aria-label="Optotype used for close" name="opto_close">
+                                    <option value="letters">Parinaud</option>
+                                    <option value="E">Jaegers</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3 text-center">
+                        <div class="row mb-3" id="rxRightSubmit">
+                            <div class="col">
+                                <button id="btnAddRxRight" class="btn btn-primary" type="submit">Submit right Rx<i class=" mx-2 fas fa-plus"></i></button>
+                            </div>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                        </div>
+                    </div>
+                </div> <!--end container div-->
+            </form>
+        </div> <!-- end rxRight col -->
+        <div class="col">
+            <form action="" id="idLeftRx">
+                <div class="container-fluid" style="background-color: #FFF5EE;">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="rx_origin" class="form-label">From:</label>
+                            <div class="input-group">
+                                <div class="btn-group rx_origin">
+                                    <input type="radio" id="rx_origin_autorx" name="rx_origin" class="btn-check" value="autorx" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="rx_origin_autorx">AutoRx</label>
+                                    <input type="radio" id="rx_origin_glass" name="rx_origin" class="btn-check" value="glass" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="rx_origin_glass">Glass</label>
+                                    <input type="radio" id="rx_origin_trial" name="rx_origin" class="btn-check" value="trial" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="rx_origin_trial">Trial</label>
+                                    <input type="radio" id="rx_origin_cyclo" name="rx_origin" class="btn-check" value="cyclo" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="rx_origin_cyclo">Cyclo</label>
+                                    <input type="radio" id="rx_origin_dil" name="rx_origin" class="btn-check" value="dil" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="rx_origin_dil">Dil</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col" id="rightTypeDiv">
+                            <label for="glass_type" class="form-label">Type:</label>
+                            <div class="input-group">
+                                <div class="btn-group glass_type">
+                                    <input type="radio" id="glass_type_mono" name="glass_type" class="btn-check" value="monofocal" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="glass_type_mono">Monofocal</label>
+                                    <input type="radio" id="glass_type_prog" name="glass_type" class="btn-check" value="progressive" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="glass_type_prog">Progressive</label>
+                                    <input type="radio" id="glass_type_bif" name="glass_type" class="btn-check" value="bifocal" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="glass_type_bif">Bifocal</label>
+                                    <input type="radio" id="glass_type_deg" name="glass_type" class="btn-check" value="bifocal" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="glass_type_deg">Degressive</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end row -->
+                    <div class="row mb-3" id="farRight">
+                        <div class="col-2">FAR</div>
+                        <div class="col-2">
+                            <label for="sph_far" class="form-label">Sph:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_sph_far" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm sph_far counter_sph_far text-center" value ="0.00" aria-label="Sphere right" name="sph_far">
+                                <button class="btn btn-outline-secondary counter_up_sph_far" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="cyl_far" class="form-label">Cyl:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_cyl_far" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm cyl_far counter_cyl_far text-center" value ="0.00" aria-label="Cylinder right" name="cyl_far">
+                                <button class="btn btn-outline-secondary counter_up_cyl_far" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="axis_far" class="form-label">Axis:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_axis_far" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm axis_far counter_axis_far text-center" value ="0.00" aria-label="Cylinder right" name="axis_far">
+                                <button class="btn btn-outline-secondary counter_up_axis_far" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="va_far" class="form-label">VA:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_va_far" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm va_far counter_va_far text-center" value ="0.00" aria-label="Visual acuity" name="va_far">
+                                <button class="btn btn-outline-secondary counter_up_va_far" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="opto_far" class="form-label">Opto:</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" aria-label="Default select example" name="opto_far">
+                                    <option value="letters">Letters</option>
+                                    <option value="E">E</option>
+                                    <option value="Pigassou">Pigassou</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3" id="intRight">
+                        <div class="col-2">
+                            <label for="add_int" class="form-label">Add for int:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_add_int" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm add_int counter_add_int text-center" value ="0.00" aria-label="Intermediate addition" name="add_int">
+                                <button class="btn btn-outline-secondary counter_up_add_int" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="sph_in-" class="form-label">Sph:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_sph_int" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm sph_far counter_sph_int text-center" value ="0.00" aria-label="Sphere right" name="sph_far">
+                                <button class="btn btn-outline-secondary counter_up_sph_int" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="cyl_int" class="form-label">Cyl:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_cyl_int" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm cyl_int counter_cyl_int text-center" value ="0.00" aria-label="Cylinder right" name="cyl_int">
+                                <button class="btn btn-outline-secondary counter_up_cyl_int" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="axis_int" class="form-label">Axis:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_axis_int" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="0.00" aria-label="Cylinder right" name="axis_int">
+                                <button class="btn btn-outline-secondary counter_up_axis_int" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="va_int" class="form-label">VA:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_va_int" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm va_int counter_va_int text-center" value ="0.00" aria-label="Visual acuity" name="va_int">
+                                <button class="btn btn-outline-secondary counter_up_va_int" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="opto_int" class="form-label">Opto:</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" aria-label="Optotype used for intermediate distance" name="opto_int">
+                                    <option value="letters">Letters</option>
+                                    <option value="E">E</option>
+                                    <option value="Pigassou">Pigassou</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3" id="closeRight">
+                        <div class="col-2">
+                            <label for="add_close" class="form-label">Add for int:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_add_close" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm add_close counter_add_close text-center" value ="0.00" aria-label="Intermediate addition" name="add_close">
+                                <button class="btn btn-outline-secondary counter_up_add_close" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="sph_close" class="form-label">Sph:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_sph_close" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="0.00" aria-label="Sphere right" name="sph_far">
+                                <button class="btn btn-outline-secondary counter_up_sph_close" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="cyl_close" class="form-label">Cyl:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_cyl_close" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm cyl_close counter_cyl_close text-center" value ="0.00" aria-label="Cylinder right" name="cyl_close">
+                                <button class="btn btn-outline-secondary counter_up_cyl_close" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="axis_close" class="form-label">Axis:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_axis_close" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm axis_close counter_axis_close text-center" value ="0.00" aria-label="Cylinder right" name="axis_close">
+                                <button class="btn btn-outline-secondary counter_up_axis_close" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="va_close" class="form-label">VA:</label>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-outline-secondary counter_down_va_close" type="button">-</button>
+                                <input type="text" class="form-control form-control-sm va_close counter_va_close text-center" value ="0.00" aria-label="Visual acuity" name="va_close">
+                                <button class="btn btn-outline-secondary counter_up_va_close" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label for="opto_close" class="form-label">Opto:</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" aria-label="Optotype used for close" name="opto_close">
+                                    <option value="letters">Parinaud</option>
+                                    <option value="E">Jaegers</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3 text-center">
+                        <div class="row mb-3" id="rxLeftSubmit">
+                            <div class="col">
+                                <button id="btnAddRxLeft" class="btn btn-primary" type="submit">Submit left Rx<i class=" mx-2 fas fa-plus"></i></button>
+                            </div>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div> <!-- end rxLeft col -->
+    </div>
+    <div class="row mb-3">
+        <div class="col">
+            <table
+            id="rxRight_tbl"
+            data-side-pagination="server"
+            data-pagination="true"
+            data-page-size="10"
+            data-search="false"
+            data-query-params="queryParams"
+            data-response-handler="responseHandler"
+            >
+                <thead>
+                    <tr>
+                        <th data-field="timestamp" data-sortable="false">Timestamp</th>
+                        <th data-field="rx_origin" data-sortable="false">Type</th>
+                        <th data-field="va_far" data-sortable="false">VA far</th>
+                        <th data-field="rx_far" data-sortable="false">Rx far</th>
+                        <th data-field="va_int" data-sortable="false">VA int</th>
+                        <th data-field="rx_int" data-sortable="false">Rx int</th>
+                        <th data-field="va_close" data-sortable="false">VA close:</th>
+                        <th data-field="rx_close" data-sortable="false">Rx close:</th>
+                        <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="col">
+            <table
+            id="rxLeft_tbl"
+            data-side-pagination="server"
+            data-pagination="true"
+            data-page-size="10"
+            data-search="false"
+            data-query-params="queryParams"
+            data-response-handler="responseHandler"
+            >
+                <thead>
+                    <tr>
+                        <th data-field="timestamp" data-sortable="false">Timestamp</th>
+                        <th data-field="rx_origin" data-sortable="false">Type</th>
+                        <th data-field="va_far" data-sortable="false">VA far</th>
+                        <th data-field="rx_far" data-sortable="false">Rx far</th>
+                        <th data-field="va_int" data-sortable="false">VA int</th>
+                        <th data-field="rx_int" data-sortable="false">Rx int</th>
+                        <th data-field="va_close" data-sortable="false">VA close:</th>
+                        <th data-field="rx_close" data-sortable="false">Rx close:</th>
+                        <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
 </div>
 
 [[ block js_scripts]]
@@ -31,14 +489,21 @@ const timeOffsetInHours = 2;
 const timeOffset = 3600*timeOffsetInHours; // in sec
 
 // init tables
-const API_RXRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-const API_RXLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-const API_KMRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-const API_KMLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_RXRIGHT = HOSTURL + "/myapp/api/autorx?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_RXLEFT = HOSTURL + "/myapp/api/autorx?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_KMRIGHT = HOSTURL + "/myapp/api/km?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_KMLEFT = HOSTURL + "/myapp/api/km?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 
+var $rxRight = $('#rxRight_tbl').bootstrapTable({
+    url: API_RXRIGHT
+});
+
+var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
+    url: API_RXLEFT
+});
 
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
-$('#airPachyRight_tbl').on('post-body.bs.table', function () {
+$('#rxRight_tbl').on('post-body.bs.table', function () {
     $('.loading-wrap').addClass('visually-hidden'); // loading bug?
 });
 
