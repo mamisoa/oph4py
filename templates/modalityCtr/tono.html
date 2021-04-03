@@ -145,6 +145,110 @@
     </div>
 </div>
 
+<div class="container-fluid mt-2">
+    <div class="row g-0 text-center" style="background-color: #f8f5f0;">
+        <div class="col">
+            <h1>APLANATION TONOMETRY</h1>
+        </div>
+    </div>
+    <div class="row mt-3 text-center">
+            <div class="col">
+                <div class="col" style="background-color: #D5E3EE;"><h2>RIGHT EYE</h2></div>
+            </div>    
+            <div class="col">
+                <div class="col" style="background-color: #EED9D5;"><h2>LEFT EYE</h2></div>
+            </div>                
+    </div>
+    <div class="row text-center">
+        <div class="col">
+            <div class="row mb-3">
+                <div class="col">
+                    <form action="" class="row" id="aplaRightForm">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="aplaRight" class="form-label">Aplanation tonometry (RE):</label>
+                                    <div class="input-group mb-3">
+                                        <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
+                                        <input type="text" class="form-control aplaRight counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="aplaRight">
+                                        <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
+                                    </div>
+                                </div>                                
+                            </div>
+                            <div class="row mb-3" id="AplaRight">
+                                <div class="col">
+                                    <button id="btnAddAplaRight" class="btn btn-primary" type="submit">Submit right aplanation<i class=" mx-2 fas fa-plus"></i></button>
+                                </div>                                                                    
+                            </div>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                        </div>
+                    </form>                   
+                </div>  <!-- end aplaRight col -->
+                <div class="col">
+                    <form action="" id="aplaLeftForm">
+                        <div class="row">
+                            <div class="col">
+                                <label for="airRight" class="form-label">Aplanation tonometry (LE):</label>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
+                                    <input type="text" class="form-control aplaLeft text-center counter_tono" value ="15" aria-label="Air tonometry" name="aplaLeft">
+                                    <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
+                                </div>                        
+                            </div>
+                        </div>
+                        <div class="row mb-3" id="aplaLeft">
+                            <div class="col">
+                                <button id="btnAddAplaLeft" class="btn btn-primary" type="submit">Submit left TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
+                            </div>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                        </div>
+                    </form>
+                </div> <!-- end aplaLeft col -->
+            </div>  <!-- end row apla form col -->
+            <div class="row mb-3">
+                <div class="col">
+                    <table
+                        id="aplaRight_tbl"
+                        data-side-pagination="server"
+                        data-pagination="true"
+                        data-page-size="10"
+                        data-search="false"
+                        data-query-params="queryParams_airPachy"
+                        data-response-handler="responseHandler_airPachy"
+                        >
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="false">Timestamp</th>
+                                <th data-field="tonometry" data-sortable="false">Tono(air)</th>                                
+                                <th data-field="operate" data-formatter="operateFormatter_airPachy" data-events="operateEvents_airPachy">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="col">
+                    <table
+                        id="aplaLeft_tbl"
+                        data-toggle="table"
+                        data-side-pagination="server"
+                        data-pagination="true"
+                        data-page-size="10"
+                        data-query-params="queryParams_airPachy"
+                        data-response-handler="responseHandler_airPachy"
+                        >
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="false">Timestamp</th>
+                                <th data-field="tonometry" data-sortable="true">Tono(air)</th>                                
+                                <th data-field="operate" data-formatter="operateFormatter_airPachy" data-events="operateEvents_airPachy">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal tonoPachyModal -->
 <div class="modal fade" id="tonoPachyModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -162,11 +266,11 @@
                                     <div class="col">
                                         <label for="laterality" class="form-label">Side:</label>
                                         <div class="input-group">
-                                            <div class="btn-group laterality">                                                
-                                                <input type="radio" id="laterality_left" name="laterality" class="btn-check" value="left" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="laterality_left">Left</label>
+                                            <div class="btn-group laterality">
                                                 <input type="radio" id="laterality_right" name="laterality" class="btn-check" value="right" autocomplete="off">
                                                 <label class="btn btn-outline-primary" for="laterality_right">Right</label>
+                                                <input type="radio" id="laterality_left" name="laterality" class="btn-check" value="left" autocomplete="off">
+                                                <label class="btn btn-outline-primary" for="laterality_left">Left</label>
                                             </div>
                                         </div>
                                     </div>                                    
@@ -246,6 +350,8 @@ const HOSTURL = 'http://localhost:8000';
 const wlId = [[= wlId ]];
 const API_AIRRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 const API_AIRLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_APLARIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_APLALEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 
 
 console.log(API_AIRRIGHT);
@@ -256,6 +362,14 @@ var $table_airRight = $('#airPachyRight_tbl').bootstrapTable({
 
 var $table_airLeft = $('#airPachyLeft_tbl').bootstrapTable({
     url: API_AIRLEFT
+});
+
+var $table_aplaRight = $('#aplaRight_tbl').bootstrapTable({
+    url: API_APLARIGHT
+});
+
+var $table_aplaLeft = $('#aplaLeft_tbl').bootstrapTable({
+    url: API_APLALEFT
 });
 
 // timeOffset 'Europe/Brussels' GMT+2:00

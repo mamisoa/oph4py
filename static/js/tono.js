@@ -1,6 +1,17 @@
 
 // useful functions 
 
+// get age
+function getAge(dateString) {
+    var today = new Date();
+    var birthDate = new Date(dateString);
+    var age = today.getFullYear() - birthDate.getFullYear();
+    var m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+}
 
 // Capitalize first character
 function capitalize(str) {
@@ -66,7 +77,7 @@ getWlDetails(wlId)
     .then(function (itemObj){ // set patient ID in top bar
         wlItemObj = Object.assign({},itemObj); // clone wltitemobj in global        
         $('#patientName').html(itemObj['user.first_name']+' '+itemObj['user.last_name']);
-        $('#patientDob').html(itemObj['user.dob']);
+        $('#patientDob').html(itemObj['user.dob']+' ('+getAge(itemObj['user.dob'])+'yo)');
         $('#wlTimeslot').html(itemObj['requested_time'].split('T').join(' '));
     })
 
@@ -90,6 +101,12 @@ setCounter('#airRightForm','pachy',2,300,700);
 setCounter('#airLeftForm','tono',0.5,0,80);
 setCounter('#airLeftForm','pachy',2,300,700);
 
+setCounter('#aplaRightForm','tono',0.5,0,80);
+setCounter('#aplaRightForm','pachy',2,300,700);
+
+setCounter('#aplaLeftForm','tono',0.5,0,80);
+setCounter('#aplaLeftForm','pachy',2,300,700);
+
 setCounter('#tonoPachyForm','tono',0.5,0,80);
 setCounter('#tonoPachyForm','pachy',2,300,700);
 
@@ -112,7 +129,7 @@ function setCounter (id_count, count_class,step, min, max) {
     });
     }
 
-// submit airPachy
+// submit airPachy and apla forms
 $('#airRightForm').submit(function(e){
     e.preventDefault();
     tonoPachyInsert(this,'right');
@@ -123,23 +140,32 @@ $('#airLeftForm').submit(function(e){
     tonoPachyInsert(this,'left');
 })
 
+$('#aplaRightForm').submit(function(e){
+    e.preventDefault();
+    tonoPachyInsert(this,'right','apla');
+});
+
+$('#aplaLeftForm').submit(function(e){
+    e.preventDefault();
+    tonoPachyInsert(this,'left','apla');
+})
+
 // domId eg #airRightForm , laterality eg 'right'
 function tonoPachyInsert(domId,laterality, techno='air') {
     let dataStr = $(domId).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let o ={};
-    o['tonometry'] = dataObj['air'+capitalize(laterality)];
-    o['pachymetry'] = dataObj['pachy'+capitalize(laterality)];
+    o['tonometry'] = dataObj[techno+capitalize(laterality)];
+    techno == 'air'? o['pachymetry'] = dataObj['pachy'+capitalize(laterality)] : o['pachymetry'] = '';
     o['id_auth_user'] = wlItemObj['user.id'];
     o['id_worklist'] = wlItemObj['id'];
     o['laterality'] = laterality;
     o['techno'] = techno;
     o['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
-    console.log(o['timestamp']);
     console.log('o',o);
     oStr = JSON.stringify(o);
     crud('tono','0','POST', oStr);
-    $('#airPachy'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
+    techno == 'air'? $('#airPachy'+capitalize(laterality)+'_tbl').bootstrapTable('refresh') : $('#apla'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
 }
 
 function delTonoPachy (id) {
@@ -161,6 +187,8 @@ function delTonoPachy (id) {
                 crud('tono',id,'DELETE');
                 $table_airRight.bootstrapTable('refresh');
                 $table_airLeft.bootstrapTable('refresh');
+                $table_aplaRight.bootstrapTable('refresh');
+                $table_aplaLeft.bootstrapTable('refresh');
             } else {
                 console.log('This was logged in the callback: ' + result);
             }
@@ -180,6 +208,8 @@ $('#tonoPachyForm').submit(function (e){
     $('#tonoPachyModal').modal('hide');
     $table_airRight.bootstrapTable('refresh');
     $table_airLeft.bootstrapTable('refresh');
+    $table_aplaRight.bootstrapTable('refresh');
+    $table_aplaLeft.bootstrapTable('refresh');
 });
 
 // crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
