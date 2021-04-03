@@ -1,6 +1,7 @@
 // set parameters for ajax request from bootstrap-table
 var s="";
 var toggle=""
+
 function queryParams(params) {
     search = params.search.split(",");
     if (search == [""]) {
@@ -21,7 +22,7 @@ function queryParams(params) {
         } else {
             s += "";
         }
-    }
+    };
     if (params.sort != undefined) {
         if (params.sort == "gender.sex") {
             params.sort = "gender";
@@ -33,19 +34,18 @@ function queryParams(params) {
             s += "&@order=~"+params.sort;
             toggle="";
         }
-    }
+    };
     if (params.offset != "0") {
         console.log(params.offset);
         s += "&@offset="+params.offset;
-    }
-
+    };
     if (params.limit != "0") {
         console.log(params.offset);
         s += "&@limit="+params.limit;
-    }
-    console.log('s',s);
+    };
+    // console.log('s',s);
     return decodeURI(encodeURI(s));
-}
+};
 
 function operateFormatter(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
@@ -54,7 +54,7 @@ function operateFormatter(value, row, index) {
     html.push('<a class="worklist ms-2" href="javascript:void(0)" title="Worklist"><i class="fas fa-list"></i></a>');
     html.push('</div>');
     return html.join('');
-  };
+};
 
 window.operateEvents = {
     'click .edit': function (e, value, row, index) {
@@ -68,7 +68,7 @@ window.operateEvents = {
     'click .worklist': function (e, value, row, index) {
         addToWorklist(row.id);
     }
-  };
+};
 
 function ageFormatter(value, row) {
     if ( row.dob==null )
@@ -77,8 +77,6 @@ function ageFormatter(value, row) {
     } else {
         return getAge(row.dob)+' yo';
     }
-    // console.log(row);
-    // return true;
 }
 
 /// Bootstrap-table options not used here
