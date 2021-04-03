@@ -16,6 +16,14 @@ def tono(wlId):
     user = auth.get_user()
     return locals()
 
+# autorx controller
+@action('autorx')
+@action('modalityCtr/autorx/<wlId>')
+@action.uses('modalityCtr/autorx.html', session, auth, db)
+def autorx(wlId):
+    user = auth.get_user()
+    return locals()
+
 # helloworld controller
 @action('hello')
 @action.uses('modalityCtr/hello.html', session, auth, db)
