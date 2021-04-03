@@ -46,10 +46,10 @@ function getWlDetails(wlId){
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: HOSTURL+"/myapp/api/worklist/"+wlId+"?@lookup=user!:id_auth_user[id,last_name,first_name,dob]",
+            url: HOSTURL+"/myapp/api/worklist/"+wlId+"?@lookup=patient!:id_auth_user[id,last_name,first_name,dob,photob64],modality!:modality_dest[id,modality_name],provider!:provider[id,last_name,first_name,dob],senior!:senior[id,last_name,first_name,dob]",
             success: function(data) {
                 if (data.status != 'error' || data.count) {
-                    displayToast('success', 'GET combo exams', 'GET'+data.items[0]['user.first_name']+' '+data.items[0]['user.last_name'],3000);
+                    displayToast('success', 'GET combo exams', 'GET'+data.items[0]['patient.first_name']+' '+data.items[0]['patient.last_name'],3000);
                 } else {
                     displayToast('error', 'GET error', 'Cannot retrieve combo exams');
                 }
@@ -61,6 +61,7 @@ function getWlDetails(wlId){
     ); // promise return data
 };
 
+// details of wl item
 var wlItemObj;
 
 getWlDetails(wlId)
@@ -76,10 +77,29 @@ getWlDetails(wlId)
     })
     .then(function (itemObj){ // set patient ID in top bar
         wlItemObj = Object.assign({},itemObj); // clone wltitemobj in global        
-        $('#patientName').html(itemObj['user.first_name']+' '+itemObj['user.last_name']);
-        $('#patientDob').html(itemObj['user.dob']+' ('+getAge(itemObj['user.dob'])+'yo)');
-        $('#wlTimeslot').html(itemObj['requested_time'].split('T').join(' '));
-    })
+        $('#wlItemDetails .patientName').html(itemObj['patient.first_name']+' '+itemObj['patient.last_name']);
+        $('#wlItemDetails .patientDob').html(itemObj['patient.dob']+' ('+getAge(itemObj['patient.dob'])+'yo)');
+        $('#wlItemDetails .timeslot').html(itemObj['requested_time'].split('T').join(' '));
+        $('#wlItemDetails .modality').html(itemObj['modality.modality_name']);
+        $('#wlItemDetails .laterality').html(itemObj['laterality']);
+        $('#wlItemDetails .provider').html(itemObj['provider.first_name']+' '+itemObj['provider.last_name']);
+        $('#wlItemDetails .senior').html(itemObj['senior.first_name']+' '+itemObj['senior.last_name']);
+        $('#wlItemDetails .status').html(itemObj['status_flag']);
+        if (itemObj['status_flag'] == 'done') {
+            $('#btnTaskDone').attr('disabled', true);
+            $('#btnAddTonoPachyRight').attr('disabled', true);
+            $('#btnAddTonoPachyLeft').attr('disabled', true);
+            $('#btnAddAplaRight').attr('disabled', true);
+            $('#btnAddAplaLeft').attr('disabled', true);            
+        }
+        wlItemObj['patient.photob64'] != null? $('#wlItemDetails .warning').html('<i class="fas fa-exclamation-circle"></i> '+itemObj['warning']) : $('#wlItemDetails .warning').html('').removeClass('bg-danger text-wrap');
+        if (wlItemObj['patient.photob64'] == null) {
+            $('#photoDiv').addClass('visually-hidden');
+            $('#patientIdDiv').removeClass('text-end').addClass('text-center');
+        } else {
+            document.getElementById("photoTitle").setAttribute("src",wlItemObj['patient.photob64']);
+        }
+});
 
 // hide pachy when techno is apla
 // if val(), change by chaining trigger("change")
@@ -157,7 +177,7 @@ function tonoPachyInsert(domId,laterality, techno='air') {
     let o ={};
     o['tonometry'] = dataObj[techno+capitalize(laterality)];
     techno == 'air'? o['pachymetry'] = dataObj['pachy'+capitalize(laterality)] : o['pachymetry'] = '';
-    o['id_auth_user'] = wlItemObj['user.id'];
+    o['id_auth_user'] = wlItemObj['patient.id'];
     o['id_worklist'] = wlItemObj['id'];
     o['laterality'] = laterality;
     o['techno'] = techno;
@@ -215,8 +235,8 @@ $('#tonoPachyForm').submit(function (e){
 // crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
 function crud(table,id='0',req='POST',data) {
     console.log(data);
-    var API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
-    var mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
+    let API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
+    let mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
     $.ajax({
         url: API_URL,
         data: data,
@@ -242,3 +262,80 @@ function crud(table,id='0',req='POST',data) {
             };
         });
 }
+
+$('#btnTaskDone').click(function() {
+    bootbox.confirm({
+        message: "Are you sure you want to set this task to DONE?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-danger'
+            }
+        },
+        callback: function (result) {
+            if (result == true) {
+                let dataObj = { 'laterality': wlItemObj['laterality'], 'id': wlId };
+                let dataStr;
+                if (wlItemObj['status_flag'] != 'done') {
+                    dataObj['status_flag'] = 'done';
+                    dataObj['counter'] = 0;
+                    dataStr = JSON.stringify(dataObj);
+                    crud('worklist','0','PUT', dataStr);
+                    getWlDetails(wlId) // check if set to done successful and disable forms
+                        .then(function (itemObj) {
+                            wlItemObj = Object.assign({},itemObj.items[0]); // clone wltitemobj in global
+                            if (wlItemObj['status_flag'] == 'done') {
+                                $('#wlItemDetails .status').html(wlItemObj['status_flag']);
+                                $('#btnTaskDone').attr('disabled', true);
+                                $('#btnAddTonoPachyRight').attr('disabled', true);
+                                $('#btnAddTonoPachyLeft').attr('disabled', true);
+                                $('#btnAddAplaRight').attr('disabled', true);
+                                $('#btnAddAplaLeft').attr('disabled', true);
+                            }
+                        });
+                }
+            } // end if
+        } // end callback
+    }); //end bootbox
+});
+
+// delete tono
+function delTonoPachy (id) {
+    bootbox.confirm({
+        message: "Are you sure you want to delete this tono/pachy?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-danger'
+            }
+        },
+        callback: function (result) {
+            if (result == true) {
+                crud('tono',id,'DELETE');
+                $table_airRight.bootstrapTable('refresh');
+                $table_airLeft.bootstrapTable('refresh');
+                $table_aplaRight.bootstrapTable('refresh');
+                $table_aplaLeft.bootstrapTable('refresh');
+            } else {
+                console.log('This was logged in the callback: ' + result);
+            }
+        }
+    });
+};
+
+// set wlItem status: done processing and counter adjustment
+// id is in the dataStr
+function setWlItemStatus (dataStr) {
+    console.log('dataStrPut:',dataStr);
+    crud('worklist','0','PUT', dataStr);
+};

@@ -1,0 +1,36 @@
+
+<div class="container-fluid my-3 py-2" id="wlItemDetails" style="background-color: #E9FFE8;">
+    <div class="row mb-3 d-flex justify-content-center align-items-center">
+        <div id="patientIdDiv" class="col-4 text-end">
+            <h2 class="patientName"></h2>
+            <h3 class="patientDob text-muted"></h3>
+        </div>
+        <div class="col-4" id="photoDiv">
+            <img id="photoTitle" class="photoId" src="" alt="Photo from EID">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-start align-items-center">
+            <a class="btn btn-primary" href="/myapp/worklist" role="button">Back</a>
+        </div>
+        <div class="col">
+            <p>Task: #[[ = wlId ]] </p>
+            <p>Timeslot: <span class="timeslot"></span></p>
+        </div>
+        <div class="col">
+            <p>Modality: <span class="modality"></span></p>
+            <p>Laterality: <span class="laterality"></span></p>
+        </div>
+        <div class="col">
+            <p>Provider: <span class="provider"></span></p>
+            <p>Senior: <span class="senior"></span></p>
+        </div>
+        <div class="col">
+            <p>Warning: <span class="warning bg-danger text-wrap p-1" style="color: white;"></span></p>
+            <p>Status: <span class="status"></span></p>
+        </div>
+        <div class="col d-flex justify-content-end align-items-center">
+            <button class="btn btn-primary mx-2" id="btnTaskDone" type="button">Done</button>
+        </div>
+    </div>
+</div>
