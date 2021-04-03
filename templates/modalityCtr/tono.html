@@ -170,7 +170,7 @@
                                             </div>
                                         </div>
                                     </div>                                    
-                                    <div class="col">
+                                    <div class="col" id="technoDiv">
                                         <label for="techno" class="form-label">Method:</label>
                                         <div class="input-group">
                                             <div class="btn-group techno">                                                
@@ -187,17 +187,19 @@
                                         <label for="tono" class="form-label">Tonometry:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
-                                            <input type="text" class="form-control tono counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="tono">
+                                            <input type="text" class="form-control tono counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="tonometry">
                                             <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <label for="pachy" class="form-label">Pachymetry:</label>
-                                        <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_pachy" type="button">-</button>
-                                            <input type="text" class="form-control pachy counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachy">
-                                            <button class="btn btn-outline-secondary counter_up_pachy" type="button">+</button>
-                                        </div>
+                                        <div id="pachyDiv">
+                                            <label for="pachy" class="form-label">Pachymetry:</label>
+                                            <div class="input-group mb-3">
+                                                <button class="btn btn-outline-secondary counter_down_pachy" type="button">-</button>
+                                                <input type="text" class="form-control pachy counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachymetry">
+                                                <button class="btn btn-outline-secondary counter_up_pachy" type="button">+</button>
+                                            </div>
+                                        </div>                                        
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -207,6 +209,7 @@
                                         <div id="requestTimeHelp" class="form-text">Adjust timestamp</div>
                                     </div>                                
                                 </div>
+                                <input id="idTonoPachy" type="text" class="visually-hidden" name="id"/>
                                 <input id="idPatient" type="text" class="visually-hidden" name="id_auth_user"/>
                                 <input id="idWl" type="text" class="visually-hidden" name="id_worklist"/>
                                 <input id="methodTonoPachySubmit" type="text" class="visually-hidden" name="methodTonoPachySubmit" value="POST"/>
@@ -218,7 +221,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="labelSubmit"for="btnTonoPachySubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="TonoPachySubmit"for="btnTonoPachySubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>

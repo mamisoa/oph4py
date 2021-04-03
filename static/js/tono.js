@@ -1,6 +1,13 @@
 
 // useful functions 
 
+
+// Capitalize first character
+function capitalize(str) {
+    return str.trim().replace(/^\w/, (c) => c.toUpperCase());
+}
+
+// set tz info
 Date.prototype.addHours = function(h) {
     this.setTime(this.getTime() + (h*60*60*1000));
     return this;
@@ -63,6 +70,17 @@ getWlDetails(wlId)
         $('#wlTimeslot').html(itemObj['requested_time'].split('T').join(' '));
     })
 
+// hide pachy when techno is apla
+// if val(), change by chaining trigger("change")
+// if air, crud should set pachy to null
+$('#tonoPachyForm [name=techno]').change(function() {
+    pachyCache = $('#tonoPachyForm [name=pachymetry]').val();
+    if ($('#tonoPachyForm [name=techno]:checked').val() == 'apla') {
+        $('#pachyDiv').addClass('visually-hidden');
+    } else {
+        $('#pachyDiv').removeClass('visually-hidden');
+    }
+});
 
 // set counters
 // id_count : form id , count_class: tono pachy (counter_tono) 
@@ -150,9 +168,19 @@ function delTonoPachy (id) {
     });
 };
 
-function putTonoPachy (tonoId) {
-    $('#tonoPachyModal').modal('show');
-}
+$('#tonoPachyForm').submit(function (e){
+    e.preventDefault();
+    let dataStr = $('#tonoPachyForm').serializeJSON();
+    let dataObj = JSON.parse(dataStr);
+    console.log(dataObj);
+    let req = dataObj['methodTonoPachySubmit'];
+    delete dataObj['methodTonoPachySubmit'];
+    dataStr = JSON.stringify(dataObj);
+    crud('tono','0',req,dataStr);
+    $('#tonoPachyModal').modal('hide');
+    $table_airRight.bootstrapTable('refresh');
+    $table_airLeft.bootstrapTable('refresh');
+});
 
 // crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
 function crud(table,id='0',req='POST',data) {
@@ -183,9 +211,4 @@ function crud(table,id='0',req='POST',data) {
                 displayToast('success', table+' '+mode,text,'6000');
             };
         });
-}
-
-// Capitalize first character
-function capitalize(str) {
-    return str.trim().replace(/^\w/, (c) => c.toUpperCase());
 }
