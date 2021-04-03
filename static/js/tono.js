@@ -79,7 +79,7 @@ $('#tonoPachyForm [name=techno]').change(function() {
 
 counterArr = ['#airRightForm', '#airLeftForm', '#aplaRightForm', '#aplaLeftForm', '#tonoPachyForm','#form_right_apla','#form_left_apla'];
 
-for (counter of counterArr) {
+for (let counter of counterArr) {
     setCounter(counter,'tono',0.5,0,80);
     setCounter(counter,'pachy',2,300,700);    
 };

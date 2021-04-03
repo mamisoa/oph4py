@@ -1,31 +1,24 @@
+// init worklist form
 
-// useful functions 
+// change modality options on exam2do select
+$('#exam2doSelect').change(function(){
+    setModalityOptions(this.value);
+}); 
+// reset form
+resetWlForm();
 
-Date.prototype.addHours = function(h) {
-    this.setTime(this.getTime() + (h*60*60*1000));
-    return this;
-};
-
-// Convert seconds to hh:mm:ss
-// Allow for -ve time values
-function secondsToHMS(secs) {
-    function z(n){return (n<10?'0':'') + n;}
-    var sign = secs < 0? '-':'';
-    secs = Math.abs(secs);
-    return sign + z(secs/3600 |0) + ':' + z((secs%3600) / 60 |0) + ':' + z(secs%60);
-};
-
-// Convert H:M:S to seconds
-// Seconds are optional (i.e. n:n is treated as h:s)
-function hmsToSeconds(s) {
-    var b = s.split(':');
-    return b[0]*3600 + b[1]*60 + (+b[2] || 0);
-};
-
-// convert in TZ time eg 
-function convertTZ(date, tzString='Europe/Brussels') {
-    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
-}
+$(".btn.counter_down").click(function() {
+    value = parseInt($("input.counter").val());
+    if (value >= 1) {
+        $("input.counter").val(value-1);
+    } else {};
+});
+$(".btn.counter_up").click(function() {
+    value = parseInt($("input.counter").val());
+    if (value >= 0) {
+        $("input.counter").val(value+1);
+    } else {};
+});
 
 // set modality options
 function setModalityOptions(exam2doId){
@@ -41,37 +34,6 @@ function setModalityOptions(exam2doId){
             $('#modality_destSelect').html(html);
         };
     });
-}
-
-// crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
-function crud(table,id='0',req='POST',data) {
-    console.log(data);
-    var API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
-    var mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
-    $.ajax({
-        url: API_URL,
-        data: data,
-        contentType: 'application/json',
-        dataType: 'json',
-        method: req
-        })
-        .done(function(data) {
-            console.log(data);
-            status = data.status;
-            message = data.message;
-            errors = "";
-            if (data.status == "error") {
-                for (i in data.errors) {
-                    errors += data.errors[i]+'</br>';
-                };
-                text = errors;
-                displayToast('error',data.message,errors,'6000');
-            };
-            if (data.status == "success") {
-                text='User id: '+(req == 'DELETE'? id : data.id)+mode;
-                displayToast('success', table+' '+mode,text,'6000');
-            };
-        });
 }
 
 // get json data for modality options
@@ -106,28 +68,6 @@ function resetWlForm() {
     setModalityOptions(choice);
 }
 
-// init worklist form
-
-// change modality options on exam2do select
-$('#exam2doSelect').change(function(){
-    setModalityOptions(this.value);
-}); 
-// reset form
-resetWlForm();
-
-$(".btn.counter_down").click(function() {
-    value = parseInt($("input.counter").val());
-    if (value >= 1) {
-        $("input.counter").val(value-1);
-    } else {};
-});
-$(".btn.counter_up").click(function() {
-    value = parseInt($("input.counter").val());
-    if (value >= 0) {
-        $("input.counter").val(value+1);
-    } else {};
-});
-
 var wlItemsJson = [];
 var wlItemsHtml = [];
 var wlItemsCounter = 0;
@@ -141,20 +81,16 @@ $('#btnWlItemAdd').click(function() {
     delete formDataObj['idWl']; // no Id when new Item
     let formDataObjMultiple = [];
     wlItemsJson.push(formDataObj);
-    // console.log('wlItemsJson',wlItemsJson); // not used
-    // console.log('formDataObj before',formDataObj);
-    if (formDataObj['modality_dest'] == 13 ) {
-        console.log('Multiple!');
-        // console.log('formDataObj in if',formDataObj);
+    if (formDataObj['modality_dest'] == 13 ) { // modality_dest 13 is multiple
         getCombo(formDataObj['exam2do'])
             .then(function(data) {
                 let arr = [];
-                console.log('dataitem:',data);
+                // console.log('dataitem:',data);
                 for (let i in data.items) {
-                    console.log('multiple modality item:',data.items[i]['id_modality.id']);
+                    // console.log('multiple modality item:',data.items[i]['id_modality.id']);
                     arr[data.items[i]['id_modality.modality_name']]=data.items[i]['id_modality.id'];
                 };
-                console.log('arr=',arr);
+                // console.log('arr=',arr);
                 let o;
                 for (let a in arr) {
                     o = Object.assign({},formDataObj); // clone formDataObj
@@ -172,11 +108,11 @@ $('#btnWlItemAdd').click(function() {
                     delete formDataObjMultiple[f]['modality_name']; // only to get modality name
                     delete formDataObjMultiple[f]['id']; // only for put request
                     let formDataObjMultipleStr = JSON.stringify(formDataObjMultiple[f]);
-                    console.log('formDataObjMultiple['+f+']', formDataObjMultipleStr);
-                    appendWlItem(JSON.stringify(formDataObjMultiple[f]), wlItemsCounter, modalityName);
+                    // console.log('formDataObjMultiple['+f+']', formDataObjMultipleStr);
+                    appendWlItem(formDataObjMultipleStr, wlItemsCounter, modalityName);
                 };
             }); // end getCombo
-        console.log('formDataObjMultiple:',formDataObjMultiple);
+        // console.log('formDataObjMultiple:',formDataObjMultiple);
     } else {
         delete formDataObj['modality_name']; // only to get modality name
         delete formDataObj['id']; // only for put request
@@ -205,34 +141,11 @@ function getCombo(id_exam2do) {
     ); // promise return data
 };
 
-// TODO: put in useful functions
-function getUuid() {
-    return Promise.resolve(
-        $.ajax({
-            type: 'GET',
-            dataType: 'json',
-            url: HOSTURL+"/myapp/api/uuid",
-            success: function(data) {
-                if (data.unique_id != undefined) {
-                    displayToast('success', 'GET uuid', 'GET uuid:'+data['unique_id'],6000);
-                } else {
-                    displayToast('error', 'GET error', 'Cannot retrieve uuid');
-                }
-            }, // success
-            error: function (er) {
-                console.log(er);
-            }
-        })
-    ); // promise return data
-};
-
-
 // arr = field content, cnt = row counter, dataStr = json data string type
 // create wlItemsHtml for display
-// create wlItemsHtml for display
 function appendWlItem(dataStr,cnt, modalityName) {
-    console.log('wlItems:', wlItemsJson);
-    console.log('modality Name:', modalityName );
+    // console.log('wlItems:', wlItemsJson);
+    // console.log('modality Name:', modalityName );
     wlItemsHtml['From'] = $('#sendingFacilitySelect :selected').text();
     wlItemsHtml['To'] = $('#receivingFacilitySelect :selected').text();
     wlItemsHtml['Procedure'] = $('#exam2doSelect :selected').text();
@@ -248,7 +161,6 @@ function appendWlItem(dataStr,cnt, modalityName) {
     wlItemsHtml['Status'] = $('input[name="status_flag"]:checked').val();
     wlItemsHtml['Counter'] = $('input[name="counter"]').val();
     wlItemsHtml['warning'] = $('input[name="warning"]').val();
-    console.log('wlItemsHtml', wlItemsHtml);
     let head = '<tr>';
     let html = '<tr id="wlItem'+ cnt + '">';
     for (item in wlItemsHtml) {
@@ -263,12 +175,13 @@ function appendWlItem(dataStr,cnt, modalityName) {
     // set data-json attribute with row formDataStr
     $('#wlItem'+cnt).data('json',dataStr);
     wlItemsCounter += 1;
-    console.log('wlItemsCounter',wlItemsCounter);
-}
+    // console.log('wlItemsCounter',wlItemsCounter);
+};
 
+// delete item in item worklist to append
 function delWlItemModal(itemId){
     $('#wlItem'+itemId).remove();
-}
+};
 
 // show modal from wl button in patient table
 function addToWorklist(userId) {
@@ -361,7 +274,6 @@ $('#newWlItemForm').submit(function(e) {
                 getUuid()
                     .then(function(uuid) {
                         itemDataObj["message_unique_id"] = uuid.unique_id;
-                        console.log('messageuuid:',itemDataObj["message_unique_id"]);
                         let itemDataStr = JSON.stringify(itemDataObj);
                         crud('worklist','0', req, itemDataStr);
                         $(el).remove(); // remove wl item element node when posted
@@ -379,7 +291,7 @@ $('#newWlItemForm').submit(function(e) {
         itemDataPutObj['modality_dest']=itemDataPutObj['modality_destPut'];
         delete itemDataPutObj['modality_destPut'];
         itemDataPutStr = JSON.stringify(itemDataPutObj);
-        console.log('PUT data:',itemDataPutObj);
+        // console.log('PUT data:',itemDataPutObj);
         crud('worklist','0','PUT',itemDataPutStr);
         hideDiv('#modality_destPutDiv', 'visually-hidden','add');
         hideDiv('#modality_destDiv', 'visually-hidden','remove');
@@ -405,7 +317,6 @@ function delWlItem (id) {
         callback: function (result) {
             if (result == true) {
                 crud('worklist',id,'DELETE');
-                // console.log('Row.id deleted:'+id);
                 $table_wl.bootstrapTable('refresh');
             } else {
                 console.log('This was logged in the callback: ' + result);
@@ -417,7 +328,7 @@ function delWlItem (id) {
 // set wlItem status: done processing and counter adjustment
 // id is in the dataStr
 function setWlItemStatus (dataStr) {
-    console.log('dataStrPut:',dataStr);
+    // console.log('dataStrPut:',dataStr);
     crud('worklist','0','PUT', dataStr);
     $table_wl.bootstrapTable('refresh');    
 };
