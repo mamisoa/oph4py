@@ -14,6 +14,7 @@ function responseHandler(res) { // used if data-response-handler="responseHandle
             'cyl_far': list[i].cyl_far,
             'axis_far': list[i].axis_far,
             'rx_far': list[i].sph_far+'('+list[i].cyl_far+'x'+list[i].axis_far+')',
+            'se_far': (parseFloat(list[i].sph_far)+0.5*parseFloat(list[i].cyl_far)).toString(),
             'va_int': list[i].va_int,
             'opto_int': list[i].opto_int,
             'sph_int': list[i].sph_int,
