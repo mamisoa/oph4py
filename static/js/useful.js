@@ -17,6 +17,16 @@ function capitalize(str) {
     return str.trim().replace(/^\w/, (c) => c.toUpperCase());
 };
 
+// normalize accented characters
+function norm(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};
+
+// password generator
+function passGen() {
+    return Math.random().toString(36)+Math.random().toString(36).toUpperCase().split('').sort(function(){return 0.5-Math.random()}).join('')
+};
+
 // set tz info
 Date.prototype.addHours = function(h) {
     this.setTime(this.getTime() + (h*60*60*1000));
