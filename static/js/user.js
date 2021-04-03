@@ -127,8 +127,8 @@ function refreshList(listName){
                 let funcEdit = "confirmEdit(\'"+item.id+"\',\'address\');";
                 let funcDel = "confirmDel(\'"+item.id+"\',\'address\');";
                 let html = '<li class="list-group-item address" data-address-id="' + item.id + '">';
-                html += checkIfDataIsNull(item.address_origin, '') + ' : <br><span class="fw-bold"> ' + checkIfDataIsNull(item.home_num, '') +' '
-                html += checkIfDataIsNull(item.address1) + ' ' +checkIfDataIsNull(item.address2) + '<br>' + checkIfDataIsNull(item.zipcode) + ', ' + checkIfDataIsNull(item.town)+ '<br>' + checkIfDataIsNull(item.country) + '</span>';
+                html += checkIfDataIsNull(item.address_origin, '') + ' : <br><span class="fw-bold"> ' + checkIfDataIsNull(item.home_num, '') +' '+ checkIfDataIsNull(item.box_num, '') +' '
+                html += checkIfDataIsNull(item.address1,'') + ' ' +checkIfDataIsNull(item.address2,'') + '<br>' + checkIfDataIsNull(item.zipcode,'') + ', ' + checkIfDataIsNull(item.town,'')+ '<br>' + checkIfDataIsNull(item.country,'') + '</span>';
                 html += '<span class="float-end"><button type="button" onclick="'+funcDel+'" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="'+funcEdit+'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span>';
                 html +='</li>';
                 $('#ulUserAddresses').append(html);
@@ -136,7 +136,6 @@ function refreshList(listName){
         });
     } else { };
 };
-
 
 // userDetailsForm //
 $('#btnEditUser').click(function() {
@@ -186,7 +185,7 @@ $('#btnGetUserId').click(function(e) {
             document.getElementById("lastName").value= item.nom;
             let sex = item.sexe == 'M'? 'Male':'Female';
             document.getElementById("genderSelect").value= checkIfDataIsNull(sex,'Male');
-            dob = item.date_naissance.split('/').reverse().join('-');
+            let dob = item.date_naissance.split('/').reverse().join('-');
             document.getElementById("dob").value= checkIfDataIsNull(dob,'');
             document.getElementById("nationality").value= checkIfDataIsNull(item.nationale,'');
             document.getElementById("birthTown").value= checkIfDataIsNull(item.lieu_naissance,'');
@@ -194,6 +193,14 @@ $('#btnGetUserId').click(function(e) {
             document.getElementById("ssn").value= checkIfDataIsNull(item.num_nat,'');
             document.getElementById("photo").setAttribute("src", "data:image/jpg;base64,"+item.photo);
             document.getElementById("photob64").value=checkIfDataIsNull("data:image/jpg;base64,"+item.photo,'');
+            document.getElementById("zipcode").value= item.code_postal;
+            document.getElementById("town").value= item.localite;
+            let addressStr = item.adresse;
+            const regex = /[-]?\d*\.\d+|[-]?\d+/gm;
+            addressArr = addressStr.match(regex);
+            document.getElementById("home_num").value = addressArr[0];
+            document.getElementById("box_num").value = addressArr[1] == undefined ? '' : addressArr[1];
+            document.getElementById("address1").value = addressStr.split(addressArr[0])[0];
         }
     })
 });
@@ -295,7 +302,6 @@ function confirmDel(id='0', table) {
     });
 };
 
-
 // COMMON confirm EDITION
 function confirmEdit(recid, table) {
     console.log(recid);
@@ -318,6 +324,7 @@ function confirmEdit(recid, table) {
                     document.getElementById("originAddressSelect").value= item.address_origin;
                     document.getElementById("address_rank").value= item.address_rank;
                     document.getElementById("home_num").value= item.home_num;
+                    document.getElementById("box_num").value= item.box_num;
                     document.getElementById("address1").value= item.address1;
                     document.getElementById("address2").value= item.address2;
                     document.getElementById("zipcode").value= item.zipcode;
