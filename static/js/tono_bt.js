@@ -53,9 +53,9 @@ window.operateEvents_airPachy = {
         $("#tonoPachyForm [name=id_worklist]").val([row.id_worklist]);
         $("#tonoPachyForm [name=laterality]").val([row.laterality]); // put in an array to set radio
         $("#tonoPachyForm [name=techno]").val([row.techno]).trigger('change'); // chain trigger to hide/show pachy
-        // todo: if techno is apla, set pachy = "null" and hide input
         let regex = /(?<=>)((?!\s*<)[\s\S]+?)(?=<)/gm;  // get text between tags
-        let pachy = parseFloat(row.pachymetry.match(regex));
+        let pachy = row.techno == 'air'? parseFloat(row.pachymetry.match(regex)) : 550;
+        console.log('pachy:',pachy);
         let tono = parseFloat(row.tonometry.match(regex));
         $("#tonoPachyForm [name='pachymetry']").val(pachy);
         $("#tonoPachyForm [name='tonometry']").val(tono);
@@ -67,8 +67,6 @@ window.operateEvents_airPachy = {
         delTonoPachy(row.id);
     }
 };
-
-
 
 function highlightValue(str,threshold, direction = 'high') {
     if (direction == 'high') {
