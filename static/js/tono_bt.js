@@ -8,8 +8,8 @@ function responseHandler_airPachy(res) { // used if data-response-handler="respo
             'id_worklist': list[i].id_worklist,
             'techno': list[i].techno,
             'laterality': list[i]['laterality'],
-            'tonometry': highlightValue(list[i]['tonometry'],20),
-            'pachymetry': highlightValue(list[i]['pachymetry'],500,'low'),
+            'tonometry': highlightValue(list[i]['tonometry'],20,24),
+            'pachymetry': highlightValue(list[i]['pachymetry'],525,500,'low'),
             'timestamp': list[i]['timestamp'].split('T').join(' '),
             'modified_by': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
             'modified_on': list[i]['modified_on'],
@@ -32,8 +32,7 @@ function queryParams_airPachy(params) {
         console.log(params.offset);
         s += "&@limit="+params.limit;
     }
-    console.log('s_wl',s.slice(1-s.length));
-    return decodeURI(encodeURI(s.slice(1-s.length)));
+    return decodeURI(encodeURI(s.slice(1-s.length))); // remove the first &
 };
 
 function operateFormatter_airPachy(value, row, index) {
@@ -68,18 +67,23 @@ window.operateEvents_airPachy = {
     }
 };
 
-function highlightValue(str,threshold, direction = 'high') {
+// highlight abnormal values
+function highlightValue(str,midthreshold,highthreshold, direction = 'high') {
     if (direction == 'high') {
-        if (parseFloat(str) >=threshold) {
-            return '<span style="color: red;"><strong>'+str+'<strong><span>'
+        if (parseFloat(str) >=highthreshold) {
+            return '<span class="text-danger"><strong>'+str+'<strong><span>';
+        } else if (parseFloat(str) >= midthreshold){
+            return '<span class="text-warning"><strong>'+str+'<strong><span>';
         } else {
-            return '<span style="color: green;">'+str+'<span>'
+            return '<span class="text-success">'+str+'<span>';
         }
     } else {
-        if (parseFloat(str) <= threshold) {
-            return '<span style="color: red;"><strong>'+str+'<strong><span>'
+        if (parseFloat(str) <= highthreshold) {
+            return '<span class="text-danger"><strong>'+str+'<strong><span>'
+        } else if (parseFloat(str) <= midthreshold){
+            return '<span class="text-warning"><strong>'+str+'<strong><span>';
         } else {
-            return '<span style="color: green;">'+str+'<span>'
+            return '<span class="text-success">'+str+'<span>';
         }
     };
 };

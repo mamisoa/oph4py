@@ -1,46 +1,15 @@
-
-// useful functions 
-
-// get age
-function getAge(dateString) {
-    var today = new Date();
-    var birthDate = new Date(dateString);
-    var age = today.getFullYear() - birthDate.getFullYear();
-    var m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    return age;
-}
-
-// Capitalize first character
-function capitalize(str) {
-    return str.trim().replace(/^\w/, (c) => c.toUpperCase());
-}
-
-// set tz info
-Date.prototype.addHours = function(h) {
-    this.setTime(this.getTime() + (h*60*60*1000));
-    return this;
-};
-
-// Convert seconds to hh:mm:ss
-// Allow for -ve time values
-function secondsToHMS(secs) {
-    function z(n){return (n<10?'0':'') + n;}
-    var sign = secs < 0? '-':'';
-    secs = Math.abs(secs);
-    return sign + z(secs/3600 |0) + ':' + z((secs%3600) / 60 |0) + ':' + z(secs%60);
-};
-
-// Convert H:M:S to seconds
-// Seconds are optional (i.e. n:n is treated as h:s)
-function hmsToSeconds(s) {
-    var b = s.split(':');
-    return b[0]*3600 + b[1]*60 + (+b[2] || 0);
-};
-
 // get wl details
+
+var wlItemObj;
+
+function disableBtn() {
+    $('#btnTaskDone').attr('disabled', true);
+    $('#btnAddTonoPachyRight').attr('disabled', true);
+    $('#btnAddTonoPachyLeft').attr('disabled', true);
+    $('#btnAddAplaRight').attr('disabled', true);
+    $('#btnAddAplaLeft').attr('disabled', true);            
+};
+
 function getWlDetails(wlId){
     return Promise.resolve(
         $.ajax({
@@ -60,9 +29,6 @@ function getWlDetails(wlId){
         })
     ); // promise return data
 };
-
-// details of wl item
-var wlItemObj;
 
 getWlDetails(wlId)
     .then(function (data) {
@@ -86,11 +52,7 @@ getWlDetails(wlId)
         $('#wlItemDetails .senior').html(itemObj['senior.first_name']+' '+itemObj['senior.last_name']);
         $('#wlItemDetails .status').html(itemObj['status_flag']);
         if (itemObj['status_flag'] == 'done') {
-            $('#btnTaskDone').attr('disabled', true);
-            $('#btnAddTonoPachyRight').attr('disabled', true);
-            $('#btnAddTonoPachyLeft').attr('disabled', true);
-            $('#btnAddAplaRight').attr('disabled', true);
-            $('#btnAddAplaLeft').attr('disabled', true);            
+            disableBtn();
         }
         wlItemObj['patient.photob64'] != null? $('#wlItemDetails .warning').html('<i class="fas fa-exclamation-circle"></i> '+itemObj['warning']) : $('#wlItemDetails .warning').html('').removeClass('bg-danger text-wrap');
         if (wlItemObj['patient.photob64'] == null) {
@@ -103,7 +65,6 @@ getWlDetails(wlId)
 
 // hide pachy when techno is apla
 // if val(), change by chaining trigger("change")
-// if air, crud should set pachy to null
 $('#tonoPachyForm [name=techno]').change(function() {
     pachyCache = $('#tonoPachyForm [name=pachymetry]').val();
     if ($('#tonoPachyForm [name=techno]:checked').val() == 'apla') {
@@ -115,23 +76,13 @@ $('#tonoPachyForm [name=techno]').change(function() {
 
 // set counters
 // id_count : form id , count_class: tono pachy (counter_tono) 
-setCounter('#airRightForm','tono',0.5,0,80);
-setCounter('#airRightForm','pachy',2,300,700);
 
-setCounter('#airLeftForm','tono',0.5,0,80);
-setCounter('#airLeftForm','pachy',2,300,700);
+counterArr = ['#airRightForm', '#airLeftForm', '#aplaRightForm', '#aplaLeftForm', '#tonoPachyForm','#form_right_apla','#form_left_apla'];
 
-setCounter('#aplaRightForm','tono',0.5,0,80);
-setCounter('#aplaRightForm','pachy',2,300,700);
-
-setCounter('#aplaLeftForm','tono',0.5,0,80);
-setCounter('#aplaLeftForm','pachy',2,300,700);
-
-setCounter('#tonoPachyForm','tono',0.5,0,80);
-setCounter('#tonoPachyForm','pachy',2,300,700);
-
-setCounter('#form_left_apla','tono',0.5,0,80);
-setCounter('#form_right_apla','tono',0.5,0,80);
+for (counter of counterArr) {
+    setCounter(counter,'tono',0.5,0,80);
+    setCounter(counter,'pachy',2,300,700);    
+};
 
 function setCounter (id_count, count_class,step, min, max) {
     $(id_count+' .btn.counter_down_'+count_class).click(function() {
@@ -147,7 +98,7 @@ function setCounter (id_count, count_class,step, min, max) {
         $(id_count+' input.counter_'+count_class).val(value+step);
         } else {};
     });
-    }
+};
 
 // submit airPachy and apla forms
 $('#airRightForm').submit(function(e){
@@ -168,7 +119,7 @@ $('#aplaRightForm').submit(function(e){
 $('#aplaLeftForm').submit(function(e){
     e.preventDefault();
     tonoPachyInsert(this,'left','apla');
-})
+});
 
 // domId eg #airRightForm , laterality eg 'right'
 function tonoPachyInsert(domId,laterality, techno='air') {
@@ -186,7 +137,14 @@ function tonoPachyInsert(domId,laterality, techno='air') {
     oStr = JSON.stringify(o);
     crud('tono','0','POST', oStr);
     techno == 'air'? $('#airPachy'+capitalize(laterality)+'_tbl').bootstrapTable('refresh') : $('#apla'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
-}
+};
+
+function refreshTables() {
+    $table_airRight.bootstrapTable('refresh');
+    $table_airLeft.bootstrapTable('refresh');
+    $table_aplaRight.bootstrapTable('refresh');
+    $table_aplaLeft.bootstrapTable('refresh');
+};
 
 function delTonoPachy (id) {
     bootbox.confirm({
@@ -205,10 +163,7 @@ function delTonoPachy (id) {
         callback: function (result) {
             if (result == true) {
                 crud('tono',id,'DELETE');
-                $table_airRight.bootstrapTable('refresh');
-                $table_airLeft.bootstrapTable('refresh');
-                $table_aplaRight.bootstrapTable('refresh');
-                $table_aplaLeft.bootstrapTable('refresh');
+                refreshTables();
             } else {
                 console.log('This was logged in the callback: ' + result);
             }
@@ -226,43 +181,10 @@ $('#tonoPachyForm').submit(function (e){
     dataStr = JSON.stringify(dataObj);
     crud('tono','0',req,dataStr);
     $('#tonoPachyModal').modal('hide');
-    $table_airRight.bootstrapTable('refresh');
-    $table_airLeft.bootstrapTable('refresh');
-    $table_aplaRight.bootstrapTable('refresh');
-    $table_aplaLeft.bootstrapTable('refresh');
+    refreshTables();
 });
 
-// crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
-function crud(table,id='0',req='POST',data) {
-    console.log(data);
-    let API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
-    let mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
-    $.ajax({
-        url: API_URL,
-        data: data,
-        contentType: 'application/json',
-        dataType: 'json',
-        method: req
-        })
-        .done(function(data) {
-            console.log(data);
-            status = data.status;
-            message = data.message;
-            errors = "";
-            if (data.status == "error") {
-                for (i in data.errors) {
-                    errors += data.errors[i]+'</br>';
-                };
-                text = errors;
-                displayToast('error',data.message,errors,'6000');
-            };
-            if (data.status == "success") {
-                text='User id: '+(req == 'DELETE'? id : data.id)+mode;
-                displayToast('success', table+' '+mode,text,'6000');
-            };
-        });
-}
-
+// set task to done and disable form buttons
 $('#btnTaskDone').click(function() {
     bootbox.confirm({
         message: "Are you sure you want to set this task to DONE?",
@@ -291,11 +213,7 @@ $('#btnTaskDone').click(function() {
                             wlItemObj = Object.assign({},itemObj.items[0]); // clone wltitemobj in global
                             if (wlItemObj['status_flag'] == 'done') {
                                 $('#wlItemDetails .status').html(wlItemObj['status_flag']);
-                                $('#btnTaskDone').attr('disabled', true);
-                                $('#btnAddTonoPachyRight').attr('disabled', true);
-                                $('#btnAddTonoPachyLeft').attr('disabled', true);
-                                $('#btnAddAplaRight').attr('disabled', true);
-                                $('#btnAddAplaLeft').attr('disabled', true);
+                                disableBtn();
                             }
                         });
                 }
@@ -322,20 +240,10 @@ function delTonoPachy (id) {
         callback: function (result) {
             if (result == true) {
                 crud('tono',id,'DELETE');
-                $table_airRight.bootstrapTable('refresh');
-                $table_airLeft.bootstrapTable('refresh');
-                $table_aplaRight.bootstrapTable('refresh');
-                $table_aplaLeft.bootstrapTable('refresh');
+                refreshTables();
             } else {
                 console.log('This was logged in the callback: ' + result);
             }
         }
     });
-};
-
-// set wlItem status: done processing and counter adjustment
-// id is in the dataStr
-function setWlItemStatus (dataStr) {
-    console.log('dataStrPut:',dataStr);
-    crud('worklist','0','PUT', dataStr);
 };
