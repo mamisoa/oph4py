@@ -329,18 +329,22 @@
 <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/useful.js"></script>
 <script src="js/tono_bt.js"></script>
 <script type="text/javascript">
 
 const HOSTURL = 'http://localhost:8000';
 const wlId = [[= wlId ]];
+
+// timeOffset 'Europe/Brussels' GMT+2:00
+const timeOffsetInHours = 2;
+const timeOffset = 3600*timeOffsetInHours; // in sec
+
+// init tables
 const API_AIRRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 const API_AIRLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 const API_APLARIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 const API_APLALEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-
-
-console.log(API_AIRRIGHT);
 
 var $table_airRight = $('#airPachyRight_tbl').bootstrapTable({
     url: API_AIRRIGHT
@@ -357,11 +361,6 @@ var $table_aplaRight = $('#aplaRight_tbl').bootstrapTable({
 var $table_aplaLeft = $('#aplaLeft_tbl').bootstrapTable({
     url: API_APLALEFT
 });
-
-// timeOffset 'Europe/Brussels' GMT+2:00
-const timeOffsetInHours = 2;
-const timeOffset = 3600*timeOffsetInHours; // in sec
-
 
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
 $('#airPachyRight_tbl').on('post-body.bs.table', function () {
