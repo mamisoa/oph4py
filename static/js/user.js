@@ -79,7 +79,7 @@ function refreshList(listName){
         userData = getUser(id);
         userData.then(function(userData){
             let item = userData.items[0];
-            console.log('refresh:', item.photob64);
+            console.log('item:', item);
             $('#ulUserTitle').html('');
             $('#ulUserItems').html('');
             $('#userDetailsModal h5.modal-title').html('Edit patient: <span class="fw-bold">'+ checkIfDataIsNull(item.first_name) + ' '+ checkIfDataIsNull(item.last_name)+'</span>');

@@ -7,21 +7,7 @@
 [[ include 'partials/nav-test.html' ]]
 [[ end]]
 
-<div class="container-fluid">
-    <div class="row d-flex justify-content-evenly align-items-center">
-        <div class="col">
-            <a class="btn btn-primary" href="/myapp/worklist" role="button">Back</a>
-        </div>
-        <div class="col d-flex flex-column text-center" >
-            <h2 id="patientName">John DOE</h2>
-            <h3 id="patientDob" class="text-muted">1985-08-01</h3>
-        </div>
-        <div class="col d-flex justify-content-end align-items-center">
-            <div>Task #[[= wlId ]] planned for <span id="wlTimeslot">2020-01-21 12:30</span></div>
-            <button class="btn btn-primary mx-2" type="button">Done</button>
-          </div>
-    </div>
-</div>
+[[ include 'partials/patient-bar.html' ]]
 
 <div class="container-fluid mt-2">
     <div class="row g-0 text-center" style="background-color: #f8f5f0;">
