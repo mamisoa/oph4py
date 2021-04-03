@@ -3,15 +3,14 @@
 [[ include 'partials/nav-test.html' ]]
 [[ end]]
 
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col photoDiv visually-hidden">
-            <img id="photoTitle" class="photoId" src="" alt="Photo from EID">
+<div class="container-fluid my-3 py-2" id="patientTitle" style="background-color: #E9FFE8;">
+    <div class="row mb-3 d-flex justify-content-center align-items-center">
+        <div id="patientIdDiv" class="col-4 text-end">
+            <h2 class="patientName"></h2>
+            <h3 class="patientDob text-muted"></h3>
         </div>
-        <div class="col">
-            <ul id="ulUserTitle" class="list-group">
-                <!-- <li> fields </li>-->
-            </ul>
+        <div class="col-4 photoDiv visually-hidden">
+            <img class="photoId" src="" alt="Photo from EID">
         </div>
     </div>
 </div>

@@ -85,13 +85,11 @@ function refreshList(listName){
             $('#userAddressModal h5.modal-title').html('New address for: <span class="fw-bold">' + checkIfDataIsNull(item.first_name) + ' ' + checkIfDataIsNull(item.last_name) + '</span>');
             // fills title
             if (item.photob64 != null) {
-                document.getElementById("photo").setAttribute("src",checkIfDataIsNull(item.photob64,''));
-                document.getElementById("photoTitle").setAttribute("src",checkIfDataIsNull(item.photob64,''));
-                $(".photoDiv").toggleClass( "visually-hidden" );
+                $('.photoId').attr("src",checkIfDataIsNull(item.photob64,''));
+                $(".photoDiv").removeClass( "visually-hidden" );
             };
-            $('#ulUserTitle').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(item.last_name)+'</span></li>');
-            $('#ulUserTitle').append('<li class="list-group-item">First name: <span class="fw-bold">' + checkIfDataIsNull(item.first_name)+'</span></li>');
-            $('#ulUserTitle').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + checkIfDataIsNull(item.dob)+'</span></li>');
+            $('#patientTitle .patientName').html(checkIfDataIsNull(item.first_name,'n/a?')+' '+checkIfDataIsNull(item.last_name,'n/a?'));
+            $('#patientTitle .patientDob').html(checkIfDataIsNull(item.dob,'n/a?')+' ('+getAge(checkIfDataIsNull(item.dob,''))+' yo)');
             // fills list
             $('#ulUserItems').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(item.last_name) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Maiden name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(item.maiden_name) + '</span></li>');
@@ -201,6 +199,7 @@ $('#btnGetUserId').click(function(e) {
             document.getElementById("home_num").value = addressArr[0];
             document.getElementById("box_num").value = addressArr[1] == undefined ? '' : addressArr[1];
             document.getElementById("address1").value = addressStr.split(addressArr[0])[0];
+            $("#userDetailsModal .photoDiv").removeClass( "visually-hidden" );
         }
     })
 });

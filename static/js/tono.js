@@ -54,12 +54,12 @@ getWlDetails(wlId)
         if (itemObj['status_flag'] == 'done') {
             disableBtn();
         }
-        wlItemObj['patient.photob64'] != null? $('#wlItemDetails .warning').html('<i class="fas fa-exclamation-circle"></i> '+itemObj['warning']) : $('#wlItemDetails .warning').html('').removeClass('bg-danger text-wrap');
+        wlItemObj['warning'] != null? $('#wlItemDetails .warning').html('<i class="fas fa-exclamation-circle"></i> '+itemObj['warning']) : $('#wlItemDetails .warning').html('').removeClass('bg-danger text-wrap');
         if (wlItemObj['patient.photob64'] == null) {
             $('#photoDiv').addClass('visually-hidden');
             $('#patientIdDiv').removeClass('text-end').addClass('text-center');
         } else {
-            document.getElementById("photoTitle").setAttribute("src",wlItemObj['patient.photob64']);
+            document.getElementById("photoId").setAttribute("src",wlItemObj['patient.photob64']);
         }
 });
 
