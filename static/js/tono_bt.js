@@ -45,7 +45,14 @@ window.operateEvents_airPachy = {
     'click .edit': function (e, value, row, index) {
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
         document.getElementById("tonoPachyForm").reset();
-        $("[name=laterality]").val(row.laterality);
+        $("[name=laterality]").val([row.laterality]);
+        $("[name=techno]").val(['air']); // put in an array to set radio
+        let regex = /(?<=>)((?!\s*<)[\s\S]+?)(?=<)/gm;  // get text between tags
+        let pachy = parseFloat(row.pachymetry.match(regex));
+        let tono = parseFloat(row.tonometry.match(regex));
+        $("#tonoPachyForm [name='pachy']").val(pachy);
+        $("#tonoPachyForm [name='tono']").val(tono);
+        $("#tonoPachyForm [name='timestamp']").val(row.timestamp.split(' ').join('T'));
         putTonoPachy(row.id);
     },
     'click .remove': function (e, value, row, index) {
