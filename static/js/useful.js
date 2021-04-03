@@ -39,6 +39,26 @@ function hmsToSeconds(s) {
     return b[0]*3600 + b[1]*60 + (+b[2] || 0);
 };
 
+function getUuid() {
+    return Promise.resolve(
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: HOSTURL+"/myapp/api/uuid",
+            success: function(data) {
+                if (data.unique_id != undefined) {
+                    displayToast('success', 'GET uuid', 'GET uuid:'+data['unique_id'],6000);
+                } else {
+                    displayToast('error', 'GET error', 'Cannot retrieve uuid');
+                }
+            }, // success
+            error: function (er) {
+                console.log(er);
+            }
+        })
+    ); // promise return data
+};
+
 // crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
 function crud(table,id='0',req='POST',data) {
     console.log(data);

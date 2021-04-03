@@ -1,6 +1,7 @@
 // set parameters for ajax request from bootstrap-table
 var s_wl="";
 var toggle_wl="";
+
 function queryParams_wl(params) {
     search = params.search.split(",");
     if (search == [""]) {
@@ -52,10 +53,8 @@ function queryParams_wl(params) {
 
 function responseHandler_wl(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
-    let nbrows = Object.keys(list).length;
     let display = [];
     $.each(list, function (i) {
-        // console.log('id',list[i].id);
         display.push({
             'id': list[i].id,
             'sending_facility': list[i]['sending_facility.facility_name'],
@@ -76,10 +75,6 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'created_on': list[i]['created_on']
         });
     });
-    // console.log('display',display);
-    let test = [{"total": res.count, "items": display}];
-    // console.log('test',test);
-    // console.log(test[0]['items']);
     return {    rows: display, 
                 total: res.count,
                 };
@@ -94,7 +89,7 @@ function operateFormatter_wl(value, row, index) {
     html.push('<a class="modality_ctr ms-1" href="javascript:void(0)" title="Execute task"><i class="fas fa-heartbeat"></i></a>');
     html.push('</div>');
     return html.join('');
-  };
+};
 
 window.operateEvents_wl = {
     'click .edit': function (e, value, row, index) {
@@ -195,7 +190,7 @@ function counterFormatter_wl(value,row){
     html.push('<span id="timer_'+row.id+'" class="badge rounded-pill bg-light text-dark mx-1">'+elapse+'</span>');
     html.push('</div>');
     return html.join('');
-}
+};
 
 function rowAttributes_wl(row,index) { // set tooltip values
     row.created_by == '' ? createdby = 'created by <strong>unknown</strong>' : createdby = 'created by <strong>'+row.created_by+'</strong>';
@@ -211,4 +206,4 @@ function rowAttributes_wl(row,index) { // set tooltip values
         "data-bs-html": html,
         "data-bs-toggle": "tooltip"
     };
-}
+};
