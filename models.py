@@ -247,7 +247,7 @@ db.define_table('tono',
     Field('laterality', 'string', required=True),
     auth.signature)
 
-db.define_table('topography',
+db.define_table('km',
     Field('id_auth_user','reference auth_user', required=True),
     Field('id_worklist','reference worklist'),
     Field('timestamp', 'datetime', required=True),
@@ -268,10 +268,10 @@ db.define_table('capsulotomy',
     auth.signature)
 
 db.tono.id_auth_user.requires = IS_IN_DB(db, 'auth_user.id', '%(first_name)s'+' '+'%(last_name)s')
-db.topography.id_auth_user.requires = IS_IN_DB(db, 'auth_user.id', '%(first_name)s'+' '+'%(last_name)s')
+db.km.id_auth_user.requires = IS_IN_DB(db, 'auth_user.id', '%(first_name)s'+' '+'%(last_name)s')
 db.tono.laterality.requires = IS_IN_SET(('right','left'))
 db.capsulotomy.laterality.requires = IS_IN_SET(('right','left'))
-db.topography.laterality.requires = IS_IN_SET(('right','left'))
+db.km.laterality.requires = IS_IN_SET(('right','left'))
 db.tono.techno.requires = IS_IN_SET(('air','apla'))
 
 db.define_table ('optotype',
