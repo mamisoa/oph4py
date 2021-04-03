@@ -4,6 +4,9 @@ function responseHandler_airPachy(res) { // used if data-response-handler="respo
     $.each(list, function (i) {
         display.push({
             'id': list[i].id,
+            'id_auth_user': list[i].id_auth_user,
+            'id_worklist': list[i].id_worklist,
+            'techno': list[i].techno,
             'laterality': list[i]['laterality'],
             'tonometry': highlightValue(list[i]['tonometry'],20),
             'pachymetry': highlightValue(list[i]['pachymetry'],500,'low'),
@@ -44,16 +47,21 @@ function operateFormatter_airPachy(value, row, index) {
 window.operateEvents_airPachy = {
     'click .edit': function (e, value, row, index) {
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        document.getElementById("tonoPachyForm").reset();
-        $("[name=laterality]").val([row.laterality]);
-        $("[name=techno]").val(['air']); // put in an array to set radio
+        document.getElementById("tonoPachyForm").reset();        
+        $("#tonoPachyForm [name=id]").val([row.id]);
+        $("#tonoPachyForm [name=id_auth_user]").val([row.id_auth_user]);
+        $("#tonoPachyForm [name=id_worklist]").val([row.id_worklist]);
+        $("#tonoPachyForm [name=laterality]").val([row.laterality]); // put in an array to set radio
+        $("#tonoPachyForm [name=techno]").val([row.techno]).trigger('change'); // chain trigger to hide/show pachy
+        // todo: if techno is apla, set pachy = "null" and hide input
         let regex = /(?<=>)((?!\s*<)[\s\S]+?)(?=<)/gm;  // get text between tags
         let pachy = parseFloat(row.pachymetry.match(regex));
         let tono = parseFloat(row.tonometry.match(regex));
-        $("#tonoPachyForm [name='pachy']").val(pachy);
-        $("#tonoPachyForm [name='tono']").val(tono);
-        $("#tonoPachyForm [name='timestamp']").val(row.timestamp.split(' ').join('T'));
-        putTonoPachy(row.id);
+        $("#tonoPachyForm [name='pachymetry']").val(pachy);
+        $("#tonoPachyForm [name='tonometry']").val(tono);
+        $("#tonoPachyForm [name='timestamp']").val(row.timestamp.split(' ').join('T')); // to ISO
+        $('#methodTonoPachySubmit').val('PUT');
+        $('#tonoPachyModal').modal('show');
     },
     'click .remove': function (e, value, row, index) {
         delTonoPachy(row.id);
