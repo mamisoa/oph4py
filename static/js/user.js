@@ -1,3 +1,7 @@
+// globals
+
+var userData, userPhone, userAddress;
+
 function getUser(id) {
     return Promise.resolve(
         $.ajax({
@@ -35,7 +39,7 @@ function getUserPhones(id) {
                 console.log(er);
             }
         }));
-}
+};
 
 function getUserAddresses(id) {
     return Promise.resolve(
@@ -55,15 +59,7 @@ function getUserAddresses(id) {
                 console.log(er);
             }
         }));
-}
-
-function checkIfDataIsNull(data, dft='n/a') {
-    return data == null? dft : data ; 
-}
-
-var userData, userPhone, userAddress;
-
-refreshAll();
+};
 
 function refreshAll(){
     arr = ['userauth_user','userPhone','userAddress'];
@@ -71,7 +67,9 @@ function refreshAll(){
         console.log(table);
         refreshList(table);
     };    
-}
+};
+
+refreshAll();
 
 // do when promise.success
 function refreshList(listName){
@@ -119,7 +117,7 @@ function refreshList(listName){
                 let funcDel = "confirmDel(\'"+item.id+"\',\'phone\');";
                 listElement += '<span class=""><button type="button" onclick="'+funcDel+'" class="btn btn-danger btn-sm m-2"><i class="fas fa-trash-alt"></i></button><button type="button" onclick="'+funcEdit+'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button></span></li>';
                 $('#ulUserPhones').append(listElement);
-            }
+            };
         });
     } else if (listName=='userAddress') {
         userAddress = getUserAddresses(id);
@@ -136,8 +134,8 @@ function refreshList(listName){
                 $('#ulUserAddresses').append(html);
             }
         });
-    } else { }
-}
+    } else { };
+};
 
 
 // userDetailsForm //
@@ -176,6 +174,7 @@ $('#btnEditUser').click(function() {
     $('#userDetailsModal').modal('show');
 });
 
+// get id from b-eid
 $('#btnGetUserId').click(function(e) {
     $.ajax({
         url: HOSTURL+"/myapp/api/beid",
@@ -199,7 +198,6 @@ $('#btnGetUserId').click(function(e) {
     })
 });
 
-
 // catch submit userAuth_userForm
 $('#userAuth_userForm').submit(function(e) {
     e.preventDefault();
@@ -216,9 +214,9 @@ $('#userAuth_userForm').submit(function(e) {
     formData['id']=id;
     formData = JSON.stringify(formData); // change to string
     console.log(formData);
-    crud('auth_user',id,'PUT',data=formData);
+    crud('auth_user',id,'PUT',formData);
     $('#userDetailsModal').modal('toggle');
-    refreshList('userauth_user')
+    refreshList('userauth_user');
     return false;
 });
 
@@ -240,7 +238,7 @@ $('#userAddressForm').submit(function(e) {
 $('#btnNewPhone').click(function() {
     refreshList('userPhone');
     $('#userPhoneModal').modal('show');
-})
+});
 
 // catch submit userPhoneForm
 $('#userPhoneForm').submit(function(e) {
@@ -264,9 +262,11 @@ function userFormSubmit(table) {
     formData = JSON.stringify(formData); // change to string
     console.log(formData);
     crud(table,rec,req,data=formData); // already sending an info toast and reset form
+    refreshList('user'+capitalize(table));
+    document.getElementById('user'+capitalize(table)+'Form').reset(); // reset form to default
     $('#user'+capitalize(table)+'Modal').modal('toggle');
     return false;
-}
+};
 
 // COMMON confirm DELETION
 function confirmDel(id='0', table) {
@@ -288,11 +288,12 @@ function confirmDel(id='0', table) {
                 console.log(id.toString()+' not deleted');
             } else {
                 crud(table,id,'DELETE');
+                refreshList('user'+capitalize(table));
                 console.log(id.toString()+' DELETED');
             }
         }
     });
-}
+};
 
 
 // COMMON confirm EDITION
@@ -329,67 +330,4 @@ function confirmEdit(recid, table) {
             }
         }
     });
-}
-
-
-// crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
-function crud(table,id='0',req='POST',data) {
-    console.log(data);
-    var API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
-    var mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
-    $.ajax({
-        url: API_URL,
-        data: data,
-        contentType: 'application/json',
-        dataType: 'json',
-        method: req
-        })
-        .done(function(data) {
-            console.log(data);
-            status = data.status;
-            message = data.message;
-            errors = "";
-            if (data.status == "error") {
-                for (i in data.errors) {
-                    errors += data.errors[i]+'</br>';
-                };
-                text = errors;
-                displayToast('error',data.message,errors,'6000');
-            };
-            if (data.status == "success") {
-                text='User id: '+(req == 'DELETE'? id : data.id)+mode;
-                refreshList('user'+capitalize(table));
-                document.getElementById('user'+capitalize(table)+'Form').reset(); // reset form to default
-                displayToast('success', table+' '+mode,text,'6000');
-            };
-        });
-}
-
-// useful functions //
-
-// normalize accented characters
-function norm(str) {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-// Capitalize first character
-function capitalize(str) {
-    return str.trim().replace(/^\w/, (c) => c.toUpperCase());
-}
-
-// password generator
-function passGen() {
-    return Math.random().toString(36)+Math.random().toString(36).toUpperCase().split('').sort(function(){return 0.5-Math.random()}).join('')
-}
-
-// get age
-function getAge(dateString) {
-    var today = new Date();
-    var birthDate = new Date(dateString);
-    var age = today.getFullYear() - birthDate.getFullYear();
-    var m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    return age;
-}
+};

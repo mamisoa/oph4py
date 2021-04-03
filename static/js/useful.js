@@ -49,6 +49,11 @@ function hmsToSeconds(s) {
     return b[0]*3600 + b[1]*60 + (+b[2] || 0);
 };
 
+// check if datastr is null
+function checkIfDataIsNull(data, dft='n/a') {
+    return data == null? dft : data ; 
+};
+
 function getUuid() {
     return Promise.resolve(
         $.ajax({
