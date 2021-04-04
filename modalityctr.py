@@ -26,8 +26,8 @@ def autorx(wlId):
     user = auth.get_user()
     qFar = db.optotype.distance == 'far'
     qClose = db.optotype.distance == 'close'
-    optoFarOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'value', qFar)
-    optoCloseOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'value', qClose)
+    optoFarOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'index', qFar)
+    optoCloseOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'index', qClose)
     return locals()
 
 # helloworld controller
