@@ -56,31 +56,28 @@ getWlDetails(wlId)
 });
 
 // set counters
-// id_count : form id , count_class: tono pachy (counter_tono) 
+var idArr = ['#idRightRx']; 
+var sphCylArr = ['sph_far', 'sph_int', 'sph_close','cyl_far', 'cyl_int', 'cyl_close'];
+var addArr = ['add_int', 'add_close'];
+var vaFarArr = ['va_far', 'va_int'];
+var vaCloseArr = ['va_close'];
 
-counterArr = ['#airRightForm'];
-
-for (let counter of counterArr) {
-    setCounter('#form_right','sph_far',0.25,-30,30,2,true);
-    setCounter('#form_right','cyl_far',0.25,-11,11,2,true);
-    setCounter('#form_right','axis_far',5,0,180,0,false);
-
-    setCounter('#form_right','va_far',0.02,0,2,2,false);
-    setCounter('#form_right','sph_int',0.25,-30,30,2,true);
-    setCounter('#form_right','cyl_int',0.25,-11,11,2,true);
-    setCounter('#form_right','axis_int',5,0,180,0,false);
-    setCounter('#form_right','add_int',0.25,0,10,2,true);
-    setCounter('#form_right','va_int',0.5,1,8,2,false);
-    setCounter('#form_right','sph_close',0.25,-30,30,2,true);
-    setCounter('#form_right','cyl_close',0.25,-11,11,2,true);
-    setCounter('#form_right','axis_close',5,0,180,0,false);
-    setCounter('#form_right','va_close',0.5,1,8,2,false);
-    setCounter('#form_right','add_close',0.25,0,10,2,true);
-
-    setCounter(counter,'tono',0.5,0,80);
-    setCounter(counter,'pachy',2,300,700);    
+for (let id of idArr) {
+    for (let sph of sphCylArr) {
+        setCounter(id,sph,0.25,-30,30,2,true);    
+    };
+    for (let add of addArr) {
+        setCounter(id,add,0.25,0,10,2,true);
+    };
+    for (let va of vaFarArr) {
+        setCounter(id,va,0.02,0,2,2,false);
+    };
+    for (let va of vaCloseArr) {
+        setCounter(id,va,0.5,1,8,2,false);
+    };
 };
 
+// id_count : form id , count_class: tono pachy (counter_tono), step, min, max, precision, show sign
 function setCounter (id_count, count_class,step, min, max, precision,sign) {
   $(id_count+' .btn.counter_down_'+count_class).click(function() {
     value = parseFloat($(id_count+' input.counter_'+count_class).val());
@@ -143,12 +140,3 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
   });
 };
 
-function setSelect(id,rows,description) {
-    var items = rows.content;
-    html = [];
-    $.each(items, function(i){
-      html.push('<option value="'+items[i][description]+'">'+items[i][description]+'</option>');
-    });
-    $(id).html(html.join(''));
-};
-  
