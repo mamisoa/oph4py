@@ -15,4 +15,29 @@ section#main {
   margin-top: 20px;
 }
 
+.patient-id {
+  background-color: #E9FFE8;
+}
 
+.big-title {
+  background-color: #f8f5f0;
+  text-transform: uppercase;
+}
+
+.title-right {
+  background-color: #D5E3EE;
+  text-transform: uppercase;
+}
+
+.title-left {
+  background-color: #EED9D5;
+  text-transform: uppercase;
+}
+
+.bg-right {
+  background-color: #F0F8FF;
+}
+
+.bg-left {
+  background-color: #FFF5EE;
+}

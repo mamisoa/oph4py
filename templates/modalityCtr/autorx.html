@@ -10,23 +10,23 @@
 [[ include 'partials/patient-bar.html' ]]
 
 <div class="container-fluid">
-    <div class="row g-0 text-center" style="background-color: #f8f5f0;">
+    <div class="row g-0 text-center big-title">
         <div class="col">
-            <h1>REFRACTION</h1>
+            <h1>Refraction</h1>
         </div>
     </div>
     <div class="row mt-3 text-center">
         <div class="col">
-            <div class="col" style="background-color: #D5E3EE;"><h2>RIGHT EYE</h2></div>
+            <div class="col title-right"><h2>RIGHT EYE</h2></div>
         </div>    
         <div class="col">
-            <div class="col" style="background-color: #EED9D5;"><h2>LEFT EYE</h2></div>
+            <div class="col title-left"><h2>LEFT EYE</h2></div>
         </div>                
     </div>
     <div class="row">
         <div class="col">
             <form id="idRightRx" enctype="multipart/form-data" method="POST">
-                <div class="container-fluid" style="background-color: #F0F8FF;">
+                <div class="container-fluid bg-right" >
                     <div class="row mb-3">
                         <div class="col">
                             <label for="rx_origin_right" class="form-label">From:</label>
@@ -229,7 +229,7 @@
         </div> <!-- end rxRight col -->
         <div class="col">
             <form action="" id="idLeftRx">
-                <div class="container-fluid" style="background-color: #FFF5EE;">
+                <div class="container-fluid bg-left">
                     <div class="row mb-3">
                         <div class="col">
                             <label for="rx_origin_left" class="form-label">From:</label>
