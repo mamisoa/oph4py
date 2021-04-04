@@ -226,7 +226,8 @@
                                     <div class="col">
                                         <button id="btnAddRxRight" class="btn btn-primary" type="submit">Submit right Rx<i class=" mx-2 fas fa-plus"></i></button>
                                     </div>
-                                    <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                                    <input id="idPatientWlRxRight" type="text" class="visually-hidden" name="id_auth_user"/>
+                                    <input id="idWlRxRight" type="text" class="visually-hidden" name="id_worklist"/>
                                 </div>
                             </div>
                         </div> <!--end container div-->
@@ -472,7 +473,8 @@
                                     <div class="col">
                                         <button id="btnAddRxLeft" class="btn btn-primary" type="submit">Submit left Rx<i class=" mx-2 fas fa-plus"></i></button>
                                     </div>
-                                    <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                                    <input id="idPatientWlRxLeft" type="text" class="visually-hidden" name="id_auth_user"/>
+                                    <input id="idWlRxLeft" type="text" class="visually-hidden" name="id_worklist"/>
                                 </div>
                             </div>
                         </div>
@@ -570,7 +572,8 @@
                             <div class="col">
                                 <button id="btnAddKmRight" class="btn btn-primary" type="submit">Submit right Km<i class="mx-2 fas fa-plus"></i></button>
                             </div>
-                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                            <input id="idPatientWlKmRight" type="text" class="visually-hidden" name="id_auth_user"/>
+                            <input id="idWlKmRight" type="text" class="visually-hidden" name="id_worklist"/>
                         </div>
                     </div>
                 </form>
@@ -656,7 +659,8 @@
                             <div class="col">
                                 <button id="btnAddKmLeft" class="btn btn-primary" type="submit">Submit left Km<i class="mx-2 fas fa-plus"></i></button>
                             </div>
-                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                            <input id="idPatientWlKmLeft" type="text" class="visually-hidden" name="id_auth_user"/>
+                            <input id="idWlKmLeft" type="text" class="visually-hidden" name="id_worklist"/>
                         </div>
                     </div>
                 </form>
@@ -720,8 +724,8 @@ const timeOffsetInHours = 2;
 const timeOffset = 3600*timeOffsetInHours; // in sec
 
 // init tables
-const API_RXRIGHT = HOSTURL + "/myapp/api/autorx?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-const API_RXLEFT = HOSTURL + "/myapp/api/autorx?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_RXRIGHT = HOSTURL + "/myapp/api/rx?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_RXLEFT = HOSTURL + "/myapp/api/rx?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 const API_KMRIGHT = HOSTURL + "/myapp/api/km?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 const API_KMLEFT = HOSTURL + "/myapp/api/km?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 
