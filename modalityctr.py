@@ -8,6 +8,8 @@ from pydal.validators import CRYPT # to encrypt passwords
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 from py4web.utils.grid import Grid
 
+from .manage import dropdownSelect
+
 # tono controller
 @action('tono')
 @action('modalityCtr/tono/<wlId>')
@@ -22,6 +24,10 @@ def tono(wlId):
 @action.uses('modalityCtr/autorx.html', session, auth, db)
 def autorx(wlId):
     user = auth.get_user()
+    qFar = db.optotype.distance == 'far'
+    qClose = db.optotype.distance == 'close'
+    optoFarOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'value', qFar)
+    optoCloseOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'value', qClose)
     return locals()
 
 # helloworld controller
