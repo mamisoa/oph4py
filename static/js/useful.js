@@ -16,6 +16,15 @@ function getAge(dateString) {
     }
 };
 
+// round 2 decimal
+function round2dec(num) {
+    num = Math.round(num*100)/100;
+    num = num.toFixed(2);
+    num >0? num='+'+num : {};
+    return num;
+}
+  
+
 // Capitalize first character
 function capitalize(str) {
     return str.trim().replace(/^\w/, (c) => c.toUpperCase());
