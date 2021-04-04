@@ -29,8 +29,6 @@ function responseHandler(res) { // used if data-response-handler="responseHandle
             'rx_close': list[i].sph_close+'('+list[i].cyl_close+'x'+list[i].axis_close+')',
             'note': list[i].note,
             'laterality': list[i]['laterality'],
-            'tonometry': highlightValue(list[i]['tonometry'],20,24),
-            'pachymetry': highlightValue(list[i]['pachymetry'],525,500,'low'),
             'modified_by': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
             'modified_on': list[i]['modified_on'],
             'created_by': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],

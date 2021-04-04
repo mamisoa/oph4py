@@ -1,5 +1,4 @@
 // get wl details
-
 var wlItemObj;
 
 function getWlDetails(wlId){
@@ -34,7 +33,9 @@ getWlDetails(wlId)
         return data.items[0];
     })
     .then(function (itemObj){ // set patient ID in top bar
-        wlItemObj = Object.assign({},itemObj); // clone wltitemobj in global        
+        wlItemObj = Object.assign({},itemObj); // clone wltitemobj in global
+        $('input[name=id_auth_user]').val(wlItemObj['patient.id']); // set patient id in forms
+        $('input[name=id_worklist]').val(wlItemObj['id']); // set patient id in forms
         $('#wlItemDetails .patientName').html(itemObj['patient.first_name']+' '+itemObj['patient.last_name']);
         $('#wlItemDetails .patientDob').html(itemObj['patient.dob']+' ('+getAge(itemObj['patient.dob'])+'yo)');
         $('#wlItemDetails .timeslot').html(itemObj['requested_time'].split('T').join(' '));
@@ -197,3 +198,23 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
   });
 };
 
+$('#idRightRx').submit(function(e){
+  e.preventDefault();
+  rxInsert('#idRightRx','right');
+});
+
+// domId eg #idRightRx , laterality eg 'right'
+function rxInsert(domId,laterality) {
+  let dataStr = $(domId).serializeJSON();
+  let dataObj = JSON.parse(dataStr);
+  console.log(dataObj);
+  dataObj['laterality'] = laterality;
+  dataObj['status'] = 1;
+  dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
+  delete dataObj['add_int'];
+  delete dataObj['add_close'];
+  console.log('dataObj',dataObj);
+  dataStr = JSON.stringify(dataObj);
+  crud('rx','0','POST', dataStr);
+  $('#rx'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
+};

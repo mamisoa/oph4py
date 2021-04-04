@@ -288,29 +288,40 @@ if db(db.optotype.id > 1).count() == 0:
     db.optotype.insert(distance="close", opto="Parinaud")
     db.optotype.insert(distance="close", opto="Jaeger")
 
+db.define_table ('status_rx',
+    Field('status', 'string', required=True),
+    auth.signature)
+
+if db(db.status_rx.id > 1).count() == 0:
+    db.status_rx.insert(status="measure")
+    db.status_rx.insert(status="prescribed")
+    db.status_rx.insert(status="duplicate")
+
 db.define_table('rx',
     Field('id_auth_user','reference auth_user', required=True),
     Field('id_worklist','reference worklist'),
     Field('timestamp', 'datetime', required=True),
     Field('rx_origin', 'string', required=True),
     Field('glass_type', 'string'),
-    Field('va_far','decimal(2,2)'),
+    Field('va_far','decimal(3,2)'),
     Field('opto_far','reference optotype'),
     Field('sph_far','decimal(4,2)'),
     Field('cyl_far','decimal(4,2)'),
     Field('axis_far', 'integer'),
     Field('opto_int','reference optotype'),
-    Field('va_int','decimal(2,2)'),
+    Field('va_int','decimal(3,2)'),
     Field('sph_int','decimal(4,2)'),
     Field('cyl_int','decimal(4,2)'),
     Field('axis_int', 'integer'),
     Field('opto_close','reference optotype'),
-    Field('va_close','decimal(2,2)'),
+    Field('va_close','decimal(3,2)'),
     Field('sph_close','decimal(4,2)'),
     Field('cyl_close','decimal(4,2)'),
     Field('axis_close', 'integer'),
     Field('note','string'),
     Field('laterality','string', required=True),
+    Field('status','reference status_rx', required=True, default='1'),
+    Field('id_duplicate', 'integer'),
     auth.signature)
 
 db.rx.rx_origin.requires = IS_IN_SET(('autorx','glass','trial','cyclo','dil'))
