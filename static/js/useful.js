@@ -16,13 +16,18 @@ function getAge(dateString) {
     }
 };
 
+// diopters to mm
+function diopter2mm(diopters) {
+    return (337.50/diopters).toFixed(2);
+};
+
 // round 2 decimal
 function round2dec(num) {
     num = Math.round(num*100)/100;
     num = num.toFixed(2);
     num >0? num='+'+num : {};
     return num;
-}
+};
   
 
 // Capitalize first character

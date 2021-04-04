@@ -116,7 +116,7 @@
                                     <label for="sph_int" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_sph_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere right" name="sph_far">
+                                        <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere right" name="sph_int">
                                         <button class="btn btn-outline-secondary counter_up_sph_int" type="button">+</button>
                                     </div>
                                 </div>
@@ -166,7 +166,7 @@
                                     <label for="sph_close" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_sph_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere right" name="+sph_far">
+                                        <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere right" name="sph_close">
                                         <button class="btn btn-outline-secondary counter_up_sph_close" type="button">+</button>
                                     </div>
                                 </div>
@@ -201,6 +201,17 @@
                                             [[ = optoCloseOptions]]
                                         </select>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <h4>SE(far)=<span id="SEfR">0.00</span>D</h4>
+                                </div>
+                                <div class="col">
+                                    <h4>SE(int)=<span id="SEiR">0.00</span>D</h4>
+                                </div>
+                                <div class="col">
+                                    <h4>SE(close)=<span id="SEcR">0.00</span>D</h4>
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -351,7 +362,7 @@
                                     <label for="sph_int" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_sph_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere left" name="sph_far">
+                                        <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere left" name="sph_int">
                                         <button class="btn btn-outline-secondary counter_up_sph_int" type="button">+</button>
                                     </div>
                                 </div>
@@ -401,7 +412,7 @@
                                     <label for="sph_close" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_sph_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere left" name="sph_far">
+                                        <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere left" name="sph_close">
                                         <button class="btn btn-outline-secondary counter_up_sph_close" type="button">+</button>
                                     </div>
                                 </div>
@@ -436,6 +447,17 @@
                                             [[ = optoCloseOptions]]
                                         </select>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <h4>SE(far)=<span id="SEfL">0.00</span>D</h4>
+                                </div>
+                                <div class="col">
+                                    <h4>SE(int)=<span id="SEiL">0.00</span>D</h4>
+                                </div>
+                                <div class="col">
+                                    <h4>SE(close)=<span id="SEcL">0.00</span>D</h4>
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -507,30 +529,41 @@
                             <div class="col">
                                 <label for="k1_right" class="form-label">K1:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_km" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k1_right counter_km text-center" value ="43.00" aria-label="K1 right" name="k1">
-                                    <button class="btn btn-outline-secondary counter_up_km" type="button">+</button>
+                                    <button class="btn btn-outline-secondary counter_down_km1" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm k1_right counter_km1 text-center" value ="43.00" aria-label="K1 right" name="k1">
+                                    <button class="btn btn-outline-secondary counter_up_km1" type="button">+</button>
                                 </div>
                                 <label for="a1_right" class="form-label">Axis 1:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_axis" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a1_right counter_axis text-center" value ="180" aria-label="Axis 1 right" name="axis1">
-                                    <button class="btn btn-outline-secondary counter_up_axis" type="button">+</button>
+                                    <button class="btn btn-outline-secondary counter_down_axis1" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm a1_right counter_axis1 text-center" value ="180" aria-label="Axis 1 right" name="axis1">
+                                    <button class="btn btn-outline-secondary counter_up_axis1" type="button">+</button>
                                 </div>
                             </div>
                             <div class="col">
                                 <label for="k2_right" class="form-label">K2:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_km" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k2_right counter_km text-center" value ="43.00" aria-label="K2 right" name="k2">
-                                    <button class="btn btn-outline-secondary counter_up_km" type="button">+</button>
+                                    <button class="btn btn-outline-secondary counter_down_km2" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm k2_right counter_km2 text-center" value ="43.00" aria-label="K2 right" name="k2">
+                                    <button class="btn btn-outline-secondary counter_up_km2" type="button">+</button>
                                 </div>
                                 <label for="a2_right" class="form-label">Axis 2:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_axis" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a2_right counter_axis text-center" value ="180" aria-label="Axis 2 right" name="axis2">
-                                    <button class="btn btn-outline-secondary counter_up_axis" type="button">+</button>
+                                    <button class="btn btn-outline-secondary counter_down_axis2" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm a2_right counter_axis2 text-center" value ="180" aria-label="Axis 2 right" name="axis2">
+                                    <button class="btn btn-outline-secondary counter_up_axis2" type="button">+</button>
                                 </div>
+                            </div>                            
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <h4>Km= <span id="kmCalculatedR">43.00D</span></h4>
+                            </div>
+                            <div class="col">
+                                <h4>K1= <span id="k1CalculatedR">7.85mm</span></h4>
+                            </div>
+                            <div class="col">
+                                <h4>K1= <span id="k2CalculatedR">7.85mm</span></h4>
                             </div>
                         </div>
                         <div class="row pb-3" id="kmRightSubmit">
@@ -543,7 +576,30 @@
                 </form>
             </div>
             <div class="row"> <!-- table right -->
-                table right
+                <div class="col">
+                    <table
+                    id="kmRight_tbl"
+                    data-side-pagination="server"
+                    data-pagination="true"
+                    data-page-size="10"
+                    data-search="false"
+                    data-query-params="queryParams"
+                    data-response-handler="responseHandler_km"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    >
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="false">Timestamp</th>
+                                <th data-field="k1" data-sortable="false">K1</th>
+                                <th data-field="axis1" data-sortable="false">Axis 1</th>
+                                <th data-field="k2" data-sortable="false">K2</th>
+                                <th data-field="axis2" data-sortable="false">Axis 2</th>
+                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col"> <!-- col left -->
@@ -559,30 +615,41 @@
                             <div class="col">
                                 <label for="k1_left" class="form-label">K1:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_km" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k1_left counter_km text-center" value ="43.00" aria-label="K1 left" name="k1">
-                                    <button class="btn btn-outline-secondary counter_up_km" type="button">+</button>
+                                    <button class="btn btn-outline-secondary counter_down_km1" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm k1_left counter_km1 text-center" value ="43.00" aria-label="K1 left" name="k1">
+                                    <button class="btn btn-outline-secondary counter_up_km1" type="button">+</button>
                                 </div>
                                 <label for="a1_left" class="form-label">Axis 1:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_axis" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a1_left counter_axis text-center" value ="180" aria-label="Axis 1 left" name="axis1">
-                                    <button class="btn btn-outline-secondary counter_up_axis" type="button">+</button>
+                                    <button class="btn btn-outline-secondary counter_down_axis1" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm a1_left counter_axis1 text-center" value ="180" aria-label="Axis 1 left" name="axis1">
+                                    <button class="btn btn-outline-secondary counter_up_axis1" type="button">+</button>
                                 </div>
                             </div>
                             <div class="col">
                                 <label for="k2_left" class="form-label">K2:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_km" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k2_left counter_km text-center" value ="43.00" aria-label="K2 left" name="k2">
-                                    <button class="btn btn-outline-secondary counter_up_km" type="button">+</button>
+                                    <button class="btn btn-outline-secondary counter_down_km2" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm k2_left counter_km2 text-center" value ="43.00" aria-label="K2 left" name="k2">
+                                    <button class="btn btn-outline-secondary counter_up_km2" type="button">+</button>
                                 </div>
                                 <label for="a2_left" class="form-label">Axis 2:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_axis" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a2_left counter_axis text-center" value ="180" aria-label="Axis 2 left" name="axis2">
-                                    <button class="btn btn-outline-secondary counter_up_axis" type="button">+</button>
+                                    <button class="btn btn-outline-secondary counter_down_axis2" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm a2_left counter_axis2 text-center" value ="180" aria-label="Axis 2 left" name="axis2">
+                                    <button class="btn btn-outline-secondary counter_up_axis2" type="button">+</button>
                                 </div>
+                            </div>                            
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <h4>Km= <span id="kmCalculatedL">43.00D</span></h4>
+                            </div>
+                            <div class="col">
+                                <h4>K1= <span id="k1CalculatedL">7.85mm</span></h4> 
+                            </div>
+                            <div class="col">
+                                <h4>K1= <span id="k2CalculatedL">7.85mm</span></h4>
                             </div>
                         </div>
                         <div class="row pb-3" id="kmLeftSubmit">
@@ -595,7 +662,30 @@
                 </form>
             </div>
             <div class="row"> <!-- table left -->
-                table left
+                <div class="col">
+                    <table
+                    id="kmLeft_tbl"
+                    data-side-pagination="server"
+                    data-pagination="true"
+                    data-page-size="10"
+                    data-search="false"
+                    data-query-params="queryParams"
+                    data-response-handler="responseHandler_km"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    >
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="false">Timestamp</th>
+                                <th data-field="k1" data-sortable="false">K1</th>
+                                <th data-field="axis1" data-sortable="false">Axis 1</th>
+                                <th data-field="k2" data-sortable="false">K2</th>
+                                <th data-field="axis2" data-sortable="false">Axis 2</th>
+                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -640,6 +730,14 @@ var $rxRight = $('#rxRight_tbl').bootstrapTable({
 });
 
 var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
+    url: API_RXLEFT
+});
+
+var $kmRight = $('#kmRight_tbl').bootstrapTable({
+    url: API_RXRIGHT
+});
+
+var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
     url: API_RXLEFT
 });
 
