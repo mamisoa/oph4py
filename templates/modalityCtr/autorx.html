@@ -250,7 +250,7 @@
                     </table>
                 </div>
             </div>
-        </div>  <!-- end col left-->  
+        </div>  <!-- end col right-->
         <div class="col"> <!-- col left-->
             <div class="row"> <!-- row left title -->
                 <div class="col title-left">
@@ -487,6 +487,118 @@
             </div>
         </div>  <!-- end col left-->
     </div> <!-- end main row -->
+</div>
+
+<div class="container-fluid">
+    <div class="row text-center big-title">
+        <h1>Keratometry</h1>
+    </div>
+    <div class="row mt-3 text-center">
+        <div class="col"> <!-- col right -->
+            <div class="row"> <!-- row right eye-->
+                <div class="col title-right">
+                    <h2>right eye</h2>
+                </div>
+            </div>
+            <div class="row"> <!-- row form right -->
+                <form id="idRightKm" enctype="multipart/form-data" method="POST">
+                    <div class="container-fluid bg-right">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="k1_right" class="form-label">K1:</label>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary counter_down_km" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm k1_right counter_km text-center" value ="43.00" aria-label="K1 right" name="k1">
+                                    <button class="btn btn-outline-secondary counter_up_km" type="button">+</button>
+                                </div>
+                                <label for="a1_right" class="form-label">Axis 1:</label>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary counter_down_axis" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm a1_right counter_axis text-center" value ="180" aria-label="Axis 1 right" name="axis1">
+                                    <button class="btn btn-outline-secondary counter_up_axis" type="button">+</button>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <label for="k2_right" class="form-label">K2:</label>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary counter_down_km" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm k2_right counter_km text-center" value ="43.00" aria-label="K2 right" name="k2">
+                                    <button class="btn btn-outline-secondary counter_up_km" type="button">+</button>
+                                </div>
+                                <label for="a2_right" class="form-label">Axis 2:</label>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary counter_down_axis" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm a2_right counter_axis text-center" value ="180" aria-label="Axis 2 right" name="axis2">
+                                    <button class="btn btn-outline-secondary counter_up_axis" type="button">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row pb-3" id="kmRightSubmit">
+                            <div class="col">
+                                <button id="btnAddKmRight" class="btn btn-primary" type="submit">Submit right Km<i class="mx-2 fas fa-plus"></i></button>
+                            </div>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row"> <!-- table right -->
+                table right
+            </div>
+        </div>
+        <div class="col"> <!-- col left -->
+            <div class="row"> <!-- row left eye-->
+                <div class="col title-left">
+                    <h2>left eye</h2>
+                </div>
+            </div>
+            <div class="row mb-3"> <!-- row form left -->
+                <form id="idLeftKm" enctype="multipart/form-data" method="POST">
+                    <div class="container-fluid bg-left">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="k1_left" class="form-label">K1:</label>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary counter_down_km" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm k1_left counter_km text-center" value ="43.00" aria-label="K1 left" name="k1">
+                                    <button class="btn btn-outline-secondary counter_up_km" type="button">+</button>
+                                </div>
+                                <label for="a1_left" class="form-label">Axis 1:</label>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary counter_down_axis" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm a1_left counter_axis text-center" value ="180" aria-label="Axis 1 left" name="axis1">
+                                    <button class="btn btn-outline-secondary counter_up_axis" type="button">+</button>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <label for="k2_left" class="form-label">K2:</label>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary counter_down_km" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm k2_left counter_km text-center" value ="43.00" aria-label="K2 left" name="k2">
+                                    <button class="btn btn-outline-secondary counter_up_km" type="button">+</button>
+                                </div>
+                                <label for="a2_left" class="form-label">Axis 2:</label>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-outline-secondary counter_down_axis" type="button">-</button>
+                                    <input type="text" class="form-control form-control-sm a2_left counter_axis text-center" value ="180" aria-label="Axis 2 left" name="axis2">
+                                    <button class="btn btn-outline-secondary counter_up_axis" type="button">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row pb-3" id="kmLeftSubmit">
+                            <div class="col">
+                                <button id="btnAddKmLeft" class="btn btn-primary" type="submit">Submit left Km<i class="mx-2 fas fa-plus"></i></button>
+                            </div>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row"> <!-- table left -->
+                table left
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="container-fluid">
