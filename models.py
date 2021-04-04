@@ -281,6 +281,13 @@ db.define_table ('optotype',
 
 db.optotype.distance.requires = IS_IN_SET(('far','intermediate','close'))
 
+if db(db.optotype.id > 1).count() == 0:
+    db.optotype.insert(distance="far", opto="Monoyer")
+    db.optotype.insert(distance="far", opto="Snellen")
+    db.optotype.insert(distance="far", opto="ETDRS")
+    db.optotype.insert(distance="close", opto="Parinaud")
+    db.optotype.insert(distance="close", opto="Jaeger")
+
 db.define_table('rx',
     Field('id_auth_user','reference auth_user', required=True),
     Field('id_worklist','reference worklist'),

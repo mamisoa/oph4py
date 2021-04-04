@@ -54,3 +54,101 @@ getWlDetails(wlId)
             document.getElementById("photoId").setAttribute("src",wlItemObj['patient.photob64']);
         }
 });
+
+// set counters
+// id_count : form id , count_class: tono pachy (counter_tono) 
+
+counterArr = ['#airRightForm'];
+
+for (let counter of counterArr) {
+    setCounter('#form_right','sph_far',0.25,-30,30,2,true);
+    setCounter('#form_right','cyl_far',0.25,-11,11,2,true);
+    setCounter('#form_right','axis_far',5,0,180,0,false);
+
+    setCounter('#form_right','va_far',0.02,0,2,2,false);
+    setCounter('#form_right','sph_int',0.25,-30,30,2,true);
+    setCounter('#form_right','cyl_int',0.25,-11,11,2,true);
+    setCounter('#form_right','axis_int',5,0,180,0,false);
+    setCounter('#form_right','add_int',0.25,0,10,2,true);
+    setCounter('#form_right','va_int',0.5,1,8,2,false);
+    setCounter('#form_right','sph_close',0.25,-30,30,2,true);
+    setCounter('#form_right','cyl_close',0.25,-11,11,2,true);
+    setCounter('#form_right','axis_close',5,0,180,0,false);
+    setCounter('#form_right','va_close',0.5,1,8,2,false);
+    setCounter('#form_right','add_close',0.25,0,10,2,true);
+
+    setCounter(counter,'tono',0.5,0,80);
+    setCounter(counter,'pachy',2,300,700);    
+};
+
+function setCounter (id_count, count_class,step, min, max, precision,sign) {
+  $(id_count+' .btn.counter_down_'+count_class).click(function() {
+    value = parseFloat($(id_count+' input.counter_'+count_class).val());
+    if (value >= (min+step)) {
+      set = value-step;
+      set = Math.round(set*100)/100;
+      sign == true? (set > 0? result='+'+set.toFixed(precision) : (result=set.toFixed(precision))) : result=set.toFixed(precision);
+      $(id_count+' input.counter_'+count_class).val(result);
+    } else {};
+    if (count_class == 'add_close') {
+      add = set + parseFloat($(id_count+' input.sph_far').val());
+      $(id_count+' input.sph_close').val(round2dec(add));
+      $(id_count+' input.cyl_close').val($(id_count+' input.cyl_far').val());
+    } else if (count_class == 'add_int') {
+      add = set + parseFloat($(id_count+' input.sph_far').val());
+      $(id_count+' input.sph_int').val(round2dec(add));
+      $(id_count+' input.cyl_int').val($(id_count+' input.cyl_far').val());
+    } else if (count_class == 'sph_far') {
+      add_int = set + parseFloat($(id_count+' input.add_int').val());
+      $(id_count+' input.sph_int').val(round2dec(add_int));
+      add_close = set + parseFloat($(id_count+' input.add_close').val());
+      $(id_count+' input.sph_close').val(round2dec(add_close));
+    } else if (count_class == 'cyl_far') {
+      $(id_count+' input.cyl_int').val($(id_count+' input.cyl_far').val());
+      $(id_count+' input.cyl_close').val($(id_count+' input.cyl_far').val());
+    } else if (count_class == 'axis_far') {
+      $(id_count+' input.axis_int').val($(id_count+' input.axis_far').val());
+      $(id_count+' input.axis_close').val($(id_count+' input.axis_far').val());
+    };
+  });
+
+  $(id_count+' .btn.counter_up_'+count_class).click(function() {
+    value = parseFloat($(id_count+' input.counter_'+count_class).val());
+    if (value <= (max-step)) {
+      set = value+step;
+      set = Math.round(set*100)/100;
+      sign == true? (set > 0? result='+'+set.toFixed(precision) : (result=set.toFixed(precision))) : result=set.toFixed(precision);
+      $(id_count+' input.counter_'+count_class).val(result);
+    } else {};
+    if (count_class == 'add_close') {
+      add = set + parseFloat($(id_count+' input.sph_far').val());
+      $(id_count+' input.sph_close').val(round2dec(add));
+      $(id_count+' input.cyl_close').val($(id_count+' input.cyl_far').val());
+    } else if (count_class == 'add_int') {
+      add = set + parseFloat($(id_count+' input.sph_far').val());
+      $(id_count+' input.sph_int').val(round2dec(add));
+      $(id_count+' input.cyl_int').val($(id_count+' input.cyl_far').val());
+    } else if (count_class == 'sph_far') {
+      add_int = set + parseFloat($(id_count+' input.add_int').val());
+      $(id_count+' input.sph_int').val(round2dec(add_int));
+      add_close = set + parseFloat($(id_count+' input.add_close').val());
+      $(id_count+' input.sph_close').val(round2dec(add_close));
+    } else if (count_class == 'cyl_far') {
+      $(id_count+' input.cyl_int').val($(id_count+' input.cyl_far').val());
+      $(id_count+' input.cyl_close').val($(id_count+' input.cyl_far').val());
+    } else if (count_class == 'axis_far') {
+      $(id_count+' input.axis_int').val($(id_count+' input.axis_far').val());
+      $(id_count+' input.axis_close').val($(id_count+' input.axis_far').val());
+    };
+  });
+};
+
+function setSelect(id,rows,description) {
+    var items = rows.content;
+    html = [];
+    $.each(items, function(i){
+      html.push('<option value="'+items[i][description]+'">'+items[i][description]+'</option>');
+    });
+    $(id).html(html.join(''));
+};
+  

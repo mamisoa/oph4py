@@ -27,9 +27,10 @@ def rows2json (tablename,rows):
     concat = concat + ']}'
     return concat
 
-def dropdownSelect(table,fieldId,defaultId,val="index"): ## eg table=db.gender fieldId=db.gender.fields[0] defaultId=0 val = index ou value
+def dropdownSelect(table,fieldId,defaultId,val="index",queryOptions=True): ## eg table=db.gender fieldId=db.gender.fields[0] defaultId=0 val = index ou value
     selectOptions=""
-    for selection in db(table.id>0).select(table.ALL):
+    query= (table.id>0) & queryOptions
+    for selection in db(query).select(table.ALL):
         if selection.id == defaultId:
             selectOptions += "<option selected value='"
         else:
