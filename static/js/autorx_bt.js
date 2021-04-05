@@ -50,7 +50,10 @@ function responseHandler_km(res) { // used if data-response-handler="responseHan
             'id_auth_user': list[i].id_auth_user,
             'id_worklist': list[i].id_worklist,
             'timestamp': list[i]['timestamp'].split('T').join(' '),
-            
+            'k1': list[i].k1,
+            'axis1': list[i].axis1,
+            'k2': list[i].k2,
+            'axis2': list[i].axis2,
             'note': list[i].note,
             'modified_by': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
             'modified_on': list[i]['modified_on'],
@@ -78,8 +81,8 @@ function queryParams(params) {
 
 function operateFormatter(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
-    html.push('<a class="edit" href="javascript:void(0)" title="Edit tono/pachy"><i class="fas fa-edit"></i></a>');
-    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete tono/pachy"><i class="fas fa-trash-alt"></i></a>');
+    html.push('<a class="edit" href="javascript:void(0)" title="Edit rx"><i class="fas fa-edit"></i></a>');
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete rx"><i class="fas fa-trash-alt"></i></a>');
     html.push('</div>');
     return html.join('');
   };
@@ -90,6 +93,24 @@ window.operateEvents = {
     },
     'click .remove': function (e, value, row, index) {
         console.log('You click action DELETE on row: ' + JSON.stringify(row));
-        // delTonoPachy(row.id);
+        delItem(row.id,'rx');
+    }
+};
+
+function operateFormatter_km(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="edit" href="javascript:void(0)" title="Edit tono/pachy"><i class="fas fa-edit"></i></a>');
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete keratometry"><i class="fas fa-trash-alt"></i></a>');
+    html.push('</div>');
+    return html.join('');
+  };
+
+window.operateEvents_km = {
+    'click .edit': function (e, value, row, index) {
+        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+    },
+    'click .remove': function (e, value, row, index) {
+        console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        delItem(row.id,'km');
     }
 };

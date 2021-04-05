@@ -605,7 +605,7 @@
                                 <th data-field="axis1" data-sortable="false">Axis 1</th>
                                 <th data-field="k2" data-sortable="false">K2</th>
                                 <th data-field="axis2" data-sortable="false">Axis 2</th>
-                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                                <th data-field="operate" data-formatter="operateFormatter_km" data-events="operateEvents_km">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -699,7 +699,7 @@
                                 <th data-field="axis1" data-sortable="false">Axis 1</th>
                                 <th data-field="k2" data-sortable="false">K2</th>
                                 <th data-field="axis2" data-sortable="false">Axis 2</th>
-                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                                <th data-field="operate" data-formatter="operateFormatter_km" data-events="operateEvents_km">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -752,12 +752,14 @@ var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
 });
 
 var $kmRight = $('#kmRight_tbl').bootstrapTable({
-    url: API_RXRIGHT
+    url: API_KMRIGHT
 });
 
 var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
-    url: API_RXLEFT
+    url: API_KMLEFT
 });
+
+const tablesArr = ['#rxRight_tbl','#rxRight_tbl','#kmRight_tbl','#kmLeft_tbl'];
 
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
 $('#rxRight_tbl').on('post-body.bs.table', function () {
