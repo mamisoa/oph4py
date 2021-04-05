@@ -326,7 +326,7 @@ db.define_table('rx',
 
 db.rx.rx_origin.requires = IS_IN_SET(('autorx','glass','trial','cyclo','dil'))
 db.rx.laterality.requires = IS_IN_SET(('right','left'))
-db.rx.glass_type.requires = IS_IN_SET(('monofocal','progressive','bifocal','degressive'))
+db.rx.glass_type.requires = IS_IN_SET(('monofocal','progressive','bifocal','degressive','na'))
 
 db.define_table('ant_biom',
     Field('id_auth_user', 'reference auth_user', required=True),

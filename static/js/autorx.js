@@ -198,10 +198,20 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
   });
 };
 
+// set rx submit buttons
 $('#idRightRx').submit(function(e){
   e.preventDefault();
   rxInsert('#idRightRx','right');
 });
+
+$('#idLeftRx').submit(function (e) {
+  e.preventDefault();
+  rxInsert('#idLeftRx', 'left');
+});
+
+// set default state for refraction
+$('input[name=rx_origin]').val(['autorx']);
+$('input[name=glass_type]').val(['na']);
 
 // domId eg #idRightRx , laterality eg 'right'
 function rxInsert(domId,laterality) {
