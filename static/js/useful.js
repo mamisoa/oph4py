@@ -92,6 +92,20 @@ function getUuid() {
     ); // promise return data
 };
 
+// refreshTables in array
+function refreshTables(tblArr) {
+    for (tbl of tablesArr) {
+      $(tbl).bootstrapTable('refresh');
+    }
+};
+
+// disable buttons in array
+function disableBtn(buttonsArr) {
+    for (btn of buttonsArr) {
+        $(btn).attr('disabled', true);    
+    }
+};
+
 // crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
 function crud(table,id='0',req='POST',data) {
     console.log(data);
