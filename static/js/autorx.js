@@ -23,7 +23,7 @@ function getWlDetails(wlId){
 
 getWlDetails(wlId)
     .then(function (data) {
-        console.log(data.items[0]);
+        // console.log(data.items[0]);
         let html = [];
         let dataWl = data.items[0];
         for (item in dataWl) {
@@ -103,7 +103,7 @@ $('#idRightRx .rxDiv input').change(function(){
   $('#SEfR').html(SEf);
   $('#SEiR').html(SEi);
   $('#SEcR').html(SEc);
-  console.log('right rx changed');
+  // console.log('right rx changed');
 });
 
 $('#idLeftRx .rxDiv input').change(function(){
@@ -113,7 +113,7 @@ $('#idLeftRx .rxDiv input').change(function(){
   $('#SEfL').html(SEf);
   $('#SEiL').html(SEi);
   $('#SEcL').html(SEc);
-  console.log('left rx changed');
+  // console.log('left rx changed');
 });
 
 $('#idRightKm input').change(function() {
@@ -230,7 +230,6 @@ for (let rx of idArr) {
         $(show).removeClass('visually-hidden');
       };
     };
-    console.log('glass type changed');
   });
   $(rx+' input[name=rx_origin]').change(function () {
     if ((this.value == 'trial') || (this.value == 'glass')) {
@@ -244,7 +243,6 @@ for (let rx of idArr) {
       }
       $(rx + ' input[name=glass_type]').val(['na']).trigger('change');
     };
-    console.log('from changed!', this.value);
   });
 };
 $('input[name=rx_origin]').val(['autorx']).trigger('change');
@@ -259,7 +257,7 @@ function rxInsert(domId,laterality) {
   dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
   delete dataObj['add_int'];
   delete dataObj['add_close'];
-  console.log('dataObj',dataObj);
+  // console.log('dataObj',dataObj);
   dataStr = JSON.stringify(dataObj);
   crud('rx','0','POST', dataStr);
   $('#rx'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
