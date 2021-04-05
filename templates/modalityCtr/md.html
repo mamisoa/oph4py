@@ -1,0 +1,65 @@
+[[extend "baseof.html"]]
+
+[[ block page_head]]
+[[ end ]]
+
+[[ block left_nav ]]
+[[ include 'partials/nav-test.html' ]]
+[[ end]]
+
+[[ include 'partials/patient-bar.html' ]]
+
+<div class="container-fluid mb-3">
+    <div class="row text-center big-title">
+        <div class="col">
+            <h1><a role="button" data-bs-toggle="collapse" href=".md">Medical examination</a></h1>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mb-3">
+    <div class="row text-center big-title">
+        <div class="col">
+            <h2><a role="button" data-bs-toggle="collapse" href=".history">History</a></h2>
+        </div>
+    </div>
+</div>
+
+[[ block js_scripts]]
+<!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
+<!-- <script src="js/bootstrap-table/bootstrap-table.js"></script> -->
+<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/useful.js"></script>
+<script src="js/md_bt.js"></script>
+<script type="text/javascript">
+
+const HOSTURL = 'http://localhost:8000';
+const wlId = [[= wlId ]];
+
+// timeOffset 'Europe/Brussels' GMT+2:00
+const timeOffsetInHours = 2;
+const timeOffset = 3600*timeOffsetInHours; // in sec
+
+// submit btn to disable when done
+const btnArr = [];
+
+// init tables
+const API_MD = HOSTURL + "/myapp/api/md?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+
+var $md = $('#md_tbl').bootstrapTable({
+    url: API_MD
+});
+
+
+const tablesArr = [];
+
+// Fires after the table body is rendered and available in the DOM, the parameters contain data
+$('#md_tbl').on('post-body.bs.table', function () {
+
+});
+
+</script>
+<script src="js/md.js"></script>
+[[ end ]]
