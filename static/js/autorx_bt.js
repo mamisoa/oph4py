@@ -77,7 +77,7 @@ function queryParams(params) {
     }
     if (params.limit != "0") {
         // console.log(params.offset);
-        s += "@limit="+params.limit;
+        s += "&@limit="+params.limit;
     }
     // return decodeURI(encodeURI(s.slice(1-s.length))); // remove the first &
     return s; // remove the first &
