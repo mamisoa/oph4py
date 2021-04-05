@@ -198,17 +198,6 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
   });
 };
 
-// set rx submit buttons
-$('#idRightRx').submit(function(e){
-  e.preventDefault();
-  rxInsert('#idRightRx','right');
-});
-
-$('#idLeftRx').submit(function (e) {
-  e.preventDefault();
-  rxInsert('#idLeftRx', 'left');
-});
-
 // set default state for refraction
 
 // set changes when From is selected
@@ -247,6 +236,27 @@ for (let rx of idArr) {
 };
 $('input[name=rx_origin]').val(['autorx']).trigger('change');
 
+// set rx submit buttons
+$('#idRightRx').submit(function(e){
+  e.preventDefault();
+  rxInsert('#idRightRx','right');
+});
+
+$('#idLeftRx').submit(function (e) {
+  e.preventDefault();
+  rxInsert('#idLeftRx', 'left');
+});
+
+$('#idRightKm').submit(function(e){
+  e.preventDefault();
+  kmInsert('#idRightKm','right');
+});
+
+$('#idLeftKm').submit(function (e) {
+  e.preventDefault();
+  kmInsert('#idLeftKm', 'left');
+});
+
 // domId eg #idRightRx , laterality eg 'right', default status = measure
 function rxInsert(domId,laterality,status=1) {
   let dataStr = $(domId).serializeJSON();
@@ -261,4 +271,49 @@ function rxInsert(domId,laterality,status=1) {
   dataStr = JSON.stringify(dataObj);
   crud('rx','0','POST', dataStr);
   $('#rx'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
+};
+
+// domId eg #idRightRx , laterality eg 'right', default status = measure
+function kmInsert(domId,laterality) {
+  let dataStr = $(domId).serializeJSON();
+  let dataObj = JSON.parse(dataStr);
+  console.log(dataObj);
+  dataObj['laterality'] = laterality;
+  dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
+  console.log('dataObj',dataObj);
+  dataStr = JSON.stringify(dataObj);
+  crud('km','0','POST', dataStr);
+  $('#km'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
+};
+
+function delItem (id,table) {
+  bootbox.confirm({
+      message: "Are you sure you want to delete this "+table+" ?",
+      closeButton: false ,
+      buttons: {
+          confirm: {
+              label: 'Yes',
+              className: 'btn-success'
+          },
+          cancel: {
+              label: 'No',
+              className: 'btn-danger'
+          }
+      },
+      callback: function (result) {
+          if (result == true) {
+              crud(table,id,'DELETE');
+              refreshTables(tablesArr);
+          } else {
+              console.log('This was logged in the callback: ' + result);
+          }
+      }
+  });
+};
+
+// todo: add to useful functions
+function refreshTables(tblArr) {
+  for (tbl of tablesArr) {
+    $(tbl).bootstrapTable('refresh');
+  }
 };
