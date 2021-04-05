@@ -96,24 +96,24 @@ for (let id of idKmArr) {
 };
 
 // update SE
-$('#idRightRx input').change(function(){
+$('#idRightRx .rxDiv input').change(function(){
   let SEf = (parseFloat($('#idRightRx input[name=sph_far]').val())+0.5*parseFloat($('#idRightRx input[name=cyl_far]').val())).toFixed(2);
   let SEi = (parseFloat($('#idRightRx input[name=sph_int]').val())+0.5*parseFloat($('#idRightRx input[name=cyl_int]').val())).toFixed(2);
   let SEc = (parseFloat($('#idRightRx input[name=sph_close]').val())+0.5*parseFloat($('#idRightRx input[name=cyl_close]').val())).toFixed(2);
   $('#SEfR').html(SEf);
   $('#SEiR').html(SEi);
   $('#SEcR').html(SEc);
-  console.log('change');
+  console.log('right rx changed');
 });
 
-$('#idLeftRx input').change(function(){
+$('#idLeftRx .rxDiv input').change(function(){
   let SEf = (parseFloat($('#idLeftRx input[name=sph_far]').val())+0.5*parseFloat($('#idLeftRx input[name=cyl_far]').val())).toFixed(2);
   let SEi = (parseFloat($('#idLeftRx input[name=sph_int]').val())+0.5*parseFloat($('#idLeftRx input[name=cyl_int]').val())).toFixed(2);
   let SEc = (parseFloat($('#idLeftRx input[name=sph_close]').val())+0.5*parseFloat($('#idLeftRx input[name=cyl_close]').val())).toFixed(2);
   $('#SEfL').html(SEf);
   $('#SEiL').html(SEi);
   $('#SEcL').html(SEc);
-  console.log('change');
+  console.log('left rx changed');
 });
 
 $('#idRightKm input').change(function() {
@@ -210,8 +210,35 @@ $('#idLeftRx').submit(function (e) {
 });
 
 // set default state for refraction
-$('input[name=rx_origin]').val(['autorx']);
-$('input[name=glass_type]').val(['na']);
+
+// set changes when From is selected
+let idArr = ['#idRightRx', '#idLeftRx'];
+for (let rx of idArr) {
+  $(rx+' input[name=rx_origin]').change(function () {
+    console.log(idArr.indexOf(rx));
+    let arr;
+    if (idArr.indexOf(rx)==0) { // if right side ie first index
+      arr = ['#rightTypeDiv', '#intRight', '#closeRight'];
+    } else {
+      arr = ['#leftTypeDiv', '#intLeft', '#closeLeft'];
+    };
+    if ((this.value == 'trial') || (this.value == 'glass')) {
+      for (let show of arr) {
+        $(show).removeClass('visually-hidden');
+      }
+      $(rx+' input[name=glass_type]').val(['monofocal']);
+    } else {
+      for (let hide of arr) {
+        $(hide).addClass('visually-hidden');
+      }
+      $(rx+' input[name=glass_type]').val(['na']);
+    };
+    console.log('from changed!', this.value);
+  });
+};
+$('input[name=rx_origin]').val(['autorx']).trigger('change');
+
+
 
 // domId eg #idRightRx , laterality eg 'right'
 function rxInsert(domId,laterality) {
