@@ -53,6 +53,7 @@ function responseHandler_km(res) { // used if data-response-handler="responseHan
             'id_auth_user': list[i].id_auth_user,
             'id_worklist': list[i].id_worklist,
             'timestamp': list[i]['timestamp'].split('T').join(' '),
+            'laterality': list[i]['laterality'],
             'k1': list[i].k1,
             'axis1': list[i].axis1,
             'k2': list[i].k2,
@@ -143,10 +144,23 @@ function operateFormatter_km(value, row, index) {
 
 window.operateEvents_km = {
     'click .edit': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        document.getElementById("kmFormModal").reset();
+        $('#kmFormModal [name=id]').val(row.id);
+        $('#kmFormModal [name=id_auth_user]').val(row.id_auth_user);
+        $('#kmFormModal [name=id_worklist]').val(row.id_worklist);
+        $('#kmFormModal [name=timestamp]').val(row['timestamp'].split(' ').join('T'));
+        $('#kmFormModal [name=id_worklist]').val(row.id_worklist);
+        $('#kmFormModal [name=laterality]').val([row.laterality]);
+        $('#kmFormModal [name=k1]').val(row.k1).trigger('change');
+        $('#kmFormModal [name=k2]').val(row.k2).trigger('change');
+        $('#kmFormModal [name=axis1]').val(row.axis1);
+        $('#kmFormModal [name=axis2]').val(row.axis2);
+        $('#kmFormModal [name=note]').val(row.note);
+        $('#kmModal').modal('show');
     },
     'click .remove': function (e, value, row, index) {
-        console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
         delItem(row.id,'km');
     }
 };
