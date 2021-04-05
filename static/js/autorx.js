@@ -214,31 +214,40 @@ $('#idLeftRx').submit(function (e) {
 // set changes when From is selected
 let idArr = ['#idRightRx', '#idLeftRx'];
 for (let rx of idArr) {
-  $(rx+' input[name=rx_origin]').change(function () {
-    console.log(idArr.indexOf(rx));
-    let arr;
-    if (idArr.indexOf(rx)==0) { // if right side ie first index
-      arr = ['#rightTypeDiv', '#intRight', '#closeRight'];
+  let arr;
+  if (idArr.indexOf(rx) == 0) { // if right side ie first index
+    arr = ['#rightTypeDiv', '#intRight', '#closeRight'];
+  } else {
+    arr = ['#leftTypeDiv', '#intLeft', '#closeLeft'];
+  };
+  $(rx + ' input[name=glass_type]').change(function(){
+    if ((this.value == 'monofocal') || (this.value == 'na')) {
+      for (hide of arr.slice(1)) {
+        $(hide).addClass('visually-hidden');
+      };
     } else {
-      arr = ['#leftTypeDiv', '#intLeft', '#closeLeft'];
+      for (show of arr.slice(1)) {
+        $(show).removeClass('visually-hidden');
+      };
     };
+    console.log('glass type changed');
+  });
+  $(rx+' input[name=rx_origin]').change(function () {
     if ((this.value == 'trial') || (this.value == 'glass')) {
       for (let show of arr) {
         $(show).removeClass('visually-hidden');
       }
-      $(rx+' input[name=glass_type]').val(['monofocal']);
+      $(rx+' input[name=glass_type]').val(['monofocal']).trigger('change');
     } else {
       for (let hide of arr) {
         $(hide).addClass('visually-hidden');
       }
-      $(rx+' input[name=glass_type]').val(['na']);
+      $(rx + ' input[name=glass_type]').val(['na']).trigger('change');
     };
     console.log('from changed!', this.value);
   });
 };
 $('input[name=rx_origin]').val(['autorx']).trigger('change');
-
-
 
 // domId eg #idRightRx , laterality eg 'right'
 function rxInsert(domId,laterality) {
