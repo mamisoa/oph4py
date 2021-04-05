@@ -255,6 +255,7 @@ db.define_table('km',
     Field('k2','decimal(4,2)'),
     Field('axis1','decimal(5,2)'),
     Field('axis2','decimal(5,2)'),
+    Field('note','string'),
     Field('laterality','string', required=True),
     auth.signature)
 
