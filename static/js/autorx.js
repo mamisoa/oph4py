@@ -57,7 +57,7 @@ getWlDetails(wlId)
 });
 
 // set counters
-var idRxArr = ['#idRightRx','#idLeftRx']; 
+var idRxArr = ['#idRightRx','#idLeftRx', '#rxFormModal']; 
 var sphCylArr = ['sph_far', 'sph_int', 'sph_close','cyl_far', 'cyl_int', 'cyl_close'];
 var axisArr = ['axis_far', 'axis_int', 'axis_close'];
 var addArr = ['add_int', 'add_close'];
@@ -80,6 +80,15 @@ for (let id of idRxArr) {
   for (let va of vaCloseArr) {
       setCounter(id,va,0.5,1,8,2,false);
   };
+  // update SE
+  $(id+' .rxDiv input').change(function(){
+    let SEf = (parseFloat($(id+ ' input[name=sph_far]').val())+0.5*parseFloat($(id+ ' input[name=cyl_far]').val())).toFixed(2);
+    let SEi = (parseFloat($(id+ ' input[name=sph_int]').val())+0.5*parseFloat($(id+ ' input[name=cyl_int]').val())).toFixed(2);
+    let SEc = (parseFloat($(id+ ' input[name=sph_close]').val())+0.5*parseFloat($(id+ ' input[name=cyl_close]').val())).toFixed(2);
+    $(id+' .SEf').html(SEf);
+    $(id+' .SEi').html(SEi);
+    $(id+' .SEc').html(SEc);
+  });
 };
 
 var idKmArr = ['#idRightKm','#idLeftKm'];
@@ -93,46 +102,16 @@ for (let id of idKmArr) {
   for (let axis of axisArr) {
     setCounter(id,axis,5,0,180,0,false);
   };
+  // km conversions
+  $(id+' input').change(function() {
+    let k1d = parseFloat(diopter2mm(parseFloat($(id+' input[name=k1]').val())));
+    let k2d = parseFloat(diopter2mm(parseFloat($(id+' input[name=k2]').val())));
+    let kmd = (k1d+k2d)/2;
+    $(id+ ' .kmCalculated').html(kmd.toFixed(2)+'mm ('+diopter2mm(kmd)+'D)');
+    $(id+ ' .k1Calculated').html(k1d.toFixed(2)+' mm');
+    $(id+ ' .k2Calculated').html(k2d.toFixed(2)+' mm');
+  });  
 };
-
-// update SE
-$('#idRightRx .rxDiv input').change(function(){
-  let SEf = (parseFloat($('#idRightRx input[name=sph_far]').val())+0.5*parseFloat($('#idRightRx input[name=cyl_far]').val())).toFixed(2);
-  let SEi = (parseFloat($('#idRightRx input[name=sph_int]').val())+0.5*parseFloat($('#idRightRx input[name=cyl_int]').val())).toFixed(2);
-  let SEc = (parseFloat($('#idRightRx input[name=sph_close]').val())+0.5*parseFloat($('#idRightRx input[name=cyl_close]').val())).toFixed(2);
-  $('#SEfR').html(SEf);
-  $('#SEiR').html(SEi);
-  $('#SEcR').html(SEc);
-  // console.log('right rx changed');
-});
-
-$('#idLeftRx .rxDiv input').change(function(){
-  let SEf = (parseFloat($('#idLeftRx input[name=sph_far]').val())+0.5*parseFloat($('#idLeftRx input[name=cyl_far]').val())).toFixed(2);
-  let SEi = (parseFloat($('#idLeftRx input[name=sph_int]').val())+0.5*parseFloat($('#idLeftRx input[name=cyl_int]').val())).toFixed(2);
-  let SEc = (parseFloat($('#idLeftRx input[name=sph_close]').val())+0.5*parseFloat($('#idLeftRx input[name=cyl_close]').val())).toFixed(2);
-  $('#SEfL').html(SEf);
-  $('#SEiL').html(SEi);
-  $('#SEcL').html(SEc);
-  // console.log('left rx changed');
-});
-
-$('#idRightKm input').change(function() {
-  let k1d = parseFloat(diopter2mm(parseFloat($('#idRightKm input[name=k1]').val())));
-  let k2d = parseFloat(diopter2mm(parseFloat($('#idRightKm input[name=k2]').val())));
-  let kmd = (k1d+k2d)/2;
-  $('#kmCalculatedR').html(kmd.toFixed(2)+'mm ('+diopter2mm(kmd)+'D)');
-  $('#k1CalculatedR').html(k1d.toFixed(2)+' mm');
-  $('#k2CalculatedR').html(k2d.toFixed(2)+' mm');
-});
-
-$('#idLeftKm input').change(function() {
-  let k1d = parseFloat(diopter2mm(parseFloat($('#idLeftKm input[name=k1]').val())));
-  let k2d = parseFloat(diopter2mm(parseFloat($('#idLeftKm input[name=k2]').val())));
-  let kmd = (k1d+k2d)/2;
-  $('#kmCalculatedL').html(kmd.toFixed(2)+'mm ('+diopter2mm(kmd)+'D)');
-  $('#k1CalculatedL').html(k1d.toFixed(2)+' mm');
-  $('#k2CalculatedL').html(k2d.toFixed(2)+' mm');
-});
 
 // id_count : form id , count_class: tono pachy (counter_tono), step, min, max, precision, show sign
 // add update values of sph

@@ -28,6 +28,7 @@ def autorx(wlId):
     qClose = db.optotype.distance == 'close'
     optoFarOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'index', qFar)
     optoCloseOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'index', qClose)
+    statusRxOptions = dropdownSelect(db.status_rx, db.status_rx.fields[1],'index')
     return locals()
 
 # helloworld controller

@@ -90,6 +90,8 @@ function operateFormatter(value, row, index) {
 window.operateEvents = {
     'click .edit': function (e, value, row, index) {
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        $('#rxModal [name=laterality').val([row.laterality]);
+        $('#rxModal').modal('show');
     },
     'click .remove': function (e, value, row, index) {
         console.log('You click action DELETE on row: ' + JSON.stringify(row));
