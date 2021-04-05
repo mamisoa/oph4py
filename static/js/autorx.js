@@ -92,7 +92,7 @@ for (let id of idRxArr) {
   });
 };
 
-var idKmArr = ['#idRightKm','#idLeftKm'];
+var idKmArr = ['#idRightKm','#idLeftKm', '#kmModal'];
 var kmArr = ['km1','km2'];
 var axisArr = ['axis1','axis2'];
 
@@ -249,9 +249,21 @@ $('#rxFormModal').submit(function (e) {
   delete dataObj['methodRxModalSubmit'];
   dataStr = JSON.stringify(dataObj);
   crud('rx','0', req, dataStr);
-  console.log(tablesArr);
   refreshTables(tablesArr);
   $('#rxModal').modal('hide');
+});
+
+$('#kmFormModal').submit(function(e) {
+  e.preventDefault();
+  let dataStr = $(this).serializeJSON();
+  let dataObj = JSON.parse(dataStr);
+  let req = dataObj['methodKmModalSubmit'];
+  delete dataObj['methodKmModalSubmit'];
+  console.log("dataForm",dataObj);
+  dataStr = JSON.stringify(dataObj);
+  crud('km','0', req, dataStr);
+  refreshTables(tablesArr);
+  $('#kmModal').modal('hide');
 });
 
 // domId eg #idRightRx , laterality eg 'right', default status = measure
@@ -308,6 +320,7 @@ function delItem (id,table) {
   });
 };
 
+// todo: transfer to useful
 // set task to done and disable form buttons
 $('#btnTaskDone').click(function() {
   bootbox.confirm({

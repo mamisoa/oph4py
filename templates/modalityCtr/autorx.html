@@ -709,17 +709,6 @@
     </div>
 </div>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col">
-            [[ = optoFarOptions]]
-        </div>
-        <div class="col">
-            [[ = optoCloseOptions]]
-        </div>
-    </div>
-</div>
-
 <!-- Modal RxModal -->
 <div class="modal fade" id="rxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
@@ -968,6 +957,105 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <label id="rxModalSubmit"for="btnRxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal kmModal -->
+<div class="modal fade" id="kmModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Keratometry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="kmFormModal" enctype="multipart/form-data" method="POST"> 
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="klaterality_modal" class="form-label">Side:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group klaterality_modal">
+                                                    <input type="radio" id="klaterality_right_modal" name="laterality" class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="klaterality_right_modal">Right</label>
+                                                    <input type="radio" id="klaterality_left_modal" name="laterality" class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="klaterality_left_modal">Left</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="ktimestamp" class="form-label">Timestamp:</label>
+                                            <input id="ktimestamp" type="datetime-local" step="1" class="form-control" name="timestamp">
+                                            <div id="ktimestampHelp" class="form-text">Adjust timestamp</div>
+                                        </div> 
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="k1_modal" class="form-label">K1:</label>
+                                            <div class="input-group mb-3">
+                                                <button class="btn btn-outline-secondary counter_down_km1" type="button">-</button>
+                                                <input type="text" class="form-control form-control-sm k1_modal counter_km1 text-center" value ="43.00" aria-label="K1" name="k1">
+                                                <button class="btn btn-outline-secondary counter_up_km1" type="button">+</button>
+                                            </div>
+                                            <label for="a1_modal" class="form-label">Axis 1:</label>
+                                            <div class="input-group mb-3">
+                                                <button class="btn btn-outline-secondary counter_down_axis1" type="button">-</button>
+                                                <input type="text" class="form-control form-control-sm a1_modal counter_axis1 text-center" value ="180" aria-label="Axis 1" name="axis1">
+                                                <button class="btn btn-outline-secondary counter_up_axis1" type="button">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="k2_modal" class="form-label">K2:</label>
+                                            <div class="input-group mb-3">
+                                                <button class="btn btn-outline-secondary counter_down_km2" type="button">-</button>
+                                                <input type="text" class="form-control form-control-sm k2_modal counter_km2 text-center" value ="43.00" aria-label="K2" name="k2">
+                                                <button class="btn btn-outline-secondary counter_up_km2" type="button">+</button>
+                                            </div>
+                                            <label for="a2_modal" class="form-label">Axis 2:</label>
+                                            <div class="input-group mb-3">
+                                                <button class="btn btn-outline-secondary counter_down_axis2" type="button">-</button>
+                                                <input type="text" class="form-control form-control-sm a2_modal counter_axis2 text-center" value ="180" aria-label="Axis 2" name="axis2">
+                                                <button class="btn btn-outline-secondary counter_up_axis2" type="button">+</button>
+                                            </div>
+                                        </div>                            
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="notekModal" class="form-label">Note:</label>
+                                            <input id="notekModal" type="text" class="form-control" name="note">
+                                            <div id="notekModal" class="form-text">Note</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <h4>Km= <span class="kmCalculated">43.00D</span></h4>
+                                        </div>
+                                        <div class="col">
+                                            <h4>K1= <span class="k1Calculated">7.85mm</span></h4>
+                                        </div>
+                                        <div class="col">
+                                            <h4>K1= <span class="k2Calculated">7.85mm</span></h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idKm" type="text" class="visually-hidden" name="id"/>
+                                <input id="idPatientKm" type="text" class="visually-hidden" name="id_auth_user"/>
+                                <input id="idWlKm" type="text" class="visually-hidden" name="id_worklist"/>
+                                <input id="methodKmModalSubmit" type="text" class="visually-hidden" name="methodKmModalSubmit" value="PUT"/>
+                                <input id="btnKmModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="kmModalSubmit"for="btnKmModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>
