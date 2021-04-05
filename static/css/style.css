@@ -4,7 +4,7 @@
   } */
 
 section#main {
-    margin-top: 100px;
+    margin-top: 70px;
 }
 
 .footer {
@@ -17,12 +17,19 @@ section#main {
 
 .patient-id {
   background-color: #E9FFE8;
-  padding-top: 20px ;
+  padding-top: 70px ;
 }
 
 .big-title {
   background-color: #f8f5f0;
   text-transform: uppercase;
+  color: inherit; 
+  text-decoration: none;
+}
+
+.big-title a {
+  color: inherit; 
+  text-decoration: none;
 }
 
 .title-right {

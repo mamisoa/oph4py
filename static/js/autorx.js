@@ -247,13 +247,13 @@ for (let rx of idArr) {
 };
 $('input[name=rx_origin]').val(['autorx']).trigger('change');
 
-// domId eg #idRightRx , laterality eg 'right'
-function rxInsert(domId,laterality) {
+// domId eg #idRightRx , laterality eg 'right', default status = measure
+function rxInsert(domId,laterality,status=1) {
   let dataStr = $(domId).serializeJSON();
   let dataObj = JSON.parse(dataStr);
   console.log(dataObj);
   dataObj['laterality'] = laterality;
-  dataObj['status'] = 1;
+  dataObj['status'] = status;
   dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
   delete dataObj['add_int'];
   delete dataObj['add_close'];
