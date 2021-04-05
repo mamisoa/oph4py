@@ -340,7 +340,12 @@ const wlId = [[= wlId ]];
 const timeOffsetInHours = 2;
 const timeOffset = 3600*timeOffsetInHours; // in sec
 
+// submit btn to disable when done
+const btnArr = ['#btnTaskDone','#btnAddTonoPachyRight','#btnAddTonoPachyLeft','#btnAddAplaRight','#btnAddAplaLeft'];
+
 // init tables
+const tablesArr = ['#airPachyRight_tbl', '#airPachyLeft_tbl','#aplaRight_tbl','#aplaLeft_tbl'];
+
 const API_AIRRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 const API_AIRLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 const API_APLARIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
@@ -364,7 +369,7 @@ var $table_aplaLeft = $('#aplaLeft_tbl').bootstrapTable({
 
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
 $('#airPachyRight_tbl').on('post-body.bs.table', function () {
-    $('.loading-wrap').addClass('visually-hidden'); // loading bug?
+    // $('.loading-wrap').addClass('visually-hidden'); // loading bug?
 });
 
 </script>

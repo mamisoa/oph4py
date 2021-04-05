@@ -1,14 +1,7 @@
-// get wl details
+refreshTables(tablesArr);
+// get wl details and set a global object
 
 var wlItemObj;
-
-function disableBtn() {
-    $('#btnTaskDone').attr('disabled', true);
-    $('#btnAddTonoPachyRight').attr('disabled', true);
-    $('#btnAddTonoPachyLeft').attr('disabled', true);
-    $('#btnAddAplaRight').attr('disabled', true);
-    $('#btnAddAplaLeft').attr('disabled', true);            
-};
 
 function getWlDetails(wlId){
     return Promise.resolve(
@@ -52,7 +45,7 @@ getWlDetails(wlId)
         $('#wlItemDetails .senior').html(itemObj['senior.first_name']+' '+itemObj['senior.last_name']);
         $('#wlItemDetails .status').html(itemObj['status_flag']);
         if (itemObj['status_flag'] == 'done') {
-            disableBtn();
+            disableBtn(btnArr);
         }
         wlItemObj['warning'] != null? $('#wlItemDetails .warning').html('<i class="fas fa-exclamation-circle"></i> '+itemObj['warning']) : $('#wlItemDetails .warning').html('').removeClass('bg-danger text-wrap');
         if (wlItemObj['patient.photob64'] == null) {
@@ -213,8 +206,9 @@ $('#btnTaskDone').click(function() {
                             wlItemObj = Object.assign({},itemObj.items[0]); // clone wltitemobj in global
                             if (wlItemObj['status_flag'] == 'done') {
                                 $('#wlItemDetails .status').html(wlItemObj['status_flag']);
-                                disableBtn();
-                            }
+                                disableBtn(btnArr);
+                            };
+                            window.location.href = '/myapp/worklist';
                         });
                 }
             } // end if

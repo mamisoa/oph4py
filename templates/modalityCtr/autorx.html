@@ -990,6 +990,9 @@ const wlId = [[= wlId ]];
 const timeOffsetInHours = 2;
 const timeOffset = 3600*timeOffsetInHours; // in sec
 
+// submit btn to disable when done
+const btnArr = ['#btnAddKmRight','#btnAddKmLeft', '#btnAddRxRight', '#btnAddRxLeft','#btnTaskDone'];
+
 // init tables
 const API_RXRIGHT = HOSTURL + "/myapp/api/rx?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 const API_RXLEFT = HOSTURL + "/myapp/api/rx?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
