@@ -1,3 +1,4 @@
+refreshTables(tablesArr);
 // get wl details
 var wlItemObj;
 
@@ -180,16 +181,20 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
 // set default state for refraction
 
 // set changes when From is selected
-let idArr = ['#idRightRx', '#idLeftRx'];
-for (let rx of idArr) {
+// let idArr = ['#idRightRx', '#idLeftRx', '#rxFormModal'];
+for (let rx of idRxArr) {
   let arr;
-  if (idArr.indexOf(rx) == 0) { // if right side ie first index
+  if (idRxArr.indexOf(rx) == 0) { // if right side ie first index
     arr = ['#rightTypeDiv', '#intRight', '#closeRight'];
-  } else {
+  } else if (idRxArr.indexOf(rx) == 1){
     arr = ['#leftTypeDiv', '#intLeft', '#closeLeft'];
+  } else {
+    arr = ['#modalTypeDiv', '#intModal', '#closeModal'];
   };
+  // if glass_type is mono or na -> typeDiv hide int and close
+  // else show typeDiv int and close
   $(rx + ' input[name=glass_type]').change(function(){
-    if ((this.value == 'monofocal') || (this.value == 'na')) {
+    if ( ($(rx + ' input[name=glass_type]:checked').val() == 'monofocal') || ($(rx + ' input[name=glass_type]:checked').val() == 'na') ) {
       for (hide of arr.slice(1)) {
         $(hide).addClass('visually-hidden');
       };
@@ -200,20 +205,17 @@ for (let rx of idArr) {
     };
   });
   $(rx+' input[name=rx_origin]').change(function () {
-    if ((this.value == 'trial') || (this.value == 'glass')) {
-      for (let show of arr) {
-        $(show).removeClass('visually-hidden');
-      }
-      $(rx+' input[name=glass_type]').val(['monofocal']).trigger('change');
+    if (($(rx+' input[name=rx_origin]:checked').val() == 'trial') || ($(rx+' input[name=rx_origin]:checked').val() == 'glass')) {
+      $(arr[0]).removeClass('visually-hidden');
     } else {
-      for (let hide of arr) {
-        $(hide).addClass('visually-hidden');
-      }
-      $(rx + ' input[name=glass_type]').val(['na']).trigger('change');
+      $(arr[0]).addClass('visually-hidden');
     };
   });
 };
+
+// set default rx_origin and glass
 $('input[name=rx_origin]').val(['autorx']).trigger('change');
+$('input[name=glass_type]').val(['monofocal']).trigger('change');
 
 // set rx submit buttons
 $('#idRightRx').submit(function(e){
@@ -234,6 +236,22 @@ $('#idRightKm').submit(function(e){
 $('#idLeftKm').submit(function (e) {
   e.preventDefault();
   kmInsert('#idLeftKm', 'left');
+});
+
+$('#rxFormModal').submit(function (e) {
+  e.preventDefault();
+  let dataStr = $(this).serializeJSON();
+  let dataObj = JSON.parse(dataStr);
+  console.log("dataForm",dataObj);
+  delete dataObj['add_int'];
+  delete dataObj['add_close'];
+  let req = dataObj['methodRxModalSubmit'];
+  delete dataObj['methodRxModalSubmit'];
+  dataStr = JSON.stringify(dataObj);
+  crud('rx','0', req, dataStr);
+  console.log(tablesArr);
+  refreshTables(tablesArr);
+  $('#rxModal').modal('hide');
 });
 
 // domId eg #idRightRx , laterality eg 'right', default status = measure

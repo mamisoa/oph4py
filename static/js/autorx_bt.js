@@ -8,6 +8,7 @@ function responseHandler(res) { // used if data-response-handler="responseHandle
             'id_worklist': list[i].id_worklist,
             'timestamp': list[i]['timestamp'].split('T').join(' '),
             'rx_origin': list[i].rx_origin,
+            'glass_type': list[i].glass_type,
             'va_far': list[i].va_far,
             'opto_far': list[i].opto_far,
             'sph_far': list[i].sph_far,
@@ -30,9 +31,11 @@ function responseHandler(res) { // used if data-response-handler="responseHandle
             'rx_close': list[i].sph_close+'('+list[i].cyl_close+'x'+list[i].axis_close+')',
             'note': list[i].note,
             'laterality': list[i]['laterality'],
-            'modified_by': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
+            'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
+            'modified_by': list[i]['mod.id'],
             'modified_on': list[i]['modified_on'],
-            'created_by': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
+            'created_by': list[i]['creator.id'],
+            'created_by_name': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
             'created_on': list[i]['created_on']
         });
     });
@@ -69,14 +72,15 @@ function responseHandler_km(res) { // used if data-response-handler="responseHan
 function queryParams(params) {
     var s="";
     if (params.offset != "0") {
-        console.log(params.offset);
+        // console.log(params.offset);
         s += "&@offset="+params.offset;
     }
     if (params.limit != "0") {
-        console.log(params.offset);
-        s += "&@limit="+params.limit;
+        // console.log(params.offset);
+        s += "@limit="+params.limit;
     }
-    return decodeURI(encodeURI(s.slice(1-s.length))); // remove the first &
+    // return decodeURI(encodeURI(s.slice(1-s.length))); // remove the first &
+    return s; // remove the first &
 };
 
 function operateFormatter(value, row, index) {
@@ -90,7 +94,37 @@ function operateFormatter(value, row, index) {
 window.operateEvents = {
     'click .edit': function (e, value, row, index) {
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        $('#rxModal [name=laterality').val([row.laterality]);
+        document.getElementById("rxFormModal").reset();
+        $('#rxFormModal [name=id]').val(row.id);
+        $('#rxFormModal [name=id_auth_user]').val(row.id_auth_user);
+        $('#rxFormModal [name=id_worklist]').val(row.id_worklist);
+        $('#rxFormModal [name=timestamp]').val(row['timestamp'].split(' ').join('T'));
+        $('#rxFormModal [name=laterality]').val([row.laterality]).trigger('change');
+        $('#rxFormModal [name=rx_origin]').val([row.rx_origin]).trigger('change');
+        $('#rxFormModal [name=glass_type]').val([row.glass_type]).trigger('change');
+        $('#rxFormModal [name=va_far]').val(row.va_far);
+        $('#rxFormModal [name=opto_far]').val(row.opto_far);
+        $('#rxFormModal [name=sph_far]').val(row.sph_far);
+        $('#rxFormModal [name=cyl_far]').val(row.cyl_far);
+        $('#rxFormModal [name=axis_far]').val(row.axis_far);
+        $('#rxFormModal [name=va_int]').val(row.va_int);
+        $('#rxFormModal [name=opto_int]').val(row.opto_int);
+        $('#rxFormModal [name=sph_int]').val(row.sph_int);
+        $('#rxFormModal [name=cyl_int]').val(row.cyl_int);
+        $('#rxFormModal [name=axis_int]').val(row.axis_int);
+        $('#rxFormModal [name=va_close]').val(row.va_close);
+        $('#rxFormModal [name=opto_close]').val(row.opto_close);
+        $('#rxFormModal [name=sph_close]').val(row.sph_close);
+        $('#rxFormModal [name=cyl_close]').val(row.cyl_close);
+        $('#rxFormModal [name=axis_close]').val(row.axis_close);
+        $('#rxFormModal [name=note]').val(row.note);
+        let add_int = round2dec(parseFloat(row.sph_int)-parseFloat(row.sph_far));
+        let add_close = round2dec(parseFloat(row.sph_close)-parseFloat(row.sph_far));
+        console.log('add_close',add_close);
+        $('#rxFormModal [name=add_int]').val(add_int).trigger('change');
+        $('#rxFormModal [name=add_close]').val(add_close).trigger('change');
+        $('#rxFormModal [name=methodRxModalSubmit]').val('PUT');
+        $('#rxFormModal [name=rx_origin]').trigger('change');
         $('#rxModal').modal('show');
     },
     'click .remove': function (e, value, row, index) {

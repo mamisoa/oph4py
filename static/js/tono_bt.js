@@ -46,7 +46,7 @@ function operateFormatter_airPachy(value, row, index) {
 window.operateEvents_airPachy = {
     'click .edit': function (e, value, row, index) {
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        document.getElementById("tonoPachyForm").reset();        
+        document.getElementById("tonoPachyForm").reset();
         $("#tonoPachyForm [name=id]").val([row.id]);
         $("#tonoPachyForm [name=id_auth_user]").val([row.id_auth_user]);
         $("#tonoPachyForm [name=id_worklist]").val([row.id_worklist]);

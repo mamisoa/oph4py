@@ -762,7 +762,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col" id="leftTypeDiv">
+                                    <div class="col" id="modalTypeDiv">
                                         <label for="glass_type_modal" class="form-label">Type:</label>
                                         <div class="input-group">
                                             <div class="btn-group glass_type_modal">
@@ -967,7 +967,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="TonoPachySubmit"for="btnTonoPachySubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="rxModalSubmit"for="btnRxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>
@@ -1012,11 +1012,12 @@ var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
     url: API_KMLEFT
 });
 
-const tablesArr = ['#rxRight_tbl','#rxRight_tbl','#kmRight_tbl','#kmLeft_tbl'];
+const tablesArr = ['#rxRight_tbl','#rxLeft_tbl','#kmRight_tbl','#kmLeft_tbl'];
 
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
 $('#rxRight_tbl').on('post-body.bs.table', function () {
-    $('.loading-wrap').addClass('visually-hidden'); // loading bug?
+    // $('#rxLeft_tbl').bootstrapTable('refresh');
+    // $('.loading-wrap').addClass('visually-hidden'); // loading bug?
 });
 
 </script>
