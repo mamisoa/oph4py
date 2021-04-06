@@ -224,15 +224,15 @@ function detailFormatter(index, row) {
 function detailFormatter_km(index, row) {
     let html = ['<div class="container-fluid"><div class="row">'];
     html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">K1: </span>'+ row.k1+'D x '+row.axis1+'°</p>');
+    html.push('<p class=""><span class="fw-bold">K2: </span>'+ row.k2+'D x '+row.axis2+'°</p>');
+    html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ row.laterality +'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
     html.push('<p class=""><span class="fw-bold">Timestamp: </span>'+ row.timestamp +'</p>');
     html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by_name+' on '+row.created_on+'</p>');
     html.push('<p class=""><span class="fw-bold">Modified by: </span>'+ row.modified_by_name+' on '+row.modified_on+'</p>');
-    html.push('</div>');
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">K1: </span>'+ row.k1+'D x '+row.axis1+'°</p>');
-    html.push('<p class=""><span class="fw-bold">K2: </span>'+ row.k2+'D x '+row.axis2+'°</p>');
-    html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ row.laterality +'</p>');
     html.push('</div>');
     html.push('</div></div>');
     return html.join('');
