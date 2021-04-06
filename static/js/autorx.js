@@ -262,6 +262,9 @@ $('#rxFormModal').submit(function (e) {
   let dataStr = $(this).serializeJSON();
   let dataObj = JSON.parse(dataStr);
   console.log("dataForm",dataObj);
+  if ((dataObj['rx_origin'] != 'glass') || (dataObj['rx_origin'] != 'trial')) {
+    dataObj['glass_type'] = 'na';
+  };
   delete dataObj['add_int'];
   delete dataObj['add_close'];
   let req = dataObj['methodRxModalSubmit'];
@@ -278,7 +281,7 @@ $('#kmFormModal').submit(function(e) {
   let dataObj = JSON.parse(dataStr);
   let req = dataObj['methodKmModalSubmit'];
   delete dataObj['methodKmModalSubmit'];
-  console.log("dataForm",dataObj);
+  // console.log("dataForm",dataObj);
   dataStr = JSON.stringify(dataObj);
   crud('km','0', req, dataStr);
   refreshTables(tablesArr);
@@ -289,10 +292,14 @@ $('#kmFormModal').submit(function(e) {
 function rxInsert(domId,laterality,status=1) {
   let dataStr = $(domId).serializeJSON();
   let dataObj = JSON.parse(dataStr);
-  console.log(dataObj);
+  // console.log(dataObj);
   dataObj['laterality'] = laterality;
   dataObj['status'] = status;
   dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
+  // console.log('rx_origin',dataObj['rx_origin']);
+  if ((dataObj['rx_origin'] != 'glass') || (dataObj['rx_origin'] != 'trial')) {
+    dataObj['glass_type'] = 'na';
+  };
   delete dataObj['add_int'];
   delete dataObj['add_close'];
   // console.log('dataObj',dataObj);

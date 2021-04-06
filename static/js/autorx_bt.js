@@ -196,7 +196,6 @@ function detailFormatter(index, row) {
     let html = ['<div class="container-fluid"><div class="row">'];
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">Origin: </span>'+ row.rx_origin+'</p>');
-    html.push('<p class=""><span class="fw-bold">Type: </span>'+ row.glass_type+'</p>');
     html.push('<p class=""><span class="fw-bold">Rx far: </span>'+ row.rx_far +'</p>');
     if ((row.rx_origin == 'glass') || (row.rx_origin == 'trial')) {
         html.push('<p class=""><span class="fw-bold">Rx int: </span>'+ row.rx_int +'</p>');
@@ -210,6 +209,7 @@ function detailFormatter(index, row) {
         html.push('<p class=""><span class="fw-bold">Va int: </span>'+ row.va_int +'</p>');
         html.push('<p class=""><span class="fw-bold">Va close: </span>'+ row.va_close +'</p>');
     };
+    html.push('<p class=""><span class="fw-bold">Type: </span>'+ row.glass_type+'</p>');
     html.push('</div>');
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
