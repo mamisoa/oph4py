@@ -59,9 +59,11 @@ function responseHandler_km(res) { // used if data-response-handler="responseHan
             'k2': list[i].k2,
             'axis2': list[i].axis2,
             'note': list[i].note,
-            'modified_by': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
+            'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
+            'modified_by': list[i]['mod.id'],
             'modified_on': list[i]['modified_on'],
-            'created_by': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
+            'created_by': list[i]['creator.id'],
+            'created_by_name': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
             'created_on': list[i]['created_on']
         });
     });
@@ -134,6 +136,31 @@ window.operateEvents = {
     }
 };
 
+function detailFormatter(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Timestamp: </span>'+ row.timestamp +'</p>');
+    html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by+'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Origin: </span>'+ row.rx_origin+'</p>');
+    html.push('<p class=""><span class="fw-bold">Type: </span>'+ row.glass_type+'</p>');
+    html.push('<p class=""><span class="fw-bold">Rx far: </span>'+ row.rx_far +'</p>');
+    html.push('<p class=""><span class="fw-bold">Rx int: </span>'+ row.rx_int +'</p>');
+    html.push('<p class=""><span class="fw-bold">Rx close: </span>'+ row.rx_close+'(Add+'+row.add+')</p>');
+    html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ row.laterality +'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_far +'</p>');
+    html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_int +'</p>');
+    html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_close +'</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};
+
 function operateFormatter_km(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="edit" href="javascript:void(0)" title="Edit tono/pachy"><i class="fas fa-edit"></i></a>');
@@ -163,4 +190,50 @@ window.operateEvents_km = {
         // console.log('You click action DELETE on row: ' + JSON.stringify(row));
         delItem(row.id,'km');
     }
+};
+
+function detailFormatter(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Origin: </span>'+ row.rx_origin+'</p>');
+    html.push('<p class=""><span class="fw-bold">Type: </span>'+ row.glass_type+'</p>');
+    html.push('<p class=""><span class="fw-bold">Rx far: </span>'+ row.rx_far +'</p>');
+    if ((row.rx_origin == 'glass') || (row.rx_origin == 'trial')) {
+        html.push('<p class=""><span class="fw-bold">Rx int: </span>'+ row.rx_int +'</p>');
+        html.push('<p class=""><span class="fw-bold">Rx close: </span>'+ row.rx_close+'(Add+'+row.add+')</p>');
+    };
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ (row.laterality).toUpperCase() +'</p>');
+    html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_far +'</p>');
+    if ((row.rx_origin == 'glass') || (row.rx_origin == 'trial')) {
+        html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_int +'</p>');
+        html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_close +'</p>');
+    };
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Timestamp: </span>'+ row.timestamp +'</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by_name+' on '+row.created_on+'</p>');
+    html.push('<p class=""><span class="fw-bold">Modified by: </span>'+ row.modified_by_name+' on '+row.modified_on+'</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};
+
+function detailFormatter_km(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Timestamp: </span>'+ row.timestamp +'</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by_name+' on '+row.created_on+'</p>');
+    html.push('<p class=""><span class="fw-bold">Modified by: </span>'+ row.modified_by_name+' on '+row.modified_on+'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">K1: </span>'+ row.k1+'D x '+row.axis1+'°</p>');
+    html.push('<p class=""><span class="fw-bold">K2: </span>'+ row.k2+'D x '+row.axis2+'°</p>');
+    html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ row.laterality +'</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
 };
