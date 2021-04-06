@@ -207,8 +207,8 @@ function detailFormatter(index, row) {
     html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ (row.laterality).toUpperCase() +'</p>');
     html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_far +'</p>');
     if ((row.rx_origin == 'glass') || (row.rx_origin == 'trial')) {
-        html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_int +'</p>');
-        html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_close +'</p>');
+        html.push('<p class=""><span class="fw-bold">Va int: </span>'+ row.va_int +'</p>');
+        html.push('<p class=""><span class="fw-bold">Va close: </span>'+ row.va_close +'</p>');
     };
     html.push('</div>');
     html.push('<div class="text-start col">');
