@@ -197,25 +197,44 @@ for (let rx of idRxArr) {
     if ( ($(rx + ' input[name=glass_type]:checked').val() == 'monofocal') || ($(rx + ' input[name=glass_type]:checked').val() == 'na') ) {
       for (hide of arr.slice(1)) {
         $(hide).addClass('visually-hidden');
+        if (rx != '#rxFormModal') {
+          $(rx+' input[name=va_far]').val('1.0');
+          $(rx+' input[name=va_int]').val('');
+          $(rx+' input[name=va_close]').val('');
+        };
       };
     } else {
       for (show of arr.slice(1)) {
         $(show).removeClass('visually-hidden');
+        if (rx != '#rxFormModal') {
+          $(rx+' input[name=va_int]').val('1.0');
+          $(rx+' input[name=va_close]').val('2');
+        };
       };
     };
   });
   $(rx+' input[name=rx_origin]').change(function () {
     if (($(rx+' input[name=rx_origin]:checked').val() == 'trial') || ($(rx+' input[name=rx_origin]:checked').val() == 'glass')) {
       $(arr[0]).removeClass('visually-hidden');
+      if (rx != '#rxFormModal') {
+        $(rx+' input[name=va_far]').val('1.0');
+        $(rx+' input[name=va_int]').val('');
+        $(rx+' input[name=va_close]').val('');
+      };
     } else {
       $(arr[0]).addClass('visually-hidden');
+      if (rx != '#rxFormModal') {
+        $(rx+' input[name=va_far]').val('');
+        $(rx+' input[name=va_int]').val('1.0');
+        $(rx+' input[name=va_close]').val('2');
+      };
     };
   });
 };
 
-// set default rx_origin and glass
-$('input[name=rx_origin]').val(['autorx']).trigger('change');
+// set default glass then rx_origin (order important)
 $('input[name=glass_type]').val(['monofocal']).trigger('change');
+$('input[name=rx_origin]').val(['autorx']).trigger('change');
 
 // set rx submit buttons
 $('#idRightRx').submit(function(e){
