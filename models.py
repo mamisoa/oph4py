@@ -357,11 +357,19 @@ db.define_table('post_biom',
 
 db.post_biom.laterality.requires = IS_IN_SET(('right','left'))
 
+db.define_table('pHx_origin',
+    Field('title','string'),
+    auth.signature)
+
+# should not reference to a worklist
 db.define_table('phistory',
     Field('id_auth_user', 'reference auth_user', required=True),
-    Field('id_worklist', 'reference worklist'),
-    Field('timestamp', 'datetime', required=True),
-    Field('phistory','string'),
+    Field('origin', 'reference pHx_origin'),
+    Field('title','string'),
+    Field('description', 'string'),
+    Field('icd10','string'),
+    Field('onset', 'date'),
+    Field('ended', 'date'),
     auth.signature)
 
 db.define_table('mx',
