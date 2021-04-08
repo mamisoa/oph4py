@@ -38,7 +38,38 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci quasi dolore, minus quod, expedita velit mollitia quibusdam quae iusto est commodi corrupti sed unde officia deleniti iste tempora ad rem.</p>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <h4 class="big-title">Medications</h4>
+                                </div>
+                            </div>
+                            <div class="row mt-3"> <!-- table right -->
+                                <div class="col">
+                                    <table
+                                        id="mx_tbl"
+                                        data-side-pagination="server"
+                                        data-pagination="true"
+                                        data-page-size="5"
+                                        data-search="false"
+                                        data-query-params="queryParams"
+                                        data-response-handler="responseHandler_mx"
+                                        data-detail-formatter="detailFormatter_mx"
+                                        data-detail-view="true" data-detail-view-icon="true"
+                                        >
+                                        <thead>
+                                            <tr>
+                                                <th data-field="onset" data-sortable="false">Onset</th>
+                                                <th data-field="ended" data-sortable="false">Ended</th>
+                                                <th data-field="medication" data-sortable="false">Medication</th>
+                                                <th data-field="brand" data-sortable="false">Brand</th>
+                                                <th data-field="frequency" data-sortable="false">Frequency</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                         <div class="col">
                             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias est qui maxime beatae placeat molestiae provident facere, voluptates repellendus eveniet reprehenderit recusandae esse ea perferendis aut reiciendis obcaecati voluptatibus asperiores.</p>
@@ -304,6 +335,7 @@
 
 const HOSTURL = 'http://localhost:8000';
 const wlId = [[= wlId ]];
+const userId = [[ = userId ]]
 
 // timeOffset 'Europe/Brussels' GMT+2:00
 const timeOffsetInHours = 2;
@@ -313,14 +345,15 @@ const timeOffset = 3600*timeOffsetInHours; // in sec
 const btnArr = [];
 
 // init tables
+const API_MX = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 const API_MD = HOSTURL + "/myapp/api/md?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 
-var $md = $('#md_tbl').bootstrapTable({
-    url: API_MD
+var $mx = $('#mx_tbl').bootstrapTable({
+    url: API_MX
 });
 
 
-const tablesArr = [];
+const tablesArr = ['#mx_tbl'];
 
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
 $('#md_tbl').on('post-body.bs.table', function () {

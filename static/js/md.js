@@ -54,6 +54,6 @@ getWlDetails(wlId)
             $('#patientIdDiv').removeClass('text-end').addClass('text-center');
         } else {
             document.getElementById("photoId").setAttribute("src",wlItemObj['patient.photob64']);
-        }
-});
+        };
+    });
 
