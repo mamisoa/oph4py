@@ -37,6 +37,7 @@ def autorx(wlId):
 @action.uses('modalityCtr/md.html', session, auth, db)
 def md(wlId):
     user = auth.get_user()
+    userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     return locals()
 
 # helloworld controller

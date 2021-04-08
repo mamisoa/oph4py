@@ -372,15 +372,24 @@ db.define_table('phistory',
     Field('ended', 'date'),
     auth.signature)
 
-db.define_table('mx',
-    Field('id_auth_user', 'reference auth_user', writable = False, readable = False),
-    Field('timestamp', 'datetime', required=True),
+db.define_table('medic_ref',
     Field('name','string'),
     Field('brand','string'),
     Field('active_ingredient','string'),
     Field('dosage','string'),
     Field('form','string'),
     Field('unit_per_intake','string'),
+    auth.signature,
+    format='%(name)s'
+)
+
+if db(db.medic_ref.id > 1).count() == 0:
+    db.medic_ref.insert(name="DAFALGAN 1g", brand="Bristol Mayers", active_ingredient="paracetamol", dosage = "1g", form="pill", unit_per_intake="1000g")
+    db.medic_ref.insert(name="TOBRADEX", brand="Alcon", active_ingredient="['dexamethasone,'tobramycine']", dosage = "['1mg','3mg']", form="drop", unit_per_intake="")
+
+db.define_table('mx',
+    Field('id_auth_user', 'reference auth_user', writable = False, readable = False),
+    Field('id_medic_ref', 'reference medic_ref'),
     Field('frequency','string'),
     Field('onset','date'),
     Field('ended','date'),
