@@ -72,3 +72,23 @@ function detailFormatter_mx(index, row) {
     html.push('</div></div>');
     return html.join('');
 };
+
+function detailFormatter_mx(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Frequency: </span>' + row.frequency + '</p>');
+    html.push('<p class=""><span class="fw-bold">Name: </span>' + row.medication + '</p>');
+    html.push('<p class=""><span class="fw-bold">Brand: </span>' + row.brand +'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Onset: </span>' + row.onset + '</p>');
+    html.push('<p class=""><span class="fw-bold">Ended: </span>' + row.ended + '</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>' + row.id);
+    html.push('<p class=""><span class="fw-bold">Created by: </span>' + row.created_by_name + ' on ' + row.created_on + '</p>');
+    html.push('<p class=""><span class="fw-bold">Modified by: </span>' + row.modified_by_name + ' on ' + row.modified_on + '</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};
