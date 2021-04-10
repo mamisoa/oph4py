@@ -357,36 +357,39 @@ db.define_table('post_biom',
 
 db.post_biom.laterality.requires = IS_IN_SET(('right','left'))
 
-db.define_table('pHx_origin',
+db.define_table('disease_ref',
     Field('title','string'),
+    Field('icd10','string'),
+    Field('description', 'string'),
     auth.signature)
 
 # should not reference to a worklist
 db.define_table('phistory',
     Field('id_auth_user', 'reference auth_user', required=True),
-    Field('origin', 'reference pHx_origin'),
+    Field('id_disease_ref', 'reference disease_ref'),
     Field('title','string'),
-    Field('description', 'string'),
-    Field('icd10','string'),
     Field('onset', 'date'),
     Field('ended', 'date'),
     auth.signature)
 
 db.define_table('medic_ref',
-    Field('name','string'),
+    Field('name','string', required=True),
     Field('brand','string'),
     Field('active_ingredient','string'),
     Field('dosage','string'),
     Field('form','string'),
+    Field('delivery', default='PO'),
     auth.signature,
     format='%(name)s'
 )
 
+db.medic_ref.delivery.requires = IS_IN_SET(('right','left','both','PO','local','IV','IM'))
+
 # db.medic_ref.truncate('RESTART IDENTITY CASCADE')
 
 if db(db.medic_ref.id > 1).count() == 0:
-    db.medic_ref.insert(name="DAFALGAN 1g", brand="Bristol Mayers", active_ingredient="paracetamol", dosage = "['1g']", form="pill")
-    db.medic_ref.insert(name="TOBRADEX", brand="Alcon", active_ingredient="['dexamethasone,'tobramycine']", dosage = "['1mg','3mg']", form="drop")
+    db.medic_ref.insert(name="DAFALGAN 1g", brand="Bristol Mayers", active_ingredient="paracetamol", dosage = "['1g']", form="pill", delivery="PO")
+    db.medic_ref.insert(name="TOBRADEX", brand="Alcon", active_ingredient="['dexamethasone,'tobramycine']", dosage = "['1mg','3mg']", form="drop", delivery="both")
 
 # should not reference to a worklist
 db.define_table('mx',
@@ -402,12 +405,12 @@ db.define_table('mx',
     )
 
 # todo: laterality table to custom dropdown select
-db.mx.delivery.requires = IS_IN_SET(('right','left','both','PO','local'))
+db.mx.delivery.requires = IS_IN_SET(('right','left','both','PO','local','IV','IM'))
 
 # db.mx.truncate('RESTART IDENTITY CASCADE')
 
 db.define_table('agent',
-    Field('name','string'),
+    Field('name','string', required=True),
     Field('code','string'),
     Field('description','string'),
     auth.signature)
