@@ -10,7 +10,7 @@
 [[ include 'partials/patient-bar.html' ]]
 
 <div class="container-fluid mb-3"> <!-- controller title-->
-    <div class="row text-center big-title">
+    <div class="row big-title">
         <div class="col">
             <h1><a role="button" data-bs-toggle="collapse" href=".md">Medical examination</a></h1>
         </div>
@@ -18,12 +18,12 @@
 </div>
 
 <div id="hx-container" class="container-fluid mb-3"> <!-- Hx container-->
-    <div class="row mb-3 text-center big-title">
+    <div class="row mb-3 big-title">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".history">Past history</a></h2>
         </div>
     </div>
-    <div class="row text-center history">
+    <div class="row history">
         <div class="col">
             <h3 class="big-title"><a role="button" data-bs-toggle="collapse" href=".gHx">General history</a></h3>
             <div class="row gHx">
@@ -31,27 +31,34 @@
                     <div class="row mb-3"> <!-- row medications -->
                         <div class="col">
                             <h4 class="big-title">Medications</h4>
+                            <div>
+                                <button type="button" id="btnNewUser" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mxModal">
+                                    Add medication<i class="mx-2 fas fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="row mt-3"> <!-- mx_tbl-->
                             <div class="col">
                                 <table
                                     id="mx_tbl"
                                     data-side-pagination="server"
+                                    data-toggle="table"
                                     data-pagination="true"
-                                    data-page-size="5"
+                                    data-page-size="10"
                                     data-search="false"
                                     data-query-params="queryParams"
                                     data-response-handler="responseHandler_mx"
                                     data-detail-formatter="detailFormatter_mx"
-                                    data-detail-view="true" data-detail-view-icon="true"
+                                    data-detail-view="true"
+                                    data-detail-view-icon="true"
                                     >
                                     <thead>
                                         <tr>
-                                            <th data-field="onset" data-sortable="false">Onset</th>
+                                            <th data-field="onset" data-sortable="true">Onset</th>
                                             <th data-field="ended" data-sortable="false">Ended</th>
-                                            <th data-field="medication" data-sortable="false">Medication</th>
-                                            <th data-field="brand" data-sortable="false">Brand</th>
-                                            <th data-field="frequency" data-sortable="false">Frequency</th>
+                                            <th data-field="medication" data-sortable="true">Medication</th>
+                                            <th data-field="delivery" data-sortable="false">Delivery</th>
+                                            <th data-field="frequency_h" data-sortable="false">Frequency</th>
                                             <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
                                             </th>
                                         </tr>
@@ -94,7 +101,7 @@
             </div> <!-- end div row medical surgical-->
         </div>
     </div>
-    <div class="row text-center history">
+    <div class="row history">
         <h3 class="big-title"><a role="button" data-bs-toggle="collapse" href=".oHx">Ocular history</a></h3>
         <div class="col oHx">
             <div class="row">
@@ -126,7 +133,7 @@
 </div>
 
 <div class="container-fluid mb-3">
-    <div class="row text-center big-title">
+    <div class="row big-title">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".pHx">Present History</a></h2>
         </div>
@@ -139,14 +146,14 @@
 </div>
 
 <div id="cx-container" class="container-fluid mb-3"> <!-- container clinical exams -->
-    <div class="row mb-3 text-center big-title">
+    <div class="row mb-3 big-title">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".clinical">Clinical exam</a></h2>
         </div>
     </div>
     <div class="row mb-3 clinical">
         <div class="col">
-            <div class="row text-center">
+            <div class="row">
                 <div class="col">
                     <h3 class="title-right">Right eye</h3>
                 </div>
@@ -166,7 +173,7 @@
     </div>
     <div class="row mb-3 clinical">
         <div class="col">
-            <div class="row text-center">
+            <div class="row">
                 <div class="col">
                     <h3 class="title-right">Miscellaneous</h3>
                 </div>
@@ -181,14 +188,14 @@
 </div>
 
 <div id="cc-container" class="container-fluid mb-3"> <!-- container conclusions -->
-    <div class="row mb-3 text-center big-title">
+    <div class="row mb-3 big-title">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".dx">Conclusions</a></h2>
         </div>
     </div>
     <div class="row mb-3 dx">
         <div class="col">
-            <div class="row text-center">
+            <div class="row">
                 <div class="col">
                     <h3 class="title-right">Right eye</h3>
                 </div>
@@ -208,7 +215,7 @@
     </div>
     <div class="row mb-3 dx">
         <div class="col">
-            <div class="row text-center">
+            <div class="row">
                 <div class="col">
                     <h3 class="title-right">Miscellaneous</h3>
                 </div>
@@ -223,14 +230,14 @@
 </div>
 
 <div id="x-container" class="container-fluid mb-3"> <!-- container actions -->
-    <div class="row mb-3 text-center big-title">
+    <div class="row mb-3 big-title">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".actions">Actions</a></h2>
         </div>
     </div>
     <div class="row mb-3 actions">
         <div class="col">
-            <div class="row text-center">
+            <div class="row">
                 <div class="col">
                     <h3 class="title-right">Medical Rx</h3>
                 </div>
@@ -256,7 +263,7 @@
     </div>
     <div class="row mb-3 actions">
         <div class="col">
-            <div class="row text-center">
+            <div class="row">
                 <div class="col">
                     <h3 class="title-right">Follow-up</h3>
                 </div>
@@ -271,14 +278,14 @@
 </div>
 
 <div id="bill-container" class="container-fluid mb-3"> <!-- container billing -->
-    <div class="row mb-3 text-center big-title">
+    <div class="row mb-3 big-title">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".bill">Billing</a></h2>
         </div>
     </div>
     <div class="row mb-3 bill">
         <div class="col">
-            <div class="row text-center">
+            <div class="row">
                 <div class="col">
                     <h3 class="title-right">Right eye</h3>
                 </div>
@@ -304,7 +311,7 @@
     </div>
     <div class="row mb-3 bill">
         <div class="col">
-            <div class="row text-center">
+            <div class="row">
                 <div class="col">
                     <h3 class="title-right">Recap</h3>
                 </div>
@@ -323,7 +330,7 @@
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Edit medication</h5>
+                <h5 class="modal-title">New medication</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -334,17 +341,19 @@
                                 <div class="container-fluid">
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="mxlaterality_modal" class="form-label">Side:</label>
+                                            <label for="mxdelivery_modal" class="form-label">Side:</label>
                                             <div class="input-group">
-                                                <div class="btn-group mxlaterality_modal">
-                                                    <input type="radio" id="mxlaterality_right_modal" name="laterality"
-                                                        class="btn-check" value="right" autocomplete="off">
-                                                    <label class="btn btn-outline-primary"
-                                                        for="mxlaterality_right_modal">Right</label>
-                                                    <input type="radio" id="mxlaterality_left_modal" name="laterality"
-                                                        class="btn-check" value="left" autocomplete="off">
-                                                    <label class="btn btn-outline-primary"
-                                                        for="mxlaterality_left_modal">Left</label>
+                                                <div class="btn-group mxdelivery_modal">
+                                                    <input type="radio" id="mxdelivery_right_modal" name="delivery" class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_right_modal">Right</label>
+                                                    <input type="radio" id="mxdelivery_left_modal" name="delivery" class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_left_modal">Left</label>
+                                                    <input type="radio" id="mxdelivery_both_modal" name="delivery" class="btn-check" value="both" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_both_modal">Both</label>
+                                                    <input type="radio" id="mxdelivery_po_modal" name="delivery" class="btn-check" value="PO" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_po_modal">PO</label>
+                                                    <input type="radio" id="mxdelivery_local_modal" name="delivery" class="btn-check" value="local" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_local_modal">Local</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -362,63 +371,29 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="k1_modal" class="form-label">K1:</label>
+                                            <label for="medicModal" class="form-label">Medication:</label>
+                                            <input id="medicModal" type="text" class="form-control" name="medication" autocomplete="off">
+                                            <div id="medicModalHelp" class="form-text">Enter medication name</div>
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="intake_modal" class="form-label">Intake:</label>
                                             <div class="input-group mb-3">
-                                                <button class="btn btn-outline-secondary counter_down_km1"
-                                                    type="button">-</button>
-                                                <input type="text"
-                                                    class="form-control form-control-sm k1_modal counter_km1 text-center"
-                                                    value="43.00" aria-label="K1" name="k1">
-                                                <button class="btn btn-outline-secondary counter_up_km1"
-                                                    type="button">+</button>
-                                            </div>
-                                            <label for="a1_modal" class="form-label">Axis 1:</label>
-                                            <div class="input-group mb-3">
-                                                <button class="btn btn-outline-secondary counter_down_axis1"
-                                                    type="button">-</button>
-                                                <input type="text"
-                                                    class="form-control form-control-sm a1_modal counter_axis1 text-center"
-                                                    value="180" aria-label="Axis 1" name="axis1">
-                                                <button class="btn btn-outline-secondary counter_up_axis1"
-                                                    type="button">+</button>
+                                                <button class="btn btn-outline-secondary counter_down_intake" type="button">-</button>
+                                                <input type="text" class="form-control form-control-sm intake_modal counter_intake text-center" value="1.00" aria-label="Intake" name="unit_per_intake">
+                                                <button class="btn btn-outline-secondary counter_up_intake" type="button">+</button>
                                             </div>
                                         </div>
                                         <div class="col">
-                                            <label for="k2_modal" class="form-label">K2:</label>
-                                            <div class="input-group mb-3">
-                                                <button class="btn btn-outline-secondary counter_down_km2"
-                                                    type="button">-</button>
-                                                <input type="text"
-                                                    class="form-control form-control-sm k2_modal counter_km2 text-center"
-                                                    value="43.00" aria-label="K2" name="k2">
-                                                <button class="btn btn-outline-secondary counter_up_km2"
-                                                    type="button">+</button>
-                                            </div>
-                                            <label for="a2_modal" class="form-label">Axis 2:</label>
-                                            <div class="input-group mb-3">
-                                                <button class="btn btn-outline-secondary counter_down_axis2"
-                                                    type="button">-</button>
-                                                <input type="text"
-                                                    class="form-control form-control-sm a2_modal counter_axis2 text-center"
-                                                    value="180" aria-label="Axis 2" name="axis2">
-                                                <button class="btn btn-outline-secondary counter_up_axis2"
-                                                    type="button">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col">
-                                            <label for="notekModal" class="form-label">Note:</label>
-                                            <input id="notekModal" type="text" class="form-control" name="note">
-                                            <div id="notekModal" class="form-text">Note</div>
+                                            <label for="freqModal" class="form-label">Frequency:</label>
+                                            <input id="freqModal" type="text" class="form-control" name="frequency" autocomplete="off">
+                                            <div id="freqModalHelp" class="form-text">Enter frequency</div>
                                         </div>
                                     </div>
                                 </div>
-                                <input id="idMx" type="text" class="visually-hidden" name="id" />
-                                <input id="idPatientKm" type="text" class="visually-hidden" name="id_auth_user" />
-                                <input id="idWlKm" type="text" class="visually-hidden" name="id_worklist" />
-                                <input id="methodMxModalSubmit" type="text" class="visually-hidden"
-                                    name="methodMxModalSubmit" value="PUT" />
+                                <input id="idMx" type="text" class="visually-hidden" name="id_medic_ref" />
+                                <input id="idMxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idPatientRx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodMxModalSubmit" type="text" class="visually-hidden" name="methodMxModalSubmit" value="POST" />
                                 <input id="btnMxModalSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -448,6 +423,8 @@ const userId = [[ = userId ]]
 <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
+<!-- https://bootstrap-autocomplete.readthedocs.io/en/latest/ -->
+<script src="https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@master/dist/latest/bootstrap-autocomplete.min.js"></script> 
 <script src="js/useful.js"></script>
 <script src="js/patient-bar.js"></script>
 <script src="js/md_bt.js"></script>
@@ -457,11 +434,13 @@ const userId = [[ = userId ]]
 const btnArr = [];
 
 // init tables
-const API_MX = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 const API_MD = HOSTURL + "/myapp/api/md?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_AUTODICT = HOSTURL + "/myapp/api/auto_dict?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&keywd.eq="; // add keywd parameter & keyoptions eg 'frequency&keyoptions.contains=...'
+const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
+const API_MEDICATIONS = HOSTURL + "/myapp/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
-var $mx = $('#mx_tbl').bootstrapTable({
-    url: API_MX
+var $mx_tbl = $('#mx_tbl').bootstrapTable({
+    url: API_MXUSER
 });
 
 

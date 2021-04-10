@@ -69,41 +69,41 @@
 <!-- bootstrap ok for auth_user table -->
 <div class="container-fluid"> <!-- #table list -->
     <div class="row">
-      <div class="col-md-12 mt-3">
-        <div>
-            <h2><span class=""><i class="fas [[=class_icon]]"></i> [[=group]]s<span></h2>
-            <div id="toolbar">
-                <button type="button" id="btnNewUser" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#newUserModal">
-                    New [[=group]]
-                </button>
+        <div class="col-md-12 mt-3">
+            <div>
+                <h2><span class=""><i class="fas [[=class_icon]]"></i> [[=group]]s<span></h2>
+                <div id="toolbar">
+                    <button type="button" id="btnNewUser" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#newUserModal">
+                        New [[=group]]
+                    </button>
+                </div>
             </div>
+            <table id="table"
+                data-toolbar="#toolbar"
+                data-id-field="id"
+                data-toggle="table"
+                data-side-pagination="server"
+                data-show-refresh="true"
+                data-pagination="true"
+                data-page-size="10"
+                data-show-columns="true"
+                data-search="true"
+                data-search-accent-neutralise="true"
+                data-visible-search="false"
+                data-data-field="items"
+                data-query-params="queryParams"
+                data-total-field="count"
+                >
+                <thead class="thead-dark">
+                    <th data-field="last_name" data-sortable="true">Last name:</th>
+                    <th data-field="first_name" data-title="First name" data-sortable="true">First name:</th>
+                    <th data-field="gender.sex" data-searchable= "true" data-sortable="true">Gender:</th>
+                    <th data-field="dob" data-sortable="true">Date of birth:</th>
+                    <th data-field="age" data-formatter="ageFormatter" data-sortable="false">Age:</th>
+                    <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                </thead>
+            </table>
         </div>
-        <table id="table"
-            data-toolbar="#toolbar"
-            data-id-field="id"
-            data-toggle="table"
-            data-side-pagination="server"
-            data-show-refresh="true"
-            data-pagination="true"
-            data-page-size="10"
-            data-show-columns="true"
-            data-search="true"
-            data-search-accent-neutralise="true"
-            data-visible-search="false"
-            data-data-field="items"
-            data-query-params="queryParams"
-            data-total-field="count"
-            >
-            <thead class="thead-dark">
-                <th data-field="last_name" data-sortable="true">Last name:</th>
-                <th data-field="first_name" data-title="First name" data-sortable="true">First name:</th>
-                <th data-field="gender.sex" data-searchable= "true" data-sortable="true">Gender:</th>
-                <th data-field="dob" data-sortable="true">Date of birth:</th>
-                <th data-field="age" data-formatter="ageFormatter" data-sortable="false">Age:</th>
-                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
-            </thead>
-        </table>
-      </div>
     </div> <!-- end row -->
 </div> <!-- end container fluid -->
 
