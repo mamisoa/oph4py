@@ -1,0 +1,149 @@
+[[extend "baseof.html"]]
+
+[[ block page_head]]
+<style>
+    .table td {
+        text-align: center;
+    }
+    .table th {
+        text-align: center;
+    }
+</style>
+<link href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css" rel="stylesheet">
+[[ end ]]
+
+[[ block left_nav ]]
+[[ include 'partials/nav-test.html' ]]
+[[ end]]
+
+<!-- bootstrap ok for table -->
+<div class="container-fluid"> <!-- #table list -->
+    <div class="row">
+      <div class="col-md-12 mt-3">
+        <div>
+            <div id="toolbar">
+                <button type="button" id="btnNewDisease" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#diseaseModal">
+                    New agent
+                </button>
+            </div>
+        </div>
+        <table id="diseases_tbl"
+            data-toolbar="#toolbar"
+            data-id-field="id"
+            data-toggle="table"
+            data-side-pagination="server"
+            data-show-refresh="true"
+            data-pagination="true"
+            data-page-size="50"
+            data-show-columns="true"
+            data-search="true"
+            data-search-accent-neutralise="true"
+            data-visible-search="false"
+            data-data-field="items"
+            data-query-params="queryParams"
+            data-total-field="count"
+            >
+            <thead class="thead-dark">
+                <th data-field="id" data-sortable="true">ID</th>
+                <th data-field="title" data-sortable="true">Title:</th>
+                <th data-field="category" data-sortable="true">Category:</th>
+                <th data-field="icd10" data-sortable="false">ICD10:</th>
+                <th data-field="description" data-sortable="false">Description:</th>
+                <th data-field="operate" data-formatter="operateFormatter_disease" data-events="operateEvents_disease">Action</th>
+            </thead>
+        </table>
+      </div>
+    </div> <!-- end row -->
+</div> <!-- end container fluid -->
+
+<!-- Modal diseaseModal -->
+<div class="modal fade" id="diseaseModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New disease</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="diseaseFormModal" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="category_modal" class="form-label">Category:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group category_modal">
+                                                    <input type="radio" id="category_medical_modal" name="category" class="btn-check" value="medical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="category_medical_modal">Medical</label>
+                                                    <input type="radio" id="category_surgical_modal" name="category" class="btn-check" value="surgical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="category_surgical_modal">Surgical</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="titleModal" class="form-label">Title:</label>
+                                            <input id="titleModal" type="text" class="form-control" name="title" autocomplete="off">
+                                            <div id="titleModalHelp" class="form-text">Enter disease title</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="icd10Modal" class="form-label">ICD-10:</label>
+                                            <input id="icd10Modal" type="text" class="form-control" name="icd10" autocomplete="off">
+                                            <div id="icd10ModalHelp" class="form-text">Enter ICD-10 code</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="descModal" class="form-label">Description:</label>
+                                            <input id="descModal" type="text" class="form-control" name="description" autocomplete="off">
+                                            <div id="descModalHelp" class="form-text">Description</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idDiseaseRow" type="text" class="visually-hidden" name="id" />
+                                <input id="methodDiseaseModalSubmit" type="text" class="visually-hidden" name="methodDiseaseModalSubmit" value="POST" />
+                                <input id="btnDiseaseModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="diseaseModalSubmit" for="btnDiseaseModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+[[ block js_scripts]]
+
+<script type="text/javascript">
+// Global variables
+const HOSTURL = 'http://localhost:8000';
+</script>
+
+<!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
+<!-- <script src="js/bootstrap-table/bootstrap-table.js"></script> -->
+<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
+<!-- https://bootstrap-autocomplete.readthedocs.io/en/latest/ -->
+<script src="js/useful.js"></script>
+<script src="js/diseases-bt.js"></script>
+<script type="text/javascript">
+
+// init tables
+const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+
+var $diseases_tbl = $('#diseases_tbl').bootstrapTable({
+    url: API_DISEASES
+});
+
+// Fires after the table body is rendered and available in the DOM, the parameters contain data
+$('#diseases_tbl').on('post-body.bs.table', function () {
+
+});
+
+</script>
+<script src="js/diseases.js"></script>
+[[ end ]]

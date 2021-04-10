@@ -1,5 +1,5 @@
 // refresh tables
-const tablesArr = ['#agents_tbl'];
+const tablesArr = ['#diseases_tbl'];
 refreshTables(tablesArr);
 
 function delItem (id,table,desc) {
@@ -27,21 +27,21 @@ function delItem (id,table,desc) {
     });
 };
 
-$('#agentsFormModal').submit(function(e){
+$('#diseaseFormModal').submit(function(e){
     e.preventDefault();
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
-    let req = dataObj['methodAgentsModalSubmit'];
+    let req = dataObj['methodDiseaseModalSubmit'];
     if (req == 'POST') {
         delete dataObj['id'];
     } else {};
-    dataObj['name']=capitalize(dataObj['name']);
-    delete dataObj['methodAgentsModalSubmit'];
+    dataObj['title']=capitalize(dataObj['title']);
+    delete dataObj['methodDiseaseModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     console.log("dataForm",dataObj);
-    crud('agent','0',req,dataStr); 
-    $agents_tbl.bootstrapTable('refresh'); 
-    $('#agentsModal').modal('hide'); 
-    $('#agentsModal .modal-title').html('New agent');
-    document.getElementById("agentsFormModal").reset();
+    crud('disease_ref','0',req,dataStr); 
+    $diseases_tbl.bootstrapTable('refresh');
+    $('#diseaseModal').modal('hide'); 
+    $('#diseaseModal .modal-title').html('New disease');
+    document.getElementById("diseaseFormModal").reset();
 });

@@ -359,18 +359,25 @@ db.post_biom.laterality.requires = IS_IN_SET(('right','left'))
 
 db.define_table('disease_ref',
     Field('title','string'),
+    Field('category','string'),
     Field('icd10','string'),
     Field('description', 'string'),
     auth.signature)
+
+db.disease_ref.category.requires = IS_IN_SET(('surgical','medical'))
 
 # should not reference to a worklist
 db.define_table('phistory',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_disease_ref', 'reference disease_ref'),
+    Field('site','string'),
     Field('title','string'),
+    Field('note','string'),
     Field('onset', 'date'),
     Field('ended', 'date'),
     auth.signature)
+
+db.phistory.site.requires = IS_IN_SET(('right','left','local','systemic'))
 
 db.define_table('medic_ref',
     Field('name','string', required=True),
