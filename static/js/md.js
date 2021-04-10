@@ -23,7 +23,7 @@ $('#mxModal input[name=frequency]').autoComplete({
     }
 });
 
-// frequency autocomplete
+// medication autocomplete
 $('#mxModal input[name=medication]').autoComplete({
     bootstrapVersion: '4',
     minLength: '1',
@@ -45,6 +45,28 @@ $('#mxModal input[name=medication]').autoComplete({
     }
 });
 
+// agent autocomplete
+$('#axModal input[name=agent]').autoComplete({
+    bootstrapVersion: '4',
+    minLength: '1',
+    resolverSettings: {
+        url: API_AGENTS,
+        queryKey: 'name.contains'
+    },
+    events: {
+        searchPost: function(res) {
+            return res.items;
+        }   
+    },
+    formatResult: function(item) {
+        console.log(item.id);
+        $('#axModal input[name=id_agent]').val(item.id);
+        return {
+            text: item.name
+        }
+    }
+});
+
 $('#mxFormModal').submit(function(e){
     e.preventDefault();
     let dataStr = $(this).serializeJSON();
@@ -59,6 +81,22 @@ $('#mxFormModal').submit(function(e){
     crud('mx','0',req,dataStr);
     $mx_tbl.bootstrapTable('refresh');
     $('#mxModal').modal('hide');
+});
+
+$('#axFormModal').submit(function(e){
+    e.preventDefault();
+    let dataStr = $(this).serializeJSON();
+    let dataObj = JSON.parse(dataStr);
+    let req = dataObj['methodAxModalSubmit'];
+    if (req == 'POST') {
+        delete dataObj['id'];
+    } else {};
+    delete dataObj['methodAxModalSubmit'];
+    dataStr= JSON.stringify(dataObj);
+    console.log("dataForm",dataObj);
+    crud('allergy','0',req,dataStr); 
+    $ax_tbl.bootstrapTable('refresh'); 
+    $('#axModal').modal('hide'); 
 });
 
 function delItem (id,table,desc) {

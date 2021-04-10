@@ -40,7 +40,7 @@ function responseHandler_ax(res) { // used if data-response-handler="responseHan
             'id_agent': list[i]['agentRef.id'],
             'agent_from_id': list[i]['agentRef.name'],
             'agent': list[i]['agent'],
-            'typ': list[i]['type'],
+            'typ': list[i]['typ'],
             'onset': list[i].onset,
             'ended': list[i].ended,
             'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
@@ -148,7 +148,7 @@ window.operateEvents_ax = {
     },
     'click .remove': function (e, value, row, index) {
         console.log('You click action DELETE on row: ' + JSON.stringify(row));
-        delItem(row.id, 'ax', 'allergy');
+        delItem(row.id, 'allergy', 'allergy');
     }
 };
 
@@ -199,4 +199,11 @@ function detailFormatter_ax(index, row) {
     html.push('</div>');
     html.push('</div></div>');
     return html.join('');
+};
+
+function rowStyle_ax(row,value) {
+    let statusColor = {'atopy':'lightblue', 'intolerance':'papayawhip', 'allergy':'#ff9999'};
+    return { 
+                css: { 'background-color': statusColor[row.typ] }
+            };
 };

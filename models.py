@@ -413,9 +413,13 @@ db.define_table('agent',
     auth.signature)
 # todo: reference to substance id -> get warning with interactions
 
+#db.agent.truncate('RESTART IDENTITY CASCADE')
+
 if db(db.agent.id > 1).count() == 0:
     db.agent.insert(name="Dust", code="dustC66", description="dust allergy")
     db.agent.insert(name="Penicilline", code="penC66", description="penicillin allergy")
+    db.agent.insert(name="NSAID", code="nsaidC66", description="NSAID allergy")
+    db.agent.insert(name="Bactrim", code="bactrimC66", description="Bactrim allergy")
 
 db.define_table('allergy',
     Field('id_auth_user', 'reference auth_user', required=True),
