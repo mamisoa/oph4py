@@ -324,21 +324,22 @@
 </div>
 
 [[ block js_scripts]]
+
+<script type="text/javascript">
+// Global variables
+const HOSTURL = 'http://localhost:8000';
+const wlId = [[= wlId ]];
+</script>
+
 <!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
 <!-- <script src="js/bootstrap-table/bootstrap-table.js"></script> -->
 <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/patient-bar.js"></script>
 <script src="js/useful.js"></script>
 <script src="js/tono_bt.js"></script>
 <script type="text/javascript">
-
-const HOSTURL = 'http://localhost:8000';
-const wlId = [[= wlId ]];
-
-// timeOffset 'Europe/Brussels' GMT+2:00
-const timeOffsetInHours = 2;
-const timeOffset = 3600*timeOffsetInHours; // in sec
 
 // submit btn to disable when done
 const btnArr = ['#btnTaskDone','#btnAddTonoPachyRight','#btnAddTonoPachyLeft','#btnAddAplaRight','#btnAddAplaLeft'];

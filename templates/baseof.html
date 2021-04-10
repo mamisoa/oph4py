@@ -82,6 +82,11 @@
     <script src="js/jquery.toast.min.js"></script> <!-- jquery toast js https://github.com/kamranahmedse/jquery-toast-plugin.git -->
     <script src="js/baseof.js"></script>
     <script type="text/javascript">
+        // timeOffset 'Europe/Brussels' GMT+2:00
+        const timeOffsetInHours = 2;
+        const timeOffset = 3600*timeOffsetInHours; // in sec
     </script>
-    [[block js_scripts]]<!-- individual pages can add scripts here -->[[end]]
+    [[block js_scripts]]
+    <!-- individual pages can add scripts here -->
+    [[end]]
 </html>
