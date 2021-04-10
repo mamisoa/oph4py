@@ -9,7 +9,7 @@
 
 [[ include 'partials/patient-bar.html' ]]
 
-<div class="container-fluid mb-3">
+<div class="container-fluid mb-3"> <!-- controller title-->
     <div class="row text-center big-title">
         <div class="col">
             <h1><a role="button" data-bs-toggle="collapse" href=".md">Medical examination</a></h1>
@@ -17,7 +17,7 @@
     </div>
 </div>
 
-<div class="container-fluid mb-3">
+<div id="hx-container" class="container-fluid mb-3"> <!-- Hx container-->
     <div class="row mb-3 text-center big-title">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".history">Past history</a></h2>
@@ -28,52 +28,47 @@
             <h3 class="big-title"><a role="button" data-bs-toggle="collapse" href=".gHx">General history</a></h3>
             <div class="row gHx">
                 <div class="col">
-                    <div class="row">
+                    <div class="row mb-3"> <!-- row medications -->
                         <div class="col">
-                            <h4>Medications</h4>
+                            <h4 class="big-title">Medications</h4>
                         </div>
+                        <div class="row mt-3"> <!-- mx_tbl-->
+                            <div class="col">
+                                <table
+                                    id="mx_tbl"
+                                    data-side-pagination="server"
+                                    data-pagination="true"
+                                    data-page-size="5"
+                                    data-search="false"
+                                    data-query-params="queryParams"
+                                    data-response-handler="responseHandler_mx"
+                                    data-detail-formatter="detailFormatter_mx"
+                                    data-detail-view="true" data-detail-view-icon="true"
+                                    >
+                                    <thead>
+                                        <tr>
+                                            <th data-field="onset" data-sortable="false">Onset</th>
+                                            <th data-field="ended" data-sortable="false">Ended</th>
+                                            <th data-field="medication" data-sortable="false">Medication</th>
+                                            <th data-field="brand" data-sortable="false">Brand</th>
+                                            <th data-field="frequency" data-sortable="false">Frequency</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div> <!-- end row mx_tbl-->
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row mb-3">
                         <div class="col">
-                            <h4>Prescriptions</h4>
+                            <h4 class="big-title">Prescriptions</h4>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <h4 class="big-title">Medications</h4>
-                                </div>
-                            </div>
-                            <div class="row mt-3"> <!-- table right -->
-                                <div class="col">
-                                    <table
-                                        id="mx_tbl"
-                                        data-side-pagination="server"
-                                        data-pagination="true"
-                                        data-page-size="5"
-                                        data-search="false"
-                                        data-query-params="queryParams"
-                                        data-response-handler="responseHandler_mx"
-                                        data-detail-formatter="detailFormatter_mx"
-                                        data-detail-view="true" data-detail-view-icon="true"
-                                        >
-                                        <thead>
-                                            <tr>
-                                                <th data-field="onset" data-sortable="false">Onset</th>
-                                                <th data-field="ended" data-sortable="false">Ended</th>
-                                                <th data-field="medication" data-sortable="false">Medication</th>
-                                                <th data-field="brand" data-sortable="false">Brand</th>
-                                                <th data-field="frequency" data-sortable="false">Frequency</th>
-                                                <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias est qui maxime beatae placeat molestiae provident facere, voluptates repellendus eveniet reprehenderit recusandae esse ea perferendis aut reiciendis obcaecati voluptatibus asperiores.</p>
-                        </div>
+                    <div class="row mb-3">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias est qui maxime beatae placeat molestiae provident facere, voluptates repellendus eveniet reprehenderit recusandae esse ea perferendis aut reiciendis obcaecati voluptatibus asperiores.</p>
                     </div>
                 </div>
             </div> <!-- end div row medical surgical-->
@@ -143,7 +138,7 @@
     </div>
 </div>
 
-<div class="container-fluid mb-3">
+<div id="cx-container" class="container-fluid mb-3"> <!-- container clinical exams -->
     <div class="row mb-3 text-center big-title">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".clinical">Clinical exam</a></h2>
@@ -185,7 +180,7 @@
     </div>
 </div>
 
-<div class="container-fluid mb-3">
+<div id="cc-container" class="container-fluid mb-3"> <!-- container conclusions -->
     <div class="row mb-3 text-center big-title">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".dx">Conclusions</a></h2>
@@ -227,7 +222,7 @@
     </div>
 </div>
 
-<div class="container-fluid mb-3">
+<div id="x-container" class="container-fluid mb-3"> <!-- container actions -->
     <div class="row mb-3 text-center big-title">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".actions">Actions</a></h2>
@@ -275,7 +270,7 @@
     </div>
 </div>
 
-<div class="container-fluid mb-3">
+<div id="bill-container" class="container-fluid mb-3"> <!-- container billing -->
     <div class="row mb-3 text-center big-title">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".bill">Billing</a></h2>
@@ -323,7 +318,7 @@
     </div>
 </div>
 
-<!-- Modal kmModal -->
+<!-- Modal mxModal -->
 <div class="modal fade" id="mxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
@@ -418,24 +413,13 @@
                                             <div id="notekModal" class="form-text">Note</div>
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <div class="col">
-                                            <h4>Km= <span class="kmCalculated">43.00D</span></h4>
-                                        </div>
-                                        <div class="col">
-                                            <h4>K1= <span class="k1Calculated">7.85mm</span></h4>
-                                        </div>
-                                        <div class="col">
-                                            <h4>K1= <span class="k2Calculated">7.85mm</span></h4>
-                                        </div>
-                                    </div>
                                 </div>
-                                <input id="idKm" type="text" class="visually-hidden" name="id" />
+                                <input id="idMx" type="text" class="visually-hidden" name="id" />
                                 <input id="idPatientKm" type="text" class="visually-hidden" name="id_auth_user" />
                                 <input id="idWlKm" type="text" class="visually-hidden" name="id_worklist" />
-                                <input id="methodKmModalSubmit" type="text" class="visually-hidden"
-                                    name="methodKmModalSubmit" value="PUT" />
-                                <input id="btnKmModalSubmit" type="submit" class="visually-hidden" />
+                                <input id="methodMxModalSubmit" type="text" class="visually-hidden"
+                                    name="methodMxModalSubmit" value="PUT" />
+                                <input id="btnMxModalSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
                     </div>
@@ -443,7 +427,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="kmModalSubmit" for="btnKmModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="mxModalSubmit" for="btnMxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>
