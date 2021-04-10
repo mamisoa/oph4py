@@ -176,6 +176,15 @@ def allergy(rec_id="1"):
     user = auth.get_user()
     return locals()
 
+## manage diseases
+
+@action('manage/diseases')
+@action('manage/diseases/<rec_id>')
+@action.uses('manage/diseases.html', session, auth, db)
+def diseases(rec_id="1"):
+    user = auth.get_user()
+    return locals()
+
 ## manage_db
 
 ## import users 

@@ -40,7 +40,9 @@ $('#medicFormModal').submit(function(e){
     console.log("dataForm",dataObj);
     crud('medic_ref','0',req,dataStr); 
     $medic_tbl.bootstrapTable('refresh'); 
-    $('#medicModal').modal('hide'); 
+    $('#medicModal').modal('hide');
+    $('#medicModal .modal-title').html('New medication');
+    document.getElementById("medicFormModal").reset(); 
 });
 
 function setCounter (id_count, count_class,step, min, max) {
