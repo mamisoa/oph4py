@@ -158,6 +158,24 @@ def worklist():
         modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
     return locals()
 
+## manage medic_ref
+
+@action('manage/medications')
+@action('manage/medications/<rec_id>')
+@action.uses('manage/medications.html', session, auth, db)
+def medications(rec_id="1"):
+    user = auth.get_user()
+    return locals()
+
+## manage allergic agents
+
+@action('manage/allergy')
+@action('manage/allergy/<rec_id>')
+@action.uses('manage/allergy.html', session, auth, db)
+def allergy(rec_id="1"):
+    user = auth.get_user()
+    return locals()
+
 ## manage_db
 
 ## import users 

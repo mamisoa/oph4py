@@ -33,12 +33,16 @@ $('#mxModal input[name=medication]').autoComplete({
     },
     events: {
         searchPost: function(res) {
+            if (res.count == 0) {
+                $('#mxModal input[name=id_medic_ref]').val('');
+            }
             return res.items;
         }   
     },
     formatResult: function(item) {
         console.log(item.id);
         $('#mxModal input[name=id_medic_ref]').val(item.id);
+        $('#mxModal input[name=delivery]').val([item.delivery]);
         return {
             text: item.name
         }
@@ -55,11 +59,13 @@ $('#axModal input[name=agent]').autoComplete({
     },
     events: {
         searchPost: function(res) {
+            if (res.count == 0) {
+                $('#axModal input[name=id_agent]').val('');
+            }
             return res.items;
         }   
     },
     formatResult: function(item) {
-        console.log(item.id);
         $('#axModal input[name=id_agent]').val(item.id);
         return {
             text: item.name
@@ -75,9 +81,17 @@ $('#mxFormModal').submit(function(e){
     if (req == 'POST') {
         delete dataObj['id'];
     } else {};
+    dataObj['medication']=capitalize(dataObj['medication']);
     delete dataObj['methodMxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     console.log("dataForm",dataObj);
+    if (dataObj['id_medic_ref'] == "") {
+        let newMedicObj = {};
+        newMedicObj['name']=dataObj['medication'];
+        newMedicObj['delivery']=dataObj['delivery'];
+        newMedicStr = JSON.stringify(newMedicObj);
+        crud('medic_ref','0','POST',newMedicStr);
+    };
     crud('mx','0',req,dataStr);
     $mx_tbl.bootstrapTable('refresh');
     $('#mxModal').modal('hide');
@@ -91,9 +105,16 @@ $('#axFormModal').submit(function(e){
     if (req == 'POST') {
         delete dataObj['id'];
     } else {};
+    dataObj['agent']=capitalize(dataObj['agent']);
     delete dataObj['methodAxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     console.log("dataForm",dataObj);
+    if (dataObj['id_agent'] == "") {
+        let newMedicObj = {};
+        newMedicObj['name']=dataObj['agent'];
+        newMedicStr = JSON.stringify(newMedicObj);
+        crud('agent','0','POST',newMedicStr);
+    };    
     crud('allergy','0',req,dataStr); 
     $ax_tbl.bootstrapTable('refresh'); 
     $('#axModal').modal('hide'); 
@@ -123,3 +144,22 @@ function delItem (id,table,desc) {
         }
     });
 };
+
+// set intake counter
+function setCounter (id_count, count_class,step, min, max) {
+    $(id_count+' .btn.counter_down_'+count_class).click(function() {
+        value = parseFloat($(id_count+' input.counter_'+count_class).val());
+        if (value >= (min+step)) {
+        $(id_count+' input.counter_'+count_class).val(value-step);
+        } else {};
+    });
+    
+    $(id_count+' .btn.counter_up_'+count_class).click(function() {
+        value = parseFloat($(id_count+' input.counter_'+count_class).val());
+        if (value <= (max-step)) {
+        $(id_count+' input.counter_'+count_class).val(value+step);
+        } else {};
+    });
+};
+
+setCounter('#mxFormModal', 'intake', 0.25,0.25,100);
