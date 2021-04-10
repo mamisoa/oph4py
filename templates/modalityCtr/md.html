@@ -90,6 +90,7 @@
                                     data-page-size="10"
                                     data-search="false"
                                     data-query-params="queryParams"
+                                    data-row-style="rowStyle_ax"
                                     data-response-handler="responseHandler_ax"
                                     data-detail-formatter="detailFormatter_ax"
                                     data-detail-view="true"
@@ -458,7 +459,7 @@
                                             <label for="typ_modal" class="form-label">Type:</label>
                                             <div class="input-group">
                                                 <div class="btn-group typ_modal">
-                                                    <input type="radio" id="type_right_modal" name="typ" class="btn-check" value="allergy" autocomplete="off">
+                                                    <input type="radio" id="typ_allergy_modal" name="typ" class="btn-check" value="allergy" autocomplete="off">
                                                     <label class="btn btn-outline-primary" for="typ_allergy_modal">Allergy</label>
                                                     <input type="radio" id="typ_atopy_modal" name="typ" class="btn-check" value="atopy" autocomplete="off">
                                                     <label class="btn btn-outline-primary" for="typ_atopy_modal">Atopy</label>
@@ -536,6 +537,7 @@ const API_AUTODICT = HOSTURL + "/myapp/api/auto_dict?@lookup=mod!:modified_by[id
 const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 const API_MEDICATIONS = HOSTURL + "/myapp/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
+const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 var $mx_tbl = $('#mx_tbl').bootstrapTable({
     url: API_MXUSER
