@@ -25,6 +25,7 @@ section#main {
   text-transform: uppercase;
   color: inherit; 
   text-decoration: none;
+  text-align: center;
 }
 
 .big-title a {
@@ -33,11 +34,13 @@ section#main {
 }
 
 .title-right {
+  text-align: center;
   background-color: #D5E3EE;
   text-transform: uppercase;
 }
 
 .title-left {
+  text-align: center;
   background-color: #EED9D5;
   text-transform: uppercase;
 }

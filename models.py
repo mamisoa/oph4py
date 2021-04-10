@@ -378,23 +378,32 @@ db.define_table('medic_ref',
     Field('active_ingredient','string'),
     Field('dosage','string'),
     Field('form','string'),
-    Field('unit_per_intake','string'),
     auth.signature,
     format='%(name)s'
 )
 
+# db.medic_ref.truncate('RESTART IDENTITY CASCADE')
+
 if db(db.medic_ref.id > 1).count() == 0:
-    db.medic_ref.insert(name="DAFALGAN 1g", brand="Bristol Mayers", active_ingredient="paracetamol", dosage = "1g", form="pill", unit_per_intake="1000g")
-    db.medic_ref.insert(name="TOBRADEX", brand="Alcon", active_ingredient="['dexamethasone,'tobramycine']", dosage = "['1mg','3mg']", form="drop", unit_per_intake="")
+    db.medic_ref.insert(name="DAFALGAN 1g", brand="Bristol Mayers", active_ingredient="paracetamol", dosage = "['1g']", form="pill")
+    db.medic_ref.insert(name="TOBRADEX", brand="Alcon", active_ingredient="['dexamethasone,'tobramycine']", dosage = "['1mg','3mg']", form="drop")
 
 db.define_table('mx',
-    Field('id_auth_user', 'reference auth_user', writable = False, readable = False),
+    Field('id_auth_user', 'reference auth_user'),
     Field('id_medic_ref', 'reference medic_ref'),
+    Field('medication', 'string'),
+    Field('delivery', default='PO'),
+    Field('unit_per_intake','decimal(4,2)'),
     Field('frequency','string'),
     Field('onset','date'),
-    Field('ended','date'),
+    Field('ended','date'), # add validity for Rx
     auth.signature
     )
+
+# todo: laterality table to custom dropdown select
+db.mx.delivery.requires = IS_IN_SET(('right','left','both','PO','local'))
+
+# db.mx.truncate('RESTART IDENTITY CASCADE')
 
 db.define_table('alerts',
     Field('id_auth_user', 'reference auth_user', writable = False, readable = False),
@@ -409,3 +418,22 @@ db.define_table('alerts',
     )
 
 db.alerts.typ.requires=IS_IN_SET(['allergy','intolerance', 'atopy'])
+
+db.define_table('auto_dict',
+    Field('keywd', 'string'),
+    Field('keyoption','string'),
+    Field('keysynonym', 'string'),
+    Field('keyvalue', 'string'),
+    auth.signature)
+
+# db.auto_dict.truncate('RESTART IDENTITY CASCADE')
+
+if db(db.auto_dict.id > 1).count() == 0:
+    db.auto_dict.insert(keywd="frequency", keyoption = "qd")
+    db.auto_dict.insert(keywd="frequency", keyoption = "bid")
+    db.auto_dict.insert(keywd="frequency", keyoption = "tid")
+    db.auto_dict.insert(keywd="frequency", keyoption = "qid")
+    db.auto_dict.insert(keywd="frequency", keyoption = "1x/j")
+    db.auto_dict.insert(keywd="frequency", keyoption = "2x/j")
+    db.auto_dict.insert(keywd="frequency", keyoption = "3x/j")
+    db.auto_dict.insert(keywd="frequency", keyoption = "4x/j")

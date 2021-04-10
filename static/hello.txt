@@ -2,7 +2,8 @@ Hello Mamisoa
 flatpickr
 bootstrap-table
 bootbox (easy modal)
-
+<!-- https://bootstrap-autocomplete.readthedocs.io/en/latest/ -->
+<script src="https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@master/dist/latest/bootstrap-autocomplete.min.js"></script> 
 
 
 @staticmethod
@@ -61,3 +62,8 @@ api reponses
     "status": "error",
     "timestamp": "2021-03-07T12:34:49.076925"
 }
+
+autocomplete tables
+word <-> ['option1', 'option2' ... 'optionn']
+eg
+frequency <-> ['qd','bid','qid']
