@@ -30,6 +30,33 @@ function responseHandler_mx(res) { // used if data-response-handler="responseHan
     };
 };
 
+function responseHandler_ax(res) { // used if data-response-handler="responseHandler_wl"
+    let list = res.items;
+    let display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'id_auth_user': list[i].id_auth_user,
+            'id_agent': list[i]['agentRef.id'],
+            'agent_from_id': list[i]['agentRef.name'],
+            'agent': list[i]['agent'],
+            'typ': list[i]['type'],
+            'onset': list[i].onset,
+            'ended': list[i].ended,
+            'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
+            'modified_by': list[i]['mod.id'],
+            'modified_on': list[i]['modified_on'],
+            'created_by': list[i]['creator.id'],
+            'created_by_name': list[i]['creator.last_name'] + ' ' + list[i]['creator.first_name'],
+            'created_on': list[i]['created_on']
+        });
+    });
+    return {
+        rows: display,
+        total: res.count,
+    };
+};
+
 var toggle ='';
 function queryParams(params) {
     let s = '';
@@ -40,11 +67,19 @@ function queryParams(params) {
         s =="" ? s += "@limit=" + params.limit: s += "&@limit=" + params.limit
     }
     if (params.sort != undefined) {
-        if (params.sort == "onset") {
-            params.sort = "onset";
-        }
-        if (params.sort == "medication") {
-            params.sort = "medication";
+        switch (params.sort) {
+            case "onset":
+                params.sort = "onset";
+                break;
+            case "medication":
+                params.sort = "medication";
+                break;
+            case "typ":
+                params.sort = "typ";
+                break;
+            case "agent":
+                params.sort = "agent";
+                break;
         }
         if (toggle=="") {
             s += "&@order="+params.sort;
@@ -79,12 +114,41 @@ window.operateEvents_mx = {
         $('#mxFormModal [name=frequency]').val(row.frequency);
         $('#mxFormModal [name=medication]').val(row.medication);
         $('#mxFormModal [name=methodMxModalSubmit]').val('PUT');
-        $('#mxModal .modal-title').val('Edit medication #'+row.id);
+        $('#mxModal .modal-title').html('Edit allergy #'+row.id);
         $('#mxModal').modal('show');
     },
     'click .remove': function (e, value, row, index) {
         console.log('You click action DELETE on row: ' + JSON.stringify(row));
         delItem(row.id, 'mx', 'medication');
+    }
+};
+
+function operateFormatter_ax(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="edit" href="javascript:void(0)" title="Edit allergy"><i class="fas fa-edit"></i></a>');
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete allergy"><i class="fas fa-trash-alt"></i></a>');
+    html.push('</div>');
+    return html.join('');
+};
+
+window.operateEvents_ax = {
+    'click .edit': function (e, value, row, index) {
+        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        document.getElementById("axFormModal").reset();
+        $('#axFormModal [name=id]').val(row.id); 
+        $('#axFormModal [name=id_agent]').val(row.id_agent);
+        $('#axFormModal [name=id_auth_user]').val(row.id_auth_user);
+        $('#axFormModal [name=onset]').val(row.onset);
+        $('#axFormModal [name=ended]').val(row.ended);
+        $('#axFormModal [name=typ]').val([row.typ]);
+        $('#axFormModal [name=agent]').val(row.agent);
+        $('#axFormModal [name=methodAxModalSubmit]').val('PUT');
+        $('#axModal .modal-title').html('Edit allergy #'+row.id);
+        $('#axModal').modal('show');
+    },
+    'click .remove': function (e, value, row, index) {
+        console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        delItem(row.id, 'ax', 'allergy');
     }
 };
 
@@ -106,6 +170,25 @@ function detailFormatter_mx(index, row) {
     html.push('</div>');
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">Delivery: </span>' + row.delivery + '</p>');
+    html.push('<p class=""><span class="fw-bold">Onset: </span>' + row.onset + '</p>');
+    html.push('<p class=""><span class="fw-bold">Ended: </span>' + row.ended + '</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>' + row.id);
+    html.push('<p class=""><span class="fw-bold">Created by: </span>' + row.created_by_name + ' on ' + row.created_on + '</p>');
+    html.push('<p class=""><span class="fw-bold">Modified by: </span>' + row.modified_by_name + ' on ' + row.modified_on + '</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};
+
+function detailFormatter_ax(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Type: </span>' + row.typ + '</p>');
+    html.push('<p class=""><span class="fw-bold">Agent: </span>' + row.agent + '</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">Onset: </span>' + row.onset + '</p>');
     html.push('<p class=""><span class="fw-bold">Ended: </span>' + row.ended + '</p>');
     html.push('</div>');

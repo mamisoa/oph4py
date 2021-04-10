@@ -388,15 +388,16 @@ if db(db.medic_ref.id > 1).count() == 0:
     db.medic_ref.insert(name="DAFALGAN 1g", brand="Bristol Mayers", active_ingredient="paracetamol", dosage = "['1g']", form="pill")
     db.medic_ref.insert(name="TOBRADEX", brand="Alcon", active_ingredient="['dexamethasone,'tobramycine']", dosage = "['1mg','3mg']", form="drop")
 
+# should not reference to a worklist
 db.define_table('mx',
-    Field('id_auth_user', 'reference auth_user'),
+    Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_medic_ref', 'reference medic_ref'),
     Field('medication', 'string'),
     Field('delivery', default='PO'),
     Field('unit_per_intake','decimal(4,2)'),
     Field('frequency','string'),
     Field('onset','date'),
-    Field('ended','date'), # add validity for Rx
+    Field('ended','date'), # add validity for prescription
     auth.signature
     )
 
@@ -405,19 +406,28 @@ db.mx.delivery.requires = IS_IN_SET(('right','left','both','PO','local'))
 
 # db.mx.truncate('RESTART IDENTITY CASCADE')
 
-db.define_table('alerts',
-    Field('id_auth_user', 'reference auth_user', writable = False, readable = False),
-    Field('timestamp', 'datetime', required=True),
-    Field('typ','string'),
-    Field('agent','string'),
+db.define_table('agent',
+    Field('name','string'),
+    Field('code','string'),
     Field('description','string'),
-    Field('agent_id','string'),
-    Field('description_id','string'),
+    auth.signature)
+# todo: reference to substance id -> get warning with interactions
+
+if db(db.agent.id > 1).count() == 0:
+    db.agent.insert(name="Dust", code="dustC66", description="dust allergy")
+    db.agent.insert(name="Penicilline", code="penC66", description="penicillin allergy")
+
+db.define_table('allergy',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_agent','reference agent'),
+    Field('typ','string', required=True),
+    Field('agent','string', required=True),
     Field('onset','date'),
+    Field('ended','date'),
     auth.signature
     )
 
-db.alerts.typ.requires=IS_IN_SET(['allergy','intolerance', 'atopy'])
+db.allergy.typ.requires=IS_IN_SET(('allergy','intolerance', 'atopy'))
 
 db.define_table('auto_dict',
     Field('keywd', 'string'),
