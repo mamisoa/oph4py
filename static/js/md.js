@@ -1,5 +1,5 @@
 // refresh tables
-const tablesArr = ['#mx_tbl','#ax_tbl'];
+const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl'];
 refreshTables(tablesArr);
 
 // frequency autocomplete

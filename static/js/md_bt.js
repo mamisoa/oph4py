@@ -57,6 +57,35 @@ function responseHandler_ax(res) { // used if data-response-handler="responseHan
     };
 };
 
+function responseHandler_msHx(res) { // used if data-response-handler="responseHandler_wl"
+    let list = res.items;
+    let display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'id_auth_user': list[i].id_auth_user,
+            'id_disease_ref': list[i]['disease.id'],
+            'disease_from_id': list[i]['disease.title'],
+            'title': list[i]['title'],
+            'site': list[i]['site'],
+            'note': list[i]['note'],
+            'onset': list[i].onset,
+            'ended': list[i].ended,
+            'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
+            'modified_by': list[i]['mod.id'],
+            'modified_on': list[i]['modified_on'],
+            'created_by': list[i]['creator.id'],
+            'created_by_name': list[i]['creator.last_name'] + ' ' + list[i]['creator.first_name'],
+            'created_on': list[i]['created_on']
+        });
+    });
+    return {
+        rows: display,
+        total: res.count,
+    };
+};
+
+
 var toggle ='';
 function queryParams(params) {
     let s = '';
@@ -80,6 +109,8 @@ function queryParams(params) {
             case "agent":
                 params.sort = "agent";
                 break;
+            case "title":
+                params.sort = "title";
         }
         if (toggle=="") {
             s += "&@order="+params.sort;
@@ -159,6 +190,36 @@ function checkIfNull(value, resultStrIfNull) {
         return value;
     }
 }
+
+function operateFormatter_msHx(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="edit" href="javascript:void(0)" title="Edit past history"><i class="fas fa-edit"></i></a>');
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete past history"><i class="fas fa-trash-alt"></i></a>');
+    html.push('</div>');
+    return html.join('');
+};
+
+window.operateEvents_msHx = {
+    'click .edit': function (e, value, row, index) {
+        let modalId = '#sHxFormModal';
+        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        document.getElementById(modalId).reset();
+        $(modalId+' [name=id]').val(row.id); 
+        $(modalId+' [name=onset]').val(row.onset); 
+        $(modalId+' [name=ended]').val(row.ended); 
+        $(modalId+' [name=category]').val([row.category]); 
+        $(modalId+' [name=site]').val([row.site]);
+        $(modalId+' [name=title]').val(row.title); 
+        $(modalId+' [name=note]').val(row.note); 
+        $(modalId+' [name=methodsHxModalSubmit]').val('PUT');
+        $('#sHxModal .modal-title').html('Edit allergy #'+row.id);
+        $('#sHxModal').modal('show');
+    },
+    'click .remove': function (e, value, row, index) {
+        console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        delItem(row.id, 'phistory', 'past history');
+    }
+};
 
 function detailFormatter_mx(index, row) {
     let html = ['<div class="container-fluid"><div class="row">'];
