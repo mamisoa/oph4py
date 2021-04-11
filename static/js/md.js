@@ -282,3 +282,25 @@ $('#clearCache').click(function(){
     $('#offcanvasCache .rxUl').html('');
     rxObj = [];
 });
+
+// cHx modal submit cHxFormModal
+
+$('#cHxFormModal').submit(function(e){
+    e.preventDefault();
+    let dataStr = $(this).serializeJSON();
+    let dataObj = JSON.parse(dataStr);
+    let req = dataObj['methodcHxModalSubmit'];
+    if (req == 'POST') {
+        delete dataObj['id'];
+    } else {};
+    dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
+    dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlItemObj['id']:{};
+    dataObj['description']=capitalize(dataObj['description']);
+    delete dataObj['methodcHxModalSubmit'];
+    dataStr= JSON.stringify(dataObj);
+    console.log("dataForm",dataObj);
+    crud('current_hx','0',req,dataStr);
+    $('#cHxDiv .cHx').html('<p>'+dataObj['description']+'</p>');
+    document.getElementById('cHxFormModal').reset();
+    $('#cHxModal').modal('hide'); 
+});
