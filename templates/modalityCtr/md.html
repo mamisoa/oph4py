@@ -113,122 +113,92 @@
             </div> <!-- end div row medications allergy -->
             <div class="row gHx">
                 <div class="col">
-                    <div class="row">
+                    <div class="row mb-3"> <!-- row mHx -->
                         <div class="col">
-                            <div class="row mb-3">
-                                <h4 class="big-title">Medical</h4>
-                            </div>
+                            <h4 class="big-title">Medical Hx</h4>
                             <div>
                                 <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-bs-category="medical">Add past medical history<i class="mx-2 fas fa-plus"></i>
                                 </button>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <table
-                                        id="mHx_tbl"
-                                        data-side-pagination="server"
-                                        data-toggle="table"
-                                        data-pagination="true"
-                                        data-page-size="10"
-                                        data-search="false"
-                                        data-query-params="queryParams"
-                                        data-response-handler="responseHandler_msHx"
-                                        data-detail-formatter="detailFormatter_msHx"
-                                        data-detail-view="true"
-                                        data-detail-view-icon="true"
-                                        >
-                                        <thead>
-                                            <tr>
-                                                <th data-field="onset" data-sortable="true">Onset</th>
-                                                <th data-field="ended" data-sortable="false">Ended</th>
-                                                <th data-field="title" data-sortable="true">Title</th>
-                                                <th data-field="site" data-sortable="true">Site</th>
-                                                <th data-field="note" data-sortable="true">Note</th>
-                                                <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                </div>
+                        </div>
+                        <div class="row mt-3"> <!-- mHx_tbl-->
+                            <div class="col">
+                                <table
+                                    id="mHx_tbl"
+                                    data-side-pagination="server"
+                                    data-toggle="table"
+                                    data-pagination="true"
+                                    data-page-size="10"
+                                    data-search="false"
+                                    data-query-params="queryParams"
+                                    data-response-handler="responseHandler_msHx"
+                                    data-detail-formatter="detailFormatter_msHx"
+                                    data-detail-view="true"
+                                    data-detail-view-icon="true"
+                                    >
+                                    <thead>
+                                        <tr>
+                                            <th data-field="onset" data-sortable="true">Onset</th>
+                                            <th data-field="ended" data-sortable="false">Ended</th>
+                                            <th data-field="title" data-sortable="true">Title</th>
+                                            <th data-field="site" data-sortable="true">Site</th>
+                                            <th data-field="note" data-sortable="true">Note</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
-                        </div><div class="col">
-                            <div class="row mb-3">
-                                <h4 class="big-title">Surgical</h4>
-                            </div>
+                        </div> <!-- end row mHx_tbl-->
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row mb-3">
+                        <div class="row mb-3">
+                            <h4 class="big-title">Surgical Hx</h4>
                             <div>
                                 <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-bs-category="surgical">Add past surgical history<i class="mx-2 fas fa-plus"></i>
                                 </button>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <table
-                                        id="sHx_tbl"
-                                        data-side-pagination="server"
-                                        data-toggle="table"
-                                        data-pagination="true"
-                                        data-page-size="10"
-                                        data-search="false"
-                                        data-query-params="queryParams"
-                                        data-response-handler="responseHandler_msHx"
-                                        data-detail-formatter="detailFormatter_msHx"
-                                        data-detail-view="true"
-                                        data-detail-view-icon="true"
-                                        >
-                                        <thead>
-                                            <tr>
-                                                <th data-field="onset" data-sortable="true">Onset</th>
-                                                <th data-field="ended" data-sortable="false">Ended</th>
-                                                <th data-field="title" data-sortable="true">Title</th>
-                                                <th data-field="site" data-sortable="true">Site</th>
-                                                <th data-field="note" data-sortable="true">Note</th>
-                                                <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <table
+                                    id="sHx_tbl"
+                                    data-side-pagination="server"
+                                    data-toggle="table"
+                                    data-pagination="true"
+                                    data-page-size="10"
+                                    data-search="false"
+                                    data-query-params="queryParams"
+                                    data-response-handler="responseHandler_msHx"
+                                    data-detail-formatter="detailFormatter_msHx"
+                                    data-detail-view="true"
+                                    data-detail-view-icon="true"
+                                    >
+                                    <thead>
+                                        <tr>
+                                            <th data-field="onset" data-sortable="true">Onset</th>
+                                            <th data-field="ended" data-sortable="false">Ended</th>
+                                            <th data-field="title" data-sortable="true">Title</th>
+                                            <th data-field="site" data-sortable="true">Site</th>
+                                            <th data-field="note" data-sortable="true">Note</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci quasi dolore, minus quod, expedita velit mollitia quibusdam quae iusto est commodi corrupti sed unde officia deleniti iste tempora ad rem.</p>
-                        </div>
-                        <div class="col">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias est qui maxime beatae placeat molestiae provident facere, voluptates repellendus eveniet reprehenderit recusandae esse ea perferendis aut reiciendis obcaecati voluptatibus asperiores.</p>
-                        </div>
-                    </div>
                 </div>
-            </div> <!-- end div row medical surgical-->
+            </div> <!-- end div row mHx sHx -->
         </div>
     </div>
     <div class="row history">
         <h3 class="big-title"><a role="button" data-bs-toggle="collapse" href=".oHx">Ocular history</a></h3>
         <div class="col oHx">
-            <div class="row">
-                <div class="col">
-                    <div class="row">
-                        <div class="col title-right">
-                            <h3>Right eye</h3>
-                        </div>
-                        <div class="col title-left">
-                            <h3>Left eye</h3>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col bg-right">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
-                        </div>
-                        <div class="col bg-left">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, maxime. Sequi dolores commodi cum porro veritatis rerum cumque praesentium dolore aspernatur consequuntur fugiat suscipit eaque, unde nisi fugit sapiente aut.</p>
+        </div> <!-- end oHx col-->
+    </div> <!-- end ocular Hx row-->
 </div>
 
 <div class="container-fluid mb-3">
