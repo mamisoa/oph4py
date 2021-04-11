@@ -329,10 +329,15 @@ db.rx.rx_origin.requires = IS_IN_SET(('autorx','glass','trial','cyclo','dil'))
 db.rx.laterality.requires = IS_IN_SET(('right','left'))
 db.rx.glass_type.requires = IS_IN_SET(('monofocal','progressive','bifocal','degressive','na'))
 
+db.define_table('current_hx',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist', 'reference worklist', required=True),
+    Field('description','string'),
+    auth.signature)
+
 db.define_table('ant_biom',
     Field('id_auth_user', 'reference auth_user', required=True),
-    Field('id_worklist', 'reference worklist'),
-    Field('timestamp', 'datetime', required=True),
+    Field('id_worklist', 'reference worklist', required=True),
     Field('laterality','string', required=True),
     Field('cornea','string'),
     Field('ant_chamb','string'),
@@ -345,8 +350,7 @@ db.ant_biom.laterality.requires = IS_IN_SET(('right','left'))
 
 db.define_table('post_biom',
     Field('id_auth_user', 'reference auth_user', required=True),
-    Field('id_worklist', 'reference worklist'),
-    Field('timestamp', 'datetime', required=True),
+    Field('id_worklist', 'reference worklist', required=True),
     Field('laterality','string', required=True),
     Field('vitreous','string'),
     Field('retina','string'),
@@ -356,6 +360,18 @@ db.define_table('post_biom',
     auth.signature)
 
 db.post_biom.laterality.requires = IS_IN_SET(('right','left'))
+
+db.define_table('motility',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist', 'reference worklist', required=True),
+    Field('description','string'),
+    auth.signature)
+
+db.define_table('pupils',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist', 'reference worklist', required=True),
+    Field('description','string'),
+    auth.signature)
 
 db.define_table('disease_ref',
     Field('title','string'),
