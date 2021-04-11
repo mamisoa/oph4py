@@ -115,10 +115,77 @@
                 <div class="col">
                     <div class="row">
                         <div class="col">
-                            <h4>Medical</h4>
-                        </div>
-                        <div class="col">
-                            <h4>Surgical</h4>
+                            <div class="row mb-3">
+                                <h4 class="big-title">Medical</h4>
+                            </div>
+                            <div>
+                                <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal">Add past medical history<i class="mx-2 fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <table
+                                        id="mHx_tbl"
+                                        data-side-pagination="server"
+                                        data-toggle="table"
+                                        data-pagination="true"
+                                        data-page-size="10"
+                                        data-search="false"
+                                        data-query-params="queryParams"
+                                        data-response-handler="responseHandler_msHx"
+                                        data-detail-formatter="detailFormatter_mHx"
+                                        data-detail-view="true"
+                                        data-detail-view-icon="true"
+                                        >
+                                        <thead>
+                                            <tr>
+                                                <th data-field="onset" data-sortable="true">Onset</th>
+                                                <th data-field="ended" data-sortable="false">Ended</th>
+                                                <th data-field="title" data-sortable="true">Title</th>
+                                                <th data-field="site" data-sortable="true">Site</th>
+                                                <th data-field="note" data-sortable="true">Note</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div><div class="col">
+                            <div class="row mb-3">
+                                <h4 class="big-title">Surgical</h4>
+                            </div>
+                            <div>
+                                <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal">Add past surgical history<i class="mx-2 fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <table
+                                        id="sHx_tbl"
+                                        data-side-pagination="server"
+                                        data-toggle="table"
+                                        data-pagination="true"
+                                        data-page-size="10"
+                                        data-search="false"
+                                        data-query-params="queryParams"
+                                        data-response-handler="responseHandler_msHx"
+                                        data-detail-formatter="detailFormatter_sHx"
+                                        data-detail-view="true"
+                                        data-detail-view-icon="true"
+                                        >
+                                        <thead>
+                                            <tr>
+                                                <th data-field="onset" data-sortable="true">Onset</th>
+                                                <th data-field="ended" data-sortable="false">Ended</th>
+                                                <th data-field="title" data-sortable="true">Title</th>
+                                                <th data-field="site" data-sortable="true">Site</th>
+                                                <th data-field="note" data-sortable="true">Note</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -510,6 +577,93 @@
     </div>
 </div>
 
+<!-- Modal mHxModal -->
+<div class="modal fade" id="mHxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New medical history</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="mHxFormModal" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="category_modal" class="form-label">Category:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group category_modal">
+                                                    <input type="radio" id="category_medical_modal" name="category" class="btn-check" value="medical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="category_medical_modal">Medical</label>
+                                                    <input type="radio" id="category_surgical_modal" name="category" class="btn-check" value="surgical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="category_surgical_modal">Surgical</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="site_modal" class="form-label">Site:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group site_modal">
+                                                    <input type="radio" id="site_right_modal" name="site" class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="site_right_modal">Right</label>
+                                                    <input type="radio" id="site_left_modal" name="site" class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="site_left_modal">Left</label>
+                                                    <input type="radio" id="site_local_modal" name="site" class="btn-check" value="local" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="site_local_modal">Local</label>
+                                                    <input type="radio" id="site_systemic_modal" name="site" class="btn-check" value="systemic" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="site_systemic_modal">Systemic</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="mHxOnset" class="form-label">Onset:</label>
+                                            <input id="mHxOnset" type="date" step="1" class="form-control"
+                                                name="onset">
+                                            <div id="mHxOnsetHelp" class="form-text">Adjust onset</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="mHxEnded" class="form-label">End:</label>
+                                            <input id="mHxEnded" type="date" step="1" class="form-control" name="ended">
+                                            <div id="mHxEndedHelp" class="form-text">Adjust end date</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="titleModal" class="form-label">Title:</label>
+                                            <input id="titleModal" type="text" class="form-control" name="title" autocomplete="off">
+                                            <div id="titleModalHelp" class="form-text">Enter disease title</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="noteModal" class="form-label">Note:</label>
+                                            <input id="noteModal" type="text" class="form-control" name="note" autocomplete="off">
+                                            <div id="noteModalHelp" class="form-text">Note</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idDiseaseRef" type="text" class="visually-hidden" name="id_disease_ref" />
+                                <input id="idsHxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idPatientAx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodsHxModalSubmit" type="text" class="visually-hidden" name="methodsHxModalSubmit" value="POST" />
+                                <input id="btnsHxModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="sHxModalSubmit" for="btnsHxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 [[ block js_scripts]]
 
@@ -542,6 +696,8 @@ const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,
 const API_MEDICATIONS = HOSTURL + "/myapp/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
+const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 
 var $mx_tbl = $('#mx_tbl').bootstrapTable({
     url: API_MXUSER
@@ -549,6 +705,15 @@ var $mx_tbl = $('#mx_tbl').bootstrapTable({
 
 var $ax_tbl = $('#ax_tbl').bootstrapTable({
     url: API_AXUSER
+});
+
+var $mHx_tbl = $('#mHx_tbl').bootstrapTable({
+    url: API_MHXUSER
+});
+
+
+var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
+    url: API_SHXUSER
 });
 
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
