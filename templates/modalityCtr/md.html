@@ -110,7 +110,7 @@
                         </div>
                     </div>
                 </div>
-            </div> <!-- end div row medical surgical-->
+            </div> <!-- end div row medications allergy -->
             <div class="row gHx">
                 <div class="col">
                     <div class="row">
@@ -119,7 +119,7 @@
                                 <h4 class="big-title">Medical</h4>
                             </div>
                             <div>
-                                <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal">Add past medical history<i class="mx-2 fas fa-plus"></i>
+                                <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-bs-category="medical">Add past medical history<i class="mx-2 fas fa-plus"></i>
                                 </button>
                             </div>
                             <div class="row mb-3">
@@ -133,7 +133,7 @@
                                         data-search="false"
                                         data-query-params="queryParams"
                                         data-response-handler="responseHandler_msHx"
-                                        data-detail-formatter="detailFormatter_mHx"
+                                        data-detail-formatter="detailFormatter_msHx"
                                         data-detail-view="true"
                                         data-detail-view-icon="true"
                                         >
@@ -155,7 +155,7 @@
                                 <h4 class="big-title">Surgical</h4>
                             </div>
                             <div>
-                                <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal">Add past surgical history<i class="mx-2 fas fa-plus"></i>
+                                <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-bs-category="surgical">Add past surgical history<i class="mx-2 fas fa-plus"></i>
                                 </button>
                             </div>
                             <div class="row mb-3">
@@ -169,7 +169,7 @@
                                         data-search="false"
                                         data-query-params="queryParams"
                                         data-response-handler="responseHandler_msHx"
-                                        data-detail-formatter="detailFormatter_sHx"
+                                        data-detail-formatter="detailFormatter_msHx"
                                         data-detail-view="true"
                                         data-detail-view-icon="true"
                                         >
@@ -596,25 +596,27 @@
                                             <label for="category_modal" class="form-label">Category:</label>
                                             <div class="input-group">
                                                 <div class="btn-group category_modal">
-                                                    <input type="radio" id="category_medical_modal" name="category" class="btn-check" value="medical" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="category_medical_modal">Medical</label>
-                                                    <input type="radio" id="category_surgical_modal" name="category" class="btn-check" value="surgical" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="category_surgical_modal">Surgical</label>
+                                                    <input type="radio" id="mHxcategory_medical_modal" name="category" class="btn-check" value="medical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxcategory_medical_modal">Medical</label>
+                                                    <input type="radio" id="mHxcategory_surgical_modal" name="category" class="btn-check" value="surgical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxcategory_surgical_modal">Surgical</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col">
-                                            <label for="site_modal" class="form-label">Site:</label>
+                                            <label for="mHxsite_modal" class="form-label">Site:</label>
                                             <div class="input-group">
                                                 <div class="btn-group site_modal">
-                                                    <input type="radio" id="site_right_modal" name="site" class="btn-check" value="right" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="site_right_modal">Right</label>
-                                                    <input type="radio" id="site_left_modal" name="site" class="btn-check" value="left" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="site_left_modal">Left</label>
-                                                    <input type="radio" id="site_local_modal" name="site" class="btn-check" value="local" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="site_local_modal">Local</label>
-                                                    <input type="radio" id="site_systemic_modal" name="site" class="btn-check" value="systemic" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="site_systemic_modal">Systemic</label>
+                                                    <input type="radio" id="mHxsite_right_modal" name="site" class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxsite_right_modal">Right</label>
+                                                    <input type="radio" id="mHxsite_left_modal" name="site" class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxsite_left_modal">Left</label>
+                                                    <input type="radio" id="mHxsite_both_modal" name="site" class="btn-check" value="both" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxsite_both_modal">Both</label>
+                                                    <input type="radio" id="mHxsite_local_modal" name="site" class="btn-check" value="local" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxsite_local_modal">Local</label>
+                                                    <input type="radio" id="mHxsite_systemic_modal" name="site" class="btn-check" value="systemic" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxsite_systemic_modal">Systemic</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -634,22 +636,22 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="titleModal" class="form-label">Title:</label>
-                                            <input id="titleModal" type="text" class="form-control" name="title" autocomplete="off">
-                                            <div id="titleModalHelp" class="form-text">Enter disease title</div>
+                                            <label for="mHxtitleModal" class="form-label">Title:</label>
+                                            <input id="mHxtitleModal" type="text" class="form-control" name="title" autocomplete="off">
+                                            <div id="mHxtitleModalHelp" class="form-text">Enter disease title</div>
                                         </div>
                                         <div class="col">
-                                            <label for="noteModal" class="form-label">Note:</label>
-                                            <input id="noteModal" type="text" class="form-control" name="note" autocomplete="off">
-                                            <div id="noteModalHelp" class="form-text">Note</div>
+                                            <label for="mHxnoteModal" class="form-label">Note:</label>
+                                            <input id="mHxnoteModal" type="text" class="form-control" name="note" autocomplete="off">
+                                            <div id="mHxnoteModalHelp" class="form-text">Note</div>
                                         </div>
                                     </div>
                                 </div>
                                 <input id="idDiseaseRef" type="text" class="visually-hidden" name="id_disease_ref" />
-                                <input id="idsHxRow" type="text" class="visually-hidden" name="id" />
-                                <input id="idPatientAx" type="text" class="visually-hidden" name="id_auth_user" />
-                                <input id="methodsHxModalSubmit" type="text" class="visually-hidden" name="methodsHxModalSubmit" value="POST" />
-                                <input id="btnsHxModalSubmit" type="submit" class="visually-hidden" />
+                                <input id="idmHxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idPatientmHx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodmHxModalSubmit" type="text" class="visually-hidden" name="methodmHxModalSubmit" value="POST" />
+                                <input id="btnmHxModalSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
                     </div>
@@ -657,7 +659,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="sHxModalSubmit" for="btnsHxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="mHxModalSubmit" for="btnmHxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>
@@ -698,6 +700,7 @@ const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,n
 const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
+const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 var $mx_tbl = $('#mx_tbl').bootstrapTable({
     url: API_MXUSER

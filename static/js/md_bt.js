@@ -71,6 +71,7 @@ function responseHandler_msHx(res) { // used if data-response-handler="responseH
             'note': list[i]['note'],
             'onset': list[i].onset,
             'ended': list[i].ended,
+            'category': list[i].category,
             'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
             'modified_by': list[i]['mod.id'],
             'modified_on': list[i]['modified_on'],
@@ -201,19 +202,21 @@ function operateFormatter_msHx(value, row, index) {
 
 window.operateEvents_msHx = {
     'click .edit': function (e, value, row, index) {
-        let modalId = '#sHxFormModal';
+        let modalFormId = '#mHxFormModal', modalId = '#mHxModal';
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        document.getElementById(modalId).reset();
-        $(modalId+' [name=id]').val(row.id); 
-        $(modalId+' [name=onset]').val(row.onset); 
-        $(modalId+' [name=ended]').val(row.ended); 
-        $(modalId+' [name=category]').val([row.category]); 
-        $(modalId+' [name=site]').val([row.site]);
-        $(modalId+' [name=title]').val(row.title); 
-        $(modalId+' [name=note]').val(row.note); 
-        $(modalId+' [name=methodsHxModalSubmit]').val('PUT');
-        $('#sHxModal .modal-title').html('Edit allergy #'+row.id);
-        $('#sHxModal').modal('show');
+        document.getElementById(modalFormId.split('#').join('')).reset();
+        $(modalFormId+' [name=id]').val(row.id); 
+        $(modalFormId+' [name=id_auth_user]').val(row.id_auth_user);
+        $(modalFormId+' [name=id_disease_ref]').val(row.id_disease_ref); 
+        $(modalFormId+' [name=onset]').val(row.onset); 
+        $(modalFormId+' [name=ended]').val(row.ended); 
+        $(modalFormId+' [name=category]').val([row.category]); 
+        $(modalFormId+' [name=site]').val([row.site]);
+        $(modalFormId+' [name=title]').val(row.title); 
+        $(modalFormId+' [name=note]').val(row.note); 
+        $(modalFormId+' [name=methodmHxModalSubmit]').val('PUT');
+        $(modalId+' .modal-title').html('Edit past history #'+row.id);
+        $(modalId).modal('show');
     },
     'click .remove': function (e, value, row, index) {
         console.log('You click action DELETE on row: ' + JSON.stringify(row));
