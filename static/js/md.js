@@ -1,5 +1,5 @@
 // refresh tables
-const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl'];
+const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl','#rxRight_tbl','#rxLeft_tbl'];
 refreshTables(tablesArr);
 
 // frequency autocomplete
@@ -255,3 +255,30 @@ function set_timers(timers) {
     });
     timer_id = [];
 };
+
+// update cache
+function updateCache(cacheObj) {
+    let domId = "#offcanvasCache .rxUl";
+    let html = [];
+    $.each(cacheObj, function(i){
+        console.log(cacheObj[i]);
+        html.push('<li class="list-group-item d-flex justify-content-between align-items-center">');
+        // content
+        if ((cacheObj[i]['rx_origin']=='autorx') || (cacheObj[i]['rx_origin']=='dil') || (cacheObj[i]['rx_origin']=='cyclo') || (cacheObj[i]['glass_type']=='monofocal')) {
+            html.push('<span class="badge bg-primary rounded-pill mx-1">'+capitalize(cacheObj[i]['rx_origin'])+'</span>');
+            cacheObj[i]['glass_type']=='monofocal'? html.push('<span class="badge bg-secondary rounded-pill mx-1">'+capitalize(cacheObj[i]['glass_type'])+'</span>'):{};
+            html.push(cacheObj[i]['rx_far']);
+        } else {
+            html.push('<span class="badge bg-primary rounded-pill mx-1">'+capitalize(cacheObj[i]['rx_origin'])+'</span>');
+            html.push('<span class="badge bg-secondary rounded-pill mx-1">'+capitalize(cacheObj[i]['glass_type'])+'</span>');
+            html.push(cacheObj[i]['rx_far'] + ' Add+'+cacheObj[i]['add']);
+        };
+        html.push('</li>');
+    });
+    $(domId).html(html.join(''));
+};
+// clear cache button
+$('#clearCache').click(function(){
+    $('#offcanvasCache .rxUl').html('');
+    rxObj = [];
+});
