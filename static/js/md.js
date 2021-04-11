@@ -1,5 +1,5 @@
 // refresh tables
-const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl'];
+const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl'];
 refreshTables(tablesArr);
 
 // frequency autocomplete
@@ -189,6 +189,7 @@ $('#mHxFormModal').submit(function(e){
     crud('phistory','0',req,dataStr); 
     $mHx_tbl.bootstrapTable('refresh'); 
     $sHx_tbl.bootstrapTable('refresh');
+    $oHx_tbl.bootstrapTable('refresh');
     document.getElementById('mHxFormModal').reset();
     $('#mHxModal').modal('hide'); 
 });
@@ -236,3 +237,21 @@ function setCounter (id_count, count_class,step, min, max) {
 };
 
 setCounter('#mxFormModal', 'intake', 0.25,0.25,100);
+
+// set wlItem status: done processing and counter adjustment
+// id is in the dataStr
+function setWlItemStatus (dataStr) {
+    // console.log('dataStrPut:',dataStr);
+    crud('worklist','0','PUT', dataStr);
+    $table_wl.bootstrapTable('refresh');    
+};
+
+// set timers 
+function set_timers(timers) {
+    $.each(timers, function(i){
+      $(timers[i]).timer({
+        seconds: $(timers[i]).text()
+      });
+    });
+    timer_id = [];
+};

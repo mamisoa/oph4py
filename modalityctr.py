@@ -31,7 +31,7 @@ def autorx(wlId):
     statusRxOptions = dropdownSelect(db.status_rx, db.status_rx.fields[1],'index')
     return locals()
 
-# tono controller
+# md controller
 @action('md')
 @action('modalityCtr/md/<wlId>')
 @action.uses('modalityCtr/md.html', session, auth, db)
