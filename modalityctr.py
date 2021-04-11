@@ -38,6 +38,10 @@ def autorx(wlId):
 def md(wlId):
     user = auth.get_user()
     userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    modalityDict = {}
+    rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
+    for row in rows:
+        modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
     return locals()
 
 # helloworld controller

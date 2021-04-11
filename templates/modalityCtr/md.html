@@ -267,8 +267,77 @@
                 </table>
             </div>
         </div> <!-- end row wlHx-->
-        <div class="row mb-3"> <!-- row rx-->
-
+        <div class="row mb-3 oHx"> <!-- row rx-->
+            <div class="col"> <!-- right column-->
+                <div class="row">
+                    <div class="col">
+                        <h4 class="title-right">Right rx</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col"> <!-- right table rx-->
+                        <table
+                            id="rxRight_tbl"
+                            data-side-pagination="server"
+                            data-pagination="true"
+                            data-page-size="5"
+                            data-search="false"
+                            data-query-params="queryParams"
+                            data-response-handler="responseHandler_rx"
+                            data-detail-formatter="detailFormatter_rx"
+                            data-detail-view="true"
+                            data-detail-view-icon="true"
+                            >
+                            <thead>
+                                <tr>
+                                    <th data-field="timestamp" data-sortable="true">Timestamp</th>
+                                    <th data-field="rx_origin" data-sortable="true">Type</th>
+                                    <th data-field="va_far" data-sortable="true">VA far</th>
+                                    <th data-field="rx_far" data-sortable="false">Rx far</th>
+                                    <th data-field="se_far" data-sortable="false">SE</th>
+                                    <th data-field="add" data-sortable="false">Add</th>
+                                    <th data-field="operate" data-formatter="operateFormatter_rx" data-events="operateEvents_rx">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col"> <!-- left column -->
+                <div class="row">
+                    <div class="col">
+                        <h4 class="title-left">Left rx</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col"> <!-- left table rx-->
+                        <table
+                            id="rxLeft_tbl"
+                            data-side-pagination="server"
+                            data-pagination="true"
+                            data-page-size="5"
+                            data-search="false"
+                            data-query-params="queryParams"
+                            data-response-handler="responseHandler_rx"
+                            data-detail-formatter="detailFormatter_rx"
+                            data-detail-view="true"
+                            data-detail-view-icon="true"
+                            >
+                            <thead>
+                                <tr>
+                                    <th data-field="timestamp" data-sortable="true">Timestamp</th>
+                                    <th data-field="rx_origin" data-sortable="true">Type</th>
+                                    <th data-field="va_far" data-sortable="true">VA far</th>
+                                    <th data-field="rx_far" data-sortable="false">Rx far</th>
+                                    <th data-field="se_far" data-sortable="false">SE</th>
+                                    <th data-field="add" data-sortable="false">Add</th>
+                                    <th data-field="operate" data-formatter="operateFormatter_rx" data-events="operateEvents_rx">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div> 
+                </div>
+            </div>
         </div> <!-- end row rx-->
     </div> <!-- end row oHx -->
 </div>
@@ -707,6 +776,27 @@
     </div>
 </div>
 
+<!-- cache offcanvas -->
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCache" aria-labelledby="offcanvas cache">
+    <div class="offcanvas-header">
+      <button type="button" class="btn btn-primary" id="clearCache">Clear cache</button>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <h3 class="big-title">Rx selected</h3>
+                </div>
+                <div class="row">
+                    <ul class="rxUl list-group">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end offcanvas body-->
+</div>
 
 
 [[ block js_scripts]]
@@ -718,7 +808,10 @@ const wlId = [[= wlId ]];
 const userId = [[ = userId ]]
 // for timer
 var timer_id = [];
-
+// modality controllers
+const modalityDict = [[ = XML(modalityDict) ]];
+// prescription objects
+var rxObj = [], tonoObj = [] ;
 </script>
 
 <!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
@@ -749,6 +842,8 @@ const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=
 const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?id_auth_user.id.eq='+userId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
+const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+userId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+userId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 var $mx_tbl = $('#mx_tbl').bootstrapTable({
     url: API_MXUSER
@@ -776,6 +871,14 @@ $table_wl = $('#table-wl').bootstrapTable({
     formatSearch: function () {
     return 'Procedure, modality';
     }
+});
+
+var $rxRight = $('#rxRight_tbl').bootstrapTable({
+    url: API_RXRIGHT
+});
+
+var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
+    url: API_RXLEFT
 });
 
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
