@@ -195,10 +195,82 @@
     </div>
     <div class="row history">
         <h3 class="big-title"><a role="button" data-bs-toggle="collapse" href=".oHx">Ocular history</a></h3>
-        <div class="col oHx">
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, maxime. Sequi dolores commodi cum porro veritatis rerum cumque praesentium dolore aspernatur consequuntur fugiat suscipit eaque, unde nisi fugit sapiente aut.</p>
-        </div> <!-- end oHx col-->
-    </div> <!-- end ocular Hx row-->
+        <div class="row mb-3"> <!-- row oHx-->
+            <div class="col oHx">
+                <table
+                    id="oHx_tbl"
+                    data-side-pagination="server"
+                    data-toggle="table"
+                    data-pagination="true"
+                    data-page-size="10"
+                    data-search="false"
+                    data-query-params="queryParams"
+                    data-response-handler="responseHandler_msHx"
+                    data-detail-formatter="detailFormatter_msHx"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    >
+                    <thead>
+                        <tr>
+                            <th data-field="onset" data-sortable="true">Onset</th>
+                            <th data-field="ended" data-sortable="false">Ended</th>
+                            <th data-field="title" data-sortable="true">Title</th>
+                            <th data-field="site" data-sortable="true">Side</th>
+                            <th data-field="note" data-sortable="true">Note</th>
+                            <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div> <!-- end oHx col-->
+        </div> <!-- end oHx row-->
+        <div class="row mb-3 oHx"> <!-- row wlHx-->
+            <div class="col">
+                <div id="toolbar-wl">
+                    <h4><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h4>
+                </div>
+                <table id="table-wl"
+                    data-toolbar-align="right"
+                    data-toolbar="#toolbar-wl"
+                    data-id-field="id"
+                    data-toggle="table"
+                    data-side-pagination="server"
+                    data-show-refresh="true"
+                    data-pagination="true"
+                    data-page-size="5"
+                    data-show-columns="true"
+                    data-search="true"
+                    data-search-accent-neutralise="true"
+                    data-visible-search="false"
+                    data-query-params="queryParams_wl"
+                    data-response-handler="responseHandler_wl"
+                    data-row-style="rowStyle_wl"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    data-detail-formatter="detailFormatter_wl"
+                    data-detail-view-by-click="false"
+                    >
+                    <thead class="thead-dark">
+                        <th data-field="id" data-sortable="true">ID</th>
+                        <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
+                        <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">Receving facility:</th>
+                        <th data-field="procedure" data-searchable= "true" data-sortable="true">Procedure:</th>
+                        <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
+                        <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
+                        <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
+                        <th data-field="laterality" data-sortable="false" data-searchable= "false">Laterality:</th>
+                        <th data-field="requested_time" data-sortable="true" data-searchable= "true">Timeslot:</th>
+                        <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
+                        <th data-field="counter" data-searchable= "true" data-sortable="false" data-formatter="counterFormatter_wl">Counter:</th>
+                        <th data-field="warning" data-searchable= "true" data-sortable="false">Warning:</th>
+                        <th data-field="operate" data-formatter="operateFormatter_wl" data-events="operateEvents_wl">Action</th>
+                    </thead>
+                </table>
+            </div>
+        </div> <!-- end row wlHx-->
+        <div class="row mb-3"> <!-- row rx-->
+
+        </div> <!-- end row rx-->
+    </div> <!-- end row oHx -->
 </div>
 
 <div class="container-fluid mb-3">
@@ -644,6 +716,9 @@
 const HOSTURL = 'http://localhost:8000';
 const wlId = [[= wlId ]];
 const userId = [[ = userId ]]
+// for timer
+var timer_id = [];
+
 </script>
 
 <!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
@@ -653,6 +728,7 @@ const userId = [[ = userId ]]
 <script src="js/jquery.serialize-object.min.js"></script>
 <!-- https://bootstrap-autocomplete.readthedocs.io/en/latest/ -->
 <script src="https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@master/dist/latest/bootstrap-autocomplete.min.js"></script> 
+<script src="js/timer.jquery.min.js"></script>
 <script src="js/useful.js"></script>
 <script src="js/patient-bar.js"></script>
 <script src="js/md_bt.js"></script>
@@ -671,6 +747,8 @@ const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first
 const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?id_auth_user.id.eq='+userId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
 
 var $mx_tbl = $('#mx_tbl').bootstrapTable({
     url: API_MXUSER
@@ -689,9 +767,23 @@ var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
     url: API_SHXUSER
 });
 
+var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
+    url: API_OHXUSER
+});
+
+$table_wl = $('#table-wl').bootstrapTable({
+    url: API_PROCEDURE_LIST,
+    formatSearch: function () {
+    return 'Procedure, modality';
+    }
+});
+
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
 $('#md_tbl').on('post-body.bs.table', function () {
+});
 
+$('#table-wl').on('post-body.bs.table', function () {
+    set_timers(timer_id);
 });
 
 </script>
