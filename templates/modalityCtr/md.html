@@ -342,13 +342,15 @@
     </div> <!-- end row oHx -->
 </div>
 
-<div class="container-fluid mb-3">
-    <div class="row big-title">
-        <div class="col">
-            <h2><a role="button" data-bs-toggle="collapse" href=".pHx">Present History</a></h2>
+<div class="container-fluid mb-3" id="cHxDiv">
+    <div class="row">
+        <div class="col text-center">
+            <h2 class="big-title"><a role="button" data-bs-toggle="collapse" href=".cHx">Present History</a></h2>
+            <button type="button" id="btnAddcHxright" class="mx-2 btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#cHxModal">New<i class="mx-2 fas fa-plus"></i></button>
+            <button type="button" id="btnEditcHxright" class="mx-2 btn btn-secondary btn-sm">Edit<i class="mx-2 fas fa-pencil-alt"></i></button>
         </div>
     </div>
-    <div class="row pHx">
+    <div class="row cHx bg-right">
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
@@ -357,18 +359,22 @@
 
 <div id="cx-container" class="container-fluid mb-3"> <!-- container clinical exams -->
     <div class="row mb-3 big-title">
-        <div class="col">
+        <div>
             <h2><a role="button" data-bs-toggle="collapse" href=".clinical">Clinical exam</a></h2>
         </div>
     </div>
     <div class="row mb-3 clinical">
         <div class="col">
-            <div class="row">
+            <div class="row mb-3">
                 <div class="col">
                     <h3 class="title-right">Right eye</h3>
+                    <button type="button" id="btnAddXright" class="mx-2 btn btn-secondary btn-sm float-end">New<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnEditHright" class="mx-2 btn btn-secondary btn-sm float-end">Edit<i class="mx-2 fas fa-pencil-alt"></i></button>
                 </div>
                 <div class="col">
                     <h3 class="title-left">Left eye</h3>
+                    <button type="button" id="btnAddXleft" class="mx-2 btn btn-secondary btn-sm float-start">New<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnEditXright" class="mx-2 btn btn-secondary btn-sm float-start">Edit<i class="mx-2 fas fa-pencil-alt"></i></button>
                 </div>
             </div>
             <div class="row">
@@ -775,6 +781,46 @@
         </div>
     </div>
 </div>
+
+<!-- Modal cHxModal -->
+<div class="modal fade" id="cHxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New present history</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="cHxFormModal" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">  
+                                            <label for="cHxDescModal" class="form-label">Description:</label>
+                                            <textarea rows="3" id="cHxDescModal" type="text" class="form-control" name="description" autocomplete="off"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idcHxWl" type="text" class="visually-hidden" name="id_worklist" />
+                                <input id="idcHxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idPatientcHx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodcHxModalSubmit" type="text" class="visually-hidden" name="methodcHxModalSubmit" value="POST" />
+                                <input id="btncHxModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="cHxModalSubmit" for="btncHxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- cache offcanvas -->
 
