@@ -239,6 +239,7 @@ function detailFormatter_mx(index, row) {
     html.push('</div>');
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">ID: </span>' + row.id);
+    html.push('<p class=""><span class="fw-bold">PatientID: </span>' + row.id_auth_user + '</p>');
     html.push('<p class=""><span class="fw-bold">Created by: </span>' + row.created_by_name + ' on ' + row.created_on + '</p>');
     html.push('<p class=""><span class="fw-bold">Modified by: </span>' + row.modified_by_name + ' on ' + row.modified_on + '</p>');
     html.push('</div>');
@@ -258,6 +259,29 @@ function detailFormatter_ax(index, row) {
     html.push('</div>');
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">ID: </span>' + row.id);
+    html.push('<p class=""><span class="fw-bold">PatientID: </span>' + row.id_auth_user + '</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>' + row.created_by_name + ' on ' + row.created_on + '</p>');
+    html.push('<p class=""><span class="fw-bold">Modified by: </span>' + row.modified_by_name + ' on ' + row.modified_on + '</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};
+
+function detailFormatter_msHx(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Title: </span>' + row.title + '</p>');
+    html.push('<p class=""><span class="fw-bold">Site: </span>' + row.site + '</p>');
+    html.push('<p class=""><span class="fw-bold">Note: </span>' + row.note + '</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Category: </span>' + row.category + '</p>');
+    html.push('<p class=""><span class="fw-bold">Onset: </span>' + row.onset + '</p>');
+    html.push('<p class=""><span class="fw-bold">Ended: </span>' + row.ended + '</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>' + row.id);
+    html.push('<p class=""><span class="fw-bold">PatientID: </span>' + row.id_auth_user + '</p>');
     html.push('<p class=""><span class="fw-bold">Created by: </span>' + row.created_by_name + ' on ' + row.created_on + '</p>');
     html.push('<p class=""><span class="fw-bold">Modified by: </span>' + row.modified_by_name + ' on ' + row.modified_on + '</p>');
     html.push('</div>');
