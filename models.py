@@ -378,7 +378,7 @@ db.define_table('phistory',
     Field('ended', 'date'),
     auth.signature)
 
-db.phistory.site.requires = IS_IN_SET(('right','left','local','systemic'))
+db.phistory.site.requires = IS_IN_SET(('right','left','both','local','systemic'))
 
 db.define_table('medic_ref',
     Field('name','string', required=True),
