@@ -258,28 +258,36 @@ function set_timers(timers) {
 
 // update cache
 function updateCache(cacheObj) {
-    let domId = "#offcanvasCache .rxUl";
-    let html = [];
+    let domId = "#offcanvasCache .rxTd";
+    let html = [], typeContent='', rxContent='';
     $.each(cacheObj, function(i){
-        console.log(cacheObj[i]);
-        html.push('<li class="list-group-item d-flex justify-content-between align-items-center">');
+        // console.log(cacheObj[i]);
         // content
+        // if true: rxContent no add, write monofocal or nothing
         if ((cacheObj[i]['rx_origin']=='autorx') || (cacheObj[i]['rx_origin']=='dil') || (cacheObj[i]['rx_origin']=='cyclo') || (cacheObj[i]['glass_type']=='monofocal')) {
-            html.push('<span class="badge bg-primary rounded-pill mx-1">'+capitalize(cacheObj[i]['rx_origin'])+'</span>');
-            cacheObj[i]['glass_type']=='monofocal'? html.push('<span class="badge bg-secondary rounded-pill mx-1">'+capitalize(cacheObj[i]['glass_type'])+'</span>'):{};
-            html.push(cacheObj[i]['rx_far']);
+            rxContent = cacheObj[i]['rx_far'];
+            cacheObj[i]['glass_type']=='monofocal'? typeContent='<span class="badge bg-secondary rounded-pill mx-1">'+capitalize(cacheObj[i]['glass_type'])+'</span>': typeContent='-';
         } else {
-            html.push('<span class="badge bg-primary rounded-pill mx-1">'+capitalize(cacheObj[i]['rx_origin'])+'</span>');
-            html.push('<span class="badge bg-secondary rounded-pill mx-1">'+capitalize(cacheObj[i]['glass_type'])+'</span>');
-            html.push(cacheObj[i]['rx_far'] + ' Add+'+cacheObj[i]['add']);
+            typeContent = '<span class="badge bg-secondary rounded-pill mx-1">'+capitalize(cacheObj[i]['glass_type'])+'</span>';
+            rxContent = cacheObj[i]['rx_far'] + ' Add+'+cacheObj[i]['add'];
         };
-        html.push('</li>');
+        html.push('<tr>'); // row
+        html.push('<td>'); // 1st col origin
+        html.push(cacheObj[i]['rx_origin']);
+        html.push('</td>');
+        html.push('<td>'); // 2nd col glass type
+        html.push(typeContent);
+        html.push('</td>');
+        html.push('<th scope="row">'); // 3rd col rx
+        html.push(rxContent);
+        html.push('</td>');
+        html.push('</tr>'); // end row
     });
     $(domId).html(html.join(''));
 };
 // clear cache button
 $('#clearCache').click(function(){
-    $('#offcanvasCache .rxUl').html('');
+    $('#offcanvasCache .rxTd').html('');
     rxObj = [];
 });
 
