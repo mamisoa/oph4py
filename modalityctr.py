@@ -31,17 +31,33 @@ def autorx(wlId):
     statusRxOptions = dropdownSelect(db.status_rx, db.status_rx.fields[1],'index')
     return locals()
 
-# md controller
+### md controller
+
+# function to init fields in view
+# return an array
+def initFields(wlId,table):
+    query = db(db[table].id_worklist == wlId)
+    if query.count() > 0:
+        item = query.select().first()
+    else :
+        item = {}
+    return item
+
 @action('md')
 @action('modalityCtr/md/<wlId>')
 @action.uses('modalityCtr/md.html', session, auth, db)
 def md(wlId):
     user = auth.get_user()
     userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    # get modality vs controller
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
     for row in rows:
         modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
+    # init fields
+    currentHx = initFields(wlId,'current_hx')
+    if currentHx == {}:
+        currentHx= {'id':'', 'description':''}
     return locals()
 
 # helloworld controller

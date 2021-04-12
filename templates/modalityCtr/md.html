@@ -346,14 +346,26 @@
     <div class="row">
         <div class="col text-center">
             <h2 class="big-title"><a role="button" data-bs-toggle="collapse" href=".cHx">Present History</a></h2>
-            <button type="button" id="btnAddcHxright" class="mx-2 btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#cHxModal">New<i class="mx-2 fas fa-plus"></i></button>
-            <button type="button" id="btnEditcHxright" class="mx-2 btn btn-secondary btn-sm">Edit<i class="mx-2 fas fa-pencil-alt"></i></button>
         </div>
     </div>
-    <div class="row cHx bg-right">
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque rem recusandae culpa sit officiis, non error, veniam laudantium provident minus facere ipsam nobis quas dicta aperiam odit, doloribus quae eos.</p>
+    <div class="row cHx py-2 bg-right">
+        <div class="col">
+            <form id="cHxForm" enctype="multipart/form-data" method="POST"> 
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col" id="descriptionCol">
+                            <div class="input-group">
+                                <button id="cHxSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(currentHx['description']) ]]</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input id="idcHx" type="text" class="visually-hidden" name="id" value="[[ = XML(currentHx['id']) ]]"/>
+                <input id="idPatientcHx" type="text" class="visually-hidden" name="id_auth_user"/>
+                <input id="idWlcHx" type="text" class="visually-hidden" name="id_worklist"/>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -368,13 +380,9 @@
             <div class="row mb-3">
                 <div class="col">
                     <h3 class="title-right">Right eye</h3>
-                    <button type="button" id="btnAddXright" class="mx-2 btn btn-secondary btn-sm float-end">New<i class="mx-2 fas fa-plus"></i></button>
-                    <button type="button" id="btnEditHright" class="mx-2 btn btn-secondary btn-sm float-end">Edit<i class="mx-2 fas fa-pencil-alt"></i></button>
                 </div>
                 <div class="col">
                     <h3 class="title-left">Left eye</h3>
-                    <button type="button" id="btnAddXleft" class="mx-2 btn btn-secondary btn-sm float-start">New<i class="mx-2 fas fa-plus"></i></button>
-                    <button type="button" id="btnEditXright" class="mx-2 btn btn-secondary btn-sm float-start">Edit<i class="mx-2 fas fa-pencil-alt"></i></button>
                 </div>
             </div>
             <div class="row">
@@ -805,7 +813,7 @@
                                 </div>
                                 <input id="idcHxWl" type="text" class="visually-hidden" name="id_worklist" />
                                 <input id="idcHxRow" type="text" class="visually-hidden" name="id" />
-                                <input id="idPatientcHx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="idPatientModalcHx" type="text" class="visually-hidden" name="id_auth_user" />
                                 <input id="methodcHxModalSubmit" type="text" class="visually-hidden" name="methodcHxModalSubmit" value="POST" />
                                 <input id="btncHxModalSubmit" type="submit" class="visually-hidden" />
                             </form>
@@ -823,7 +831,6 @@
 
 
 <!-- cache offcanvas -->
-
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCache" aria-labelledby="offcanvas cache">
     <div class="offcanvas-header">
       <button type="button" class="btn btn-primary" id="clearCache">Clear cache</button>
