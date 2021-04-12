@@ -36,18 +36,22 @@ def autorx(wlId):
 # function to init fields in view
 # return an array
 def initFields(wlId,table,lat=""):
+    fieldsArr= db[table].fields
     if lat == "":
         query = db(db[table].id_worklist == wlId)
     else:
         query = db((db[table].id_worklist == wlId) & (db[table].laterality == lat))
-    item = {}
+    items = {}
     if query.count() > 0:
-        item = query.select().first()
+        items = query.select().first()
+        # remove 'None' when empty fields
+        for item in items:
+            if items[item] == None:
+                items[item] = ""
     else :
-        fieldsArr= db[table].fields
         for i in range(len(fieldsArr)):
-            item[fieldsArr[i]]=""
-    return item
+            items[fieldsArr[i]]=""
+    return items
 
 @action('md')
 @action('modalityCtr/md/<wlId>')

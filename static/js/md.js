@@ -297,12 +297,18 @@ $('#clearCache').click(function(){
 // 3) on change: if field value has changed then submit
 
 // promise to get item wl fields value
-function getWlItemData(table,wlId) {
+function getWlItemData(table,wlId,lat='') {
+    let WURL;
+    if (lat == '') {
+        WURL = HOSTURL+"/myapp/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId;
+    } else {
+        WURL = HOSTURL+"/myapp/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId+'&laterality.eq='+lat;
+    }
     return Promise.resolve(
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: HOSTURL+"/myapp/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId,
+            url: WURL,
             success: function(data) {
                 if (data.status != 'error' && parseInt(data.count) > 0) {
                     displayToast('success', 'Item exists', 'Count is '+data.count,3000);
@@ -379,51 +385,66 @@ $('#cHxForm textarea').focus(function(){
 });
 
 
-// antRightForm
-$('#antRightForm').submit(function(e){
-    e.preventDefault();
-    let dataStr = $(this).serializeJSON();
-    let dataObj = JSON.parse(dataStr);
-    let req ;
-    getWlItemData('ant_biom',wlId)
-        .then(function(data){
-            if (data.count !=0) {
-                req = 'PUT';
-            } else {
-                req = 'POST';
-                delete dataObj['id'];
-            };
-            dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
-            dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlItemObj['id']:{};
-            // capitalize fields
-            let fields = ['cornea','ant_chamb','iris','lens','other']
-            for (field of fields) {
-                dataObj[field]=capitalize(dataObj[field]); // capitalize text objects
-                $('#antRightForm input[name='+field+']').val(dataObj[field]); // update fields
-            };
-            dataStr= JSON.stringify(dataObj);
-            console.log("dataForm",dataObj);
-            crud('ant_biom','0',req,dataStr);
-            $('#antRightSubmit').removeClass('btn-danger').addClass('btn-secondary');            
-        })
-});
+// set submit forms
+var antFieldsArr = ['cornea','ant_chamb','iris','lens','other'],
+    postFieldsArr = ['vitreous','retina','macula','papil','other'];
 
-var antFieldsArr = ['cornea','ant_chamb','iris','lens','other']
+function setSubmit(domId,table, fieldsArr,lat) {
+    $(domId).submit(function(e){
+        e.preventDefault();
+        let dataStr = $(this).serializeJSON();
+        let dataObj = JSON.parse(dataStr);
+        let req ;
+        getWlItemData(table,wlId,lat)
+            .then(function(data){
+                if (data.count != 0) {
+                    req = 'PUT';
+                } else {
+                    req = 'POST';
+                    delete dataObj['id'];
+                };
+                console.log('setSubmit request:',req, 'data.count:',data.count);
+                dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
+                dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlItemObj['id']:{};
+                // capitalize fields
+                for (field of fieldsArr) {
+                    if (dataObj[field] != "") {
+                        console.log('capitalize:', field ,dataObj[field]);
+                        dataObj[field]=capitalize(dataObj[field]); // capitalize text objects
+                        $(domId+' input[name='+field+']').val(dataObj[field]); // update fields
+                    } else {};
+                };
+                dataStr= JSON.stringify(dataObj);
+                console.log("dataForm from setSubmit",dataObj);
+                crud(table,'0',req,dataStr);
+                $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');
+                getWlItemData(table,wlId,lat)
+                    .then(function(data) {
+                        if (data.count != 0) {
+                            $(domId+' input[name=id]').val(data.items[0].id);
+                        } else {};
+                    })
+            });
+    });        
+}
 
+setSubmit('#antRightForm','ant_biom',antFieldsArr,'right');
+setSubmit('#antLeftForm','ant_biom', antFieldsArr,'left');
+setSubmit('#postRightForm','post_biom', postFieldsArr,'right');
+setSubmit('#postLeftForm','post_biom', postFieldsArr,'left');
 
 // set events handlers to update fields
-function updateFields(table,domId,fieldsArr) {
+function updateHandlersFields(table,domId,fieldsArr,lat='') {
     for (const field of fieldsArr) {
         $(domId+' input[name='+field+']').focus(function(){
-            // wlId is already laterality specific
-            getWlItemData(table,wlId)
+            getWlItemData(table,wlId,lat)
                 .then(function(data){
                     console.log("from update fields "+field+" :",data, data.count);
                     if (data.count != 0) {
                         let item=data.items[0];
                         $(domId+' input[name=id]').val(item['id']);
                         console.log('input value: ', domId+' input[name='+field+']');
-                        if ($(domId+' input[name='+field+']').val()!=item[field]) {
+                        if ($(domId+' input[name='+field+']').val()!=item[field] && item[field] != 'None' ) {
                             console.log(capitalize(field)+' changed');
                             let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
                             displayToast('warning', capitalize(field)+' was changed', capitalize(field)+' was changed by '+modder,6000);
@@ -435,23 +456,22 @@ function updateFields(table,domId,fieldsArr) {
     };
 }
 
-updateFields('ant_biom','#antLeftForm', antFieldsArr);
-updateFields('ant_biom','#antRightForm', antFieldsArr);
+updateHandlersFields('ant_biom','#antRightForm', antFieldsArr,'right');
+updateHandlersFields('ant_biom','#antLeftForm', antFieldsArr,'left');
+updateHandlersFields('post_biom','#postRightForm', postFieldsArr,'right');
+updateHandlersFields('post_biom','#postLeftForm', postFieldsArr,'left');
 
-// // update field on focus and highlight if changed
-// $('#antRightForm input[name=cornea]').focus(function(){
-//     // wlId is already laterality specific
-//     getWlItemData('ant_biom',wlId)
-//         .then(function(data){
-//             if (data.count != 0) {
-//                 let item=data.items[0];
-//                 $('#antRightForm input[name=id]').val(item['id']);
-//                 if ($('#antRightForm input[name=cornea]').val()!=item['cornea']) {
-//                     console.log('Cornea changed');
-//                     let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
-//                     displayToast('warning', 'Cornea was changed', 'Item was changed by '+modder,6000);
-//                     $('#antRightForm input[name=cornea]').val(item.cornea);
-//                 } else {};
-//             } else {};
-//         });
-// });
+// trigger change at each value change
+function monitorValueChange(domId,fieldsArr) {
+    for (field of fieldsArr) {
+        $(domId+' input[name='+field+']').change(function() {
+            $(domId+'FormSubmit').removeClass('btn-secondary').addClass('btn-danger');
+            $(domId).submit();
+        })
+    };
+};
+
+monitorValueChange('#antRightForm', antFieldsArr);
+monitorValueChange('#antLeftForm', antFieldsArr);
+monitorValueChange('#postRightForm', postFieldsArr);
+monitorValueChange('#postLeftForm', postFieldsArr);
