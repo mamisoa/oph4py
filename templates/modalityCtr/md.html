@@ -657,9 +657,23 @@
                                     <h4 class="big-title">Phoria</h4>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row py-2 bg-left">
                                 <div class="col">
-                                    form phorie
+                                    <form id="phoForm" enctype="multipart/form-data" method="POST"> 
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="input-group">
+                                                        <button id="phoFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(phoria['description']) ]]</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input id="idpho" type="text" class="visually-hidden" name="id" value="[[ = XML(phoria['id']) ]]"/>
+                                        <input id="idPatientpho" type="text" class="visually-hidden" name="id_auth_user"/>
+                                        <input id="idWlpho" type="text" class="visually-hidden" name="id_worklist"/>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -669,9 +683,23 @@
                                     <h4 class="big-title">Pupils</h4>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row py-2 bg-right">
                                 <div class="col">
-                                    form pupil
+                                    <form id="pupForm" enctype="multipart/form-data" method="POST"> 
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="input-group">
+                                                        <button id="pupFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(pupils['description']) ]]</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input id="idpup" type="text" class="visually-hidden" name="id" value="[[ = XML(pupils['id']) ]]"/>
+                                        <input id="idPatientpup" type="text" class="visually-hidden" name="id_auth_user"/>
+                                        <input id="idWlpup" type="text" class="visually-hidden" name="id_worklist"/>
+                                    </form>
                                 </div>
                             </div>
                         </div>
