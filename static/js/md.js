@@ -461,7 +461,8 @@ function setOneSubmit(domId,table) {
 
 setOneSubmit('#cHxForm','current_hx');
 setOneSubmit('#motForm','motility');
-
+setOneSubmit('#phoForm','phoria');
+setOneSubmit('#pupForm','pupils');
 
 // using focusout to update will trigger too much ajax call
 // button in red if field updated
@@ -476,6 +477,8 @@ function updateHandlersOneField(domId) {
 
 updateHandlersOneField('#cHxForm');
 updateHandlersOneField('#motForm');
+updateHandlersOneField('#phoForm');
+updateHandlersOneField('#pupForm');
 
 // update field on focus and highlight if changed
 
@@ -499,3 +502,5 @@ function monitorValueChangeOneField(domId,table) {
 
 monitorValueChangeOneField('#cHxForm','current_hx');
 monitorValueChangeOneField('#motForm','motility');
+monitorValueChangeOneField('#phoForm','phoria');
+monitorValueChangeOneField('#pupForm','pupils');
