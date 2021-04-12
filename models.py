@@ -367,6 +367,12 @@ db.define_table('motility',
     Field('description','string'),
     auth.signature)
 
+db.define_table('phoria',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist', 'reference worklist', required=True),
+    Field('description','string'),
+    auth.signature)
+
 db.define_table('pupils',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist', 'reference worklist', required=True),
