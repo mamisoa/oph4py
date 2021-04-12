@@ -392,6 +392,7 @@ db.disease_ref.category.requires = IS_IN_SET(('surgical','medical'))
 db.define_table('phistory',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_disease_ref', 'reference disease_ref'),
+    Field('id_worklist','reference worklist'),
     Field('site','string'),
     Field('title','string'),
     Field('category','string'),
@@ -484,3 +485,13 @@ if db(db.auto_dict.id > 1).count() == 0:
     db.auto_dict.insert(keywd="frequency", keyoption = "2x/j")
     db.auto_dict.insert(keywd="frequency", keyoption = "3x/j")
     db.auto_dict.insert(keywd="frequency", keyoption = "4x/j")
+
+db.define_table('ccx',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist', 'reference worklist', required=True),
+    Field('laterality','string', required=True),
+    Field('description','string'),
+    auth.signature)
+
+db.ccx.laterality.requires = IS_IN_SET(('right','left','na'))
+

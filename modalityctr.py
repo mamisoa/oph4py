@@ -73,6 +73,9 @@ def md(wlId):
     motility = initFields(wlId,'motility')
     phoria = initFields(wlId,'phoria')
     pupils = initFields(wlId,'pupils')
+    ccx = initFields(wlId,'ccx')
+    ccxR = initFields(wlId,'ccx','right')
+    ccxL = initFields(wlId,'ccx','left')
     return locals()
 
 # helloworld controller
