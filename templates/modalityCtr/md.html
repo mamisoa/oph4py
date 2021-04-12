@@ -355,7 +355,7 @@
                     <div class="row">
                         <div class="col" id="descriptionCol">
                             <div class="input-group">
-                                <button id="cHxSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                <button id="cHxFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
                                 <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(currentHx['description']) ]]</textarea>
                             </div>
                         </div>
@@ -626,13 +626,54 @@
                     </div>
                     <div class="row misc">
                         <div class="col">
-                            <h4 class="big-title">Motility</h4>
+                            <div class="row">
+                                <div class="col">
+                                    <h4 class="big-title">Motility</h4>
+                                </div>
+                            </div>
+                            <div class="row py-2 bg-right">
+                                <div class="col">
+                                    <form id="motForm" enctype="multipart/form-data" method="POST"> 
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="input-group">
+                                                        <button id="motFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(motility['description']) ]]</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input id="idmot" type="text" class="visually-hidden" name="id" value="[[ = XML(motility['id']) ]]"/>
+                                        <input id="idPatientmot" type="text" class="visually-hidden" name="id_auth_user"/>
+                                        <input id="idWlmot" type="text" class="visually-hidden" name="id_worklist"/>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                         <div class="col">
-                            <h4 class="big-title">Phoria</h4>
+                            <div class="row">
+                                <div class="col">
+                                    <h4 class="big-title">Phoria</h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    form phorie
+                                </div>
+                            </div>
                         </div>
                         <div class="col">
-                            <h4 class="big-title">Pupils</h4>
+                            <div class="row">
+                                <div class="col">
+                                    <h4 class="big-title">Pupils</h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    form pupil
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

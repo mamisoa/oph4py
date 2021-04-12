@@ -70,6 +70,7 @@ def md(wlId):
     postRight = initFields(wlId,'post_biom','right')
     antLeft = initFields(wlId,'ant_biom','left')
     postLeft = initFields(wlId,'post_biom','left')
+    motility = initFields(wlId,'motility')
     return locals()
 
 # helloworld controller
