@@ -59,6 +59,9 @@ def md(wlId):
     if currentHx == {}:
         currentHx= {'id':'', 'description':''}
     antRight = {'id': '1','cornea':'','ant_chamb': '', 'iris':'','lens':'','other':''}
+    postRight = {'id': '1','vitreous':'','retina':'','macula':'','papil':'','other':''}
+    antLeft = {'id': '1','cornea':'','ant_chamb': '', 'iris':'','lens':'','other':''}
+    postLeft = {'id': '1','vitreous':'','retina':'','macula':'','papil':'','other':''}
     return locals()
 
 # helloworld controller
