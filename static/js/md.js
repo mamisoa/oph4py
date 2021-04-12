@@ -291,13 +291,50 @@ $('#clearCache').click(function(){
     rxObj = [];
 });
 
-// cHx modal submit cHxFormModal
+// 3 functions for each fields:
+// 1) Submit: check for PUT, capitalize, crud
+// 2) on focus: check in DB if field has changed
+// 3) on change: if field value has changed then submit
+
+// promise to get item wl fields value
+function getWlItemData(table,wlId) {
+    return Promise.resolve(
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: HOSTURL+"/myapp/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId,
+            success: function(data) {
+                if (data.status != 'error' && parseInt(data.count) > 0) {
+                    displayToast('success', 'Item exists', 'Count is '+data.count,3000);
+                } else if (data.count == 0) {
+                    displayToast('warning', 'Item not found', 'Items does not exist.',3000);
+                } else {
+                    displayToast('error', 'GET error', 'Request to check failed.');
+                }
+            }, // success
+            error: function (er) {
+                console.log(er);
+            }
+        })
+    )
+};
+
+// todo: to remove later, use as test
+// init fields
+getWlItemData('current_hx',wlId).then(function (data) {
+    if (data.count != 0) {
+        console.log("current_hx exists");
+    } else {
+        console.log("current_hx is empty");
+    }
+});
+
+// cHx form submit 
 $('#cHxForm').submit(function(e){
     e.preventDefault();
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let req ;
-    // todo: check if someone already change it -> difficult -> better update on focus
     getWlItemData('current_hx',wlId)
         .then(function(data){
             if (data.count !=0) {
@@ -341,35 +378,80 @@ $('#cHxForm textarea').focus(function(){
         });
 });
 
-// promise check if there is only ONE row for ONE worklist in table (record should be unique for one wl)
-function getWlItemData(table,wlId) {
-    return Promise.resolve(
-        $.ajax({
-            type: 'GET',
-            dataType: 'json',
-            url: HOSTURL+"/myapp/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId,
-            success: function(data) {
-                if (data.status != 'error' && parseInt(data.count) > 0) {
-                    displayToast('success', 'Item exists', 'Count is '+data.count,3000);
-                } else if (data.count == 0) {
-                    displayToast('warning', 'Item not found', 'Items does not exist.',3000);
-                } else {
-                    displayToast('error', 'GET error', 'Request to check failed.');
-                }
-            }, // success
-            error: function (er) {
-                console.log(er);
-            }
-        })
-    )
-};
 
-// todo: to remove later, use as test
-// init fields
-getWlItemData('current_hx',wlId).then(function (data) {
-    if (data.count != 0) {
-        console.log("current_hx exists");
-    } else {
-        console.log("current_hx is empty");
-    }
+// antRightForm
+$('#antRightForm').submit(function(e){
+    e.preventDefault();
+    let dataStr = $(this).serializeJSON();
+    let dataObj = JSON.parse(dataStr);
+    let req ;
+    getWlItemData('ant_biom',wlId)
+        .then(function(data){
+            if (data.count !=0) {
+                req = 'PUT';
+            } else {
+                req = 'POST';
+                delete dataObj['id'];
+            };
+            dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
+            dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlItemObj['id']:{};
+            // capitalize fields
+            let fields = ['cornea','ant_chamb','iris','lens','other']
+            for (field of fields) {
+                dataObj[field]=capitalize(dataObj[field]); // capitalize text objects
+                $('#antRightForm input[name='+field+']').val(dataObj[field]); // update fields
+            };
+            dataStr= JSON.stringify(dataObj);
+            console.log("dataForm",dataObj);
+            crud('ant_biom','0',req,dataStr);
+            $('#antRightSubmit').removeClass('btn-danger').addClass('btn-secondary');            
+        })
 });
+
+var antFieldsArr = ['cornea','ant_chamb','iris','lens','other']
+
+
+// set events handlers to update fields
+function updateFields(table,domId,fieldsArr) {
+    for (const field of fieldsArr) {
+        $(domId+' input[name='+field+']').focus(function(){
+            // wlId is already laterality specific
+            getWlItemData(table,wlId)
+                .then(function(data){
+                    console.log("from update fields "+field+" :",data, data.count);
+                    if (data.count != 0) {
+                        let item=data.items[0];
+                        $(domId+' input[name=id]').val(item['id']);
+                        console.log('input value: ', domId+' input[name='+field+']');
+                        if ($(domId+' input[name='+field+']').val()!=item[field]) {
+                            console.log(capitalize(field)+' changed');
+                            let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
+                            displayToast('warning', capitalize(field)+' was changed', capitalize(field)+' was changed by '+modder,6000);
+                            $(domId+' input[name='+field+']').val(item[field]);
+                        } else {};
+                    } else {};
+                });
+        });        
+    };
+}
+
+updateFields('ant_biom','#antLeftForm', antFieldsArr);
+updateFields('ant_biom','#antRightForm', antFieldsArr);
+
+// // update field on focus and highlight if changed
+// $('#antRightForm input[name=cornea]').focus(function(){
+//     // wlId is already laterality specific
+//     getWlItemData('ant_biom',wlId)
+//         .then(function(data){
+//             if (data.count != 0) {
+//                 let item=data.items[0];
+//                 $('#antRightForm input[name=id]').val(item['id']);
+//                 if ($('#antRightForm input[name=cornea]').val()!=item['cornea']) {
+//                     console.log('Cornea changed');
+//                     let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
+//                     displayToast('warning', 'Cornea was changed', 'Item was changed by '+modder,6000);
+//                     $('#antRightForm input[name=cornea]').val(item.cornea);
+//                 } else {};
+//             } else {};
+//         });
+// });

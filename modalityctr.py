@@ -35,12 +35,18 @@ def autorx(wlId):
 
 # function to init fields in view
 # return an array
-def initFields(wlId,table):
-    query = db(db[table].id_worklist == wlId)
+def initFields(wlId,table,lat=""):
+    if lat == "":
+        query = db(db[table].id_worklist == wlId)
+    else:
+        query = db((db[table].id_worklist == wlId) & (db[table].laterality == lat))
+    item = {}
     if query.count() > 0:
         item = query.select().first()
     else :
-        item = {}
+        fieldsArr= db[table].fields
+        for i in range(len(fieldsArr)):
+            item[fieldsArr[i]]=""
     return item
 
 @action('md')
@@ -56,12 +62,10 @@ def md(wlId):
         modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
     # init fields
     currentHx = initFields(wlId,'current_hx')
-    if currentHx == {}:
-        currentHx= {'id':'', 'description':''}
-    antRight = {'id': '1','cornea':'','ant_chamb': '', 'iris':'','lens':'','other':''}
-    postRight = {'id': '1','vitreous':'','retina':'','macula':'','papil':'','other':''}
-    antLeft = {'id': '1','cornea':'','ant_chamb': '', 'iris':'','lens':'','other':''}
-    postLeft = {'id': '1','vitreous':'','retina':'','macula':'','papil':'','other':''}
+    antRight = initFields(wlId,'ant_biom','right')
+    postRight = initFields(wlId,'post_biom','right')
+    antLeft = initFields(wlId,'ant_biom','left')
+    postLeft = initFields(wlId,'post_biom','left')
     return locals()
 
 # helloworld controller
