@@ -58,6 +58,7 @@ def md(wlId):
     currentHx = initFields(wlId,'current_hx')
     if currentHx == {}:
         currentHx= {'id':'', 'description':''}
+    antRight = {'id': '1','cornea':'','ant_chamb': '', 'iris':'','lens':'','other':''}
     return locals()
 
 # helloworld controller
