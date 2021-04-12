@@ -8,7 +8,7 @@ function getWlDetails(wlId){
             dataType: 'json',
             url: HOSTURL+"/myapp/api/worklist/"+wlId+"?@lookup=patient!:id_auth_user[id,last_name,first_name,dob,photob64],modality!:modality_dest[id,modality_name],provider!:provider[id,last_name,first_name,dob],senior!:senior[id,last_name,first_name,dob]",
             success: function(data) {
-                if (data.status != 'error' || data.count) {
+                if (data.status != 'error' && data.count) {
                     displayToast('success', 'GET combo exams', 'GET'+data.items[0]['patient.first_name']+' '+data.items[0]['patient.last_name'],3000);
                 } else {
                     displayToast('error', 'GET error', 'Cannot retrieve combo exams');

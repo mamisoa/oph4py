@@ -292,23 +292,84 @@ $('#clearCache').click(function(){
 });
 
 // cHx modal submit cHxFormModal
-
-$('#cHxFormModal').submit(function(e){
+$('#cHxForm').submit(function(e){
     e.preventDefault();
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
-    let req = dataObj['methodcHxModalSubmit'];
-    if (req == 'POST') {
-        delete dataObj['id'];
-    } else {};
-    dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
-    dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlItemObj['id']:{};
-    dataObj['description']=capitalize(dataObj['description']);
-    delete dataObj['methodcHxModalSubmit'];
-    dataStr= JSON.stringify(dataObj);
-    console.log("dataForm",dataObj);
-    crud('current_hx','0',req,dataStr);
-    $('#cHxDiv .cHx').html('<p>'+dataObj['description']+'</p>');
-    document.getElementById('cHxFormModal').reset();
-    $('#cHxModal').modal('hide'); 
+    let req ;
+    // todo: check if someone already change it -> difficult -> better update on focus
+    getWlItemData('current_hx',wlId)
+        .then(function(data){
+            if (data.count !=0) {
+                req = 'PUT';
+            } else {
+                req = 'POST';
+                delete dataObj['id'];
+            };
+            dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
+            dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlItemObj['id']:{};
+            dataObj['description']=capitalize(dataObj['description']);
+            dataStr= JSON.stringify(dataObj);
+            console.log("dataForm",dataObj);
+            crud('current_hx','0',req,dataStr);
+            $('#cHxSubmit').removeClass('btn-danger').addClass('btn-secondary');            
+        })
+});
+
+// using focusout to update will trigger too much ajax call
+// button in red if field updated
+// trigger change at each value change
+$('#cHxForm textarea').change(function(){
+    $('#cHxSubmit').removeClass('btn-secondary').addClass('btn-danger');
+    $('#cHxForm').submit();
+});
+
+// update field on focus and highlight if changed
+$('#cHxForm textarea').focus(function(){
+    getWlItemData('current_hx',wlId)
+        .then(function(data){
+            if (data.count != 0) {
+                let item=data.items[0];
+                $('#idcHx').val(item['id']);
+                if ($('#cHxForm textarea').val()!=item['description']) {
+                    console.log('Description changed');
+                    let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
+                    displayToast('warning', 'Description was changed', 'Item was changed by '+modder,6000);
+                    $('#cHxForm textarea').val(item.description);
+                } else {};
+            } else {};
+        });
+});
+
+// promise check if there is only ONE row for ONE worklist in table (record should be unique for one wl)
+function getWlItemData(table,wlId) {
+    return Promise.resolve(
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: HOSTURL+"/myapp/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId,
+            success: function(data) {
+                if (data.status != 'error' && parseInt(data.count) > 0) {
+                    displayToast('success', 'Item exists', 'Count is '+data.count,3000);
+                } else if (data.count == 0) {
+                    displayToast('warning', 'Item not found', 'Items does not exist.',3000);
+                } else {
+                    displayToast('error', 'GET error', 'Request to check failed.');
+                }
+            }, // success
+            error: function (er) {
+                console.log(er);
+            }
+        })
+    )
+};
+
+// todo: to remove later, use as test
+// init fields
+getWlItemData('current_hx',wlId).then(function (data) {
+    if (data.count != 0) {
+        console.log("current_hx exists");
+    } else {
+        console.log("current_hx is empty");
+    }
 });
