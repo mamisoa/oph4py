@@ -385,7 +385,8 @@
                         </div>
                     </div>
                     <div class="row bg-right">
-                        <div class="col pt-3">
+                        <div class="col pt-3"> <!-- antRight col -->
+                            <h5 class="text-center">Anterior segment exam</h5>
                             <form id="antRightForm" enctype="multipart/form-data" method="POST"> 
                                 <div class="container-fluid">
                                     <div class="row mb-3">
@@ -437,6 +438,60 @@
                                     <button id="antRightSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
                                 </div>
                             </form>
+                        </div> <!-- antRight end col -->
+                        <div class="col pt-3"> <!-- postRight col -->
+                            <h5 class="text-center">Posterior segment exam</h5>
+                            <form id="postRightForm" enctype="multipart/form-data" method="POST"> 
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="postRightVitreous" class="form-control" aria-label="vitreous exam" name="vitreous" value="[[ = XML(postRight['vitreous']) ]]"/>
+                                                <label for="postRightVitreous">Vitreous exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="postRightRetina" class="form-control" aria-label="retina exam" name="retina" value="[[ = XML(postRight['retina']) ]]"/>
+                                                <label for="postRightRetina">Retina exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="postRightMacula" class="form-control" aria-label="macula exam" name="macula" value="[[ = XML(postRight['macula']) ]]"/>
+                                                <label for="postRightMacula">Macula exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="postRightPapil" class="form-control" aria-label="papil exam" name="lens" value="[[ = XML(postRight['papil']) ]]"/>
+                                                <label for="postRightPapil">Papil exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="postRightOther" class="form-control" aria-label="lens exam" name="other" value="[[ = XML(postRight['other']) ]]"/>
+                                                <label for="postRightOther">Other findings</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container-fluid">
+                                    <input id="lateralitypostRight" type="text" class="visually-hidden" name="laterality" value="right"/>
+                                    <input id="idpostRight" type="text" class="visually-hidden" name="id" value="[[ = XML(postRight['id']) ]]"/>
+                                    <input id="idPatientpostRight" type="text" class="visually-hidden" name="id_auth_user"/>
+                                    <input id="idWlpostRight" type="text" class="visually-hidden" name="id_worklist"/>
+                                    <button id="postRightSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -447,8 +502,113 @@
                         </div>
                     </div>
                     <div class="row bg-left">
-                        <div class="col">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+                        <div class="col py-3"> <!-- antLeft col -->
+                            <h5 class="text-center">Anterior segment exam</h5>
+                            <form id="antLeftForm" enctype="multipart/form-data" method="POST"> 
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="antLeftCornea" class="form-control" aria-label="cornea exam" name="cornea" value="[[ = XML(antLeft['cornea']) ]]"/>
+                                                <label for="antLeftCornea">Cornea exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="antLeftantChamber" class="form-control" aria-label="anterior chamber exam" name="cornea" value="[[ = XML(antLeft['ant_chamb']) ]]"/>
+                                                <label for="antLeftantChamber">Anterior segment exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="antLeftIris" class="form-control" aria-label="iris exam" name="iris" value="[[ = XML(antLeft['iris']) ]]"/>
+                                                <label for="antLeftIris">Iris exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="antLeftLens" class="form-control" aria-label="lens exam" name="lens" value="[[ = XML(antLeft['lens']) ]]"/>
+                                                <label for="antLeftLens">Lens exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="antLeftOther" class="form-control" aria-label="lens exam" name="other" value="[[ = XML(antLeft['other']) ]]"/>
+                                                <label for="antLeftOther">Other findings</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container-fluid">
+                                    <input id="lateralityantLeft" type="text" class="visually-hidden" name="laterality" value="right"/>
+                                    <input id="idantLeft" type="text" class="visually-hidden" name="id" value="[[ = XML(antLeft['id']) ]]"/>
+                                    <input id="idPatientantLeft" type="text" class="visually-hidden" name="id_auth_user"/>
+                                    <input id="idWlantLeft" type="text" class="visually-hidden" name="id_worklist"/>
+                                    <button id="antLeftSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                </div>
+                            </form>
+                        </div> <!-- antLeft end col -->
+                        <div class="col py-3"> <!-- postLeft col -->
+                            <h5 class="text-center">Posterior segment exam</h5>
+                            <form id="postLeftForm" enctype="multipart/form-data" method="POST"> 
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="postLeftVitreous" class="form-control" aria-label="vitreous exam" name="vitreous" value="[[ = XML(postLeft['vitreous']) ]]"/>
+                                                <label for="postLeftVitreous">Vitreous exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="postLeftRetina" class="form-control" aria-label="retina exam" name="retina" value="[[ = XML(postLeft['retina']) ]]"/>
+                                                <label for="postLeftRetina">Retina exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="postLeftMacula" class="form-control" aria-label="macula exam" name="macula" value="[[ = XML(postLeft['macula']) ]]"/>
+                                                <label for="postLeftMacula">Macula exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="postLeftPapil" class="form-control" aria-label="papil exam" name="lens" value="[[ = XML(postLeft['papil']) ]]"/>
+                                                <label for="postLeftPapil">Papil exam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input type="text" id="postLeftOther" class="form-control" aria-label="lens exam" name="other" value="[[ = XML(postLeft['other']) ]]"/>
+                                                <label for="postLeftOther">Other findings</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container-fluid">
+                                    <input id="lateralitypostLeft" type="text" class="visually-hidden" name="laterality" value="right"/>
+                                    <input id="idpostLeft" type="text" class="visually-hidden" name="id" value="[[ = XML(postLeft['id']) ]]"/>
+                                    <input id="idPatientpostLeft" type="text" class="visually-hidden" name="id_auth_user"/>
+                                    <input id="idWlpostLeft" type="text" class="visually-hidden" name="id_worklist"/>
+                                    <button id="postLeftSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
