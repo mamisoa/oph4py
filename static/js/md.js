@@ -335,55 +335,6 @@ getWlItemData('current_hx',wlId).then(function (data) {
     }
 });
 
-// cHx form submit 
-$('#cHxForm').submit(function(e){
-    e.preventDefault();
-    let dataStr = $(this).serializeJSON();
-    let dataObj = JSON.parse(dataStr);
-    let req ;
-    getWlItemData('current_hx',wlId)
-        .then(function(data){
-            if (data.count !=0) {
-                req = 'PUT';
-            } else {
-                req = 'POST';
-                delete dataObj['id'];
-            };
-            dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
-            dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlItemObj['id']:{};
-            dataObj['description']=capitalize(dataObj['description']);
-            dataStr= JSON.stringify(dataObj);
-            console.log("dataForm",dataObj);
-            crud('current_hx','0',req,dataStr);
-            $('#cHxSubmit').removeClass('btn-danger').addClass('btn-secondary');            
-        })
-});
-
-// using focusout to update will trigger too much ajax call
-// button in red if field updated
-// trigger change at each value change
-$('#cHxForm textarea').change(function(){
-    $('#cHxSubmit').removeClass('btn-secondary').addClass('btn-danger');
-    $('#cHxForm').submit();
-});
-
-// update field on focus and highlight if changed
-$('#cHxForm textarea').focus(function(){
-    getWlItemData('current_hx',wlId)
-        .then(function(data){
-            if (data.count != 0) {
-                let item=data.items[0];
-                $('#idcHx').val(item['id']);
-                if ($('#cHxForm textarea').val()!=item['description']) {
-                    console.log('Description changed');
-                    let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
-                    displayToast('warning', 'Description was changed', 'Item was changed by '+modder,6000);
-                    $('#cHxForm textarea').val(item.description);
-                } else {};
-            } else {};
-        });
-});
-
 
 // set submit forms
 var antFieldsArr = ['cornea','ant_chamb','iris','lens','other'],
@@ -475,3 +426,76 @@ monitorValueChange('#antRightForm', antFieldsArr);
 monitorValueChange('#antLeftForm', antFieldsArr);
 monitorValueChange('#postRightForm', postFieldsArr);
 monitorValueChange('#postLeftForm', postFieldsArr);
+
+// motility 
+
+// set form submit with 1 field 'description', not laterality
+// domId = formId eg #motForm
+
+oneFieldArr = ['#cHxForm','#motForm'];
+
+function setOneSubmit(domId,table) {
+    $(domId).submit(function(e){
+        e.preventDefault();
+        let dataStr = $(this).serializeJSON();
+        let dataObj = JSON.parse(dataStr);
+        let req ;
+        getWlItemData(table,wlId)
+            .then(function(data){
+                if (data.count !=0) {
+                    req = 'PUT';
+                } else {
+                    req = 'POST';
+                    delete dataObj['id'];
+                };
+                dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
+                dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlItemObj['id']:{};
+                dataObj['description']=capitalize(dataObj['description']);
+                dataStr= JSON.stringify(dataObj);
+                console.log("dataForm",dataObj);
+                crud(table,'0',req,dataStr);
+                $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');            
+            })
+    });    
+};
+
+setOneSubmit('#cHxForm','current_hx');
+setOneSubmit('#motForm','motility');
+
+
+// using focusout to update will trigger too much ajax call
+// button in red if field updated
+// trigger change at each value change
+
+function updateHandlersOneField(domId) {
+    $(domId+' textarea').change(function(){
+        $(domId+'Submit').removeClass('btn-secondary').addClass('btn-danger');
+        $(domId).submit();
+    });
+};
+
+updateHandlersOneField('#cHxForm');
+updateHandlersOneField('#motForm');
+
+// update field on focus and highlight if changed
+
+function monitorValueChangeOneField(domId,table) {
+    $(domId+' textarea').focus(function(){
+        getWlItemData(table,wlId)
+            .then(function(data){
+                if (data.count != 0) {
+                    let item=data.items[0];
+                    $(domId+' input[name=id]').val(item['id']);
+                    if ($(domId+' textarea').val()!=item['description']) {
+                        console.log('Description changed');
+                        let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
+                        displayToast('warning', 'Description was changed', 'Item was changed by '+modder,6000);
+                        $(domId+' textarea').val(item.description);
+                    } else {};
+                } else {};
+            });
+    });    
+}
+
+monitorValueChangeOneField('#cHxForm','current_hx');
+monitorValueChangeOneField('#motForm','motility');
