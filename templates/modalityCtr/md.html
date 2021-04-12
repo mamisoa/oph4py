@@ -711,27 +711,91 @@
 </div>
 
 <div id="cc-container" class="container-fluid mb-3"> <!-- container conclusions -->
-    <div class="row mb-3 big-title">
+    <div class="row mb-3">
         <div class="col">
-            <h2><a role="button" data-bs-toggle="collapse" href=".dx">Conclusions</a></h2>
+            <div class="row">
+                <div class="col big-title">
+                    <h2><a role="button" data-bs-toggle="collapse" href=".dx">Conclusions</a></h2>
+                </div>
+            </div>
+            <div class="row bg-right py-3 dx">
+                <div class="col">
+                    <form id="ccxForm" enctype="multipart/form-data" method="POST"> 
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-group">
+                                        <button id="ccxFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(ccx['description']) ]]</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input id="lateralityccx" type="text" class="visually-hidden" name="laterality" value="na"/>
+                        <input id="idccx" type="text" class="visually-hidden" name="id" value="[[ = XML(ccx['id']) ]]"/>
+                        <input id="idPatientccx" type="text" class="visually-hidden" name="id_auth_user" value="[[=userId]]"/>
+                        <input id="idWlccx" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row mb-3 dx">
         <div class="col">
             <div class="row">
                 <div class="col">
-                    <h3 class="title-right">Right eye</h3>
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-right">Right eye</h3>
+                        </div>
+                    </div>
+                    <div class="row bg-right py-3">
+                        <div class="col">
+                            <form id="ccxRForm" enctype="multipart/form-data" method="POST"> 
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <button id="ccxRFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                                <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(ccxR['description']) ]]</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="lateralityccxR" type="text" class="visually-hidden" name="laterality" value="right"/>
+                                <input id="idccxR" type="text" class="visually-hidden" name="id" value="[[ = XML(ccxR['id']) ]]"/>
+                                <input id="idPatientccxR" type="text" class="visually-hidden" name="id_auth_user" value="[[=userId]]"/>
+                                <input id="idWlccxR" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
+                            </form>
+                        </div>
+                    </div>
                 </div>
                 <div class="col">
-                    <h3 class="title-left">Left eye</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
-                </div>
-                <div class="col bg-left">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-left">Left eye</h3>
+                        </div>
+                    </div>
+                    <div class="row bg-left py-3">
+                        <div class="col">
+                            <form id="ccxLForm" enctype="multipart/form-data" method="POST"> 
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <button id="ccxLFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                                <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(ccxL['description']) ]]</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="lateralityccxL" type="text" class="visually-hidden" name="laterality" value="left"/>
+                                <input id="idccxL" type="text" class="visually-hidden" name="id" value="[[ = XML(ccxR['id']) ]]"/>
+                                <input id="idPatientccxL" type="text" class="visually-hidden" name="id_auth_user" value="[[=userId]]"/>
+                                <input id="idWlccxL" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

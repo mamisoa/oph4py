@@ -434,13 +434,13 @@ monitorValueChange('#postLeftForm', postFieldsArr);
 
 oneFieldArr = ['#cHxForm','#motForm'];
 
-function setOneSubmit(domId,table) {
+function setOneSubmit(domId,table,lat) {
     $(domId).submit(function(e){
         e.preventDefault();
         let dataStr = $(this).serializeJSON();
         let dataObj = JSON.parse(dataStr);
         let req ;
-        getWlItemData(table,wlId)
+        getWlItemData(table,wlId,lat)
             .then(function(data){
                 if (data.count !=0) {
                     req = 'PUT';
@@ -463,6 +463,9 @@ setOneSubmit('#cHxForm','current_hx');
 setOneSubmit('#motForm','motility');
 setOneSubmit('#phoForm','phoria');
 setOneSubmit('#pupForm','pupils');
+setOneSubmit('#ccxForm','ccx','na');
+setOneSubmit('#ccxRForm','ccx','right');
+setOneSubmit('#ccxLForm','ccx','left');
 
 // using focusout to update will trigger too much ajax call
 // button in red if field updated
@@ -479,12 +482,15 @@ updateHandlersOneField('#cHxForm');
 updateHandlersOneField('#motForm');
 updateHandlersOneField('#phoForm');
 updateHandlersOneField('#pupForm');
+updateHandlersOneField('#ccxForm');
+updateHandlersOneField('#ccxRForm');
+updateHandlersOneField('#ccxLForm');
 
 // update field on focus and highlight if changed
 
-function monitorValueChangeOneField(domId,table) {
+function monitorValueChangeOneField(domId,table,lat) {
     $(domId+' textarea').focus(function(){
-        getWlItemData(table,wlId)
+        getWlItemData(table,wlId,lat)
             .then(function(data){
                 if (data.count != 0) {
                     let item=data.items[0];
@@ -504,3 +510,6 @@ monitorValueChangeOneField('#cHxForm','current_hx');
 monitorValueChangeOneField('#motForm','motility');
 monitorValueChangeOneField('#phoForm','phoria');
 monitorValueChangeOneField('#pupForm','pupils');
+monitorValueChangeOneField('#ccxForm','ccx','na');
+monitorValueChangeOneField('#ccxRForm','ccx','right');
+monitorValueChangeOneField('#ccxLForm','ccx','left');
