@@ -32,7 +32,9 @@ function round2dec(num) {
 
 // Capitalize first character
 function capitalize(str) {
-    return str.trim().replace(/^\w/, (c) => c.toUpperCase());
+    let res='';
+    str != ''? res =str.trim().replace(/^\w/, (c) => c.toUpperCase()):{};
+    return res;
 };
 
 // normalize accented characters

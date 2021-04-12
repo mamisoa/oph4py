@@ -385,7 +385,7 @@
                         </div>
                     </div>
                     <div class="row bg-right">
-                        <div class="col pt-3"> <!-- antRight col -->
+                        <div class="col py-3"> <!-- antRight col -->
                             <h5 class="text-center">Anterior segment exam</h5>
                             <form id="antRightForm" enctype="multipart/form-data" method="POST"> 
                                 <div class="container-fluid">
@@ -435,7 +435,7 @@
                                     <input id="idantRight" type="text" class="visually-hidden" name="id" value="[[ = XML(antRight['id']) ]]"/>
                                     <input id="idPatientantRight" type="text" class="visually-hidden" name="id_auth_user"/>
                                     <input id="idWlantRight" type="text" class="visually-hidden" name="id_worklist"/>
-                                    <button id="antRightSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                    <button id="antRightFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
                                 </div>
                             </form>
                         </div> <!-- antRight end col -->
@@ -470,7 +470,7 @@
                                     <div class="row mb-3">
                                         <div class="col">
                                             <div class="form-floating">
-                                                <input type="text" id="postRightPapil" class="form-control" aria-label="papil exam" name="lens" value="[[ = XML(postRight['papil']) ]]" autocomplete="off"/>
+                                                <input type="text" id="postRightPapil" class="form-control" aria-label="papil exam" name="papil" value="[[ = XML(postRight['papil']) ]]" autocomplete="off"/>
                                                 <label for="postRightPapil">Papil exam</label>
                                             </div>
                                         </div>
@@ -489,7 +489,7 @@
                                     <input id="idpostRight" type="text" class="visually-hidden" name="id" value="[[ = XML(postRight['id']) ]]"/>
                                     <input id="idPatientpostRight" type="text" class="visually-hidden" name="id_auth_user"/>
                                     <input id="idWlpostRight" type="text" class="visually-hidden" name="id_worklist"/>
-                                    <button id="postRightSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                    <button id="postRightFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
                                 </div>
                             </form>
                         </div>
@@ -548,11 +548,11 @@
                                     </div>
                                 </div>
                                 <div class="container-fluid">
-                                    <input id="lateralityantLeft" type="text" class="visually-hidden" name="laterality" value="right"/>
+                                    <input id="lateralityantLeft" type="text" class="visually-hidden" name="laterality" value="left"/>
                                     <input id="idantLeft" type="text" class="visually-hidden" name="id" value="[[ = XML(antLeft['id']) ]]"/>
                                     <input id="idPatientantLeft" type="text" class="visually-hidden" name="id_auth_user"/>
                                     <input id="idWlantLeft" type="text" class="visually-hidden" name="id_worklist"/>
-                                    <button id="antLeftSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                    <button id="antLeftFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
                                 </div>
                             </form>
                         </div> <!-- antLeft end col -->
@@ -563,7 +563,7 @@
                                     <div class="row mb-3">
                                         <div class="col">
                                             <div class="form-floating">
-                                                <input type="text" id="postLeftVitreous" class="form-control" aria-label="vitreous exam" name="vitreous" value="[[ = XML(postLeft['vitreous']) ]]"/>
+                                                <input type="text" id="postLeftVitreous" class="form-control" aria-label="vitreous exam" name="vitreous" value="[[ = XML(postLeft['vitreous']) ]]" autocomplete="off"/>
                                                 <label for="postLeftVitreous">Vitreous exam</label>
                                             </div>
                                         </div>
@@ -571,7 +571,7 @@
                                     <div class="row mb-3">
                                         <div class="col">
                                             <div class="form-floating">
-                                                <input type="text" id="postLeftRetina" class="form-control" aria-label="retina exam" name="retina" value="[[ = XML(postLeft['retina']) ]]"/>
+                                                <input type="text" id="postLeftRetina" class="form-control" aria-label="retina exam" name="retina" value="[[ = XML(postLeft['retina']) ]]" autocomplete="off"/>
                                                 <label for="postLeftRetina">Retina exam</label>
                                             </div>
                                         </div>
@@ -579,7 +579,7 @@
                                     <div class="row mb-3">
                                         <div class="col">
                                             <div class="form-floating">
-                                                <input type="text" id="postLeftMacula" class="form-control" aria-label="macula exam" name="macula" value="[[ = XML(postLeft['macula']) ]]"/>
+                                                <input type="text" id="postLeftMacula" class="form-control" aria-label="macula exam" name="macula" value="[[ = XML(postLeft['macula']) ]]" autocomplete="off"/>
                                                 <label for="postLeftMacula">Macula exam</label>
                                             </div>
                                         </div>
@@ -587,7 +587,7 @@
                                     <div class="row mb-3">
                                         <div class="col">
                                             <div class="form-floating">
-                                                <input type="text" id="postLeftPapil" class="form-control" aria-label="papil exam" name="lens" value="[[ = XML(postLeft['papil']) ]]"/>
+                                                <input type="text" id="postLeftPapil" class="form-control" aria-label="papil exam" name="papil" value="[[ = XML(postLeft['papil']) ]]" autocomplete="off"/>
                                                 <label for="postLeftPapil">Papil exam</label>
                                             </div>
                                         </div>
@@ -595,18 +595,18 @@
                                     <div class="row mb-3">
                                         <div class="col">
                                             <div class="form-floating">
-                                                <input type="text" id="postLeftOther" class="form-control" aria-label="lens exam" name="other" value="[[ = XML(postLeft['other']) ]]"/>
+                                                <input type="text" id="postLeftOther" class="form-control" aria-label="lens exam" name="other" value="[[ = XML(postLeft['other']) ]]" autocomplete="off"/>
                                                 <label for="postLeftOther">Other findings</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="container-fluid">
-                                    <input id="lateralitypostLeft" type="text" class="visually-hidden" name="laterality" value="right"/>
+                                    <input id="lateralitypostLeft" type="text" class="visually-hidden" name="laterality" value="left"/>
                                     <input id="idpostLeft" type="text" class="visually-hidden" name="id" value="[[ = XML(postLeft['id']) ]]"/>
                                     <input id="idPatientpostLeft" type="text" class="visually-hidden" name="id_auth_user"/>
                                     <input id="idWlpostLeft" type="text" class="visually-hidden" name="id_worklist"/>
-                                    <button id="postLeftSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                    <button id="postLeftFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
                                 </div>
                             </form>
                         </div>
@@ -1069,6 +1069,9 @@ var timer_id = [];
 const modalityDict = [[ = XML(modalityDict) ]];
 // prescription objects
 var rxObj = [], tonoObj = [] ;
+// test
+var test = "[[=XML(postLeft)]]"
+
 </script>
 
 <!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
