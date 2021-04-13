@@ -1,5 +1,5 @@
 // refresh tables
-const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl','#rxRight_tbl','#rxLeft_tbl'];
+const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl','#rxRight_tbl','#rxLeft_tbl', '#coding_tbl'];
 refreshTables(tablesArr);
 
 // frequency autocomplete
@@ -108,6 +108,12 @@ mHxmodal.addEventListener('show.bs.modal', function (event) {
         document.getElementById('mHxFormModal').reset();
         // Extract info from data-bs-* attributes
         var category = button.getAttribute('data-bs-category');
+        if (category == 'coding') {
+            category = 'medical';
+            $('#mHxModal input[name=id_worklist]').val(wlId);
+            let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
+            $('#mHxModal input[name=onset]').val(today);
+        }
         $('#mHxModal .modal-title').html('New '+category+' history');
         $('#mHxModal input[name=category]').val([category]);
         $('#mHxModal input[name=site]').val(['systemic']);
@@ -190,6 +196,7 @@ $('#mHxFormModal').submit(function(e){
     $mHx_tbl.bootstrapTable('refresh'); 
     $sHx_tbl.bootstrapTable('refresh');
     $oHx_tbl.bootstrapTable('refresh');
+    $coding.bootstrapTable('refresh');
     document.getElementById('mHxFormModal').reset();
     $('#mHxModal').modal('hide'); 
 });

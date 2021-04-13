@@ -66,6 +66,8 @@ function responseHandler_msHx(res) { // used if data-response-handler="responseH
             'id_auth_user': list[i].id_auth_user,
             'id_disease_ref': list[i]['disease.id'],
             'disease_from_id': list[i]['disease.title'],
+            'id_worklist': list[i]['id_worklist'],
+            'icd10': list[i]['disease.icd10'],
             'title': list[i]['title'],
             'site': list[i]['site'],
             'note': list[i]['note'],
@@ -220,7 +222,8 @@ window.operateEvents_msHx = {
         $(modalFormId+' [name=ended]').val(row.ended); 
         $(modalFormId+' [name=category]').val([row.category]); 
         $(modalFormId+' [name=site]').val([row.site]);
-        $(modalFormId+' [name=title]').val(row.title); 
+        $(modalFormId+' [name=title]').val(row.title);
+        $(modalFormId+' [name=id_worklist]').val(row.id_worklist);  
         $(modalFormId+' [name=note]').val(row.note); 
         $(modalFormId+' [name=methodmHxModalSubmit]').val('PUT');
         $(modalId+' .modal-title').html('Edit past history #'+row.id);
