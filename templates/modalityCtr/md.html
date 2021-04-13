@@ -32,7 +32,7 @@
                         <div class="col">
                             <h4 class="big-title">Medications</h4>
                             <div>
-                                <button type="button" id="btnNewMx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mxModal">
+                                <button type="button" id="btnNewMx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-status-flag="historyMx" data-mx-flag="historyMx" data-bs-target="#mxModal">
                                     Add medication<i class="mx-2 fas fa-plus"></i>
                                 </button>
                             </div>
@@ -59,6 +59,7 @@
                                             <th data-field="medication" data-sortable="true">Medication</th>
                                             <th data-field="delivery" data-sortable="false">Delivery</th>
                                             <th data-field="frequency_h" data-sortable="false">Frequency</th>
+                                            <th data-field="note" data-sortable="false">Note</th>
                                             <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
                                             </th>
                                         </tr>
@@ -117,7 +118,7 @@
                         <div class="col">
                             <h4 class="big-title">Medical Hx</h4>
                             <div>
-                                <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-bs-category="medical">Add past medical history<i class="mx-2 fas fa-plus"></i>
+                                <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="medical">Add past medical history<i class="mx-2 fas fa-plus"></i>
                                 </button>
                             </div>
                         </div>
@@ -157,7 +158,7 @@
                         <div class="row mb-3">
                             <h4 class="big-title">Surgical Hx</h4>
                             <div>
-                                <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-bs-category="surgical">Add past surgical history<i class="mx-2 fas fa-plus"></i>
+                                <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="surgical">Add past surgical history<i class="mx-2 fas fa-plus"></i>
                                 </button>
                             </div>
                         </div>
@@ -812,7 +813,7 @@
             </div>
             <div class="row bg-right">
                 <div class="col ">
-                    <button type="button" id="btnNewCoding" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-bs-category="coding">Add code<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewCoding" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="medical" data-mhx-flag="code">Add code<i class="mx-2 fas fa-plus"></i></button>
                     <table
                         id="coding_tbl"
                         data-side-pagination="server"
@@ -854,24 +855,63 @@
         <div class="col">
             <div class="row">
                 <div class="col">
-                    <h3 class="title-right">Medical Rx</h3>
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-right">Medical Rx</h3>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
+                            <table
+                                id="mxWl_tbl"
+                                data-side-pagination="server"
+                                data-toggle="table"
+                                data-pagination="true"
+                                data-page-size="10"
+                                data-search="false"
+                                data-query-params="queryParams"
+                                data-response-handler="responseHandler_mx"
+                                data-detail-formatter="detailFormatter_mx"
+                                data-detail-view="true"
+                                data-detail-view-icon="true"
+                                >
+                                <thead>
+                                    <tr>
+                                        <th data-field="onset" data-sortable="true">Onset</th>
+                                        <th data-field="ended" data-sortable="false">Ended</th>
+                                        <th data-field="medication" data-sortable="true">Medication</th>
+                                        <th data-field="delivery" data-sortable="false">Delivery</th>
+                                        <th data-field="frequency_h" data-sortable="false">Frequency</th>
+                                        <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <div class="col">
-                    <h3 class="title-left">Glass Rx</h3>
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-left">Glass Rx</h3>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            table glass prescriptions
+                        </div>
+                    </div>
                 </div>
                 <div class="col">
-                    <h3 class="title-right">Papers</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
-                </div>
-                <div class="col bg-left">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
-                </div>
-                <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-right">Papers</h3>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            table papers
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1008,9 +1048,18 @@
                                             <div id="freqModalHelp" class="form-text">Enter frequency</div>
                                         </div>
                                     </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="mxNoteModal" class="form-label">Note:</label>
+                                            <input id="mxNoteModal" type="text" class="form-control" name="note" autocomplete="off">
+                                            <div id="mxNoteModalHelp" class="form-text">Note</div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <input id="idMx" type="text" class="visually-hidden" name="id_medic_ref" />
+                                <input id="idMxWl" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]" />
                                 <input id="idMxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idMxStatus" type="text" class="visually-hidden" name="status" />
                                 <input id="idPatientRx" type="text" class="visually-hidden" name="id_auth_user" />
                                 <input id="methodMxModalSubmit" type="text" class="visually-hidden" name="methodMxModalSubmit" value="POST" />
                                 <input id="btnMxModalSubmit" type="submit" class="visually-hidden" />
@@ -1252,68 +1301,86 @@ var test = "[[=XML(postLeft)]]"
 // submit btn to disable when done
 const btnArr = [];
 
-// init tables
+// 
 const API_MD = HOSTURL + "/myapp/api/md?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-const API_AUTODICT = HOSTURL + "/myapp/api/auto_dict?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&keywd.eq="; // add keywd parameter & keyoptions eg 'frequency&keyoptions.contains=...'
-const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
-const API_MEDICATIONS = HOSTURL + "/myapp/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
-const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
-const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
-const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?id_auth_user.id.eq='+userId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
-const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+userId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+userId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-const API_CODING = HOSTURL + "/myapp/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+ userId;
 
+// todo: to implement
+// add keywd parameter & keyoptions eg 'frequency&keyoptions.contains=...' for autocomplete
+const API_AUTODICT = HOSTURL + "/myapp/api/auto_dict?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&keywd.eq=";
+
+// API_MEDICATION lists medications for autocomplete
+const API_MEDICATIONS = HOSTURL + "/myapp/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+// API_AGENT lists agents for autocomplete
+const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+// API_DISEASES lists diseases for autocomplete
+const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+
+// table listing ALL medications taken by user
+const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 var $mx_tbl = $('#mx_tbl').bootstrapTable({
     url: API_MXUSER
 });
 
+// table listing ALL allergy to agents by user
+const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 var $ax_tbl = $('#ax_tbl').bootstrapTable({
     url: API_AXUSER
 });
 
+// table listing medical history by user
+const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 var $mHx_tbl = $('#mHx_tbl').bootstrapTable({
     url: API_MHXUSER
 });
 
-
+// table listing surgical history by user
+const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
     url: API_SHXUSER
 });
 
+// table listing ocular history by user
+const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
 var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
     url: API_OHXUSER
 });
 
+// table listing procedure worklist for user
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?id_auth_user.id.eq='+userId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
 $table_wl = $('#table-wl').bootstrapTable({
     url: API_PROCEDURE_LIST,
     formatSearch: function () {
     return 'Procedure, modality';
     }
 });
+// set timers in wl when completely rendered
+// Fires after the table body is rendered and available in the DOM, the parameters contain data
+$('#table-wl').on('post-body.bs.table', function () {
+    set_timers(timer_id);
+});
 
+// table listing refraction right eye by user
+const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+userId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 var $rxRight = $('#rxRight_tbl').bootstrapTable({
     url: API_RXRIGHT
 });
 
+// table listing refraction left eye by user
+const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+userId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
     url: API_RXLEFT
 });
 
+// table listing code encoded for worklist to user
+const API_CODING = HOSTURL + "/myapp/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+ userId;
 var $coding = $('#coding_tbl').bootstrapTable({
     url: API_CODING
 });
 
-// Fires after the table body is rendered and available in the DOM, the parameters contain data
-$('#md_tbl').on('post-body.bs.table', function () {
-});
-
-$('#table-wl').on('post-body.bs.table', function () {
-    set_timers(timer_id);
+// table listing medication encoded for current worklist 
+const API_MXWLUSER = HOSTURL + "/myapp/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+userId;
+var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
+    url: API_MXWLUSER
 });
 
 </script>

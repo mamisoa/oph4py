@@ -1,5 +1,5 @@
 // refresh tables
-const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl','#rxRight_tbl','#rxLeft_tbl', '#coding_tbl'];
+const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl','#rxRight_tbl','#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl'];
 refreshTables(tablesArr);
 
 // frequency autocomplete
@@ -100,19 +100,26 @@ $('#mHxModal input[name=title]').autoComplete({
 
 
 // init modal according to the button that called it, before it is shown
+// set mHxModal parameters by default: category
+// diagnosis associated to a worklist item have a WlId, NOT the others
 var mHxmodal = document.getElementById('mHxModal')
 mHxmodal.addEventListener('show.bs.modal', function (event) {
+    console.log('mHx modal listener triggered');
     // Button that triggered the modal
-    var button = event.relatedTarget;
+    let button = event.relatedTarget;
     if (button != undefined) {
         document.getElementById('mHxFormModal').reset();
-        // Extract info from data-bs-* attributes
-        var category = button.getAttribute('data-bs-category');
-        if (category == 'coding') {
+        // Extract info from data-*-flag attributes
+        let category = button.getAttribute('data-category-flag');
+        let mhxFlag = button.getAttribute('data-mhx-flag');
+        if (mhxFlag == 'code') {
+            // set wlId, onset today
             category = 'medical';
             $('#mHxModal input[name=id_worklist]').val(wlId);
             let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
             $('#mHxModal input[name=onset]').val(today);
+        } else {
+            $('#mHxModal input[name=id_worklist]').val('');
         }
         $('#mHxModal .modal-title').html('New '+category+' history');
         $('#mHxModal input[name=category]').val([category]);
@@ -120,6 +127,33 @@ mHxmodal.addEventListener('show.bs.modal', function (event) {
     };
 });
 
+// set mxModal parameters by default:
+// medications associated to a worklist item have a WlId, NOT the others
+var mxModal = document.getElementById('mxModal')
+mxModal.addEventListener('show.bs.modal', function (event) {
+    console.log('mx modal listener triggered');
+    // Button that triggered the modal
+    let button = event.relatedTarget;
+    if (button != undefined) {
+        // reset the form on opening
+        document.getElementById('mxFormModal').reset();
+        // Extract info from data-*-flag attributes
+        let mxFlag = button.getAttribute('data-mx-flag');
+        if (mxFlag == 'mxWl') {
+            console.log('data flag:','mxWl');
+            // set wlId, onset today
+            $('#mxModal input[name=id_worklist]').val(wlId);
+            let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
+            $('#mxModal input[name=onset]').val(today);
+        } else {
+            console.log('data flag:','NOT a mxWl');
+            $('#mxModal input[name=id_worklist]').val('');
+        };
+        $('#mxModal input[name=delivery]').val(['PO']);
+    };
+});
+
+// submit mxFormModal (medications)
 $('#mxFormModal').submit(function(e){
     e.preventDefault();
     let dataStr = $(this).serializeJSON();
@@ -363,7 +397,7 @@ function setSubmit(domId,table, fieldsArr,lat) {
                 };
                 console.log('setSubmit request:',req, 'data.count:',data.count);
                 dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
-                dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlItemObj['id']:{};
+                dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
                 // capitalize fields
                 for (field of fieldsArr) {
                     if (dataObj[field] != "") {
@@ -456,7 +490,7 @@ function setOneSubmit(domId,table,lat) {
                     delete dataObj['id'];
                 };
                 dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
-                dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlItemObj['id']:{};
+                dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
                 dataObj['description']=capitalize(dataObj['description']);
                 dataStr= JSON.stringify(dataObj);
                 console.log("dataForm",dataObj);
