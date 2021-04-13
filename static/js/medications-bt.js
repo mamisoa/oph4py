@@ -9,6 +9,7 @@ function responseHandler_medic(res) { // used if data-response-handler="response
             'brand': list[i]['brand'],
             'form': list[i]['medication.form'],
             'dosage': list[i]['dosage'],
+            'packaging': list[i]['packaging'],
             'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
             'modified_by': list[i]['mod.id'],
             'modified_on': list[i]['modified_on'],
@@ -96,6 +97,7 @@ function detailFormatter_medic(index, row) {
     html.push('<p class=""><span class="fw-bold">Delivery: </span>' + row.delivery + '</p>');
     html.push('<p class=""><span class="fw-bold">Name: </span>' + row.medication + '</p>');
     html.push('<p class=""><span class="fw-bold">Brand: </span>' + row.brand +'</p>');
+    html.push('<p class=""><span class="fw-bold">Packaging: </span>' + row.packaging +'</p>');
     html.push('</div>');
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">ID: </span>' + row.id);
