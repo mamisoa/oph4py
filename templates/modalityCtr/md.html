@@ -141,6 +141,7 @@
                                             <th data-field="onset" data-sortable="true">Onset</th>
                                             <th data-field="ended" data-sortable="false">Ended</th>
                                             <th data-field="title" data-sortable="true">Title</th>
+                                            <th data-field="icd10" data-sortable="true">ICD-10</th>
                                             <th data-field="site" data-sortable="true">Site</th>
                                             <th data-field="note" data-sortable="true">Note</th>
                                             <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
@@ -180,6 +181,7 @@
                                             <th data-field="onset" data-sortable="true">Onset</th>
                                             <th data-field="ended" data-sortable="false">Ended</th>
                                             <th data-field="title" data-sortable="true">Title</th>
+                                            <th data-field="icd10" data-sortable="true">ICD-10</th>
                                             <th data-field="site" data-sortable="true">Site</th>
                                             <th data-field="note" data-sortable="true">Note</th>
                                             <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
@@ -215,6 +217,7 @@
                             <th data-field="onset" data-sortable="true">Onset</th>
                             <th data-field="ended" data-sortable="false">Ended</th>
                             <th data-field="title" data-sortable="true">Title</th>
+                            <th data-field="icd10" data-sortable="true">ICD-10</th>
                             <th data-field="site" data-sortable="true">Side</th>
                             <th data-field="note" data-sortable="true">Note</th>
                             <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
@@ -804,13 +807,38 @@
         <div class="col">
             <div class="row">
                 <div class="col">
-                    <h3 class="title-right">Miscellaneous</h3>
+                    <h3 class="title-right">Coding</h3>
                 </div>
             </div>
-            <div class="row">
-                <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
-                </div>
+            <div class="row bg-right">
+                <div class="col ">
+                    <button type="button" id="btnNewCoding" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-bs-category="coding">Add code<i class="mx-2 fas fa-plus"></i></button>
+                    <table
+                        id="coding_tbl"
+                        data-side-pagination="server"
+                        data-toggle="table"
+                        data-pagination="true"
+                        data-page-size="10"
+                        data-search="false"
+                        data-query-params="queryParams"
+                        data-response-handler="responseHandler_msHx"
+                        data-detail-formatter="detailFormatter_msHx"
+                        data-detail-view="true"
+                        data-detail-view-icon="true"
+                        >
+                        <thead>
+                            <tr>
+                                <th data-field="onset" data-sortable="true">Onset</th>
+                                <th data-field="ended" data-sortable="false">Ended</th>
+                                <th data-field="title" data-sortable="true">Title</th>
+                                <th data-field="icd10" data-sortable="true">ICD-10</th>
+                                <th data-field="site" data-sortable="true">Side</th>
+                                <th data-field="note" data-sortable="true">Note</th>
+                                <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div> <!-- end coding col-->
             </div>
         </div>
     </div>
@@ -1137,6 +1165,7 @@
                                 </div>
                                 <input id="idDiseaseRef" type="text" class="visually-hidden" name="id_disease_ref" />
                                 <input id="idmHxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idmHxWl" type="text" class="visually-hidden" name="id_worklist" />
                                 <input id="idPatientmHx" type="text" class="visually-hidden" name="id_auth_user" />
                                 <input id="methodmHxModalSubmit" type="text" class="visually-hidden" name="methodmHxModalSubmit" value="POST" />
                                 <input id="btnmHxModalSubmit" type="submit" class="visually-hidden" />
@@ -1237,6 +1266,7 @@ const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@look
 const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?id_auth_user.id.eq='+userId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
 const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+userId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+userId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_CODING = HOSTURL + "/myapp/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+ userId;
 
 var $mx_tbl = $('#mx_tbl').bootstrapTable({
     url: API_MXUSER
@@ -1272,6 +1302,10 @@ var $rxRight = $('#rxRight_tbl').bootstrapTable({
 
 var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
     url: API_RXLEFT
+});
+
+var $coding = $('#coding_tbl').bootstrapTable({
+    url: API_CODING
 });
 
 // Fires after the table body is rendered and available in the DOM, the parameters contain data
