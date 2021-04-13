@@ -18,7 +18,7 @@ function responseHandler_mx(res) { // used if data-response-handler="responseHan
             'onset': list[i].onset,
             'ended': list[i].ended,
             'note': list[i].note,
-            'status': list[i].status,
+            'prescribed': list[i].prescribed,
             'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
             'modified_by': list[i]['mod.id'],
             'modified_on': list[i]['modified_on'],
@@ -250,7 +250,7 @@ function detailFormatter_mx(index, row) {
     html.push('<p class=""><span class="fw-bold">Delivery: </span>' + row.delivery + '</p>');
     html.push('</div>');
     html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">Status: </span>' + row.status + '</p>');
+    html.push('<p class=""><span class="fw-bold">Prescribed: </span>' + row.prescribed + '</p>');
     html.push('<p class=""><span class="fw-bold">Onset: </span>' + row.onset + '</p>');
     html.push('<p class=""><span class="fw-bold">Ended: </span>' + row.ended + '</p>');
     html.push('<p class=""><span class="fw-bold">Note: </span>' + row.note + '</p>');

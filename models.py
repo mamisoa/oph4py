@@ -434,13 +434,12 @@ db.define_table('mx',
     Field('onset','date'),
     Field('ended','date'), # add validity for prescription
     Field('note','string'),
-    Field('status','string'),
+    Field('prescribed','boolean', default = False),
     auth.signature
     )
 
 # todo: laterality table to custom dropdown select
 db.mx.delivery.requires = IS_IN_SET(('right','left','both','PO','local','IV','IM'))
-db.mx.status.requires = IS_IN_SET(('prescribed',''))
 
 # db.mx.truncate('RESTART IDENTITY CASCADE')
 
