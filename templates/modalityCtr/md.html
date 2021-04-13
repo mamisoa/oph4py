@@ -930,36 +930,40 @@
                         <div class="col">
                             <h3 class="title-right">Medical Rx</h3>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col">
-                            <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
-                            <button type="button" id="btnMxRx" class="btn btn-warning btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
-                            <table
-                                id="mxWl_tbl"
-                                data-side-pagination="server"
-                                data-toggle="table"
-                                data-pagination="true"
-                                data-page-size="10"
-                                data-search="false"
-                                data-query-params="queryParams"
-                                data-response-handler="responseHandler_mx"
-                                data-detail-formatter="detailFormatter_mx"
-                                data-detail-view="true"
-                                data-detail-view-icon="true"
-                                >
-                                <thead>
-                                    <tr>
-                                        <th data-field="onset" data-sortable="true">Onset</th>
-                                        <th data-field="ended" data-sortable="false">Ended</th>
-                                        <th data-field="medication" data-sortable="true">Medication</th>
-                                        <th data-field="delivery" data-sortable="false">Delivery</th>
-                                        <th data-field="frequency_h" data-sortable="false">Frequency</th>
-                                        <th data-field="note" data-sortable="false">Note</th>
-                                        <th data-field="prescribed" data-sortable="false">Prescribed</th>
-                                        <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
-                                        </th>
-                                    </tr>
-                                </thead>
-                            </table>
+                            <div class="col">
+                                <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
+                                <button type="button" id="btnMxRx" class="btn btn-warning btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
+                                <table
+                                    id="mxWl_tbl"
+                                    data-side-pagination="server"
+                                    data-toggle="table"
+                                    data-pagination="true"
+                                    data-page-size="10"
+                                    data-search="false"
+                                    data-query-params="queryParams"
+                                    data-response-handler="responseHandler_mx"
+                                    data-detail-formatter="detailFormatter_mx"
+                                    data-detail-view="true"
+                                    data-detail-view-icon="true"
+                                    >
+                                    <thead>
+                                        <tr>
+                                            <th data-field="onset" data-sortable="true">Onset</th>
+                                            <th data-field="ended" data-sortable="false">Ended</th>
+                                            <th data-field="medication" data-sortable="true">Medication</th>
+                                            <th data-field="delivery" data-sortable="false">Delivery</th>
+                                            <th data-field="frequency_h" data-sortable="false">Frequency</th>
+                                            <th data-field="note" data-sortable="false">Note</th>
+                                            <th data-field="prescribed" data-sortable="false">Prescribed</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
