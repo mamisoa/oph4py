@@ -177,6 +177,7 @@ $('#mxFormModal').submit(function(e){
     crud('mx','0',req,dataStr);
     document.getElementById('mxFormModal').reset();
     $mx_tbl.bootstrapTable('refresh');
+    $mxWl_tbl.bootstrapTable('refresh');
     $('#mxModal').modal('hide');
 });
 
