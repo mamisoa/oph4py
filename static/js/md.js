@@ -586,4 +586,94 @@ $('#btnMxRx').click(function(){
             $mxWl_tbl.bootstrapTable('refresh');
             $mx_tbl.bootstrapTable('refresh');
         });
-})
+});
+
+// fill the mxRxModal prescription module
+$('#btnMxRx2').click(function(){
+    // get medications from current wl and not prescribed
+    getWlItemData('mx',wlId,'','&prescribed=False&@lookup=medic!:id_medic_ref')
+        .then(function(data){
+            let dataObj=data.items;
+            console.log(data);
+            if (data.count > 0 && data.status != 'error') {
+                let html = [];
+                for (item of dataObj) {
+                    html.push('<tr>');
+                        html.push('<th scope"row">'+item.medication+'</th>');
+                        let posology=item['unit_per_intake']+' '+item['medic.form']+' '+item.frequency;
+                        html.push('<td>'+posology+'</td>');
+                        html.push('<td>'+item.onset+'</td>');
+                        html.push('<td>'+item.ended+'</td>');
+                    html.push('<tr>');
+                };
+                $('#mxRxTd').html(html.join(''));
+                $('#mxRxModal').modal('show');
+            } else {
+                displayToast('error','Medication list empty', 'No medication to prescribe',6000);
+            }
+        });
+});
+
+
+// list all prescribed medications and prints
+// set medications to prescribed
+
+// function to prepare pdf content of prescription 
+function renderMedicObj(medicObj) {
+    let content =['R/'];
+    content.push(medicObj['medication']+'\n');
+    content.push('DT n°I '+checkIfDataIsNull(medicObj['medic.packaging'],' ')+'\n');
+    let posology=item['unit_per_intake']+' '+medicObj['medic.form']+' '+medicObj['frequency'];
+    content.push('S/'+ posology+'\n');
+    return content.join('');
+};
+
+$('#mxRxModalPrint').click(function(){
+    // get medications from current wl and not prescribed
+    getWlItemData('mx',wlId,'','&prescribed=False&@lookup=medic!:id_medic_ref')
+        .then(function(data){
+            let contentAggregate="";
+            let dataObj=data.items;
+            console.log(data);
+            prescObj['name']=wlItemObj['patient.last_name'];
+            prescObj['firstname']=wlItemObj['patient.first_name'];
+            if (data.count > 0 && data.status != 'error') {
+                // crud medications in medical_rx_list
+                for (item of dataObj) {
+                    // will take the onset and ended of the last item
+                    prescObj['onset']=item['onset'];
+                    prescObj['ended']=item['ended'];
+                    let medicRxObj={};
+                    medicRxObj['id_auth_user']=item['id_auth_user'];
+                    medicRxObj['id_medic_ref']=item['medic.id'];
+                    medicRxObj['id_worklist']=item['id_worklist'];
+                    console.log('medicRxObj',medicRxObj);
+                    let medicRxStr = JSON.stringify(medicRxObj);
+                    // crud('medical_rx_list','0','POST',medicRxStr);
+                    // set medication as prescribed
+                    item['prescribed'] = 'True';
+                    delete item['mod.first_name'];
+                    delete item['mod.id'];
+                    delete item['mod.last_name'];
+                    delete item['modified_on'];
+                    delete item['created_by'];
+                    delete item['created_on'];
+                    // console.log('item:',item);
+                    // let dataStr = JSON.stringify(item);
+                    // crud('mx','0','PUT',dataStr);
+                    console.log('prescObj:',prescObj);
+                    let content = renderMedicObj(item);
+                    contentAggregate += content;
+                }; // end for loop
+                // console.log('contentAggregate:',contentAggregate);
+                prescObj['content']=contentAggregate;
+                console.log('prescObj:',prescObj);
+                let temp = Object.assign({}, prescTemplate);
+                pdfMake.createPdf(temp).download('test.pdf');
+            } else {
+                displayToast('error','Medication list empty', 'No medication to prescribe',6000);
+            }
+            $mxWl_tbl.bootstrapTable('refresh');
+            $mx_tbl.bootstrapTable('refresh');
+        });
+});

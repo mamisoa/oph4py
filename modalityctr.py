@@ -58,7 +58,7 @@ def initFields(wlId,table,lat=""):
 @action.uses('modalityCtr/md.html', session, auth, db)
 def md(wlId):
     user = auth.get_user()
-    userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    authUserId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     # get modality vs controller
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
@@ -76,6 +76,8 @@ def md(wlId):
     ccx = initFields(wlId,'ccx')
     ccxR = initFields(wlId,'ccx','right')
     ccxL = initFields(wlId,'ccx','left')
+    mdParams= db(db.md_params.id_auth_user == user['id']).select(db.md_params.id_auth_user,db.md_params.inami,db.md_params.email,db.md_params.officename,db.md_params.officeaddress,db.md_params.officezip,db.md_params.officetown,db.md_params.officeurl,db.md_params.officephone).first().as_dict()
+    userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
     return locals()
 
 # helloworld controller

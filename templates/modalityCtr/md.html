@@ -738,7 +738,7 @@
                         </div>
                         <input id="lateralityccx" type="text" class="visually-hidden" name="laterality" value="na"/>
                         <input id="idccx" type="text" class="visually-hidden" name="id" value="[[ = XML(ccx['id']) ]]"/>
-                        <input id="idPatientccx" type="text" class="visually-hidden" name="id_auth_user" value="[[=userId]]"/>
+                        <input id="idPatientccx" type="text" class="visually-hidden" name="id_auth_user" value="[[=authUserId]]"/>
                         <input id="idWlccx" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
                     </form>
                 </div>
@@ -769,7 +769,7 @@
                                 </div>
                                 <input id="lateralityccxR" type="text" class="visually-hidden" name="laterality" value="right"/>
                                 <input id="idccxR" type="text" class="visually-hidden" name="id" value="[[ = XML(ccxR['id']) ]]"/>
-                                <input id="idPatientccxR" type="text" class="visually-hidden" name="id_auth_user" value="[[=userId]]"/>
+                                <input id="idPatientccxR" type="text" class="visually-hidden" name="id_auth_user" value="[[=authUserId]]"/>
                                 <input id="idWlccxR" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
                             </form>
                         </div>
@@ -796,7 +796,7 @@
                                 </div>
                                 <input id="lateralityccxL" type="text" class="visually-hidden" name="laterality" value="left"/>
                                 <input id="idccxL" type="text" class="visually-hidden" name="id" value="[[ = XML(ccxR['id']) ]]"/>
-                                <input id="idPatientccxL" type="text" class="visually-hidden" name="id_auth_user" value="[[=userId]]"/>
+                                <input id="idPatientccxL" type="text" class="visually-hidden" name="id_auth_user" value="[[=authUserId]]"/>
                                 <input id="idWlccxL" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
                             </form>
                         </div>
@@ -863,6 +863,7 @@
                         <div class="col">
                             <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
                             <button type="button" id="btnMxRx" class="btn btn-warning btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
+                            <button type="button" id="btnMxRx2" class="btn btn-danger btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
                             <table
                                 id="mxWl_tbl"
                                 data-side-pagination="server"
@@ -1235,6 +1236,45 @@
     </div>
 </div>
 
+<!-- Modal mxRxModal -->
+<div class="modal fade" id="mxRxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Prescription module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="visually-hidden"><canvas id="itf"></canvas></div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Medication</th>
+                                    <th scope="col">Posology</th>
+                                    <th scope="col">Onset</th>
+                                    <th scope="col">End</th>
+                                  </tr>
+                                </thead>
+                                <tbody id="mxRxTd">
+                                    <!-- insert rows <td></td>-->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="mxRxModalPrint" for="btnmxRModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- cache offcanvas -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCache" aria-labelledby="offcanvas cache">
     <div class="offcanvas-header">
@@ -1277,7 +1317,9 @@
 // Global variables
 const HOSTURL = 'http://localhost:8000';
 const wlId = [[= wlId ]];
-const userId = [[ = userId ]]
+const authUserId = [[ = authUserId ]];
+const usermdObj = [[ =XML(mdParams) ]];
+const userObj = [[ =XML(userDict)]];
 // for timer
 var timer_id = [];
 // modality controllers
@@ -1285,7 +1327,6 @@ const modalityDict = [[ = XML(modalityDict) ]];
 // prescription objects
 var rxObj = [], tonoObj = [] ;
 // test
-var test = "[[=XML(postLeft)]]"
 
 </script>
 
@@ -1300,8 +1341,11 @@ var test = "[[=XML(postLeft)]]"
 <script src="js/useful.js"></script>
 <script src="js/patient-bar.js"></script>
 <script src="js/md_bt.js"></script>
+<!-- pdfmake and template prescription -->
+<script src="js/pdfmake/pdfmake.min.js"></script>
+<script src="js/pdfmake/vfs_fonts.js"></script>
+<script src="js/jsbarcode/JsBarcode.itf.min.js"></script>
 <script type="text/javascript">
-
 // submit btn to disable when done
 const btnArr = [];
 
@@ -1320,37 +1364,37 @@ const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first
 const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 // table listing ALL medications taken by user
-const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
+const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + authUserId;
 var $mx_tbl = $('#mx_tbl').bootstrapTable({
     url: API_MXUSER
 });
 
 // table listing ALL allergy to agents by user
-const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
+const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + authUserId;
 var $ax_tbl = $('#ax_tbl').bootstrapTable({
     url: API_AXUSER
 });
 
 // table listing medical history by user
-const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
+const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + authUserId;
 var $mHx_tbl = $('#mHx_tbl').bootstrapTable({
     url: API_MHXUSER
 });
 
 // table listing surgical history by user
-const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
+const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + authUserId;
 var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
     url: API_SHXUSER
 });
 
 // table listing ocular history by user
-const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + userId;
+const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + authUserId;
 var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
     url: API_OHXUSER
 });
 
 // table listing procedure worklist for user
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?id_auth_user.id.eq='+userId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?id_auth_user.id.eq='+authUserId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
 $table_wl = $('#table-wl').bootstrapTable({
     url: API_PROCEDURE_LIST,
     formatSearch: function () {
@@ -1364,29 +1408,30 @@ $('#table-wl').on('post-body.bs.table', function () {
 });
 
 // table listing refraction right eye by user
-const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+userId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+authUserId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 var $rxRight = $('#rxRight_tbl').bootstrapTable({
     url: API_RXRIGHT
 });
 
 // table listing refraction left eye by user
-const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+userId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+authUserId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
     url: API_RXLEFT
 });
 
 // table listing code encoded for worklist to user
-const API_CODING = HOSTURL + "/myapp/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+ userId;
+const API_CODING = HOSTURL + "/myapp/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+ authUserId;
 var $coding = $('#coding_tbl').bootstrapTable({
     url: API_CODING
 });
 
 // table listing medication encoded for current worklist 
-const API_MXWLUSER = HOSTURL + "/myapp/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+userId;
+const API_MXWLUSER = HOSTURL + "/myapp/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+authUserId;
 var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
     url: API_MXWLUSER
 });
 
 </script>
 <script src="js/md.js"></script>
+<script src="js/prescription.js"></script>
 [[ end ]]

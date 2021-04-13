@@ -159,6 +159,7 @@ window.operateEvents_mx = {
         $('#mxFormModal [name=frequency]').val(row.frequency);
         $('#mxFormModal [name=medication]').val(row.medication);
         $('#mxFormModal [name=note]').val(row.note);
+        $('#mxFormModal [name=prescribed]').val(row.prescribed);
         $('#mxFormModal [name=id_worklist]').val(row.id_worklist);
         $('#mxFormModal [name=methodMxModalSubmit]').val('PUT');
         $('#mxModal .modal-title').html('Edit allergy #'+row.id);

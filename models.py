@@ -406,6 +406,7 @@ db.phistory.site.requires = IS_IN_SET(('right','left','both','local','systemic')
 db.define_table('medic_ref',
     Field('name','string', required=True),
     Field('brand','string'),
+    Field('packaging','string'),
     Field('active_ingredient','string'),
     Field('dosage','string'),
     Field('form','string'),
@@ -419,8 +420,8 @@ db.medic_ref.delivery.requires = IS_IN_SET(('right','left','both','PO','local','
 # db.medic_ref.truncate('RESTART IDENTITY CASCADE')
 
 if db(db.medic_ref.id > 1).count() == 0:
-    db.medic_ref.insert(name="DAFALGAN 1g", brand="Bristol Mayers", active_ingredient="paracetamol", dosage = "['1g']", form="pill", delivery="PO")
-    db.medic_ref.insert(name="TOBRADEX", brand="Alcon", active_ingredient="['dexamethasone,'tobramycine']", dosage = "['1mg','3mg']", form="drop", delivery="both")
+    db.medic_ref.insert(name="DAFALGAN FORTE 1g", brand="Bristol Mayers", package="Boite de 40cp",active_ingredient="paracetamol", dosage = "['1g']", form="pill", delivery="PO")
+    db.medic_ref.insert(name="TOBRADEX", brand="Alcon", packaging="Collyre de 5ml", active_ingredient="['dexamethasone,'tobramycine']", dosage = "['1mg','3mg']", form="drop", delivery="both")
 
 # should not reference to a worklist
 db.define_table('mx',
@@ -512,5 +513,6 @@ db.define_table('md_params',
     Field('officeaddress','string'),
     Field('officezip','string'),
     Field('officetown','string'),
+    Field('officephone','string'),
     Field('officeurl','string'),
     auth.signature)
