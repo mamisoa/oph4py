@@ -426,17 +426,21 @@ if db(db.medic_ref.id > 1).count() == 0:
 db.define_table('mx',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_medic_ref', 'reference medic_ref'),
+    Field('id_worklist','reference worklist'),
     Field('medication', 'string'),
     Field('delivery', default='PO'),
     Field('unit_per_intake','decimal(4,2)'),
     Field('frequency','string'),
     Field('onset','date'),
     Field('ended','date'), # add validity for prescription
+    Field('note','string'),
+    Field('status','string'),
     auth.signature
     )
 
 # todo: laterality table to custom dropdown select
 db.mx.delivery.requires = IS_IN_SET(('right','left','both','PO','local','IV','IM'))
+db.mx.status.requires = IS_IN_SET(('prescribed',''))
 
 # db.mx.truncate('RESTART IDENTITY CASCADE')
 

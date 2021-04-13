@@ -5,6 +5,7 @@ function responseHandler_mx(res) { // used if data-response-handler="responseHan
         display.push({
             'id': list[i].id,
             'id_auth_user': list[i].id_auth_user,
+            'id_worklist': list[i].id_worklist,
             'id_medic_ref': list[i]['medication.id'],
             'medication_from_id': list[i]['medication.name'],
             'medication': list[i]['medication'],
@@ -16,6 +17,8 @@ function responseHandler_mx(res) { // used if data-response-handler="responseHan
             'frequency_h': list[i]['unit_per_intake'] +' '+ checkIfNull(list[i]['medication.form'],'') + ' '+ list[i].frequency,
             'onset': list[i].onset,
             'ended': list[i].ended,
+            'note': list[i].note,
+            'status': list[i].status,
             'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
             'modified_by': list[i]['mod.id'],
             'modified_on': list[i]['modified_on'],
@@ -155,6 +158,8 @@ window.operateEvents_mx = {
         $('#mxFormModal [name=intake]').val(row.intake);
         $('#mxFormModal [name=frequency]').val(row.frequency);
         $('#mxFormModal [name=medication]').val(row.medication);
+        $('#mxFormModal [name=note]').val(row.note);
+        $('#mxFormModal [name=id_worklist]').val(row.id_worklist);
         $('#mxFormModal [name=methodMxModalSubmit]').val('PUT');
         $('#mxModal .modal-title').html('Edit allergy #'+row.id);
         $('#mxModal').modal('show');
@@ -242,15 +247,18 @@ function detailFormatter_mx(index, row) {
     html.push('<p class=""><span class="fw-bold">Frequency: </span>' + row.frequency + '</p>');
     html.push('<p class=""><span class="fw-bold">Name: </span>' + row.medication + '</p>');
     html.push('<p class=""><span class="fw-bold">Brand: </span>' + checkIfNull(row.brand, '-') +'</p>');
+    html.push('<p class=""><span class="fw-bold">Delivery: </span>' + row.delivery + '</p>');
     html.push('</div>');
     html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">Delivery: </span>' + row.delivery + '</p>');
+    html.push('<p class=""><span class="fw-bold">Status: </span>' + row.status + '</p>');
     html.push('<p class=""><span class="fw-bold">Onset: </span>' + row.onset + '</p>');
     html.push('<p class=""><span class="fw-bold">Ended: </span>' + row.ended + '</p>');
+    html.push('<p class=""><span class="fw-bold">Note: </span>' + row.note + '</p>');
     html.push('</div>');
     html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">ID: </span>' + row.id);
+    html.push('<p class=""><span class="fw-bold">Mx ID: </span>' + row.id);
     html.push('<p class=""><span class="fw-bold">PatientID: </span>' + row.id_auth_user + '</p>');
+    html.push('<p class=""><span class="fw-bold">Worklist ID: </span>' + row.id_worklist + '</p>');
     html.push('<p class=""><span class="fw-bold">Created by: </span>' + row.created_by_name + ' on ' + row.created_on + '</p>');
     html.push('<p class=""><span class="fw-bold">Modified by: </span>' + row.modified_by_name + ' on ' + row.modified_on + '</p>');
     html.push('</div>');
@@ -293,6 +301,7 @@ function detailFormatter_msHx(index, row) {
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">ID: </span>' + row.id);
     html.push('<p class=""><span class="fw-bold">PatientID: </span>' + row.id_auth_user + '</p>');
+    html.push('<p class=""><span class="fw-bold">Worklist ID: </span>' + row.id_worklist + '</p>');
     html.push('<p class=""><span class="fw-bold">Created by: </span>' + row.created_by_name + ' on ' + row.created_on + '</p>');
     html.push('<p class=""><span class="fw-bold">Modified by: </span>' + row.modified_by_name + ' on ' + row.modified_on + '</p>');
     html.push('</div>');
