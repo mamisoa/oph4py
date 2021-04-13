@@ -119,6 +119,7 @@ def check_duplicate(form):
 @action.uses('test.html', session, T, auth, db, flash)
 def test(membership=6):
     user = auth.get_user()
+    userId=user['username']
     flash.set("Hello World", sanitize=True)   
     test="Test OK"
     try: # check if membership exists
