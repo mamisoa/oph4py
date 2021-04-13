@@ -498,3 +498,9 @@ db.define_table('ccx',
 
 db.ccx.laterality.requires = IS_IN_SET(('right','left','na'))
 
+db.define_table('medical_rx_list',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_medic_ref', 'reference medic_ref', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    auth.signature)
+

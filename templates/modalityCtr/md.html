@@ -862,6 +862,7 @@
                         </div>
                         <div class="col">
                             <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
+                            <button type="button" id="btnMxRx" class="btn btn-warning btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
                             <table
                                 id="mxWl_tbl"
                                 data-side-pagination="server"
@@ -1061,6 +1062,7 @@
                                 </div>
                                 <input id="idMx" type="text" class="visually-hidden" name="id_medic_ref" />
                                 <input id="idMxWl" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]" />
+                                <input id="idMxPrescribed" type="text" class="visually-hidden" name="prescribed" />
                                 <input id="idMxRow" type="text" class="visually-hidden" name="id" />
                                 <input id="idPatientRx" type="text" class="visually-hidden" name="id_auth_user" />
                                 <input id="methodMxModalSubmit" type="text" class="visually-hidden" name="methodMxModalSubmit" value="POST" />
