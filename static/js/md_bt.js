@@ -125,6 +125,12 @@ function queryParams(params) {
                 break;
             case "va_far":
                 params.sort = "va_far";
+            case "tonometry":
+                params.sort = "tonometry";
+            case "pachymetry":
+                params.sort = "pachymetry";
+            case "techno":
+                params.sort = "techno";
         }
         if (toggle=="") {
             s += "&@order="+params.sort;
@@ -580,3 +586,103 @@ function detailFormatter_rx(index, row) {
     return html.join('');
 };
 
+
+// tono tables parameters
+// todo: add search to select techo
+function responseHandler_tono(res) { 
+    let list = res.items;
+    let display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'id_auth_user': list[i].id_auth_user,
+            'id_worklist': list[i].id_worklist,
+            'techno': list[i].techno,
+            'laterality': list[i]['laterality'],
+            'tonometry': highlightValue(list[i]['tonometry'],20,24),
+            'pachymetry': list[i]['pachymetry']==null ?' ': highlightValue(list[i]['pachymetry'],525,500,'low'),
+            'timestamp': list[i]['timestamp'].split('T').join(' '),
+            'modified_by': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
+            'modified_on': list[i]['modified_on'],
+            'created_by': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
+            'created_on': list[i]['created_on']
+        });
+    });
+    return {    rows: display, 
+                total: res.count,
+                };
+};
+
+function queryParams_tono(params) {
+    var s="";
+    if (params.offset != "0") {
+        console.log(params.offset);
+        s += "&@offset="+params.offset;
+    }
+    if (params.limit != "0") {
+        console.log(params.offset);
+        s += "&@limit="+params.limit;
+    }
+    return decodeURI(encodeURI(s.slice(1-s.length))); // remove the first &
+};
+
+function operateFormatter_tono(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="edit" href="javascript:void(0)" title="Edit '+row.laterality+' tono"><i class="fas fa-edit"></i></a>');
+    html.push('<a class="cache" href="javascript:void(0)" title="Cache '+row.laterality+' tono"><i class="fas fa-file-import"></i></a>');
+    html.push('</div>');
+    return html.join('');
+  };
+
+window.operateEvents_tono = {
+    'click .edit': function (e, value, row, index) {
+        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        window.location.href = '/myapp/modalityCtr/tono/'+row.id_worklist;
+    },
+    'click .cache': function (e, value, row, index) {
+        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        tonoObj.push(row);
+        // todo: implement tono in cache
+        // updateCache(tonoObj); 
+    }
+};
+
+// highlight abnormal values
+function highlightValue(str,midthreshold,highthreshold, direction = 'high') {
+    if (direction == 'high') {
+        if (parseFloat(str) >=highthreshold) {
+            return '<span class="text-danger"><strong>'+str+'<strong><span>';
+        } else if (parseFloat(str) >= midthreshold){
+            return '<span class="text-warning"><strong>'+str+'<strong><span>';
+        } else {
+            return '<span class="text-success">'+str+'<span>';
+        }
+    } else {
+        if (parseFloat(str) <= highthreshold) {
+            return '<span class="text-danger"><strong>'+str+'<strong><span>'
+        } else if (parseFloat(str) <= midthreshold){
+            return '<span class="text-warning"><strong>'+str+'<strong><span>';
+        } else {
+            return '<span class="text-success">'+str+'<span>';
+        }
+    };
+};
+
+function detailFormatter_tono(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Tono: </span>' + row.tonometry + '</p>');
+    html.push('<p class=""><span class="fw-bold">Techno: </span>' + row.techno + '</p>');
+    html.push('<p class=""><span class="fw-bold">Pachy: </span>' + row.pachymetry + '</p>');
+    html.push('<p class=""><span class="fw-bold">Timestpan: </span>' + row.timestamp + '</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>' + row.id);
+    html.push('<p class=""><span class="fw-bold">PatientID: </span>' + row.id_auth_user + '</p>');
+    html.push('<p class=""><span class="fw-bold">Worklist ID: </span>' + row.id_worklist + '</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>' + row.created_by_name + ' on ' + row.created_on + '</p>');
+    html.push('<p class=""><span class="fw-bold">Modified by: </span>' + row.modified_by_name + ' on ' + row.modified_on + '</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};

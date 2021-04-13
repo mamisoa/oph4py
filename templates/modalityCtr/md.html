@@ -272,6 +272,76 @@
                 </table>
             </div>
         </div> <!-- end row wlHx-->
+        <div class="row mb-3 oHx"> <!-- row tono-->
+            <div class="col"> <!-- right column-->
+                <div class="row">
+                    <div class="col">
+                        <h4 class="title-right">Right tono</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col"> <!-- right table rx-->
+                        <table
+                            id="tonoRight_tbl"
+                            data-side-pagination="server"
+                            data-pagination="true"
+                            data-page-size="10"
+                            data-search="false"
+                            data-query-params="queryParams"
+                            data-response-handler="responseHandler_tono"
+                            data-detail-view="true"
+                            data-detail-view-icon="true"
+                            data-detail-formatter="detailFormatter_tono"
+                            data-detail-view-by-click="false"
+                            >
+                            <thead>
+                                <tr>
+                                    <th data-field="timestamp" data-sortable="true">Timestamp</th>
+                                    <th data-field="tonometry" data-sortable="true">Tono</th>
+                                    <th data-field="techno" data-sortable="true">Method</th>
+                                    <th data-field="pachymetry" data-sortable="true">Pachy</th>
+                                    <th data-field="operate" data-formatter="operateFormatter_tono" data-events="operateEvents_tono">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col"> <!-- left column -->
+                <div class="row">
+                    <div class="col">
+                        <h4 class="title-left">Left tono</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col"> <!-- left table rx-->
+                        <table
+                        id="tonoLeft_tbl"
+                        data-toggle="table"
+                        data-side-pagination="server"
+                        data-pagination="true"
+                        data-page-size="10"
+                        data-query-params="queryParams"
+                        data-response-handler="responseHandler_tono"
+                        data-detail-view="true"
+                        data-detail-view-icon="true"
+                        data-detail-formatter="detailFormatter_tono"
+                        data-detail-view-by-click="false"
+                        >
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="true">Timestamp</th>
+                                <th data-field="tonometry" data-sortable="true">Tono</th>
+                                <th data-field="techno" data-sortable="true">Method</th>
+                                <th data-field="pachymetry" data-sortable="true">Pachy</th>
+                                <th data-field="operate" data-formatter="operateFormatter_tono" data-events="operateEvents_tono">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    </div> 
+                </div>
+            </div>
+        </div> <!-- end row tono-->
         <div class="row mb-3 oHx"> <!-- row rx-->
             <div class="col"> <!-- right column-->
                 <div class="row">
@@ -344,7 +414,7 @@
                 </div>
             </div>
         </div> <!-- end row rx-->
-    </div> <!-- end row oHx -->
+    </div> <!-- end row oHx --> 
 </div>
 
 <div class="container-fluid mb-3" id="cHxDiv">
@@ -863,7 +933,6 @@
                         <div class="col">
                             <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
                             <button type="button" id="btnMxRx" class="btn btn-warning btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
-                            <button type="button" id="btnMxRx2" class="btn btn-danger btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
                             <table
                                 id="mxWl_tbl"
                                 data-side-pagination="server"
@@ -1429,6 +1498,16 @@ var $coding = $('#coding_tbl').bootstrapTable({
 const API_MXWLUSER = HOSTURL + "/myapp/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+authUserId;
 var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
     url: API_MXWLUSER
+});
+
+const API_TONORIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user="+authUserId;
+var $tonoRight = $('#tonoRight_tbl').bootstrapTable({
+    url: API_TONORIGHT
+});
+
+const API_TONOLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user="+authUserId;
+var $tonoLeft = $('#tonoLeft_tbl').bootstrapTable({
+    url: API_TONOLEFT
 });
 
 </script>
