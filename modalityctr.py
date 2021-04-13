@@ -80,8 +80,10 @@ def md(wlId):
 
 # helloworld controller
 @action('hello')
+@action('modalityCtr/hello/<wlId>')
 @action.uses('modalityCtr/hello.html', session, auth, db)
-def hello():
+def hello(wlId):
     user = auth.get_user()
+    userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     string = "Hello World!"
     return locals()
