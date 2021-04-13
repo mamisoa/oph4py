@@ -504,3 +504,13 @@ db.define_table('medical_rx_list',
     Field('id_worklist','reference worklist', required=True),
     auth.signature)
 
+db.define_table('md_params',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('inami', 'string'),
+    Field('email', 'string'),
+    Field('officename', 'string'),
+    Field('officeaddress','string'),
+    Field('officezip','string'),
+    Field('officetown','string'),
+    Field('officeurl','string'),
+    auth.signature)
