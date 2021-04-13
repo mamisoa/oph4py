@@ -1,5 +1,5 @@
 // refresh tables
-const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl','#rxRight_tbl','#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl'];
+const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl','#rxRight_tbl','#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl', '#tonoRight_tbl', '#tonoLeft_tbl'];
 refreshTables(tablesArr);
 
 // frequency autocomplete
@@ -552,44 +552,9 @@ monitorValueChangeOneField('#ccxLForm','ccx','left');
 // medical prescriptions
 // list all prescribed medications and prints
 // set medications to prescribed
-$('#btnMxRx').click(function(){
-    // get medications from current wl and not prescribed
-    getWlItemData('mx',wlId,'','&prescribed=False')
-        .then(function(data){
-            let dataObj=data.items;
-            console.log(data);
-            if (data.count > 0 && data.status != 'error') {
-                // crud medications in medical_rx_list
-                for (item of dataObj) {
-                    let medicRxObj={};
-                    medicRxObj['id_auth_user']=item['id_auth_user'];
-                    medicRxObj['id_medic_ref']=item['id_medic_ref'];
-                    medicRxObj['id_worklist']=item['id_worklist'];
-                    console.log(medicRxObj);
-                    let medicRxStr = JSON.stringify(medicRxObj);
-                    crud('medical_rx_list','0','POST',medicRxStr);
-                    // set medication as prescribed
-                    item['prescribed'] = 'True';
-                    delete item['mod.first_name'];
-                    delete item['mod.id'];
-                    delete item['mod.last_name'];
-                    delete item['modified_on'];
-                    delete item['created_by'];
-                    delete item['created_on'];
-                    // console.log('item:',item);
-                    let dataStr = JSON.stringify(item);
-                    crud('mx','0','PUT',dataStr);
-                };
-            } else {
-                displayToast('error','Medication list empty', 'No medication to prescribe',6000);
-            }
-            $mxWl_tbl.bootstrapTable('refresh');
-            $mx_tbl.bootstrapTable('refresh');
-        });
-});
 
 // fill the mxRxModal prescription module
-$('#btnMxRx2').click(function(){
+$('#btnMxRx').click(function(){
     // get medications from current wl and not prescribed
     getWlItemData('mx',wlId,'','&prescribed=False&@lookup=medic!:id_medic_ref')
         .then(function(data){
@@ -622,9 +587,6 @@ $('#btnMxRx2').click(function(){
         });
 });
 
-
-// list all prescribed medications and prints
-// set medications to prescribed
 
 // function to prepare pdf content of prescription 
 function renderMedicObj(medicObj) {
