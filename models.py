@@ -515,6 +515,9 @@ db.define_table('md_params',
     Field('officetown','string'),
     Field('officephone','string'),
     Field('officeurl','string'),
+    Field('companynum','string'),
+    Field('companyname','string'),
+    Field('iban','string'),
     auth.signature)
 
 db.define_table('glasses_rx_list',

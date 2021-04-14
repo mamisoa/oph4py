@@ -799,4 +799,43 @@ $('#GxRxModalPrint').click(function() {
     console.log('left:',dataObj);
     // crud('glasses_rx_list','0','POST',dataStr);
 
-})
+});
+
+// set task to done and disable form buttons
+$('#btnTaskDone').click(function() {
+    bootbox.confirm({
+        message: "Are you sure you want to set this task to DONE?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-danger'
+            }
+        },
+        callback: function (result) {
+            if (result == true) {
+                let dataObj = { 'laterality': wlItemObj['laterality'], 'id': wlId };
+                let dataStr;
+                if (wlItemObj['status_flag'] != 'done') {
+                    dataObj['status_flag'] = 'done';
+                    dataObj['counter'] = 0;
+                    dataStr = JSON.stringify(dataObj);
+                    crud('worklist','0','PUT', dataStr);
+                    getWlDetails(wlId) // check if set to done successful and disable forms
+                        .then(function (itemObj) {
+                            wlItemObj = Object.assign({},itemObj.items[0]); // clone wltitemobj in global
+                            if (wlItemObj['status_flag'] == 'done') {
+                                $('#wlItemDetails .status').html(wlItemObj['status_flag']);
+                                disableBtn(btnArr);
+                            };
+                            window.location.href = '/myapp/worklist';
+                        });
+                }
+            } // end if
+        } // end callback
+    }); //end bootbox
+});
