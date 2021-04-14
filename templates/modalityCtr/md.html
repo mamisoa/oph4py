@@ -975,7 +975,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            table glass prescriptions
+                            <button type="button" id="btnGxRx" class="btn btn-warning btn-sm float-end" >Prescribe glasses<i class="mx-2 fas fa-prescription"></i></button>
                         </div>
                     </div>
                 </div>
@@ -1347,6 +1347,164 @@
     </div>
 </div>
 
+<!-- Modal mxRxModal -->
+<div class="modal fade" id="mxRxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Prescription module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="visually-hidden"><canvas id="itf"></canvas></div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Medication</th>
+                                    <th scope="col">Posology</th>
+                                    <th scope="col">Onset</th>
+                                    <th scope="col">End</th>
+                                  </tr>
+                                </thead>
+                                <tbody id="mxRxTd">
+                                    <!-- insert rows <td></td>-->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="mxRxModalPrint" for="btnmxRModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal GxRxModal -->
+<div class="modal fade" id="GxRxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Glass module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col title-right">
+                                    <h4>Rx Right eye</h4>
+                                </div>
+                            </div>
+                            <div class="row bg-right">
+                                <div class="col">
+                                    <table class="table right">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">Origin</th>  
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Rx</th>
+                                            <th scope="col"></th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="GxRxRTd">
+                                            <!-- insert rows <td></td>-->
+                                        </tbody>
+                                    </table> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col title-left">
+                                    <h4>Rx Left eye</h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col bg-left">
+                                    <table class="table left">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">Origin</th>  
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Rx</th>
+                                            <th scope="col"></th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="GxRxLTd">
+                                            <!-- insert rows <td></td>-->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end table row-->
+                    <div class="row mt-3">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col title-right">
+                                    <h4>Rx Right to prescribe</h4>
+                                </div>
+                            </div>
+                            <div class="row bg-right">
+                                <div class="col">
+                                    <table class="table right">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">Origin</th>  
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Rx</th>
+                                            <th scope="col"></th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="GxRxright">
+                                            <!-- insert rows <td></td>-->
+                                        </tbody>
+                                    </table> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col title-left">
+                                    <h4>Rx Left eye to prescribe</h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col bg-left">
+                                    <table class="table left">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">Origin</th>  
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Rx</th>
+                                            <th scope="col"></th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="GxRxleft">
+                                            <!-- insert rows <td></td>-->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end table row-->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="GxRxModalPrint" for="btnGxRxModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- cache offcanvas -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCache" aria-labelledby="offcanvas cache">
@@ -1513,6 +1671,7 @@ const API_TONOLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&@lookup=mod!:
 var $tonoLeft = $('#tonoLeft_tbl').bootstrapTable({
     url: API_TONOLEFT
 });
+
 
 </script>
 <script src="js/md.js"></script>

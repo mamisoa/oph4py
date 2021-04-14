@@ -705,3 +705,98 @@ $('#mxRxModalPrint').click(function(){
             $mx_tbl.bootstrapTable('refresh');
         });
 }); // end prescription module
+
+// glasses prescriptions
+
+const clonerxObj = Object.assign({}, rxObj);
+$('#btnGxRx').click(function() {
+    let htmlR=[], htmlL=[];
+    for (item of rxObj) {
+        console.log(item);
+        // put everything in table
+        if (item['laterality']=='right') {
+            let html =[];
+            html.push('<tr>'); // row
+            html.push('<td>'); // 1st col origin
+            html.push(item['rx_origin']);
+            html.push('</td>');
+            html.push('<td>'); // 2nd col glass type
+            html.push(item['glass_type']);
+            html.push('</td>');
+            html.push('<th scope="row">'); // 3rd col rx
+            html.push(item['rx_far']+' Add+'+item['add']);
+            html.push('</td>');
+            html.push('<td>'); // 4th col
+            html.push('<button type="button" class="btn btn-primary btn-sm print-rx" onclick="rxDataButton(this.getAttribute(\'data-rx-obj\'),\'right\');" data-rx-obj=\''+JSON.stringify(item)+'\'><i class="fas fa-file-import"></i></button>');
+            html.push('</td>');
+            html.push('</tr>'); // end row
+            htmlR.push(html.join(''));
+        } else {
+            let html =[];
+            html.push('<tr>'); // row
+            html.push('<td>'); // 1st col origin
+            html.push(item['rx_origin']);
+            html.push('</td>');
+            html.push('<td>'); // 2nd col glass type
+            html.push(item['glass_type']);
+            html.push('</td>');
+            html.push('<th scope="row">'); // 3rd col rx
+            html.push(item['rx_far']+' Add+'+item['add']);
+            html.push('</td>');
+            html.push('<td>'); // 4th col
+            html.push('<button type="button" class="btn btn-primary btn-sm print-rx" onclick="rxDataButton(this.getAttribute(\'data-rx-obj\'),\'left\');" data-rx-obj=\''+JSON.stringify(item)+'\'><i class="fas fa-file-import"></i></button>');
+            html.push('</td>');
+            html.push('</tr>'); // end row
+            htmlL.push(html.join(''));
+        };
+    };
+    $('#GxRxRTd').html(htmlR.join(''));
+    $('#GxRxLTd').html(htmlL.join(''));
+    $('#GxRxModal').modal('show');
+});
+
+var GxRxRightObj ={};
+var GxRxLeftObj ={};
+function rxDataButton(dataStr, lat) {
+    let dataObj = JSON.parse(dataStr);
+    // console.log(dataObj);
+    let html=[];
+    html.push('<tr>'); // row
+    html.push('<td>'); // 1st col origin
+    html.push(dataObj['rx_origin']);
+    html.push('</td>');
+    html.push('<td>'); // 2nd col glass type
+    html.push(dataObj['glass_type']);
+    html.push('</td>');
+    html.push('<th scope="row">'); // 3rd col rx
+    html.push(dataObj['rx_far']+' Add+'+dataObj['add']);
+    html.push('</td>');
+    html.push('<td>'); // 4th col
+    html.push('</td>');
+    html.push('</tr>'); // end row
+    $('#GxRx'+lat).html(html.join(''));
+    lat =='right'? GxRxRightObj=dataObj: GxRxLeftObj=dataObj;
+};
+
+// todo get the prescription to glasses prescription tablel
+// then print
+$('#GxRxModalPrint').click(function() {
+    let dataObj = {};
+    // send glass right prescription to table
+    dataObj['id_auth_user']=GxRxRightObj['id_auth_user'];
+    dataObj['id_worklist']=GxRxRightObj['id_worklist'];
+    dataObj['id_rx']=GxRxRightObj['id'];
+    dataObj['laterality']='right';
+    dataStr = JSON.stringify(dataObj);
+    console.log('right:',dataObj);
+    // crud('glasses_rx_list','0','POST',dataStr);
+    // send glass left prescription to table
+    dataObj['id_auth_user']=GxRxLeftObj['id_auth_user'];
+    dataObj['id_worklist']=GxRxLeftObj['id_worklist'];
+    dataObj['id_rx']=GxRxLeftObj['id'];
+    dataObj['laterality']='left';
+    dataStr = JSON.stringify(dataObj);
+    console.log('left:',dataObj);
+    // crud('glasses_rx_list','0','POST',dataStr);
+
+})

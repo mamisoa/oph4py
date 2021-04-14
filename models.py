@@ -516,3 +516,12 @@ db.define_table('md_params',
     Field('officephone','string'),
     Field('officeurl','string'),
     auth.signature)
+
+db.define_table('glasses_rx_list',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_rx', 'reference rx', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('laterality','reference worklist', required=True),
+    auth.signature)
+
+db.glasses_rx_list.laterality.requires = IS_IN_SET(('right','left'))
