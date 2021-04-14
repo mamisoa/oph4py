@@ -85,7 +85,16 @@ def md(wlId):
 @action('modalityCtr/hello/<wlId>')
 @action.uses('modalityCtr/hello.html', session, auth, db)
 def hello(wlId):
+    import base64
     user = auth.get_user()
     userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     string = "Hello World!"
+    axe_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/axe.png'
+    logo_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg'
+    axeImg64 = base64.b64encode(open(axe_img_path, "rb").read())
+    logo64 = base64.b64encode(open(logo_img_path, "rb").read())
+    # with open('/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/axe.png', "rb") as image_file:
+    #    axeImg64 = base64.b64encode(image_file.read())
+    # with open('/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg', "rb") as image_file:
+    #    logo64 = base64.b64encode(image_file.read())
     return locals()
