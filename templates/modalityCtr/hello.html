@@ -17,9 +17,11 @@ hello2 = [[ = string]]
 [[ block js_scripts]]
 <script type="text/javascript">
 // Global variables
-const HOSTURL = 'http://localhost:8000';
+// const HOSTURL = 'http://localhost:8000';
+const HOSTURL = "[[ =hosturl ]]";
 const wlId = [[= wlId ]];
-const userId = [[ = userId ]]
+const userId = [[ = userId ]];
+const btnArr = [];
 
 const axeImg64 = 'data:image/png;base64,'+"[[= XML(axeImg64) ]]";
 var name = 'Patient',

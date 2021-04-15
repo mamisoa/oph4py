@@ -16,7 +16,6 @@ from . import settings
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 import uuid
 
-
 def str_uuid():
     unique_id = str(uuid.uuid4().hex)
     return unique_id
