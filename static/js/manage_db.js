@@ -42,7 +42,6 @@ function confirm_savedb() {
       success: function(result) {
         arr = result.split(" ");
         if (arr[1] == 'True') {
-            Listing generated'
             displayToast('success',time_counter,'DB saved');
         } else {
             displayToast('error',time_counter,'Error trying to save DB!');
