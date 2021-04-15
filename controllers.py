@@ -34,6 +34,8 @@ from py4web.utils.tags import Tags
 
 from pydal.validators import CRYPT # to encrypt passwords
 
+# import settings
+from .settings import LOCAL_URL
 
 if db(db.facility.id > 1).count() == 0:
     db.facility.insert(facility_name="Desk1")
