@@ -9,7 +9,7 @@ from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added 
 from py4web.utils.grid import Grid
 
 # import settings
-from .settings import LOCAL_URL
+from .settings import LOCAL_URL, LOCAL_BEID
 
 # table rows query to json string
 def rows2json (tablename,rows):
@@ -65,6 +65,7 @@ def check_duplicate(form):
 @action.uses('manage/user.html', session, auth, db)
 def user(rec_id="1"):
     hosturl = LOCAL_URL
+    localbeid = LOCAL_BEID
     user = auth.get_user()
     row = db(db.auth_user.id == rec_id).select().first()
     username = row.username
