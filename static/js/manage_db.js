@@ -119,7 +119,7 @@ function restoreCsv(datafile) {
               displayToast('error',time_counter,'Error trying to save DB!');
             };
         list_csv();
-        };
+        }
     });
     $('#restoreModal').modal('hide');
 };
