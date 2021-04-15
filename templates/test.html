@@ -160,7 +160,7 @@
 <script type="text/javascript">
 // init bootstrat-tables
 var membership = [[=membership]];
-var HOSTURL = 'http://localhost:8000';
+var HOSTURL = "[[ = hosturl ]]";
 
 const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender:gender[id,sex]&@count=true'; // check users with membership -> OK
 

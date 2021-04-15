@@ -18,6 +18,7 @@ from .manage import dropdownSelect
 @action('modalityCtr/tono/<wlId>')
 @action.uses('modalityCtr/tono.html', session, auth, db)
 def tono(wlId):
+    hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
 
@@ -26,6 +27,7 @@ def tono(wlId):
 @action('modalityCtr/autorx/<wlId>')
 @action.uses('modalityCtr/autorx.html', session, auth, db)
 def autorx(wlId):
+    hosturl = LOCAL_URL
     user = auth.get_user()
     qFar = db.optotype.distance == 'far'
     qClose = db.optotype.distance == 'close'
@@ -60,6 +62,7 @@ def initFields(wlId,table,lat=""):
 @action('modalityCtr/md/<wlId>')
 @action.uses('modalityCtr/md.html', session, auth, db)
 def md(wlId):
+    hosturl = LOCAL_URL
     user = auth.get_user()
     authUserId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     # get modality vs controller
