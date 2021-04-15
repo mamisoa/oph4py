@@ -64,6 +64,7 @@ def check_duplicate(form):
 @action('user/<rec_id>')
 @action.uses('manage/user.html', session, auth, db)
 def user(rec_id="1"):
+    hosturl = LOCAL_URL
     user = auth.get_user()
     row = db(db.auth_user.id == rec_id).select().first()
     username = row.username
@@ -86,6 +87,7 @@ def user(rec_id="1"):
 @action('manage/users/<membership>')
 @action.uses('manage/users.html', session, T, auth, db)
 def users(membership=6):
+    hosturl = LOCAL_URL
     user = auth.get_user()
     test="Test OK"
     try: # check if membership exists
@@ -121,6 +123,7 @@ def users(membership=6):
 @action('worklist', method=['POST','GET']) # route
 @action.uses('worklist.html', session, T, auth, db)
 def worklist():
+    hosturl = LOCAL_URL
     user = auth.get_user()
     test="Test OK"
     membership = 6
@@ -167,6 +170,7 @@ def worklist():
 @action('manage/medications/<rec_id>')
 @action.uses('manage/medications.html', session, auth, db)
 def medications(rec_id="1"):
+    hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
 
@@ -176,6 +180,7 @@ def medications(rec_id="1"):
 @action('manage/allergy/<rec_id>')
 @action.uses('manage/allergy.html', session, auth, db)
 def allergy(rec_id="1"):
+    hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
 
@@ -185,6 +190,7 @@ def allergy(rec_id="1"):
 @action('manage/diseases/<rec_id>')
 @action.uses('manage/diseases.html', session, auth, db)
 def diseases(rec_id="1"):
+    hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
 
@@ -194,6 +200,7 @@ def diseases(rec_id="1"):
 @action('import_users')
 @action.uses('generic.html', T, db)
 def import_users():
+    hosturl = LOCAL_URL
     import os
     rows = db(db.auth_user).select()
     with open(os.path.join(os.path.dirname(__file__),'uploads/csv/')+'1.csv', 'r', encoding='utf-8', newline='') as dumpfile:
@@ -203,6 +210,7 @@ def import_users():
 @action('db_truncate')
 @action.uses('generic.html', T, db, auth.user)
 def import_users():
+    hosturl = LOCAL_URL
     for table_name in db.tables():
         db[table_name].truncate('RESTART IDENTITY CASCADE')
     return locals()
@@ -210,6 +218,7 @@ def import_users():
 @action("manage/db")
 @action.uses('manage/manage_db.html', T, auth.user, db, flash)
 def manage_db():
+    hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
 
@@ -254,6 +263,7 @@ def save_db():
     except:
         return filename+" "+"False"
 
+# todo to update and add a button!
 def set_defaults_db():
     db.gender.insert(sex="Male")
     db.gender.insert(sex="Female")
@@ -284,8 +294,8 @@ def init_db():
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
     backup_path_file = backup_path+'init_db.csv'
     try:
-        # with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
-        #     db.import_from_csv_file(dumpfile)
+        with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+            db.import_from_csv_file(dumpfile)
         # set_defaults_db()
         return "reset"+" "+"True"
     except:
@@ -295,8 +305,10 @@ def init_db():
 def restore_db():
     import os
     file2restore = request.query.datafile
+    # delete all tables
     for table_name in db.tables():
         db[table_name].truncate('RESTART IDENTITY CASCADE')
+    # import csv file
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
     backup_path_file = backup_path+file2restore
     try:
