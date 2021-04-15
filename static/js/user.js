@@ -174,7 +174,7 @@ $('#btnEditUser').click(function() {
 // get id from b-eid
 $('#btnGetUserId').click(function(e) {
     $.ajax({
-        url: HOSTURL+"/myapp/api/beid",
+        url: LOCAL_BEID+"/myapp/api/beid",
         dataType: 'json',
         type: 'GET',
         success: function (item) {

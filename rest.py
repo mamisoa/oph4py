@@ -46,6 +46,7 @@ def generate_unique_id():
     unique_id = str(uuid.uuid4().hex)
     return json.dumps({"unique_id": unique_id})
 
+# TODO: add header to allow CORS on distant card reader
 @action('api/beid', method=['GET'])
 def beid():
     import json, bottle

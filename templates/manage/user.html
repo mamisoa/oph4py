@@ -361,9 +361,10 @@
 <script src="js/useful.js"></script>
 <!-- <script src="js/user_validation.js"></script> -->
 <script type="text/javascript">
-var id = [[ =rec_id ]]
-var membership = [[=membership]];
-var HOSTURL = "[[ = hosturl ]]";
+const id = [[ =rec_id ]]
+const membership = [[=membership]];
+const HOSTURL = "[[ = hosturl ]]";
+const LOCAL_BEID = "[[=localbeid ]]";
 
 const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender,marital,membership,ethny&@count=true'; 
 const API_USER_PHONE = HOSTURL + '[[=URL('api','phone')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true'; 
