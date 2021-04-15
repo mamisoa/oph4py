@@ -8,6 +8,9 @@ from pydal.validators import CRYPT # to encrypt passwords
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 from py4web.utils.grid import Grid
 
+# import settings
+from .settings import LOCAL_URL
+
 # table rows query to json string
 def rows2json (tablename,rows):
     import datetime

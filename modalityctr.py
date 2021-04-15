@@ -8,6 +8,9 @@ from pydal.validators import CRYPT # to encrypt passwords
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 from py4web.utils.grid import Grid
 
+# import settings
+from .settings import LOCAL_URL
+
 from .manage import dropdownSelect
 
 # tono controller
@@ -86,6 +89,7 @@ def md(wlId):
 @action.uses('modalityCtr/hello.html', session, auth, db)
 def hello(wlId):
     import base64
+    hosturl = LOCAL_URL
     user = auth.get_user()
     userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     string = "Hello World!"
