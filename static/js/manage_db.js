@@ -36,7 +36,7 @@ function show_csv_dir(arr) { // arr is a python list of filenames
 // throw an ajax request to make a csv backup file after modal confirmation in view
 function confirm_savedb() {
     time_counter = Date.now();
-    create_toast(toast_counter,time_counter,'Saving DB...');
+    displayToast('success',time_counter,'Saving DB...');
     $.ajax({
       url: CTRL_SAVE_DB,
       success: function(result) {
