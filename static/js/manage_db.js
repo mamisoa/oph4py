@@ -5,7 +5,7 @@ var filename ="";
 // throw an ajax request to update list of backup files
 function list_csv() {
   time_counter = Date.now();
-  create_toast(toast_counter,time_counter,'Listing csv files...');
+  displayToast('success',time_counter,'Listing csv files...');
   $.ajax({
     url: CTRL_LISTDIR,
     success: function(result) {
