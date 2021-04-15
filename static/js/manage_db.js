@@ -10,7 +10,7 @@ function list_csv() {
     url: CTRL_LISTDIR,
     success: function(result) {
     show_csv_dir(result.split(" "));
-    create_toast(toast_counter,time_counter,'Listing generated');
+    displayToast('success','Listing generated','Listing generated');
     }
   });
 }
@@ -42,9 +42,10 @@ function confirm_savedb() {
       success: function(result) {
         arr = result.split(" ");
         if (arr[1] == 'True') {
-            create_toast(toast_counter,time_counter,'DB saved')
+            Listing generated'
+            displayToast('success',time_counter,'DB saved');
         } else {
-            create_toast(toast_counter,time_counter,'Error trying to save DB!')
+            displayToast('error',time_counter,'Error trying to save DB!');
         }
       }
     });
@@ -55,33 +56,33 @@ function confirm_savedb() {
 // throw an ajax request 1) to backup DB and if successful 2) clear/reset DB - after modal confirmation in view
 function confirm_init() {
   time_counter = Date.now();
-  create_toast(toast_counter,time_counter,'Saving DB...');
+  displayToast('success',time_counter,'Saving DB...');
   $.ajax({
       url: CTRL_SAVE_DB,
       success: function(result) {
         arr = result.split(" ");
         if (arr[1] == 'True') {
-            create_toast(toast_counter,time_counter,'DB saved, resetting DB...')
+            displayToast('success',time_counter,'DB saved, resetting DB...');
             $.ajax({
-                url: CTRL_INIT_DB,
-                success: function(result) {
+              url: CTRL_INIT_DB,
+              success: function(result) {
                 arr = result.split(" ");
                 if (arr[1] == 'True') {
-                create_toast(toast_counter,time_counter,'DB blanked')
+                  displayToast('success',time_counter,'DB blanked');
                 } else {
-                create_toast(toast_counter,time_counter,'Error trying to blank DB!')
+                  displayToast('error',time_counter,'Error trying to blank DB!');
                 }
-                }
+              }
             });
         } else {
-            create_toast(toast_counter,time_counter,'Error trying to save DB!')
+          displayToast('error',time_counter,'Error trying to save DB!');
         }
       }
     });
     time_counter = Date.now();
   $('#resetModal').modal('hide');
   list_csv();
-}
+};
 
 // open modal for restore confirmation
 function confirm_restorecsv(datafile) {
@@ -95,34 +96,34 @@ function confirm_restorecsv(datafile) {
 function restoreCsv(datafile) {
     time_counter = Date.now();
     console.log('file in restoreCsv function:'+datafile);
-    create_toast(toast_counter,time_counter,'Saving DB...');
+    displayToast('success',time_counter,'Saving DB...');
     $.ajax({
         url: CTRL_SAVE_DB,
         success: function(result) {
             arr = result.split(" ");
             if (arr[1] == 'True') {
-            create_toast(toast_counter,time_counter,'DB saved, beginning restore...');
-            time_counter = Date.now();
+              displayToast('success',time_counter,'DB saved, beginning restore...');
+              time_counter = Date.now();
             $.ajax({
                 url: CTRL_RESTORE_DB+'?datafile='+datafile,
                 success: function(result) {
                     $('#delModal').modal('hide');
                     arr = result.split(" ");
                     if (arr[1] == 'True') {
-                    create_toast(toast_counter,time_counter,arr[0]+' restored')
+                      displayToast('success',time_counter,'DB '+arr[0]+' restored');
                     } else {
-                    create_toast(toast_counter,time_counter,"Couldn't restore "+arr[0]+' file!')
+                      displayToast('error',time_counter,"Couldn't restore "+arr[0]+' file!');
                     }
                 }
             });
             } else {
-            create_toast(toast_counter,time_counter,'Error trying to save DB!')
+              displayToast('error',time_counter,'Error trying to save DB!');
             };
         list_csv();
-        }
+        };
     });
     $('#restoreModal').modal('hide');
-}
+};
 
 // open modal for delete confirmation
 function confirm_delcsv(datafile) {
@@ -141,14 +142,14 @@ function delcsv(datafile) {
         $('#delModal').modal('hide');
         arr = result.split(" ");
         if (arr[1] == 'True') {
-            create_toast(toast_counter,time_counter,arr[0]+' backup DELETED')
+          displayToast('success',time_counter,'DB '+arr[0]+' backup DELETED');
         } else {
-            create_toast(toast_counter,time_counter,"Couldn't delete "+arr[0]+' file!')
+          displayToast('error',time_counter,"Couldn't delete "+arr[0]+' file!');
         }
         list_csv();
       }
   });
-}
+};
 
 // add one row in the table list of files
 // difficult to append a cell at the right place ...
