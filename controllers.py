@@ -37,6 +37,10 @@ from pydal.validators import CRYPT # to encrypt passwords
 # import settings
 from .settings import LOCAL_URL
 
+# grid
+from functools import reduce
+from py4web.utils.grid import Grid
+
 if db(db.facility.id > 1).count() == 0:
     db.facility.insert(facility_name="Desk1")
     db.facility.insert(facility_name="Desk2")
@@ -186,3 +190,13 @@ def testtable():
         flash.set("Testtable row added", sanitize=True)
         redirect(URL('index'))
     return dict(form=form, user=user, form_key=form_key)
+
+@action('companies', method=['POST', 'GET'])
+@action('companies/<path:path>', method=['POST', 'GET'])
+@action.uses(session, db, auth, 'grid.html')
+def companies(path=None):
+    grid = Grid(path,
+                query=reduce(lambda a, b: (a & b), [db.auth_user.id > 0]),
+                orderby=[db.auth_user.username],
+                search_queries=[['Search by Name', lambda val: db.auth_user.username.contains(val)]])
+    return dict(grid=grid)
