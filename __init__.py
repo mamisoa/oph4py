@@ -11,6 +11,7 @@ from . import controllers
 from . import manage
 from . import rest
 from . import modalityctr
+from . import defaults
 
 # optional parameters
 __version__ = "0.0.0"
