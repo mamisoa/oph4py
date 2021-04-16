@@ -257,18 +257,18 @@ def save_table(tablename):
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
-    filename = date_backup+'_'+tablename+'_table_backup.csv'
+    filename = date_backup+'_'+tablename+'-table-backup.csv'
     backup_path_file = backup_path+filename
     rows=db(db[tablename]).select()
     try:
         with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
             rows.export_to_csv_file(dumpfile)
         evalArr = (filename+" True").split(' ')
-        return ' '.join(evalArr)
+        return '#'.join(evalArr)
     except Exception as e:
         evalArr = (filename+" False").split(' ')
         evalArr.append(print(e))
-        return ' '.join(evalArr)
+        return '#'.join(evalArr)
 
 @action("save_db")
 def save_db():
@@ -277,18 +277,18 @@ def save_db():
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
-    filename = date_backup+'_full_backup.csv'
+    filename = date_backup+'db-full-backup.csv'
     backup_path_file = backup_path+filename
     # rows=db(db.auth_user).select()
     try:
         with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
             db.export_to_csv_file(dumpfile)
         evalArr = (filename+" True").split(' ')
-        return ' '.join(evalArr)
+        return '#'.join(evalArr)
     except Exception as e:
         evalArr = (filename+" False").split(' ')
         evalArr.append(print(e))
-        return ' '.join(evalArr)
+        return '#'.join(evalArr)
 
 # todo to update and add a button!
 def set_defaults_db():
@@ -342,26 +342,58 @@ def restore_db():
         with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
             db.import_from_csv_file(dumpfile)
         evalArr = (file2restore+" True").split(' ')
-        return ' '.join(evalArr)
+        return '#'.join(evalArr)
     except Exception as e:
         evalArr = (file2restore+" False").split(' ')
         evalArr.append(print(e))
-        return ' '.join(evalArr)
+        return '#'.join(evalArr)
     
 
-@action("restore_table")
-def restore_table():
+@action("restore", method=['GET'])
+def restore():
     import os
-    file2restore = request.query.datafile
-    # delete all tables
-    for table_name in db.tables():
-        db[table_name].truncate('RESTART IDENTITY CASCADE')
-    # import csv file
+    filename = request.query.datafile
+    # filename contains datetime-(tablename or db)-(full or table)-backup.csv -> [datetime,tablename or db,full or table,backup.csv]
+    reqArr = filename.split('-')
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
-    backup_path_file = backup_path+file2restore
-    try:
-        with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
-            db.import_from_csv_file(dumpfile)
-        return file2restore +" "+"True"
-    except:
-        return file2restore +" "+"False"
+    backup_path_file = backup_path+filename
+    table_name = reqArr[1]
+    errorTruncate = errorImport = ""
+    if reqArr[2] == 'table':
+        # truncate table
+        try:
+            db[table_name].truncate('RESTART IDENTITY CASCADE')
+        except Exception as et:
+            errorTruncate = print(et)
+        # import
+        try:
+            with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+                db[table_name].import_from_csv_file(dumpfile)
+            evalArr = (filename+" True").split(' ')
+            evalArr.append(errorTruncate)
+            return '#'.join(evalArr)
+        except Exception as ei:
+            errorImport = print(ei)
+            evalArr = (filename+" False").split(' ')
+            evalArr.append(errorTruncate+' '+errorImport)
+            return '#'.join(evalArr)
+    elif reqArr[2] == 'full':
+        # truncate db
+        try:
+            db.truncate('RESTART IDENTITY CASCADE')
+        except Exception as et:
+            errorTruncate = print(et)
+        # import
+        try:
+            with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+                db.import_from_csv_file(dumpfile)
+            evalArr = (filename+" True").split(' ')
+            evalArr.append(errorImport)
+            return '#'.join(evalArr)
+        except Exception as ei:
+            errorImport = print(ei)
+            evalArr = (filename+" False").split(' ')
+            evalArr.append(errorTruncate+' '+errorImport)
+            return '#'.join(evalArr)
+    else:
+        return 'filename#False'
