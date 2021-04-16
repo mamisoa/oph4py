@@ -257,7 +257,7 @@ def save_table(tablename):
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
-    filename = date_backup+'_'+tablename+'-table-backup.csv'
+    filename = date_backup+'-'+tablename+'-table-backup.csv'
     backup_path_file = backup_path+filename
     rows=db(db[tablename]).select()
     try:
@@ -270,6 +270,22 @@ def save_table(tablename):
         evalArr.append(print(e))
         return '#'.join(evalArr)
 
+@action("save_all_tables")
+def save_all_tables():
+    from datetime import datetime
+    import os
+    now = datetime.now()
+    dblist = db._tables
+    for table in dblist:
+        date_backup = now.strftime("%y%m%d-%H%M%S")
+        backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/tables')
+        filename = date_backup+'-'+table+'-table-backup.csv'
+        backup_path_file = backup_path+filename
+        rows=db(db[table]).select()
+        with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
+            rows.export_to_csv_file(dumpfile)
+    return True
+
 @action("save_db")
 def save_db():
     from datetime import datetime
@@ -277,7 +293,7 @@ def save_db():
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
-    filename = date_backup+'db-full-backup.csv'
+    filename = date_backup+'-db-full-backup.csv'
     backup_path_file = backup_path+filename
     # rows=db(db.auth_user).select()
     try:
