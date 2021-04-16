@@ -135,7 +135,7 @@ function confirm_delcsv(datafile) {
 
 // throw an ajax request to delete a csv backup file after modal confirmation in view
 function delcsv(datafile) {
-  create_toast(toast_counter,time_counter,'Deleting backup...');
+  displayToast('warning',time_counter,'Deleting backup...');
   $.ajax({
       url: CTRL_DELCSV+'?datafile='+datafile,
       success: function(result) {
