@@ -44,7 +44,7 @@ function confirm_savedb() {
         if (arr[1] == 'True') {
             displayToast('success',time_counter,'DB saved');
         } else {
-            displayToast('error',time_counter,'Error' + arr[0]+ 'trying to save DB!');
+            displayToast('error',time_counter,'Error ' + arr[0]+ ' trying to save DB!');
         }
       }
     });
@@ -59,7 +59,8 @@ function confirm_init() {
   $.ajax({
       url: CTRL_SAVE_DB,
       success: function(result) {
-        arr = result.split(" ");
+        console.log(result);
+        arr = result;
         if (arr[1] == 'True') {
             displayToast('success',time_counter,'DB saved, resetting DB...');
             $.ajax({
@@ -99,8 +100,8 @@ function restoreCsv(datafile) {
     $.ajax({
         url: CTRL_SAVE_DB,
         success: function(result) {
-            arr = result.split(" ");
-            if (arr[1] == 'True') {
+            arr = result;
+            if ('True') {
               displayToast('success',time_counter,'DB saved, beginning restore...');
               time_counter = Date.now();
             $.ajax({
