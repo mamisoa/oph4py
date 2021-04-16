@@ -216,9 +216,11 @@ def truncate_db():
         db[table_name].truncate('RESTART IDENTITY CASCADE')
     return locals()
 
+# TODO: add action uses aut.user to all sensible pages
 @action("manage/db")
 @action.uses('manage/manage_db.html', T, auth.user, db, flash)
 def manage_db():
+    tablesArr = db._tables
     hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
@@ -246,6 +248,25 @@ def del_csv():
         return file2del+" "+"True"
     except:
         return file2del+" "+"False"
+
+@action("save_table")
+@action('save_table/<tablename>')
+def save_db(tablename):
+    from datetime import datetime
+    import os
+    now = datetime.now()
+    date_backup = now.strftime("%y%m%d-%H%M%S")
+    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
+    filename = date_backup+'_'+tablename+'_table_backup.csv'
+    backup_path_file = backup_path+filename
+    rows=db(db[tablename]).select()
+    try:
+        with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
+            rows.export_to_csv_file(dumpfile)
+        evalstr = [filename,"True"];
+        return evalstr;
+    except Exception as e:
+        return [filename,"False",print(e)];
 
 @action("save_db")
 def save_db():

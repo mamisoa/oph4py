@@ -15,6 +15,35 @@ function list_csv() {
   });
 }
 
+function list_tables(){
+  let html = [], counter = 1;
+  for (table of TABLES_LIST) {
+    html.push('<tr>');
+    html.push('<td>'+parseInt(counter)+'</td>');
+    html.push('<td>'+table+'</td>');
+    html.push('<td><button type="button" class="btn btn-primary btn-sm" onclick="save_table(\''+table+'\');"><i class="fas fa-save"></i></button></td>');
+    html.push('<td><button type="button" class="btn btn-warning btn-sm" onclick="restore_table(\''+table+'\');"><i class="fas fa-trash-restore-alt"></i></button></td>');
+    html.push('</tr>');
+    counter +=1;
+  };
+  $('#listTables').html(html.join(''));
+};
+
+function save_table(table) {
+  console.log(table);
+  $.ajax({
+    url: CTRL_SAVE_TABLE+'/'+table,
+    success: function(result) {
+      if (result[1]==true) {
+        displayToast('success','Table '+result[0],'Table '+result[0]+' saved');
+      } else {
+        displayToast('error','Error '+result[2],'Table '+result[0]+' NOT saved!');
+      };
+      list_csv();
+    }
+  });
+};
+
 function show_csv_dir(arr) { // arr is a python list of filenames
   var flag=arr.pop(); // last item from array  
   $('#listDir').html('');
@@ -203,4 +232,4 @@ function time_elapsed(from) {
   } else {
     return elapsed_ms+'ms';
   }
-}
+};
