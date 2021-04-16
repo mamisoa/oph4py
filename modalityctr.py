@@ -93,8 +93,10 @@ def md(wlId):
 def hello(wlId):
     import base64
     hosturl = LOCAL_URL
+    database = db._tables
     user = auth.get_user()
-    userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    # userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    userId = "1"
     string = "Hello World!"
     axe_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/axe.png'
     logo_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg'

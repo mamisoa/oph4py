@@ -60,6 +60,25 @@
   </div>
 </div>
 
+<div class="container">
+  <div class="row">
+    <div class="col-8">
+      <table class="table text-center">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Table</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody id="listTables">
+          <!-- List of tables here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <!-- modals -->
 <div class="modal" id="saveModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -139,6 +158,7 @@
 
 <div class="visually-hidden">
     <p>User is: [[= globals().get('user',{}) ]]</p>
+
 </div>
 
 [[ block js_scripts]]
@@ -150,9 +170,12 @@
   const CTRL_LISTDIR = '[[=URL('list_dir_csv')]]';
   const CTRL_DELCSV = '[[=URL('del_csv')]]';
   const CTRL_RESTORE_DB = '[[=URL('restore_db')]]';
+  const CTRL_SAVE_TABLE = '[[=URL('save_table')]]';
+  const TABLES_LIST = [[ = XML(tablesArr)]];
+
   $(function() {
-    $('.toast').toast('');
     list_csv();
+    list_tables();
   });
 </script>
 
