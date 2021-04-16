@@ -256,7 +256,7 @@ def save_table(tablename):
     import os
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
-    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
+    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/tables')
     filename = date_backup+'-'+tablename+'-table-backup.csv'
     backup_path_file = backup_path+filename
     rows=db(db[tablename]).select()
