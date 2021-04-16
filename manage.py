@@ -256,9 +256,10 @@ def save_db():
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
     filename = date_backup+'_backup.csv'
     backup_path_file = backup_path+filename
+    rows=db(db.auth_user).select()
     try:
         with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
-            db.export_to_csv_file(dumpfile)
+            rows.export_to_csv_file(dumpfile)
         evalstr = [filename,"True"]
         return evalstr
     except Exception as e:
