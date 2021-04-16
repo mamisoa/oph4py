@@ -125,7 +125,7 @@ function confirm_restorecsv(datafile) {
 // 1) save db 2) restore db
 function restoreCsv(datafile) {
     time_counter = Date.now();
-    console.log('file in restoreCsv function:'+datafile);
+    console.log('file in restoreCsv function:\n'+datafile);
     displayToast('warning',time_counter,'Saving DB...');
     // first save current db
     $.ajax({
@@ -172,6 +172,7 @@ function delcsv(datafile) {
   $.ajax({
       url: CTRL_DELCSV+'?datafile='+datafile,
       success: function(result) {
+        console.log(result);
         $('#delModal').modal('hide');
         arr = result.split('#');
         if (arr[1] == 'True') {

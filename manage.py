@@ -86,10 +86,11 @@ def user(rec_id="1"):
 # list users from membership
 @action('manage/users', method=['POST','GET']) # route
 @action('manage/users/<membership>')
-@action.uses('manage/users.html', session, T, auth, db)
+# @action.uses('manage/users.html', session, T, auth, db)
+@action.uses('manage/users.html', session, T, db)
 def users(membership=6):
     hosturl = LOCAL_URL
-    user = auth.get_user()
+    # user = auth.get_user()
     test="Test OK"
     try: # check if membership exists
         check_group= db(db.membership.id == membership).isempty()
@@ -245,9 +246,9 @@ def del_csv():
     try:
         fullPath=os.path.join(os.path.dirname(__file__),'uploads/csv/')+file2del
         os.remove(fullPath)
-        return file2del+" "+"True"
+        return file2del+"#True"
     except:
-        return file2del+" "+"False"
+        return file2del+"#False"
 
 @action("save_table")
 @action('save_table/<tablename>')
@@ -256,7 +257,7 @@ def save_table(tablename):
     import os
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
-    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/tables/')
+    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
     filename = date_backup+'-'+tablename+'-table-backup.csv'
     backup_path_file = backup_path+filename
     rows=db(db[tablename]).select()
@@ -309,29 +310,6 @@ def save_db():
         evalArr.append(print(e))
         return '#'.join(evalArr)
 
-# todo to update and add a button!
-def set_defaults_db():
-    db.gender.insert(sex="Male")
-    db.gender.insert(sex="Female")
-    db.gender.insert(sex="Other")
-    db.ethny.insert(ethny="Caucasian")
-    db.ethny.insert(ethny="Black")
-    db.ethny.insert(ethny="Hispanic")
-    db.ethny.insert(ethny="Arabic")
-    db.marital.insert(marital_status="single")
-    db.marital.insert(marital_status="married")
-    db.membership.insert(membership="Admin", hierarchy="0")
-    db.membership.insert(membership="Doctor", hierarchy="1")
-    db.membership.insert(membership="Nurse", hierarchy="2")
-    db.membership.insert(membership="Medical assistant", hierarchy="2")
-    db.membership.insert(membership="Administrative", hierarchy="3")
-    db.membership.insert(membership="Patient", hierarchy="99")
-    db.data_origin.insert(origin="Home")
-    db.data_origin.insert(origin="Mobile")
-    db.data_origin.insert(origin="Work")
-    db.commit()
-    return
-
 @action("init_db")
 def init_db():
     import os
@@ -343,9 +321,9 @@ def init_db():
         with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
             db.import_from_csv_file(dumpfile)
         # set_defaults_db()
-        return "reset"+" "+"True"
+        return "reset"+"#"+"True"
     except:
-        return "reset"+" "+"False"
+        return "reset"+"#"+"False"
 
 @action("restore_db", method=['GET'])
 def restore_db():
@@ -372,13 +350,13 @@ def restore_db():
 def restore():
     import os
     filename = request.query.datafile
-    # filename contains datetime-(tablename or db)-(full or table)-backup.csv -> [datetime,tablename or db,full or table,backup.csv]
+    # filename contains date-time-(tablename or db)-(full or table)-backup.csv -> [date,time,tablename or db,full or table,backup.csv]
     reqArr = filename.split('-')
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
     backup_path_file = backup_path+filename
-    table_name = reqArr[1]
+    table_name = reqArr[2]
     errorTruncate = errorImport = ""
-    if reqArr[2] == 'table':
+    if reqArr[3] == 'table':
         # truncate table
         try:
             db[table_name].truncate('RESTART IDENTITY CASCADE')
@@ -396,7 +374,7 @@ def restore():
             evalArr = (filename+" False").split(' ')
             evalArr.append(errorTruncate+' '+errorImport)
             return '#'.join(evalArr)
-    elif reqArr[2] == 'full':
+    elif reqArr[3] == 'full':
         # truncate db
         try:
             db.truncate('RESTART IDENTITY CASCADE')
@@ -412,7 +390,7 @@ def restore():
         except Exception as ei:
             errorImport = print(ei)
             evalArr = (filename+" False").split(' ')
-            evalArr.append(errorTruncate+' '+errorImport)
+            # evalArr.append(errorTruncate+' '+errorImport)
             return '#'.join(evalArr)
     else:
-        return 'filename#False'
+        return filename+'#False'
