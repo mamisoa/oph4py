@@ -259,10 +259,10 @@ def save_db():
     try:
         with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
             db.export_to_csv_file(dumpfile)
-        evalstr = filename+" "+"True"
+        evalstr = [filename,"True"]
         return evalstr
-    except:
-        return filename+" "+"False"
+    except Exception as e:
+        return [print(e),"False"]
 
 # todo to update and add a button!
 def set_defaults_db():
