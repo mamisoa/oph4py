@@ -44,7 +44,7 @@ function confirm_savedb() {
         if (arr[1] == 'True') {
             displayToast('success',time_counter,'DB saved');
         } else {
-            displayToast('error',time_counter,'Error trying to save DB!');
+            displayToast('error',time_counter,'Error' + arr[0]+ 'trying to save DB!');
         }
       }
     });
