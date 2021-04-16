@@ -22,7 +22,6 @@ function list_tables(){
     html.push('<td>'+parseInt(counter)+'</td>');
     html.push('<td>'+table+'</td>');
     html.push('<td><button type="button" class="btn btn-primary btn-sm" onclick="save_table(\''+table+'\');"><i class="fas fa-save"></i></button></td>');
-    html.push('<td><button type="button" class="btn btn-warning btn-sm" onclick="restore_table(\''+table+'\');"><i class="fas fa-trash-restore-alt"></i></button></td>');
     html.push('</tr>');
     counter +=1;
   };
@@ -30,6 +29,7 @@ function list_tables(){
 };
 
 function save_table(table) {
+  displayToast('warning',time_counter,'Saving table '+table +'files...');
   console.log(table);
   $.ajax({
     url: CTRL_SAVE_TABLE+'/'+table,
@@ -65,15 +65,15 @@ function show_csv_dir(arr) { // arr is a python list of filenames
 // throw an ajax request to make a csv backup file after modal confirmation in view
 function confirm_savedb() {
     time_counter = Date.now();
-    displayToast('success',time_counter,'Saving DB...');
+    displayToast('warning',time_counter,'Saving DB...');
     $.ajax({
       url: CTRL_SAVE_DB,
       success: function(result) {
-        arr = result;
+        let arr = result.split(' ');
         if (arr[1] == 'True') {
-            displayToast('success',time_counter,'DB saved');
+            displayToast('success',time_counter,'DB'+arr[0]+' saved');
         } else {
-            displayToast('error',time_counter,'Error ' + arr[0]+ ' trying to save DB!');
+            displayToast('error','Error ' + arr[2],'Error ' + arr[2]+ ' trying to save DB!');
         }
       }
     });
@@ -89,7 +89,7 @@ function confirm_init() {
       url: CTRL_SAVE_DB,
       success: function(result) {
         console.log(result);
-        arr = result;
+        arr = result.split(' ');
         if (arr[1] == 'True') {
             displayToast('success',time_counter,'DB saved, resetting DB...');
             $.ajax({
@@ -121,32 +121,35 @@ function confirm_restorecsv(datafile) {
   $('#restoreModal').modal('show');
 }
 
-// throw an ajax request to restore a csv backup file after modal confirmation in view
+// 1) save db 2) restore db
 function restoreCsv(datafile) {
     time_counter = Date.now();
     console.log('file in restoreCsv function:'+datafile);
-    displayToast('success',time_counter,'Saving DB...');
+    displayToast('warning',time_counter,'Saving DB...');
+    // first save current db
     $.ajax({
         url: CTRL_SAVE_DB,
         success: function(result) {
-            arr = result;
-            if ('True') {
+            let arr = result.split(' ');
+            console.log('result ajax save db:', arr);
+            if (arr[1]=='True') {
               displayToast('success',time_counter,'DB saved, beginning restore...');
               time_counter = Date.now();
             $.ajax({
                 url: CTRL_RESTORE_DB+'?datafile='+datafile,
                 success: function(result) {
                     $('#delModal').modal('hide');
-                    arr = result.split(" ");
+                    let arr = result.split(' ');
+                    console.log(arr);
                     if (arr[1] == 'True') {
                       displayToast('success',time_counter,'DB '+arr[0]+' restored');
                     } else {
-                      displayToast('error',time_counter,"Couldn't restore "+arr[0]+' file!');
+                      displayToast('error',"Error "+arr[2],"Error "+arr[2]+ " restoring "+arr[0]+' file!');
                     }
                 }
             });
             } else {
-              displayToast('error',time_counter,'Error trying to save DB!');
+              displayToast('error','Server error','Error trying to access file DB!');
             };
         list_csv();
         }

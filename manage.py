@@ -251,7 +251,7 @@ def del_csv():
 
 @action("save_table")
 @action('save_table/<tablename>')
-def save_db(tablename):
+def save_table(tablename):
     from datetime import datetime
     import os
     now = datetime.now()
@@ -263,10 +263,12 @@ def save_db(tablename):
     try:
         with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
             rows.export_to_csv_file(dumpfile)
-        evalstr = [filename,"True"];
-        return evalstr;
+        evalArr = (filename+" True").split(' ')
+        return ' '.join(evalArr)
     except Exception as e:
-        return [filename,"False",print(e)];
+        evalArr = (filename+" False").split(' ')
+        evalArr.append(print(e))
+        return ' '.join(evalArr)
 
 @action("save_db")
 def save_db():
@@ -275,16 +277,18 @@ def save_db():
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
-    filename = date_backup+'_backup.csv'
+    filename = date_backup+'_full_backup.csv'
     backup_path_file = backup_path+filename
-    rows=db(db.auth_user).select()
+    # rows=db(db.auth_user).select()
     try:
         with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
-            rows.export_to_csv_file(dumpfile)
-        evalstr = [filename,"True"]
-        return evalstr
+            db.export_to_csv_file(dumpfile)
+        evalArr = (filename+" True").split(' ')
+        return ' '.join(evalArr)
     except Exception as e:
-        return [print(e),"False"]
+        evalArr = (filename+" False").split(' ')
+        evalArr.append(print(e))
+        return ' '.join(evalArr)
 
 # todo to update and add a button!
 def set_defaults_db():
@@ -326,6 +330,27 @@ def init_db():
 
 @action("restore_db", method=['GET'])
 def restore_db():
+    import os
+    file2restore = request.query.datafile
+    # delete all tables
+    for table_name in db.tables():
+        db[table_name].truncate('RESTART IDENTITY CASCADE')
+    # import csv file
+    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
+    backup_path_file = backup_path+file2restore
+    try:
+        with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+            db.import_from_csv_file(dumpfile)
+        evalArr = (file2restore+" True").split(' ')
+        return ' '.join(evalArr)
+    except Exception as e:
+        evalArr = (file2restore+" False").split(' ')
+        evalArr.append(print(e))
+        return ' '.join(evalArr)
+    
+
+@action("restore_table")
+def restore_table():
     import os
     file2restore = request.query.datafile
     # delete all tables
