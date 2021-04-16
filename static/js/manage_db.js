@@ -34,6 +34,7 @@ function save_table(table) {
   $.ajax({
     url: CTRL_SAVE_TABLE+'/'+table,
     success: function(result) {
+      let arr = result.split('#');
       if (result[1]==true) {
         displayToast('success','Table '+result[0],'Table '+result[0]+' saved');
       } else {
@@ -69,7 +70,7 @@ function confirm_savedb() {
     $.ajax({
       url: CTRL_SAVE_DB,
       success: function(result) {
-        let arr = result.split(' ');
+        let arr = result.split('#');
         if (arr[1] == 'True') {
             displayToast('success',time_counter,'DB'+arr[0]+' saved');
         } else {
@@ -89,13 +90,13 @@ function confirm_init() {
       url: CTRL_SAVE_DB,
       success: function(result) {
         console.log(result);
-        arr = result.split(' ');
+        arr = result.split('#');
         if (arr[1] == 'True') {
             displayToast('success',time_counter,'DB saved, resetting DB...');
             $.ajax({
               url: CTRL_INIT_DB,
               success: function(result) {
-                arr = result.split(" ");
+                arr = result.split('#');
                 if (arr[1] == 'True') {
                   displayToast('success',time_counter,'DB blanked');
                 } else {
@@ -130,7 +131,7 @@ function restoreCsv(datafile) {
     $.ajax({
         url: CTRL_SAVE_DB,
         success: function(result) {
-            let arr = result.split(' ');
+            let arr = result.split('#');
             console.log('result ajax save db:', arr);
             if (arr[1]=='True') {
               displayToast('success',time_counter,'DB saved, beginning restore...');
@@ -139,7 +140,7 @@ function restoreCsv(datafile) {
                 url: CTRL_RESTORE_DB+'?datafile='+datafile,
                 success: function(result) {
                     $('#delModal').modal('hide');
-                    let arr = result.split(' ');
+                    let arr = result.split('#');
                     console.log(arr);
                     if (arr[1] == 'True') {
                       displayToast('success',time_counter,'DB '+arr[0]+' restored');
@@ -172,7 +173,7 @@ function delcsv(datafile) {
       url: CTRL_DELCSV+'?datafile='+datafile,
       success: function(result) {
         $('#delModal').modal('hide');
-        arr = result.split(" ");
+        arr = result.split('#');
         if (arr[1] == 'True') {
           displayToast('success',time_counter,'DB '+arr[0]+' backup DELETED');
         } else {
