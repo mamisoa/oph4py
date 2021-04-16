@@ -40,7 +40,7 @@ function confirm_savedb() {
     $.ajax({
       url: CTRL_SAVE_DB,
       success: function(result) {
-        arr = result.split(" ");
+        arr = result;
         if (arr[1] == 'True') {
             displayToast('success',time_counter,'DB saved');
         } else {
