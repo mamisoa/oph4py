@@ -65,7 +65,7 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'procedure': list[i]['procedure.exam_name'],
             'modality': list[i]['modality.modality_name'],
             'laterality': list[i]['laterality'],
-            'requested_time': list[i]['requested_time'].split('T').reverse(),
+            'requested_time': list[i]['requested_time'].split('T').reverse().join(' '),
             'status_flag': list[i]['status_flag'],
             'counter': list[i]['counter'],
             'warning': list[i]['warning'],
