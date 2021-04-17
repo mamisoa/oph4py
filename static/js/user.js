@@ -128,7 +128,7 @@ function refreshList(listName){
             $('#ulUserItems').append('<li class="list-group-item">Membership: <span class="fw-bold">' + checkIfDataIsNull(item.membership['membership']) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + checkIfDataIsNull(item.dob) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Gender: <span class="fw-bold">' + checkIfDataIsNull(item.gender['sex']) + '</span></li>');
-            $('#ulUserItems').append('<li class="list-group-item">Marital status: <span class="fw-bold">' + checkIfDataIsNull(item.marital['marital_status']) + '</span></li>');
+            $('#ulUserItems').append('<li class="list-group-item">Marital status: <span class="fw-bold">' + checkIfDataIsNull(item['marital.marital_status']) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Nationality: <span class="fw-bold">' + checkIfDataIsNull(item.nationality) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Country of birth: <span class="fw-bold">' + checkIfDataIsNull(item.birth_country) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Notes: <span class="fw-bold">' + checkIfDataIsNull(item.user_notes) + '</span></li>');
@@ -230,11 +230,11 @@ $('#btnGetUserId').click(function(e) {
             console.log(item);
             document.getElementById("firstName").value= item.prenoms;
             document.getElementById("lastName").value= item.nom;
-            let sex = item.sexe == 'M'? 'Male':'Female';
+            let sex = item.sexe == 'M'? '1':'2';
             document.getElementById("genderSelect").value= checkIfDataIsNull(sex,'Male');
             let dob = item.date_naissance.split('/').reverse().join('-');
             document.getElementById("dob").value= checkIfDataIsNull(dob,'');
-            document.getElementById("nationality").value= checkIfDataIsNull(item.nationale,'');
+            document.getElementById("nationality").value= checkIfDataIsNull(item.nationalite,'');
             document.getElementById("birthTown").value= checkIfDataIsNull(item.lieu_naissance,'');
             document.getElementById("idcNum").value= checkIfDataIsNull(item.num_carte,'');
             document.getElementById("ssn").value= checkIfDataIsNull(item.num_nat,'');
