@@ -1,0 +1,61 @@
+[[extend "baseof.html"]]
+
+[[ block page_head]]
+
+[[ end ]]
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h1>Combo procedures management</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form id="newComboForm" enctype="multipart/form-data" method="POST">
+                <div class="container">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="procedure" class="form-label">Procedure:</label>
+                            <select id="procedureSelect" class="form-select" name="id_procedure">
+                                [[= procedureOptions]]
+                            </select>
+                            <div id="procedureHelp" class="form-text">Select the procedure</div>
+                        </div>
+                        <div class="col">
+                            <label for="combo" class="form-label">Modalities:</label>
+                            <select class="form-select" multiple size="10" aria-label="select the modalities related to procedure" name="id_modality">
+                                [[=modalityOptions]]
+                            </select>
+                            <div id="modalityHelp" class="form-text">Select the procedure</div>
+                        </div>
+                    <div id="wlItemAddDiv"class="row my-3">
+                        <div class="col">
+                            <button type="submit" id="btnComboAdd" class="btn btn-primary" type="button">Add combo procedure <i class="fas fa-plus"></i></button>
+                        </div>                                        
+                    </div>
+                </div>    <!--end container form  -->                            
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+[[ block js_scripts]]
+<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/timer.jquery.min.js"></script>
+<script src="js/useful.js"></script>
+<script src="js/combo.js"></script>
+<script src="js/combo-bt.js"></script>
+<script type="text/javascript">
+// global variables
+const HOSTURL = "[[ = hosturl ]]";
+const API_PROCEDURE = HOSTURL + '[[=URL('api','combo')]]';
+</script>
+
+[[ end ]]

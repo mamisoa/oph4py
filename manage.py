@@ -357,11 +357,12 @@ def restore():
     table_name = reqArr[2]
     errorTruncate = errorImport = ""
     if reqArr[3] == 'table':
-        # truncate table
-        try:
-            db[table_name].truncate('RESTART IDENTITY CASCADE')
-        except Exception as et:
-            errorTruncate = print(et)
+        ###### truncate can cause some id discrepancies #####
+        # # truncate table
+        # try:
+        #     db[table_name].truncate('RESTART IDENTITY CASCADE')
+        # except Exception as et:
+        #     errorTruncate = print(et)
         # import
         try:
             with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
@@ -375,11 +376,12 @@ def restore():
             # evalArr.append(errorTruncate+' '+errorImport)
             return '#'.join(evalArr)
     elif reqArr[3] == 'full':
+        ###### truncate can cause some id discrepancies #####
         # truncate db
-        try:
-            db.truncate('RESTART IDENTITY CASCADE')
-        except Exception as et:
-            errorTruncate = print(et)
+        # try:
+        #     db.truncate('RESTART IDENTITY CASCADE')
+        # except Exception as et:
+        #     errorTruncate = print(et)
         # import
         try:
             with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
@@ -394,3 +396,12 @@ def restore():
             return '#'.join(evalArr)
     else:
         return filename+'#False'
+
+# manage procedure combo
+@action('manage/combo')
+@action.uses(session, db, 'manage/combo.html')
+def combo():
+    hosturl = LOCAL_URL
+    procedureOptions=dropdownSelect(db.procedure,db.procedure.fields[2],1) # table to show is procedure, field to show=name, selected value is id=1, value is index
+    modalityOptions=dropdownSelect(db.modality,db.modality.fields[1],1)
+    return locals()
