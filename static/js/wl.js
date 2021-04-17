@@ -1,7 +1,7 @@
 // init worklist form
 
-// change modality options on exam2do select
-$('#exam2doSelect').change(function(){
+// change modality options on procedure select
+$('#procedureSelect').change(function(){
     setModalityOptions(this.value);
 }); 
 // reset form
@@ -21,8 +21,8 @@ $(".btn.counter_up").click(function() {
 });
 
 // set modality options
-function setModalityOptions(exam2doId){
-    let modalityOptions = getModalityOptions(exam2doId);
+function setModalityOptions(procedureId){
+    let modalityOptions = getModalityOptions(procedureId);
     modalityOptions.then(function(data){
         if (data.status != 'error') {
             let items = data.items;
@@ -37,18 +37,18 @@ function setModalityOptions(exam2doId){
 }
 
 // get json data for modality options
-function getModalityOptions(exam2doId) {
+function getModalityOptions(procedureId) {
     return Promise.resolve(
         $.ajax({
             type: "GET",
-            url: HOSTURL+"/myapp/api/modality?id_modality.exam2do_family.id_exam2do.eq="+exam2doId,
+            url: HOSTURL+"/myapp/api/modality?id_modality.procedure_family.id_procedure.eq="+procedureId,
             dataType: "json",
             success: function (data) {
                 // console.log(data); 
                 if (data.status == 'error' || data.count == 0) {
                     displayToast('error', 'GET error', 'Cannot retrieve modality options', '6000');
                 } else {                    
-                    displayToast('info', 'GET success', 'modality options for ' + exam2doId, '6000');
+                    displayToast('info', 'GET success', 'modality options for ' + procedureId, '6000');
                 }
             },
             error: function (er) {
@@ -64,7 +64,7 @@ function resetWlForm() {
     $("[name=laterality]").val(["both"]);
     $("[name=status_flag]").val(["requested"]);
     $("[name=warning]").val([""]);
-    let choice = $('select#exam2doSelect option:checked').val();
+    let choice = $('select#procedureSelect option:checked').val();
     setModalityOptions(choice);
 }
 
@@ -82,7 +82,7 @@ $('#btnWlItemAdd').click(function() {
     let formDataObjMultiple = [];
     wlItemsJson.push(formDataObj);
     if (formDataObj['modality_dest'] == 13 ) { // modality_dest 13 is multiple
-        getCombo(formDataObj['exam2do'])
+        getCombo(formDataObj['procedure'])
             .then(function(data) {
                 let arr = [];
                 // console.log('dataitem:',data);
@@ -121,15 +121,15 @@ $('#btnWlItemAdd').click(function() {
     }
 });
 
-function getCombo(id_exam2do) {
+function getCombo(id_procedure) {
     return Promise.resolve(
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: HOSTURL+"/myapp/api/combo?@lookup=id_exam2do!:id_exam2do[exam_name],id_modality!:id_modality&@count=true&id_exam2do="+id_exam2do,
+            url: HOSTURL+"/myapp/api/combo?@lookup=id_procedure!:id_procedure[exam_name],id_modality!:id_modality&@count=true&id_procedure="+id_procedure,
             success: function(data) {
                 if (data.status != 'error' || data.count) {
-                    displayToast('success', 'GET combo exams', 'GET'+data.items[0]['id_exam2do.exam_name']);
+                    displayToast('success', 'GET combo exams', 'GET'+data.items[0]['id_procedure.exam_name']);
                 } else {
                     displayToast('error', 'GET error', 'Cannot retrieve combo exams');
                 }
@@ -148,7 +148,7 @@ function appendWlItem(dataStr,cnt, modalityName) {
     // console.log('modality Name:', modalityName );
     wlItemsHtml['From'] = $('#sendingFacilitySelect :selected').text();
     wlItemsHtml['To'] = $('#receivingFacilitySelect :selected').text();
-    wlItemsHtml['Procedure'] = $('#exam2doSelect :selected').text();
+    wlItemsHtml['Procedure'] = $('#procedureSelect :selected').text();
     wlItemsHtml['Provider'] = $('#providerSelect :selected').text();
     wlItemsHtml['Senior'] = $('#seniorSelect :selected').text();
     wlItemsHtml['Timeslot'] = $('#requested_time').val();
@@ -210,7 +210,7 @@ function getWlItemDetails(wl_id) {
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: HOSTURL+"/myapp/api/worklist/"+wl_id+"?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name]",
+            url: HOSTURL+"/myapp/api/worklist/"+wl_id+"?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name]",
             success: function(data) {
                 if (data.status != 'error') {
                     displayToast('success', 'GET wl details', 'GET wl details from id :'+wl_id,6000);
@@ -245,7 +245,7 @@ function putWlModal(wlId){
             document.getElementById("newWlItemForm").reset();
             document.getElementById("sendingFacilitySelect").value= field['sending_facility.id'];
             document.getElementById("receivingFacilitySelect").value= field['receiving_facility.id'];
-            document.getElementById("exam2doSelect").value= field['exam2do.id'];
+            document.getElementById("procedureSelect").value= field['procedure.id'];
             document.getElementById("providerSelect").value= field['provider.id'];
             document.getElementById("seniorSelect").value= field['senior.id'];
             document.getElementById("requested_time").value= field['requested_time'];

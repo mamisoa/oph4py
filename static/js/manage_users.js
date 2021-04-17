@@ -85,7 +85,7 @@ window.actionEvents = {
   },
   'click .worklist':function (e,value,row) {
         resetForm($('#form_wl'));
-        setSelect('#form_wl select.exam2do', exams, 'exam_description','7'); // rx
+        setSelect('#form_wl select.procedure', exams, 'exam_description','7'); // rx
         setSelect('#form_wl select.sending_facility', facilities, 'facility_name','2'); // desk1
         setSelect('#form_wl select.receving_facility', facilities, 'facility_name','4'); // iris
         setSelect('#form_wl select.provider', providers, 'name','1'); // me
@@ -171,12 +171,12 @@ function responseHandler_wl(res) {
      'created_on': worklist[i].worklist.created_on,
      'modified_by': worklist[i].editor.first_name+' '+worklist[i].editor.last_name,
      'modified_on': worklist[i].worklist.modified_on,
-     'exam2do': worklist[i].exam2do.id,
-     'controller': worklist[i].exam2do.controller,
-     'exam_description': worklist[i].exam2do.exam_description,
+     'procedure': worklist[i].procedure.id,
+     'controller': worklist[i].procedure.controller,
+     'exam_description': worklist[i].procedure.exam_description,
      'counter': worklist[i].worklist.counter,
-     'procedure_seq': worklist[i].exam2do.procedure_seq,
-     'cycle_num': worklist[i].exam2do.cycle_num,
+     'procedure_seq': worklist[i].procedure.procedure_seq,
+     'cycle_num': worklist[i].procedure.cycle_num,
      'laterality': worklist[i].worklist.laterality,
      'warning': worklist[i].worklist.warning,
      'sending_fac_num': worklist[i].receiver.id,
@@ -266,7 +266,7 @@ function examFormatter(value,row) {
 window.actionEvents_wl = {
   'click .update': function (e,value,row) { // set values of wl items to pass to modal-wl form
     resetForm($('#form_wl'));
-    setSelect('#form_wl select.exam2do', exams, 'exam_description');
+    setSelect('#form_wl select.procedure', exams, 'exam_description');
     setSelect('#form_wl select.sending_facility', facilities, 'facility_name',row.sending_fac_num);
     setSelect('#form_wl select.receving_facility', facilities, 'facility_name',row.receiving_fac_num);
     setSelect('#form_wl select.provider', providers, 'name');
@@ -276,7 +276,7 @@ window.actionEvents_wl = {
     $('#form_wl .id_auth_user').val(row.id_auth_user);
     $('#form_wl .message_unique_id').text(row.message_unique_id);
     $('#form_wl input.requested_time').val(row.requested_time);
-    $('#form_wl select.exam2do').val(row.exam2do);
+    $('#form_wl select.procedure').val(row.procedure);
     $('#form_wl select.provider').val(row.provider_id);
     $('#form_wl select.status_flag').val(row.status_flag);
     $('#form_wl input.warning').val(row.warning);

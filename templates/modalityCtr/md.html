@@ -1625,7 +1625,7 @@ var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
 });
 
 // table listing procedure worklist for user
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?id_auth_user.id.eq='+authUserId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?id_auth_user.id.eq='+authUserId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
 $table_wl = $('#table-wl').bootstrapTable({
     url: API_PROCEDURE_LIST,
     formatSearch: function () {

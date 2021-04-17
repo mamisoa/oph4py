@@ -85,10 +85,10 @@ TABLE insurance_sector
 TABLE insurance
 
 
-TABLE exam2do
+TABLE procedure
 
 
-TABLE exam2do_family
+TABLE procedure_family
 
 
 TABLE combo
