@@ -62,6 +62,26 @@
     </div>
 </div>
 
+<div class="my-2 container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <h5 class="mb-1">Medical board registration details</h5>
+                        <span>
+                            <button id="btnEditmdParam" type="button" class="btn btn-outline-dark btn-sm m-1"><i class="fas fa-edit"></i></button>
+                        </span>
+                    </div>
+                </div>
+                <ul id="mdParamItems" class="list-group list-group-flush">
+                    <!-- li fields-->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- userModal -->
 <div class="modal fade" id="userDetailsModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
@@ -346,6 +366,103 @@
     </div>
 </div>
 
+<!-- mdParamModal -->
+<div class="modal fade" id="userMd_paramModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New provider informations</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="userMd_paramForm" enctype="multipart/form-data">
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="numInami" class="form-label">Inami:</label>
+                                        <input id="numInami" type="text" class="form-control" name="inami">
+                                        <div id="numInamiHelp" class="form-text">Set INAMI number eg 1-00-000-00-000</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="mdEmail" class="form-label">Email:</label>
+                                        <input id="mdEmail" type="email" class="form-control" name="email">
+                                        <div id="mdEmailHelp" class="form-text">Set public email</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="officeName" class="form-label">Office denomination:</label>
+                                        <input id="officeName" type="text" class="form-control" name="officename">
+                                        <div id="officeNameHelp" class="form-text">Set the office offical name</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="officeUrl" class="form-label">Office url:</label>
+                                        <input id="officeUrl" type="text" class="form-control" name="officeurl">
+                                        <div id="officeUrlHelp" class="form-text">Set the office url</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="officePhone" class="form-label">Office phone:</label>
+                                        <input id="officePhone" type="text" class="form-control" name="officephone">
+                                        <div id="officePhoneHelp" class="form-text">Set the office phone</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="officeAddress" class="form-label">Address</label>
+                                        <input id="officeAddress" type="text" class="form-control" name="officeaddress">
+                                        <div id="officeAddressHelp" class="form-text">Enter address</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="officeZip" class="form-label">Zip:</label>
+                                        <input id="officeZip" type="text" class="form-control" name="officezip">
+                                        <div id="officeZipHelp" class="form-text">Enter zip code</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="officeTown" class="form-label">Town:</label>
+                                        <input id="officeTown" type="text" class="form-control" name="officetown">
+                                        <div id="officeTownHelp" class="form-text">Enter town</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="officeCountry" class="form-label">Country:</label>
+                                        <input id="officeCountry" type="text" class="form-control" name="officecountry">
+                                        <div id="officeCountryHelp" class="form-text">Enter country</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="companyName" class="form-label">Company name:</label>
+                                        <input id="companyName" type="text" class="form-control" name="companyname">
+                                        <div id="companyNameHelp" class="form-text">Enter official registration number</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="companyNum" class="form-label">Company number:</label>
+                                        <input id="companyNum" type="text" class="form-control" name="companynum">
+                                        <div id="companyNumHelp" class="form-text">Enter official registration number</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="companyIban" class="form-label">Company IBAN:</label>
+                                        <input id="companyIban" type="text" class="form-control" name="companyiban">
+                                        <div id="companyIbanHelp" class="form-text">Enter bank account number</div>
+                                    </div>
+                                </div>
+                                <input id="idMd_ParamSubmit" type="text" class="visually-hidden" name="id"/>
+                                <input id="methodMd_paramSubmit" type="text" class="visually-hidden" name="methodmdParamSubmit" value="POST"/>
+                                <input id="btnmdParamSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="mdParamSubmit" for="btnmdParamSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- <div>
     <p>Record is: [[ =rec_id ]]</p>
     <p>User is: [[ =username ]]</p>
@@ -369,6 +486,7 @@ const LOCAL_BEID = "[[=localbeid ]]";
 const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender,marital,membership,ethny&@count=true'; 
 const API_USER_PHONE = HOSTURL + '[[=URL('api','phone')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true'; 
 const API_USER_ADDRESS = HOSTURL + '[[=URL('api','address')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true&@order=address_rank'; 
+const API_MDPARAM = HOSTURL + '[[=URL('api','md_params')]]' + '?id_auth_user.eq=' + id
 </script>
 <script src="js/user.js"></script>
 [[ end ]]
