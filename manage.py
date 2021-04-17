@@ -307,7 +307,7 @@ def save_db():
         return '#'.join(evalArr)
     except Exception as e:
         evalArr = (filename+" False").split(' ')
-        evalArr.append(print(e))
+        # evalArr.append(print(e))
         return '#'.join(evalArr)
 
 @action("init_db")
@@ -372,7 +372,7 @@ def restore():
         except Exception as ei:
             errorImport = print(ei)
             evalArr = (filename+" False").split(' ')
-            evalArr.append(errorTruncate+' '+errorImport)
+            # evalArr.append(errorTruncate+' '+errorImport)
             return '#'.join(evalArr)
     elif reqArr[3] == 'full':
         # truncate db
