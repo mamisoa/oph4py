@@ -70,6 +70,7 @@ def user(rec_id="1"):
     row = db(db.auth_user.id == rec_id).select().first()
     username = row.username
     membership = row.membership
+    hierarchy = db(db.membership.id == membership).select(db.membership.hierarchy).first()['hierarchy']
     roleOptions=""
     for role in db(db.membership.id>0).select(db.membership.ALL):
         if role.membership == "Patient": # make "Patient" as default option
