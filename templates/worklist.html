@@ -216,11 +216,11 @@
                                             <div id="receivingFacilityHelp" class="form-text">Receiving facility</div>
                                         </div>
                                         <div class="col">
-                                            <label for="exam2do" class="form-label">Procedure:</label>
-                                            <select id="exam2doSelect" class="form-select" name="exam2do">
-                                                [[ =exam2doOptions ]]
+                                            <label for="procedure" class="form-label">Procedure:</label>
+                                            <select id="procedureSelect" class="form-select" name="procedure">
+                                                [[ =procedureOptions ]]
                                             </select>
-                                            <div id="exam2doHelp" class="form-text">Choose procedure</div>
+                                            <div id="procedureHelp" class="form-text">Choose procedure</div>
                                         </div>
                                         <div class="col">
                                             <label for="provider" class="form-label">Provider:</label>
@@ -365,8 +365,8 @@ const HOSTURL = "[[ = hosturl ]]";
 // set tables
 const TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
 const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
-const API_PROCEDURE_LIST_TODAY = HOSTURL+'[[=URL('api','worklist')]]'+'?created_on='+TODAY_DATE+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],exam2do!:exam2do,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
+const API_PROCEDURE_LIST_TODAY = HOSTURL+'[[=URL('api','worklist')]]'+'?created_on='+TODAY_DATE+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
 
 var $table = $('#table').bootstrapTable({
     url: API_USER_LIST,

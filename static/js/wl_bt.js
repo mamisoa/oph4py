@@ -26,7 +26,7 @@ function queryParams_wl(params) {
             params.sort = "modality_dest";
         }
         if (params.sort == "procedure") {
-            params.sort = "exam2do";
+            params.sort = "procedure";
         }
         if (params.sort == "patient") {
             params.sort = "id_auth_user";
@@ -62,7 +62,7 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'patient': list[i]['id_auth_user.last_name']+' '+list[i]['id_auth_user.first_name'],
             'provider': list[i]['provider.last_name']+' '+list[i]['provider.first_name'],
             'senior': list[i]['senior.last_name']+' '+list[i]['senior.first_name'],
-            'procedure': list[i]['exam2do.exam_name'],
+            'procedure': list[i]['procedure.exam_name'],
             'modality': list[i]['modality.modality_name'],
             'laterality': list[i]['laterality'],
             'requested_time': list[i]['requested_time'].split('T').reverse(),

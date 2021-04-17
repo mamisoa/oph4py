@@ -141,7 +141,7 @@ def worklist():
     genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1)
     sendingFacilityOptions = dropdownSelect(db.facility,db.facility.fields[1],1) # defaultId = 1 (desk1)
     receivingFacilityOptions = dropdownSelect(db.facility,db.facility.fields[1],3) # defaultId = 3 (iris)
-    exam2doOptions = dropdownSelect(db.exam2do,db.exam2do.fields[2],4) # field exam_name defaultId = 4 (routine consultation)
+    procedureOptions = dropdownSelect(db.procedure,db.procedure.fields[2],4) # field exam_name defaultId = 4 (routine consultation)
     providerOptions=""
     for provider in db((db.auth_user.membership>=1)&(db.auth_user.membership<=4)).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
         if provider.last_name == 'Griffith': # make "House" as default option

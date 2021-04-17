@@ -10,8 +10,6 @@ from py4web import action
 # todo to update and add a button!
 @action('set_defaults_db')
 def set_defaults_db():
-    for table_name in db.tables():
-        db[table_name].truncate('RESTART IDENTITY CASCADE')
     # gender reference to: nothing
     db.gender.insert(sex="Male")
     db.gender.insert(sex="Female")
@@ -96,38 +94,38 @@ def set_defaults_db():
     db.modality.insert(modality_name="Cyclopentol", id_modality_controller="1") #autorx
     db.modality.insert(modality_name="Mix Tropicol/Phenylephrine", id_modality_controller="10") #none
     db.commit()
-    # exam2do reference to : nothing 160421
-    db.exam2do.insert(loinc_code="autorxc66", exam_name="AutoRx",exam_description="Automatic refraction",cycle_num="1", procedure_seq="1")
-    db.exam2do.insert(loinc_code="topoc66", exam_name="Corneal mapping",exam_description="Corneal mapping",cycle_num="1", procedure_seq="1")
-    db.exam2do.insert(loinc_code="biometryc66", exam_name="Optical biometry",exam_description="Optical biometry",cycle_num="1", procedure_seq="1")
-    db.exam2do.insert(loinc_code="routinec66", exam_name="Routine consultation",exam_description="Routine consultation",cycle_num="1", procedure_seq="4")
-    db.exam2do.insert(loinc_code="glaucoma1c66", exam_name="Glaucoma consultation",exam_description="Glaucoma consultation with visual field and OCT",cycle_num="1", procedure_seq="6")
-    db.exam2do.insert(loinc_code="keratoconusc66", exam_name="Keratoconus consultation",exam_description="Keratoconus consultation with corneal mapping",cycle_num="1", procedure_seq="5")
-    db.exam2do.insert(loinc_code="sltc66", exam_name="SLT",exam_description="Selective Laser Therapy",cycle_num="1", procedure_seq="1")
-    db.exam2do.insert(loinc_code="iridoc66", exam_name="Iridotomy",exam_description="Iridotomy with YAG laser",cycle_num="1", procedure_seq="1")
-    db.exam2do.insert(loinc_code="capsuloc66", exam_name="Capsulotomy",exam_description="Capsulotomy with YAG laser",cycle_num="1", procedure_seq="1")
-    db.exam2do.insert(loinc_code="octmacc66", exam_name="OCT macula",exam_description="Macular OCT",cycle_num="1", procedure_seq="1")
-    db.exam2do.insert(loinc_code="octpapc66", exam_name="OCT glaucoma",exam_description="Optic nerve layer OCT on papil and retina",cycle_num="1", procedure_seq="1")
-    db.exam2do.insert(loinc_code="cycloc66", exam_name="Cycloplegia",exam_description="Cycloplegia",cycle_num="1", procedure_seq="1")
-    db.exam2do.insert(loinc_code="dilc66", exam_name="Dilatation",exam_description="Dilatation of pupils",cycle_num="1", procedure_seq="1")
+    # procedure reference to : nothing 160421
+    db.procedure.insert(loinc_code="autorxc66", exam_name="AutoRx",exam_description="Automatic refraction",cycle_num="1", procedure_seq="1")
+    db.procedure.insert(loinc_code="topoc66", exam_name="Corneal mapping",exam_description="Corneal mapping",cycle_num="1", procedure_seq="1")
+    db.procedure.insert(loinc_code="biometryc66", exam_name="Optical biometry",exam_description="Optical biometry",cycle_num="1", procedure_seq="1")
+    db.procedure.insert(loinc_code="routinec66", exam_name="Routine consultation",exam_description="Routine consultation",cycle_num="1", procedure_seq="4")
+    db.procedure.insert(loinc_code="glaucoma1c66", exam_name="Glaucoma consultation",exam_description="Glaucoma consultation with visual field and OCT",cycle_num="1", procedure_seq="6")
+    db.procedure.insert(loinc_code="keratoconusc66", exam_name="Keratoconus consultation",exam_description="Keratoconus consultation with corneal mapping",cycle_num="1", procedure_seq="5")
+    db.procedure.insert(loinc_code="sltc66", exam_name="SLT",exam_description="Selective Laser Therapy",cycle_num="1", procedure_seq="1")
+    db.procedure.insert(loinc_code="iridoc66", exam_name="Iridotomy",exam_description="Iridotomy with YAG laser",cycle_num="1", procedure_seq="1")
+    db.procedure.insert(loinc_code="capsuloc66", exam_name="Capsulotomy",exam_description="Capsulotomy with YAG laser",cycle_num="1", procedure_seq="1")
+    db.procedure.insert(loinc_code="octmacc66", exam_name="OCT macula",exam_description="Macular OCT",cycle_num="1", procedure_seq="1")
+    db.procedure.insert(loinc_code="octpapc66", exam_name="OCT glaucoma",exam_description="Optic nerve layer OCT on papil and retina",cycle_num="1", procedure_seq="1")
+    db.procedure.insert(loinc_code="cycloc66", exam_name="Cycloplegia",exam_description="Cycloplegia",cycle_num="1", procedure_seq="1")
+    db.procedure.insert(loinc_code="dilc66", exam_name="Dilatation",exam_description="Dilatation of pupils",cycle_num="1", procedure_seq="1")
     db.commit()
-    # exam2do_family reference to: exam2do, modality, modality family 160421
-    db.exam2do_family.insert(id_exam2do="1", id_modality="1",id_modality_family="1")
-    db.exam2do_family.insert(id_exam2do="1", id_modality="2",id_modality_family="1")
-    db.exam2do_family.insert(id_exam2do="2", id_modality="8",id_modality_family="2")
-    db.exam2do_family.insert(id_exam2do="2", id_modality="9",id_modality_family="2")
-    db.exam2do_family.insert(id_exam2do="3", id_modality="9",id_modality_family="3")
-    db.exam2do_family.insert(id_exam2do="3", id_modality="12",id_modality_family="3")
-    db.exam2do_family.insert(id_exam2do="4", id_modality="13",id_modality_family="7")
-    db.exam2do_family.insert(id_exam2do="5", id_modality="13",id_modality_family="7")
-    db.exam2do_family.insert(id_exam2do="6", id_modality="13",id_modality_family="7") #9
-    db.exam2do_family.insert(id_exam2do="7", id_modality="15",id_modality_family="8") #10
-    db.exam2do_family.insert(id_exam2do="8", id_modality="15",id_modality_family="8")
-    db.exam2do_family.insert(id_exam2do="9", id_modality="15",id_modality_family="8")
-    db.exam2do_family.insert(id_exam2do="10", id_modality="7",id_modality_family="6")
-    db.exam2do_family.insert(id_exam2do="11", id_modality="7",id_modality_family="6")
-    db.exam2do_family.insert(id_exam2do="12", id_modality="16",id_modality_family="9") #15
-    db.exam2do_family.insert(id_exam2do="13", id_modality="17",id_modality_family="9") 
+    # procedure_family reference to: procedure, modality, modality family 160421
+    db.procedure_family.insert(id_procedure="1", id_modality="1",id_modality_family="1")
+    db.procedure_family.insert(id_procedure="1", id_modality="2",id_modality_family="1")
+    db.procedure_family.insert(id_procedure="2", id_modality="8",id_modality_family="2")
+    db.procedure_family.insert(id_procedure="2", id_modality="9",id_modality_family="2")
+    db.procedure_family.insert(id_procedure="3", id_modality="9",id_modality_family="3")
+    db.procedure_family.insert(id_procedure="3", id_modality="12",id_modality_family="3")
+    db.procedure_family.insert(id_procedure="4", id_modality="13",id_modality_family="7")
+    db.procedure_family.insert(id_procedure="5", id_modality="13",id_modality_family="7")
+    db.procedure_family.insert(id_procedure="6", id_modality="13",id_modality_family="7") #9
+    db.procedure_family.insert(id_procedure="7", id_modality="15",id_modality_family="8") #10
+    db.procedure_family.insert(id_procedure="8", id_modality="15",id_modality_family="8")
+    db.procedure_family.insert(id_procedure="9", id_modality="15",id_modality_family="8")
+    db.procedure_family.insert(id_procedure="10", id_modality="7",id_modality_family="6")
+    db.procedure_family.insert(id_procedure="11", id_modality="7",id_modality_family="6")
+    db.procedure_family.insert(id_procedure="12", id_modality="16",id_modality_family="9") #15
+    db.procedure_family.insert(id_procedure="13", id_modality="17",id_modality_family="9") 
     db.commit()
     # medic reference to: nothing , better to download the table
     db.medic_ref.insert(name="DAFALGAN FORTE 1g", brand="Bristol Mayers", package="Boite de 40cp",active_ingredient="paracetamol", dosage = "['1g']", form="pill", delivery="PO")

@@ -333,7 +333,7 @@ function queryParams_wl(params) {
         s_wl =""
     } else {
         if (search[0]!= undefined) {
-            s_wl = "exam2do.exam_name.startswith=" + capitalize(search[0]);
+            s_wl = "procedure.exam_name.startswith=" + capitalize(search[0]);
         } else {
             s_wl = "";
         }
@@ -351,7 +351,7 @@ function queryParams_wl(params) {
             params.sort = "modality_dest";
         }
         if (params.sort == "procedure") {
-            params.sort = "exam2do";
+            params.sort = "procedure";
         }
         if (toggle_wl=="") {
             s_wl += "&@order="+params.sort;
@@ -384,7 +384,7 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'patient': list[i]['id_auth_user.last_name']+' '+list[i]['id_auth_user.first_name'],
             'provider': list[i]['provider.last_name']+' '+list[i]['provider.first_name'],
             'senior': list[i]['senior.last_name']+' '+list[i]['senior.first_name'],
-            'procedure': list[i]['exam2do.exam_name'],
+            'procedure': list[i]['procedure.exam_name'],
             'modality': list[i]['modality.modality_name'],
             'laterality': list[i]['laterality'],
             'requested_time': list[i]['requested_time'],

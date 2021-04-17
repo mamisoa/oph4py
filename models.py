@@ -114,7 +114,7 @@ db.define_table('insurance',
 
 db.insurance.insurance_type.requires=IS_IN_DB(db,'insurance_sector.sector','%(sector)s')
 
-db.define_table('exam2do',
+db.define_table('procedure',
     Field('loinc_code', 'string'),
     Field('exam_name','string'),
     Field('exam_description','string'),
@@ -123,14 +123,14 @@ db.define_table('exam2do',
     auth.signature,
     format='%(exam_name)s')
 
-db.define_table('exam2do_family', # many to many
-    Field('id_exam2do', 'reference exam2do'),
+db.define_table('procedure_family', # many to many
+    Field('id_procedure', 'reference procedure'),
     Field('id_modality', 'reference modality'),
     Field('id_modality_family', 'reference modality_family'),
     auth.signature)
 
 db.define_table('combo',
-    Field('id_exam2do','reference exam2do'),
+    Field('id_procedure','reference procedure'),
     Field('id_modality','reference modality'),
     auth.signature)
 
@@ -143,7 +143,7 @@ db.define_table('worklist',
     Field('receiving_app','string', default = 'Receiving App'),
     Field('receiving_facility','reference facility', default = '1'),
     Field('message_unique_id','string', default=str_uuid(), required=True),
-    Field('exam2do', 'reference exam2do', required=True),
+    Field('procedure', 'reference procedure', required=True),
     Field('provider', 'reference auth_user', required=True),
     Field('senior', 'reference auth_user', required=True),
     Field('requested_time', 'datetime', required=True),
@@ -161,13 +161,13 @@ db.worklist.status_flag.requires=IS_IN_SET(('requested', 'processing', 'done', '
 
 #  db.worklist.id_auth_user.requires=IS_IN_DB(db,'auth_user.id','%(first_name)s'+' '+'%(last_name)s')
 #  db.worklist.provider.requires=IS_IN_DB(db(query_sessions), 'auth_user.id', '%(first_name)s'+' '+'%(last_name)s' )
-# db.worklist.exam2do.requires=IS_IN_DB(db,'exam2do.id', '%(exam_description)s')
+# db.worklist.procedure.requires=IS_IN_DB(db,'procedure.id', '%(exam_description)s')
 # db.worklist.receiving_facility.requires=IS_IN_DB(db,'facility.id', '%(facility_name)s' + ' ('+'%(id)s)')
 # db.worklist.modality_dest.requires=IS_IN_DB(db,'modality.id', '%(modality_name)s')
 
 
 ################################################################
-#               EXAM2DO                                        #
+#               procedure                                        #
 ################################################################
 
 db.define_table('tono',
