@@ -314,7 +314,7 @@ def save_db():
 def init_db():
     import os
     for table_name in db.tables():
-        db[table_name].truncate('RESTART IDENTITY CASCADE')
+        db[table_name].truncate('ON DELETE CASCADE')
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
     backup_path_file = backup_path+'init_db.csv'
     try:
