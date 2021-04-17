@@ -122,7 +122,7 @@
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="firstName" class="form-label">First name:</label>
-                                        <input id="firstName" type="text" class="form-control" name="first_name">
+                                        <input id="firstName" type="text" class="form-control" name="first_name" autocomplete="off">
                                         <div id="firstNameHelp" class="form-text">Enter your first name</div>
                                     </div>
                                     <div class="col">
@@ -134,13 +134,28 @@
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="username" class="form-label">Username:</label>
-                                        <input id="username" type="text" class="form-control" title="Username must not be blank and contain only letters, numbers and underscores." name="username" required pattern="\w+" autocomplete="username" />
+                                        <input id="username" type="text" class="form-control" title="Username must not be blank and contain only letters, numbers and underscores." name="username" required pattern="\w+" autocomplete="off"/>
                                         <div id="usernameHelp" class="form-text">Enter your username</div>
                                     </div>
                                     <div class="col">
                                         <label for="email" class="form-label">Email:</label>
-                                        <input id="email" type="email" class="form-control"  name="email">
+                                        <input id="email" type="email" class="form-control"  name="email" autocomplete="off">
                                         <div id="emailHelp" class="form-text">Enter your email</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-4">
+                                        <label for="phone_prefix" class="form-label">Prefix:</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">+</span>
+                                            <input id="phone_prefix" type="text" class="form-control" name="phone_prefix">
+                                        </div>
+                                        <div id="prefixHelp" class="form-text">Enter country's prefix</div>
+                                    </div>
+                                    <div class="col-8">
+                                        <label for="phone" class="form-label">Mobile:</label>
+                                        <input id="phone" type="text" class="form-control" name="phone" autocomplete="off">
+                                        <div id="phoneHelp" class="form-text">Enter mobile phone</div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">

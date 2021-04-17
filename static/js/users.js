@@ -1,18 +1,40 @@
 // catch submit userForm
 $('#userForm').submit(function(e) {
     e.preventDefault();
-    var formData = $('#userForm').serializeJSON();
-    formData = JSON.parse(formData); // change to object
-    delete formData['passwordCheck']; // remove passwordCheck field
-    formData['first_name'] = capitalize(formData['first_name']);
-    formData['last_name'] = capitalize(formData['last_name']);
-    formData = JSON.stringify(formData); // change to string
-    console.log(formData);
-    crud('auth_user','0','POST',formData);
+    let formStr = $('#userForm').serializeJSON();
+    formObj = JSON.parse(formStr); // change to object
+    delete formObj['passwordCheck']; // remove passwordCheck field
+    let mobileObj = Object.assign({}, formObj);
+    formObj['first_name'] = capitalize(formObj['first_name']);
+    delete mobileObj['first_name'];
+    delete mobileObj['last_name'];
+    formObj['last_name'] = capitalize(formObj['last_name']);
+    mobileObj['phone_prefix']=formObj['phone_prefix'];
+    delete formObj['phone_prefix'];
+    mobileObj['phone']=formObj['phone'];
+    delete formObj['phone'];
+    delete mobileObj['email'];
+    delete mobileObj['gender'];
+    delete mobileObj['username'];
+    delete mobileObj['password'];
+    delete mobileObj['membership'];
+    mobileObj['phone_origin']='Mobile';
+    mobileStr = JSON.stringify(mobileObj);
+    formStr = JSON.stringify(formObj); // change to string
+    console.log('userdata:',formObj);
+    if (mobileObj['phone'] != '' || mobileObj['prefix'] =='') {
+        // console.log('mobiledata present:',mobileObj);
+        crud('phone','0','POST',mobileStr); 
+    } else {
+        displayToast('error','Phone not recorded','Fill prefix and mobile phone', 3000);
+    };
+    crud('auth_user','0','POST',formStr); 
     $table.bootstrapTable('refresh');
     $('#newUserModal').modal('toggle');
     return false;
 });
+
+
 
 function delUser (id) {
     bootbox.confirm({
@@ -47,5 +69,12 @@ $( "#btnNewUser" ).click(function() {
     pass = passGen();
     document.querySelector("#userForm input[name='password']").value = pass;
     document.querySelector("#userForm input[name='passwordCheck']").value = pass;
+    document.querySelector("#userForm input[name='phone_prefix']").value = '32';
 });
 
+$('#userForm input[name=first_name]').change(function(){
+    console.log('first name changed');
+    let t = new Date();
+    suffix = $('#userForm input[name=first_name]').val()+parseInt(t.getMilliseconds())+parseInt(t.getSeconds());
+    $('#userForm input[name=username]').val(suffix);
+});
