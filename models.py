@@ -413,11 +413,12 @@ db.define_table('md_params',
     Field('officeaddress','string'),
     Field('officezip','string'),
     Field('officetown','string'),
+    Field('officecountry','string'),
     Field('officephone','string'),
     Field('officeurl','string'),
     Field('companynum','string'),
     Field('companyname','string'),
-    Field('iban','string'),
+    Field('companyiban','string'),
     auth.signature)
 
 db.define_table('glasses_rx_list',

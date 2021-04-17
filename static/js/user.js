@@ -61,8 +61,38 @@ function getUserAddresses(id) {
         }));
 };
 
+// click on new/edit mdparams button
+$('#btnEditmdParam').click(function () {
+    getmdParam(id)
+        .then(function (data) {
+            document.getElementById("userMd_paramForm").reset();
+            if (data.count > 0) {
+                let item = data.items[0];
+                $('#userMd_paramForm input[name=id]').val(item.id);
+                $('#userMd_paramForm input[name=methodmdParamSubmit]').val('PUT');
+                $('#userMd_paramModal .modal-title').html('Edit provider informations');
+                $('#userMd_paramForm input[name=inami]').val(item.inami);
+                $('#userMd_paramForm input[name=email]').val(item.email);
+                $('#userMd_paramForm input[name=officename]').val(item.officename);
+                $('#userMd_paramForm input[name=officeaddress]').val(item.officeaddress);
+                $('#userMd_paramForm input[name=officezip]').val(item.officezip);
+                $('#userMd_paramForm input[name=officetown]').val(item.officetown);
+                $('#userMd_paramForm input[name=officecountry]').val(item.officecountry);
+                $('#userMd_paramForm input[name=officephone]').val(item.officephone);
+                $('#userMd_paramForm input[name=officeurl]').val(item.officeurl);
+                $('#userMd_paramForm input[name=companynum]').val(item.companynum);
+                $('#userMd_paramForm input[name=companyname]').val(item.companyname);
+                $('#userMd_paramForm input[name=companyiban]').val(item.companyiban);
+            } else {
+                $('#userMd_paramForm input[name=methodmdParamSubmit]').val('POST');
+            };
+            $('#userMd_paramModal').modal('show');
+        })
+});
+
+
 function refreshAll(){
-    arr = ['userauth_user','userPhone','userAddress'];
+    let arr = ['userauth_user','userPhone','userAddress','userMd_param'];
     for (const table of arr) {
         console.log(table);
         refreshList(table);
@@ -74,7 +104,7 @@ refreshAll();
 // do when promise.success
 function refreshList(listName){
     if (listName=='userauth_user') {
-        userData = getUser(id);
+        let userData = getUser(id);
         userData.then(function(userData){
             let item = userData.items[0];
             console.log('item:', item);
@@ -104,7 +134,7 @@ function refreshList(listName){
             $('#ulUserItems').append('<li class="list-group-item">Notes: <span class="fw-bold">' + checkIfDataIsNull(item.user_notes) + '</span></li>');
         });
     } else if (listName=='userPhone') {
-        userPhone = getUserPhones(id);
+        let userPhone = getUserPhones(id);
         userPhone.then(function(userData){
             $('#ulUserPhones').html('');
             for (const item of userData.items) {
@@ -118,7 +148,7 @@ function refreshList(listName){
             };
         });
     } else if (listName=='userAddress') {
-        userAddress = getUserAddresses(id);
+        let userAddress = getUserAddresses(id);
         $('#ulUserAddresses').html('');
         userAddress.then(function (userData) {
             for (const item of userData.items) {
@@ -132,7 +162,26 @@ function refreshList(listName){
                 $('#ulUserAddresses').append(html);
             }
         });
-    } else { };
+    } else if ( listName=='userMd_param' ) {
+        let mdParam = getmdParam(id);
+        mdParam.then( function(data){
+            if (data.count >0 ){
+                let item = data.items[0];
+                $('#mdParamItems').append('<li class="list-group-item">Inami: <span class="fw-bold">' + checkIfDataIsNull(item.inami) + '</span></li>');
+                $('#mdParamItems').append('<li class="list-group-item">Professional email: <span class="fw-bold">' + checkIfDataIsNull(item.email) + '</span></li>');
+                $('#mdParamItems').append('<li class="list-group-item">Office name: <span class="fw-bold">' + checkIfDataIsNull(item.officename) + '</span></li>');
+                $('#mdParamItems').append('<li class="list-group-item">Office Address: <span class="fw-bold">' + checkIfDataIsNull(item.officeaddress) + '</span></li>');
+                $('#mdParamItems').append('<li class="list-group-item">Office zip: <span class="fw-bold">' + checkIfDataIsNull(item.officezip) + '</span></li>');
+                $('#mdParamItems').append('<li class="list-group-item">Office town: <span class="fw-bold">' + checkIfDataIsNull(item.officetown) + '</span></li>');
+                $('#mdParamItems').append('<li class="list-group-item">Office country<span class="fw-bold">' + checkIfDataIsNull(item.officecountry) + '</span></li>');
+                $('#mdParamItems').append('<li class="list-group-item">Office phone: <span class="fw-bold">' + checkIfDataIsNull(item.officephone) + '</span></li>');
+                $('#mdParamItems').append('<li class="list-group-item">Office url: <span class="fw-bold">' + checkIfDataIsNull(item.officeurl) + '</span></li>');
+                $('#mdParamItems').append('<li class="list-group-item">Company number: <span class="fw-bold">' + checkIfDataIsNull(item.companynum) + '</span></li>');
+                $('#mdParamItems').append('<li class="list-group-item">Company name: <span class="fw-bold">' + checkIfDataIsNull(item.companyname)+'</span></li>');
+                $('#mdParamItems').append('<li class="list-group-item">Company IBAN: <span class="fw-bold">' + checkIfDataIsNull(item.companyiban) + '</span></li>');
+            };
+        });
+    } else {};
 };
 
 // userDetailsForm //
@@ -203,6 +252,7 @@ $('#btnGetUserId').click(function(e) {
         }
     })
 });
+
 
 // catch submit userAuth_userForm
 $('#userAuth_userForm').submit(function(e) {
@@ -302,6 +352,7 @@ function confirmDel(id='0', table) {
 };
 
 // COMMON confirm EDITION
+// don't need user id as it is edition
 function confirmEdit(recid, table) {
     console.log(recid);
     $.ajax({
@@ -337,3 +388,50 @@ function confirmEdit(recid, table) {
         }
     });
 };
+
+// md params
+function getmdParam(id) {
+    return Promise.resolve(
+        $.ajax({
+            type: "GET",
+            url: API_MDPARAM,
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                if (data.status == 'error' || data.count == 0) {
+                    displayToast('error', 'GET error', 'Cannot retrieve medical registration infos', '6000');
+                } else {
+                    displayToast('info', 'GET request', 'GET MD registration info' + data.items[0].id_auth_user['username'], '6000');
+                }
+            },
+            error: function (er) {
+                console.log(er);
+            }
+        }));
+};
+
+// catch submit userMd_Form
+$('#userMd_paramForm').submit(function(e) {
+    e.preventDefault();
+    let formData = $('#userMd_paramForm').serializeJSON();
+    formData = JSON.parse(formData); // change to object
+    formData['id_auth_user'] = id;
+    formData['companyname'] = capitalize(formData['companyname']);
+    formData['officename'] = capitalize(formData['officename']);
+    let req = formData['methodmdParamSubmit'];
+    req == 'POST'? delete formData['id']: {};
+    delete formData['methodmdParamSubmit'];
+    for (let [key,value] of Object.entries(formData)) { // delete other empty keys to avoid resetting existing fields
+        if (value == '') {
+            console.log(key,':empty');
+            delete formData[key];
+        }
+    };
+    formStr = JSON.stringify(formData); // change to string
+    console.log(formData);
+    console.log('method',req);
+    crud('md_params',id,req,formStr);
+    $('#userMd_paramModal').modal('hide');
+    refreshList('userMd_param');
+    return false;
+});
