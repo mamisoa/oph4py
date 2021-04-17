@@ -1,0 +1,169 @@
+TABLE gender
+gender.id,gender.sex
+1,Male
+2,Female
+3,Other
+
+
+TABLE ethny
+ethny.id,ethny.ethny
+1,Caucasian
+2,Black
+3,Hispanic
+4,Arabic
+
+
+TABLE marital
+marital.id,marital.marital_status
+1,single
+2,married
+
+
+TABLE membership
+membership.id,membership.membership,membership.hierarchy
+1,Admin,0
+2,Doctor,1
+3,Nurse,2
+4,Medical assistant,2
+5,Administrative,3
+6,Patient,99
+
+
+TABLE auth_user
+auth_user.id,auth_user.username,auth_user.email,auth_user.password,auth_user.first_name,auth_user.last_name,auth_user.sso_id,auth_user.action_token,auth_user.last_password_change,auth_user.past_passwords_hash,auth_user.uid,auth_user.membership,auth_user.maiden_name,auth_user.dob,auth_user.birth_town,auth_user.birth_country,auth_user.gender,auth_user.marital,auth_user.ethny,auth_user.idc_num,auth_user.ssn,auth_user.user_notes,auth_user.chipnumber,auth_user.validfrom,auth_user.validtill,auth_user.initials,auth_user.nationality,auth_user.noblecondition,auth_user.documenttype,auth_user.specialstatus,auth_user.photob64,auth_user.created_on,auth_user.created_by,auth_user.modified_on,auth_user.modified_by,auth_user.is_active
+1,mamisoa,mamisoa@gmail.com,"pbkdf2(1000,20,sha512)$b870219ea5aa579f$6923231881f4fd7c3f1b738ce71cec66738bdc2f",Mamisoa,Andriantafika,<NULL>,,<NULL>,<NULL>,b4b46fa02b614ef095684da77ea4c422,1,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,2021-04-16 18:58:34,<NULL>,2021-04-16 18:58:34,<NULL>,True
+2,lea,l.laugeois@ophtalmologiste.be,"pbkdf2(1000,20,sha512)$a5a6fd512a0e0c71$e5b064f87f9433dee41b0725972c17c0054d0c8a",Lea,Laugeois,<NULL>,,<NULL>,<NULL>,9243e6c73d314019b3fb2f078c5a1bc4,4,,<NULL>,,,<NULL>,<NULL>,<NULL>,,,,,<NULL>,<NULL>,,,,<NULL>,<NULL>,<NULL>,2021-04-14 10:53:53,<NULL>,2021-04-14 10:57:32,1,True
+3,edite,e.desouza@ophtalmologiste.be,"pbkdf2(1000,20,sha512)$93509b46dc7aa0c9$0d5d3a48a6c12054700b3883f1652e4ea9aecb9e",Edite,De Souza,<NULL>,<NULL>,<NULL>,<NULL>,9243e6c73d314019b3fb2f078c5a1bc4,5,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,2021-04-14 10:02:44,<NULL>,2021-04-14 10:02:44,<NULL>,True
+4,mireille,m.danzul@ophtalmologiste.be,"pbkdf2(1000,20,sha512)$91bb0ac83677d1c9$e4b7e2981920b588fbbb4121a8500dfa9f4d54c2",Mireille,D'Anzul,<NULL>,<NULL>,<NULL>,<NULL>,9243e6c73d314019b3fb2f078c5a1bc4,5,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,2021-04-14 10:04:49,<NULL>,2021-04-14 10:04:49,<NULL>,True
+5,margaux,m.bertrand@ophtalmologiste.be,"pbkdf2(1000,20,sha512)$8c1cd4e175dad769$6ba09357bad130a238be5c709c591c73ffe1e404",Margaux,BERTRAND,<NULL>,<NULL>,<NULL>,<NULL>,9243e6c73d314019b3fb2f078c5a1bc4,4,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,2021-04-14 10:55:55,<NULL>,2021-04-14 10:57:49,1,True
+6,maitec66,m.lienart@ophtalmologiste.be,"pbkdf2(1000,20,sha512)$91ffd455fd890408$853f78a33e74e5b2df50c74547fdd95462a7c4f7",Maite,Lienart,<NULL>,<NULL>,<NULL>,<NULL>,9243e6c73d314019b3fb2f078c5a1bc4,2,<NULL>,<NULL>,<NULL>,<NULL>,2,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,<NULL>,2021-04-14 12:56:55,1,2021-04-14 12:56:55,1,True
+
+
+TABLE auth_user_tag_groups
+
+
+TABLE facilities
+
+
+TABLE testtable
+
+
+TABLE photo_id
+
+
+TABLE facility
+
+
+TABLE modality_family
+
+
+TABLE modality_controller
+
+
+TABLE modality
+
+
+TABLE modality_tag_default
+
+
+TABLE data_origin
+data_origin.id,data_origin.origin
+1,Home
+2,Mobile
+3,Work
+
+
+TABLE address
+
+
+TABLE phone
+
+
+TABLE insurance_sector
+
+
+TABLE insurance
+
+
+TABLE exam2do
+
+
+TABLE exam2do_family
+
+
+TABLE combo
+
+
+TABLE worklist
+
+
+TABLE tono
+
+
+TABLE km
+
+
+TABLE capsulotomy
+
+
+TABLE optotype
+
+
+TABLE status_rx
+
+
+TABLE rx
+
+
+TABLE current_hx
+
+
+TABLE ant_biom
+
+
+TABLE post_biom
+
+
+TABLE motility
+
+
+TABLE phoria
+
+
+TABLE pupils
+
+
+TABLE disease_ref
+
+
+TABLE phistory
+
+
+TABLE medic_ref
+
+
+TABLE mx
+
+
+TABLE agent
+
+
+TABLE allergy
+
+
+TABLE auto_dict
+
+
+TABLE ccx
+
+
+TABLE medical_rx_list
+
+
+TABLE md_params
+
+
+TABLE glasses_rx_list
+
+
+END
