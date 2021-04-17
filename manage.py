@@ -127,6 +127,7 @@ def users(membership=6):
 @action.uses('worklist.html', session, T, auth, db)
 def worklist():
     hosturl = LOCAL_URL
+    localbeid = LOCAL_BEID
     user = auth.get_user()
     test="Test OK"
     membership = 6
