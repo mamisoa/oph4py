@@ -140,9 +140,15 @@ window.operateEvents_wl = {
 };
 
 function rowStyle_wl(row,value) {
-    let statusColor = {'requested':'lightblue', 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999'};
+    let statusColor = {'requested':'lightblue', 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999', 'doctorDone': '#00FF00' };
+    let bg;
+    if (row.modality == 'MD' && row.status_flag =='done'){
+        bg = statusColor['doctorDone'];
+    } else {
+        bg = statusColor[row.status_flag];
+    }
     return { 
-                css: { 'background-color': statusColor[row.status_flag] }
+                css: { 'background-color': bg }
             };
 };
 
