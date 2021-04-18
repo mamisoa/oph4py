@@ -423,9 +423,9 @@ db.define_table('md_params',
     auth.signature)
 
 db.define_table('glasses_rx_list',
+    Field('uuid','string', default=str_uuid()),
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True), # from the autorx wl!
-    Field('rx_origin', 'string', required=True),
     Field('glass_type', 'string'),
     Field('sph_farR','decimal(4,2)'),
     Field('cyl_farR','decimal(4,2)'),
@@ -447,7 +447,6 @@ db.define_table('glasses_rx_list',
     Field('axis_closeL', 'integer'),
     Field('remarks','string'),
     Field('art30','boolean', default=False),
-    Field('uuid','string', default=str_uuid()),
     Field('prismR','decimal(4,2)'),
     Field('baseR', 'integer'),
     Field('prismL','decimal(4,2)'),

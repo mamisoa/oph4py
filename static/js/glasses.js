@@ -72,7 +72,7 @@ function rxDataButton(dataStr, lat) {
 
 function filterGxRx(dataObj){
     let removeKeysArray = [
-        'created_by_name','modified_by_name','created_by','modified_by','created_on','modified_on',
+        'id','created_by_name','modified_by_name','created_by','modified_by','created_on','modified_on',
         'opto_far','opto_int','opto_close','va_far','va_int','va_close', 'se_far','add','note', 'laterality'
     ];
     for (let key of removeKeysArray){
@@ -84,6 +84,7 @@ function filterGxRx(dataObj){
 // then print
 $('#GxRxFormModal').submit(function(e) {
     e.preventDefault();
+    let GxRxGlobalObj= {};
     let formObj = {};
     let formStr = $(this).serializeJSON();
     formObj=JSON.parse(formStr);
@@ -91,22 +92,31 @@ $('#GxRxFormModal').submit(function(e) {
     // GxRxRight, GxRxLeft is from rx selection
     // GxRxGlobalObj is the prescription object
     // set GxRxGlobalObj from GxRxRight, GxRxLeft
+    GxRxGlobalObj['id_auth_user']=GxRxRightObj['id_auth_user']; // common for right and left (same autorx wlId)
+    GxRxGlobalObj['id_worklist']=GxRxRightObj['id_worklist'];
     filterGxRx(GxRxRightObj);
     filterGxRx(GxRxLeftObj);
     console.log('GxRxRightObj:',GxRxRightObj);
     console.log('GxRxLeftObj:',GxRxRightObj);
     console.log('GxRxdataObj:',formObj);
-    let GxRxGlobalObj= {};
     let GxRxArr = [
-        'glass_type','sph_farR','cyl_farR','axis_farR','sph_farL','cyl_farL','axis_farL',
-        'sph_intR','cyl_intR','axis_intR','sph_intL','cyl_intL','axis_intL',
-        'sph_closeR','cyl_closeR','axis_closeR','sph_closeL','cyl_closeL','axis_closeL',
-        'prismR','baseR','prismL','baseL',
-        'tint','photo',
-        'art30','remarks'];
+        'sph_far','cyl_far','axis_far',
+        'sph_int','cyl_int','axis_int',
+        'sph_close','cyl_close','axis_close'];
+    let GxRxArrC = [
+        'glass_type','prismL','baseL','prismL','baseL',
+        'prismR','baseR','prismR','baseR',
+        'tint','photo','art30','remarks'];
+    for (key of GxRxArr) {
+        GxRxGlobalObj[key+'R']=GxRxRightObj[key];
+    };
+    for (key of GxRxArr) {
+        GxRxGlobalObj[key+'L']=GxRxLeftObj[key];
+    };
+    for (key of GxRxArrC) {
+        GxRxGlobalObj[key]=formObj[key];
+    };
     // send glass right prescription to table
-    GxRxGlobalObj['id_auth_user']=GxRxRightObj['id_auth_user']; // common for right and left (same autorx wlId)
-    GxRxGlobalObj['id_worklist']=GxRxRightObj['id_worklist'];
     console.log('Global:',GxRxGlobalObj);
     // dataStr = JSON.stringify(dataObj);
     // send glass left prescription to table
