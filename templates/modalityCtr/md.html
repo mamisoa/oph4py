@@ -1482,9 +1482,9 @@
                                             <label for="art30modal" class="form-label">Article 30:</label>
                                             <div class="input-group">
                                                 <div class="btn-group art30_modal">
-                                                    <input type="radio" id="art30_no_modal" name="art30" class="btn-check" autocomplete="off" checked>
+                                                    <input type="radio" id="art30_no_modal" name="art30" class="btn-check"  value="False" autocomplete="off" checked>
                                                     <label class="btn btn-outline-primary" for="art30_no_modal">No</label>
-                                                    <input type="radio" id="art30_yes_modal" name="art30" class="btn-check" autocomplete="off">
+                                                    <input type="radio" id="art30_yes_modal" name="art30" class="btn-check" value="True" autocomplete="off">
                                                     <label class="btn btn-outline-primary" for="art30_yes_modal">Yes</label>
                                                 </div>
                                             </div>
@@ -1532,21 +1532,25 @@
                                             <label for="tintmodal" class="form-label">Tint:</label>
                                             <div class="input-group">
                                                 <div class="btn-group tint_modal">
-                                                    <input type="radio" id="tint_notmedical_modal" name="tint" class="btn-check" value="nonmedTint" autocomplete="off">
+                                                    <input type="radio" id="tint_no_modal" name="tint" class="btn-check" value="" autocomplete="off" checked>
+                                                    <label class="btn btn-outline-primary" for="tint_no_modal">No</label>
+                                                    <input type="radio" id="tint_notmedical_modal" name="tint" class="btn-check" value="False" autocomplete="off">
                                                     <label class="btn btn-outline-primary" for="tint_notmedical_modal">Non medical</label>
-                                                    <input type="radio" id="tint_medical_modal" name="tint" class="btn-check" value="medTint" autocomplete="off">
+                                                    <input type="radio" id="tint_medical_modal" name="tint" class="btn-check" value="True" autocomplete="off">
                                                     <label class="btn btn-outline-primary" for="tint_medical_modal">Medical</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col" id="tintDiv">
-                                            <label for="photomodal" class="form-label">Photochromique:</label>
+                                            <label for="photomodal" class="form-label">Photochromic:</label>
                                             <div class="input-group">
                                                 <div class="btn-group photo_modal">
-                                                    <input type="radio" id="photo_notmedical_modal" name="photo" class="btn-check" value="nonmedPhoto" autocomplete="off">
+                                                    <input type="radio" id="photo_no_modal" name="photo" class="btn-check" value="" autocomplete="off" checked>
+                                                    <label class="btn btn-outline-primary" for="photo_no_modal">No</label>
+                                                    <input type="radio" id="photo_notmedical_modal" name="photo" class="btn-check" value="False" autocomplete="off">
                                                     <label class="btn btn-outline-primary" for="photo_notmedical_modal">Non medical</label>
-                                                    <input type="radio" id="photo_medical_modal" name="photo" class="btn-check" value="medPhoto" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="photo_medical_modal">Medical</label>
+                                                    <input type="radio" id="photo_medical_modal" name="photo" class="btn-check" value="True" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="photo_medical_modal">Medical</label>                                                    
                                                 </div>
                                             </div>
                                         </div>                                        
