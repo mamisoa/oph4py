@@ -19,7 +19,7 @@ function getUser(id) {
                 console.log(er);
             }
         }));
-}
+};
 
 function getUserPhones(id) {
     return Promise.resolve(

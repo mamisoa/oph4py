@@ -407,3 +407,16 @@ def combo():
     procedureOptions=dropdownSelect(db.procedure,db.procedure.fields[2],1) # table to show is procedure, field to show=name, selected value is id=1, value is index
     modalityOptions=dropdownSelect(db.modality,db.modality.fields[1],1)
     return locals()
+
+
+# manage billing summary
+@action('billing/summary')
+@action('billing/summary/<rec_id>')
+@action.uses('billing/summary.html', session, auth, db)
+def summary(rec_id):
+    hosturl = LOCAL_URL
+    user = auth.get_user()
+    row = db(db.auth_user.id == rec_id).select().first()
+    username = row.username
+    membership = row.membership
+    return locals()

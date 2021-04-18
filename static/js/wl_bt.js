@@ -57,6 +57,7 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
     $.each(list, function (i) {
         display.push({
             'id': list[i].id,
+            'id_auth_user': list[i]['id_auth_user.id'],
             'sending_facility': list[i]['sending_facility.facility_name'],
             'receiving_facility': list[i]['receiving_facility.facility_name'],
             'patient': list[i]['id_auth_user.last_name']+' '+list[i]['id_auth_user.first_name'],
@@ -137,11 +138,12 @@ window.operateEvents_wl = {
             setWlItemStatus(dataStr);
         }
         let controller = modalityDict[row.modality];
-        link = HOSTURL+'/myapp/modalityCtr/'+controller+'/'+row.id
+        let link = HOSTURL+'/myapp/modalityCtr/'+controller+'/'+row.id
         window.location.href = link;
     },
-    'click .done': function (e, value, row, index) {
-        link = HOSTURL+'/myapp/modalityCtr/'+summary+'/'+row.id
+    'click .summary': function (e, value, row, index) {
+        let link = HOSTURL+'/myapp/billing/summary/'+row.id_auth_user;
+        window.location.href = link;
     }
 };
 
