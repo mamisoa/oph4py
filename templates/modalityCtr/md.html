@@ -1027,9 +1027,23 @@
                     <h3 class="title-right">Follow-up</h3>
                 </div>
             </div>
-            <div class="row">
-                <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+            <div class="row bg-right py-3">
+                <div class="col">
+                    <form id="folForm" enctype="multipart/form-data" method="POST"> 
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-group">
+                                        <button id="folFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(followup['description']) ]]</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input id="idfol" type="text" class="visually-hidden" name="id" value="[[ = XML(followup['id']) ]]"/>
+                        <input id="idPatientfol" type="text" class="visually-hidden" name="id_auth_user" value="[[=authUserId]]"/>
+                        <input id="idWlfol" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
+                    </form>
                 </div>
             </div>
         </div>

@@ -696,6 +696,7 @@ function responseHandler_gx(res) {
             'id': list[i].id,
             'id_auth_user': list[i].id_auth_user,
             'id_worklist': list[i].id_worklist,
+            'uuid': list[i]['uuid'],
             'datestamp': list[i]['datestamp'],
             'glass_type': list[i].glass_type,
             'sph_farR': list[i].sph_farR,
@@ -755,6 +756,7 @@ function detailFormatter_gx(index, row) {
     let html = ['<div class="container-fluid"><div class="row">'];
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Unique id: </span>'+ row.uuid);
     html.push('<p class=""><span class="fw-bold">Datestamp: </span>'+ row.datestamp +'</p>');
     html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
     html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by+'</p>');
