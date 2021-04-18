@@ -72,7 +72,7 @@ function operateFormatter_medic(value, row, index) {
 
 window.operateEvents_medic = {
     'click .edit': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         document.getElementById("medicFormModal").reset();
         $('#medicFormModal [name=id]').val(row.id); 
         $('#medicFormModal [name=delivery]').val([row.delivery]);
@@ -86,7 +86,7 @@ window.operateEvents_medic = {
         $('#medicModal').modal('show');
     },
     'click .remove': function (e, value, row, index) {
-        console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
         delItem(row.id, 'medic_ref', 'medication');
     }
 };

@@ -403,6 +403,7 @@ db.define_table('medical_rx_list',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_medic_ref', 'reference medic_ref', required=True),
     Field('id_worklist','reference worklist', required=True),
+    Field('uuid','string', default=str_uuid()),
     auth.signature)
 
 db.define_table('md_params',
@@ -423,9 +424,34 @@ db.define_table('md_params',
 
 db.define_table('glasses_rx_list',
     Field('id_auth_user', 'reference auth_user', required=True),
-    Field('id_rx', 'reference rx', required=True),
-    Field('id_worklist','reference worklist', required=True),
-    Field('laterality','reference worklist', required=True),
+    Field('id_worklist','reference worklist', required=True), # from the autorx wl!
+    Field('rx_origin', 'string', required=True),
+    Field('glass_type', 'string'),
+    Field('sph_farR','decimal(4,2)'),
+    Field('cyl_farR','decimal(4,2)'),
+    Field('axis_farR', 'integer'),
+    Field('sph_intR','decimal(4,2)'),
+    Field('cyl_intR','decimal(4,2)'),
+    Field('axis_intR', 'integer'),
+    Field('sph_closeR','decimal(4,2)'),
+    Field('cyl_closeR','decimal(4,2)'),
+    Field('axis_closeR', 'integer'),
+    Field('sph_farL','decimal(4,2)'),
+    Field('cyl_farL','decimal(4,2)'),
+    Field('axis_farL', 'integer'),
+    Field('sph_intL','decimal(4,2)'),
+    Field('cyl_intL','decimal(4,2)'),
+    Field('axis_intL', 'integer'),
+    Field('sph_closeL','decimal(4,2)'),
+    Field('cyl_closeL','decimal(4,2)'),
+    Field('axis_closeL', 'integer'),
+    Field('remarks','string'),
+    Field('art30','boolean', default=False),
+    Field('uuid','string', default=str_uuid()),
+    Field('prismR','decimal(4,2)'),
+    Field('baseR', 'integer'),
+    Field('prismL','decimal(4,2)'),
+    Field('baseL', 'integer'),
+    Field('tint','boolean'), # true = medical, false = non medical, null = no tint
+    Field('photo','boolean'), # true = medical, false = non medical, null = not photochromic
     auth.signature)
-
-db.glasses_rx_list.laterality.requires = IS_IN_SET(('right','left'))

@@ -153,7 +153,7 @@ function operateFormatter_mx(value, row, index) {
 
 window.operateEvents_mx = {
     'click .edit': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         document.getElementById("mxFormModal").reset();
         $('#mxFormModal [name=id]').val(row.id); 
         $('#mxFormModal [name=id_medic_ref]').val(row.id_medic_ref);
@@ -172,7 +172,7 @@ window.operateEvents_mx = {
         $('#mxModal').modal('show');
     },
     'click .remove': function (e, value, row, index) {
-        console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
         delItem(row.id, 'mx', 'medication');
     }
 };
@@ -187,7 +187,7 @@ function operateFormatter_ax(value, row, index) {
 
 window.operateEvents_ax = {
     'click .edit': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         document.getElementById("axFormModal").reset();
         $('#axFormModal [name=id]').val(row.id); 
         $('#axFormModal [name=id_agent]').val(row.id_agent);
@@ -201,7 +201,7 @@ window.operateEvents_ax = {
         $('#axModal').modal('show');
     },
     'click .remove': function (e, value, row, index) {
-        console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
         delItem(row.id, 'allergy', 'allergy');
     }
 };
@@ -225,7 +225,7 @@ function operateFormatter_msHx(value, row, index) {
 window.operateEvents_msHx = {
     'click .edit': function (e, value, row, index) {
         let modalFormId = '#mHxFormModal', modalId = '#mHxModal';
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         document.getElementById(modalFormId.split('#').join('')).reset();
         $(modalFormId+' [name=id]').val(row.id); 
         $(modalFormId+' [name=id_auth_user]').val(row.id_auth_user);
@@ -242,7 +242,7 @@ window.operateEvents_msHx = {
         $(modalId).modal('show');
     },
     'click .remove': function (e, value, row, index) {
-        console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
         delItem(row.id, 'phistory', 'past history');
     }
 };
@@ -551,11 +551,11 @@ function operateFormatter_rx(value, row, index) {
 
 window.operateEvents_rx = {
     'click .edit': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         window.location.href = '/myapp/modalityCtr/autorx/'+row.id_worklist;
     },
     'click .cache': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         rxObj.push(row);
         updateCache(rxObj);
     }
@@ -636,11 +636,11 @@ function operateFormatter_tono(value, row, index) {
 
 window.operateEvents_tono = {
     'click .edit': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         window.location.href = '/myapp/modalityCtr/tono/'+row.id_worklist;
     },
     'click .cache': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         tonoObj.push(row);
         // todo: implement tono in cache
         // updateCache(tonoObj); 

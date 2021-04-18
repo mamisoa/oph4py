@@ -62,6 +62,7 @@ def initFields(wlId,table,lat=""):
 @action('modalityCtr/md/<wlId>')
 @action.uses('modalityCtr/md.html', session, auth, db)
 def md(wlId):
+    import base64
     hosturl = LOCAL_URL
     user = auth.get_user()
     authUserId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
@@ -84,6 +85,11 @@ def md(wlId):
     ccxL = initFields(wlId,'ccx','left')
     mdParams= db(db.md_params.id_auth_user == user['id']).select(db.md_params.id_auth_user,db.md_params.inami,db.md_params.email,db.md_params.officename,db.md_params.officeaddress,db.md_params.officezip,db.md_params.officetown,db.md_params.officeurl,db.md_params.officephone).first().as_dict()
     userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
+    # glasses assets
+    axe_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/axe.png'
+    logo_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg'
+    axeImg64 = base64.b64encode(open(axe_img_path, "rb").read())
+    logo64 = base64.b64encode(open(logo_img_path, "rb").read())
     return locals()
 
 # helloworld controller
