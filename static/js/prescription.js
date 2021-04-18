@@ -5,7 +5,7 @@ prescObj['doctorlast']=userObj['last_name'];
 prescObj['doctortitle']='Dr '+userObj['last_name'].toUpperCase()+' '+userObj['first_name'];
 prescObj['doctorinami']=usermdObj['inami']; // keep separations
 prescObj['doctoremail']=usermdObj['email']; 
-prescObj['centername']=usermdObj['officename']+ '\n'+usermdObj['officeaddress']+' '+usermdObj['officezip']+usermdObj['officetown']+usermdObj['officetown']
+prescObj['centername']=usermdObj['officename']+ '\n'+usermdObj['officeaddress']+'\n'+usermdObj['officezip']+' '+usermdObj['officetown']
 prescObj['centerphone']=usermdObj['officephone']
 prescObj['centerurl']=usermdObj['officeurl']
 

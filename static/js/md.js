@@ -695,8 +695,15 @@ $('#mxRxModalPrint').click(function(){
                         }
                     ] // content end
                 };
-                
-                pdfMake.createPdf(presc).download('test.pdf');
+                let pdf= pdfMake.createPdf(presc);
+                let form = new FormData();
+                pdf.getBuffer((blob) => {
+                    console.log('blob uploading...');
+                    form.append('upload', blob, 'test.pdf');
+                    fetch(HOSTURL+"/myapp/upload", {method:"POST", body:form})
+                    .then(response => console.log(response));
+                });
+                // pdf.print();
                 $('#mxRxModal').modal('hide');
             } else {
                 displayToast('error','Medication list empty', 'No medication to prescribe',6000);
@@ -705,6 +712,38 @@ $('#mxRxModalPrint').click(function(){
             $mx_tbl.bootstrapTable('refresh');
         });
 }); // end prescription module
+
+
+function testpdf(){
+    let text=  {
+        content: [
+            'First paragraph',
+            'Another paragraph, this time a little bit longer to make sure, this line will be divided into at least two lines'
+        ]
+    };
+    let pdf= pdfMake.createPdf(text);
+    let form = new FormData();
+    // pdf.getBuffer((blob) => {
+    //     console.log('blob uploading...');
+    //     form.append('upload', blob, 'test.pdf');
+    //     fetch(HOSTURL+"/myapp/upload", {method:"POST", body:form})
+    //     .then(response => console.log(response));
+    // });
+    pdf.getBlob(blob => {
+        const file = new File([blob], `output.pdf`, { type: blob.type });
+        form.append('upload', file, 'test.pdf');
+        fetch(HOSTURL+"/myapp/upload", {method:"POST", body:form})
+        .then(response => console.log(response));
+    })
+    pdf.getBlob((blob) => {
+        console.log('blob uploading...');
+        form.append('upload', blob, 'test.pdf');
+        fetch(HOSTURL+"/myapp/upload", {method:"POST", body:form})
+        .then(response => console.log(response));
+    });
+    pdf.download();
+};
+
 
 // glasses prescriptions
 
@@ -778,7 +817,7 @@ function rxDataButton(dataStr, lat) {
     lat =='right'? GxRxRightObj=dataObj: GxRxLeftObj=dataObj;
 };
 
-// todo get the prescription to glasses prescription tablel
+// todo get the prescription to glasses prescription table
 // then print
 $('#GxRxModalPrint').click(function() {
     let dataObj = {};

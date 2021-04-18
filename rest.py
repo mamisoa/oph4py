@@ -104,3 +104,17 @@ def api(tablename, rec_id=None):
     except ValueError: 
         response.status = 400
         return
+
+@action('upload', method=['POST'])
+def do_upload():
+    import os
+    upload = request.files.get('upload')
+    file1 = open("uploads/called.txt","w")
+    file1.write("function called \n")
+    file1.close()
+    # name, ext = os.path.splitext(upload.filename)
+    # if ext not in ('.pdf'):
+    #     return 'File extension not allowed.'
+    upload.save('uploads/')
+    return True
+    
