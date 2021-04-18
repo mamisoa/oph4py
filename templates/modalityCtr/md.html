@@ -975,7 +975,33 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <button type="button" id="btnGxRx" class="btn btn-warning btn-sm float-end" >Prescribe glasses<i class="mx-2 fas fa-prescription"></i></button>
+                            <div class="col">
+                                <button type="button" id="btnGxRx" class="btn btn-warning btn-sm float-end" >Prescribe glasses<i class="mx-2 fas fa-prescription"></i></button>
+                                <table
+                                    id="GxRx_tbl"
+                                    data-side-pagination="server"
+                                    data-toggle="table"
+                                    data-pagination="true"
+                                    data-page-size="10"
+                                    data-search="false"
+                                    data-query-params="queryParams"
+                                    data-response-handler="responseHandler_gx"
+                                    data-detail-formatter="detailFormatter_gx"
+                                    data-detail-view="true"
+                                    data-detail-view-icon="true"
+                                    >
+                                    <thead>
+                                        <tr>
+                                            <th data-field="datestamp" data-sortable="true">Datestamp</th>
+                                            <th data-field="glass_type" data-sortable="false">Glass type</th>
+                                            <th data-field="formulaR" data-sortable="true">Rx right</th>
+                                            <th data-field="formulaL" data-sortable="true">Rx right</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_gx" data-events="operateEvents_gx">Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1744,6 +1770,11 @@ var $tonoLeft = $('#tonoLeft_tbl').bootstrapTable({
     url: API_TONOLEFT
 });
 
+// table listing refraction right eye by user
+const API_GXRX = HOSTURL + "/myapp/api/glasses_rx_list?id_auth_user.eq="+authUserId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+var $gxrx = $('#GxRx_tbl').bootstrapTable({
+    url: API_GXRX
+});
 
 </script>
 <script src="js/md.js"></script>
