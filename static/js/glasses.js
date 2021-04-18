@@ -637,6 +637,8 @@ $('#GxRxFormModal').submit(function(e) {
                 console.log(finalPresc);
                 let pdf= pdfMake.createPdf(finalPresc);
                 pdf.download('rx');
+                $('#GxRx_tbl').bootstrapTable('refresh');
+                $('#GxRxModal').modal('hide');
             });
 });
 

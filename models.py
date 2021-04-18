@@ -462,3 +462,10 @@ db.define_table('followup',
     Field('id_worklist','reference worklist', required=True),
     Field('description','string'),
     auth.signature)
+
+#temporary
+db.define_table('billing',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('description','string'),
+    auth.signature)
