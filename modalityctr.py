@@ -83,12 +83,13 @@ def md(wlId):
     ccx = initFields(wlId,'ccx')
     ccxR = initFields(wlId,'ccx','right')
     ccxL = initFields(wlId,'ccx','left')
-    mdParams= db(db.md_params.id_auth_user == user['id']).select(db.md_params.id_auth_user,db.md_params.inami,db.md_params.email,db.md_params.officename,db.md_params.officeaddress,db.md_params.officezip,db.md_params.officetown,db.md_params.officeurl,db.md_params.officephone).first().as_dict()
+    mddb=db.md_params
+    mdParams= db(mddb.id_auth_user == user['id']).select(mddb.id_auth_user,mddb.inami,mddb.email,mddb.officename,mddb.officeaddress,mddb.officezip,mddb.officetown,mddb.officeurl,mddb.officephone,mddb.companynum,mddb.companyname,mddb.companyiban,mddb.companyaddress).first().as_dict()
     userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
     # glasses assets
     axe_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/axe.png'
     logo_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg'
-    axeImg64 = base64.b64encode(open(axe_img_path, "rb").read())
+    axe64 = base64.b64encode(open(axe_img_path, "rb").read())
     logo64 = base64.b64encode(open(logo_img_path, "rb").read())
     return locals()
 
@@ -106,8 +107,10 @@ def hello(wlId):
     string = "Hello World!"
     axe_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/axe.png'
     logo_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg'
-    axeImg64 = base64.b64encode(open(axe_img_path, "rb").read())
-    logo64 = base64.b64encode(open(logo_img_path, "rb").read())
+    axe64 = embed64(filename= axe_img_path, file=axe_img_path, data=None, extension='image/png')
+    logo64 = embed64(filename= logo_img_path, file=logo_img_path, data=None, extension='image/jpg')
+    # axeImg64 = base64.b64encode(open(axe_img_path, "rb").read())
+    # logo64 = base64.b64encode(open(logo_img_path, "rb").read())
     # with open('/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/axe.png', "rb") as image_file:
     #    axeImg64 = base64.b64encode(image_file.read())
     # with open('/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg', "rb") as image_file:
