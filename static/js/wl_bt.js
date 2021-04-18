@@ -87,6 +87,9 @@ function operateFormatter_wl(value, row, index) {
     html.push('<a class="done ms-1" href="javascript:void(0)" title="Set to done"><i class="fas fa-check"></i></a>');
     html.push('<a class="stopwatch ms-1" href="javascript:void(0)" title="Counter minus 1"><i class="fas fa-stopwatch"></i></a>');
     html.push('<a class="modality_ctr ms-1" href="javascript:void(0)" title="Execute task"><i class="fas fa-heartbeat"></i></a>');
+    if (row.modality == 'MD' && row.status_flag =='done'){
+        html.push('<a class="summary ms-1" href="javascript:void(0)" title="Read summary"><i class="fas fa-th-list"></i></a>');
+    } else {};
     html.push('</div>');
     return html.join('');
 };
@@ -136,6 +139,9 @@ window.operateEvents_wl = {
         let controller = modalityDict[row.modality];
         link = HOSTURL+'/myapp/modalityCtr/'+controller+'/'+row.id
         window.location.href = link;
+    },
+    'click .done': function (e, value, row, index) {
+        link = HOSTURL+'/myapp/modalityCtr/'+summary+'/'+row.id
     }
 };
 
@@ -146,7 +152,7 @@ function rowStyle_wl(row,value) {
         bg = statusColor['doctorDone'];
     } else {
         bg = statusColor[row.status_flag];
-    }
+    };
     return { 
                 css: { 'background-color': bg }
             };

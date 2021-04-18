@@ -501,10 +501,11 @@ setOneSubmit('#cHxForm','current_hx');
 setOneSubmit('#motForm','motility');
 setOneSubmit('#phoForm','phoria');
 setOneSubmit('#pupForm','pupils');
-setOneSubmit('#folForm','followup');
 setOneSubmit('#ccxForm','ccx','na');
 setOneSubmit('#ccxRForm','ccx','right');
 setOneSubmit('#ccxLForm','ccx','left');
+setOneSubmit('#folForm','followup');
+setOneSubmit('#bilForm','billing');
 
 // using focusout to update will trigger too much ajax call
 // button in red if field updated
@@ -525,6 +526,7 @@ updateHandlersOneField('#ccxForm');
 updateHandlersOneField('#ccxRForm');
 updateHandlersOneField('#ccxLForm');
 updateHandlersOneField('#folForm');
+updateHandlersOneField('#bilForm');
 
 // update field on focus and highlight if changed
 
@@ -553,7 +555,8 @@ monitorValueChangeOneField('#pupForm','pupils');
 monitorValueChangeOneField('#ccxForm','ccx','na');
 monitorValueChangeOneField('#ccxRForm','ccx','right');
 monitorValueChangeOneField('#ccxLForm','ccx','left');
-
+monitorValueChangeOneField('#folForm','followup');
+monitorValueChangeOneField('#bilForm','billing');
 
 // function to prepare pdf content of prescription 
 function renderMedicObj(medicObj) {
