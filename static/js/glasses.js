@@ -1,6 +1,22 @@
-
 // glasses prescriptions
 const clonerxObj = Object.assign({}, rxObj);
+
+prescRxObj['doctorfirst']=userObj['first_name'];
+prescRxObj['doctorlast']=userObj['last_name'];
+prescRxObj['doctortitle']='Dr '+userObj['last_name'].toUpperCase()+' '+userObj['first_name'];
+prescRxObj['doctorinami']=usermdObj['inami']; // keep separations
+prescRxObj['doctoremail']=usermdObj['email']; 
+prescRxObj['centername']=usermdObj['officename']+ '\n'+usermdObj['officeaddress']+'\n'+usermdObj['officezip']+' '+usermdObj['officetown']
+prescRxObj['centerphone']=usermdObj['officephone']
+prescRxObj['centerurl']=usermdObj['officeurl']
+
+
+prescRxObj['bifocal']='o';
+prescRxObj['art30yes']='[x]';
+prescRxObj['art30no']='[ ]';
+prescRxObj['qrcode']='Signed by '+prescRxObj['doctortitle']+' uuid:';
+
+
 $('#btnGxRx').click(function() {
     let htmlR=[], htmlL=[];
     for (item of rxObj) {
@@ -80,11 +96,81 @@ function filterGxRx(dataObj){
     };
 };
 
+function globalRx2presc(rxObj) { 
+    let delkeyArr = ['id_auth_user','id_worklist'];
+    for (key of delkeyArr) {
+        delete rxObj['key'];
+    };
+    if (rxObj['art30'] == 'False') {
+        rxObj['art30no'] ='[x]';
+        rxObj['art30yes'] ='[ ]';
+    } else {
+        rxObj['art30yes'] ='[x]';
+        rxObj['art30no'] ='[ ]';
+    };
+    delete rxObj['art30'];
+    // default no tint
+    rxObj['tintnonmed'] ='o';
+    rxObj['tintmed'] ='o';
+    if (rxObj['tint'] == '') {
+        rxObj['tint'] ='o';
+    } else if (rxObj['tint'] == 'False') { // non med tint
+        rxObj['tint'] ='X';
+        rxObj['tintnonmed'] ='X';
+    } else if (rxObj['tint'] == 'True'){ // med tint
+        rxObj['tint'] ='X';
+        rxObj['tintmed'] ='X';
+    } else {rxObj['tint'] == 'o'};
+    rxObj['photononmed'] ='o';
+    rxObj['photomed'] ='o';
+    if (rxObj['photo'] == '') {
+        rxObj['photo'] ='o';
+    } else if (rxObj['photo'] == 'False') { // non med photo
+        rxObj['photo'] ='X';
+        rxObj['photononmed'] ='X';
+    } else if (rxObj['photo'] == 'True'){ // med photo
+        rxObj['photo'] ='X';
+        rxObj['photomed'] ='X';
+    } else {rxObj['photo']='o'};
+    // default glass_type: monofocal
+    rxObj['monofocal'] ='X';
+    rxObj['multifocal'] ='o';
+    rxObj['progressive'] ='o';
+    rxObj['degressive'] ='o';
+    rxObj['bifocal'] ='o';
+    if (rxObj['glass_type'] == 'progressive') {
+        rxObj['monofocal'] ='o';
+        rxObj['multifocal'] ='X';
+        rxObj['progressive'] ='X';
+    } else if (rxObj['glass_type'] == 'bifocal') { // non med photo
+        rxObj['monofocal'] ='o';
+        rxObj['multifocal'] ='X';
+        rxObj['bifocal'] ='o';
+    } else if (rxObj['glass_type'] == 'degressive'){ // med photo
+        rxObj['monofocal'] ='o';
+        rxObj['multifocal'] ='X';
+        rxObj['degressive'] ='X';
+    }; // default already set
+    let addR = rxObj['sph_closeR']-rxObj['sph_farR'];
+    let addL = rxObj['sph_closeL']-rxObj['sph_farL'];
+    rxObj['add_closeR']=addR;
+    rxObj['add_closeL']=addL;
+    // change everything in string, and check for empty or null values
+    for (const key in rxObj) {
+        if (typeof rxObj[key] == 'number') {
+            console.log('intial: '+key,rxObj[key],typeof rxObj[key]);
+            rxObj[key] = checkIfDataIsNull(rxObj[key].toString(),'');
+            console.log('final: '+key,rxObj[key],typeof rxObj[key])
+        } else {
+            rxObj[key] = checkIfDataIsNull(rxObj[key],'');
+        }
+    };
+};
 // todo get the prescription to glasses prescription table
 // then print
 $('#GxRxFormModal').submit(function(e) {
-    e.preventDefault();
     let GxRxGlobalObj= {};
+    e.preventDefault();
     let formObj = {};
     let formStr = $(this).serializeJSON();
     formObj=JSON.parse(formStr);
@@ -116,46 +202,441 @@ $('#GxRxFormModal').submit(function(e) {
     for (key of GxRxArrC) {
         GxRxGlobalObj[key]=formObj[key];
     };
+    let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
+    GxRxGlobalObj['datestamp']=today;
     fetch(HOSTURL+"/myapp/api/uuid", {method:"GET"})
         .then(response => response.json())
         .then(data =>
             {
-                GxRxGlobalObj['uuid']=data.unique_id;
                 let dataStr = JSON.stringify(GxRxGlobalObj);
                 console.log('Global:',GxRxGlobalObj);
                 // send glass left prescription to table
-                crud('glasses_rx_list','0','POST',dataStr);
+                // crud('glasses_rx_list','0','POST',dataStr);
                 $('#GxRxModal').modal('hide');
+                // clone prescRxObj
+                // add all keys and values from GxRxGlobalObj
+                // modify the value of art30 tint photo prism
+                console.log(prescRxObj);
+                let finalRxObj = Object.assign({}, prescRxObj);
+                globalRx2presc(GxRxGlobalObj);
+                // add all keys to finalRxObj
+                for (const key in GxRxGlobalObj) {
+                    finalRxObj[key] = GxRxGlobalObj[key];
+                };
+                finalRxObj['qrcode'] = finalRxObj['qrcode']+data.unique_id; // already string
+                finalRxObj['first_name'] = wlItemObj['patient.last_name'];
+                finalRxObj['last_name'] = wlItemObj['patient.first_name'];
+                console.log('FinalRxObj',finalRxObj);
+                // const finalPresc = rxprescription;
+                let finalPresc = {
+                    watermark: {text: '', color: 'red', opacity: 0.2, bold: false, italics: false},
+                    pageSize: 'A4',
+                    pageMargins: [ 10, 60, 40, 30 ],
+                    header: {
+                        style: 'header',
+                        margin: [200, 10, 150, 5],
+                        columns: [
+                            {
+                                image: logo64,
+                                width: 50
+                            },
+                            {
+                                margin: [10, 0, 0, 0],
+                                text: ['Centre Médical Bruxelles-Schuman\n',{ text: '66 Avenue de Cortenbergh\n1000 Bruxelles, Belgique\n+32(0)2/256.90.83 - info@ophtalmologiste.be\n', fontSize: 7 },
+                                { text: 'www.ophtalmologiste.be', fontSize: 7, color: 'blue', decoration: 'underline' }],
+                                width: '*',
+                                alignment: 'center'
+                            }
+                        ] // end of 2 columns
+                    }, // end header
+                    footer: {
+                        style: 'footer',
+                        margin: [10, 10, 0, 0],
+                        alignment: 'center',
+                        text : [ 
+                            {text: usermdObj['companyname'], decoration: 'underline'},
+                            {text: ' - '+ usermdObj['companyaddress']+'\n'+' '+usermdObj['companynum']+' - '+usermdObj['companyiban']}
+                        ] // end of text 
+                    }, // end of footer
+                    content: [
+                        {   style: 'title',
+                            margin: [0, 20, 0, 20],
+                            alignment: 'center',
+                            text: [
+                                'Annexe 15',
+                                { text: 'bis\n', italics: true },
+                                'PRESCRIPTION MEDICALE POUR VERRES DE LUNETTES ET/OU ACCESSOIRES'
+                                ]
+                        },
+                        {   canvas: [
+                                { type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5 },
+                                {type: 'rect',x: 0,y: 12, w: 515, h: 1, color: 'white'} // spacer
+                        ] }, // end of canvas
+                        {   text: 'VIGNETTE O.A', alignment: 'left'},
+                        { canvas: [
+                                { type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5 },
+                                {type: 'rect',x: 0,y: 7, w: 515, h: 2, color: 'white'} // spacer
+                        ] }, // end of canvas
+                        {
+                            style: 'idtable',
+                            margin: [0, 20, 0, 0],
+                            table: {
+                                widths: ['*','*'],
+                                body: [
+                                      [ {text: [{ text: 'NOM: '},{ text: finalRxObj['last_name'], bold: true}] },
+                                        {text: [{ text: 'PRENOM: '},{ text: finalRxObj['first_name'], bold: true}]} ],
+                                      [ {text: [{ text: 'DATE DE NAISSANCE: '},{ text: finalRxObj['dob'], bold: true}] },
+                                      '']  
+                                ],
+                            }, // end of table
+                            layout: 'noBorders' // end of body, 2 columns
+                        }, // end of row
+                        { canvas: [
+                            { type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1 },
+                            {type: 'rect',x: 0,y: 12, w: 515, h: 2, color: 'white'} // spacer
+                            ]
+                        }, // end of canvas
+                        {
+                            style: 'tabo',
+                            table: {
+                                widths: [ 50,'*', '*', '*'],
+                                headerRows: 1,
+                                alignement: 'center',
+                                body: [
+                                        [
+                                            { text: ''                                            
+                                            }, // spacer
+                                            {
+                                                rowSpan: 3,
+                                                image: axe64,
+                                                fit: [100, 100]                                                
+                                            }, // axe64 gauche
+                                            {
+                                                canvas: [
+                                                    {
+                                                        type: 'ellipse',
+                                                        x: 42, y: 20,
+                                                        color: 'black',
+                                                        fillOpacity: 0.5,
+                                                        r1: 30, r2: 20
+                                                    },
+                                                    {
+                                                        type: 'ellipse',
+                                                        x: 42, y: 20,
+                                                        color: 'white',
+                                                        fillOpacity: 0.5,
+                                                        r1: 20, r2: 15
+                                                    },
+                                                    {
+                                                        type: 'rect',
+                                                        x: 12,
+                                                        y: 20,
+                                                        w: 60,
+                                                        h: 20,
+                                                        color: 'white'
+                                                    } // hidder
+                                                ]
+                                            },  // canvas end
+                                            {
+                                                rowSpan: 3,
+                                                image: axe64,
+                                                fit: [100, 100]                                                
+                                            }
+                                        ], // 4 columns
+                                        [   
+                                            { text: ''                                            
+                                            }, // spacer
+                                            '',{ text: 'TABO', bold: true, alignement: 'right' }, ''], // 4 columns
+                                        [
+                                            { text: ''                                            
+                                            }, // spacer
+                                            '', { canvas: [{type: 'rect',x: 10,y: 0, w: 10, h: 35, color: 'white'}]}, ''] // spacer to keep height
+                                    ] // body table end
+                                },
+                            layout: 'noBorders'
+                        }, // 'tabo' table end
+                        {
+                            margin: [0, 5, 0, 0],
+                            style: 'tableExample', // table prescription
+                            table: {
+                                headerRows: 1,
+                                widths: [ '*', '*', '*', '*', '*', '*', 2 ,'*', '*', '*', '*', '*', '*' ],
+                                body: [
+                                        [ 
+                                            { text: 'D', bold: true, border: [false, false, true, true] },
+                                            { style: 'tableHeader', text: 'Sph' } , 
+                                            { text: 'Cyl', style: 'tableHeader' } ,
+                                            { text: 'Axis', style: 'tableHeader' } ,
+                                            { text: 'PRISM', style: 'tableHeader' },
+                                            { text: 'BASE', style: 'tableHeader'},
+                                            { text: '',border: [false, false, false, false] }, // spacer
+                                            { text: 'G', bold: true, border: [false, false, true, true] },
+                                            { text: 'Sph', style: 'tableHeader'} ,
+                                            { text: 'Cyl', style: 'tableHeader'},
+                                            { text: 'Axis', style: 'tableHeader'} ,
+                                            { text: 'PRISM', style: 'tableHeader'},
+                                            { text: 'BASE',style: 'tableHeader'}
+                                        ], // end table header 13 columns
+                                        [   {text: 'Loin'},
+                                            {text: finalRxObj['sph_farR'] }, 
+                                            {text: finalRxObj['cyl_farR'] },
+                                            {text: finalRxObj['axis_farR']},
+                                            {text: finalRxObj['prismR']},
+                                            {text: finalRxObj['baseR']},
+                                            {text: '',border: [false, false, false, false] }, // spacer - 6 col ok
+                                            {text: 'Loin'},
+                                            {text: finalRxObj['sph_farL'] }, 
+                                            {text: finalRxObj['cyl_farL'] },
+                                            {text: finalRxObj['axis_farL']},
+                                            {text: finalRxObj['prismL']},
+                                            {text: finalRxObj['baseL']},
+                                        ],
+                                        [   {text: 'Inter'},
+                                            {text: finalRxObj['sph_intR'] }, 
+                                            {text: finalRxObj['cyl_intR'] },
+                                            {text: finalRxObj['axis_intR']},
+                                            {text: ''},
+                                            {text: ''},
+                                            {text: '',border: [false, false, false, false] }, // spacer - 6 col ok
+                                            {text: 'Inter'},
+                                            {text: finalRxObj['sph_intL'] }, 
+                                            {text: finalRxObj['cyl_intL'] },
+                                            {text: finalRxObj['axis_intL']},
+                                            {text: ''},
+                                            {text: ''},
+                                        ],
+                                        [   {text: 'Près'},
+                                            {text: finalRxObj['sph_closeR'] }, 
+                                            {text: finalRxObj['cyl_closeR'] },
+                                            {text: finalRxObj['axis_closeR']},
+                                            {text: ''},
+                                            {text: ''},
+                                            {text: '',border: [false, false, false, false] }, // spacer - 6 col ok
+                                            {text: 'Inter'},
+                                            {text: finalRxObj['sph_closeL'] }, 
+                                            {text: finalRxObj['cyl_closeL'] },
+                                            {text: finalRxObj['axis_closeL']},
+                                            {text: ''},
+                                            {text: ''},
+                                        ]
+                                ] // end of body
+                            } // end of table
+                          }, // end of row
+                          {
+                            style: 'add',
+                            margin: [80, 2, 10, 2],
+                            table: {
+                                body: [
+                                        [
+                                            {text:'ADD'},
+                                            {text: finalRxObj['add_closeR']} ,
+                                            { canvas: [{type: 'rect',x: 0,y: 0, w: 230, h: 5, color: 'white'}],border: [true, false, true, false]},
+                                            {text:'ADD'}, 
+                                            {text: finalRxObj['add_closeL']}
+                                        ]
+                                ] // end of body
+                            } // end of row
+                        }, // tableau prescription fin
+                        {
+                            alignment: 'left',
+                            fontSize: 9,
+                            text: [
+                                    {text: 'REMARQUES: ', bold : true},
+                                    {text: '\n', italics: true}
+                                ]
+                        }, // end of row
+                        { 
+                            alignment: 'left',
+                            fontSize: 8 ,
+                            margin: [10,0,0,0],
+                            text: [
+                                    { text: '\tLunettes vertex : 12.5mm (standard=12mm)\n'},
+                                    {text:'Note: '} ,{text: finalRxObj['remarks']+'\n', italics: true} 
+                                ]
+                        }, // end of row
+                        { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1 },
+                            {type: 'rect',x: 0,y: 12, w: 515, h: 2, color: 'white'} ] // spacer
+                        },
+                        {
+                            text: 'EQUIPEMENT',
+                            bold: true,
+                            alignment: 'left',
+                            fontSize: 9
+                        }, // end of row
+                        {
+			                alignment: 'left',
+                            fontSize: 8,
+                            margin : [10,2,10,2],
+			                columns: [
+				                [
+                                    {
+					                    text: [{ text: finalRxObj['monofocal']+' UNIFOCAL\n'},{ text: finalRxObj['multifocal']+' MULTIFOCAL'}]
+				                    },
+                                    {
+                                        margin: [15,0,10,2],
+                                        text: [
+                                            { text: finalRxObj['bifocal']+' Bifocal\n'},
+                                            { text: finalRxObj['progressive']+' Progressif\n'},
+                                            { text: finalRxObj['degressive']+' Dégressifs\n'}]
+				                    },
+                                    {
+					                    text: [{ text: finalRxObj['tint']+' TEINTE FIXE'}]
+				                    },
+                                    {
+                                        margin: [15,0,10,2],
+					                    text: [{ text: finalRxObj['tintnonmed']+' Sans filtre médical\n'},
+                                        { text: finalRxObj['tintmed']+' Avec filtre médical(*) - Type '},
+                                        { text: '' , italics: true}]
+                                    },
+                                    {
+					                    text: [{ text: finalRxObj['photo']+' PHOTOCHROMIQUE'}]
+				                    },
+                                    {
+                                        margin: [15,0,10,2],
+					                    text: [{ text: finalRxObj['photononmed']+' Sans filtre médical\n'},
+                                        { text: finalRxObj['photomed']+' Avec filtre médical(*) - Type '},{ text: '' , italics: true}]
+				                    }
+                                ], // left column
+                                [
+                                    {
+                                        text: [{ text: 'o'+' PRISME'}]
+				                    },
+                                    {
+                                        margin: [15,0,10,2],
+					                    text: [
+                                            { text: 'o'+' Taillé dans le verre - Diplopie      '},
+                                            { text: '[ ]'+' OUI '},
+                                            { text: '[ ]'+' NON\n'},
+                                            { text: '[ ]'+' FRESNEL\n\n'}]
+				                    },
+                                    {
+					                    text: [{ text: 'o'+' OBTURATEUR'}]
+				                    },
+                                    {
+                                        margin: [15,0,10,2],
+					                    text: [{ text: 'o'+' Avec coquille et ventouse\n'},{ text: 'o'+' Avec micropores\n\n'}]
+				                    },
+                                    {
+					                text: [{ text: 'o'+' FILTRE DE RYSER - Calibrage(densité): '},{ text: '' , italics: true}]
+				                    }
+                                ] // right column
+			                ]
+		                }, // EQUIPEMENT fin
+                        { 
+                            canvas: [
+                                        { type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1 },
+                                        {type: 'rect',x: 0,y: 12, w: 515, h: 2, color: 'white'} // spacer
+                                ]
+                        },
+                        {
+                            alignment: 'left',
+                            fontSize: 8,
+                            columns: [
+                                [
+                                    {
+                                        text: '(*) INDICATION MEDICALE selon Art.30 de la nomenclature\n(POUR FILTRE MEDICAL AVEC ABSORPTION PREDETERMINEE DE LA\nLUMIERE BLEUE ET FILTRE MEDICAL AVEC TEINTE FIXE)'
+                                    }
+                                ], // left column
+                                [ 
+                                    { 
+                                        margin: [15,0,10,2],
+                                        text: [{ text: finalRxObj['art30yes']+' OUI '},
+                                        { text: finalRxObj['art30no']+' NON\n'}]
+                                    }
+                                ] // right column
+                            ] // end 2 columns table
+                        }, // art.30 end
+                        {
+                            style: 'tableExample',
+                            margin: [0,30,0,10],
+                            table: {
+                            widths: ['*', '*'],
+                            body: [
+                                [
+                                    [ // left column
+                                        {
+                                         text: [{fontSize: 6, alignment: 'left', text: 'Cachet du prescripteur:'}]
+                                        },
+                                        {
+                                            margin: [0,2,0,0],
+                                            fontSize: 8,
+                                            text: [{ text: finalRxObj['doctortitle']+'\n', bold: true },{text: finalRxObj['doctorinami']}]
+                                        },
+                                        {
+                                            fontSize: 6,
+                                            text: [{ text: finalRxObj['officename']+'\n' },{text: 'Tél: '+finalRxObj['officephone']+'\n'},
+                                            {text: finalRxObj['centerurl']+'\n', color: 'blue', decoration: 'underline', italics: 'true'}]
+                                        }
+                                    ], // left column end
+                                    [{
+                                        border: [true, false, false, false],
+                                        text: [
+                                            {fontSize: 6, alignment: 'left', text: 'Date et signature: \n'},
+                                            {fontSize: 8, alignment: 'left', text: finalRxObj['datestamp']+'\n', bold: true},
+                                            ]
+                                    },{qr: finalRxObj['qrcode'], fit: 50, alignment: 'center'}
+                                    ]
+                                ] // right column end
+                            ] // end of body
+                            } // end of table
+                        }, // stamp end
+                        {
+                            alignment: 'left',
+                            fontSize: 8,
+                            text: [{text:'Email du prescripteur: '},{text: usermdObj['email'], color: 'blue', decoration: 'underline' }]
+                        },
+                        {
+                            alignment: 'left',
+                            fontSize: 8,
+                            text: [{text:'Email de l\'opticien: '},{text: '', color: 'blue', decoration: 'underline' }]
+                        },
+                        {
+                            alignment: 'left',
+                            fontSize: 8,
+                            text: [{text:'Remarques de l\'opticien: '},{text: '', bold:true }]
+                        }
+                    ], // content end
+                styles: {
+                    header: {
+                        fontSize: 9,
+                        margin: [10,2, 10, 0]
+                    },
+                    footer: {
+                        italics: true,
+                        fontSize: 7,
+                        margin: [10,2, 10, 0]
+                    },
+                    title: {
+                        bold: true
+                    },
+                    idtable: {
+                        fontSize: 9,
+                        alignment: 'left'
+                    },
+                    tableExample: {
+                        fontSize: 8
+                    },
+                    tableHeader: {
+                        bold: true,
+                        color: 'black',
+                        fillColor: '#eeeeee',
+                        fontSize: 8
+                    },
+                    tabo: {
+                        alignment: 'center'
+                    }
+                },
+                defaultStyle: {
+                    alignment: 'center',
+                    fontSize: 10
+                    }
+            }; // end of template
+                console.log(finalPresc);
+                let pdf= pdfMake.createPdf(finalPresc);
+                pdf.download('rx');
             });
 });
 
-var axe_img64 = '[[=axe_img64]]',
-    name = 'Patient',
-    firstname = 'Test',
-    dob = '01/01/1975',
-    rem = '',
-    vertex = '13mm',
-    note = '2 paires séparées',
-    teinte = 'ambre',
-    photochromique = 'UV 3',
-    ryser = '1/10',
-    doctorname = 'Dr. ANDRIANTAFIKA R.M',
-    doctorinami = '1-89506-32-370',
-    doctoremail = 'info@ophtalmologiste.be',
-    centername = 'Centre Médical Bruxelles-Schuman\n66 Av. de Cortenbergh\n1000 - Bruxelles, Belgique',
-    centerphone = '+32(0)2/256.90.83',
-    centerwww = 'www.ophtalmologiste.be',
-    prescdate = "01/01/2017",
-    sprlname = 'Dr. ANDRIANTAFIKA Mamisoa SPRL',
-    sprladdress = '154 Rue du Rouge Bouton B-1460 Virginal-Samme',
-    sprliban = 'ING IBAN BE29 3630 2433 0064 SWIFT BBRUBEBB',
-    sprlbce = '0893.588.051',
-    optoemail = 'unknown',
-    optorem = 'none',
-    qrcode = 'signed by '+ doctorname
-    logo_img64 = '[[=logo_img64]]';
-
-let prescRxObj={};
 
 var rxprescription = {
     watermark: {text: 'duplicata', color: 'red', opacity: 0.2, bold: false, italics: false},
@@ -166,7 +647,7 @@ var rxprescription = {
          margin: [200, 10, 150, 5],
          columns: [
             {
-                image: logo_img64,
+                image: logo64,
                 width: 50
             },
             {
@@ -180,7 +661,7 @@ var rxprescription = {
       },
     footer: {
         style: 'footer',
-        text : [ { text: sprlname, decoration: 'underline'},{text: ' - '+ sprladdress+'\n'+'BCE '+sprlbce+' - '+sprliban}
+        text : [ { text: usermdObj['companyname'], decoration: 'underline'},{text: ' - '+ usermdObj['companyaddress']+'\n'+' '+usermdObj['companynum']+' - '+usermdObj['companyiban']}
             ]
     },
     content: [
@@ -206,8 +687,8 @@ var rxprescription = {
 		  table: {
              widths: ['*','*'],
              body: [
-                    [ {text: [{ text: 'NOM: '},{ text: name, bold: true}] } , {text: [{ text: 'PRENOM: '},{ text: firstname, bold: true}]} ],
-					[ {text: [{ text: 'DATE DE NAISSANCE: '},{ text: dob, bold: true}] }, '']
+                    [ {text: [{ text: 'NOM: '},{ text: prescRxObj['last_name'], bold: true}] } , {text: [{ text: 'PRENOM: '},{ text: prescRxObj['first_name'], bold: true}]} ],
+					[ {text: [{ text: 'DATE DE NAISSANCE: '},{ text: prescRxObj['dob'], bold: true}] }, '']
                    ]
 				},
           layout: 'noBorders'
@@ -224,7 +705,7 @@ var rxprescription = {
                                     [
                                         {
                                             rowSpan: 3,
-                                            image: axe_img64,
+                                            image: axe64,
                                             fit: [100, 100],
                                         },
                                         {
@@ -256,7 +737,7 @@ var rxprescription = {
                                         },  // canvas end
                                        {
                                            rowSpan: 3,
-                                            image: axe_img64,
+                                            image: axe64,
                                             fit: [100, 100],
                                         }],
                                     ['', { text: 'TABO', bold: true, alignement: 'center' }, ''],
@@ -278,9 +759,9 @@ var rxprescription = {
               [ 'Loin', prescRxObj['sph_farR'], prescRxObj['cyl_farR'], prescRxObj['axis_farR'], prescRxObj['prismR'], prescRxObj['baseR'],{ text: '',border: [false, false, false, false] },
               'Loin', prescRxObj['sph_farL'], prescRxObj['cyl_farL'], prescRxObj['axis_farL'], prescRxObj['prismL'], prescRxObj['baseL']],
               [ 'Inter', prescRxObj['sph_intR'], prescRxObj['cyl_intR'], prescRxObj['axis_intR'], '--', '--', { text: '',border: [false, false, false, false] },
-              'Inter', prescRxObj['sph_intL'], prescRxObj['cyl_intR'], prescRxObj['axis_farL'], '--', '--'],
+              'Inter', prescRxObj['sph_intL'], prescRxObj['cyl_intL'], prescRxObj['axis_farL'], '--', '--'],
               [ 'Près', prescRxObj['sph_closeR'], prescRxObj['cyl_closeR'], prescRxObj['axis_closeR'], '--', '--', { text: '',border: [false, false, false, false] },
-              'Près', prescRxObj['sph_closeL'], prescRxObj['cyl_closeR'], prescRxObj['axis_closeL'], '--', '--']
+              'Près', prescRxObj['sph_closeL'], prescRxObj['cyl_closeL'], prescRxObj['axis_closeL'], '--', '--']
             ]
           }
         },
@@ -293,8 +774,8 @@ var rxprescription = {
 								]
 						}
 		}, // tableau prescription fin
-        { alignment: 'left', fontSize: 9, text: [{text: 'REMARQUES: ', bold : true},{text: rem+'\n', italics: true}]},
-        { alignment: 'left', fontSize: 8 ,margin: [10,0,0,0],  text: [{ text: '\tLunettes vertex : '+vertex+' (standard=12mm)\n'},'Note: ' ,{text: note+'\n', italics: true} ]},
+        { alignment: 'left', fontSize: 9, text: [{text: 'REMARQUES: ', bold : true},{text: prescRxObj['remarks']+'\n', italics: true}]},
+        { alignment: 'left', fontSize: 8 ,margin: [10,0,0,0],  text: [{ text: '\tLunettes vertex : 12.5mm (standard=12mm)\n'},'Note: ' ,{text: ''+'\n', italics: true} ]},
         { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1 },
                    {type: 'rect',x: 0,y: 12, w: 515, h: 2, color: 'white'} // spacer
                   ] },
@@ -305,25 +786,25 @@ var rxprescription = {
             margin : [10,2,10,2],
 			columns: [
 				[{
-					text: [{ text: 'o'+' UNIFOCAL\n'},{ text: 'o'+' MULTIFOCAL'}]
+					text: [{ text: prescRxObj['monofocal']+' UNIFOCAL\n'},{ text: prescRxObj['multifocal']+' MULTIFOCAL'}]
 				},
                  {
                     margin: [15,0,10,2],
-					text: [{ text: 'o'+' Bifocal\n'},{ text: 'o'+' Progressif\n'},{ text: 'o'+' Trifocal\n'},{ text: 'o'+' Non spécifié\n'}]
+					text: [{ text: prescRxObj['bifocal']+' Bifocal\n'},{ text: prescRxObj['progressif']+' Progressif\n'},{ text: prescRxObj['degressif']+' Dégressifs\n'}]
 				},
                  {
-					text: [{ text: 'o'+' TEINTE FIXE'}]
-				},
-                 {
-                    margin: [15,0,10,2],
-					text: [{ text: 'o'+' Sans filtre médical\n'},{ text: 'o'+' Avec filtre médical(*) - Type '},{ text: teinte , italics: true}]
-				},
-                 {
-					text: [{ text: 'o'+' PHOTOCHROMIQUE'}]
+					text: [{ text: prescRxObj['tint']+' TEINTE FIXE'}]
 				},
                  {
                     margin: [15,0,10,2],
-					text: [{ text: 'o'+' Sans filtre médical\n'},{ text: 'o'+' Avec filtre médical(*) - Type '},{ text: photochromique , italics: true}]
+					text: [{ text: prescRxObj['tintnonmed']+' Sans filtre médical\n'},{ text: prescRxObj['tintmed']+' Avec filtre médical(*) - Type '},{ text: '' , italics: true}]
+				},
+                 {
+					text: [{ text: prescRxObj['photo']+' PHOTOCHROMIQUE'}]
+				},
+                 {
+                    margin: [15,0,10,2],
+					text: [{ text: prescRxObj['photononmed']+' Sans filtre médical\n'},{ text: 'o'+' Avec filtre médical(*) - Type '},{ text: '' , italics: true}]
 				}
                 ], // left column
                 [{
@@ -341,7 +822,7 @@ var rxprescription = {
 					text: [{ text: 'o'+' Avec coquille et ventouse\n'},{ text: 'o'+' Avec micropores\n\n'}]
 				},
                  {
-					text: [{ text: 'o'+' FILTRE DE RYSER - Calibrage(densité): '},{ text: ryser , italics: true}]
+					text: [{ text: 'o'+' FILTRE DE RYSER - Calibrage(densité): '},{ text: '' , italics: true}]
 				},
                 ] // right column
 			]
@@ -357,7 +838,7 @@ var rxprescription = {
 					text: '(*) INDICATION MEDICALE selon Art.30 de la nomenclature\n(POUR FILTRE MEDICAL AVEC ABSORPTION PREDETERMINEE DE LA\nLUMIERE BLEUE ET FILTRE MEDICAL AVEC TEINTE FIXE)'
 				}
                 ], // left column
-				[ { margin: [15,0,10,2],text: [{ text: '[x]'+' OUI '},{ text: '[ ]'+' NON\n'}]
+				[ { margin: [15,0,10,2],text: [{ text: prescRxObj['art30yes']+' OUI '},{ text: prescRxObj['art30no']+' NON\n'}]
                  }
                 ] // right column
 			]
@@ -376,15 +857,15 @@ var rxprescription = {
                                   {
                                     margin: [0,2,0,0],
                                     fontSize: 8,
-                                    text: [{ text: doctorname+'\n', bold: true },{text: doctorinami}]
+                                    text: [{ text: prescRxObj['docortitle']+'\n', bold: true },{text: prescRxObj['doctorinami']}]
                                     },
                                    {
                                     fontSize: 6,
-                                    text: [{ text: centername+'\n' },{text: 'Tél: '+centerphone+'\n'}, {text: centerwww+'\n', color: 'blue', decoration: 'underline', italics: 'true'}]
+                                    text: [{ text: prescRxObj['officename']+'\n' },{text: 'Tél: '+prescRxObj['officephone']+'\n'}, {text: prescRxObj['officeurl']+'\n', color: 'blue', decoration: 'underline', italics: 'true'}]
                                     }
                                  ], // left column end
                                       { border: [true, false, false, false],
-                                    text: [{fontSize: 6, alignment: 'left', text: 'Date et signature: '},{fontSize: 8, alignment: 'left', text: prescdate, bold: true}],
+                                    text: [{fontSize: 6, alignment: 'left', text: 'Date et signature: '},{fontSize: 8, alignment: 'left', text: prescRxObj['datestamp'], bold: true}],
                                     }
                                 ]
                         ]
@@ -393,19 +874,19 @@ var rxprescription = {
         {
             alignment: 'left',
             fontSize: 8,
-            text: [{text:'Email du prescripteur: '},{text: doctoremail, color: 'blue', decoration: 'underline' }]
+            text: [{text:'Email du prescripteur: '},{text: usermdObj['email'], color: 'blue', decoration: 'underline' }]
         },
         {
             alignment: 'left',
             fontSize: 8,
-            text: [{text:'Email de l\'opticien: '},{text: optoemail, color: 'blue', decoration: 'underline' }]
+            text: [{text:'Email de l\'opticien: '},{text: '', color: 'blue', decoration: 'underline' }]
         },
         {
             alignment: 'left',
             fontSize: 8,
-            text: [{text:'Remarques de l\'opticien: '},{text: optorem, bold:true }]
+            text: [{text:'Remarques de l\'opticien: '},{text: '', bold:true }]
         },
-        {qr: sprlname, fit: 30, alignment: 'right'}
+        {qr: prescRxObj['qrcode'], fit: 30, alignment: 'right'}
       ], // content end
         styles: {
             header: {
@@ -442,3 +923,5 @@ var rxprescription = {
             fontSize: 10
         }
 };
+
+console.log('prescRxObj:',prescRxObj);

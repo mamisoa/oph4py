@@ -419,6 +419,7 @@ db.define_table('md_params',
     Field('officeurl','string'),
     Field('companynum','string'),
     Field('companyname','string'),
+    Field('companyaddress','string'),
     Field('companyiban','string'),
     auth.signature)
 
@@ -426,6 +427,7 @@ db.define_table('glasses_rx_list',
     Field('uuid','string', default=str_uuid()),
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True), # from the autorx wl!
+    Field('datestamp', 'date'),
     Field('glass_type', 'string'),
     Field('sph_farR','decimal(4,2)'),
     Field('cyl_farR','decimal(4,2)'),

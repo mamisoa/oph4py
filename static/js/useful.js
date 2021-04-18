@@ -71,7 +71,7 @@ function hmsToSeconds(s) {
 
 // check if datastr is null
 function checkIfDataIsNull(data, dft='n/a') {
-    return data == null? dft : data ; 
+    return (data == null || data =='')? dft : data ; 
 };
 
 function getUuid() {
