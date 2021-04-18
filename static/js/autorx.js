@@ -240,7 +240,7 @@ function rxInsert(domId,laterality,status=1) {
   dataObj['status'] = status;
   dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
   // console.log('rx_origin',dataObj['rx_origin']);
-  if ((dataObj['rx_origin'] != 'glass') || (dataObj['rx_origin'] != 'trial')) {
+  if ((dataObj['rx_origin'] != 'glass') && (dataObj['rx_origin'] != 'trial')) {
     dataObj['glass_type'] = 'na';
   };
   delete dataObj['add_int'];
