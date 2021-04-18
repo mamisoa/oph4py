@@ -448,9 +448,9 @@ db.define_table('glasses_rx_list',
     Field('remarks','string'),
     Field('art30','boolean', default=False),
     Field('prismR','decimal(4,2)'),
-    Field('baseR', 'integer'),
+    Field('baseR', 'string'),
     Field('prismL','decimal(4,2)'),
-    Field('baseL', 'integer'),
+    Field('baseL', 'string'),
     Field('tint','boolean'), # true = medical, false = non medical, null = no tint
     Field('photo','boolean'), # true = medical, false = non medical, null = not photochromic
     auth.signature)
