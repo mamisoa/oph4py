@@ -1,3 +1,118 @@
+
+// glasses prescriptions
+const clonerxObj = Object.assign({}, rxObj);
+$('#btnGxRx').click(function() {
+    let htmlR=[], htmlL=[];
+    for (item of rxObj) {
+        console.log('Choosen Rx',item);
+        // put everything in table
+        if (item['laterality']=='right') {
+            let html =[];
+            html.push('<tr>'); // row
+            html.push('<td>'); // 1st col origin
+            html.push(item['rx_origin']);
+            html.push('</td>');
+            html.push('<td>'); // 2nd col glass type
+            html.push(item['glass_type']);
+            html.push('</td>');
+            html.push('<th scope="row">'); // 3rd col rx
+            html.push(item['rx_far']+' Add+'+item['add']);
+            html.push('</td>');
+            html.push('<td>'); // 4th col
+            html.push('<button type="button" class="btn btn-primary btn-sm print-rx" onclick="rxDataButton(this.getAttribute(\'data-rx-obj\'),\'right\');" data-rx-obj=\''+JSON.stringify(item)+'\'><i class="fas fa-file-import"></i></button>');
+            html.push('</td>');
+            html.push('</tr>'); // end row
+            htmlR.push(html.join(''));
+        } else {
+            let html =[];
+            html.push('<tr>'); // row
+            html.push('<td>'); // 1st col origin
+            html.push(item['rx_origin']);
+            html.push('</td>');
+            html.push('<td>'); // 2nd col glass type
+            html.push(item['glass_type']);
+            html.push('</td>');
+            html.push('<th scope="row">'); // 3rd col rx
+            html.push(item['rx_far']+' Add+'+item['add']);
+            html.push('</td>');
+            html.push('<td>'); // 4th col
+            html.push('<button type="button" class="btn btn-primary btn-sm print-rx" onclick="rxDataButton(this.getAttribute(\'data-rx-obj\'),\'left\');" data-rx-obj=\''+JSON.stringify(item)+'\'><i class="fas fa-file-import"></i></button>');
+            html.push('</td>');
+            html.push('</tr>'); // end row
+            htmlL.push(html.join(''));
+        };
+    };
+    $('#GxRxRTd').html(htmlR.join(''));
+    $('#GxRxLTd').html(htmlL.join(''));
+    $('#GxRxModal').modal('show');
+});
+
+var GxRxRightObj ={};
+var GxRxLeftObj ={};
+function rxDataButton(dataStr, lat) {
+    let dataObj = JSON.parse(dataStr);
+    // console.log(dataObj);
+    let html=[];
+    html.push('<tr>'); // row
+    html.push('<td>'); // 1st col origin
+    html.push(dataObj['rx_origin']);
+    html.push('</td>');
+    html.push('<td>'); // 2nd col glass type
+    html.push(dataObj['glass_type']);
+    html.push('</td>');
+    html.push('<th scope="row">'); // 3rd col rx
+    html.push(dataObj['rx_far']+' Add+'+dataObj['add']);
+    html.push('</td>');
+    html.push('<td>'); // 4th col
+    html.push('</td>');
+    html.push('</tr>'); // end row
+    $('#GxRx'+lat).html(html.join(''));
+    lat =='right'? GxRxRightObj=dataObj: GxRxLeftObj=dataObj;
+};
+
+function filterGxRx(dataObj){
+    let removeKeysArray = [
+        'created_by_name','modified_by_name','created_by','modified_by','created_on','modified_on',
+        'opto_far','opto_int','opto_close','va_far','va_int','va_close', 'se_far','add','note', 'laterality'
+    ];
+    for (let key of removeKeysArray){
+        delete dataObj[key];
+    };
+};
+
+// todo get the prescription to glasses prescription table
+// then print
+$('#GxRxFormModal').submit(function(e) {
+    e.preventDefault();
+    let formObj = {};
+    let formStr = $(this).serializeJSON();
+    formObj=JSON.parse(formStr);
+    // formObj is from form
+    // GxRxRight, GxRxLeft is from rx selection
+    // GxRxGlobalObj is the prescription object
+    // set GxRxGlobalObj from GxRxRight, GxRxLeft
+    filterGxRx(GxRxRightObj);
+    filterGxRx(GxRxLeftObj);
+    console.log('GxRxRightObj:',GxRxRightObj);
+    console.log('GxRxLeftObj:',GxRxRightObj);
+    console.log('GxRxdataObj:',formObj);
+    let GxRxGlobalObj= {};
+    let GxRxArr = [
+        'glass_type','sph_farR','cyl_farR','axis_farR','sph_farL','cyl_farL','axis_farL',
+        'sph_intR','cyl_intR','axis_intR','sph_intL','cyl_intL','axis_intL',
+        'sph_closeR','cyl_closeR','axis_closeR','sph_closeL','cyl_closeL','axis_closeL',
+        'prismR','baseR','prismL','baseL',
+        'tint','photo',
+        'art30','remarks'];
+    // send glass right prescription to table
+    GxRxGlobalObj['id_auth_user']=GxRxRightObj['id_auth_user']; // common for right and left (same autorx wlId)
+    GxRxGlobalObj['id_worklist']=GxRxRightObj['id_worklist'];
+    console.log('Global:',GxRxGlobalObj);
+    // dataStr = JSON.stringify(dataObj);
+    // send glass left prescription to table
+    // crud('glasses_rx_list','0','POST',dataStr);
+});
+
 var axe_img64 = '[[=axe_img64]]',
     name = 'Patient',
     firstname = 'Test',
@@ -24,7 +139,9 @@ var axe_img64 = '[[=axe_img64]]',
     qrcode = 'signed by '+ doctorname
     logo_img64 = '[[=logo_img64]]';
 
-var dd = {
+let prescRxObj={};
+
+var rxprescription = {
     watermark: {text: 'duplicata', color: 'red', opacity: 0.2, bold: false, italics: false},
     pageSize: 'A4',
     pageMargins: [ 50, 60, 40, 30 ],
@@ -142,8 +259,8 @@ var dd = {
               [ { text: 'D', bold: true, border: [false, false, true, true] }, { style: 'tableHeader', text: 'Sph' } , { text: 'Cyl', style: 'tableHeader' } ,{ text: 'Axis', style: 'tableHeader' } , { text: 'PRISM', style: 'tableHeader' }, { text: 'BASE', style: 'tableHeader'},
                 { text: '',border: [false, false, false, false] },
                 { text: 'G', bold: true, border: [false, false, true, true] }, { text: 'Sph', style: 'tableHeader'} , { text: 'Cyl', style: 'tableHeader' } ,{ text: 'Axis', style: 'tableHeader'} , { text: 'PRISM', style: 'tableHeader'}, { text: 'BASE',style: 'tableHeader'}],
-              [ 'Loin', prescRxObj['sph_farR'], prescRxObj['cyl_farR'], prescRxObj['axis_farR'], '--', '--',{ text: '',border: [false, false, false, false] },
-              'Loin', prescRxObj['sph_farL'], prescRxObj['cyl_farL'], prescRxObj['axis_farL'], '--', '--'],
+              [ 'Loin', prescRxObj['sph_farR'], prescRxObj['cyl_farR'], prescRxObj['axis_farR'], prescRxObj['prismR'], prescRxObj['baseR'],{ text: '',border: [false, false, false, false] },
+              'Loin', prescRxObj['sph_farL'], prescRxObj['cyl_farL'], prescRxObj['axis_farL'], prescRxObj['prismL'], prescRxObj['baseL']],
               [ 'Inter', prescRxObj['sph_intR'], prescRxObj['cyl_intR'], prescRxObj['axis_intR'], '--', '--', { text: '',border: [false, false, false, false] },
               'Inter', prescRxObj['sph_intL'], prescRxObj['cyl_intR'], prescRxObj['axis_farL'], '--', '--'],
               [ 'Près', prescRxObj['sph_closeR'], prescRxObj['cyl_closeR'], prescRxObj['axis_closeR'], '--', '--', { text: '',border: [false, false, false, false] },

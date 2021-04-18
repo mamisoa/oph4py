@@ -549,44 +549,6 @@ monitorValueChangeOneField('#ccxForm','ccx','na');
 monitorValueChangeOneField('#ccxRForm','ccx','right');
 monitorValueChangeOneField('#ccxLForm','ccx','left');
 
-// medical prescriptions
-// list all prescribed medications and prints
-// set medications to prescribed
-
-// fill the mxRxModal prescription module
-$('#btnMxRx').click(function(){
-    // get medications from current wl and not prescribed
-    getWlItemData('mx',wlId,'','&prescribed=False&@lookup=medic!:id_medic_ref')
-        .then(function(data){
-            prescObj['name']=wlItemObj['patient.last_name'];
-            prescObj['firstname']=wlItemObj['patient.first_name'];
-            let contentAggregate="";
-            let dataObj=data.items;
-            console.log(data);
-            if (data.count > 0 && data.status != 'error') {
-                let html = [];
-                for (item of dataObj) {
-                    prescObj['onset']=item['onset'];
-                    prescObj['ended']=item['ended'];
-                    let content = renderMedicObj(item);
-                    contentAggregate += content;
-                    html.push('<tr>');
-                        html.push('<th scope"row">'+item.medication+'</th>');
-                        let posology=item['unit_per_intake']+' '+item['medic.form']+' '+item.frequency;
-                        html.push('<td>'+posology+'</td>');
-                        html.push('<td>'+item.onset+'</td>');
-                        html.push('<td>'+item.ended+'</td>');
-                    html.push('<tr>');
-                };
-                prescObj['content']=contentAggregate;
-                $('#mxRxTd').html(html.join(''));
-                $('#mxRxModal').modal('show');
-            } else {
-                displayToast('error','Medication list empty', 'No medication to prescribe',6000);
-            }
-        });
-});
-
 
 // function to prepare pdf content of prescription 
 function renderMedicObj(medicObj) {
@@ -598,122 +560,9 @@ function renderMedicObj(medicObj) {
     return content.join('');
 };
 
-$('#mxRxModalPrint').click(function(){
-    // get medications from current wl and not prescribed
-    getWlItemData('mx',wlId,'','&prescribed=False')
-        .then(function(data){
-            let dataObj=data.items;
-            console.log(data);
-            if (data.count > 0 && data.status != 'error') {
-                // crud medications in medical_rx_list
-                for (item of dataObj) {
-                    // will take the onset and ended of the last item
-                    let medicRxObj={};
-                    medicRxObj['id_auth_user']=item['id_auth_user'];
-                    medicRxObj['id_medic_ref']=item['id_medic_ref'];
-                    medicRxObj['id_worklist']=item['id_worklist'];
-                    console.log('medicRxObj',medicRxObj);
-                    let medicRxStr = JSON.stringify(medicRxObj);
-                    crud('medical_rx_list','0','POST',medicRxStr);
-                    // set medication as prescribed
-                    item['prescribed'] = 'True';
-                    delete item['mod.first_name'];
-                    delete item['mod.id'];
-                    delete item['mod.last_name'];
-                    delete item['modified_on'];
-                    delete item['created_by'];
-                    delete item['created_on'];
-                    console.log('item:',item);
-                    let dataStr = JSON.stringify(item);
-                    crud('mx','0','PUT',dataStr);
-                }; // end for loop
-                console.log('prescObj:',prescObj);
-                var presc = {
-                    content: [
-                        { canvas: [{type: 'rect',x: 0 ,y: 0, w: 1, h: 50, color: 'white'}] },
-                        {
-                            table: {
-                                widths: [ 80, 25, 130 ], // widths of each 3 columns
-                                body: [
-                                        [{image: dataURL, width: 110, alignment: 'center', colSpan:2, border: [false, true , true, true] },{},
-                                            { border: [true, true , false, true],
-                                            text: [{ text: 'Nom et prénom du\nprescripteur\n\n', fontSize: 6, alignment: 'left' },
-                                                    {
-                                                        margin: [15,0,0,0],
-                                                        text: prescObj.doctorlast + ' \n' +prescObj.doctorfirst, fontSize: 8, bold: true, alignment: 'left' }
-                                                    ]
-                                            }
-                                        ],
-                                        [{ colSpan: 3, border: [false, true , false, true],
-                                            text: [{ text: 'A REMPLIR PAR LE PRESCRIPTEUR:\n', fontSize: 8, margin: [0,2,0,2] },
-                                                    { text: 'nom et prénom\ndu bénéficiaire:       ', fontSize: 6},
-                                                    { text: prescObj['name'] + ' ' +prescObj['firstname'], fontSize: 8, bold: true }
-                                                    ]
-                                            },
-                                            {},{}], // end row
-                                        [
-                                            {
-                                            border: [false, true , true, true],
-                                            stack: [{text: 'Réservé à la vignette du conditionnement', fontSize:6 },{ canvas: [{type: 'rect',x: 0 ,y: 12, w: 1, h: 220, color: 'white'}] }]
-                                            },
-                                                {text: prescObj['content'], colSpan: 2 , border: [false, true , false, true]},
-                                                {}
-                                        ], // end row
-                                        [
-                                            {
-                                                colSpan:2, rowSpan:2, border: [false, true , true, true], alignment: 'center', margin: [0,2,0,10],
-                                                stack: [
-                                                    { text: 'Cachet du prescripteur\n\n', fontSize: 6 },
-                                                    { text: prescObj['doctortitle']+'\n', fontSize: 8, bold: true },
-                                                    {
-                                                        fontSize: 6,
-                                                        text: [{ text: prescObj['centername']+'\n' },{text: 'Tél: '+prescObj['centerphone']+'\n'}, {text: prescObj['centerurl']+'\n', color: 'blue', decoration: 'underline', italics: 'true'}]
-                                                    }
-                                                    ]
-                                                },
-                                                {},
-                                                {
-                                                margin: [0,2,0,10], border: [true, true , false, true],
-                                                stack: [
-                                                    {text: 'Date et signature du prescripteur', alignment: 'center', fontSize: 6, margin: [0,2,0,2]},
-                                                    {text: prescObj['onset'], alignment: 'center', fontSize:8, bold: true}
-                                                    ]
-                                            }
-                                        ], // end row
-                                        [{},{},
-                                            {
-                                                margin: [0,2,0,10], border: [true, true , false, true],
-                                                stack: [
-                                                    {text: 'Date de fin pour l\'execution\n', alignment: 'center', fontSize: 6, margin: [0,2,0,2]},
-                                                    {text: prescObj['ended'], alignment: 'center', fontSize:8, bold: true}
-                                                    ]
-                                            }
-                                        ], // end row
-                                        [{text: "PRESCRIPTION DE MEDICAMENTS D'APPLICATION A PARTIR \nDU 1er novembre 2019", colSpan:3, alignment: 'left', bold: true,fontSize: 8, border: [false, true , false, false]},{},{}]
-                                    ]
-                            }
-                        }
-                    ] // content end
-                };
-                let pdf= pdfMake.createPdf(presc);
-                let form = new FormData();
-                pdf.getBuffer((blob) => {
-                    console.log('blob uploading...');
-                    form.append('upload', blob, 'test.pdf');
-                    fetch(HOSTURL+"/myapp/upload", {method:"POST", body:form})
-                    .then(response => console.log(response));
-                });
-                // pdf.print();
-                $('#mxRxModal').modal('hide');
-            } else {
-                displayToast('error','Medication list empty', 'No medication to prescribe',6000);
-            }
-            $mxWl_tbl.bootstrapTable('refresh');
-            $mx_tbl.bootstrapTable('refresh');
-        });
-}); // end prescription module
 
 
+// testing pdf blob to download file on server
 function testpdf(){
     let text=  {
         content: [
@@ -729,12 +578,6 @@ function testpdf(){
     //     fetch(HOSTURL+"/myapp/upload", {method:"POST", body:form})
     //     .then(response => console.log(response));
     // });
-    pdf.getBlob(blob => {
-        const file = new File([blob], `output.pdf`, { type: blob.type });
-        form.append('upload', file, 'test.pdf');
-        fetch(HOSTURL+"/myapp/upload", {method:"POST", body:form})
-        .then(response => console.log(response));
-    })
     pdf.getBlob((blob) => {
         console.log('blob uploading...');
         form.append('upload', blob, 'test.pdf');
@@ -743,102 +586,6 @@ function testpdf(){
     });
     pdf.download();
 };
-
-
-// glasses prescriptions
-
-const clonerxObj = Object.assign({}, rxObj);
-$('#btnGxRx').click(function() {
-    let htmlR=[], htmlL=[];
-    for (item of rxObj) {
-        console.log(item);
-        // put everything in table
-        if (item['laterality']=='right') {
-            let html =[];
-            html.push('<tr>'); // row
-            html.push('<td>'); // 1st col origin
-            html.push(item['rx_origin']);
-            html.push('</td>');
-            html.push('<td>'); // 2nd col glass type
-            html.push(item['glass_type']);
-            html.push('</td>');
-            html.push('<th scope="row">'); // 3rd col rx
-            html.push(item['rx_far']+' Add+'+item['add']);
-            html.push('</td>');
-            html.push('<td>'); // 4th col
-            html.push('<button type="button" class="btn btn-primary btn-sm print-rx" onclick="rxDataButton(this.getAttribute(\'data-rx-obj\'),\'right\');" data-rx-obj=\''+JSON.stringify(item)+'\'><i class="fas fa-file-import"></i></button>');
-            html.push('</td>');
-            html.push('</tr>'); // end row
-            htmlR.push(html.join(''));
-        } else {
-            let html =[];
-            html.push('<tr>'); // row
-            html.push('<td>'); // 1st col origin
-            html.push(item['rx_origin']);
-            html.push('</td>');
-            html.push('<td>'); // 2nd col glass type
-            html.push(item['glass_type']);
-            html.push('</td>');
-            html.push('<th scope="row">'); // 3rd col rx
-            html.push(item['rx_far']+' Add+'+item['add']);
-            html.push('</td>');
-            html.push('<td>'); // 4th col
-            html.push('<button type="button" class="btn btn-primary btn-sm print-rx" onclick="rxDataButton(this.getAttribute(\'data-rx-obj\'),\'left\');" data-rx-obj=\''+JSON.stringify(item)+'\'><i class="fas fa-file-import"></i></button>');
-            html.push('</td>');
-            html.push('</tr>'); // end row
-            htmlL.push(html.join(''));
-        };
-    };
-    $('#GxRxRTd').html(htmlR.join(''));
-    $('#GxRxLTd').html(htmlL.join(''));
-    $('#GxRxModal').modal('show');
-});
-
-var GxRxRightObj ={};
-var GxRxLeftObj ={};
-function rxDataButton(dataStr, lat) {
-    let dataObj = JSON.parse(dataStr);
-    // console.log(dataObj);
-    let html=[];
-    html.push('<tr>'); // row
-    html.push('<td>'); // 1st col origin
-    html.push(dataObj['rx_origin']);
-    html.push('</td>');
-    html.push('<td>'); // 2nd col glass type
-    html.push(dataObj['glass_type']);
-    html.push('</td>');
-    html.push('<th scope="row">'); // 3rd col rx
-    html.push(dataObj['rx_far']+' Add+'+dataObj['add']);
-    html.push('</td>');
-    html.push('<td>'); // 4th col
-    html.push('</td>');
-    html.push('</tr>'); // end row
-    $('#GxRx'+lat).html(html.join(''));
-    lat =='right'? GxRxRightObj=dataObj: GxRxLeftObj=dataObj;
-};
-
-// todo get the prescription to glasses prescription table
-// then print
-$('#GxRxModalPrint').click(function() {
-    let dataObj = {};
-    // send glass right prescription to table
-    dataObj['id_auth_user']=GxRxRightObj['id_auth_user'];
-    dataObj['id_worklist']=GxRxRightObj['id_worklist'];
-    dataObj['id_rx']=GxRxRightObj['id'];
-    dataObj['laterality']='right';
-    dataStr = JSON.stringify(dataObj);
-    console.log('right:',dataObj);
-    // crud('glasses_rx_list','0','POST',dataStr);
-    // send glass left prescription to table
-    dataObj['id_auth_user']=GxRxLeftObj['id_auth_user'];
-    dataObj['id_worklist']=GxRxLeftObj['id_worklist'];
-    dataObj['id_rx']=GxRxLeftObj['id'];
-    dataObj['laterality']='left';
-    dataStr = JSON.stringify(dataObj);
-    console.log('left:',dataObj);
-    // crud('glasses_rx_list','0','POST',dataStr);
-
-});
 
 // set task to done and disable form buttons
 $('#btnTaskDone').click(function() {

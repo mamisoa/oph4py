@@ -1457,12 +1457,113 @@
                             </div>
                         </div>
                     </div> <!-- end table row-->
+                    <div class="row mb-3">
+                        <div class="col">
+                            <form id="GxRxFormModal">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col" id="modalTypeDiv">
+                                            <label for="glass_type_modal" class="form-label">Glass type:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group glass_type_modal">
+                                                    <input type="radio" id="glass_type_mono_modal" name="glass_type" class="btn-check" value="monofocal" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="glass_type_mono_modal">Monofocal</label>
+                                                    <input type="radio" id="glass_type_prog_modal" name="glass_type" class="btn-check" value="progressive" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="glass_type_prog_modal">Progressive</label>
+                                                    <input type="radio" id="glass_type_bif_modal" name="glass_type" class="btn-check" value="bifocal" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="glass_type_bif_modal">Bifocal</label>
+                                                    <input type="radio" id="glass_type_deg_modal" name="glass_type" class="btn-check" value="degressive" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="glass_type_deg_modal">Degressive</label>
+                                                    <input type="radio" id="glass_type_na" name="glass_type" class="btn-check visually-hidden" value="na" autocomplete="off">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col" id="art30Div">
+                                            <label for="art30modal" class="form-label">Article 30:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group art30_modal">
+                                                    <input type="radio" id="art30_no_modal" name="art30" class="btn-check" autocomplete="off" checked>
+                                                    <label class="btn btn-outline-primary" for="art30_no_modal">No</label>
+                                                    <input type="radio" id="art30_yes_modal" name="art30" class="btn-check" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="art30_yes_modal">Yes</label>
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="GxHxremarksModal" class="form-label">Remarks:</label>
+                                            <input id="GxHxremarksModal" type="text" class="form-control" name="remarks" autocomplete="off">
+                                            <div id="GxHxremarksModalHelp" class="form-text">Enter remarks including related to prism</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col bg-right">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <label for="GxHxprismRModal" class="form-label">Prism right:</label>
+                                                    <input id="GxHxprismRModal" type="number" class="form-control" name="prismR" autocomplete="off">
+                                                    <div id="GxHprismRModalHelp" class="form-text">Enter prismvalue right in diopters</div>
+                                                </div>
+                                                <div class="col">
+                                                    <label for="GxHxbaseRModal" class="form-label">Base right:</label>
+                                                    <input id="GxHxbaseRModal" type="text" class="form-control" name="baseR" autocomplete="off">
+                                                    <div id="GxHbaseRModalHelp" class="form-text">Enter base direction</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col bg-left">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <label for="GxHxprismLModal" class="form-label">Prism left:</label>
+                                                    <input id="GxHxprismLModal" type="number" class="form-control" name="prismL" autocomplete="off">
+                                                    <div id="GxHprismLModalHelp" class="form-text">Enter prismvalue left in diopters</div>
+                                                </div>
+                                                <div class="col">
+                                                    <label for="GxHxbaseLModal" class="form-label">Prism left:</label>
+                                                    <input id="GxHxbaseLModal" type="text" class="form-control" name="baseL" autocomplete="off">
+                                                    <div id="GxHbaseLModalHelp" class="form-text">Enter base direction</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col" id="tintDiv">
+                                            <label for="tintmodal" class="form-label">Tint:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group tint_modal">
+                                                    <input type="radio" id="tint_notmedical_modal" name="tint" class="btn-check" value="nonmedTint" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="tint_notmedical_modal">Non medical</label>
+                                                    <input type="radio" id="tint_medical_modal" name="tint" class="btn-check" value="medTint" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="tint_medical_modal">Medical</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col" id="tintDiv">
+                                            <label for="photomodal" class="form-label">Photochromique:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group photo_modal">
+                                                    <input type="radio" id="photo_notmedical_modal" name="photo" class="btn-check" value="nonmedPhoto" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="photo_notmedical_modal">Non medical</label>
+                                                    <input type="radio" id="photo_medical_modal" name="photo" class="btn-check" value="medPhoto" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="photo_medical_modal">Medical</label>
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                                <input id="idGxHxWl" type="text" class="visually-hidden" name="id_worklist" />
+                                <input id="idPatientGxHx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodGxHxModalSubmit" type="text" class="visually-hidden" name="methodGxHxModalSubmit" value="POST" />
+                                <input id="btnGxRxModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <input id="btnGxRxModalFile" type="file" accept=".pdf" class="visually-hidden" name="pdfprescription"/>
-                <label id="GxRxModalPrint" for="btnGxRxModalFile" class="btn btn-primary" tabindex="0">Print</label>
+                <label id="GxRxModalSubmit" for="btnGxRxModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
             </div>
         </div>
     </div>
@@ -1639,4 +1740,5 @@ var $tonoLeft = $('#tonoLeft_tbl').bootstrapTable({
 </script>
 <script src="js/md.js"></script>
 <script src="js/prescription.js"></script>
+<script src="js/glasses.js"></script>
 [[ end ]]
