@@ -686,3 +686,111 @@ function detailFormatter_tono(index, row) {
     html.push('</div></div>');
     return html.join('');
 };
+
+// for rx table
+function responseHandler_gx(res) { 
+    let list = res.items;
+    let display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'id_auth_user': list[i].id_auth_user,
+            'id_worklist': list[i].id_worklist,
+            'datestamp': list[i]['datestamp'],
+            'glass_type': list[i].glass_type,
+            'sph_farR': list[i].sph_farR,
+            'cyl_farR': list[i].cyl_farR,
+            'axis_farR': list[i].axis_farR,
+            'rx_farR': list[i].sph_farR+'('+list[i].cyl_farR+'x'+list[i].axis_farR+')',
+            'formulaR': list[i].sph_farR+'('+list[i].cyl_farR+'x'+list[i].axis_farR+') Add'+(parseFloat(list[i].sph_closeR)-parseFloat(list[i].sph_farR)).toFixed(2),
+            'se_farR': (parseFloat(list[i].sph_farR)+0.5*parseFloat(list[i].cyl_farR)).toFixed(2),
+            'sph_intR': list[i].sph_intR,
+            'cyl_intR': list[i].cyl_intR,
+            'axis_intR': list[i].axis_intR,
+            'rx_intR': list[i].sph_intR+'('+list[i].cyl_intR+'x'+list[i].axis_intR+')',
+            'addR': (parseFloat(list[i].sph_close)-parseFloat(list[i].sph_far)).toFixed(2),
+            'sph_closeR': list[i].sph_closeR,
+            'cyl_closeR': list[i].cyl_closeR,
+            'axis_closeR': list[i].axis_closeR,
+            'rx_closeR': list[i].sph_closeR+'('+list[i].cyl_closeR+'x'+list[i].axis_closeR+')',
+            // left eye
+            'sph_farL': list[i].sph_farL,
+            'cyl_farL': list[i].cyl_farL,
+            'axis_farL': list[i].axis_farL,
+            'rx_farL': list[i].sph_farL+'('+list[i].cyl_farL+'x'+list[i].axis_farL+')',
+            'formulaL': list[i].sph_farL+'('+list[i].cyl_farL+'x'+list[i].axis_farL+') Add'+(parseFloat(list[i].sph_closeL)-parseFloat(list[i].sph_farL)).toFixed(2),
+            'se_farL': (parseFloat(list[i].sph_farL)+0.5*parseFloat(list[i].cyl_farL)).toFixed(2),
+            'sph_intL': list[i].sph_intL,
+            'cyl_intL': list[i].cyl_intL,
+            'axis_intL': list[i].axis_intL,
+            'rx_intL': list[i].sph_intL+'('+list[i].cyl_intL+'x'+list[i].axis_intL+')',
+            'addL': (parseFloat(list[i].sph_close)-parseFloat(list[i].sph_far)).toFixed(2),
+            'sph_closeL': list[i].sph_closeL,
+            'cyl_closeL': list[i].cyl_closeL,
+            'axis_closeL': list[i].axis_closeL,
+            'rx_closeL': list[i].sph_closeL+'('+list[i].cyl_closeL+'x'+list[i].axis_closeL+')',
+            'remarks': list[i].remarks,
+            'art30': list[i].art30,
+            'prismL': list[i].prismL,
+            'prismR': list[i].prismR,
+            'baseL': list[i].baseL,
+            'baseR': list[i].baseR,
+            'tint': list[i].tint,
+            'photo': list[i].photo,
+            'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
+            'modified_by': list[i]['mod.id'],
+            'modified_on': list[i]['modified_on'],
+            'created_by': list[i]['creator.id'],
+            'created_by_name': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
+            'created_on': list[i]['created_on']
+        });
+    });
+    return {    rows: display, 
+                total: res.count,
+                };
+};
+
+//todo check_if_null
+function detailFormatter_gx(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Datestamp: </span>'+ row.datestamp +'</p>');
+    html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by+'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Type: </span>'+ row.glass_type+'</p>');
+    html.push('<p class=""><span class="fw-bold">Rx right: </span>'+ row.formulaR+'</p>');
+    html.push('<p class=""><span class="fw-bold">Rx left: </span>'+ row.formulaL+'</p>');
+    html.push('<p class=""><span class="fw-bold">Remarks: </span>'+ row.remarks+'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Prism right: </span>'+ row.prismR +'</p>');
+    html.push('<p class=""><span class="fw-bold">Base right: </span>'+ row.baseR +'</p>');
+    html.push('<p class=""><span class="fw-bold">Prism left: </span>'+ row.prismL +'</p>');
+    html.push('<p class=""><span class="fw-bold">Base right: </span>'+ row.baseL +'</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};
+
+function operateFormatter_gx(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="edit" href="javascript:void(0)" title="Edit '+row.laterality+' tono"><i class="fas fa-edit"></i></a>');
+    html.push('<a class="cache" href="javascript:void(0)" title="Cache '+row.laterality+' tono"><i class="fas fa-file-import"></i></a>');
+    html.push('</div>');
+    return html.join('');
+  };
+
+window.operateEvents_gx = {
+    'click .edit': function (e, value, row, index) {
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        window.location.href = '/myapp/modalityCtr/autorx/'+row.id_worklist;
+    },
+    'click .cache': function (e, value, row, index) {
+        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // todo: implement gx in cache
+        // updateCache(gxObj); 
+    }
+};
