@@ -116,11 +116,17 @@ $('#GxRxFormModal').submit(function(e) {
     for (key of GxRxArrC) {
         GxRxGlobalObj[key]=formObj[key];
     };
-    // send glass right prescription to table
-    console.log('Global:',GxRxGlobalObj);
-    // dataStr = JSON.stringify(dataObj);
-    // send glass left prescription to table
-    // crud('glasses_rx_list','0','POST',dataStr);
+    fetch(HOSTURL+"/myapp/api/uuid", {method:"GET"})
+        .then(response => response.json())
+        .then(data =>
+            {
+                GxRxGlobalObj['uuid']=data.unique_id;
+                let dataStr = JSON.stringify(GxRxGlobalObj);
+                console.log('Global:',GxRxGlobalObj);
+                // send glass left prescription to table
+                crud('glasses_rx_list','0','POST',dataStr);
+                $('#GxRxModal').modal('hide');
+            });
 });
 
 var axe_img64 = '[[=axe_img64]]',

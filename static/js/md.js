@@ -581,8 +581,9 @@ function testpdf(){
     pdf.getBlob((blob) => {
         console.log('blob uploading...');
         form.append('upload', blob, 'test.pdf');
-        fetch(HOSTURL+"/myapp/upload", {method:"POST", body:form})
-        .then(response => console.log(response));
+        fetch(HOSTURL+"/myapp/upload", {method:"POST", body:blob})
+        .then(response => response.text())
+        .then(data => console.log(data));
     });
     pdf.download();
 };
