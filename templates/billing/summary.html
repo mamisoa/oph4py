@@ -1,0 +1,188 @@
+[[extend 'baseof.html']]
+
+[[ block page_head]]
+<link href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css" rel="stylesheet">
+[[ end ]]
+
+[[ block left_nav ]]
+[[ end]]
+
+<div class="container-fluid my-3 py-2 patient-id" id="patientTitle">
+    <div class="row mb-3 d-flex justify-content-center align-items-center">
+        <div id="patientIdDiv" class="col-4 text-end">
+            <h2 class="patientName"></h2>
+            <h3 class="patientDob text-muted"></h3>
+        </div>
+        <div class="col-4 photoDiv visually-hidden">
+            <img class="photoId" src="" alt="Photo from EID">
+        </div>
+        hjkhjk
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3 class="big-title">Current history</h3>
+                </div>
+            </div>
+            <div class="row bg-right">
+                <table
+                    id="chx_tbl"
+                    data-side-pagination="server"
+                    data-toggle="table"
+                    data-pagination="true"
+                    data-page-size="10"
+                    data-search="false"
+                    data-query-params="queryParams"
+                    data-response-handler="responseHandler"
+                    data-detail-formatter="detailFormatter"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    >
+                    <thead>
+                        <tr>
+                            <th data-field="created_on" data-sortable="true">Timestamp</th>
+                            <th data-field="description" data-sortable="false">Description</th>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3 class="big-title">Ccx</h3>
+                </div>
+            </div>
+            <div class="row">
+                <table
+                    id="ccx_tbl"
+                    data-side-pagination="server"
+                    data-toggle="table"
+                    data-pagination="true"
+                    data-page-size="10"
+                    data-search="false"
+                    data-query-params="queryParams"
+                    data-response-handler="responseHandler"
+                    data-detail-formatter="detailFormatter"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    >
+                    <thead>
+                        <tr>
+                            <th data-field="created_on" data-sortable="true">Timestamp</th>
+                            <th data-field="description" data-sortable="false">Description</th>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3 class="big-title">Followup</h3>
+                </div>
+            </div>
+            <div class="row">
+                <table
+                    id="fol_tbl"
+                    data-side-pagination="server"
+                    data-toggle="table"
+                    data-pagination="true"
+                    data-page-size="10"
+                    data-search="false"
+                    data-query-params="queryParams"
+                    data-response-handler="responseHandler"
+                    data-detail-formatter="detailFormatter"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    >
+                    <thead>
+                        <tr>
+                            <th data-field="created_on" data-sortable="true">Timestamp</th>
+                            <th data-field="description" data-sortable="false">Description</th>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3 class="big-title">Billing</h3>
+                </div>
+            </div>
+            <div class="row">
+                <table
+                    id="bil_tbl"
+                    data-side-pagination="server"
+                    data-toggle="table"
+                    data-pagination="true"
+                    data-page-size="10"
+                    data-search="false"
+                    data-query-params="queryParams"
+                    data-response-handler="responseHandler"
+                    data-detail-formatter="detailFormatter"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    >
+                    <thead>
+                        <tr>
+                            <th data-field="created_on" data-sortable="true">Timestamp</th>
+                            <th data-field="description" data-sortable="false">Description</th>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+[[ block js_scripts ]]
+<script type="text/javascript">
+// globals
+const id = [[ =rec_id ]]
+const membership = [[=membership]];
+const HOSTURL = "[[ = hosturl ]]";
+
+const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender,marital,membership,ethny&@count=true'; 
+const API_CHXUSER = HOSTURL + '[[=URL('api','current_hx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
+const API_CCXUSER = HOSTURL + '[[=URL('api','ccx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
+const API_FOLUSER = HOSTURL + '[[=URL('api','followup')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
+const API_BILUSER = HOSTURL + '[[=URL('api','billing')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
+
+</script>
+<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/useful.js"></script>
+<script src="js/summary-bt.js"></script>
+<!-- <script src="js/user_validation.js"></script> -->
+<script type="text/javascript">
+
+var $chx = $('#chx_tbl').bootstrapTable({
+    url: API_CHXUSER
+});
+
+var $ccx = $('#ccx_tbl').bootstrapTable({
+    url: API_CCXUSER
+});
+
+var $fol = $('#fol_tbl').bootstrapTable({
+    url: API_FOLUSER
+});
+
+var $bil = $('#bil_tbl').bootstrapTable({
+    url: API_BILUSER
+});
+
+</script>
+<script src="js/summary.js"></script>
+[[ end ]]
