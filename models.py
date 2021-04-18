@@ -456,3 +456,9 @@ db.define_table('glasses_rx_list',
     Field('tint','boolean'), # true = medical, false = non medical, null = no tint
     Field('photo','boolean'), # true = medical, false = non medical, null = not photochromic
     auth.signature)
+
+db.define_table('followup',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('description','string'),
+    auth.signature)

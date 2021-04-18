@@ -469,6 +469,7 @@ monitorValueChange('#postLeftForm', postFieldsArr);
 // set form submit with 1 field 'description', not laterality
 // domId = formId eg #motForm
 
+// todo: to implement
 oneFieldArr = ['#cHxForm','#motForm'];
 
 function setOneSubmit(domId,table,lat) {
@@ -500,6 +501,7 @@ setOneSubmit('#cHxForm','current_hx');
 setOneSubmit('#motForm','motility');
 setOneSubmit('#phoForm','phoria');
 setOneSubmit('#pupForm','pupils');
+setOneSubmit('#folForm','followup');
 setOneSubmit('#ccxForm','ccx','na');
 setOneSubmit('#ccxRForm','ccx','right');
 setOneSubmit('#ccxLForm','ccx','left');
@@ -522,6 +524,7 @@ updateHandlersOneField('#pupForm');
 updateHandlersOneField('#ccxForm');
 updateHandlersOneField('#ccxRForm');
 updateHandlersOneField('#ccxLForm');
+updateHandlersOneField('#folForm');
 
 // update field on focus and highlight if changed
 
