@@ -177,7 +177,7 @@ $('#userForm input[name=first_name]').change(function(){
 // get id from b-eid
 $('#btnGetUserId').click(function(e) {
     $.ajax({
-        url: LOCAL_BEID+"/myapp/api/beid",
+        url: LOCAL_BEID,
         dataType: 'json',
         type: 'GET',
         success: function (item) {
