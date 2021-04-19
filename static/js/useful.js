@@ -82,7 +82,8 @@ function getUuid() {
             url: HOSTURL+"/myapp/api/uuid",
             success: function(data) {
                 if (data.unique_id != undefined) {
-                    displayToast('success', 'GET uuid', 'GET uuid:'+data['unique_id'],6000);
+                    console.log('uuid generated');
+                    // displayToast('success', 'GET uuid', 'GET uuid:'+data['unique_id'],6000);
                 } else {
                     displayToast('error', 'GET error', 'Cannot retrieve uuid');
                 }

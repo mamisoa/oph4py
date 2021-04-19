@@ -9,7 +9,7 @@ from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added 
 from py4web.utils.grid import Grid
 
 # import settings
-from .settings import LOCAL_URL, LOCAL_BEID
+from .settings import LOCAL_URL, LOCAL_BEID, DEFAULT_PROVIDER, DEFAULT_SENIOR
 
 # table rows query to json string
 def rows2json (tablename,rows):
@@ -146,14 +146,16 @@ def worklist():
     procedureOptions = dropdownSelect(db.procedure,db.procedure.fields[2],4) # field exam_name defaultId = 4 (routine consultation)
     providerOptions=""
     for provider in db((db.auth_user.membership>=1)&(db.auth_user.membership<=4)).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
-        if provider.last_name == 'Griffith': # make "House" as default option
+        if provider.last_name == DEFAULT_PROVIDER: # make "House" as default option
             providerOptions = CAT(providerOptions, OPTION(provider.last_name + ' '+ provider.first_name,_selected="selected",_value=str(provider.id)))
         else:
             providerOptions = CAT(providerOptions, OPTION(provider.last_name + ' '+ provider.first_name,_value=str(provider.id)))
     providerOptions = XML(providerOptions) 
     seniorOptions = ""
+    # medicalmembership = db((db.membership.hierarchy==1)|(db.membership.hierarchy==2)).select(
+    #     db.membership.ALL, db.auth_user.last_name,left=db.auth_user.on(db.auth_user.membership == db.auth_user.id)).as_dict()
     for senior in db((db.auth_user.membership >= 1) & (db.auth_user.membership <= 4)).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
-        if senior.last_name == 'Lloyd':  # make "House" as default option
+        if senior.last_name == DEFAULT_SENIOR :  # make "House" as default option
             seniorOptions = CAT(seniorOptions, OPTION(
                 senior.last_name + ' ' + senior.first_name, _selected="selected", _value=str(senior.id)))
         else:
