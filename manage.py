@@ -166,6 +166,7 @@ def worklist():
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
     for row in rows:
         modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
+    multiplemod = db(db.modality.modality_name == 'multiple').select().first()['id']
     return locals()
 
 ## manage medic_ref
