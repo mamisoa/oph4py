@@ -67,7 +67,7 @@ function resetWlForm() {
     let choice = $('select#procedureSelect option:checked').val();
     setModalityOptions(choice);
 }
-
+//
 var wlItemsJson = [];
 var wlItemsHtml = [];
 var wlItemsCounter = 0;
@@ -81,7 +81,7 @@ $('#btnWlItemAdd').click(function() {
     delete formDataObj['idWl']; // no Id when new Item
     let formDataObjMultiple = [];
     wlItemsJson.push(formDataObj);
-    if (formDataObj['modality_dest'] == 13 ) { // modality_dest 13 is multiple
+    if (formDataObj['modality_dest'] == multiplemod ) { // modality_dest 13 is multiple 
         getCombo(formDataObj['procedure'])
             .then(function(data) {
                 let arr = [];
