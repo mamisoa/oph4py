@@ -57,6 +57,9 @@ def beid():
     infos_json = {}
     response = bottle.response
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
     try:
         # sleep(2)
         infos = read_infos(r, read_photo=True)

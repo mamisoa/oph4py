@@ -9,7 +9,7 @@ from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added 
 from py4web.utils.grid import Grid
 
 # import settings
-from .settings import LOCAL_URL
+from .settings import LOCAL_URL, ASSETS_FOLDER
 
 from .manage import dropdownSelect
 
@@ -89,8 +89,8 @@ def md(wlId):
     mdParams= db(mddb.id_auth_user == user['id']).select(mddb.id_auth_user,mddb.inami,mddb.email,mddb.officename,mddb.officeaddress,mddb.officezip,mddb.officetown,mddb.officeurl,mddb.officephone,mddb.companynum,mddb.companyname,mddb.companyiban,mddb.companyaddress).first().as_dict()
     userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
     # glasses assets
-    axe_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/axe.png'
-    logo_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg'
+    axe_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/axe.png'
+    logo_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/logo.jpg'
     axe64 = base64.b64encode(open(axe_img_path, "rb").read())
     logo64 = base64.b64encode(open(logo_img_path, "rb").read())
     return locals()
@@ -107,8 +107,8 @@ def hello(wlId):
     # userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     userId = "1"
     string = "Hello World!"
-    axe_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/axe.png'
-    logo_img_path = '/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg'
+    axe_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/axe.png'
+    logo_img_path = ASSETS_FOLDER+'/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg'
     axe64 = embed64(filename= axe_img_path, file=axe_img_path, data=None, extension='image/png')
     logo64 = embed64(filename= logo_img_path, file=logo_img_path, data=None, extension='image/jpg')
     # axeImg64 = base64.b64encode(open(axe_img_path, "rb").read())
