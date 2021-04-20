@@ -159,7 +159,8 @@ function globalRx2presc(rxObj) {
     for (const key in rxObj) {
         if (typeof rxObj[key] == 'number') {
             if (rxObj[key]>0 && key.startsWith('ax') != true) {
-                rxObj[key] = '+'+checkIfDataIsNull(rxObj[key].toString(),'');    
+                rxObj[key]=round2dec(rxObj[key]);
+                rxObj[key] = checkIfDataIsNull(rxObj[key].toString(),'');    
             } else {
                 rxObj[key] = checkIfDataIsNull(rxObj[key].toString(),'');
             }
