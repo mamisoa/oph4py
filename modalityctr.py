@@ -63,6 +63,7 @@ def initFields(wlId,table,lat=""):
 @action.uses('modalityCtr/md.html', session, auth, db)
 def md(wlId):
     import base64
+    from datetime import datetime
     hosturl = LOCAL_URL
     user = auth.get_user()
     authUserId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user

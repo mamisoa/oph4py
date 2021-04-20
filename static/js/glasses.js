@@ -230,6 +230,7 @@ $('#GxRxFormModal').submit(function(e) {
                 finalRxObj['qrcode'] = finalRxObj['qrcode']+data.unique_id; // already string
                 finalRxObj['first_name'] = wlItemObj['patient.last_name'];
                 finalRxObj['last_name'] = wlItemObj['patient.first_name'];
+                finalRxObj['dob'] = wlItemObj['patient.dob'].split('-').reverse().join('/');
                 console.log('FinalRxObj',finalRxObj);
                 // const finalPresc = rxprescription;
                 let finalPresc = {
