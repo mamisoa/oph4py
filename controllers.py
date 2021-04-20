@@ -41,17 +41,20 @@ from .settings import LOCAL_URL
 from functools import reduce
 from py4web.utils.grid import Grid
 
+def getMembershipId(role):
+    query = db(db.membership.membership == role).select().first()['id']
+    return query
 
 @unauthenticated("index", "index.html")
 def index():
     user = auth.get_user()
     message = T("Hello {first_name}!".format(**user) if user else "Hello. You should sign in!")
-    db_admins_count = db(db.auth_user.membership==1).count()
-    db_doctors_count = db(db.auth_user.membership==2).count()
-    db_nurses_count = db(db.auth_user.membership==3).count()
-    db_massistants_count = db(db.auth_user.membership==4).count()
-    db_assistants_count = db(db.auth_user.membership==5).count()
-    db_patients_count = db(db.auth_user.membership==6).count()
+    db_admins_count = db(db.auth_user.membership==getMembershipId('Admin')).count()
+    db_doctors_count = db(db.auth_user.membership==getMembershipId('Doctor')).count()
+    db_nurses_count = db(db.auth_user.membership==getMembershipId('Nurse')).count()
+    db_massistants_count = db(db.auth_user.membership==getMembershipId('Medical assistant')).count()
+    db_assistants_count = db(db.auth_user.membership==getMembershipId('Administrative')).count()
+    db_patients_count = db(db.auth_user.membership==getMembershipId('Patient')).count()
     db_entries_count = db(db.auth_user).count()
     return locals()
 
