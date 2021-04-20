@@ -235,7 +235,7 @@ $('#GxRxFormModal').submit(function(e) {
                 let finalPresc = {
                     watermark: {text: '', color: 'red', opacity: 0.2, bold: false, italics: false},
                     pageSize: 'A4',
-                    pageMargins: [ 10, 60, 40, 30 ],
+                    pageMargins: [ 25, 60, 40, 30 ],
                     header: {
                         style: 'header',
                         margin: [200, 10, 150, 5],
@@ -637,7 +637,8 @@ $('#GxRxFormModal').submit(function(e) {
             }; // end of template
                 console.log(finalPresc);
                 let pdf= pdfMake.createPdf(finalPresc);
-                pdf.download('rx');
+                // pdf.download('rx');
+                pdf.print()
                 $('#GxRx_tbl').bootstrapTable('refresh');
                 $('#GxRxModal').modal('hide');
             });
