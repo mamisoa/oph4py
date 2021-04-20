@@ -568,7 +568,7 @@ $('#GxRxFormModal').submit(function(e) {
                                         },
                                         {
                                             fontSize: 6,
-                                            text: [{ text: finalRxObj['officename']+'\n' },{text: 'Tél: '+finalRxObj['officephone']+'\n'},
+                                            text: [{ text: finalRxObj['centername']+'\n' },{text: 'Tél: '+finalRxObj['centerphone']+'\n'},
                                             {text: finalRxObj['centerurl']+'\n', color: 'blue', decoration: 'underline', italics: 'true'}]
                                         }
                                     ], // left column end
