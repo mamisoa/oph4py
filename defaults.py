@@ -122,41 +122,24 @@ def set_defaults_db():
     db.procedure.insert(loinc_code="dilc66", exam_name="Dilatation",exam_description="Dilatation of pupils",cycle_num="1", procedure_seq="1") #37
     db.commit()
     # modality reference to: modality_controller 160421
-    db.modality.insert(modality_name="L80", id_modality_controller="1") #1
-    db.modality.insert(modality_name="VX-120", id_modality_controller="1") #4
-    db.modality.insert(modality_name="TonoRef", id_modality_controller="4") #7
-    db.modality.insert(modality_name="TonoCan", id_modality_controller="4") #10 
-    db.modality.insert(modality_name="Octopus 900", id_modality_controller="10") #13
-    db.modality.insert(modality_name="FDT", id_modality_controller="10") #16 
-    db.modality.insert(modality_name="OCT Maestro", id_modality_controller="13") #19
-    db.modality.insert(modality_name="Pentacam", id_modality_controller="7") #22
-    db.modality.insert(modality_name="Anterion", id_modality_controller="7") #25 
-    db.modality.insert(modality_name="Visucam", id_modality_controller="16") #28
-    db.modality.insert(modality_name="CEM-500", id_modality_controller="19") #31
-    db.modality.insert(modality_name="Lenstar", id_modality_controller="25") #34
-    db.modality.insert(modality_name="Multiple", id_modality_controller="28") #37
-    db.modality.insert(modality_name="MD", id_modality_controller="31") #40
-    db.modality.insert(modality_name="YAG Lumenis", id_modality_controller="37") #43
-    db.modality.insert(modality_name="Cyclopentol", id_modality_controller="1") #autorx #46
-    db.modality.insert(modality_name="Mix Tropicol/Phenylephrine", id_modality_controller="28") #none #49
-    db.commit()
-    # procedure_family reference to: procedure, modality, modality family 160421
-    db.procedure_family.insert(id_procedure="1", id_modality="1",id_modality_family="1")
-    db.procedure_family.insert(id_procedure="1", id_modality="5",id_modality_family="1")
-    db.procedure_family.insert(id_procedure="5", id_modality="11",id_modality_family="5")
-    db.procedure_family.insert(id_procedure="5", id_modality="12",id_modality_family="5")
-    db.procedure_family.insert(id_procedure="6", id_modality="12",id_modality_family="6")
-    db.procedure_family.insert(id_procedure="6", id_modality="15",id_modality_family="6")
-    db.procedure_family.insert(id_procedure="7", id_modality="16",id_modality_family="10")
-    db.procedure_family.insert(id_procedure="8", id_modality="16",id_modality_family="10")
-    db.procedure_family.insert(id_procedure="9", id_modality="16",id_modality_family="10") #9
-    db.procedure_family.insert(id_procedure="10", id_modality="18",id_modality_family="11") #10
-    db.procedure_family.insert(id_procedure="11", id_modality="18",id_modality_family="11")
-    db.procedure_family.insert(id_procedure="12", id_modality="18",id_modality_family="11")
-    db.procedure_family.insert(id_procedure="13", id_modality="10",id_modality_family="9")
-    db.procedure_family.insert(id_procedure="14", id_modality="10",id_modality_family="9")
-    db.procedure_family.insert(id_procedure="15", id_modality="19",id_modality_family="12") #15
-    db.procedure_family.insert(id_procedure="16", id_modality="20",id_modality_family="12") 
+    moddb = db.modality_controller
+    db.modality.insert(modality_name="L80", id_modality_controller=db(moddb.modality_controller_name == 'autorx').select(moddb.id).first()['id']) # ctrl is autorx
+    db.modality.insert(modality_name="VX-120", id_modality_controller=db(moddb.modality_controller_name == 'autorx').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="TonoRef", id_modality_controller=db(moddb.modality_controller_name == 'tono').select(moddb.id).first()['id']) 
+    db.modality.insert(modality_name="TonoCan", id_modality_controller=db(moddb.modality_controller_name == 'tono').select(moddb.id).first()['id']) 
+    db.modality.insert(modality_name="Octopus 900", id_modality_controller=db(moddb.modality_controller_name == 'visualfield').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="FDT", id_modality_controller=db(moddb.modality_controller_name == 'visualfield').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="OCT Maestro", id_modality_controller=db(moddb.modality_controller_name == 'oct').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="Pentacam", id_modality_controller=db(moddb.modality_controller_name == 'topo').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="Anterion", id_modality_controller=db(moddb.modality_controller_name == 'anterion').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="Visucam", id_modality_controller=db(moddb.modality_controller_name == 'fluo').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="CEM-500", id_modality_controller=db(moddb.modality_controller_name == 'cem500').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="Lenstar", id_modality_controller=db(moddb.modality_controller_name == 'lenstar').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="Multiple", id_modality_controller=db(moddb.modality_controller_name == 'none').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="MD", id_modality_controller=db(moddb.modality_controller_name == 'md').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="YAG Lumenis", id_modality_controller=db(moddb.modality_controller_name == 'yag').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="Cyclopentol", id_modality_controller=db(moddb.modality_controller_name == 'autorx').select(moddb.id).first()['id'])
+    db.modality.insert(modality_name="Mix Tropicol/Phenylephrine", id_modality_controller=db(moddb.modality_controller_name == 'none').select(moddb.id).first()['id'])
     db.commit()
     return True
     
