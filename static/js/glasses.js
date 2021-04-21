@@ -132,6 +132,11 @@ function globalRx2presc(rxObj) {
         rxObj['photo'] ='X';
         rxObj['photomed'] ='X';
     } else {rxObj['photo']='o'};
+    // add addition cell
+    let addR = rxObj['sph_closeR']-rxObj['sph_farR'];
+    let addL = rxObj['sph_closeL']-rxObj['sph_farL'];
+    rxObj['add_closeR']=addR;
+    rxObj['add_closeL']=addL;
     // default glass_type: monofocal
     rxObj['monofocal'] ='X';
     rxObj['multifocal'] ='o';
@@ -150,11 +155,21 @@ function globalRx2presc(rxObj) {
         rxObj['monofocal'] ='o';
         rxObj['multifocal'] ='X';
         rxObj['degressive'] ='X';
-    }; // default already set
-    let addR = rxObj['sph_closeR']-rxObj['sph_farR'];
-    let addL = rxObj['sph_closeL']-rxObj['sph_farL'];
-    rxObj['add_closeR']=addR;
-    rxObj['add_closeL']=addL;
+    } else {
+        // monofocal -> delete sph cyl axis int and close
+        if (rxObj['glass_type'] == ('monofocalfar')) {
+            rxObj['sph_intR']=rxObj['cyl_intR']=rxObj['cyl_intR']=rxObj['axis_intR']='-';
+            rxObj['sph_closeR']=rxObj['cyl_closeR']=rxObj['cyl_closeR']=rxObj['axis_closeR']='-';
+            rxObj['sph_intL']=rxObj['cyl_intL']=rxObj['cyl_intL']=rxObj['axis_intL']='-';
+            rxObj['sph_closeL']=rxObj['cyl_closeL']=rxObj['cyl_closeL']=rxObj['axis_closeL']='-';
+        } else if (rxObj['glass_type'] == 'monofocalclose') {
+            rxObj['sph_intR']=rxObj['cyl_intR']=rxObj['cyl_intR']=rxObj['axis_intR']='-';
+            rxObj['sph_farR']=rxObj['cyl_farR']=rxObj['cyl_farR']=rxObj['axis_farR']='-';
+            rxObj['sph_intL']=rxObj['cyl_intL']=rxObj['cyl_intL']=rxObj['axis_intL']='-';
+            rxObj['sph_farL']=rxObj['cyl_farL']=rxObj['cyl_farL']=rxObj['axis_farL']='-';
+        };
+        rxObj['add_closeR']=rxObj['add_closeL']='-';
+    };
     // change everything in string, and check for empty or null values
     for (const key in rxObj) {
         if (typeof rxObj[key] == 'number') {
@@ -231,6 +246,9 @@ $('#GxRxFormModal').submit(function(e) {
                 finalRxObj['first_name'] = wlItemObj['patient.last_name'];
                 finalRxObj['last_name'] = wlItemObj['patient.first_name'];
                 finalRxObj['dob'] = wlItemObj['patient.dob'].split('-').reverse().join('/');
+                // temporarly: do not display the intermediate distance
+                finalRxObj['sph_intR']=finalRxObj['cyl_intR']=finalRxObj['cyl_intR']=finalRxObj['axis_intR']='-';
+                finalRxObj['sph_intL']=finalRxObj['cyl_intL']=finalRxObj['cyl_intL']=finalRxObj['axis_intL']='-';
                 console.log('FinalRxObj',finalRxObj);
                 // const finalPresc = rxprescription;
                 let finalPresc = {
