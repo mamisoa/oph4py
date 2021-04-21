@@ -12,7 +12,7 @@ prescObj['centerurl']=usermdObj['officeurl']
 // return barcode in canvas dataURL
 function renderBarCode() {
     // set canvas #itf
-    JsBarcode("#itf", '0'+prescObj['doctorinami'].split('-').join('') , {
+    JsBarcode("#itf", prescObj['doctorinami'].split('-').join('')+'0' , {
         format: "ITF",
         height: 50,
         displayValue: true,
