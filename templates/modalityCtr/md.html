@@ -10,7 +10,7 @@
 [[ include 'partials/patient-bar.html' ]]
 
 <div class="container-fluid mb-3"> <!-- controller title-->
-    <div class="row big-title">
+    <div class="row big-title bg-neutral">
         <div class="col">
             <h1><a role="button" data-bs-toggle="collapse" href=".md">Medical examination</a></h1>
         </div>
@@ -18,19 +18,19 @@
 </div>
 
 <div id="hx-container" class="container-fluid mb-3"> <!-- Hx container-->
-    <div class="row mb-3 big-title">
+    <div class="row mb-3 big-title bg-primary">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".history">Past history</a></h2>
         </div>
     </div>
     <div class="row history">
         <div class="col">
-            <h3 class="big-title"><a role="button" data-bs-toggle="collapse" href=".gHx">General history</a></h3>
+            <h3 class="big-title bg-secondary"><a role="button" data-bs-toggle="collapse" href=".gHx">General history</a></h3>
             <div class="row gHx">
                 <div class="col">
                     <div class="row mb-3"> <!-- row medications -->
                         <div class="col">
-                            <h4 class="big-title">Medications</h4>
+                            <h4 class="big-title bg-neutral">Medications</h4>
                             <div>
                                 <button type="button" id="btnNewMx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-status-flag="historyMx" data-mx-flag="historyMx" data-bs-target="#mxModal">
                                     Add medication<i class="mx-2 fas fa-plus"></i>
@@ -74,7 +74,7 @@
                     <div class="row mb-3">
                         <div class="row mb-3">
                             <div class="col">
-                                <h4 class="big-title">Allergy</h4>
+                                <h4 class="big-title bg-warning">Allergy</h4>
                             </div>
                             <div>
                                 <button type="button" id="btnNewAx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#axModal">
@@ -117,7 +117,7 @@
                 <div class="col">
                     <div class="row mb-3"> <!-- row mHx -->
                         <div class="col">
-                            <h4 class="big-title">Medical Hx</h4>
+                            <h4 class="big-title bg-neutral">Medical Hx</h4>
                             <div>
                                 <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="medical">Add past medical history<i class="mx-2 fas fa-plus"></i>
                                 </button>
@@ -157,7 +157,7 @@
                 <div class="col">
                     <div class="row mb-3">
                         <div class="row mb-3">
-                            <h4 class="big-title">Surgical Hx</h4>
+                            <h4 class="big-title bg-secondary">Surgical Hx</h4>
                             <div>
                                 <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="surgical">Add past surgical history<i class="mx-2 fas fa-plus"></i>
                                 </button>
@@ -198,7 +198,7 @@
         </div>
     </div>
     <div class="row history">
-        <h3 class="big-title"><a role="button" data-bs-toggle="collapse" href=".oHx">Ocular history</a></h3>
+        <h3 class="big-title bg-info"><a role="button" data-bs-toggle="collapse" href=".oHx">Ocular history</a></h3>
         <div class="row mb-3"> <!-- row oHx-->
             <div class="col oHx">
                 <table
@@ -230,8 +230,8 @@
         </div> <!-- end oHx row-->
         <div class="row mb-3 oHx"> <!-- row wlHx-->
             <div class="col">
+                <h4><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h4>
                 <div id="toolbar-wl">
-                    <h4><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h4>
                 </div>
                 <table id="table-wl"
                     data-toolbar-align="right"
@@ -420,7 +420,7 @@
 <div class="container-fluid mb-3" id="cHxDiv">
     <div class="row">
         <div class="col text-center">
-            <h2 class="big-title"><a role="button" data-bs-toggle="collapse" href=".cHx">Present History</a></h2>
+            <h2 class="big-title bg-info"><a role="button" data-bs-toggle="collapse" href=".cHx">Present History</a></h2>
         </div>
     </div>
     <div class="row cHx py-2 bg-right">
@@ -445,7 +445,7 @@
 </div>
 
 <div id="cx-container" class="container-fluid mb-3"> <!-- container clinical exams -->
-    <div class="row mb-3 big-title">
+    <div class="row mb-3 big-title bg-primary">
         <div>
             <h2><a role="button" data-bs-toggle="collapse" href=".clinical">Clinical exam</a></h2>
         </div>
@@ -696,7 +696,7 @@
                 <div class="col">
                     <div class="row">
                         <div class="col">
-                            <h3 class="big-title"><a role="button" data-bs-toggle="collapse" href=".misc">Miscellaneous</a></h3>
+                            <h3 class="big-title bg-secondary"><a role="button" data-bs-toggle="collapse" href=".misc">Miscellaneous</a></h3>
                         </div>
                     </div>
                     <div class="row misc">
@@ -789,7 +789,7 @@
     <div class="row mb-3">
         <div class="col">
             <div class="row">
-                <div class="col big-title">
+                <div class="col big-title bg-primary">
                     <h2><a role="button" data-bs-toggle="collapse" href=".dx">Conclusions</a></h2>
                 </div>
             </div>
@@ -917,7 +917,7 @@
 </div>
 
 <div id="x-container" class="container-fluid mb-3"> <!-- container actions -->
-    <div class="row mb-3 big-title">
+    <div class="row mb-3 big-title bg-warning">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".actions">Actions</a></h2>
         </div>
@@ -1024,7 +1024,7 @@
         <div class="col">
             <div class="row">
                 <div class="col">
-                    <h3 class="title-right">Follow-up</h3>
+                    <h3 class="big-title bg-info">Follow-up</h3>
                 </div>
             </div>
             <div class="row bg-right py-3">
@@ -1051,7 +1051,7 @@
 </div>
 
 <div id="bill-container" class="container-fluid mb-3"> <!-- container billing -->
-    <div class="row mb-3 big-title">
+    <div class="row mb-3 big-title bg-success">
         <div class="col">
             <h2><a role="button" data-bs-toggle="collapse" href=".bill">Billing</a></h2>
         </div>

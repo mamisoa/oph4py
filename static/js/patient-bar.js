@@ -36,7 +36,7 @@ getWlDetails(wlId)
         wlItemObj = Object.assign({},itemObj); // clone wltitemobj in global
         $('input[name=id_auth_user]').val(wlItemObj['patient.id']); // set patient id in forms
         $('input[name=id_worklist]').val(wlItemObj['id']); // set patient id in forms
-        $('#wlItemDetails .patientName').html(itemObj['patient.first_name']+' '+itemObj['patient.last_name']);
+        $('#wlItemDetails .patientName').html(itemObj['patient.first_name']+' '+itemObj['patient.last_name'].toUpperCase());
         $('#wlItemDetails .patientDob').html(itemObj['patient.dob']+' ('+getAge(itemObj['patient.dob'])+'yo)');
         $('#wlItemDetails .patientId').html('#'+itemObj['patient.id']);
         $('#wlItemDetails .timeslot').html(itemObj['requested_time'].split('T').join(' '));
