@@ -11,12 +11,22 @@ function queryParams_wl(params) {
             s_wl = "id_auth_user.last_name.startswith=" + capitalize(search[0]);
         } else {
             s_wl = "";
-        }
+        };
         if (search[1]!= undefined) {
             s_wl += "&id_auth_user.first_name.startswith=" + capitalize(search[1]);
         } else {
             s_wl +="";
-        }
+        };
+        if (search[2]!= undefined) {
+            s_wl += "&procedure.exam_name.startswith=" + capitalize(search[2]);
+        } else {
+            s_wl +="";
+        };
+        if (search[2]!= undefined) {
+            s_wl += "&modality_dest.modality_name.startswith=" + capitalize(search[3]);
+        } else {
+            s_wl +="";
+        };
     }
     if (params.sort != undefined) {
         if (params.sort == "id") {
@@ -148,7 +158,7 @@ window.operateEvents_wl = {
 };
 
 function rowStyle_wl(row,value) {
-    let statusColor = {'requested':'lightblue', 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999', 'doctorDone': '#00FF00' };
+    let statusColor = {'requested':'#ffcc99' , 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999', 'doctorDone': '#00FF00' };
     let bg;
     if (row.modality == 'MD' && row.status_flag =='done'){
         bg = statusColor['doctorDone'];

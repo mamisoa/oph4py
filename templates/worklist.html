@@ -19,48 +19,59 @@
 <!-- bootstrap ok for table-wl -->
 <div class="container-fluid"> <!-- #table-wl list -->
     <div class="row">
-      <div class="col-md-12 mt-3">
-        <div id="toolbar-wl">
-            <h2><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h2>
+        <div class="col-md-12 mt-3">
+            <div class="row">
+                <div class="col">
+                    <button type="button" id="btnFullList" class="btn btn-dark">Full list</button>
+                </div>
+                <div class="col">
+                    <div id="toolbar-wl">
+                        <h2><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <table id="table-wl"
+                    data-toolbar="#toolbar-wl"
+                    data-id-field="id"
+                    data-toggle="table"
+                    data-side-pagination="server"
+                    data-show-refresh="true"
+                    data-pagination="true"
+                    data-page-size="25"
+                    data-show-columns="true"
+                    data-search="true"
+                    data-search-accent-neutralise="true"
+                    data-visible-search="false"
+                    data-query-params="queryParams_wl"
+                    data-response-handler="responseHandler_wl"
+                    data-row-style="rowStyle_wl"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    data-detail-formatter="detailFormatter_wl"
+                    data-detail-view-by-click="false"
+                    >
+                    <thead class="thead-dark">
+                        <th data-field="id" data-sortable="true">ID</th>
+                        <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
+                        <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">Receving facility:</th>
+                        <th data-field="procedure" data-searchable= "true" data-sortable="true">Procedure:</th>
+                        <th data-field="patient" data-searchable= "true" data-sortable="true">Patient:</th>
+                        <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
+                        <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
+                        <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
+                        <th data-field="laterality" data-sortable="false" data-searchable= "false">Laterality:</th>
+                        <th data-field="requested_time" data-sortable="true" data-searchable= "true">Timeslot:</th>
+                        <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
+                        <th data-field="counter" data-searchable= "true" data-sortable="false" data-formatter="counterFormatter_wl">Counter:</th>
+                        <th data-field="warning" data-searchable= "true" data-sortable="false">Warning:</th>
+                        <th data-field="operate" data-formatter="operateFormatter_wl" data-events="operateEvents_wl">Action</th>
+                    </thead>
+                </table>
+                </div>
+            </div>
         </div>
-        <table id="table-wl"
-            data-toolbar="#toolbar-wl"
-            data-id-field="id"
-            data-toggle="table"
-            data-side-pagination="server"
-            data-show-refresh="true"
-            data-pagination="true"
-            data-page-size="25"
-            data-show-columns="true"
-            data-search="true"
-            data-search-accent-neutralise="true"
-            data-visible-search="false"
-            data-query-params="queryParams_wl"
-            data-response-handler="responseHandler_wl"
-            data-row-style="rowStyle_wl"
-            data-detail-view="true"
-            data-detail-view-icon="true"
-            data-detail-formatter="detailFormatter_wl"
-            data-detail-view-by-click="false"
-            >
-            <thead class="thead-dark">
-                <th data-field="id" data-sortable="true">ID</th>
-                <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
-                <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">Receving facility:</th>
-                <th data-field="procedure" data-searchable= "true" data-sortable="true">Procedure:</th>
-                <th data-field="patient" data-searchable= "true" data-sortable="true">Patient:</th>
-                <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
-                <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
-                <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
-                <th data-field="laterality" data-sortable="false" data-searchable= "false">Laterality:</th>
-                <th data-field="requested_time" data-sortable="true" data-searchable= "true">Timeslot:</th>
-                <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
-                <th data-field="counter" data-searchable= "true" data-sortable="false" data-formatter="counterFormatter_wl">Counter:</th>
-                <th data-field="warning" data-searchable= "true" data-sortable="false">Warning:</th>
-                <th data-field="operate" data-formatter="operateFormatter_wl" data-events="operateEvents_wl">Action</th>
-            </thead>
-        </table>
-      </div>
     </div> <!-- end row -->
 </div> <!-- end container fluid -->
 
@@ -419,7 +430,7 @@ var $table = $('#table').bootstrapTable({
 var $table_wl = $('#table-wl').bootstrapTable({
     url: API_PROCEDURE_LIST,
     formatSearch: function () {
-        return 'Last name,first name,procedure';
+        return 'Last name,first name,procedure,modality';
     }
 });
 
