@@ -1087,10 +1087,10 @@ const wlId = [[= wlId ]];
 const btnArr = ['#btnAddKmRight','#btnAddKmLeft', '#btnAddRxRight', '#btnAddRxLeft','#btnTaskDone'];
 
 // init tables
-const API_RXRIGHT = HOSTURL + "/myapp/api/rx?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-const API_RXLEFT = HOSTURL + "/myapp/api/rx?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-const API_KMRIGHT = HOSTURL + "/myapp/api/km?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-const API_KMLEFT = HOSTURL + "/myapp/api/km?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_RXRIGHT = HOSTURL + "/myapp/api/rx?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId+'&@order=~id';
+const API_RXLEFT = HOSTURL + "/myapp/api/rx?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&order=~id&id_worklist.eq="+wlId+'&@order=~id';
+const API_KMRIGHT = HOSTURL + "/myapp/api/km?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId+'&@order=~id';
+const API_KMLEFT = HOSTURL + "/myapp/api/km?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId+'&@order=~id';
 
 var $rxRight = $('#rxRight_tbl').bootstrapTable({
     url: API_RXRIGHT

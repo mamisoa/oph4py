@@ -128,11 +128,11 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
 for (let rx of idRxArr) {
   let arr;
   if (idRxArr.indexOf(rx) == 0) { // if right side ie first index
-    arr = ['#rightTypeDiv', '#intRight', '#closeRight'];
+    arr = ['#rightTypeDiv', '#intRight', '#closeRight']; //right
   } else if (idRxArr.indexOf(rx) == 1){
-    arr = ['#leftTypeDiv', '#intLeft', '#closeLeft'];
+    arr = ['#leftTypeDiv', '#intLeft', '#closeLeft']; //left
   } else {
-    arr = ['#modalTypeDiv', '#intModal', '#closeModal'];
+    arr = ['#modalTypeDiv', '#intModal', '#closeModal']; // modal
   };
   // if glass_type is mono or na -> typeDiv hide int and close
   // else show typeDiv int and close
@@ -156,6 +156,7 @@ for (let rx of idRxArr) {
       };
     };
   });
+  // if origin of rx is autorx, cyclo, dil -> hide int and close, reset them to 0 and hide them
   $(rx+' input[name=rx_origin]').change(function () {
     if (($(rx+' input[name=rx_origin]:checked').val() == 'trial') || ($(rx+' input[name=rx_origin]:checked').val() == 'glass')) {
       $(arr[0]).removeClass('visually-hidden');
@@ -165,11 +166,23 @@ for (let rx of idRxArr) {
         $(rx+' input[name=va_close]').val('');
       };
     } else {
-      $(arr[0]).addClass('visually-hidden');
+      $(arr[0]).addClass('visually-hidden'); // hide 
       if (rx != '#rxFormModal') {
         $(rx+' input[name=va_far]').val('');
         $(rx+' input[name=va_int]').val('1.0');
         $(rx+' input[name=va_close]').val('2');
+        for (hide of arr.slice(1)) {
+          $(hide).addClass('visually-hidden');
+        };
+        // reset int and close fields to 0 if monofocal dil cyclo
+        $(rx+' input[name=sph_int]').val($(rx+' input[name=sph_far]').val());
+        $(rx+' input[name=cyl_int]').val($(rx+' input[name=cyl_far]').val());
+        $(rx+' input[name=axis_int]').val($(rx+' input[name=axis_far]').val());
+        $(rx+' input[name=sph_close]').val($(rx+' input[name=sph_far]').val());
+        $(rx+' input[name=cyl_close]').val($(rx+' input[name=cyl_far]').val());
+        $(rx+' input[name=axis_close]').val($(rx+' input[name=axis_far]').val());
+        $(rx+' input[name=add_int]').val(round2dec(0));
+        $(rx+' input[name=add_close]').val(round2dec(0));
       };
     };
   });
@@ -239,7 +252,7 @@ function rxInsert(domId,laterality,status=1) {
   dataObj['laterality'] = laterality;
   dataObj['status'] = status;
   dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
-  // console.log('rx_origin',dataObj['rx_origin']);
+  console.log('rx_origin',dataObj['rx_origin']);
   if ((dataObj['rx_origin'] != 'glass') && (dataObj['rx_origin'] != 'trial')) {
     dataObj['glass_type'] = 'na';
   };
