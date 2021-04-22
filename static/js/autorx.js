@@ -32,6 +32,12 @@ for (let id of idRxArr) {
     $(id+' .SEf').html(SEf);
     $(id+' .SEi').html(SEi);
     $(id+' .SEc').html(SEc);
+    // if axis value is input manually for far, set the other with the same axis
+    console.log('this:',this);
+    if ($(this).attr('name')=='axis_far'){
+      $(id+' input[name=axis_int]').val($(id+' input[name=axis_far]').val());
+      $(id+' input[name=axis_close]').val($(id+' input[name=axis_far]').val());
+    };
   });
 };
 
