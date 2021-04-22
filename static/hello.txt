@@ -67,3 +67,5 @@ autocomplete tables
 word <-> ['option1', 'option2' ... 'optionn']
 eg
 frequency <-> ['qd','bid','qid']
+
+let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);

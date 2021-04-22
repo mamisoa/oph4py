@@ -22,7 +22,7 @@ function queryParams_wl(params) {
         } else {
             s_wl +="";
         };
-        if (search[2]!= undefined) {
+        if (search[3]!= undefined) {
             s_wl += "&modality_dest.modality_name.startswith=" + capitalize(search[3]);
         } else {
             s_wl +="";
