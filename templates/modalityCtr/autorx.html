@@ -133,7 +133,7 @@
                                     <label for="axis_int" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_axis_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="180" aria-label="Cylinder right" name="axis_int">
+                                        <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="180" aria-label="Axis right" name="axis_int">
                                         <button class="btn btn-outline-secondary counter_up_axis_int" type="button">+</button>
                                     </div>
                                 </div>
@@ -1088,7 +1088,7 @@ const btnArr = ['#btnAddKmRight','#btnAddKmLeft', '#btnAddRxRight', '#btnAddRxLe
 
 // init tables
 const API_RXRIGHT = HOSTURL + "/myapp/api/rx?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId+'&@order=~id';
-const API_RXLEFT = HOSTURL + "/myapp/api/rx?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&order=~id&id_worklist.eq="+wlId+'&@order=~id';
+const API_RXLEFT = HOSTURL + "/myapp/api/rx?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId+'&@order=~id';
 const API_KMRIGHT = HOSTURL + "/myapp/api/km?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId+'&@order=~id';
 const API_KMLEFT = HOSTURL + "/myapp/api/km?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId+'&@order=~id';
 
