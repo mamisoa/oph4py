@@ -243,8 +243,8 @@ $('#GxRxFormModal').submit(function(e) {
                     finalRxObj[key] = GxRxGlobalObj[key];
                 };
                 finalRxObj['qrcode'] = finalRxObj['qrcode']+data.unique_id; // already string
-                finalRxObj['first_name'] = wlItemObj['patient.last_name'];
-                finalRxObj['last_name'] = wlItemObj['patient.first_name'];
+                finalRxObj['first_name'] = wlItemObj['patient.first_name'];
+                finalRxObj['last_name'] = wlItemObj['patient.last_name'];
                 finalRxObj['dob'] = wlItemObj['patient.dob'].split('-').reverse().join('/');
                 // temporarly: do not display the intermediate distance
                 finalRxObj['sph_intR']=finalRxObj['cyl_intR']=finalRxObj['cyl_intR']=finalRxObj['axis_intR']='-';
