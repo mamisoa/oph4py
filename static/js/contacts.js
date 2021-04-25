@@ -371,65 +371,7 @@ $('#CxRxFormModal').submit(function(e) {
                             {type: 'rect',x: 0,y: 12, w: 515, h: 2, color: 'white'} // spacer
                             ]
                         }, // end of canvas
-                        {
-                            style: 'tabo',
-                            table: {
-                                widths: [ 50,'*', '*', '*'],
-                                headerRows: 1,
-                                alignement: 'center',
-                                body: [
-                                        [
-                                            { text: ''                                            
-                                            }, // spacer
-                                            {
-                                                rowSpan: 3,
-                                                image: axe64,
-                                                fit: [100, 100]                                                
-                                            }, // axe64 gauche
-                                            {
-                                                canvas: [
-                                                    {
-                                                        type: 'ellipse',
-                                                        x: 42, y: 20,
-                                                        color: 'black',
-                                                        fillOpacity: 0.5,
-                                                        r1: 30, r2: 20
-                                                    },
-                                                    {
-                                                        type: 'ellipse',
-                                                        x: 42, y: 20,
-                                                        color: 'white',
-                                                        fillOpacity: 0.5,
-                                                        r1: 20, r2: 15
-                                                    },
-                                                    {
-                                                        type: 'rect',
-                                                        x: 12,
-                                                        y: 20,
-                                                        w: 60,
-                                                        h: 20,
-                                                        color: 'white'
-                                                    } // hidder
-                                                ]
-                                            },  // canvas end
-                                            {
-                                                rowSpan: 3,
-                                                image: axe64,
-                                                fit: [100, 100]                                                
-                                            }
-                                        ], // 4 columns
-                                        [   
-                                            { text: ''                                            
-                                            }, // spacer
-                                            '',{ text: 'TABO', bold: true, alignement: 'right' }, ''], // 4 columns
-                                        [
-                                            { text: ''                                            
-                                            }, // spacer
-                                            '', { canvas: [{type: 'rect',x: 10,y: 0, w: 10, h: 35, color: 'white'}]}, ''] // spacer to keep height
-                                    ] // body table end
-                                },
-                            layout: 'noBorders'
-                        }, // 'tabo' table end
+                        {   text: 'Réfraction des verres lunettes ( à remplir obligatoirement – vertex : 12mm )', alignment: 'left'},
                         {
                             margin: [0, 5, 0, 0],
                             style: 'tableExample', // table prescription
