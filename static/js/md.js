@@ -635,3 +635,49 @@ $('#btnTaskDone').click(function() {
         } // end callback
     }); //end bootbox
 });
+
+function printRx(table,id) {
+    $.ajax({
+        type: "GET",
+        url: HOSTURL+"/myapp/api/"+table+"?id.eq="+id,
+        dataType: "json",
+        success: function (data) {
+            // console.log(data); 
+            let item=data.items[0];
+            if (data.status == 'error' || data.count == 0) {
+                displayToast('error', 'GET error', 'Cannot retrieve glasses prescription', '3000');
+            } else {                    
+                displayToast('info', 'GET success', 'Glasses prescription retrieved #' + id, '3000');
+                let pdfObj = JSON.parse(item['pdf_report']);
+                let pdf= pdfMake.createPdf(pdfObj);
+                pdf.print()
+            }
+        },
+        error: function (er) {
+            console.log(er);
+        }
+    });
+};
+
+function printGxRx(id) {
+    $.ajax({
+        type: "GET",
+        url: HOSTURL+"/myapp/api/glasses_rx_list?id.eq="+id,
+        dataType: "json",
+        success: function (data) {
+            // console.log(data); 
+            let item=data.items[0];
+            if (data.status == 'error' || data.count == 0) {
+                displayToast('error', 'GET error', 'Cannot retrieve glasses prescription', '3000');
+            } else {                    
+                displayToast('info', 'GET success', 'Glasses prescription retrieved #' + id, '3000');
+                let pdfObj = JSON.parse(item['pdf_report']);
+                let pdf= pdfMake.createPdf(pdfObj);
+                pdf.print()
+            }
+        },
+        error: function (er) {
+            console.log(er);
+        }
+    });
+};
