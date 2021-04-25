@@ -938,7 +938,7 @@
                     <div class="row mb-3 bg-right">
                         <div class="col">
                             <div class="col">
-                                <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
+                                <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm " data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
                                 <button type="button" id="btnMxRx" class="btn btn-warning btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
                                 <table
                                     id="mxWl_tbl"
@@ -1009,7 +1009,8 @@
                     <div class="row mb-3 bg-left">
                         <div class="col">
                             <div class="col">
-                                <button type="button" id="btnGxRx" class="btn btn-warning btn-sm float-end" >Prescribe glasses<i class="mx-2 fas fa-prescription"></i></button>
+                                <button type="button" id="btnGxRx" class="btn btn-warning btn-sm mx-2 float-end" >Prescribe glasses<i class="mx-2 fas fa-glasses"></i></button>
+                                <button type="button" id="btnCxRx" class="btn btn-warning btn-sm mx-2 float-end" >Prescribe contacts<i class="mx-2 fas fa-bullseye"></i></button>
                                 <table
                                     id="GxRx_tbl"
                                     data-side-pagination="server"
@@ -1691,6 +1692,339 @@
     </div>
 </div>
 
+<!-- Modal CxRxModal -->
+<div class="modal fade" id="CxRxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Contact lenses module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col title-right">
+                                    <h4>Rx Right eye</h4>
+                                </div>
+                            </div>
+                            <div class="row bg-right">
+                                <div class="col">
+                                    <table class="table right">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">Origin</th>  
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Rx</th>
+                                            <th scope="col"></th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="CxRxRTd">
+                                            <!-- insert rows <td></td>-->
+                                        </tbody>
+                                    </table> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col title-left">
+                                    <h4>Rx Left eye</h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col bg-left">
+                                    <table class="table left">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">Origin</th>  
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Rx</th>
+                                            <th scope="col"></th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="CxRxLTd">
+                                            <!-- insert rows <td></td>-->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end table row-->
+                    <div class="row mt-3">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col title-right">
+                                    <h4>Rx Right to prescribe</h4>
+                                </div>
+                            </div>
+                            <div class="row bg-right">
+                                <div class="col">
+                                    <table class="table right">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">Origin</th>  
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Rx</th>
+                                            <th scope="col"></th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="CxRxright">
+                                            <!-- insert rows <td></td>-->
+                                        </tbody>
+                                    </table> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col title-left">
+                                    <h4>Rx Left eye to prescribe</h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col bg-left">
+                                    <table class="table left">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">Origin</th>  
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Rx</th>
+                                            <th scope="col"></th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="CxRxleft">
+                                            <!-- insert rows <td></td>-->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end table row-->
+                    <div class="row mb-3">
+                        <div class="col">
+                            <form id="CxRxFormModal">
+                                <div class="container-fluid">
+                                    <div class="row my-2">
+                                        <h4 class="big-title bg-neutral">Contact lenses prescription</h4>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col bg-right">
+                                            <div class="row">
+                                                <h5 class="title-right">Right contact</h5>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.25" class="form-control" id="sphR_lc" placeholder="Sphere" name="sphR">
+                                                        <label for="sphR_lc">Sphere</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.25" class="form-control" id="cylR_lc" placeholder="Cylinder" name="cylR">
+                                                        <label for="cylR_lc">Cylinder</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.25" class="form-control" id="axisR_lc" placeholder="Axis" name="axisR">
+                                                        <label for="axisR_lc">Axis</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.25" min="0" value="0" class="form-control" id="addR_lc" placeholder="Addition" name="addR">
+                                                        <label for="addR_lc">Add</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <label for="lensnameRModal" class="form-label">Lens:</label>
+                                                    <input id="lensnameRModal" type="text" class="form-control" name="lensnameR" autocomplete="off">
+                                                    <div id="lensnameRModalHelp" class="form-text">Choose lens</div>                                                    
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.05" class="form-control" id="basecurveR_lc" placeholder="Base curve" name="basecurveR">
+                                                        <label for="basecurveR_lc">Base curve</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.10" class="form-control" id="diameterR_lc" placeholder="Diameter" name="diameterR">
+                                                        <label for="diameterR_lc">Diameter</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col bg-left">
+                                            <div class="row">
+                                                <h5 class="title-left">Left contact</h5>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.25" class="form-control" id="sphL_lc" placeholder="Sphere" name="sphL">
+                                                        <label for="sphL_lc">Sphere</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.25" class="form-control" id="cylL_lc" placeholder="Cylinder" name="cylL">
+                                                        <label for="cylL_lc">Cylinder</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.25" class="form-control" id="axisL_lc" placeholder="Axis" name="axisL">
+                                                        <label for="axisL_lc">Axis</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.25" min="0" value="0" class="form-control" id="addL_lc" placeholder="Addition" name="addL">
+                                                        <label for="addL_lc">Add</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <label for="lensnameLModal" class="form-label">Lens:</label>
+                                                    <input id="lensnameLModal" type="text" class="form-control" name="lensnameL" autocomplete="off">
+                                                    <div id="lensnameLModalHelp" class="form-text">Choose lens</div>                                                    
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.05" class="form-control" id="basecurveL_lc" placeholder="Base curve" name="basecurveL">
+                                                        <label for="basecurveL_lc">Base curve</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" step="0.10" class="form-control" id="diameterL_lc" placeholder="Diameter" name="diameterL">
+                                                        <label for="diameterL_lc">Diameter</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <h6 class="big-title bg-neutral">Group 1 contact lenses</h6>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="g1" id="g1">
+                                                <label class="form-check-label" for="g1">
+                                                    Soft contact lenses
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="g1spheric" id="g1spheric">
+                                                <label class="form-check-label" for="g1spheric">
+                                                    Soft spheric lenses
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="g1toric" id="g1toric">
+                                                <label class="form-check-label" for="g1toric">
+                                                    Soft toric lenses
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <h6 class="big-title bg-neutral">Group 2 irregular cornea</h6>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="g2soft" id="g2soft">
+                                                <label class="form-check-label" for="g1">
+                                                    Soft or hybrid
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="g2rigidc" id="g2rigidc">
+                                                <label class="form-check-label" for="g2rigidc">
+                                                    Rigid corneal
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="g2rigidcs" id="g2rigidcs">
+                                                <label class="form-check-label" for="g2rigidcs">
+                                                    Rigid corneo-scleral
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="g2rigids" id="g2rigids">
+                                                <label class="form-check-label" for="g2rigids">
+                                                    Rigid scleral
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <h6 class="big-title bg-neutral">Group 3 special</h6>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="g3iris" id="g3iris">
+                                                <label class="form-check-label" for="g3iris">
+                                                    Soft with opaque iris
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="g3pupil" id="g3pupil">
+                                                <label class="form-check-label" for="g3pupil">
+                                                    Soft with opaque pupil
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col" id="art30CDiv">
+                                            <label for="art30modal" class="form-label">Article 30:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group art30C_modal">
+                                                    <input type="radio" id="art30C_no_modal" name="art30" class="btn-check"  value="False" autocomplete="off" checked>
+                                                    <label class="btn btn-outline-primary" for="art30_no_modal">No</label>
+                                                    <input type="radio" id="art30C_yes_modal" name="art30" class="btn-check" value="True" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="art3C0_yes_modal">Yes</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="CxRxremarksModal" class="form-label">Remarks:</label>
+                                            <input id="CxRxremarksModal" type="text" class="form-control" name="remarks" autocomplete="off">
+                                            <div id="CxRxremarksModalHelp" class="form-text">Enter remarks including related to prism</div>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                                <input id="CxRxmaterialR" type="text" class="visually-hidden" name="materialR" />
+                                <input id="CxRxmaterialL" type="text" class="visually-hidden" name="materialL" />
+                                <input id="CxRxdesignR" type="text" class="visually-hidden" name="designR" />
+                                <input id="CxRxdesignL" type="text" class="visually-hidden" name="designL" />
+                                <input id="CxRxedgeR" type="text" class="visually-hidden" name="edgeR" />
+                                <input id="CxRxedgeL" type="text" class="visually-hidden" name="edgeL" />
+                                <input id="CxRxopticalzoneR" type="text" class="visually-hidden" name="opticalzoneR" />
+                                <input id="CxRxopticalzoneL" type="text" class="visually-hidden" name="opticalzoneL" />
+                                <input id="idCxRxWl" type="text" class="visually-hidden" name="id_worklist" />
+                                <input id="idPatientCxRx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodCxRxModalSubmit" type="text" class="visually-hidden" name="methodCxRxModalSubmit" value="POST" />
+                                <input id="btnCxRxModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="CxRxModalSubmit" for="btnCxRxModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- cache offcanvas -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCache" aria-labelledby="offcanvas cache">
@@ -1780,6 +2114,9 @@ const API_MEDICATIONS = HOSTURL + "/myapp/api/medic_ref?@lookup=mod!:modified_by
 const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 // API_DISEASES lists diseases for autocomplete
 const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+
+// API_LENSES lists lenses for autocomplete
+const API_LENSES = HOSTURL + "/myapp/api/lenses?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 // table listing ALL medications taken by user
 const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;
@@ -1876,4 +2213,5 @@ var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
 <script src="js/md.js"></script>
 <script src="js/prescription.js"></script>
 <script src="js/glasses.js"></script>
+<script src="js/contacts.js"></script>
 [[ end ]]
