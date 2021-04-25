@@ -1,7 +1,6 @@
 // glasses prescriptions
 // prescRxObj contains id and options items
 // GxRxGlobalObj merges GxRxRight and left
-const clonerxObj = Object.assign({}, rxObj);
 
 prescRxObj['doctorfirst']=userObj['first_name'];
 prescRxObj['doctorlast']=userObj['last_name'];
@@ -533,7 +532,7 @@ $('#GxRxFormModal').submit(function(e) {
                                     {
                                         margin: [15,0,10,2],
                                         text: [
-                                            { text: finalRxObj['bifocal']+' Bifocal\n'},
+                                            { text: finalRxObj['bifocal']+' Bifocaux\n'},
                                             { text: finalRxObj['progressive']+' Progressifs\n'},
                                             { text: finalRxObj['degressive']+' Dégressifs\n'}]
 				                    },
