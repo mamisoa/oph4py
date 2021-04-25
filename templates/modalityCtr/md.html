@@ -30,7 +30,7 @@
                 <div class="col">
                     <div class="row mb-3"> <!-- row medications -->
                         <div class="col">
-                            <h4 class="big-title bg-neutral">Medications</h4>
+                            <h4 class="title-right">Medications</h4>
                             <div>
                                 <button type="button" id="btnNewMx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-status-flag="historyMx" data-mx-flag="historyMx" data-bs-target="#mxModal">
                                     Add medication<i class="mx-2 fas fa-plus"></i>
@@ -117,7 +117,7 @@
                 <div class="col">
                     <div class="row mb-3"> <!-- row mHx -->
                         <div class="col">
-                            <h4 class="big-title bg-neutral">Medical Hx</h4>
+                            <h4 class="title-right">Medical Hx</h4>
                             <div>
                                 <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="medical">Add past medical history<i class="mx-2 fas fa-plus"></i>
                                 </button>
@@ -157,7 +157,7 @@
                 <div class="col">
                     <div class="row mb-3">
                         <div class="row mb-3">
-                            <h4 class="big-title bg-secondary">Surgical Hx</h4>
+                            <h4 class="title-left">Surgical Hx</h4>
                             <div>
                                 <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="surgical">Add past surgical history<i class="mx-2 fas fa-plus"></i>
                                 </button>
@@ -808,7 +808,7 @@
                         </div>
                         <input id="lateralityccx" type="text" class="visually-hidden" name="laterality" value="na"/>
                         <input id="idccx" type="text" class="visually-hidden" name="id" value="[[ = XML(ccx['id']) ]]"/>
-                        <input id="idPatientccx" type="text" class="visually-hidden" name="id_auth_user" value="[[=authUserId]]"/>
+                        <input id="idPatientccx" type="text" class="visually-hidden" name="id_auth_user" value="[[=patientId]]"/>
                         <input id="idWlccx" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
                     </form>
                 </div>
@@ -839,7 +839,7 @@
                                 </div>
                                 <input id="lateralityccxR" type="text" class="visually-hidden" name="laterality" value="right"/>
                                 <input id="idccxR" type="text" class="visually-hidden" name="id" value="[[ = XML(ccxR['id']) ]]"/>
-                                <input id="idPatientccxR" type="text" class="visually-hidden" name="id_auth_user" value="[[=authUserId]]"/>
+                                <input id="idPatientccxR" type="text" class="visually-hidden" name="id_auth_user" value="[[=patientId]]"/>
                                 <input id="idWlccxR" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
                             </form>
                         </div>
@@ -866,7 +866,7 @@
                                 </div>
                                 <input id="lateralityccxL" type="text" class="visually-hidden" name="laterality" value="left"/>
                                 <input id="idccxL" type="text" class="visually-hidden" name="id" value="[[ = XML(ccxR['id']) ]]"/>
-                                <input id="idPatientccxL" type="text" class="visually-hidden" name="id_auth_user" value="[[=authUserId]]"/>
+                                <input id="idPatientccxL" type="text" class="visually-hidden" name="id_auth_user" value="[[=patientId]]"/>
                                 <input id="idWlccxL" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
                             </form>
                         </div>
@@ -890,7 +890,7 @@
                         data-side-pagination="server"
                         data-toggle="table"
                         data-pagination="true"
-                        data-page-size="10"
+                        data-page-size="5"
                         data-search="false"
                         data-query-params="queryParams"
                         data-response-handler="responseHandler_msHx"
@@ -941,7 +941,7 @@
                                     data-side-pagination="server"
                                     data-toggle="table"
                                     data-pagination="true"
-                                    data-page-size="10"
+                                    data-page-size="5"
                                     data-search="false"
                                     data-query-params="queryParams"
                                     data-response-handler="responseHandler_mx"
@@ -959,6 +959,35 @@
                                             <th data-field="note" data-sortable="false">Note</th>
                                             <th data-field="prescribed" data-sortable="false">Prescribed</th>
                                             <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="col">
+                                <h4 class="title-right">List of printed medical prescriptions</h4>
+                                <table
+                                    id="mxrx_tbl"
+                                    data-side-pagination="server"
+                                    data-toggle="table"
+                                    data-pagination="true"
+                                    data-page-size="5"
+                                    data-search="false"
+                                    data-query-params="queryParams"
+                                    data-response-handler="responseHandler_mxrx"
+                                    data-detail-formatter="detailFormatter_mxrx"
+                                    data-detail-view="true"
+                                    data-detail-view-icon="true"
+                                    >
+                                    <thead>
+                                        <tr>
+                                            <th data-field="created_on" data-sortable="true">Created:</th>
+                                            <th data-field="mx_names" data-sortable="false">Medication</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_mxrx" data-events="operateEvents_mxrx">Action
                                             </th>
                                         </tr>
                                     </thead>
@@ -995,7 +1024,7 @@
                                             <th data-field="datestamp" data-sortable="true">Datestamp</th>
                                             <th data-field="glass_type" data-sortable="false">Glass type</th>
                                             <th data-field="formulaR" data-sortable="true">Rx right</th>
-                                            <th data-field="formulaL" data-sortable="true">Rx right</th>
+                                            <th data-field="formulaL" data-sortable="true">Rx left</th>
                                             <th data-field="operate" data-formatter="operateFormatter_gx" data-events="operateEvents_gx">Action
                                             </th>
                                         </tr>
@@ -1041,7 +1070,7 @@
                             </div>
                         </div>
                         <input id="idfol" type="text" class="visually-hidden" name="id" value="[[ = XML(followup['id']) ]]"/>
-                        <input id="idPatientfol" type="text" class="visually-hidden" name="id_auth_user" value="[[=authUserId]]"/>
+                        <input id="idPatientfol" type="text" class="visually-hidden" name="id_auth_user" value="[[=patientId]]"/>
                         <input id="idWlfol" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
                     </form>
                 </div>
@@ -1103,7 +1132,7 @@
                                     </div>
                                 </div>
                                 <input id="idbil" type="text" class="visually-hidden" name="id" value="[[ = XML(billing['id']) ]]"/>
-                                <input id="idPatientbil" type="text" class="visually-hidden" name="id_auth_user" value="[[=authUserId]]"/>
+                                <input id="idPatientbil" type="text" class="visually-hidden" name="id_auth_user" value="[[=patientId]]"/>
                                 <input id="idWlbil" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
                             </form>
                         </div>
@@ -1701,7 +1730,7 @@
 // Global variables
 const HOSTURL = "[[ = hosturl ]]";
 const wlId = [[= wlId ]];
-const authUserId = [[ = authUserId ]];
+const patientId = [[ = patientId ]];
 var usermdObj = [[ =XML(mdParams) ]];
 var userObj = [[ =XML(userDict)]];
 // for timer
@@ -1752,37 +1781,37 @@ const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first
 const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 // table listing ALL medications taken by user
-const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + authUserId;
+const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;
 var $mx_tbl = $('#mx_tbl').bootstrapTable({
     url: API_MXUSER
 });
 
 // table listing ALL allergy to agents by user
-const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + authUserId;
+const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;
 var $ax_tbl = $('#ax_tbl').bootstrapTable({
     url: API_AXUSER
 });
 
 // table listing medical history by user
-const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + authUserId;
+const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;
 var $mHx_tbl = $('#mHx_tbl').bootstrapTable({
     url: API_MHXUSER
 });
 
 // table listing surgical history by user
-const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + authUserId;
+const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;
 var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
     url: API_SHXUSER
 });
 
 // table listing ocular history by user
-const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + authUserId;
+const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;
 var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
     url: API_OHXUSER
 });
 
 // table listing procedure worklist for user
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&id_auth_user.id.eq='+authUserId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&id_auth_user.id.eq='+patientId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
 $table_wl = $('#table-wl').bootstrapTable({
     url: API_PROCEDURE_LIST,
     formatSearch: function () {
@@ -1796,44 +1825,51 @@ $('#table-wl').on('post-body.bs.table', function () {
 });
 
 // table listing refraction right eye by user
-const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+authUserId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 var $rxRight = $('#rxRight_tbl').bootstrapTable({
     url: API_RXRIGHT
 });
 
 // table listing refraction left eye by user
-const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+authUserId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
     url: API_RXLEFT
 });
 
 // table listing code encoded for worklist to user
-const API_CODING = HOSTURL + "/myapp/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+ authUserId;
+const API_CODING = HOSTURL + "/myapp/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+ patientId;
 var $coding = $('#coding_tbl').bootstrapTable({
     url: API_CODING
 });
 
 // table listing medication encoded for current worklist 
-const API_MXWLUSER = HOSTURL + "/myapp/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+authUserId;
+const API_MXWLUSER = HOSTURL + "/myapp/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+patientId;
 var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
     url: API_MXWLUSER
 });
 
-const API_TONORIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user="+authUserId;
+const API_TONORIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user="+patientId;
 var $tonoRight = $('#tonoRight_tbl').bootstrapTable({
     url: API_TONORIGHT
 });
 
-const API_TONOLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user="+authUserId;
+const API_TONOLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user="+patientId;
 var $tonoLeft = $('#tonoLeft_tbl').bootstrapTable({
     url: API_TONOLEFT
 });
 
 // table listing refraction right eye by user
-const API_GXRX = HOSTURL + "/myapp/api/glasses_rx_list?id_auth_user.eq="+authUserId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_GXRX = HOSTURL + "/myapp/api/glasses_rx_list?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 var $gxrx = $('#GxRx_tbl').bootstrapTable({
     url: API_GXRX
 });
+
+// table listing medication encoded for current worklist 
+const API_MXRX = HOSTURL + "/myapp/api/medical_rx_list?id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
+    url: API_MXRX
+});
+
 
 </script>
 <script src="js/md.js"></script>

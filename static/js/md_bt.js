@@ -795,3 +795,63 @@ window.operateEvents_gx = {
         printGxRx(row.id);
     }
 };
+
+function responseHandler_mxrx(res) { // used if data-response-handler="responseHandler_wl"
+    let list = res.items;
+    let display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'id_auth_user': list[i].id_auth_user,
+            'id_worklist': list[i].id_worklist,
+            'id_mx_ref': list[i]['id_mx_ref'] == null? 'n/a':list[i]['id_mx_ref'].split('|').join(','),
+            'mx_names': list[i]['mx_names'] == null? 'n/a':list[i]['mx_names'].split('|').join(','),
+            'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
+            'modified_by': list[i]['mod.id'],
+            'modified_on': list[i]['modified_on'],
+            'created_by': list[i]['creator.id'],
+            'created_by_name': list[i]['creator.last_name'] + ' ' + list[i]['creator.first_name'],
+            'created_on': list[i]['created_on']
+        });
+    });
+    return {
+        rows: display,
+        total: res.count,
+    };
+};
+
+function detailFormatter_mxrx(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Patient ID: </span>'+ row.id_auth_user);
+    html.push('<p class=""><span class="fw-bold">Wl ID: </span>'+ row.id_worklist);
+    html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by_name+'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Medications: </span>'+ row.mx_names+'</p>');
+    html.push('<p class=""><span class="fw-bold">Medications ids: </span>'+ row.id_mx_ref+'</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};
+
+function operateFormatter_mxrx(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete rx"><i class="fas fa-trash-alt"></i></a>');
+    html.push('<a class="print ms-1" href="javascript:void(0)" title="Print medical prescription"><i class="fas fa-print"></i></a>');
+    html.push('</div>');
+    return html.join('');
+};
+
+window.operateEvents_mxrx = {
+    'click .print': function (e, value, row, index) {
+        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        printRx('medical_rx_list',row.id);
+    },
+    'click .remove': function (e, value, row, index) {
+        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        delItem(row.id, 'medical_rx_list', 'prescription');
+    }
+};
