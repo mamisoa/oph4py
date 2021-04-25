@@ -255,6 +255,40 @@ $('#GxRxFormModal').submit(function(e) {
                     watermark: {text: '', color: 'red', opacity: 0.2, bold: false, italics: false},
                     pageSize: 'A4',
                     pageMargins: [ 25, 60, 40, 30 ],
+                    styles: {
+                            header: {
+                                fontSize: 9,
+                                margin: [10,2, 10, 0]
+                            },
+                            footer: {
+                                italics: true,
+                                fontSize: 7,
+                                margin: [10,2, 10, 0]
+                            },
+                            title: {
+                                bold: true
+                            },
+                            idtable: {
+                                fontSize: 9,
+                                alignment: 'left'
+                            },
+                            tableExample: {
+                                fontSize: 8
+                            },
+                            tableHeader: {
+                                bold: true,
+                                color: 'black',
+                                fillColor: '#eeeeee',
+                                fontSize: 8
+                            },
+                            tabo: {
+                                alignment: 'center'
+                            }
+                        },
+                    defaultStyle: {
+                            alignment: 'center',
+                            fontSize: 10
+                            },
                     header: {
                         style: 'header',
                         margin: [200, 10, 150, 5],
@@ -499,7 +533,7 @@ $('#GxRxFormModal').submit(function(e) {
                                         margin: [15,0,10,2],
                                         text: [
                                             { text: finalRxObj['bifocal']+' Bifocal\n'},
-                                            { text: finalRxObj['progressive']+' Progressif\n'},
+                                            { text: finalRxObj['progressive']+' Progressifs\n'},
                                             { text: finalRxObj['degressive']+' Dégressifs\n'}]
 				                    },
                                     {
@@ -618,41 +652,7 @@ $('#GxRxFormModal').submit(function(e) {
                             fontSize: 8,
                             text: [{text:'Remarques de l\'opticien: '},{text: '', bold:true }]
                         }
-                    ], // content end
-                styles: {
-                    header: {
-                        fontSize: 9,
-                        margin: [10,2, 10, 0]
-                    },
-                    footer: {
-                        italics: true,
-                        fontSize: 7,
-                        margin: [10,2, 10, 0]
-                    },
-                    title: {
-                        bold: true
-                    },
-                    idtable: {
-                        fontSize: 9,
-                        alignment: 'left'
-                    },
-                    tableExample: {
-                        fontSize: 8
-                    },
-                    tableHeader: {
-                        bold: true,
-                        color: 'black',
-                        fillColor: '#eeeeee',
-                        fontSize: 8
-                    },
-                    tabo: {
-                        alignment: 'center'
-                    }
-                },
-                defaultStyle: {
-                    alignment: 'center',
-                    fontSize: 10
-                    }
+                    ] // content end
             }; // end of template
                 console.log(finalPresc);
                 let pdf= pdfMake.createPdf(finalPresc);
