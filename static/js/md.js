@@ -100,6 +100,74 @@ $('#mHxModal input[name=title]').autoComplete({
     }
 });
 
+// lens right autocomplete
+$('#CxRxFormModal input[name=lensnameR]').autoComplete({
+    bootstrapVersion: '4',
+    minLength: '1',
+    resolverSettings: {
+        url: API_LENSES,
+        queryKey: 'name.contains'
+    },
+    events: {
+        searchPost: function(res) {
+            if (res.count == 0) {
+                // $('#mxModal input[name=id_medic_ref]').val('');
+            }
+            return res.items;
+        }   
+    },
+    formatResult: function(item) {
+        console.log(item.id);
+        $('#CxRxFormModal input[name=materialR]').val(checkIfDataIsNull(item.material,'-'));
+        $('#CxRxFormModal input[name=designR]').val(checkIfDataIsNull(item.design,'-'));
+        $('#CxRxFormModal input[name=edgeR]').val(checkIfDataIsNull(item.edge,'-'));
+        $('#CxRxFormModal input[name=opticalzoneR]').val(checkIfDataIsNull(item.opticalzone,'-'));
+        $('#CxRxFormModal input[name=basecurveR]').val(checkIfDataIsNull(item.basecurve,'-'));
+        $('#CxRxFormModal input[name=diameterR]').val(checkIfDataIsNull(item.diameter,'-'));
+        if (item.rigidity =='soft') {
+            $('#CxRxModal input[name=g1]').prop('checked',true);
+        } else {
+            $('#CxRxModal input[name=g1]').prop('checked',false);
+        };
+        return {
+            text: item.name
+        }
+    }
+});
+
+$('#CxRxFormModal input[name=lensnameL]').autoComplete({
+    bootstrapVersion: '4',
+    minLength: '1',
+    resolverSettings: {
+        url: API_LENSES,
+        queryKey: 'name.contains'
+    },
+    events: {
+        searchPost: function(res) {
+            if (res.count == 0) {
+                // $('#mxModal input[name=id_medic_ref]').val('');
+            }
+            return res.items;
+        }   
+    },
+    formatResult: function(item) {
+        console.log(item);
+        $('#CxRxModal input[name=materialL]').val(checkIfDataIsNull(item.material,'-'));
+        $('#CxRxModal input[name=designL]').val(checkIfDataIsNull(item.design,'-'));
+        $('#CxRxModal input[name=edgeL]').val(checkIfDataIsNull(item.edge,'-'));
+        $('#CxRxModal input[name=opticalzoneL]').val(checkIfDataIsNull(item.opticalzone,''));
+        $('#CxRxModal input[name=basecurveL]').val(checkIfDataIsNull(item.basecurve,''));
+        $('#CxRxModal input[name=diameterL]').val(checkIfDataIsNull(item.diameter,''));
+        if (item.rigidity =='soft') {
+            $('#CxRxModal input[name=g1]').prop('checked',true);
+        } else {
+            $('#CxRxModal input[name=g1]').prop('checked',false);
+        };
+        return {
+            text: item.name
+        }
+    }
+});
 
 // init modal according to the button that called it, before it is shown
 // set mHxModal parameters by default: category

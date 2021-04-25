@@ -28,7 +28,11 @@ function round2dec(num) {
     num >0? num='+'+num : {};
     return num;
 };
-  
+
+// round to closer quarter
+function round2qter(num) {
+    return (Math.round(num * 4) / 4).toFixed(2);
+};
 
 // Capitalize first character
 function capitalize(str) {

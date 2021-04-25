@@ -472,3 +472,17 @@ db.define_table('billing',
     Field('id_worklist','reference worklist', required=True),
     Field('description','string'),
     auth.signature)
+
+# contactlenses
+db.define_table('lenses',
+    Field('name', 'string', required=True),
+    Field('brand','string'),
+    Field('material','string'),
+    Field('design','string'),
+    Field('edge','string'),
+    Field('opticalzone','string'),
+    Field('basecurve','string'),
+    Field('diameter','string'),
+    Field('rigidity','string'),
+    Field('misc','string'),
+    auth.signature)
