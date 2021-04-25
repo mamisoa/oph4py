@@ -404,6 +404,7 @@ db.define_table('medical_rx_list',
     Field('id_medic_ref', 'reference medic_ref', required=True),
     Field('id_worklist','reference worklist', required=True),
     Field('uuid','string', default=str_uuid()),
+    Field('pdf_report','blob'),
     auth.signature)
 
 db.define_table('md_params',
@@ -455,6 +456,7 @@ db.define_table('glasses_rx_list',
     Field('baseL', 'string'),
     Field('tint','boolean'), # true = medical, false = non medical, null = no tint
     Field('photo','boolean'), # true = medical, false = non medical, null = not photochromic
+    Field('pdf_report','blob'),
     auth.signature)
 
 db.define_table('followup',
