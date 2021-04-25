@@ -131,11 +131,12 @@ function crud(table,id='0',req='POST',data) {
                     errors += data.errors[i]+'</br>';
                 };
                 text = errors;
-                displayToast('error',data.message,errors,'6000');
+                displayToast('error',data.message,errors,'3000');
             };
             if (data.status == "success") {
                 text='User id: '+(req == 'DELETE'? id : data.id)+mode;
-                displayToast('success', table+' '+mode,text,'6000');
+                displayToast('success', table+' '+mode,text,'3000');
             };
+            return data;
         });
 };

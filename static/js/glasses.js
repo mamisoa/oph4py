@@ -1,4 +1,6 @@
 // glasses prescriptions
+// prescRxObj contains id and options items
+// GxRxGlobalObj merges GxRxRight and left
 const clonerxObj = Object.assign({}, rxObj);
 
 prescRxObj['doctorfirst']=userObj['first_name'];
@@ -86,6 +88,7 @@ function rxDataButton(dataStr, lat) {
     lat =='right'? GxRxRightObj=dataObj: GxRxLeftObj=dataObj;
 };
 
+// remove unecessary elements
 function filterGxRx(dataObj){
     let removeKeysArray = [
         'id','created_by_name','modified_by_name','created_by','modified_by','created_on','modified_on',
@@ -96,6 +99,7 @@ function filterGxRx(dataObj){
     };
 };
 
+// convert numbers to strings and set options in report
 function globalRx2presc(rxObj) { 
     let delkeyArr = ['id_auth_user','id_worklist'];
     for (key of delkeyArr) {
@@ -227,16 +231,13 @@ $('#GxRxFormModal').submit(function(e) {
         .then(response => response.json())
         .then(data =>
             {
-                let dataStr = JSON.stringify(GxRxGlobalObj);
-                console.log('Global:',GxRxGlobalObj);
-                // send glass left prescription to table
-                crud('glasses_rx_list','0','POST',dataStr);
-                $('#GxRxModal').modal('hide');
                 // clone prescRxObj
                 // add all keys and values from GxRxGlobalObj
                 // modify the value of art30 tint photo prism
                 console.log(prescRxObj);
                 let finalRxObj = Object.assign({}, prescRxObj);
+                let finalDbObj = Object.assign({}, GxRxGlobalObj);
+                // filter numbers to strings and add options in report
                 globalRx2presc(GxRxGlobalObj);
                 // add all keys to finalRxObj
                 for (const key in GxRxGlobalObj) {
@@ -654,13 +655,19 @@ $('#GxRxFormModal').submit(function(e) {
                         }
                     ] // content end
             }; // end of template
-                console.log(finalPresc);
-                let pdf= pdfMake.createPdf(finalPresc);
-                // pdf.download('rx');
-                pdf.print()
-                $('#GxRx_tbl').bootstrapTable('refresh');
-                $('#GxRxModal').modal('hide');
-            });
+            finalDbObj['uuid']=data.unique_id;
+            finalDbObj['pdf_report'] = JSON.stringify(finalPresc);
+            let finalDbStr = JSON.stringify(finalDbObj);
+            console.log('Global:',finalDbObj);
+            // send glass left prescription to table
+            let crud_res=crud('glasses_rx_list','0','POST',finalDbStr);
+            console.log('crud_res: ',crud_res);
+            let pdf= pdfMake.createPdf(finalPresc);
+            // pdf.download('rx');
+            pdf.print()
+            $('#GxRx_tbl').bootstrapTable('refresh');
+            $('#GxRxModal').modal('hide');
+        });
 });
 
 

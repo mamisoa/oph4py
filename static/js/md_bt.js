@@ -779,20 +779,19 @@ function detailFormatter_gx(index, row) {
 
 function operateFormatter_gx(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
-    html.push('<a class="edit" href="javascript:void(0)" title="Edit '+row.laterality+' tono"><i class="fas fa-edit"></i></a>');
-    html.push('<a class="cache" href="javascript:void(0)" title="Cache '+row.laterality+' tono"><i class="fas fa-file-import"></i></a>');
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete prescription"><i class="fas fa-trash-alt"></i></a>');
+    html.push('<a class="print ms-1" href="javascript:void(0)" title="Print glasses prescription"><i class="fas fa-print"></i></a>');
     html.push('</div>');
     return html.join('');
   };
 
 window.operateEvents_gx = {
-    'click .edit': function (e, value, row, index) {
-        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        window.location.href = '/myapp/modalityCtr/autorx/'+row.id_worklist;
+    'click .remove': function (e, value, row, index) {
+        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        delItem(row.id, 'glasses_rx_list', 'glasses prescription');
     },
-    'click .cache': function (e, value, row, index) {
+    'click .print': function (e, value, row, index) {
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        // todo: implement gx in cache
-        // updateCache(gxObj); 
+        printRx('glasses_rx_list',row.id);
     }
 };
