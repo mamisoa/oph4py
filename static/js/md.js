@@ -672,6 +672,8 @@ function printGxRx(id) {
             } else {                    
                 displayToast('info', 'GET success', 'Glasses prescription retrieved #' + id, '3000');
                 let pdfObj = JSON.parse(item['pdf_report']);
+                pdfObj['watermark']['text']='Duplicate';
+                console.log('pdfObj:',pdfObj);
                 let pdf= pdfMake.createPdf(pdfObj);
                 pdf.print()
             }

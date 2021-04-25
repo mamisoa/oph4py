@@ -792,6 +792,6 @@ window.operateEvents_gx = {
     },
     'click .print': function (e, value, row, index) {
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        printRx('glasses_rx_list',row.id);
+        printGxRx(row.id);
     }
 };
