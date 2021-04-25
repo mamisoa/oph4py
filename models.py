@@ -401,8 +401,9 @@ db.ccx.laterality.requires = IS_IN_SET(('right','left','na'))
 
 db.define_table('medical_rx_list',
     Field('id_auth_user', 'reference auth_user', required=True),
-    Field('id_medic_ref', 'reference medic_ref', required=True),
     Field('id_worklist','reference worklist', required=True),
+    Field('id_mx_ref', 'string', required=True),
+    Field('mx_names', 'string'),
     Field('uuid','string', default=str_uuid()),
     Field('pdf_report','blob'),
     auth.signature)

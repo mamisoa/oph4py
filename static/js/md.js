@@ -1,7 +1,7 @@
 // refresh tables
 const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl',
     '#rxRight_tbl','#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl',
-    '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl'];
+    '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl'];
 refreshTables(tablesArr);
 
 // frequency autocomplete
@@ -563,12 +563,10 @@ function renderMedicObj(medicObj) {
     let content =['R/'];
     content.push(medicObj['medication']+'\n');
     content.push('DT n°I '+checkIfDataIsNull(medicObj['medic.packaging'],' ')+'\n');
-    let posology=item['unit_per_intake']+' '+medicObj['medic.form']+' '+medicObj['frequency'];
+    let posology=item['unit_per_intake']+' '+checkIfDataIsNull(medicObj['medic.form'],'unit(s)')+' '+medicObj['frequency'];
     content.push('S/'+ posology+'\n');
     return content.join('');
 };
-
-
 
 // testing pdf blob to download file on server
 function testpdf(){

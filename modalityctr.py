@@ -66,7 +66,7 @@ def md(wlId):
     from datetime import datetime
     hosturl = LOCAL_URL
     user = auth.get_user()
-    authUserId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     # get modality vs controller
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
