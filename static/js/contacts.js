@@ -455,26 +455,6 @@ $('#CxRxFormModal').submit(function(e) {
                             } // end of row
                         }, // tableau prescription fin
                         {
-                            alignment: 'left',
-                            fontSize: 9,
-                            text: [
-                                    {text: 'REMARQUES: ', bold : true},
-                                    {text: '\n', italics: true}
-                                ]
-                        }, // end of row
-                        { 
-                            alignment: 'left',
-                            fontSize: 8 ,
-                            margin: [10,0,0,0],
-                            text: [
-                                    { text: '\tLunettes vertex : 12.5mm (standard=12mm)\n'},
-                                    {text:'Note: '} ,{text: finalRxObj['remarks']+'\n', italics: true} 
-                                ]
-                        }, // end of row
-                        { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1 },
-                            {type: 'rect',x: 0,y: 12, w: 515, h: 2, color: 'white'} ] // spacer
-                        },
-                        {
                             text: 'EQUIPEMENT',
                             bold: true,
                             alignment: 'left',
@@ -487,64 +467,45 @@ $('#CxRxFormModal').submit(function(e) {
 			                columns: [
 				                [
                                     {
-					                    text: [{ text: finalRxObj['monofocal']+' UNIFOCAL\n'},{ text: finalRxObj['multifocal']+' MULTIFOCAL'}]
+					                    text: 'LENTILLES DE CONTACT OPTIQUE (Groupe 1)'
 				                    },
                                     {
                                         margin: [15,0,10,2],
                                         text: [
-                                            { text: finalRxObj['bifocal']+' Bifocaux\n'},
-                                            { text: finalRxObj['progressive']+' Progressifs\n'},
-                                            { text: finalRxObj['degressive']+' Dégressifs\n'}]
+                                            { text: finalRxObj['g1']+' Lentilles souples '},
+                                            { text: finalRxObj['g1spheric']+' Spheriques '},
+                                            { text: finalRxObj['g1toric']+' Toriques '}]
 				                    },
                                     {
-					                    text: [{ text: finalRxObj['tint']+' TEINTE FIXE'}]
-				                    },
-                                    {
-                                        margin: [15,0,10,2],
-					                    text: [{ text: finalRxObj['tintnonmed']+' Sans filtre médical\n'},
-                                        { text: finalRxObj['tintmed']+' Avec filtre médical(*) - Type '},
-                                        { text: '' , italics: true}]
-                                    },
-                                    {
-					                    text: [{ text: finalRxObj['photo']+' PHOTOCHROMIQUE'}]
+					                    text: 'LENTILLES DE CONTACT SPECIFIQUES pour CORNEE IRREGULIERE (Groupe 2)'
 				                    },
                                     {
                                         margin: [15,0,10,2],
-					                    text: [{ text: finalRxObj['photononmed']+' Sans filtre médical\n'},
-                                        { text: finalRxObj['photomed']+' Avec filtre médical(*) - Type '},{ text: '' , italics: true}]
+                                        text: [
+                                            { text: finalRxObj['g2soft']+' souples ou hybrides '},
+                                            { text: finalRxObj['g2rigidc']+' rigides cornéennes '},
+                                            { text: finalRxObj['g2rigidcs']+' rigides cornéo-sclérales '},
+                                            { text: finalRxObj['g2rigids']+' rigides sclérales optiques'}
+                                        ]
+				                    },
+                                    {
+					                    text: 'LENTILLES DE CONTACT PARTICULIERES FAITES SUR MESURE (Groupe 3)'
+				                    },
+                                    {
+                                        margin: [15,0,10,2],
+                                        text: [
+                                            { text: finalRxObj['g3iris']+' souple à iris opaque '},
+                                            { text: finalRxObj['g3pupil']+' souple à pupille opaque '}
+                                        ]
 				                    }
                                 ], // left column
                                 [
                                     {
-                                        text: [{ text: 'o'+' PRISME'}]
-				                    },
-                                    {
-                                        margin: [15,0,10,2],
-					                    text: [
-                                            { text: 'o'+' Taillé dans le verre - Diplopie      '},
-                                            { text: '[ ]'+' OUI '},
-                                            { text: '[ ]'+' NON\n'},
-                                            { text: '[ ]'+' FRESNEL\n\n'}]
-				                    },
-                                    {
-					                    text: [{ text: 'o'+' OBTURATEUR'}]
-				                    },
-                                    {
-                                        margin: [15,0,10,2],
-					                    text: [{ text: 'o'+' Avec coquille et ventouse\n'},{ text: 'o'+' Avec micropores\n\n'}]
-				                    },
-                                    {
-					                text: [{ text: 'o'+' FILTRE DE RYSER - Calibrage(densité): '},{ text: '' , italics: true}]
+                                        text: [{ text: 'Remarques: '+finalRxObj['remarks']}]
 				                    }
                                 ] // right column
 			                ]
 		                }, // EQUIPEMENT fin
-                        { 
-                            canvas: [
-                                        { type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1 },
-                                        {type: 'rect',x: 0,y: 12, w: 515, h: 2, color: 'white'} // spacer
-                                ]
-                        },
                         {
                             alignment: 'left',
                             fontSize: 8,
@@ -603,15 +564,12 @@ $('#CxRxFormModal').submit(function(e) {
                             text: [{text:'Email du prescripteur: '},{text: usermdObj['email'], color: 'blue', decoration: 'underline' }]
                         },
                         {
+                            text: 'Réfraction des lentilles de contact (à remplir obligatoirement par l\'adapateur des lentilles)',
+                            bold: true,
                             alignment: 'left',
-                            fontSize: 8,
-                            text: [{text:'Email de l\'opticien: '},{text: '', color: 'blue', decoration: 'underline' }]
-                        },
-                        {
-                            alignment: 'left',
-                            fontSize: 8,
-                            text: [{text:'Remarques de l\'opticien: '},{text: '', bold:true }]
-                        }
+                            fontSize: 9
+                        }, // end of row
+                        
                     ] // content end
             }; // end of template
             finalDbObj['uuid']=data.unique_id;
