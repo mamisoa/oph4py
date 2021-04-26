@@ -11,16 +11,31 @@ prescRxObj['centername']=usermdObj['officename']+ '\n'+usermdObj['officeaddress'
 prescRxObj['centerphone']=usermdObj['officephone']
 prescRxObj['centerurl']=usermdObj['officeurl']
 
-
 prescRxObj['bifocal']='o';
 prescRxObj['art30yes']='[x]';
 prescRxObj['art30no']='[ ]';
 prescRxObj['qrcode']='Signed by '+prescRxObj['doctortitle']+' uuid:';
 
+// remove unecessary elements
+function filterGxRx(dataObj){
+    let removeKeysArray = [
+        'opto_far','opto_int','opto_close','va_far','va_int','va_close', 'se_far','add','note', 'laterality'
+    ];
+    for (let key of removeKeysArray){
+        delete dataObj[key];
+    };
+};
 
 $('#btnGxRx').click(function() {
     let htmlR=[], htmlL=[];
-    for (item of rxObj) {
+    let dataObj= Object.assign([], rxObj);
+    // console.log('dataObj', dataObj);
+    for (item of dataObj) {
+        // remove unecessary keys eg names containing single quotes
+        let removeIdKeysArr = ['id','created_by_name','modified_by_name','created_by','modified_by','created_on','modified_on'];
+        for (let key of removeIdKeysArr){
+            delete item[key];
+        };
         console.log('Choosen Rx',item);
         // put everything in table
         if (item['laterality']=='right') {
@@ -85,17 +100,6 @@ function rxDataButton(dataStr, lat) {
     html.push('</tr>'); // end row
     $('#GxRx'+lat).html(html.join(''));
     lat =='right'? GxRxRightObj=dataObj: GxRxLeftObj=dataObj;
-};
-
-// remove unecessary elements
-function filterGxRx(dataObj){
-    let removeKeysArray = [
-        'id','created_by_name','modified_by_name','created_by','modified_by','created_on','modified_on',
-        'opto_far','opto_int','opto_close','va_far','va_int','va_close', 'se_far','add','note', 'laterality'
-    ];
-    for (let key of removeKeysArray){
-        delete dataObj[key];
-    };
 };
 
 // convert numbers to strings and set options in report
@@ -202,8 +206,9 @@ $('#GxRxFormModal').submit(function(e) {
     // set GxRxGlobalObj from GxRxRight, GxRxLeft
     GxRxGlobalObj['id_auth_user']=GxRxRightObj['id_auth_user']; // common for right and left (same autorx wlId)
     GxRxGlobalObj['id_worklist']=GxRxRightObj['id_worklist'];
-    filterGxRx(GxRxRightObj);
-    filterGxRx(GxRxLeftObj);
+    // already done before
+    // filterGxRx(GxRxRightObj);
+    // filterGxRx(GxRxLeftObj);
     console.log('GxRxRightObj:',GxRxRightObj);
     console.log('GxRxLeftObj:',GxRxRightObj);
     console.log('GxRxdataObj:',formObj);
