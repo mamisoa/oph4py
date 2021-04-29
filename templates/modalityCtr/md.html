@@ -2163,13 +2163,13 @@ $('#table-wl').on('post-body.bs.table', function () {
 });
 
 // table listing refraction right eye by user
-const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 var $rxRight = $('#rxRight_tbl').bootstrapTable({
     url: API_RXRIGHT
 });
 
 // table listing refraction left eye by user
-const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
     url: API_RXLEFT
 });
