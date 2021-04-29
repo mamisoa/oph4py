@@ -579,8 +579,8 @@ function detailFormatter_rx(index, row) {
     html.push('</div>');
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_far +'</p>');
-    html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_int +'</p>');
-    html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_close +'</p>');
+    html.push('<p class=""><span class="fw-bold">Va int: </span>'+ row.va_int +'</p>');
+    html.push('<p class=""><span class="fw-bold">Va close: </span>'+ row.va_close +'</p>');
     html.push('</div>');
     html.push('</div></div>');
     return html.join('');
