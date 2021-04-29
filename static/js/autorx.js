@@ -156,7 +156,7 @@ for (let rx of idRxArr) {
       for (show of arr.slice(1)) {
         $(show).removeClass('visually-hidden');
         if (rx != '#rxFormModal') {
-          $(rx+' input[name=va_int]').val('1.0');
+          $(rx+' input[name=va_int]').val(''); // no int vision as default, before 1.0
           $(rx+' input[name=va_close]').val('2');
         };
       };
@@ -175,7 +175,7 @@ for (let rx of idRxArr) {
       $(arr[0]).addClass('visually-hidden'); // hide 
       if (rx != '#rxFormModal') {
         $(rx+' input[name=va_far]').val('');
-        $(rx+' input[name=va_int]').val('1.0');
+        $(rx+' input[name=va_int]').val(''); // no int vision as default, before 1.0
         $(rx+' input[name=va_close]').val('2');
         for (hide of arr.slice(1)) {
           $(hide).addClass('visually-hidden');
