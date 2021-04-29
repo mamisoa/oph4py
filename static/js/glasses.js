@@ -474,7 +474,7 @@ $('#GxRxFormModal').submit(function(e) {
                                             {text: ''},
                                             {text: ''},
                                             {text: '',border: [false, false, false, false] }, // spacer - 6 col ok
-                                            {text: 'Inter'},
+                                            {text: 'Près'},
                                             {text: finalRxObj['sph_closeL'] }, 
                                             {text: finalRxObj['cyl_closeL'] },
                                             {text: finalRxObj['axis_closeL']},
