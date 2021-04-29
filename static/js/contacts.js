@@ -574,7 +574,7 @@ $('#CxRxFormModal').submit(function(e) {
                             style: 'tableExample', // table prescription
                             table: {
                                 headerRows: 1,
-                                widths: [ '*', '*', '*', '*', '*', '*','*', '*', '*', '*', '*', '*' ],
+                                widths: [ '*', '*', '*', '*', '*', '*','*', '*', '*', '*', '*', '*' ], // table 12 columns
                                 body: [
                                         [ 
                                             { text: 'D', bold: true, border: [false, false, true, true] },
@@ -603,35 +603,121 @@ $('#CxRxFormModal').submit(function(e) {
                                             {text: finalRxObj['prismL']},
                                             {text: finalRxObj['baseL']},
                                         ],
-                                        [   {text: 'Inter'},
-                                            {text: finalRxObj['sph_intR'] }, 
-                                            {text: finalRxObj['cyl_intR'] },
-                                            {text: finalRxObj['axis_intR']},
-                                            {text: ''},
-                                            {text: ''},
-                                            {text: 'Inter'},
-                                            {text: finalRxObj['sph_intL'] }, 
-                                            {text: finalRxObj['cyl_intL'] },
-                                            {text: finalRxObj['axis_intL']},
-                                            {text: ''},
-                                            {text: ''},
-                                        ],
-                                        [   {text: 'Près'},
-                                            {text: finalRxObj['sph_closeR'] }, 
-                                            {text: finalRxObj['cyl_closeR'] },
-                                            {text: finalRxObj['axis_closeR']},
-                                            {text: ''},
-                                            {text: ''},
-                                            {text: 'Inter'},
-                                            {text: finalRxObj['sph_closeL'] }, 
-                                            {text: finalRxObj['cyl_closeL'] },
-                                            {text: finalRxObj['axis_closeL']},
-                                            {text: ''},
-                                            {text: ''},
+                                        [   {text: 'ADD'},
+                                            {text: finalRxObj['add_closeR'] }, 
+                                            { text: '', border: [false, false, false, false] },
+                                            { text: '', border: [false, false, false, false] },
+                                            { text: '', border: [false, false, false, false] },
+                                            { text: '', border: [false, false, false, false] },
+                                            {text: 'ADD'},
+                                            {text: finalRxObj['add_closeL'] }, 
+                                            { text: '', border: [false, false, false, false] },
+                                            { text: '', border: [false, false, false, false] },
+                                            { text: '', border: [false, false, false, false] },
+                                            { text: '', border: [false, false, false, false] }
                                         ]
                                 ] // end of body
                             } // end of table
-                        } //end of row  
+                        }, //end of row
+                        {
+                            text: 'SPECIFICATIONS LENTILLES DE CONTACT adaptées par: [X] OPHTALMOLOGUE [ ] OPTICIEN',
+                            alignment: 'center',
+                            fontSize: 9
+                        }, // end of row
+                        {
+                            margin: [0, 5, 0, 0],
+                            style: 'tableExample', // table contacts parameters
+                            table: {
+                                headerRows: 1,
+                                widths: [ '*', '*', '*'],
+                                body: [
+                                        [ 
+                                            { text: ''},
+                                            { text: 'DROITE' }, 
+                                            { text: 'GAUCHE' } 
+                                        ], // end table header 3 columns
+                                        [ 
+                                            { text: 'Materiau'},
+                                            { text: finalRxObj['marterialR'] }, 
+                                            { text: finalRxObj['marterialL'] } 
+                                        ],
+                                        [ 
+                                            { text: 'Design'},
+                                            { text: finalRxObj['designR'] }, 
+                                            { text: finalRxObj['designL'] } 
+                                        ],
+                                        [ 
+                                            { text: 'Finition de bord'},
+                                            { text: finalRxObj['edgeR'] }, 
+                                            { text: finalRxObj['edgeL'] } 
+                                        ],
+                                        [ 
+                                            { text: '', border: [false, false, false, false] },
+                                            { text: '', border: [false, false, false, false] },
+                                            { text: '', border: [false, false, false, false] },
+                                        ], // end spacer
+                                        [ 
+                                            { text: 'Optical Zone'},
+                                            { text: finalRxObj['opticalzoneR'] }, 
+                                            { text: finalRxObj['opticalzoneL'] } 
+                                        ],
+                                        [ 
+                                            { text: 'Base curve'},
+                                            { text: finalRxObj['basecurveR'] }, 
+                                            { text: finalRxObj['basecurveL'] } 
+                                        ],
+                                        [ 
+                                            { text: 'Diamètre total'},
+                                            { text: finalRxObj['diameterR'] }, 
+                                            { text: finalRxObj['diameterL'] } 
+                                        ],
+                                        [ 
+                                            { text: 'Paramètres supplémentaires'},
+                                            { text: finalRxObj['parametersR'] }, 
+                                            { text: finalRxObj['parametersL'] } 
+                                        ]
+                                ] // end of body
+                            } // end of table
+                        }, //end of row
+                        {
+                            style: 'tableExample',
+                            margin: [0,30,0,10],
+                            table: {
+                            widths: ['*', '*'],
+                            body: [
+                                [
+                                    [ // left column
+                                        {
+                                         text: [{fontSize: 6, alignment: 'left', text: 'Cachet du prescripteur:'}]
+                                        },
+                                        {
+                                            margin: [0,2,0,0],
+                                            fontSize: 8,
+                                            text: [{ text: finalRxObj['doctortitle']+'\n', bold: true },{text: finalRxObj['doctorinami']}]
+                                        },
+                                        {
+                                            fontSize: 6,
+                                            text: [{ text: finalRxObj['centername']+'\n' },{text: 'Tél: '+finalRxObj['centerphone']+'\n'},
+                                            {text: finalRxObj['centerurl']+'\n', color: 'blue', decoration: 'underline', italics: 'true'}]
+                                        }
+                                    ], // left column end
+                                    [{
+                                        border: [true, false, false, false],
+                                        text: [
+                                            {fontSize: 6, alignment: 'left', text: 'Date et signature: \n'},
+                                            {fontSize: 8, alignment: 'left', text: finalRxObj['datestamp']+'\n', bold: true},
+                                            ]
+                                    },{qr: finalRxObj['qrcode'], fit: 50, alignment: 'center'}
+                                    ]
+                                ] // right column end
+                            ] // end of body
+                            } // end of table
+                        }, // stamp end
+                        {
+                            alignment: 'left',
+                            fontSize: 8,
+                            text: [{text:'Email de l\'opticien: '},{text: '', color: 'blue', decoration: 'underline' }]
+                        }
                     ] // content end
             }; // end of template
             finalDbObj['uuid']=data.unique_id;
