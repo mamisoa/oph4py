@@ -569,7 +569,69 @@ $('#CxRxFormModal').submit(function(e) {
                             alignment: 'left',
                             fontSize: 9
                         }, // end of row
-                        
+                        {
+                            margin: [0, 5, 0, 0],
+                            style: 'tableExample', // table prescription
+                            table: {
+                                headerRows: 1,
+                                widths: [ '*', '*', '*', '*', '*', '*','*', '*', '*', '*', '*', '*' ],
+                                body: [
+                                        [ 
+                                            { text: 'D', bold: true, border: [false, false, true, true] },
+                                            { style: 'tableHeader', text: 'Sph' } , 
+                                            { text: 'Cyl', style: 'tableHeader' } ,
+                                            { text: 'Axis', style: 'tableHeader' } ,
+                                            { text: 'BC', style: 'tableHeader' },
+                                            { text: 'DIA', style: 'tableHeader'},
+                                            { text: 'G', bold: true, border: [false, false, true, true] },
+                                            { text: 'Sph', style: 'tableHeader'} ,
+                                            { text: 'Cyl', style: 'tableHeader'},
+                                            { text: 'Axis', style: 'tableHeader'} ,
+                                            { text: 'BC', style: 'tableHeader'},
+                                            { text: 'DIA',style: 'tableHeader'}
+                                        ], // end table header 13 columns
+                                        [   {text: 'Loin'},
+                                            {text: finalRxObj['sph_farR'] }, 
+                                            {text: finalRxObj['cyl_farR'] },
+                                            {text: finalRxObj['axis_farR']},
+                                            {text: finalRxObj['prismR']},
+                                            {text: finalRxObj['baseR']},
+                                            {text: 'Loin'},
+                                            {text: finalRxObj['sph_farL'] }, 
+                                            {text: finalRxObj['cyl_farL'] },
+                                            {text: finalRxObj['axis_farL']},
+                                            {text: finalRxObj['prismL']},
+                                            {text: finalRxObj['baseL']},
+                                        ],
+                                        [   {text: 'Inter'},
+                                            {text: finalRxObj['sph_intR'] }, 
+                                            {text: finalRxObj['cyl_intR'] },
+                                            {text: finalRxObj['axis_intR']},
+                                            {text: ''},
+                                            {text: ''},
+                                            {text: 'Inter'},
+                                            {text: finalRxObj['sph_intL'] }, 
+                                            {text: finalRxObj['cyl_intL'] },
+                                            {text: finalRxObj['axis_intL']},
+                                            {text: ''},
+                                            {text: ''},
+                                        ],
+                                        [   {text: 'Près'},
+                                            {text: finalRxObj['sph_closeR'] }, 
+                                            {text: finalRxObj['cyl_closeR'] },
+                                            {text: finalRxObj['axis_closeR']},
+                                            {text: ''},
+                                            {text: ''},
+                                            {text: 'Inter'},
+                                            {text: finalRxObj['sph_closeL'] }, 
+                                            {text: finalRxObj['cyl_closeL'] },
+                                            {text: finalRxObj['axis_closeL']},
+                                            {text: ''},
+                                            {text: ''},
+                                        ]
+                                ] // end of body
+                            } // end of table
+                        } //end of row  
                     ] // content end
             }; // end of template
             finalDbObj['uuid']=data.unique_id;
