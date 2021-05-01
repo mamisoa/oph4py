@@ -187,7 +187,29 @@ $('#CxRxFormModal input[name=lensnameL]').autoComplete({
 });
 
 // cleaning solution autocomplete
-$('#CxRxFormModal input[name=cleaning]').autoComplete({
+$('#CxRxFormModal input[name=cleaningR]').autoComplete({
+    bootstrapVersion: '4',
+    minLength: '1',
+    resolverSettings: {
+        url: API_CLEANING,
+        queryKey: 'name.contains'
+    },
+    events: {
+        searchPost: function(res) {
+            if (res.count == 0) {
+            }
+            return res.items;
+        }   
+    },
+    formatResult: function(item) {
+        $('#CxRxFormModal input[name=cleaningL]').val(item.name+' ('+item.brand+')').trigger('change');
+        return {
+            text: item.name+' ('+item.brand+')'
+        };
+    }
+});
+
+$('#CxRxFormModal input[name=cleaningL]').autoComplete({
     bootstrapVersion: '4',
     minLength: '1',
     resolverSettings: {
