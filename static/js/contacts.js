@@ -224,11 +224,11 @@ $('#CxRxFormModal').submit(function(e) {
     // CxRxGlobalObj['id_worklist']=CxRxRightObj['id_worklist'];
     // set soft or rigid rx
     if (formObj['g1rspheric']==true || formObj['g1rtoric'] == true || formObj['g2rigidc'] == true || formObj['g2rigidcs'] == true || formObj['g2rigids'] == true ) {
-        formObj['rxsoft'] = ['o'];
-        formObj['rxrigid'] = ['X'];
+        formObj['rxsoft'] = 'o';
+        formObj['rxrigid'] = 'X';
     } else {
-        formObj['rxsoft'] = ['X'];
-        formObj['rxrigid'] = ['o'];
+        formObj['rxsoft'] = 'X';
+        formObj['rxrigid'] = 'o';
     };
     // set group 1
     if (formObj['g1sspheric']==true || formObj['g1storic'] == true) {
