@@ -566,6 +566,8 @@ db.define_table('certificates',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True), # from the autorx wl!
     Field('datestamp', 'date'),
+    Field('onset', 'date'),
+    Field('ended', 'date'),
     Field('category','string'),
     Field('pdf_report','blob'),
     auth.signature)

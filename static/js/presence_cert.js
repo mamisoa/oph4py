@@ -230,6 +230,7 @@ $('#certPresenceFormModal').submit(function(e) {
             crud('certificates','0','POST',finalDbStr);
             let pdf= pdfMake.createPdf(finalPresc);
             pdf.print();
+            $('#cert_tbl').bootstrapTable('refresh');
             $('#certPresenceModal').modal('hide');
         });
 });
