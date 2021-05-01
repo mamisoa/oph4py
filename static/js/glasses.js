@@ -230,7 +230,7 @@ $('#GxRxFormModal').submit(function(e) {
         GxRxGlobalObj[key]=formObj[key];
     };
     let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
-    GxRxGlobalObj['datestamp']=today;
+    GxRxGlobalObj['datestamp']=today.split('-').reverse().join('/');
     fetch(HOSTURL+"/myapp/api/uuid", {method:"GET"})
         .then(response => response.json())
         .then(data =>

@@ -1835,7 +1835,7 @@
                                                 </div>
                                                 <div class="col">
                                                     <div class="form-floating mb-3">
-                                                        <input type="number" step="0.25" min="0" value="0" class="form-control" id="addR_lc" placeholder="Addition" name="addR">
+                                                        <input type="number" step="0.25" min="0" value="0" class="form-control" id="addR_lc" placeholder="Addition" name="addcR">
                                                         <label for="addR_lc">Add</label>
                                                     </div>
                                                 </div>
@@ -1887,7 +1887,7 @@
                                                 </div>
                                                 <div class="col">
                                                     <div class="form-floating mb-3">
-                                                        <input type="number" step="0.25" min="0" value="0" class="form-control" id="addL_lc" placeholder="Addition" name="addL">
+                                                        <input type="number" step="0.25" min="0" value="0" class="form-control" id="addL_lc" placeholder="Addition" name="addcL">
                                                         <label for="addL_lc">Add</label>
                                                     </div>
                                                 </div>
@@ -2003,7 +2003,14 @@
                                         <div class="col">
                                             <label for="CxRxremarksModal" class="form-label">Remarks:</label>
                                             <input id="CxRxremarksModal" type="text" class="form-control" name="remarks" autocomplete="off">
-                                            <div id="CxRxremarksModalHelp" class="form-text">Enter remarks including related to prism</div>
+                                            <div id="CxRxremarksModalHelp" class="form-text">Enter remarks concerning contact lenses adaptation</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="CxRxcleaningModal" class="form-label">Cleaning solution:</label>
+                                            <input id="CxRxcleaningModal" type="text" class="form-control" name="cleaning" autocomplete="off">
+                                            <div id="CxRxcleaningModalHelp" class="form-text">Enter cleaning solution</div>
                                         </div>
                                     </div>                                    
                                 </div>
@@ -2123,6 +2130,9 @@ const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[
 
 // API_LENSES lists lenses for autocomplete
 const API_LENSES = HOSTURL + "/myapp/api/lenses?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+
+// API_CLEANING lists cleaning solutions for autocomplete
+const API_CLEANING = HOSTURL + "/myapp/api/cleaning_solution?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 // table listing ALL medications taken by user
 const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;

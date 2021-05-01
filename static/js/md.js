@@ -117,7 +117,7 @@ $('#CxRxFormModal input[name=lensnameR]').autoComplete({
         }   
     },
     formatResult: function(item) {
-        console.log(item);
+        // console.log(item);
         $('#CxRxFormModal input[name=materialR]').val(checkIfDataIsNull(item.material,'-'));
         $('#CxRxFormModal input[name=designR]').val(checkIfDataIsNull(item.design,'-'));
         $('#CxRxFormModal input[name=edgeR]').val(checkIfDataIsNull(item.edge,'-'));
@@ -139,7 +139,7 @@ $('#CxRxFormModal input[name=lensnameR]').autoComplete({
             $('#CxRxModal input[name=g1storic]').prop('checked',false).trigger('change');
         };
         return {
-            text: item.name
+            text: item.name+' ('+item.brand+')'
         }
     }
 });
@@ -154,13 +154,12 @@ $('#CxRxFormModal input[name=lensnameL]').autoComplete({
     events: {
         searchPost: function(res) {
             if (res.count == 0) {
-                // $('#mxModal input[name=id_medic_ref]').val('');
             }
             return res.items;
         }   
     },
     formatResult: function(item) {
-        console.log(item);
+        // console.log(item);
         $('#CxRxModal input[name=materialL]').val(checkIfDataIsNull(item.material,'-'));
         $('#CxRxModal input[name=designL]').val(checkIfDataIsNull(item.design,'-'));
         $('#CxRxModal input[name=edgeL]').val(checkIfDataIsNull(item.edge,'-'));
@@ -182,8 +181,30 @@ $('#CxRxFormModal input[name=lensnameL]').autoComplete({
             $('#CxRxModal input[name=g1storic]').prop('checked',false).trigger('change');
         };
         return {
-            text: item.name
-        }
+            text: item.name+' ('+item.brand+')'
+        };
+    }
+});
+
+// cleaning solution autocomplete
+$('#CxRxFormModal input[name=cleaning]').autoComplete({
+    bootstrapVersion: '4',
+    minLength: '1',
+    resolverSettings: {
+        url: API_CLEANING,
+        queryKey: 'name.contains'
+    },
+    events: {
+        searchPost: function(res) {
+            if (res.count == 0) {
+            }
+            return res.items;
+        }   
+    },
+    formatResult: function(item) {
+        return {
+            text: item.name+' ('+item.brand+')'
+        };
     }
 });
 
