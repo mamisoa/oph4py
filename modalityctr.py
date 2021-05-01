@@ -108,14 +108,4 @@ def hello(wlId):
     # userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     userId = "1"
     string = "Hello World!"
-    axe_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/axe.png'
-    logo_img_path = ASSETS_FOLDER+'/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg'
-    axe64 = embed64(filename= axe_img_path, file=axe_img_path, data=None, extension='image/png')
-    logo64 = embed64(filename= logo_img_path, file=logo_img_path, data=None, extension='image/jpg')
-    # axeImg64 = base64.b64encode(open(axe_img_path, "rb").read())
-    # logo64 = base64.b64encode(open(logo_img_path, "rb").read())
-    # with open('/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/axe.png', "rb") as image_file:
-    #    axeImg64 = base64.b64encode(image_file.read())
-    # with open('/home/mamisoa16/code/py4web/apps/myapp/static/images/assets/glassesrx/logo.jpg', "rb") as image_file:
-    #    logo64 = base64.b64encode(image_file.read())
     return locals()
