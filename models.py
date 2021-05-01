@@ -484,5 +484,6 @@ db.define_table('lenses',
     Field('basecurve','string'),
     Field('diameter','string'),
     Field('rigidity','string'),
+    Field('toricity','boolean'),
     Field('misc','string'),
     auth.signature)
