@@ -11,7 +11,7 @@ from py4web.utils.grid import Grid
 # import settings
 from .settings import LOCAL_URL, ASSETS_FOLDER
 
-from .manage import dropdownSelect
+from .manage import dropdownSelect, rows2json
 
 # tono controller
 @action('tono')
@@ -62,11 +62,15 @@ def initFields(wlId,table,lat=""):
 @action('modalityCtr/md/<wlId>')
 @action.uses('modalityCtr/md.html', session, auth, db)
 def md(wlId):
-    import base64
+    import base64, ast
     from datetime import datetime
     hosturl = LOCAL_URL
     user = auth.get_user()
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    patientDict = db(db.auth_user.id == patientId).select(db.auth_user.first_name,db.auth_user.last_name,db.auth_user.dob)
+    patientJson = rows2json('patient',patientDict)
+    patientJson = ast.literal_eval(patientJson)
+    patientObj = patientJson['patient'][0]
     # get modality vs controller
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
