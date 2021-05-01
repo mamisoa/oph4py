@@ -230,7 +230,7 @@ $('#GxRxFormModal').submit(function(e) {
         GxRxGlobalObj[key]=formObj[key];
     };
     let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
-    GxRxGlobalObj['datestamp']=today.split('-').reverse().join('/');
+    GxRxGlobalObj['datestamp']=today;
     fetch(HOSTURL+"/myapp/api/uuid", {method:"GET"})
         .then(response => response.json())
         .then(data =>
@@ -634,7 +634,7 @@ $('#GxRxFormModal').submit(function(e) {
                                         border: [true, false, false, false],
                                         text: [
                                             {fontSize: 6, alignment: 'left', text: 'Date et signature: \n'},
-                                            {fontSize: 8, alignment: 'left', text: finalRxObj['datestamp']+'\n', bold: true},
+                                            {fontSize: 8, alignment: 'left', text: finalRxObj['datestamp'].split('-').reverse().join('/')+'\n', bold: true},
                                             ]
                                     },{qr: finalRxObj['qrcode'], fit: 50, alignment: 'center'}
                                     ]
