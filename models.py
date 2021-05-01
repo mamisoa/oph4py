@@ -487,3 +487,10 @@ db.define_table('lenses',
     Field('toricity','boolean'),
     Field('misc','string'),
     auth.signature)
+
+# cleaning solution
+db.define_table ('cleaning_solution',
+    Field('name','string', required=True),
+    Field('brand', 'string'),
+    Field('cat', 'string'),
+    auth.signature)
