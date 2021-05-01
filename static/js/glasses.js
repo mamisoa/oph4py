@@ -203,9 +203,6 @@ $('#GxRxFormModal').submit(function(e) {
     // formObj is from form
     // GxRxRight, GxRxLeft is from rx selection
     // GxRxGlobalObj is the prescription object
-    // set GxRxGlobalObj from GxRxRight, GxRxLeft
-    GxRxGlobalObj['id_auth_user']=GxRxRightObj['id_auth_user']; // common for right and left (same autorx wlId)
-    GxRxGlobalObj['id_worklist']=GxRxRightObj['id_worklist'];
     // already done before
     // filterGxRx(GxRxRightObj);
     // filterGxRx(GxRxLeftObj);
@@ -217,6 +214,7 @@ $('#GxRxFormModal').submit(function(e) {
         'sph_int','cyl_int','axis_int',
         'sph_close','cyl_close','axis_close'];
     let GxRxArrC = [
+        'id_auth_user','id_worklist',
         'glass_type','prismL','baseL','prismL','baseL',
         'prismR','baseR','prismR','baseR',
         'tint','photo','art30','remarks'];
@@ -231,6 +229,7 @@ $('#GxRxFormModal').submit(function(e) {
     };
     let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
     GxRxGlobalObj['datestamp']=today;
+    let finalDbObj = Object.assign({}, GxRxGlobalObj);
     fetch(HOSTURL+"/myapp/api/uuid", {method:"GET"})
         .then(response => response.json())
         .then(data =>
@@ -240,7 +239,6 @@ $('#GxRxFormModal').submit(function(e) {
                 // modify the value of art30 tint photo prism
                 console.log(prescRxObj);
                 let finalRxObj = Object.assign({}, prescRxObj);
-                let finalDbObj = Object.assign({}, GxRxGlobalObj);
                 // filter numbers to strings and add options in report
                 globalRx2presc(GxRxGlobalObj);
                 // add all keys to finalRxObj
@@ -662,10 +660,8 @@ $('#GxRxFormModal').submit(function(e) {
             finalDbObj['uuid']=data.unique_id;
             finalDbObj['pdf_report'] = JSON.stringify(finalPresc);
             let finalDbStr = JSON.stringify(finalDbObj);
-            console.log('Global:',finalDbObj);
-            // send glass left prescription to table
-            let crud_res=crud('glasses_rx_list','0','POST',finalDbStr);
-            console.log('crud_res: ',crud_res);
+            console.log('finalDbObj:',finalDbObj);
+            crud('glasses_rx_list','0','POST',finalDbStr);
             let pdf= pdfMake.createPdf(finalPresc);
             // pdf.download('rx');
             pdf.print()
