@@ -219,9 +219,6 @@ $('#CxRxFormModal').submit(function(e) {
     // CxRxRight, CxRxLeft is from rx selection
     // CxRxGlobalObj is the prescription object
     // set CxRxGlobalObj from CxRxRight, CxRxLeft
-    // todo: remove in glasses.js as id_auth_user and id_worklist should already be in formObj
-    // CxRxGlobalObj['id_auth_user']=CxRxRightObj['id_auth_user']; // common for right and left (same autorx wlId)
-    // CxRxGlobalObj['id_worklist']=CxRxRightObj['id_worklist'];
     // set soft or rigid rx
     if (formObj['g1rspheric']==true || formObj['g1rtoric'] == true || formObj['g2rigidc'] == true || formObj['g2rigidcs'] == true || formObj['g2rigids'] == true ) {
         formObj['rxsoft'] = 'o';
