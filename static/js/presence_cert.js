@@ -15,11 +15,8 @@ certPresenceObj['centerurl']=usermdObj['officeurl']
 
 certPresenceObj['qrcode']='Signed by '+certPresenceObj['doctortitle']+' uuid:';
 
-var certPresenceModal = document.getElementById('certPresenceModal')
-certPresenceModal.addEventListener('show.bs.modal', function (event) {
-    // set default text
-    let certdefault = ['<div style="text-align:left">'];
-    certdefault.push('<p>Je, soussigné Docteur en Médecine, certifie avoir examiné ');
+function presenceCert(){
+    let certdefault=['<p>Je, soussigné Docteur en Médecine, certifie avoir examiné '];
     certdefault.push('<strong>'+wlItemObj['patient.last_name']+' '+wlItemObj['patient.first_name']+' DN'+wlItemObj['patient.dob'].split('-').reverse().join('/')+'</strong>')
     let today = new Date().addHours(timeOffsetInHours).toJSON().slice(11,19);
     let creationstamp = new Date(wlItemObj['created_on']).addHours(timeOffsetInHours);
@@ -28,6 +25,21 @@ certPresenceModal.addEventListener('show.bs.modal', function (event) {
     certdefault.push(' ce '+ datecreation + ' de ' + timecreation +' à '+ today+'.');
     certdefault.push('</p>');
     certdefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
+    return certdefault.join('');
+}
+
+var certPresenceModal = document.getElementById('certPresenceModal')
+certPresenceModal.addEventListener('show.bs.modal', function (event) {
+    let certdefault = ['<div style="text-align:left">'];
+    let btn = event.relatedTarget;
+    if ($(btn).data('certFlag') == "presence") {
+        console.log('presence cert!');
+        certdefault.push(presenceCert());
+    } else {
+        console.log('NOT a presence cert!');
+        certdefault.push('<p>Not a presence cert</p>');
+    };
+    // set default text
     certdefault.push('</div>');
     let certhtml= certdefault.join('');
     console.log('certhtml:',certhtml);
