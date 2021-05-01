@@ -792,7 +792,7 @@ window.operateEvents_gx = {
     },
     'click .print': function (e, value, row, index) {
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        printGxRx(row.id);
+        printGxRx('glasses_rx_list', row.id);
     }
 };
 
@@ -853,5 +853,101 @@ window.operateEvents_mxrx = {
     'click .remove': function (e, value, row, index) {
         // console.log('You click action DELETE on row: ' + JSON.stringify(row));
         delItem(row.id, 'medical_rx_list', 'prescription');
+    }
+};
+
+// for rx table
+function responseHandler_cxrx(res) { 
+    let list = res.items;
+    let display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'id_auth_user': list[i].id_auth_user,
+            'id_worklist': list[i].id_worklist,
+            'uuid': list[i]['uuid'],
+            'datestamp': list[i]['datestamp'],
+            'sph_farR': list[i].sph_farR,
+            'cyl_farR': list[i].cyl_farR,
+            'axis_farR': list[i].axis_farR,
+            'formulaR': list[i].sphR+'('+list[i].cylR+'x'+list[i].axisR+') Add+'+list[i].addcR,
+            'sph_intR': list[i].sph_intR,
+            'cyl_intR': list[i].cyl_intR,
+            'axis_intR': list[i].axis_intR,
+            'addcR': list[i].addcR,
+            'sph_closeR': list[i].sph_closeR,
+            'cyl_closeR': list[i].cyl_closeR,
+            'axis_closeR': list[i].axis_closeR,
+            'lensnameR': list[i].lensnameR,
+            'cleaningR': list[i].cleaningR,
+            // left eye
+            'sph_farL': list[i].sph_farL,
+            'cyl_farL': list[i].cyl_farL,
+            'axis_farL': list[i].axis_farL,
+            'formulaL': list[i].sphL+'('+list[i].cylL+'x'+list[i].axisL+') Add+'+list[i].addcL,
+            'sph_intL': list[i].sph_intL,
+            'cyl_intL': list[i].cyl_intL,
+            'axis_intL': list[i].axis_intL,
+            'addcL': list[i].addcL,
+            'sph_closeL': list[i].sph_closeL,
+            'cyl_closeL': list[i].cyl_closeL,
+            'axis_closeL': list[i].axis_closeL,
+            'lensnameL': list[i].lensnameL,
+            'cleaningL': list[i].cleaningL,
+            'remarks': list[i].remarks,
+            'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
+            'modified_by': list[i]['mod.id'],
+            'modified_on': list[i]['modified_on'],
+            'created_by': list[i]['creator.id'],
+            'created_by_name': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
+            'created_on': list[i]['created_on']
+        });
+    });
+    return {    rows: display, 
+                total: res.count,
+                };
+};
+
+//todo check_if_null
+function detailFormatter_cxrx(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Unique id: </span>'+ row.uuid);
+    html.push('<p class=""><span class="fw-bold">Datestamp: </span>'+ row.datestamp +'</p>');
+    html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by+'</p>');
+    html.push('<p class=""><span class="fw-bold">Remarks: </span>'+ row.remarks+'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Right lense: </span>'+ row.lensnameR+'</p>');
+    html.push('<p class=""><span class="fw-bold">Rx right: </span>'+ row.formulaR+'</p>');
+    html.push('<p class=""><span class="fw-bold">Cleaning right: </span>'+ row.cleaningR+'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">Left lense: </span>'+ row.lensnameL+'</p>');
+    html.push('<p class=""><span class="fw-bold">Rx left: </span>'+ row.formulaL+'</p>');
+    html.push('<p class=""><span class="fw-bold">Cleaning left: </span>'+ row.cleaningL+'</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};
+
+function operateFormatter_cxrx(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete prescription"><i class="fas fa-trash-alt"></i></a>');
+    html.push('<a class="print ms-1" href="javascript:void(0)" title="Print lenses prescription"><i class="fas fa-print"></i></a>');
+    html.push('</div>');
+    return html.join('');
+  };
+
+window.operateEvents_cxrx = {
+    'click .remove': function (e, value, row, index) {
+        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        delItem(row.id, 'contacts_rx_list', 'contacts prescription');
+    },
+    'click .print': function (e, value, row, index) {
+        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        printGxRx('contacts_rx_list', row.id);
     }
 };

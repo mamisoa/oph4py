@@ -1,7 +1,7 @@
 // refresh tables
 const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl',
     '#rxRight_tbl','#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl',
-    '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl'];
+    '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl'];
 refreshTables(tablesArr);
 
 // frequency autocomplete
@@ -772,9 +772,9 @@ function printRx(table,id) {
             // console.log(data); 
             let item=data.items[0];
             if (data.status == 'error' || data.count == 0) {
-                displayToast('error', 'GET error', 'Cannot retrieve glasses prescription', '3000');
+                displayToast('error', 'GET error', 'Cannot retrieve prescription', '3000');
             } else {                    
-                displayToast('info', 'GET success', 'Glasses prescription retrieved #' + id, '3000');
+                displayToast('info', 'GET success', 'Prescription retrieved #' + id, '3000');
                 let pdfObj = JSON.parse(item['pdf_report']);
                 let pdf= pdfMake.createPdf(pdfObj);
                 pdf.print()
@@ -786,18 +786,18 @@ function printRx(table,id) {
     });
 };
 
-function printGxRx(id) {
+function printGxRx(table,id) {
     $.ajax({
         type: "GET",
-        url: HOSTURL+"/myapp/api/glasses_rx_list?id.eq="+id,
+        url: HOSTURL+"/myapp/api/"+table+"glasses_rx_list?id.eq="+id,
         dataType: "json",
         success: function (data) {
             // console.log(data); 
             let item=data.items[0];
             if (data.status == 'error' || data.count == 0) {
-                displayToast('error', 'GET error', 'Cannot retrieve glasses prescription', '3000');
+                displayToast('error', 'GET error', 'Cannot retrieve prescription', '3000');
             } else {                    
-                displayToast('info', 'GET success', 'Glasses prescription retrieved #' + id, '3000');
+                displayToast('info', 'GET success', 'Prescription retrieved #' + id, '3000');
                 let pdfObj = JSON.parse(item['pdf_report']);
                 pdfObj['watermark']['text']='Duplicate';
                 console.log('pdfObj:',pdfObj);
