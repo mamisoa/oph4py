@@ -789,7 +789,7 @@ function printRx(table,id) {
 function printGxRx(table,id) {
     $.ajax({
         type: "GET",
-        url: HOSTURL+"/myapp/api/"+table+"glasses_rx_list?id.eq="+id,
+        url: HOSTURL+"/myapp/api/"+table+"?id.eq="+id,
         dataType: "json",
         success: function (data) {
             // console.log(data); 
@@ -799,7 +799,7 @@ function printGxRx(table,id) {
             } else {                    
                 displayToast('info', 'GET success', 'Prescription retrieved #' + id, '3000');
                 let pdfObj = JSON.parse(item['pdf_report']);
-                pdfObj['watermark']['text']='Duplicate';
+                pdfObj['watermark']['text']='Duplicata';
                 console.log('pdfObj:',pdfObj);
                 let pdf= pdfMake.createPdf(pdfObj);
                 pdf.print()

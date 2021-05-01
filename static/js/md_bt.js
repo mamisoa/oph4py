@@ -125,12 +125,19 @@ function queryParams(params) {
                 break;
             case "va_far":
                 params.sort = "va_far";
+                break;
             case "tonometry":
                 params.sort = "tonometry";
+                break;
             case "pachymetry":
                 params.sort = "pachymetry";
+                break;
             case "techno":
                 params.sort = "techno";
+                break;
+            case "category":
+                params.sort = "category";
+                break;
         }
         if (toggle=="") {
             s += "&@order="+params.sort;
@@ -949,5 +956,64 @@ window.operateEvents_cxrx = {
     'click .print': function (e, value, row, index) {
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
         printGxRx('contacts_rx_list', row.id);
+    }
+};
+
+// for cert table
+function responseHandler_cert(res) { 
+    let list = res.items;
+    let display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'id_auth_user': list[i].id_auth_user,
+            'id_worklist': list[i].id_worklist,
+            'uuid': list[i]['uuid'],
+            'datestamp': list[i]['datestamp'],
+            'category': list[i].category,
+            'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
+            'modified_by': list[i]['mod.id'],
+            'modified_on': list[i]['modified_on'],
+            'created_by': list[i]['creator.id'],
+            'created_by_name': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
+            'created_on': list[i]['created_on']
+        });
+    });
+    return {    rows: display, 
+                total: res.count,
+                };
+};
+
+//todo check_if_null
+function detailFormatter_cert(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Unique id: </span>'+ row.uuid);
+    html.push('<p class=""><span class="fw-bold">Datestamp: </span>'+ row.datestamp +'</p>');
+    html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by+'</p>');
+    html.push('<p class=""><span class="fw-bold">Category: </span>'+ row.category+'</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};
+
+function operateFormatter_cert(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete certificate"><i class="fas fa-trash-alt"></i></a>');
+    html.push('<a class="print ms-1" href="javascript:void(0)" title="Print certificate"><i class="fas fa-print"></i></a>');
+    html.push('</div>');
+    return html.join('');
+  };
+
+window.operateEvents_cert = {
+    'click .remove': function (e, value, row, index) {
+        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        delItem(row.id, 'certificates', 'certificate');
+    },
+    'click .print': function (e, value, row, index) {
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        printGxRx('certificates', row.id);
     }
 };
