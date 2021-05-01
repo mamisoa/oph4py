@@ -560,3 +560,12 @@ db.define_table('contacts_rx_list',
     Field('addcL','decimal(4,2)'),
     Field('pdf_report','blob'),
     auth.signature)
+
+db.define_table('certificates',
+    Field('uuid','string', default=str_uuid()),
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True), # from the autorx wl!
+    Field('datestamp', 'date'),
+    Field('category','string'),
+    Field('pdf_report','blob'),
+    auth.signature)
