@@ -116,6 +116,52 @@ function filterCxRx(dataObj){
     };
 };
 
+// if one group is selected in form, others are disabled
+$('#CxRxFormModal #group-1 input').change(function(){
+    if (this.checked) {
+        $("#CxRxFormModal #group-2 input").attr('disabled', true);
+        $("#CxRxFormModal #group-3 input").attr('disabled', true);
+    } else {
+        // checks if one or more box are still checked before disabling other groups
+        if (!($('#CxRxFormModal #group-1 input[name=g1]:checked').val() == 'on' || $('#CxRxFormModal #group-1 input[name=g1spheric]:checked').val() == 'on' || $('#CxRxFormModal #group-1 input[name=g1toric]:checked').val() == 'on')) {
+            $("#CxRxFormModal #group-2 input").attr('disabled', false);
+            $("#CxRxFormModal #group-3 input").attr('disabled', false);
+        } else {
+            // don't re-enable
+        };
+    };
+});
+
+$('#CxRxFormModal #group-2 input').change(function(){
+    if (this.checked) {
+        $("#CxRxFormModal #group-1 input").attr('disabled', true);
+        $("#CxRxFormModal #group-3 input").attr('disabled', true);
+    } else {
+        // checks if one or more box are still checked before disabling other groups
+        if (!($('#CxRxFormModal #group-2 input[name=g2soft]:checked').val() == 'on' || $('#CxRxFormModal #group-2 input[name=g2rigidc]:checked').val() == 'on' || $('#CxRxFormModal #group-2 input[name=g2rigidcs]:checked').val() == 'on' || $('#CxRxFormModal #group-2 input[name=g2rigids]:checked').val() == 'on')) {
+            $("#CxRxFormModal #group-1 input").attr('disabled', false);
+            $("#CxRxFormModal #group-3 input").attr('disabled', false);
+        } else {
+            // don't re-enable
+        };
+    };
+});
+
+$('#CxRxFormModal #group-3 input').change(function(){
+    if (this.checked) {
+        $("#CxRxFormModal #group-1 input").attr('disabled', true);
+        $("#CxRxFormModal #group-2 input").attr('disabled', true);
+    } else {
+        // checks if one or more box are still checked before disabling other groups
+        if (!($('#CxRxFormModal #group-3 input[name=g3iris]:checked').val() == 'on' || $('#CxRxFormModal #group-3 input[name=g3pupil]:checked').val() == 'on')) {
+            $("#CxRxFormModal #group-1 input").attr('disabled', false);
+            $("#CxRxFormModal #group-2 input").attr('disabled', false);
+        } else {
+            // don't re-enable
+        };
+    };
+});
+
 // convert numbers to strings and set options in report
 function globalRx2presc2(rxObj) { 
     let delkeyArr = ['id_auth_user','id_worklist'];
@@ -130,9 +176,6 @@ function globalRx2presc2(rxObj) {
         rxObj['art30no'] ='[ ]';
     };
     delete rxObj['art30'];
-    // default no tint
-    rxObj['tintnonmed'] ='o';
-    rxObj['tintmed'] ='o';
     if (rxObj['tint'] == '') {
         rxObj['tint'] ='o';
     } else if (rxObj['tint'] == 'False') { // non med tint
