@@ -1069,7 +1069,29 @@
             </div>
             <div class="row bg-right">
                 <div class="col">
+                    <h4 class="title-right">List of printed certificates</h4>
                     <button type="button" id="btnNewcertPresence" class="btn btn-dark btn-sm " data-bs-toggle="modal" data-bs-target="#certPresenceModal">Presence certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <table
+                    id="cert_tbl"
+                    data-side-pagination="server"
+                    data-toggle="table"
+                    data-pagination="true"
+                    data-page-size="5"
+                    data-search="false"
+                    data-query-params="queryParams"
+                    data-response-handler="responseHandler_cert"
+                    data-detail-formatter="detailFormatter_cert"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    >
+                        <thead>
+                            <tr>
+                                <th data-field="datestamp" data-sortable="true">Datestamp</th>
+                                <th data-field="category" data-sortable="true">Category</th>
+                                <th data-field="operate" data-formatter="operateFormatter_cert" data-events="operateEvents_cert">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
@@ -2078,8 +2100,7 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col">
-                                    <textarea name="content" id="certPresenceContent" style="height: 500px">
-                                        <p>Je, soussigné Docteur en Médecine, certifie avoir examiné <strong>[[ =patientObj['last_name']+' '+patientObj['first_name']+ ' DN'+patientObj['dob'] ]]</strong></p>
+                                    <textarea name="content" id="certPresenceContent">
                                     </textarea>
                                 </div>
                             </div>
@@ -2293,6 +2314,12 @@ var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
 const API_CXRX = HOSTURL + "/myapp/api/contacts_rx_list?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 var $cxrx = $('#cxrx_tbl').bootstrapTable({
     url: API_CXRX
+});
+
+// table listing refraction right eye by user
+const API_CERT = HOSTURL + "/myapp/api/certificates?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+var $cert = $('#cert_tbl').bootstrapTable({
+    url: API_CERT
 });
 
 // init tinymce
