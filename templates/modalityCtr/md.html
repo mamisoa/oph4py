@@ -930,126 +930,146 @@
         <div class="col">
             <div class="row">
                 <div class="col">
-                    <div class="row">
-                        <div class="col">
-                            <h3 class="title-right">Medical Rx</h3>
-                        </div>
-                    </div>
-                    <div class="row mb-3 bg-right">
-                        <div class="col">
-                            <div class="col">
-                                <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm " data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
-                                <button type="button" id="btnMxRx" class="btn btn-warning btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
-                                <table
-                                    id="mxWl_tbl"
-                                    data-side-pagination="server"
-                                    data-toggle="table"
-                                    data-pagination="true"
-                                    data-page-size="5"
-                                    data-search="false"
-                                    data-query-params="queryParams"
-                                    data-response-handler="responseHandler_mx"
-                                    data-detail-formatter="detailFormatter_mx"
-                                    data-detail-view="true"
-                                    data-detail-view-icon="true"
-                                    >
-                                    <thead>
-                                        <tr>
-                                            <th data-field="onset" data-sortable="true">Onset</th>
-                                            <th data-field="ended" data-sortable="false">Ended</th>
-                                            <th data-field="medication" data-sortable="true">Medication</th>
-                                            <th data-field="delivery" data-sortable="false">Delivery</th>
-                                            <th data-field="frequency_h" data-sortable="false">Frequency</th>
-                                            <th data-field="note" data-sortable="false">Note</th>
-                                            <th data-field="prescribed" data-sortable="false">Prescribed</th>
-                                            <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-3 bg-right">
-                        <div class="col">
-                            <div class="col">
-                                <h4 class="title-right">List of printed medical prescriptions</h4>
-                                <table
-                                    id="mxrx_tbl"
-                                    data-side-pagination="server"
-                                    data-toggle="table"
-                                    data-pagination="true"
-                                    data-page-size="5"
-                                    data-search="false"
-                                    data-query-params="queryParams"
-                                    data-response-handler="responseHandler_mxrx"
-                                    data-detail-formatter="detailFormatter_mxrx"
-                                    data-detail-view="true"
-                                    data-detail-view-icon="true"
-                                    >
-                                    <thead>
-                                        <tr>
-                                            <th data-field="created_on" data-sortable="true">Created:</th>
-                                            <th data-field="mx_names" data-sortable="false">Medication</th>
-                                            <th data-field="operate" data-formatter="operateFormatter_mxrx" data-events="operateEvents_mxrx">Action
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                        </div>
+                    <div class="col">
+                        <h3 class="title-right">Medical Rx</h3>
                     </div>
                 </div>
+            </div>
+            <div class="row bg-right">
                 <div class="col">
-                    <div class="row">
-                        <div class="col">
-                            <h3 class="title-left">Glass Rx</h3>
-                        </div>
-                    </div>
-                    <div class="row mb-3 bg-left">
-                        <div class="col">
-                            <div class="col">
-                                <button type="button" id="btnGxRx" class="btn btn-warning btn-sm mx-2 float-end" >Prescribe glasses<i class="mx-2 fas fa-glasses"></i></button>
-                                <button type="button" id="btnCxRx" class="btn btn-warning btn-sm mx-2 float-end" >Prescribe contacts<i class="mx-2 fas fa-bullseye"></i></button>
-                                <table
-                                    id="GxRx_tbl"
-                                    data-side-pagination="server"
-                                    data-toggle="table"
-                                    data-pagination="true"
-                                    data-page-size="5"
-                                    data-search="false"
-                                    data-query-params="queryParams"
-                                    data-response-handler="responseHandler_gx"
-                                    data-detail-formatter="detailFormatter_gx"
-                                    data-detail-view="true"
-                                    data-detail-view-icon="true"
-                                    >
-                                    <thead>
-                                        <tr>
-                                            <th data-field="datestamp" data-sortable="true">Datestamp</th>
-                                            <th data-field="glass_type" data-sortable="false">Glass type</th>
-                                            <th data-field="formulaR" data-sortable="true">Rx right</th>
-                                            <th data-field="formulaL" data-sortable="true">Rx left</th>
-                                            <th data-field="operate" data-formatter="operateFormatter_gx" data-events="operateEvents_gx">Action
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm " data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnMxRx" class="btn btn-warning btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
+                    <table
+                        id="mxWl_tbl"
+                        data-side-pagination="server"
+                        data-toggle="table"
+                        data-pagination="true"
+                        data-page-size="5"
+                        data-search="false"
+                        data-query-params="queryParams"
+                        data-response-handler="responseHandler_mx"
+                        data-detail-formatter="detailFormatter_mx"
+                        data-detail-view="true"
+                        data-detail-view-icon="true"
+                        >
+                        <thead>
+                            <tr>
+                                <th data-field="onset" data-sortable="true">Onset</th>
+                                <th data-field="ended" data-sortable="false">Ended</th>
+                                <th data-field="medication" data-sortable="true">Medication</th>
+                                <th data-field="delivery" data-sortable="false">Delivery</th>
+                                <th data-field="frequency_h" data-sortable="false">Frequency</th>
+                                <th data-field="note" data-sortable="false">Note</th>
+                                <th data-field="prescribed" data-sortable="false">Prescribed</th>
+                                <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
+            </div>
+            <div class="row bg-right">
                 <div class="col">
-                    <div class="row">
-                        <div class="col">
-                            <h3 class="title-right">Papers</h3>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            table papers
-                        </div>
-                    </div>
+                    <h4 class="title-right">List of printed medical prescriptions</h4>
+                    <table
+                        id="mxrx_tbl"
+                        data-side-pagination="server"
+                        data-toggle="table"
+                        data-pagination="true"
+                        data-page-size="5"
+                        data-search="false"
+                        data-query-params="queryParams"
+                        data-response-handler="responseHandler_mxrx"
+                        data-detail-formatter="detailFormatter_mxrx"
+                        data-detail-view="true"
+                        data-detail-view-icon="true"
+                        >
+                        <thead>
+                            <tr>
+                                <th data-field="created_on" data-sortable="true">Created:</th>
+                                <th data-field="mx_names" data-sortable="false">Medication</th>
+                                <th data-field="operate" data-formatter="operateFormatter_mxrx" data-events="operateEvents_mxrx">Action
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- end medical action col row-->
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3 class="title-left">Glass Rx</h3>
+                </div>
+            </div>
+            <div class="row bg-left">
+                <div class="col">
+                    <button type="button" id="btnGxRx" class="btn btn-warning btn-sm mx-2 float-end" >Prescribe glasses<i class="mx-2 fas fa-glasses"></i></button>
+                    <table
+                        id="GxRx_tbl"
+                        data-side-pagination="server"
+                        data-toggle="table"
+                        data-pagination="true"
+                        data-page-size="5"
+                        data-search="false"
+                        data-query-params="queryParams"
+                        data-response-handler="responseHandler_gx"
+                        data-detail-formatter="detailFormatter_gx"
+                        data-detail-view="true"
+                        data-detail-view-icon="true"
+                        >
+                        <thead>
+                            <tr>
+                                <th data-field="datestamp" data-sortable="true">Datestamp</th>
+                                <th data-field="glass_type" data-sortable="false">Glass type</th>
+                                <th data-field="formulaR" data-sortable="true">Rx right</th>
+                                <th data-field="formulaL" data-sortable="true">Rx left</th>
+                                <th data-field="operate" data-formatter="operateFormatter_gx" data-events="operateEvents_gx">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="row bg-left">
+                <div class="col">
+                    <h4 class="title-right">List of printed lenses prescriptions</h4>
+                    <button type="button" id="btnCxRx" class="btn btn-warning btn-sm mx-2 float-end" >Prescribe contacts<i class="mx-2 fas fa-bullseye"></i></button>
+                    <table
+                        id="cxrx_tbl"
+                        data-side-pagination="server"
+                        data-toggle="table"
+                        data-pagination="true"
+                        data-page-size="5"
+                        data-search="false"
+                        data-query-params="queryParams"
+                        data-response-handler="responseHandler_cxrx"
+                        data-detail-formatter="detailFormatter_cxrx"
+                        data-detail-view="true"
+                        data-detail-view-icon="true"
+                        >
+                        <thead>
+                            <tr>
+                                <th data-field="datestamp" data-sortable="true">Datestamp</th>
+                                <th data-field="lensnameR" data-sortable="false">Right lens</th>
+                                <th data-field="formulaR" data-sortable="true">Rx right</th>
+                                <th data-field="lensnameR" data-sortable="false">Left lens</th>
+                                <th data-field="formulaL" data-sortable="true">Rx left</th>
+                                <th data-field="operate" data-formatter="operateFormatter_cxrx" data-events="operateEvents_cxrx">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- end glasses/lenses action col row-->
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3 class="title-right">Papers</h3>
+                </div>
+            </div>
+            <div class="row bg-right">
+                <div class="col">
+                    Lots of papers
                 </div>
             </div>
         </div>
@@ -2229,6 +2249,11 @@ var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
     url: API_MXRX
 });
 
+// table listing refraction right eye by user
+const API_CXRX = HOSTURL + "/myapp/api/contacts_rx_list?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+var $cxrx = $('#cxrx_tbl').bootstrapTable({
+    url: API_CXRX
+});
 
 </script>
 <script src="js/md.js"></script>
