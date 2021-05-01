@@ -39,6 +39,7 @@ certPresenceModal.addEventListener('show.bs.modal', function (event) {
         console.log('NOT a presence cert!');
         certdefault.push('<p>Not a presence cert</p>');
     };
+    $('#certPresenceFormModal input[name=category]').val($(btn).data('certFlag'));
     // set default text
     certdefault.push('</div>');
     let certhtml= certdefault.join('');
@@ -49,6 +50,8 @@ certPresenceModal.addEventListener('show.bs.modal', function (event) {
 
 $('#certPresenceFormModal').submit(function(e) {
     e.preventDefault();
+    let formStr = $(this).serializeJSON();
+    let formObj = JSON.parse(formStr);
     let presenceContent = tinyMCE.get('certPresenceContent').getContent();
     console.log('content:', presenceContent);
     let fromTinyMce=htmlToPdfmake(presenceContent);
@@ -223,7 +226,7 @@ $('#certPresenceFormModal').submit(function(e) {
             finalDbObj['id_auth_user']=wlItemObj['patient.id'];
             finalDbObj['id_worklist']=wlItemObj['id'];
             finalDbObj['datestamp']=today;
-            finalDbObj['category']='presence';
+            finalDbObj['category']=formObj['category'];
             finalDbObj['pdf_report'] = JSON.stringify(finalPresc);
             let finalDbStr = JSON.stringify(finalDbObj);
             console.log('finalDbObj:',finalDbObj);
