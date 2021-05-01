@@ -117,7 +117,7 @@ $('#CxRxFormModal input[name=lensnameR]').autoComplete({
         }   
     },
     formatResult: function(item) {
-        console.log(item.id);
+        console.log(item);
         $('#CxRxFormModal input[name=materialR]').val(checkIfDataIsNull(item.material,'-'));
         $('#CxRxFormModal input[name=designR]').val(checkIfDataIsNull(item.design,'-'));
         $('#CxRxFormModal input[name=edgeR]').val(checkIfDataIsNull(item.edge,'-'));
@@ -125,9 +125,18 @@ $('#CxRxFormModal input[name=lensnameR]').autoComplete({
         $('#CxRxFormModal input[name=basecurveR]').val(checkIfDataIsNull(item.basecurve,'-'));
         $('#CxRxFormModal input[name=diameterR]').val(checkIfDataIsNull(item.diameter,'-'));
         if (item.rigidity =='soft') {
-            $('#CxRxModal input[name=g1]').prop('checked',true);
-        } else {
-            $('#CxRxModal input[name=g1]').prop('checked',false);
+            if (item.toricity != true) {
+                console.log('Lens choosen if soft spheric');
+                $('#CxRxModal input[name=g1sspheric]').prop('checked',true).trigger('change');
+                $('#CxRxModal input[name=g1storic]').prop('checked',false);
+            } else {
+                console.log('Lens choosen if soft toric');
+                $('#CxRxModal input[name=g1storic]').prop('checked',true).trigger('change');
+                $('#CxRxModal input[name=g1sspheric]').prop('checked',false);
+            };
+        } else { // other than soft
+            $('#CxRxModal input[name=g1sspheric]').prop('checked',false).trigger('change');
+            $('#CxRxModal input[name=g1storic]').prop('checked',false).trigger('change');
         };
         return {
             text: item.name
