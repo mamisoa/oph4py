@@ -1,0 +1,236 @@
+[[extend "baseof.html"]]
+
+[[ block page_head]]
+<style>
+    .table td {
+        text-align: center;
+    }
+    .table th {
+        text-align: center;
+    }
+</style>
+<link href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css" rel="stylesheet">
+[[ end ]]
+
+[[ block left_nav ]]
+[[ include 'partials/nav-test.html' ]]
+[[ end]]
+
+<!-- bootstrap ok for table -->
+<div class="container-fluid"> <!-- #table list -->
+    <div class="row">
+      <div class="col-md-12 mt-3">
+        <div>
+            <div id="toolbar">
+                <button type="button" id="btnNewLens" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#lensModal">
+                    New lens
+                </button>
+            </div>
+        </div>
+        <table id="lens_tbl"
+            data-toolbar="#toolbar"
+            data-id-field="id"
+            data-toggle="table"
+            data-side-pagination="server"
+            data-show-refresh="true"
+            data-pagination="true"
+            data-page-size="10"
+            data-show-columns="true"
+            data-search="true"
+            data-search-accent-neutralise="true"
+            data-visible-search="false"
+            data-data-field="items"
+            data-query-params="queryParams"
+            data-total-field="count"
+            data-detail-formatter="detailFormatter_lens"
+            data-detail-view="true"
+            data-detail-view-icon="true"
+            >
+            <thead class="thead-dark">
+                <th data-field="id" data-sortable="true">ID</th>
+                <th data-field="name" data-sortable="true">Name:</th>
+                <th data-field="brand" data-sortable="true">Brand:</th>
+                <th data-field="material" data-searchable= "true" data-sortable="true">Material:</th>
+                <th data-field="packaging" data-sortable="true">Packaging:</th>
+                <th data-field="operate" data-formatter="operateFormatter_lens" data-events="operateEvents_lens">Action</th>
+            </thead>
+        </table>
+      </div>
+    </div> <!-- end row -->
+</div> <!-- end container fluid -->
+
+<!-- Modal mxModal -->
+<div class="modal fade" id="lensModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New lens</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="lensFormModal" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="lensModal" class="form-label">Lens:</label>
+                                            <input id="lensModal" type="text" class="form-control" name="name" autocomplete="off">
+                                            <div id="lensModalHelp" class="form-text">Enter lens name</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="brandModal" class="form-label">Brand:</label>
+                                            <input id="brandModal" type="text" class="form-control" name="brand" autocomplete="off">
+                                            <div id="brandModalHelp" class="form-text">Enter company</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="materialModal" class="form-label">Material:</label>
+                                            <input id="materialModal" type="text" class="form-control" name="material" autocomplete="off">
+                                            <div id="materialModalHelp" class="form-text">Enter material</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="packagingModal" class="form-label">Packaging:</label>
+                                            <input id="packagingModal" type="text" class="form-control" name="packaging" autocomplete="off">
+                                            <div id="packagingModalHelp" class="form-text">Enter packaging</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="designModal" class="form-label">Design:</label>
+                                            <input id="designModal" type="text" class="form-control" name="design" autocomplete="off">
+                                            <div id="designModalHelp" class="form-text">Enter design</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="edgeModal" class="form-label">Edge:</label>
+                                            <input id="edgeModal" type="text" class="form-control" name="edge" autocomplete="off">
+                                            <div id="edgeModalHelp" class="form-text">Enter edge</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="opticalzoneModal" class="form-label">Optical zone:</label>
+                                            <input id="opticalzoneModal" type="number" min="5" step="0.10" class="form-control" name="opticalzone" autocomplete="off">
+                                            <div id="opticalzoneModalHelp" class="form-text">Enter optical zone</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="diameterModal" class="form-label">Diameter:</label>
+                                            <input id="diameterModal" type="number" min="5" step="0.10" class="form-control" name="diameter" autocomplete="off">
+                                            <div id="diameterModalHelp" class="form-text">Enter diameter</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="basecurveModal" class="form-label">Basecurve:</label>
+                                            <input id="basecurveModal" type="number" min="5" step="0.10" class="form-control" name="basecurve" autocomplete="off">
+                                            <div id="basecurveModalHelp" class="form-text">Enter basecurve</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="rigidityModal" class="form-label">rigidity:</label>
+                                            <input id="rigidityModal" type="text" class="form-control" name="rigidity" autocomplete="off">
+                                            <div id="rigidityModalHelp" class="form-text">Enter rigidity</div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="toricityModal" name="toricity">
+                                                <label class="form-check-label" for="toricityModal">Toricity</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="minsphModal" class="form-label">Minimum sphere:</label>
+                                            <input id="minsphModal" type="number" step="0.25" class="form-control" name="minsph" value="0" autocomplete="off">
+                                            <div id="minsphModalHelp" class="form-text">Enter minimum sphere</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="maxsphModal" class="form-label">Maximum sphere:</label>
+                                            <input id="minsphModal" type="number" step="0.25" class="form-control" name="maxsph" value="0" autocomplete="off">
+                                            <div id="maxsphModalHelp" class="form-text">Enter maximum sphere</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="mincylModal" class="form-label">Minimum cylinder:</label>
+                                            <input id="mincylModal" type="number" step="0.25" class="form-control" name="mincyl" value="0" autocomplete="off">
+                                            <div id="mincylModalHelp" class="form-text">Enter minimum cylinder</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="maxcylModal" class="form-label">Maximum cylinder:</label>
+                                            <input id="maxcylModal" type="number" step="0.25" class="form-control" name="maxcyl" value="0" autocomplete="off">
+                                            <div id="maxcylModalHelp" class="form-text">Enter maximum cylinder</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="dkModal" class="form-label">Dk:</label>
+                                            <input id="dkModal" type="number" min="0" step="1" class="form-control" name="dk" value="0" autocomplete="off">
+                                            <div id="dkModalHelp" class="form-text">Enter Dk</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="wearModal" class="form-label">Wear:</label>
+                                            <input id="wearModal" type="text" class="form-control" name="wear" autocomplete="off">
+                                            <div id="wearModalHelp" class="form-text">Enter wear</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="replacementModal" class="form-label">Replacement:</label>
+                                            <input id="replacementModal" type="text" class="form-control" name="replacement" autocomplete="off">
+                                            <div id="replacementModalHelp" class="form-text">Enter replacement</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="packagingModal" class="form-label">Packaging:</label>
+                                            <input id="packagingModal" type="text" class="form-control" name="packaging" autocomplete="off">
+                                            <div id="packagingModalHelp" class="form-text">Enter packaging</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="miscModal" class="form-label">Miscellaneous:</label>
+                                            <input id="miscModal" type="text" class="form-control" name="misc" autocomplete="off">
+                                            <div id="miscModalHelp" class="form-text">Enter miscellaneous</div>
+                                        </div>
+                                    </div>
+                                <input id="idlensRow" type="text" class="visually-hidden" name="id" />
+                                <input id="methodlensModalSubmit" type="text" class="visually-hidden" name="methodlensModalSubmit" value="POST" />
+                                <input id="btnlensModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="lensModalSubmit" for="btnlensModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+[[ block js_scripts]]
+
+<script type="text/javascript">
+// Global variables
+const HOSTURL = "[[ = hosturl ]]";
+</script>
+
+<!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
+<!-- <script src="js/bootstrap-table/bootstrap-table.js"></script> -->
+<script src="js/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
+<!-- https://bootstrap-autocomplete.readthedocs.io/en/latest/ -->
+<script src="js/useful.js"></script>
+<script src="js/lenses-bt.js"></script>
+<script type="text/javascript">
+
+// init tables
+const API_LENS = HOSTURL + "/myapp/api/cl?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+
+var $lens_tbl = $('#lens_tbl').bootstrapTable({
+    url: API_LENS
+});
+
+// Fires after the table body is rendered and available in the DOM, the parameters contain data
+$('#lens_tbl').on('post-body.bs.table', function () {
+
+});
+
+</script>
+<script src="js/lenses.js"></script>
+[[ end ]]
