@@ -474,20 +474,6 @@ db.define_table('billing',
     auth.signature)
 
 # contactlenses
-db.define_table('lenses',
-    Field('name', 'string', required=True),
-    Field('brand','string'),
-    Field('material','string'),
-    Field('design','string'),
-    Field('edge','string'),
-    Field('opticalzone','string'),
-    Field('basecurve','string'),
-    Field('diameter','string'),
-    Field('rigidity','string'),
-    Field('toricity','boolean'),
-    Field('misc','string'),
-    auth.signature)
-
 db.define_table('cl',
     Field('name', 'string', required=True),
     Field('brand','string'),
