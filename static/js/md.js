@@ -42,7 +42,7 @@ $('#mxModal input[name=medication]').autoComplete({
         }   
     },
     formatResult: function(item) {
-        console.log(item.id);
+        // console.log(item.id);
         $('#mxModal input[name=id_medic_ref]').val(item.id);
         $('#mxModal input[name=delivery]').val([item.delivery]);
         return {
@@ -126,11 +126,11 @@ $('#CxRxFormModal input[name=lensnameR]').autoComplete({
         $('#CxRxFormModal input[name=diameterR]').val(checkIfDataIsNull(item.diameter,'-'));
         if (item.rigidity =='soft') {
             if (item.toricity != true) {
-                console.log('Lens choosen if soft spheric');
+                // console.log('Lens choosen if soft spheric');
                 $('#CxRxModal input[name=g1sspheric]').prop('checked',true).trigger('change');
                 $('#CxRxModal input[name=g1storic]').prop('checked',false);
             } else {
-                console.log('Lens choosen if soft toric');
+                // console.log('Lens choosen if soft toric');
                 $('#CxRxModal input[name=g1storic]').prop('checked',true).trigger('change');
                 $('#CxRxModal input[name=g1sspheric]').prop('checked',false);
             };
@@ -168,11 +168,11 @@ $('#CxRxFormModal input[name=lensnameL]').autoComplete({
         $('#CxRxModal input[name=diameterL]').val(checkIfDataIsNull(item.diameter,''));
         if (item.rigidity =='soft') {
             if (item.toricity != true) {
-                console.log('Lens choosen if soft spheric');
+                // console.log('Lens choosen if soft spheric');
                 $('#CxRxModal input[name=g1sspheric]').prop('checked',true).trigger('change');
                 $('#CxRxModal input[name=g1storic]').prop('checked',false);
             } else {
-                console.log('Lens choosen if soft toric');
+                // console.log('Lens choosen if soft toric');
                 $('#CxRxModal input[name=g1storic]').prop('checked',true).trigger('change');
                 $('#CxRxModal input[name=g1sspheric]').prop('checked',false);
             };
@@ -235,7 +235,7 @@ $('#CxRxFormModal input[name=cleaningL]').autoComplete({
 // diagnosis associated to a worklist item have a WlId, NOT the others
 var mHxmodal = document.getElementById('mHxModal')
 mHxmodal.addEventListener('show.bs.modal', function (event) {
-    console.log('mHx modal listener triggered');
+    // console.log('mHx modal listener triggered');
     // Button that triggered the modal
     let button = event.relatedTarget;
     if (button != undefined) {
@@ -262,7 +262,7 @@ mHxmodal.addEventListener('show.bs.modal', function (event) {
 // medications associated to a worklist item have a WlId, NOT the others
 var mxModal = document.getElementById('mxModal')
 mxModal.addEventListener('show.bs.modal', function (event) {
-    console.log('mx modal listener triggered');
+    // console.log('mx modal listener triggered');
     // Button that triggered the modal
     let button = event.relatedTarget;
     if (button != undefined) {
@@ -271,7 +271,7 @@ mxModal.addEventListener('show.bs.modal', function (event) {
         // Extract info from data-*-flag attributes
         let mxFlag = button.getAttribute('data-mx-flag');
         if (mxFlag == 'mxWl') {
-            console.log('data flag:','mxWl');
+            // console.log('data flag:','mxWl');
             // set wlId, onset today
             $('#mxModal input[name=id_worklist]').val(wlId);
             let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
@@ -281,7 +281,7 @@ mxModal.addEventListener('show.bs.modal', function (event) {
             $('#mxModal input[name=ended]').val(end);
             $('#mxModal input[name=prescribed]').val('False');
         } else {
-            console.log('data flag:','NOT a mxWl');
+            // console.log('data flag:','NOT a mxWl');
             $('#mxModal input[name=id_worklist]').val('');
         };
         $('#mxModal input[name=delivery]').val(['PO']);
@@ -301,7 +301,7 @@ $('#mxFormModal').submit(function(e){
     dataObj['medication']=capitalize(dataObj['medication']);
     delete dataObj['methodMxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
-    console.log("dataForm",dataObj);
+    // console.log("dataForm",dataObj);
     if (dataObj['id_medic_ref'] == "") {
         let newMedicObj = {};
         newMedicObj['name']=dataObj['medication'];
@@ -328,7 +328,7 @@ $('#axFormModal').submit(function(e){
     dataObj['agent']=capitalize(dataObj['agent']);
     delete dataObj['methodAxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
-    console.log("dataForm",dataObj);
+    // console.log("dataForm",dataObj);
     if (dataObj['id_agent'] == "") {
         let newMedicObj = {};
         newMedicObj['name']=dataObj['agent'];
@@ -353,13 +353,13 @@ $('#mHxFormModal').submit(function(e){
     dataObj['title']=capitalize(dataObj['title']);
     delete dataObj['methodmHxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
-    console.log("dataForm",dataObj);
+    // console.log("dataForm",dataObj);
     if (dataObj['id_disease_ref'] == "") {
         let newMedicObj = {};
         newMedicObj['title']=dataObj['title'];
         newMedicObj['category']=dataObj['category'];
         newMedicStr = JSON.stringify(newMedicObj);
-        console.log("newMedicObj",newMedicObj);
+        // console.log("newMedicObj",newMedicObj);
         crud('disease_ref','0','POST',newMedicStr);
     };    
     crud('phistory','0',req,dataStr); 
@@ -520,19 +520,19 @@ function setSubmit(domId,table, fieldsArr,lat) {
                     req = 'POST';
                     delete dataObj['id'];
                 };
-                console.log('setSubmit request:',req, 'data.count:',data.count);
+                // console.log('setSubmit request:',req, 'data.count:',data.count);
                 dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
                 dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
                 // capitalize fields
                 for (field of fieldsArr) {
                     if (dataObj[field] != "") {
-                        console.log('capitalize:', field ,dataObj[field]);
+                        // console.log('capitalize:', field ,dataObj[field]);
                         dataObj[field]=capitalize(dataObj[field]); // capitalize text objects
                         $(domId+' input[name='+field+']').val(dataObj[field]); // update fields
                     } else {};
                 };
                 dataStr= JSON.stringify(dataObj);
-                console.log("dataForm from setSubmit",dataObj);
+                // console.log("dataForm from setSubmit",dataObj);
                 crud(table,'0',req,dataStr);
                 $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');
                 getWlItemData(table,wlId,lat)
@@ -556,13 +556,13 @@ function updateHandlersFields(table,domId,fieldsArr,lat='') {
         $(domId+' input[name='+field+']').focus(function(){
             getWlItemData(table,wlId,lat)
                 .then(function(data){
-                    console.log("from update fields "+field+" :",data, data.count);
+                    // console.log("from update fields "+field+" :",data, data.count);
                     if (data.count != 0) {
                         let item=data.items[0];
                         $(domId+' input[name=id]').val(item['id']);
-                        console.log('input value: ', domId+' input[name='+field+']');
+                        // console.log('input value: ', domId+' input[name='+field+']');
                         if ($(domId+' input[name='+field+']').val()!=item[field] && item[field] != 'None' ) {
-                            console.log(capitalize(field)+' changed');
+                            // console.log(capitalize(field)+' changed');
                             let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
                             displayToast('warning', capitalize(field)+' was changed', capitalize(field)+' was changed by '+modder,6000);
                             $(domId+' input[name='+field+']').val(item[field]);
@@ -619,7 +619,7 @@ function setOneSubmit(domId,table,lat) {
                 dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
                 dataObj['description']=capitalize(dataObj['description']);
                 dataStr= JSON.stringify(dataObj);
-                console.log("dataForm",dataObj);
+                // console.log("dataForm",dataObj);
                 crud(table,'0',req,dataStr);
                 $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');            
             })
@@ -667,7 +667,7 @@ function monitorValueChangeOneField(domId,table,lat) {
                     let item=data.items[0];
                     $(domId+' input[name=id]').val(item['id']);
                     if ($(domId+' textarea').val()!=item['description']) {
-                        console.log('Description changed');
+                        // console.log('Description changed');
                         let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
                         displayToast('warning', 'Description was changed', 'Item was changed by '+modder,6000);
                         $(domId+' textarea').val(item.description);
@@ -715,7 +715,7 @@ function testpdf(){
     //     .then(response => console.log(response));
     // });
     pdf.getBlob((blob) => {
-        console.log('blob uploading...');
+        // console.log('blob uploading...');
         form.append('upload', blob, 'test.pdf');
         fetch(HOSTURL+"/myapp/upload", {method:"POST", body:blob})
         .then(response => response.text())
@@ -800,7 +800,7 @@ function printGxRx(table,id) {
                 displayToast('info', 'GET success', 'Prescription retrieved #' + id, '3000');
                 let pdfObj = JSON.parse(item['pdf_report']);
                 pdfObj['watermark']['text']='Duplicata';
-                console.log('pdfObj:',pdfObj);
+                // console.log('pdfObj:',pdfObj);
                 let pdf= pdfMake.createPdf(pdfObj);
                 pdf.print()
             }

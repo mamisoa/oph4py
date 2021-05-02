@@ -369,14 +369,14 @@ function queryParams_wl(params) {
         }
     }
     if (params.offset != "0") {
-        console.log(params.offset);
+        // console.log(params.offset);
         s_wl += "&@offset="+params.offset;
     }
     if (params.limit != "0") {
-        console.log(params.offset);
+        // console.log(params.offset);
         s_wl += "&@limit="+params.limit;
     }
-    console.log('s_wl',s_wl);
+    // console.log('s_wl',s_wl);
     return decodeURI(encodeURI(s_wl));
 };
 
@@ -629,11 +629,11 @@ function responseHandler_tono(res) {
 function queryParams_tono(params) {
     var s="";
     if (params.offset != "0") {
-        console.log(params.offset);
+        // console.log(params.offset);
         s += "&@offset="+params.offset;
     }
     if (params.limit != "0") {
-        console.log(params.offset);
+        // console.log(params.offset);
         s += "&@limit="+params.limit;
     }
     return decodeURI(encodeURI(s.slice(1-s.length))); // remove the first &
@@ -804,7 +804,7 @@ window.operateEvents_gx = {
         delItem(row.id, 'glasses_rx_list', 'glasses prescription');
     },
     'click .print': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         printGxRx('glasses_rx_list', row.id);
     }
 };
@@ -860,7 +860,7 @@ function operateFormatter_mxrx(value, row, index) {
 
 window.operateEvents_mxrx = {
     'click .print': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         printRx('medical_rx_list',row.id);
     },
     'click .remove': function (e, value, row, index) {
@@ -960,7 +960,7 @@ window.operateEvents_cxrx = {
         delItem(row.id, 'contacts_rx_list', 'contacts prescription');
     },
     'click .print': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         printGxRx('contacts_rx_list', row.id);
     }
 };
