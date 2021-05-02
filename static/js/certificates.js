@@ -34,9 +34,9 @@ function sickCert(onset,ended,exit) {
     let creationstamp = new Date(wlItemObj['created_on']).addHours(timeOffsetInHours);
     let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
     let timecreation = creationstamp.toJSON().slice(11,19);
-    let start = onset.split('-').reverse().join('/'), end = ended.split('-').reverse().join('/');
     certdefault.push('<p> ce '+ datecreation + ' à ' + timecreation+'.</p>');
-    certdefault.push('<p> Ce patient est inapte au travail du '+start+' au '+ end +' inclus.</p>');
+    let start = onset.split('-').reverse().join('/'), end = ended.split('-').reverse().join('/');
+    certdefault.push('<p> Ce patient est inapte au travail du <strong>'+start+' au '+ end +' inclus</strong>.</p>');
     if (exit == 'no') {
         certdefault.push('<p>Les sorties <strong>ne sont pas autorisées</strong>.</p>');
     } else {
@@ -53,14 +53,45 @@ sickModal.addEventListener('show.bs.modal', function(e){
     $('#endedsick').val(today);
 });
 
+function freeCert() {
+    let certdefault =[];
+    certdefault.push('<p>J\'ai examiné: </p>');
+    certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
+    let creationstamp = new Date(wlItemObj['created_on']).addHours(timeOffsetInHours);
+    let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
+    let timecreation = creationstamp.toJSON().slice(11,19);
+    certdefault.push('<p> ce '+ datecreation + ' à ' + timecreation+'.</p>');
+    certdefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
+    certdefault.push('<p>Cordialement,</p>');
+    certdefault.push('<p><strong>Dr.'+userObj['last_name'].toUpperCase()+' '+userObj['first_name']+' '+'</strong></p>');
+    return certdefault.join('');
+};
+
+function docCert() {
+    let certdefault =[];
+    certdefault.push('<p>Cher Confrère, chère Consoeur, </p>');
+    certdefault.push('<p>J\'ai examiné: </p>');
+    certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
+    let creationstamp = new Date(wlItemObj['created_on']).addHours(timeOffsetInHours);
+    let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
+    let timecreation = creationstamp.toJSON().slice(11,19);
+    certdefault.push('<p> ce '+ datecreation + ' à ' + timecreation+'.</p>');
+    certdefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
+    certdefault.push('<p>Cordialement,</p>');
+    certdefault.push('<p><strong>Dr.'+userObj['last_name'].toUpperCase()+' '+userObj['first_name']+' '+'</strong></p>');
+    return certdefault.join('');
+};
+
 var certificateModal = document.getElementById('certificateModal')
 certificateModal.addEventListener('show.bs.modal', function (event) {
     let certdefault = ['<div style="text-align:left">'];
     let btn = event.relatedTarget;
-    // set default onset and ended
+    // set default form values
     let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
     $('#certificateOnset').val(today);
     $('#certificateEnded').val(today);
+    $('#certificateDest').val('A QUI DE DROIT');
+    $('#certificateTitle').val('CERTIFICAT MEDICAL');
     // check certificate category
     if ($(btn).data('certFlag') == "presence") {
         console.log('presence cert!');
@@ -71,9 +102,14 @@ certificateModal.addEventListener('show.bs.modal', function (event) {
         $('#certificateOnset').val(onset);
         $('#certificateEnded').val(ended);
         certdefault.push(sickCert(onset,ended,exit));
+    } else if ($(btn).data('certFlag') == "doc") {
+        console.log('doc cert!');
+        $('#certificateDest').val('AU MEDECIN DE DROIT');
+        $('#certificateTitle').val('RAPPORT MEDICAL');
+        certdefault.push(docCert());
     } else {
         console.log('free cert');
-        certdefault.push('Free certificate');
+        certdefault.push(freeCert());
     };
     $('#certificateFormModal input[name=category]').val($(btn).data('certFlag'));
     // set default text
@@ -105,6 +141,8 @@ $('#certificateFormModal').submit(function(e) {
                 finalRxObj['first_name'] = patientObj['first_name'];
                 finalRxObj['last_name'] = patientObj['last_name'];
                 finalRxObj['dob'] = patientObj['dob'].split('-').reverse().join('/');
+                finalRxObj['destination'] = formObj['destination'];
+                finalRxObj['title'] = formObj['title'];
                 let finalPresc = {
                     watermark: {text: '', color: 'red', opacity: 0.2, bold: false, italics: false},
                     pageSize: 'A4',
@@ -175,7 +213,7 @@ $('#certificateFormModal').submit(function(e) {
                             alignment: 'center',
                             fontSize: 14,
                             text: [
-                                'CERTIFICAT MEDICAL'
+                                finalRxObj['title']
                                 ]
                         },
                         {   canvas: [
@@ -209,7 +247,7 @@ $('#certificateFormModal').submit(function(e) {
                         {   
                             style: 'title',
                             margin: [0, 20, 0, 20],
-                            text: 'A QUI DE DROIT',
+                            text: finalRxObj['destination'],
                             alignment: 'left',
                             bold: true,
                             fontSize: 12,
@@ -267,7 +305,7 @@ $('#certificateFormModal').submit(function(e) {
             finalDbObj['category']=formObj['category'];
             finalDbObj['pdf_report'] = JSON.stringify(finalPresc);
             let finalDbStr = JSON.stringify(finalDbObj);
-            console.log('finalDbObj:',finalDbObj);
+            // console.log('finalDbObj:',finalDbObj);
             crud('certificates','0','POST',finalDbStr);
             let pdf= pdfMake.createPdf(finalPresc);
             pdf.print();

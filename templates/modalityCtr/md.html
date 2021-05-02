@@ -371,10 +371,12 @@
                                 <tr>
                                     <th data-field="timestamp" data-sortable="true">Timestamp</th>
                                     <th data-field="rx_origin" data-sortable="true">Type</th>
+                                    <th data-field="note" data-sortable="false">Note</th>
                                     <th data-field="va_far" data-sortable="true">VA far</th>
                                     <th data-field="rx_far" data-sortable="false">Rx far</th>
                                     <th data-field="se_far" data-sortable="false">SE</th>
                                     <th data-field="add" data-sortable="false">Add</th>
+                                    <th data-field="va_close" data-sortable="true">VA close</th>
                                     <th data-field="operate" data-formatter="operateFormatter_rx" data-events="operateEvents_rx">Action</th>
                                 </tr>
                             </thead>
@@ -406,10 +408,12 @@
                                 <tr>
                                     <th data-field="timestamp" data-sortable="true">Timestamp</th>
                                     <th data-field="rx_origin" data-sortable="true">Type</th>
+                                    <th data-field="note" data-sortable="false">Note</th>
                                     <th data-field="va_far" data-sortable="true">VA far</th>
                                     <th data-field="rx_far" data-sortable="false">Rx far</th>
                                     <th data-field="se_far" data-sortable="false">SE</th>
                                     <th data-field="add" data-sortable="false">Add</th>
+                                    <th data-field="va_close" data-sortable="true">VA close</th>
                                     <th data-field="operate" data-formatter="operateFormatter_rx" data-events="operateEvents_rx">Action</th>
                                 </tr>
                             </thead>
@@ -1070,8 +1074,10 @@
             <div class="row bg-right">
                 <div class="col">
                     <h4 class="title-right">List of printed certificates</h4>
-                    <button type="button" id="btnNewcertificate" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="presence">Presence certificate<i class="mx-2 fas fa-plus"></i></button>
-                    <button type="button" id="btnNewcertSickLeave" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#sickModal">Sick leave certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewcertificate" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="presence">Presence certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewcertsickleave" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#sickModal">Sick leave certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewfreecertificate" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="free">Free certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewdoccertificate" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="doc">MD certificate<i class="mx-2 fas fa-plus"></i></button>
                     <table
                     id="cert_tbl"
                     data-side-pagination="server"
@@ -2107,6 +2113,8 @@
                             </div>
                         </div>
                         <input id="certificateCat" type="text" class="visually-hidden" name="category" />
+                        <input id="certificateDest" type="text" class="visually-hidden" name="destination" />
+                        <input id="certificateTitle" type="text" class="visually-hidden" name="title" />
                         <input id="certificateOnset" type="text" class="visually-hidden" name="onset" />
                         <input id="certificateEnded" type="text" class="visually-hidden" name="ended" />
                         <input id="idcertificateWl" type="text" class="visually-hidden" name="id_worklist" />
@@ -2331,7 +2339,7 @@ var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
 });
 
 // table listing code encoded for worklist to user
-const API_CODING = HOSTURL + "/myapp/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+ patientId;
+const API_CODING = HOSTURL + "/myapp/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq="+ patientId;
 var $coding = $('#coding_tbl').bootstrapTable({
     url: API_CODING
 });
@@ -2342,36 +2350,36 @@ var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
     url: API_MXWLUSER
 });
 
-const API_TONORIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user="+patientId;
+const API_TONORIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user="+patientId;
 var $tonoRight = $('#tonoRight_tbl').bootstrapTable({
     url: API_TONORIGHT
 });
 
-const API_TONOLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user="+patientId;
+const API_TONOLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user="+patientId;
 var $tonoLeft = $('#tonoLeft_tbl').bootstrapTable({
     url: API_TONOLEFT
 });
 
 // table listing refraction right eye by user
-const API_GXRX = HOSTURL + "/myapp/api/glasses_rx_list?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_GXRX = HOSTURL + "/myapp/api/glasses_rx_list?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 var $gxrx = $('#GxRx_tbl').bootstrapTable({
     url: API_GXRX
 });
 
 // table listing medication encoded for current worklist 
-const API_MXRX = HOSTURL + "/myapp/api/medical_rx_list?id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_MXRX = HOSTURL + "/myapp/api/medical_rx_list?id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
     url: API_MXRX
 });
 
 // table listing refraction right eye by user
-const API_CXRX = HOSTURL + "/myapp/api/contacts_rx_list?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_CXRX = HOSTURL + "/myapp/api/contacts_rx_list?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 var $cxrx = $('#cxrx_tbl').bootstrapTable({
     url: API_CXRX
 });
 
 // table listing refraction right eye by user
-const API_CERT = HOSTURL + "/myapp/api/certificates?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_CERT = HOSTURL + "/myapp/api/certificates?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 var $cert = $('#cert_tbl').bootstrapTable({
     url: API_CERT
 });
