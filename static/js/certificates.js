@@ -307,10 +307,10 @@ $('#certificateFormModal').submit(function(e) {
             let finalDbStr = JSON.stringify(finalDbObj);
             // console.log('finalDbObj:',finalDbObj);
             crud('certificates','0','POST',finalDbStr);
+            $cert_tbl.bootstrapTable('refresh');
             let pdf= pdfMake.createPdf(finalPresc);
             pdf.print();
             // document.getElementById('certificateFormModal').reset();
-            $cert_tbl.bootstrapTable('refresh');
             $('#certificateModal').modal('hide');
         });
 });
