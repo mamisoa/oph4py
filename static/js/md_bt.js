@@ -219,7 +219,7 @@ function checkIfNull(value, resultStrIfNull) {
     } else {
         return value;
     }
-}
+};
 
 function operateFormatter_msHx(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
@@ -433,9 +433,15 @@ window.operateEvents_wl = {
 };
 
 function rowStyle_wl(row,value) {
-    let statusColor = {'requested':'lightblue', 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999'};
+    let statusColor = {'requested':'#ffcc99' , 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999', 'doctorDone': '#00FF00' };
+    let bg;
+    if (row.modality == 'MD' && row.status_flag =='done'){
+        bg = statusColor['doctorDone'];
+    } else {
+        bg = statusColor[row.status_flag];
+    };
     return { 
-                css: { 'background-color': statusColor[row.status_flag] }
+                css: { 'background-color': bg }
             };
 };
 
@@ -582,7 +588,7 @@ function detailFormatter_rx(index, row) {
     html.push('<p class=""><span class="fw-bold">Rx far: </span>'+ row.rx_far +'</p>');
     html.push('<p class=""><span class="fw-bold">Rx int: </span>'+ row.rx_int +'</p>');
     html.push('<p class=""><span class="fw-bold">Rx close: </span>'+ row.rx_close+'(Add+'+row.add+')</p>');
-    html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ row.laterality +'</p>');
+    html.push('<p class=""><span class="fw-bold">Note: </span>'+ row.note +'</p>');
     html.push('</div>');
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_far +'</p>');
@@ -818,7 +824,7 @@ function responseHandler_mxrx(res) { // used if data-response-handler="responseH
             'modified_on': list[i]['modified_on'],
             'created_by': list[i]['creator.id'],
             'created_by_name': list[i]['creator.last_name'] + ' ' + list[i]['creator.first_name'],
-            'created_on': list[i]['created_on']
+            'created_on': list[i]['created_on'].split('T').join(' ')
         });
     });
     return {
