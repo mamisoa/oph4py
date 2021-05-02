@@ -67,7 +67,8 @@ def md(wlId):
     hosturl = LOCAL_URL
     user = auth.get_user()
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
-    patientDict = db(db.auth_user.id == patientId).select(db.auth_user.first_name,db.auth_user.last_name,db.auth_user.dob,db.auth_user.photob64).as_json()
+    userdb = db.auth_user
+    patientDict = db(userdb.id == patientId).select(userdb.first_name,userdb.last_name,userdb.dob,userdb.ssn,userdb.photob64).as_json()
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
     for row in rows:

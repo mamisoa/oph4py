@@ -1,19 +1,19 @@
 // contacts prescriptions
-// certPresenceObj contains id and options items
+// certificateObj contains id and options items
 // CxRxGlobalObj merges CxRxRight and left
 
-var certPresenceObj = {};
+var certificateObj = {};
 
-certPresenceObj['doctorfirst']=userObj['first_name'];
-certPresenceObj['doctorlast']=userObj['last_name'];
-certPresenceObj['doctortitle']='Dr '+userObj['last_name'].toUpperCase()+' '+userObj['first_name'];
-certPresenceObj['doctorinami']=usermdObj['inami']; // keep separations
-certPresenceObj['doctoremail']=usermdObj['email']; 
-certPresenceObj['centername']=usermdObj['officename']+ '\n'+usermdObj['officeaddress']+'\n'+usermdObj['officezip']+' '+usermdObj['officetown']
-certPresenceObj['centerphone']=usermdObj['officephone']
-certPresenceObj['centerurl']=usermdObj['officeurl']
+certificateObj['doctorfirst']=userObj['first_name'];
+certificateObj['doctorlast']=userObj['last_name'];
+certificateObj['doctortitle']='Dr '+userObj['last_name'].toUpperCase()+' '+userObj['first_name'];
+certificateObj['doctorinami']=usermdObj['inami']; // keep separations
+certificateObj['doctoremail']=usermdObj['email']; 
+certificateObj['centername']=usermdObj['officename']+ '\n'+usermdObj['officeaddress']+'\n'+usermdObj['officezip']+' '+usermdObj['officetown']
+certificateObj['centerphone']=usermdObj['officephone']
+certificateObj['centerurl']=usermdObj['officeurl']
 
-certPresenceObj['qrcode']='Signed by '+certPresenceObj['doctortitle']+' uuid:';
+certificateObj['qrcode']='Signed by '+certificateObj['doctortitle']+' uuid:';
 
 function presenceCert(){
     let certdefault=['<p>Je, soussigné Docteur en Médecine, certifie avoir examiné '];
@@ -28,8 +28,8 @@ function presenceCert(){
     return certdefault.join('');
 }
 
-var certPresenceModal = document.getElementById('certPresenceModal')
-certPresenceModal.addEventListener('show.bs.modal', function (event) {
+var certificateModal = document.getElementById('certificateModal')
+certificateModal.addEventListener('show.bs.modal', function (event) {
     let certdefault = ['<div style="text-align:left">'];
     let btn = event.relatedTarget;
     if ($(btn).data('certFlag') == "presence") {
@@ -39,20 +39,20 @@ certPresenceModal.addEventListener('show.bs.modal', function (event) {
         console.log('NOT a presence cert!');
         certdefault.push('<p>Not a presence cert</p>');
     };
-    $('#certPresenceFormModal input[name=category]').val($(btn).data('certFlag'));
+    $('#certificateFormModal input[name=category]').val($(btn).data('certFlag'));
     // set default text
     certdefault.push('</div>');
     let certhtml= certdefault.join('');
     console.log('certhtml:',certhtml);
-    tinymce.get('certPresenceContent').setContent(certhtml);
+    tinymce.get('certificateContent').setContent(certhtml);
 });
 
 
-$('#certPresenceFormModal').submit(function(e) {
+$('#certificateFormModal').submit(function(e) {
     e.preventDefault();
     let formStr = $(this).serializeJSON();
     let formObj = JSON.parse(formStr);
-    let presenceContent = tinyMCE.get('certPresenceContent').getContent();
+    let presenceContent = tinyMCE.get('certificateContent').getContent();
     console.log('content:', presenceContent);
     let fromTinyMce=htmlToPdfmake(presenceContent);
     console.log('from tinyMCE:', fromTinyMce);
@@ -60,9 +60,9 @@ $('#certPresenceFormModal').submit(function(e) {
         .then(response => response.json())
         .then(data =>
             {
-                // clone certPresenceObj
-                console.log('certPresenceObj',certPresenceObj);
-                let finalRxObj = Object.assign({}, certPresenceObj);
+                // clone certificateObj
+                console.log('certificateObj',certificateObj);
+                let finalRxObj = Object.assign({}, certificateObj);
                 let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
                 finalRxObj['datestamp']=today;
                 finalRxObj['qrcode'] = finalRxObj['qrcode']+data.unique_id; // already string
@@ -234,6 +234,6 @@ $('#certPresenceFormModal').submit(function(e) {
             let pdf= pdfMake.createPdf(finalPresc);
             pdf.print();
             $('#cert_tbl').bootstrapTable('refresh');
-            $('#certPresenceModal').modal('hide');
+            $('#certificateModal').modal('hide');
         });
 });

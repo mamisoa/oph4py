@@ -1070,8 +1070,8 @@
             <div class="row bg-right">
                 <div class="col">
                     <h4 class="title-right">List of printed certificates</h4>
-                    <button type="button" id="btnNewcertPresence" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#certPresenceModal" data-cert-flag="presence">Presence certificate<i class="mx-2 fas fa-plus"></i></button>
-                    <button type="button" id="btnNewcertSickLeave" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#certPresenceModal" data-cert-flag="sick">Sick leave certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewcertificate" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="presence">Presence certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewcertSickLeave" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="sick">Sick leave certificate<i class="mx-2 fas fa-plus"></i></button>
                     <table
                     id="cert_tbl"
                     data-side-pagination="server"
@@ -2087,8 +2087,8 @@
     </div>
 </div>
 
-<!-- Modal certPresenceModal -->
-<div class="modal fade" id="certPresenceModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+<!-- Modal certificateModal -->
+<div class="modal fade" id="certificateModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -2097,26 +2097,26 @@
             </div>
             <div class="modal-body">
                 <div class="container">
-                    <form id="certPresenceFormModal">
+                    <form id="certificateFormModal">
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col">
-                                    <textarea name="content" id="certPresenceContent">
+                                    <textarea name="content" id="certificateContent">
                                     </textarea>
                                 </div>
                             </div>
                         </div>
-                        <input id="certPresenceCat" type="text" class="visually-hidden" name="category" />
-                        <input id="idcertPresenceWl" type="text" class="visually-hidden" name="id_worklist" />
-                        <input id="idPatientcertPresence" type="text" class="visually-hidden" name="id_auth_user" />
-                        <input id="methodcertPresenceModalSubmit" type="text" class="visually-hidden" name="methodcertPresenceModalSubmit" value="POST" />
-                        <input id="btncertPresenceModalSubmit" type="submit" class="visually-hidden" />
+                        <input id="certificateCat" type="text" class="visually-hidden" name="category" />
+                        <input id="idcertificateWl" type="text" class="visually-hidden" name="id_worklist" />
+                        <input id="idPatientcertificate" type="text" class="visually-hidden" name="id_auth_user" />
+                        <input id="methodcertificateModalSubmit" type="text" class="visually-hidden" name="methodcertificateModalSubmit" value="POST" />
+                        <input id="btncertificateModalSubmit" type="submit" class="visually-hidden" />
                     </form>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="certPresenceModalSubmit" for="btncertPresenceModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
+                <label id="certificateModalSubmit" for="btncertificateModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
             </div>
         </div>
     </div>
@@ -2327,7 +2327,7 @@ var $cert = $('#cert_tbl').bootstrapTable({
 
 // init tinymce
 tinymce.init({
-    selector: '#certPresenceContent',
+    selector: '#certificateContent',
     height: '500px',
     plugins: 'save print code link table'
 });
@@ -2337,5 +2337,5 @@ tinymce.init({
 <script src="js/prescription.js"></script>
 <script src="js/glasses.js"></script>
 <script src="js/contacts.js"></script>
-<script src="js/presence_cert.js"></script>
+<script src="js/certificates.js"></script>
 [[ end ]]
