@@ -202,6 +202,17 @@ def diseases(rec_id="1"):
     user = auth.get_user()
     return locals()
 
+## manage lenses
+
+@action('manage/lenses')
+@action('manage/lenses/<rec_id>')
+@action.uses('manage/lenses.html', session, auth, db)
+def medications(rec_id="1"):
+    hosturl = LOCAL_URL
+    user = auth.get_user()
+    return locals()
+
+
 ## manage_db
 
 ## import users 
