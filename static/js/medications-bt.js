@@ -27,6 +27,16 @@ function responseHandler_medic(res) { // used if data-response-handler="response
 var toggle ='';
 function queryParams(params) {
     let s = '';
+    let search = params.search.split(",");
+    if (search == [""]) {
+        s =""
+    } else {
+        if (search[0]!= undefined) {
+            s = "name.startswith=" + capitalize(search[0]);
+        } else {
+            // s +="";
+        };
+    }
     if (params.offset != "0") {
         s =="" ? s += "@offset=" + params.offset : s += "&@offset=" + params.offset;
     }
