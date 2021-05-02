@@ -132,7 +132,6 @@ window.operateEvents = {
         $('#rxFormModal [name=add_int]').val(add_int).trigger('change');
         $('#rxFormModal [name=add_close]').val(add_close).trigger('change');
         $('#rxFormModal [name=methodRxModalSubmit]').val('PUT');
-        $('#rxFormModal [name=rx_origin]').trigger('change');
         $('#rxModal').modal('show');
     },
     'click .remove': function (e, value, row, index) {
