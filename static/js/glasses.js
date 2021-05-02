@@ -665,6 +665,7 @@ $('#GxRxFormModal').submit(function(e) {
             let pdf= pdfMake.createPdf(finalPresc);
             // pdf.download('rx');
             pdf.print()
+            // document.getElementById('GxRxFormModal').reset();
             $('#GxRx_tbl').bootstrapTable('refresh');
             $('#GxRxModal').modal('hide');
         });
