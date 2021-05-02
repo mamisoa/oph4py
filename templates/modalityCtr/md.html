@@ -2374,13 +2374,13 @@ var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
 
 // table listing refraction right eye by user
 const API_CXRX = HOSTURL + "/myapp/api/contacts_rx_list?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-var $cxrx = $('#cxrx_tbl').bootstrapTable({
+var $cxrx_tbl = $('#cxrx_tbl').bootstrapTable({
     url: API_CXRX
 });
 
 // table listing refraction right eye by user
 const API_CERT = HOSTURL + "/myapp/api/certificates?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-var $cert = $('#cert_tbl').bootstrapTable({
+var $cert_tbl = $('#cert_tbl').bootstrapTable({
     url: API_CERT
 });
 

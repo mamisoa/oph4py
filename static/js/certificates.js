@@ -310,7 +310,7 @@ $('#certificateFormModal').submit(function(e) {
             let pdf= pdfMake.createPdf(finalPresc);
             pdf.print();
             // document.getElementById('certificateFormModal').reset();
-            $('#cert_tbl').bootstrapTable('refresh');
+            $cert_tbl.bootstrapTable('refresh');
             $('#certificateModal').modal('hide');
         });
 });
