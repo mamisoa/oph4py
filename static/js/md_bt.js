@@ -971,6 +971,8 @@ function responseHandler_cert(res) {
             'uuid': list[i]['uuid'],
             'datestamp': list[i]['datestamp'],
             'category': list[i].category,
+            'onset': list[i].onset,
+            'ended': list[i].ended,
             'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
             'modified_by': list[i]['mod.id'],
             'modified_on': list[i]['modified_on'],
@@ -991,8 +993,10 @@ function detailFormatter_cert(index, row) {
     html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
     html.push('<p class=""><span class="fw-bold">Unique id: </span>'+ row.uuid);
     html.push('<p class=""><span class="fw-bold">Datestamp: </span>'+ row.datestamp +'</p>');
+    html.push('<p class=""><span class="fw-bold">Onset: </span>'+ row.onset +'</p>');
+    html.push('<p class=""><span class="fw-bold">Ended: </span>'+ row.ended +'</p>');
     html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
-    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by+'</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by_name+'</p>');
     html.push('<p class=""><span class="fw-bold">Category: </span>'+ row.category+'</p>');
     html.push('</div>');
     html.push('</div></div>');

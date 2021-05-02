@@ -16,28 +16,64 @@ certificateObj['centerurl']=usermdObj['officeurl']
 certificateObj['qrcode']='Signed by '+certificateObj['doctortitle']+' uuid:';
 
 function presenceCert(){
-    let certdefault=['<p>Je, soussigné Docteur en Médecine, certifie avoir examiné '];
-    certdefault.push('<strong>'+wlItemObj['patient.last_name']+' '+wlItemObj['patient.first_name']+' DN'+wlItemObj['patient.dob'].split('-').reverse().join('/')+'</strong>')
+    let certdefault=['<p>Je, soussigné Docteur en Médecine, certifie avoir examiné: </p>'];
+    certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
     let today = new Date().addHours(timeOffsetInHours).toJSON().slice(11,19);
     let creationstamp = new Date(wlItemObj['created_on']).addHours(timeOffsetInHours);
     let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
     let timecreation = creationstamp.toJSON().slice(11,19);
-    certdefault.push(' ce '+ datecreation + ' de ' + timecreation +' à '+ today+'.');
-    certdefault.push('</p>');
+    certdefault.push('<p> ce '+ datecreation + ' de ' + timecreation +' à '+ today+'.</p>');
     certdefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
     return certdefault.join('');
-}
+};
+
+function sickCert(onset,ended,exit) {
+    let certdefault=['<p>Je, soussigné Docteur en Médecine, certifie avoir examiné: </p>'];
+    certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
+    let today = new Date().addHours(timeOffsetInHours).toJSON().slice(11,19);
+    let creationstamp = new Date(wlItemObj['created_on']).addHours(timeOffsetInHours);
+    let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
+    let timecreation = creationstamp.toJSON().slice(11,19);
+    let start = onset.split('-').reverse().join('/'), end = ended.split('-').reverse().join('/');
+    certdefault.push('<p> ce '+ datecreation + ' à ' + timecreation+'.</p>');
+    certdefault.push('<p> Ce patient est inapte au travail du '+start+' au '+ end +' inclus.</p>');
+    if (exit == 'no') {
+        certdefault.push('<p>Les sorties <strong>ne sont pas autorisées</strong>.</p>');
+    } else {
+        certdefault.push('<p>Les sorties sont <strong>autorisées</strong>.</p>');
+    };
+    certdefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
+    return certdefault.join('');
+};
+
+var sickModal = document.getElementById('sickModal');
+sickModal.addEventListener('show.bs.modal', function(e){
+    let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
+    $('#onsetsick').val(today);
+    $('#endedsick').val(today);
+});
 
 var certificateModal = document.getElementById('certificateModal')
 certificateModal.addEventListener('show.bs.modal', function (event) {
     let certdefault = ['<div style="text-align:left">'];
     let btn = event.relatedTarget;
+    // set default onset and ended
+    let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
+    $('#certificateOnset').val(today);
+    $('#certificateEnded').val(today);
+    // check certificate category
     if ($(btn).data('certFlag') == "presence") {
         console.log('presence cert!');
         certdefault.push(presenceCert());
+    } else if ($(btn).data('certFlag') == "sick") {
+        console.log('sick leave cert!');
+        let onset = $('#onsetsick').val(), ended = $('#endedsick').val(), exit = $('#sickFormModal input[name=exit]:checked').val();
+        $('#certificateOnset').val(onset);
+        $('#certificateEnded').val(ended);
+        certdefault.push(sickCert(onset,ended,exit));
     } else {
-        console.log('NOT a presence cert!');
-        certdefault.push('<p>Not a presence cert</p>');
+        console.log('free cert');
+        certdefault.push('Free certificate');
     };
     $('#certificateFormModal input[name=category]').val($(btn).data('certFlag'));
     // set default text
@@ -52,9 +88,9 @@ $('#certificateFormModal').submit(function(e) {
     e.preventDefault();
     let formStr = $(this).serializeJSON();
     let formObj = JSON.parse(formStr);
-    let presenceContent = tinyMCE.get('certificateContent').getContent();
-    console.log('content:', presenceContent);
-    let fromTinyMce=htmlToPdfmake(presenceContent);
+    let certContent = tinyMCE.get('certificateContent').getContent();
+    console.log('content:', certContent);
+    let fromTinyMce=htmlToPdfmake(certContent);
     console.log('from tinyMCE:', fromTinyMce);
     fetch(HOSTURL+"/myapp/api/uuid", {method:"GET"})
         .then(response => response.json())
@@ -66,9 +102,9 @@ $('#certificateFormModal').submit(function(e) {
                 let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
                 finalRxObj['datestamp']=today;
                 finalRxObj['qrcode'] = finalRxObj['qrcode']+data.unique_id; // already string
-                finalRxObj['first_name'] = wlItemObj['patient.first_name'];
-                finalRxObj['last_name'] = wlItemObj['patient.last_name'];
-                finalRxObj['dob'] = wlItemObj['patient.dob'].split('-').reverse().join('/');
+                finalRxObj['first_name'] = patientObj['first_name'];
+                finalRxObj['last_name'] = patientObj['last_name'];
+                finalRxObj['dob'] = patientObj['dob'].split('-').reverse().join('/');
                 let finalPresc = {
                     watermark: {text: '', color: 'red', opacity: 0.2, bold: false, italics: false},
                     pageSize: 'A4',
@@ -223,8 +259,10 @@ $('#certificateFormModal').submit(function(e) {
             // finalDbObj contains uuid + blob pdfreport
             let finalDbObj = {};
             finalDbObj['uuid']=data.unique_id;
-            finalDbObj['id_auth_user']=wlItemObj['patient.id'];
-            finalDbObj['id_worklist']=wlItemObj['id'];
+            finalDbObj['id_auth_user']=patientId;
+            finalDbObj['id_worklist']=wlId;
+            finalDbObj['onset']=formObj['onset'];
+            finalDbObj['ended']=formObj['ended'];
             finalDbObj['datestamp']=today;
             finalDbObj['category']=formObj['category'];
             finalDbObj['pdf_report'] = JSON.stringify(finalPresc);
@@ -233,6 +271,7 @@ $('#certificateFormModal').submit(function(e) {
             crud('certificates','0','POST',finalDbStr);
             let pdf= pdfMake.createPdf(finalPresc);
             pdf.print();
+            // document.getElementById('certificateFormModal').reset();
             $('#cert_tbl').bootstrapTable('refresh');
             $('#certificateModal').modal('hide');
         });
