@@ -326,18 +326,19 @@ $('#btnTaskDone').click(function() {
       },
       callback: function (result) {
           if (result == true) {
-              let dataObj = { 'laterality': wlItemObj['laterality'], 'id': wlId };
+              let dataObj = { 'laterality': wlObj['worklist']['laterality'], 'id': wlId };
               let dataStr;
-              if (wlItemObj['status_flag'] != 'done') {
+              if (wlObj['status_flag'] != 'done') {
                   dataObj['status_flag'] = 'done';
                   dataObj['counter'] = 0;
                   dataStr = JSON.stringify(dataObj);
-                  crud('worklist','0','PUT', dataStr);
+                  let res =crud('worklist','0','PUT', dataStr);
+                  console.log("update result:",res);
                   getWlDetails(wlId) // check if set to done successful and disable forms
                       .then(function (itemObj) {
-                          wlItemObj = Object.assign({},itemObj.items[0]); // clone wltitemobj in global
+                          wlObj['worklist'] = Object.assign({},itemObj.items[0]); // update wlObj worklist 
                           if (wlItemObj['status_flag'] == 'done') {
-                              $('#wlItemDetails .status').html(wlItemObj['status_flag']);
+                              $('#wlItemDetails .status').html(wlObj['status_flag']);
                               disableBtn(btnArr);
                           };
                           window.location.href = '/myapp/worklist';

@@ -42,8 +42,8 @@ $('#btnMxRx').click(function(){
   // get medications from current wl and not prescribed
   getWlItemData('mx',wlId,'','&prescribed=False&@lookup=medic!:id_medic_ref')
       .then(function(data){
-          prescObj['name']=wlItemObj['patient.last_name'];
-          prescObj['firstname']=wlItemObj['patient.first_name'];
+          prescObj['name']=patientObj['last_name'];
+          prescObj['firstname']=patientObj['patient.first_name'];
           let contentAggregate="";
           let dataObj=data.items;
           console.log(data);
