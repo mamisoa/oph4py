@@ -223,7 +223,7 @@ $('#rxFormModal').submit(function (e) {
   let dataStr = $(this).serializeJSON();
   let dataObj = JSON.parse(dataStr);
   console.log("dataForm",dataObj);
-  if ((dataObj['rx_origin'] != 'glass') || (dataObj['rx_origin'] != 'trial')) {
+  if ((dataObj['rx_origin'] != 'glass') && (dataObj['rx_origin'] != 'trial')) {
     dataObj['glass_type'] = 'na';
   };
   delete dataObj['add_int'];
@@ -260,6 +260,7 @@ function rxInsert(domId,laterality,status=1) {
   console.log('rx_origin',dataObj['rx_origin']);
   if ((dataObj['rx_origin'] != 'glass') && (dataObj['rx_origin'] != 'trial')) {
     dataObj['glass_type'] = 'na';
+    dataObj['va_close'] = dataObj['va_int']='';
   };
   delete dataObj['add_int'];
   delete dataObj['add_close'];
