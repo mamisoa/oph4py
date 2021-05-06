@@ -599,6 +599,25 @@ function detailFormatter_rx(index, row) {
     return html.join('');
 };
 
+function rowStyle_type(row) {
+    let bg, statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' };
+    row.rx_origin != undefined ? bg = statusColor[row.rx_origin] : bg = "white";
+    return { 
+                css: { 'background-color': bg }
+            };
+};
+
+function cellStyle_formula(value,row) {
+    let bg, statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' };
+    row.rx_origin != undefined ? bg = statusColor[row.rx_origin] : bg = "white";
+    console.log('row',row)
+    return {    
+        css: { 
+            'font-weight': 'bold',
+            'background-color': bg
+        }
+    };
+};
 
 // tono tables parameters
 // todo: add search to select techo
