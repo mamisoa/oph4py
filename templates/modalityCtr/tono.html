@@ -345,10 +345,10 @@ const btnArr = ['#btnTaskDone','#btnAddTonoPachyRight','#btnAddTonoPachyLeft','#
 // init tables
 const tablesArr = ['#airPachyRight_tbl', '#airPachyLeft_tbl','#aplaRight_tbl','#aplaLeft_tbl'];
 
-const API_AIRRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-const API_AIRLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-const API_APLARIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
-const API_APLALEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+const API_AIRRIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
+const API_AIRLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
+const API_APLARIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
+const API_APLALEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
 
 var $table_airRight = $('#airPachyRight_tbl').bootstrapTable({
     url: API_AIRRIGHT

@@ -2277,31 +2277,31 @@ const API_LENSES = HOSTURL + "/myapp/api/cl?@lookup=mod!:modified_by[id,first_na
 const API_CLEANING = HOSTURL + "/myapp/api/cleaning_solution?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 // table listing ALL medications taken by user
-const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;
+const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 var $mx_tbl = $('#mx_tbl').bootstrapTable({
     url: API_MXUSER
 });
 
 // table listing ALL allergy to agents by user
-const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;
+const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 var $ax_tbl = $('#ax_tbl').bootstrapTable({
     url: API_AXUSER
 });
 
 // table listing medical history by user
-const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;
+const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 var $mHx_tbl = $('#mHx_tbl').bootstrapTable({
     url: API_MHXUSER
 });
 
 // table listing surgical history by user
-const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;
+const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
     url: API_SHXUSER
 });
 
 // table listing ocular history by user
-const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq=" + patientId;
+const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
     url: API_OHXUSER
 });
@@ -2339,7 +2339,7 @@ var $coding = $('#coding_tbl').bootstrapTable({
 });
 
 // table listing medication encoded for current worklist 
-const API_MXWLUSER = HOSTURL + "/myapp/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+patientId;
+const API_MXWLUSER = HOSTURL + "/myapp/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq="+patientId;
 var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
     url: API_MXWLUSER
 });
