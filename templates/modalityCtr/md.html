@@ -2233,8 +2233,8 @@ var rxObj = [], tonoObj = [] ;
 var prescRxObj = {};
 var axe64 = 'data:image/png;base64,'+'[[=XML(axe64)]]';
 var logo64 ='data:image/jpg;base64,'+'[[=XML(logo64)]]';
-
-// test
+// submit btn to disable when done
+const btnArr = ['#btnTaskDone','#btnNewMx', '#btnNewAx','#btnNewmHx', '#btnNewsHx', 'input', 'textarea', '#btnNewCoding','#btnNewMxWl','#btnMxRx','#btnMxRx','#btnGxRx' ];
 
 </script>
 <script src="js/bootstrap-table/bootstrap-table.min.js"></script>
@@ -2255,8 +2255,6 @@ var logo64 ='data:image/jpg;base64,'+'[[=XML(logo64)]]';
 <script src="js/tinymce/tinymce.min.js"></script>
 <script src="js/tinymce/jquery.tinymce.min.js"></script>
 <script type="text/javascript">
-// submit btn to disable when done
-const btnArr = ['#btnTaskDone','#btnNewMx', '#btnNewAx','#btnNewmHx', '#btnNewsHx', 'input', 'textarea', '#btnNewCoding','#btnNewMxWl','#btnMxRx','#btnMxRx','#btnGxRx' ];
 
 // 
 const API_MD = HOSTURL + "/myapp/api/md?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;

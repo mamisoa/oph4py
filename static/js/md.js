@@ -297,7 +297,7 @@ $('#mxFormModal').submit(function(e){
     if (req == 'POST') {
         delete dataObj['id'];
     } else {};
-    dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
+    dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
     dataObj['medication']=capitalize(dataObj['medication']);
     delete dataObj['methodMxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
@@ -324,7 +324,7 @@ $('#axFormModal').submit(function(e){
     if (req == 'POST') {
         delete dataObj['id'];
     } else {};
-    dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
+    dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
     dataObj['agent']=capitalize(dataObj['agent']);
     delete dataObj['methodAxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
@@ -349,7 +349,7 @@ $('#mHxFormModal').submit(function(e){
     if (req == 'POST') {
         delete dataObj['id'];
     } else {};
-    dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
+    dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
     dataObj['title']=capitalize(dataObj['title']);
     delete dataObj['methodmHxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
@@ -521,7 +521,7 @@ function setSubmit(domId,table, fieldsArr,lat) {
                     delete dataObj['id'];
                 };
                 // console.log('setSubmit request:',req, 'data.count:',data.count);
-                dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
+                dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
                 dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
                 // capitalize fields
                 for (field of fieldsArr) {
@@ -615,7 +615,7 @@ function setOneSubmit(domId,table,lat) {
                     req = 'POST';
                     delete dataObj['id'];
                 };
-                dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=wlItemObj['patient.id']:{};
+                dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
                 dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
                 dataObj['description']=capitalize(dataObj['description']);
                 dataStr= JSON.stringify(dataObj);
@@ -723,45 +723,6 @@ function testpdf(){
     });
     pdf.download();
 };
-
-// set task to done and disable form buttons
-$('#btnTaskDone').click(function() {
-    bootbox.confirm({
-        message: "Are you sure you want to set this task to DONE?",
-        closeButton: false ,
-        buttons: {
-            confirm: {
-                label: 'Yes',
-                className: 'btn-success'
-            },
-            cancel: {
-                label: 'No',
-                className: 'btn-danger'
-            }
-        },
-        callback: function (result) {
-            if (result == true) {
-                let dataObj = { 'laterality': wlItemObj['laterality'], 'id': wlId };
-                let dataStr;
-                if (wlItemObj['status_flag'] != 'done') {
-                    dataObj['status_flag'] = 'done';
-                    dataObj['counter'] = 0;
-                    dataStr = JSON.stringify(dataObj);
-                    crud('worklist','0','PUT', dataStr);
-                    getWlDetails(wlId) // check if set to done successful and disable forms
-                        .then(function (itemObj) {
-                            wlItemObj = Object.assign({},itemObj.items[0]); // clone wltitemobj in global
-                            if (wlItemObj['status_flag'] == 'done') {
-                                $('#wlItemDetails .status').html(wlItemObj['status_flag']);
-                                disableBtn(btnArr);
-                            };
-                            window.location.href = '/myapp/worklist';
-                        });
-                }
-            } // end if
-        } // end callback
-    }); //end bootbox
-});
 
 function printRx(table,id) {
     $.ajax({

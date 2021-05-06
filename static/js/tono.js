@@ -65,8 +65,8 @@ function tonoPachyInsert(domId,laterality, techno='air') {
     let o ={};
     o['tonometry'] = dataObj[techno+capitalize(laterality)];
     techno == 'air'? o['pachymetry'] = dataObj['pachy'+capitalize(laterality)] : o['pachymetry'] = '';
-    o['id_auth_user'] = wlItemObj['patient.id'];
-    o['id_worklist'] = wlItemObj['id'];
+    o['id_auth_user'] = patientObj['id'];
+    o['id_worklist'] = wlObj['worklist']['id'];
     o['laterality'] = laterality;
     o['techno'] = techno;
     o['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
@@ -119,45 +119,6 @@ $('#tonoPachyForm').submit(function (e){
     crud('tono','0',req,dataStr);
     $('#tonoPachyModal').modal('hide');
     refreshTables();
-});
-
-// set task to done and disable form buttons
-$('#btnTaskDone').click(function() {
-    bootbox.confirm({
-        message: "Are you sure you want to set this task to DONE?",
-        closeButton: false ,
-        buttons: {
-            confirm: {
-                label: 'Yes',
-                className: 'btn-success'
-            },
-            cancel: {
-                label: 'No',
-                className: 'btn-danger'
-            }
-        },
-        callback: function (result) {
-            if (result == true) {
-                let dataObj = { 'laterality': wlItemObj['laterality'], 'id': wlId };
-                let dataStr;
-                if (wlItemObj['status_flag'] != 'done') {
-                    dataObj['status_flag'] = 'done';
-                    dataObj['counter'] = 0;
-                    dataStr = JSON.stringify(dataObj);
-                    crud('worklist','0','PUT', dataStr);
-                    getWlDetails(wlId) // check if set to done successful and disable forms
-                        .then(function (itemObj) {
-                            wlItemObj = Object.assign({},itemObj.items[0]); // clone wltitemobj in global
-                            if (wlItemObj['status_flag'] == 'done') {
-                                $('#wlItemDetails .status').html(wlItemObj['status_flag']);
-                                disableBtn(btnArr);
-                            };
-                            window.location.href = '/myapp/worklist';
-                        });
-                }
-            } // end if
-        } // end callback
-    }); //end bootbox
 });
 
 // delete tono
