@@ -29,6 +29,17 @@ def tono(wlId):
 def autorx(wlId):
     hosturl = LOCAL_URL
     user = auth.get_user()
+    wldb = db.worklist
+    wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
+        join=[
+            db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
+            db.modality.on(db.modality.id == wldb.modality_dest),
+            ]
+        ).as_json()
+    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
+        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
+    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
+        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
     qFar = db.optotype.distance == 'far'
     qClose = db.optotype.distance == 'close'
     optoFarOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'index', qFar)
@@ -65,15 +76,27 @@ def md(wlId):
     import base64, ast
     from datetime import datetime
     hosturl = LOCAL_URL
+    db.auth_user.password.readable = False
+    db.auth_user.password.writable  = False
+    wldb = db.worklist
+    wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
+        join=[
+            db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
+            db.modality.on(db.modality.id == wldb.modality_dest),
+            ]
+        ).as_json()
+    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
+        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
+    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
+        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
     user = auth.get_user()
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     userdb = db.auth_user
-    patientDict = db(userdb.id == patientId).select(userdb.first_name,userdb.last_name,userdb.dob,userdb.ssn,userdb.photob64).as_json()
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
     for row in rows:
         modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
-    # init fields
+    # init all fields
     currentHx = initFields(wlId,'current_hx')
     antRight = initFields(wlId,'ant_biom','right')
     postRight = initFields(wlId,'post_biom','right')
