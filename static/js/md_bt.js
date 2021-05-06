@@ -610,7 +610,6 @@ function rowStyle_type(row) {
 function cellStyle_formula(value,row) {
     let bg, statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' };
     row.rx_origin != undefined ? bg = statusColor[row.rx_origin] : bg = "white";
-    console.log('row',row)
     return {    
         css: { 
             'font-weight': 'bold',
