@@ -33,7 +33,6 @@ for (let id of idRxArr) {
     $(id+' .SEi').html(SEi);
     $(id+' .SEc').html(SEc);
     // if axis value is input manually for far, set the other with the same axis
-    console.log('this:',this);
     if ($(this).attr('name')=='axis_far'){
       $(id+' input[name=axis_int]').val($(id+' input[name=axis_far]').val());
       $(id+' input[name=axis_close]').val($(id+' input[name=axis_far]').val());
@@ -307,44 +306,3 @@ function delItem (id,table) {
       }
   });
 };
-
-// todo: transfer to useful
-// set task to done and disable form buttons
-$('#btnTaskDone').click(function() {
-  bootbox.confirm({
-      message: "Are you sure you want to set this task to DONE?",
-      closeButton: false ,
-      buttons: {
-          confirm: {
-              label: 'Yes',
-              className: 'btn-success'
-          },
-          cancel: {
-              label: 'No',
-              className: 'btn-danger'
-          }
-      },
-      callback: function (result) {
-          if (result == true) {
-              let dataObj = { 'laterality': wlObj['worklist']['laterality'], 'id': wlId };
-              let dataStr;
-              if (wlObj['status_flag'] != 'done') {
-                  dataObj['status_flag'] = 'done';
-                  dataObj['counter'] = 0;
-                  dataStr = JSON.stringify(dataObj);
-                  let res =crud('worklist','0','PUT', dataStr);
-                  console.log("update result:",res);
-                  getWlDetails(wlId) // check if set to done successful and disable forms
-                      .then(function (itemObj) {
-                          wlObj['worklist'] = Object.assign({},itemObj.items[0]); // update wlObj worklist 
-                          if (wlItemObj['status_flag'] == 'done') {
-                              $('#wlItemDetails .status').html(wlObj['status_flag']);
-                              disableBtn(btnArr);
-                          };
-                          window.location.href = '/myapp/worklist';
-                      });
-              }
-          } // end if
-      } // end callback
-  }); //end bootbox
-});

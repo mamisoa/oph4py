@@ -20,6 +20,17 @@ from .manage import dropdownSelect, rows2json
 def tono(wlId):
     hosturl = LOCAL_URL
     user = auth.get_user()
+    wldb = db.worklist
+    wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
+        join=[
+            db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
+            db.modality.on(db.modality.id == wldb.modality_dest),
+            ]
+        ).as_json()
+    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
+        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
+    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
+        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
     return locals()
 
 # autorx controller

@@ -328,7 +328,8 @@
 <script type="text/javascript">
 // Global variables
 const HOSTURL = "[[ = hosturl ]]";
-const wlId = [[= wlId ]];
+// submit btn to disable when done
+const btnArr = ['#btnTaskDone','#btnAddTonoPachyRight','#btnAddTonoPachyLeft','#btnAddAplaRight','#btnAddAplaLeft'];
 </script>
 
 <!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
@@ -336,13 +337,10 @@ const wlId = [[= wlId ]];
 <script src="js/bootstrap-table/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
-<script src="js/patient-bar.js"></script>
 <script src="js/useful.js"></script>
+<script src="js/patient-bar.js"></script>
 <script src="js/tono_bt.js"></script>
 <script type="text/javascript">
-
-// submit btn to disable when done
-const btnArr = ['#btnTaskDone','#btnAddTonoPachyRight','#btnAddTonoPachyLeft','#btnAddAplaRight','#btnAddAplaLeft'];
 
 // init tables
 const tablesArr = ['#airPachyRight_tbl', '#airPachyLeft_tbl','#aplaRight_tbl','#aplaLeft_tbl'];

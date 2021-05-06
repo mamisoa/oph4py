@@ -296,7 +296,7 @@ $('#CxRxFormModal').submit(function(e) {
                 finalRxObj['qrcode'] = finalRxObj['qrcode']+data.unique_id; // already string
                 finalRxObj['first_name'] = patientObj['first_name'];
                 finalRxObj['last_name'] = patientObj['last_name'];
-                finalRxObj['dob'] = patientObj['patient.dob'].split('-').reverse().join('/');
+                finalRxObj['dob'] = patientObj['dob'].split('-').reverse().join('/');
                 // temporarly: do not display the intermediate distance
                 finalRxObj['sph_intR']=finalRxObj['cyl_intR']=finalRxObj['cyl_intR']=finalRxObj['axis_intR']='-';
                 finalRxObj['sph_intL']=finalRxObj['cyl_intL']=finalRxObj['cyl_intL']=finalRxObj['axis_intL']='-';

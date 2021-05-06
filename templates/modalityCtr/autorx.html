@@ -1070,6 +1070,8 @@
 <script type="text/javascript">
 // Global variables
 const HOSTURL = "[[ = hosturl ]]";
+// submit btn to disable when done
+const btnArr = ['#btnAddKmRight','#btnAddKmLeft', '#btnAddRxRight', '#btnAddRxLeft','#btnTaskDone'];
 </script>
 
 <!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
@@ -1081,9 +1083,6 @@ const HOSTURL = "[[ = hosturl ]]";
 <script src="js/patient-bar.js"></script>
 <script src="js/autorx_bt.js"></script>
 <script type="text/javascript">
-
-// submit btn to disable when done
-const btnArr = ['#btnAddKmRight','#btnAddKmLeft', '#btnAddRxRight', '#btnAddRxLeft','#btnTaskDone'];
 
 // init tables
 const API_RXRIGHT = HOSTURL + "/myapp/api/rx?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId+'&@order=~id';

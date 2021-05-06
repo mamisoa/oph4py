@@ -43,7 +43,7 @@ $('#btnMxRx').click(function(){
   getWlItemData('mx',wlId,'','&prescribed=False&@lookup=medic!:id_medic_ref')
       .then(function(data){
           prescObj['name']=patientObj['last_name'];
-          prescObj['firstname']=patientObj['patient.first_name'];
+          prescObj['firstname']=patientObj['first_name'];
           let contentAggregate="";
           let dataObj=data.items;
           console.log(data);
