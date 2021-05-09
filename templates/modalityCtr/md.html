@@ -2316,11 +2316,6 @@ $table_wl = $('#table-wl').bootstrapTable({
     return 'Procedure, modality';
     }
 });
-// set timers in wl when completely rendered
-// Fires after the table body is rendered and available in the DOM, the parameters contain data
-$('#table-wl').on('post-body.bs.table', function () {
-    set_timers(timer_id);
-});
 
 // table listing refraction right eye by user
 const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
@@ -2347,18 +2342,18 @@ var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
 });
 
 const API_TONORIGHT = HOSTURL + "/myapp/api/tono?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user="+patientId;
-var $tonoRight = $('#tonoRight_tbl').bootstrapTable({
+var $tonoRight_tbl = $('#tonoRight_tbl').bootstrapTable({
     url: API_TONORIGHT
 });
 
 const API_TONOLEFT = HOSTURL + "/myapp/api/tono?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user="+patientId;
-var $tonoLeft = $('#tonoLeft_tbl').bootstrapTable({
+var $tonoLeft_tbl = $('#tonoLeft_tbl').bootstrapTable({
     url: API_TONOLEFT
 });
 
 // table listing refraction right eye by user
 const API_GXRX = HOSTURL + "/myapp/api/glasses_rx_list?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-var $gxrx = $('#GxRx_tbl').bootstrapTable({
+var $gxrx_tbl = $('#GxRx_tbl').bootstrapTable({
     url: API_GXRX
 });
 
@@ -2380,12 +2375,37 @@ var $cert_tbl = $('#cert_tbl').bootstrapTable({
     url: API_CERT
 });
 
+// tables list
+const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl',
+    '#rxRight_tbl','#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl',
+    '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl', '#cert_tbl'];
+
 // init tinymce
 tinymce.init({
     selector: '#certificateContent',
     height: '500px',
     plugins: 'save print code link table'
 });
+
+$( document ).ready(function() {
+    if (document.referrer.includes('modalityCtr/autorx')) {
+        refreshTables(['#rxRight_tbl','#rxLeft_tbl']);
+        console.log('rx tables should be refreshed');
+    };
+    if (document.referrer.includes('modalityCtr/tono')) {
+        refreshTables(['#tonoRight_tbl','#tonoLeft_tbl']);
+        console.log('tono tables should be refreshed');
+    };
+});
+
+$('#rxRight_tbl').on('post-body.bs.table', function () {
+});
+
+if (window.performance.getEntriesByType('navigation')[0].type == 'back_forward' || window.performance.getEntriesByType('navigation')[0].type == 'prerender') {
+        console.log('tables:',tablesArr);
+        refreshTables(tablesArr);
+        console.log(' all tables should be refreshed');
+};
 
 </script>
 <script src="js/md.js"></script>

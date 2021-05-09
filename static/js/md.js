@@ -1,8 +1,6 @@
 // refresh tables
-const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl',
-    '#rxRight_tbl','#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl',
-    '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl', '#cert_tbl'];
-refreshTables(tablesArr);
+// refreshTables(tablesArr);
+
 
 // frequency autocomplete
 $('#mxModal input[name=frequency]').autoComplete({
@@ -432,6 +430,12 @@ function set_timers(timers) {
     });
     timer_id = [];
 };
+
+// set timers in wl when completely rendered
+// Fires after the table body is rendered and available in the DOM, the parameters contain data
+$('#table-wl').on('post-body.bs.table', function () {
+    set_timers(timer_id);
+});
 
 // update cache
 function updateCache(cacheObj) {

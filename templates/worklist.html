@@ -449,9 +449,15 @@ $('#table-wl').on('post-body.bs.table', function () {
 });
 
 var timeoutID = window.setInterval(function () {
-    console.log("Refreshing wl table!");
+    // console.log("Refreshing wl table!");
     $('#table-wl').bootstrapTable('refresh');
 },40000);
+
+$( document ).ready(function() {
+    if (window.performance.getEntriesByType('navigation')[0].type == 'back-forward') {
+        $('#table-wl').bootstrapTable('refresh');
+    };
+});
 
 </script>
 <script src="js/wl.js"></script>
