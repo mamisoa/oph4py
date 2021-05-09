@@ -22,7 +22,8 @@
         <div class="col-md-12 mt-3">
             <div class="row">
                 <div class="col">
-                    <button type="button" id="btnFullList" class="btn btn-dark">Full list</button>
+                    <button type="button" id="btnFullList" class="btn btn-dark mx-2">Full list</button>
+                    <button type="button" id="btnTodaysList" class="btn btn-dark mx-2">Today's list</button>
                 </div>
                 <div class="col">
                     <div id="toolbar-wl">
@@ -462,6 +463,12 @@ $( document ).ready(function() {
 $('#btnFullList').click(function () {
     $('#table-wl').bootstrapTable('refreshOptions', {
         url: API_PROCEDURE_LIST
+    });
+});
+
+$('#btnTodaysList').click(function () {
+    $('#table-wl').bootstrapTable('refreshOptions', {
+        url: API_PROCEDURE_LIST_TODAY
     });
 });
 
