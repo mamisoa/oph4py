@@ -95,8 +95,12 @@ function operateFormatter_wl(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="edit" href="javascript:void(0)" title="Edit worklist item"><i class="fas fa-edit"></i></a>');
     html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete worklist item"><i class="fas fa-trash-alt"></i></a>');
-    html.push('<a class="done ms-1" href="javascript:void(0)" title="Set to done"><i class="fas fa-check"></i></a>');
-    html.push('<a class="stopwatch ms-1" href="javascript:void(0)" title="Counter minus 1"><i class="fas fa-stopwatch"></i></a>');
+    if (row.status_flag != 'done') {
+        html.push('<a class="done ms-1" href="javascript:void(0)" title="Set to process"><i class="fas fa-check"></i></a>');
+        html.push('<a class="stopwatch ms-1" href="javascript:void(0)" title="Counter minus 1"><i class="fas fa-stopwatch"></i></a>');
+    } else {
+        html.push('<a class="unlock ms-1" href="javascript:void(0)" title="Set to process"><i class="fas fa-unlock"></i></a>');
+    }
     html.push('<a class="modality_ctr ms-1" href="javascript:void(0)" title="Execute task"><i class="fas fa-heartbeat"></i></a>');
     if (row.modality == 'MD' && row.status_flag =='done'){
         html.push('<a class="summary ms-1" href="javascript:void(0)" title="Read summary"><i class="fas fa-th-list"></i></a>');
@@ -154,6 +158,16 @@ window.operateEvents_wl = {
     'click .summary': function (e, value, row, index) {
         let link = HOSTURL+'/myapp/billing/summary/'+row.id_auth_user;
         window.location.href = link;
+    },
+    'click .unlock': function (e, value, row, index) {
+        let dataObj = { 'laterality': row.laterality, 'id': row.id };
+        let dataStr;
+        if (row.status_flag == 'done') {
+            dataObj['status_flag'] = 'processing';
+            dataObj['counter'] = 1;
+            dataStr = JSON.stringify(dataObj);
+            setWlItemStatus(dataStr);
+        } else {};
     }
 };
 

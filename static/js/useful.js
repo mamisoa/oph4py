@@ -144,3 +144,11 @@ function crud(table,id='0',req='POST',data) {
             return data;
         });
 };
+
+// set wlItem status: done processing and counter adjustment
+// id is in the dataStr
+function setWlItemStatus (dataStr) {
+    // console.log('dataStrPut:',dataStr);
+    crud('worklist','0','PUT', dataStr);
+    $table_wl.bootstrapTable('refresh');    
+};

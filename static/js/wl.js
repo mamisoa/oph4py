@@ -325,14 +325,6 @@ function delWlItem (id) {
     });
 };
 
-// set wlItem status: done processing and counter adjustment
-// id is in the dataStr
-function setWlItemStatus (dataStr) {
-    // console.log('dataStrPut:',dataStr);
-    crud('worklist','0','PUT', dataStr);
-    $table_wl.bootstrapTable('refresh');    
-};
-
 // set timers 
 function set_timers(timers) {
     $.each(timers, function(i){
