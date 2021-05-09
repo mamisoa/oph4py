@@ -459,6 +459,12 @@ $( document ).ready(function() {
     };
 });
 
+$('#btnFullList').click(function () {
+    $('#table-wl').bootstrapTable('refreshOptions', {
+        url: API_PROCEDURE_LIST
+    });
+});
+
 </script>
 <script src="js/wl.js"></script>
 [[ end ]]

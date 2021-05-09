@@ -22,8 +22,12 @@
         <div class="col-md-12 mt-3">
             <div class="row">
                 <div class="col">
+                    <div class="col">
+                        <button type="button" id="btnFullList" class="btn btn-dark mx-2">Full list</button>
+                        <button type="button" id="btnMdList" class="btn btn-dark mx-2">MD list</button>
+                    </div>
                     <div id="toolbar-wl">
-                        <h2><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h2>
+                        <h2><span class=""><i class="fas fa-list me-2"></i>Files<span></h2>
                     </div>
                 </div>
             </div>
@@ -93,9 +97,10 @@ const HOSTURL = "[[ = hosturl ]]";
 
 // set tables
 const TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id&modality_dest.modality_name.eq=MD';
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
+const API_PROCEDURE_LIST_MD = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id&modality_dest.modality_name.eq=MD';
 var $table_wl = $('#table-wl').bootstrapTable({
-    url: API_PROCEDURE_LIST,
+    url: API_PROCEDURE_LIST_MD,
     formatSearch: function () {
         return 'Last name,first name,procedure,modality';
     }
@@ -111,11 +116,22 @@ $('#table-wl').on('post-body.bs.table', function () {
 
 });
 
-
 $( document ).ready(function() {
     if (window.performance.getEntriesByType('navigation')[0].type == 'back-forward') {
         $('#table-wl').bootstrapTable('refresh');
     };
+});
+
+$('#btnFullList').click(function () {
+    $('#table-wl').bootstrapTable('refreshOptions', {
+        url: API_PROCEDURE_LIST
+    });
+});
+
+$('#btnMdList').click(function () {
+    $('#table-wl').bootstrapTable('refreshOptions', {
+        url: API_PROCEDURE_LIST_MD
+    });
 });
 
 </script>
