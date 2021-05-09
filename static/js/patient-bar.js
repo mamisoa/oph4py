@@ -12,8 +12,11 @@ $('#wlItemDetails .provider').html(providerObj['first_name']+' '+providerObj['la
 $('#wlItemDetails .senior').html(seniorObj['first_name']+' '+seniorObj['last_name']);
 $('#wlItemDetails .status').html(wlObj['worklist']['status_flag']);
 if (wlObj['worklist']['status_flag'] == 'done') {
+    $('#btnTaskDone').addClass('visually-hidden');
     disableBtn(btnArr);
-}
+} else {
+    $('#btnUnlockTask').addClass('visually-hidden');
+};
 wlObj['worklist']['warning'] != null? $('#wlItemDetails .warning').html('<i class="fas fa-exclamation-circle"></i> '+wlObj['worklist']['warning']) : $('#wlItemDetails .warning').html('').removeClass('bg-danger text-wrap');
 if (patientObj['photob64'] == null) {
     $('#photoDiv').addClass('visually-hidden');
@@ -82,4 +85,15 @@ $('#btnTaskDone').click(function() {
         } // end callback
     }); //end bootbox
 });
-  
+
+$('#btnUnlockTask').click(function(){
+    let dataObj = { 'laterality': wlObj['worklist']['laterality'], 'id': wlObj['worklist']['id'] };
+    let dataStr;
+    if (wlObj['worklist']['status_flag'] == 'done') {
+        dataObj['status_flag'] = 'processing';
+        dataObj['counter'] = 1;
+        dataStr = JSON.stringify(dataObj);
+        setWlItemStatus(dataStr);
+        document.location.reload();
+    } else {};
+});
