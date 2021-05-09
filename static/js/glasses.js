@@ -666,7 +666,7 @@ $('#GxRxFormModal').submit(function(e) {
             // pdf.download('rx');
             pdf.print()
             // document.getElementById('GxRxFormModal').reset();
-            $gxrx.bootstrapTable('refresh');
+            $gxrx_tbl.bootstrapTable('refresh');
             $('#GxRxModal').modal('hide');
         });
 });
