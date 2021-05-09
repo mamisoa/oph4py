@@ -776,8 +776,10 @@ $('#CxRxFormModal').submit(function(e) {
             crud('contacts_rx_list','0','POST',finalDbStr);
             let pdf= pdfMake.createPdf(finalPresc);
             pdf.print();
-            $cxrx_tbl.bootstrapTable('refresh');
             // document.getElementById('CxRxFormModal').reset();
             $('#CxRxModal').modal('hide');
+        })
+        .then(function () {
+            $cxrx_tbl.bootstrapTable('refresh');
         });
 });
