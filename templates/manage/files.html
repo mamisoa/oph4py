@@ -1,0 +1,123 @@
+[[extend "baseof.html"]]
+
+[[ block page_head]]
+<style>
+    .table td {
+        text-align: center;
+    }
+    .table th {
+        text-align: center;
+    }
+</style>
+<link href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css" rel="stylesheet">
+[[ end ]]
+
+[[ block left_nav ]]
+[[ include 'partials/nav-test.html' ]]
+[[ end]]
+
+<!-- bootstrap ok for table-wl -->
+<div class="container-fluid"> <!-- #table-wl list -->
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            <div class="row">
+                <div class="col">
+                    <div id="toolbar-wl">
+                        <h2><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <table id="table-wl"
+                    data-toolbar="#toolbar-wl"
+                    data-id-field="id"
+                    data-toggle="table"
+                    data-side-pagination="server"
+                    data-show-refresh="true"
+                    data-pagination="true"
+                    data-page-size="25"
+                    data-show-columns="true"
+                    data-search="true"
+                    data-search-accent-neutralise="true"
+                    data-visible-search="false"
+                    data-query-params="queryParams_wl"
+                    data-response-handler="responseHandler_wl"
+                    data-row-style="rowStyle_wl"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    data-detail-formatter="detailFormatter_wl"
+                    data-detail-view-by-click="false"
+                    >
+                    <thead class="thead-dark">
+                        <th data-field="id" data-sortable="true">ID</th>
+                        <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
+                        <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">Receving facility:</th>
+                        <th data-field="procedure" data-searchable= "true" data-sortable="true">Procedure:</th>
+                        <th data-field="patient" data-searchable= "true" data-sortable="true">Patient:</th>
+                        <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
+                        <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
+                        <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
+                        <th data-field="laterality" data-sortable="false" data-searchable= "false">Laterality:</th>
+                        <th data-field="requested_time" data-sortable="true" data-searchable= "true">Timeslot:</th>
+                        <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
+                        <th data-field="counter" data-searchable= "true" data-sortable="false" data-formatter="counterFormatter_wl">Counter:</th>
+                        <th data-field="warning" data-searchable= "true" data-sortable="false">Warning:</th>
+                        <th data-field="operate" data-formatter="operateFormatter_wl" data-events="operateEvents_wl">Action</th>
+                    </thead>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end row -->
+</div> <!-- end container fluid -->
+
+
+<div class="visually-hidden container">
+    testing
+</div>
+
+[[ block js_scripts]]
+<!-- <script src="js/bootstrap-table/bootstrap-table.min.js"></script> -->
+<!-- <script src="js/bootstrap-table/bootstrap-table.js"></script> -->
+<script src="js/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/useful.js"></script>
+<script src="js/files_bt.js"></script>
+<script type="text/javascript">
+
+// init bootstrat-tables
+const membership = [[=membership]];
+const HOSTURL = "[[ = hosturl ]]";
+
+// set tables
+const TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id&modality_dest.modality_name.eq=MD';
+var $table_wl = $('#table-wl').bootstrapTable({
+    url: API_PROCEDURE_LIST,
+    formatSearch: function () {
+        return 'Last name,first name,procedure,modality';
+    }
+});
+
+// hide columns in wl table: id, sending_facility, receiving_facility
+$table_wl.bootstrapTable('hideColumn','id');
+$table_wl.bootstrapTable('hideColumn','sending_facility');
+$table_wl.bootstrapTable('hideColumn','receiving_facility');
+
+// Fires after the table body is rendered and available in the DOM, the parameters contain data
+$('#table-wl').on('post-body.bs.table', function () {
+
+});
+
+
+$( document ).ready(function() {
+    if (window.performance.getEntriesByType('navigation')[0].type == 'back-forward') {
+        $('#table-wl').bootstrapTable('refresh');
+    };
+});
+
+</script>
+<script src="js/files.js"></script>
+[[ end ]]
