@@ -212,6 +212,23 @@ def medications(rec_id="1"):
     user = auth.get_user()
     return locals()
 
+@action('manage/files', method=['POST','GET']) # route
+@action.uses('manage/files.html', session, T, auth, db)
+def files():
+    hosturl = LOCAL_URL
+    user = auth.get_user()
+    test="Test OK"
+    membership = 6
+    class_icon = 'fa-user'
+    group = "Patient"
+    roleOptions=""
+    for role in db(db.membership.id>0).select(db.membership.ALL):
+        if role.membership == group: # make "Patient" as default option
+            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_selected="selected",_value=str(role.id)))
+        else:
+            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
+    roleOptions = XML(roleOptions)
+    return locals()
 
 ## manage_db
 
