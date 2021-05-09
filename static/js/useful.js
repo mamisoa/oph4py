@@ -150,5 +150,4 @@ function crud(table,id='0',req='POST',data) {
 function setWlItemStatus (dataStr) {
     // console.log('dataStrPut:',dataStr);
     crud('worklist','0','PUT', dataStr);
-    $table_wl.bootstrapTable('refresh');    
 };

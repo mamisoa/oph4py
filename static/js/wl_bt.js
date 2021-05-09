@@ -54,10 +54,10 @@ function queryParams_wl(params) {
         s_wl += "&@offset="+params.offset;
     }
     if (params.limit != "0") {
-        console.log(params.offset);
+        // console.log(params.offset);
         s_wl += "&@limit="+params.limit;
     }
-    console.log('s_wl',s_wl);
+    // console.log('s_wl',s_wl);
     return decodeURI(encodeURI(s_wl));
 };
 
@@ -130,6 +130,7 @@ window.operateEvents_wl = {
             }
             dataStr = JSON.stringify(dataObj);
             setWlItemStatus(dataStr);
+            $table_wl.bootstrapTable('refresh');
         }
     },
     'click .done': function (e, value, row, index) {
@@ -140,6 +141,7 @@ window.operateEvents_wl = {
             dataObj['counter'] = 0;
             dataStr = JSON.stringify(dataObj);
             setWlItemStatus(dataStr);
+            $table_wl.bootstrapTable('refresh');
         }
     },
     'click .modality_ctr': function (e, value, row, index) {
@@ -150,6 +152,7 @@ window.operateEvents_wl = {
             dataObj['counter'] = row.counter;
             dataStr = JSON.stringify(dataObj);
             setWlItemStatus(dataStr);
+            $table_wl.bootstrapTable('refresh');
         }
         let controller = modalityDict[row.modality];
         let link = HOSTURL+'/myapp/modalityCtr/'+controller+'/'+row.id
@@ -167,6 +170,7 @@ window.operateEvents_wl = {
             dataObj['counter'] = 1;
             dataStr = JSON.stringify(dataObj);
             setWlItemStatus(dataStr);
+            $table_wl.bootstrapTable('refresh');
         } else {};
     }
 };
