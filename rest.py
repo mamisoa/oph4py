@@ -2,7 +2,7 @@
 
 from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
 from yatl.helpers import A
-from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
+from .common import db, dbo, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
 from pydal.restapi import RestAPI, Policy
 
@@ -71,7 +71,7 @@ def beid():
     return infos_json
 
 
-# TODO: authenficication
+# TODO: authentification
 #  http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=phone:id_auth_user -> get phone from auth_user_id
 # http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=identity!:id_auth_user[first_name,last_name] -> denormalised (flat)
 @action('api/<tablename>/', method=['GET','POST','PUT']) # PUT ok
@@ -102,6 +102,17 @@ def api(tablename, rec_id=None):
     try:
         json_resp = RestAPI(db,policy)(request.method,tablename,rec_id,request.GET,request.json)
         # json_resp RestAPI(db,policy)(request.method,tablename,rec_id,request.GET,request.POST) 
+        db.commit()
+        return json_resp
+    except ValueError: 
+        response.status = 400
+        return
+
+@action('octopus/api/<tablename>/', method=['GET','POST','PUT']) # PUT ok
+@action('octopus/api/<tablename>/<rec_id>', method=['GET','PUT','DELETE']) # delete OK get OK post OK
+def octopus(tablename, rec_id=None):
+    try:
+        json_resp = RestAPI(dbo,policy)(request.method,tablename,rec_id,request.GET,request.json)
         db.commit()
         return json_resp
     except ValueError: 
