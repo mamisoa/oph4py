@@ -10,6 +10,7 @@ from py4web.utils.grid import Grid
 
 # import settings
 from .settings import LOCAL_URL, LOCAL_BEID, DEFAULT_PROVIDER, DEFAULT_SENIOR
+from .controllers import getMembershipId
 
 # table rows query to json string
 def rows2json (tablename,rows):
@@ -146,7 +147,7 @@ def worklist():
     routineid=db(db.procedure.exam_name.startswith("Routine")).select().first()['id'] # id
     procedureOptions = dropdownSelect(db.procedure,db.procedure.fields[2],routineid) # field exam_name defaultId = 4 (routine consultation)
     providerOptions=""
-    for provider in db((db.auth_user.membership>=1)&(db.auth_user.membership<=4)).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
+    for provider in db((db.auth_user.membership>=getMembershipId('Doctor'))&(db.auth_user.membership<=getMembershipId('Medical assistant'))).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
         if provider.last_name == DEFAULT_PROVIDER: # make "House" as default option
             providerOptions = CAT(providerOptions, OPTION(provider.last_name + ' '+ provider.first_name,_selected="selected",_value=str(provider.id)))
         else:

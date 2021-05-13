@@ -100,8 +100,10 @@ function operateFormatter_wl(value, row, index) {
         html.push('<a class="stopwatch ms-1" href="javascript:void(0)" title="Counter minus 1"><i class="fas fa-stopwatch"></i></a>');
     } else {
         html.push('<a class="unlock ms-1" href="javascript:void(0)" title="Set to process"><i class="fas fa-unlock"></i></a>');
+    };
+    if (modalityDict[row.modality] != 'none') {
+        html.push('<a class="modality_ctr ms-1" href="javascript:void(0)" title="Execute task"><i class="fas fa-heartbeat"></i></a>');
     }
-    html.push('<a class="modality_ctr ms-1" href="javascript:void(0)" title="Execute task"><i class="fas fa-heartbeat"></i></a>');
     if (row.modality == 'MD' && row.status_flag =='done'){
         html.push('<a class="summary ms-1" href="javascript:void(0)" title="Read summary"><i class="fas fa-th-list"></i></a>');
     } else {};
