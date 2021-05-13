@@ -59,12 +59,13 @@
 </div> <!-- end container fluid -->
 
 
-<!-- Modal -->
-<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<!-- Modal newUserModal -->
+<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">New user</h5>
+                <button id="btnGetUserId" type="button" class="btn btn-outline-dark btn-sm m-3"><i class="fas fa-id-card"></i></button>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -73,9 +74,14 @@
                         <div class="col">
                             <form id="userForm" enctype="multipart/form-data" method="POST">
                                 <div class="row mb-3">
+                                    <div class="col photoDiv visually-hidden">
+                                        <img id="photoidc" class="photoId" src="" alt="Photo from EID">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
                                     <div class="col">
                                         <label for="firstName" class="form-label">First name:</label>
-                                        <input id="firstName" type="text" class="form-control" name="first_name">
+                                        <input id="firstName" type="text" class="form-control" name="first_name" autocomplete="off">
                                         <div id="firstNameHelp" class="form-text">Enter your first name</div>
                                     </div>
                                     <div class="col">
@@ -87,13 +93,33 @@
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="username" class="form-label">Username:</label>
-                                        <input id="username" type="text" class="form-control" title="Username must not be blank and contain only letters, numbers and underscores." name="username" required pattern="\w+" autocomplete="username" />
+                                        <input id="username" type="text" class="form-control" title="Username must not be blank and contain only letters, numbers and underscores." name="username" required pattern="\w+" autocomplete="off"/>
                                         <div id="usernameHelp" class="form-text">Enter your username</div>
                                     </div>
                                     <div class="col">
                                         <label for="email" class="form-label">Email:</label>
-                                        <input id="email" type="email" class="form-control"  name="email">
+                                        <input id="email" type="email" class="form-control"  name="email" autocomplete="off">
                                         <div id="emailHelp" class="form-text">Enter your email</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="newUserdob" class="form-label">dob:</label>
+                                        <input id="newUserdob" type="date" class="form-control" name="dob">
+                                        <div id="dobHelp" class="form-text">Enter your dob</div>
+                                    </div>
+                                    <div class="col-2">
+                                        <label for="phone_prefix" class="form-label">Prefix:</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">+</span>
+                                            <input id="phone_prefix" type="text" class="form-control" name="phone_prefix">
+                                        </div>
+                                        <div id="prefixHelp" class="form-text">Enter country's prefix</div>
+                                    </div>
+                                    <div class="col">
+                                        <label for="phone" class="form-label">Mobile:</label>
+                                        <input id="phone" type="text" class="form-control" name="phone" autocomplete="off">
+                                        <div id="phoneHelp" class="form-text">Enter mobile phone</div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -124,6 +150,15 @@
                                         <div id="membershipHelp" class="form-text">Choose gender</div>
                                     </div>
                                 </div>
+                                <input id="newUserNationality" type="text" class="visually-hidden" name="nationality" />
+                                <input id="newUserbirthTown" type="text" class="visually-hidden" name="birth_town" />
+                                <input id="newUserbirthCountry" type="text" class="visually-hidden" name="birth_country" />
+                                <input id="newUserIdcNum" type="text" class="visually-hidden" name="idc_num" />
+                                <input id="newUserSsn" type="text" class="visually-hidden" name="ssn" />
+                                <input id="newUserPhoto" type="text" class="visually-hidden" name="photob64"/>
+                                <input id="newUserAddress" type="text" class="visually-hidden" name="address"/>
+                                <input id="newUserZip" type="text" class="visually-hidden" name="zipcode"/>
+                                <input id="newUserTown" type="text" class="visually-hidden" name="town"/>
                                 <input id="btnNewUserSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -137,7 +172,6 @@
         </div>
     </div>
 </div>
-
 
 <div>
     <p>Value is : [[=test]]</p>
@@ -158,10 +192,10 @@
 <script src="js/users.js"></script>
 <script type="text/javascript">
 // init bootstrat-tables
-var membership = [[=membership]];
+var membership = "[[=membership]]";
 var HOSTURL = "[[ = hosturl ]]";
 
-const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender:gender[id,sex]&@count=true'; // check users with membership -> OK
+const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?@lookup=gender:gender[id,sex],membership!:membership[membership,hierarchy]&@count=true&membership.membership.eq='+membership; // check users with membership -> OK
 
 var $table = $('#table').bootstrapTable({
     url: decodeURI(encodeURI(API_USER_LIST)),

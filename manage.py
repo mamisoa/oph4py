@@ -89,29 +89,29 @@ def user(rec_id="1"):
 @action('manage/users/<membership>')
 # @action.uses('manage/users.html', session, T, auth, db)
 @action.uses('manage/users.html', session, T, db)
-def users(membership=6):
+def users(membership='Patient'):
     hosturl = LOCAL_URL
     # user = auth.get_user()
     test="Test OK"
     try: # check if membership exists
-        check_group= db(db.membership.id == membership).isempty()
+        check_group= db(db.membership.membership == membership).isempty()
     except ValueError:
-        membership = 6
+        membership = 'Patient'
     else:
         if check_group is True: # if does not exist
-            membership = 6
+            membership = 'Patient'
     def group_icon(membership):
         dict_icon = {
-            1:'fa-users-cog',
-            2:'fa-user-md',
-            3:'fa-user-nurse',
-            4:'fa-user-nurse',
-            5:'fa-user-edit',
-            6:'fa-user'
+            'Admin':'fa-users-cog',
+            'Doctor':'fa-user-md',
+            'Nurse':'fa-user-nurse',
+            'Medical assistant':'fa-user-nurse',
+            'Administrative':'fa-user-edit',
+            'Patient':'fa-user'
         }
-        return dict_icon[int(membership)]
+        return dict_icon[membership]
     class_icon = group_icon(membership)
-    group = (db(db.membership.id == membership).select().first()).membership #name of membership
+    group = membership #name of membership
     roleOptions=""
     for role in db(db.membership.id>0).select(db.membership.ALL):
         if role.membership == group: # make "Patient" as default option
