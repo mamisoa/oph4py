@@ -35,7 +35,7 @@ from py4web.utils.tags import Tags
 from pydal.validators import CRYPT # to encrypt passwords
 
 # import settings
-from .settings import LOCAL_URL
+from .settings import LOCAL_URL, DB_OCTOPUS
 
 # grid
 from functools import reduce
