@@ -201,6 +201,7 @@
             </div> <!-- end div row mHx sHx -->
         </div>
     </div>
+    [[ if userMembership == 'Doctor':]]
     <div class="row history">
         <h3 class="big-title bg-info"><a role="button" data-bs-toggle="collapse" href=".oHx">Ocular history</a></h3>
         <div class="row mb-3 bg-neutral"> <!-- row oHx-->
@@ -425,8 +426,9 @@
             </div>
         </div> <!-- end row rx-->
     </div> <!-- end row oHx --> 
+    [[ pass ]]
 </div>
-
+[[ if userMembership == 'Doctor':]]
 <div class="container-fluid mb-3" id="cHxDiv">
     <div class="row">
         <div class="col text-center">
@@ -453,13 +455,14 @@
         </div>
     </div>
 </div>
-
+[[ pass ]]
 <div id="cx-container" class="container-fluid mb-3"> <!-- container clinical exams -->
     <div class="row mb-3 big-title bg-primary">
         <div>
             <h2><a role="button" data-bs-toggle="collapse" href=".clinical">Clinical exam</a></h2>
         </div>
     </div>
+    [[ if userMembership == 'Doctor':]]
     <div class="row mb-3 clinical">
         <div class="col">
             <div class="row mb-3">
@@ -732,6 +735,7 @@
             </div>
         </div>
     </div>
+    [[ pass ]]
     <div class="row mb-3 clinical">
         <div class="col">
             <div class="row">
@@ -826,7 +830,7 @@
         </div>
     </div>
 </div>
-
+[[ if userMembership == 'Doctor':]]
 <div id="cc-container" class="container-fluid mb-3"> <!-- container conclusions -->
     <div class="row mb-3">
         <div class="col">
@@ -1255,7 +1259,7 @@
         </div>
     </div>
 </div>
-
+[[ pass ]]
 <!-- Modal mxModal -->
 <div class="modal fade" id="mxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
