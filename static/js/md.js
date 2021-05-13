@@ -605,7 +605,10 @@ monitorValueChange('#postLeftForm', postFieldsArr);
 // domId = formId eg #motForm
 
 // todo: to implement
-oneFieldArr = ['#cHxForm','#motForm'];
+// key is domId, value is table
+oneFieldObj = {
+        '#cHxForm': 'current_hx','#motForm':'motility', '#phoForm':'phoria', '#pupForm':'pupils',
+        '#ccxForm':'ccx', '#ccxRForm':'ccx','#ccxLForm':'ccx','#folForm':'followup','#bilForm':'billing' };
 
 function setOneSubmit(domId,table,lat) {
     $(domId).submit(function(e){
