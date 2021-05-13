@@ -50,6 +50,11 @@ db = DAL(
     entity_quoting = True
 )
 
+dbo = DAL(
+    settings.DB_OCTOPUS,
+    folder=settings.DB_FOLDER
+)
+
 # #######################################################
 # define global objects that may or may not be used by the actions
 # #######################################################
