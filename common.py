@@ -52,7 +52,9 @@ db = DAL(
 
 dbo = DAL(
     settings.DB_OCTOPUS,
-    folder=settings.DB_FOLDER
+    folder=settings.DBO_FOLDER,
+    pool_size=settings.DB_POOL_SIZE,
+    migrate_enabled=False
 )
 
 # #######################################################

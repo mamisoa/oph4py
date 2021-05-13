@@ -273,6 +273,7 @@ $('#newWlItemForm').submit(function(e) {
                 delete itemDataObj['methodWlItemSubmit'];
                 getUuid()
                     .then(function(uuid) {
+                        console.log('WlItemObj:',itemDataObj);                   
                         itemDataObj["message_unique_id"] = uuid.unique_id;
                         let itemDataStr = JSON.stringify(itemDataObj);
                         crud('worklist','0', req, itemDataStr);

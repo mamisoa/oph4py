@@ -2,7 +2,7 @@
 This file defines the database models
 """
 
-from .common import db, Field, auth, groups # add auth for auto.signature
+from .common import db, dbo, Field, auth, groups # add auth for auto.signature
 from pydal.validators import *
 from py4web.utils.tags import Tags
 
@@ -582,3 +582,25 @@ db.define_table('certificates',
     Field('category','string'),
     Field('pdf_report','blob'),
     auth.signature)
+
+## OCTOPUS
+dbo.define_table('tbl_basic_patient',
+    Field('pk_patient',type='id'),
+    Field('uuid','string'),
+    Field('patientid','string'),
+    Field('name','string'),
+    Field('firstname','string'),
+    Field('birthdate','date'),
+    Field('gender','integer'),
+    Field('ethnicity','integer'),
+    Field('fk_physician_id','integer'),
+    Field('diagnosisleft','string'),
+    Field('diagnosisright','string'),
+    Field('riskfactors','string'),
+    Field('comment','string'),
+    Field('picture','blob'),
+    Field('lastcall','datetime'),
+    Field('deleteflag','string', defaut='0'),
+    Field('lastmodified','datetime'),
+    Field('last_exam','integer')
+    )
