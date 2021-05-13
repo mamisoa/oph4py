@@ -507,8 +507,8 @@ function getWlItemData(table,wlId,lat='',options='') {
 };
 
 // set submit forms
-var antFieldsArr = ['cornea','ant_chamb','iris','lens','other'],
-    postFieldsArr = ['vitreous','retina','macula','papil','other'];
+var antFieldsArr = ['outer','cornea','ant_chamb','iris','lens','other'],
+    postFieldsArr = ['post_chamb','vitreous','retina','macula','papil','other'];
 
 function setSubmit(domId,table, fieldsArr,lat) {
     $(domId).submit(function(e){
@@ -567,8 +567,10 @@ function updateHandlersFields(table,domId,fieldsArr,lat='') {
                         // console.log('input value: ', domId+' input[name='+field+']');
                         if ($(domId+' input[name='+field+']').val()!=item[field] && item[field] != 'None' ) {
                             // console.log(capitalize(field)+' changed');
+                            // inform if field has changed
                             let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
                             displayToast('warning', capitalize(field)+' was changed', capitalize(field)+' was changed by '+modder,6000);
+                            // update input field
                             $(domId+' input[name='+field+']').val(item[field]);
                         } else {};
                     } else {};
