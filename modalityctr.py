@@ -12,6 +12,7 @@ from py4web.utils.grid import Grid
 from .settings import LOCAL_URL, ASSETS_FOLDER
 
 from .manage import dropdownSelect, rows2json
+from .controllers import getMembershipId
 
 # tono controller
 @action('tono')
@@ -87,6 +88,8 @@ def md(wlId):
     import base64, ast
     from datetime import datetime
     hosturl = LOCAL_URL
+    user = auth.get_user()
+    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
     db.auth_user.password.readable = False
     db.auth_user.password.writable  = False
     wldb = db.worklist
@@ -100,7 +103,6 @@ def md(wlId):
         left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
     seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
         left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
-    user = auth.get_user()
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     userdb = db.auth_user
     modalityDict = {}
