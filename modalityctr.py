@@ -85,12 +85,8 @@ def initFields(wlId,table,lat=""):
 @action('modalityCtr/md/<wlId>')
 @action.uses(session, auth, db,'modalityCtr/md.html')
 def md(wlId):
-    import base64, ast, json , bottle
+    import base64
     from datetime import datetime
-    response = bottle.response
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
     response.set_header('Cross-Origin-Embedder-Policy','require-corp')
     response.set_header('Cross-Origin-Opener-Policy','same-origin')
     hosturl = LOCAL_URL
