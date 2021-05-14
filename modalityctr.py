@@ -83,13 +83,13 @@ def initFields(wlId,table,lat=""):
 
 @action('md')
 @action('modalityCtr/md/<wlId>')
-@action.uses('modalityCtr/md.html', session, auth, db)
+@action.uses(session, auth, db,'modalityCtr/md.html')
 def md(wlId):
     import base64, ast, json , bottle
     from datetime import datetime
     response = bottle.response
-    response.add_header('Cross-Origin-Embedder-Policy','require-corp')
-    response.add_header('Cross-Origin-Opener-Policy','same-origin')
+    response.set_header('Cross-Origin-Embedder-Policy','require-corp')
+    response.set_header('Cross-Origin-Opener-Policy','same-origin')
     hosturl = LOCAL_URL
     user = auth.get_user()
     userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
