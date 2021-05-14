@@ -88,9 +88,10 @@ def md(wlId):
     import base64, ast, json , bottle
     from datetime import datetime
     response = bottle.response
-    response.headers['Content-Type'] = 'text/html; charset=UTF-8'
-    # response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
-    # response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    # response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+    response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
+    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
     hosturl = LOCAL_URL
     user = auth.get_user()
     userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
