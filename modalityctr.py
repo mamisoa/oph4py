@@ -87,8 +87,10 @@ def initFields(wlId,table,lat=""):
 def md(wlId):
     import base64
     from datetime import datetime
-    response.set_header('Cross-Origin-Embedder-Policy','require-corp')
-    response.set_header('Cross-Origin-Opener-Policy','same-origin')
+    # response.set_header('Cross-Origin-Embedder-Policy','require-corp')
+    # response.set_header('Cross-Origin-Opener-Policy','same-origin')
+    response.headers['Cross-Origin-Embedder-Policy']='require-corp'
+    response.headers['Cross-Origin-Opener-Policy']='same-origin'
     hosturl = LOCAL_URL
     user = auth.get_user()
     userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
