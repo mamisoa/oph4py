@@ -88,7 +88,7 @@ def md(wlId):
     import base64, ast, json , bottle
     from datetime import datetime
     response = bottle.response
-    response.content_type = 'text/html; charset=utf-8'
+    response.headers['Content-Type'] = 'text/html; charset=UTF-8'
     response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
     hosturl = LOCAL_URL
