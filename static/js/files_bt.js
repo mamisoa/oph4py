@@ -132,7 +132,7 @@ window.operateEvents_wl = {
             setWlItemStatus(dataStr);
             $table_wl.bootstrapTable('refresh');
         }
-        let controller = 'md';
+        let controller = modalityDict[row.modality];
         let link = HOSTURL+'/myapp/modalityCtr/'+controller+'/'+row.id
         window.location.href = link;
     },

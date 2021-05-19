@@ -98,7 +98,8 @@ $('#btnWlItemAdd').click(function() {
                     o['modality_dest']=arr[a];
                     o['modality_name']= a; // only to get modality name
                     if (a == 'MD') {
-                        o['provider']=o['senior'];
+                        // o['provider']=o['senior'];
+                        o['counter']=1;
                     }
                     formDataObjMultiple.push(o);
                     // console.log('Object:',o);
@@ -129,7 +130,7 @@ function getCombo(id_procedure) {
             url: HOSTURL+"/myapp/api/combo?@lookup=id_procedure!:id_procedure[exam_name],id_modality!:id_modality&@count=true&id_procedure="+id_procedure,
             success: function(data) {
                 if (data.status != 'error' || data.count) {
-                    displayToast('success', 'GET combo exams', 'GET'+data.items[0]['id_procedure.exam_name']);
+                    displayToast('success', 'GET combo exams', 'GET '+data.items[0]['id_procedure.exam_name']);
                 } else {
                     displayToast('error', 'GET error', 'Cannot retrieve combo exams');
                 }
