@@ -229,6 +229,10 @@ def files():
         else:
             roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
     roleOptions = XML(roleOptions)
+    modalityDict = {}
+    rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
+    for row in rows:
+        modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
     return locals()
 
 ## manage_db
