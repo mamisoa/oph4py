@@ -285,7 +285,7 @@
                     </div>
                 </div>
                 <div class="row bg-right">
-                    <div class="col"> <!-- right table rx-->
+                    <div class="col"> <!-- right table tono-->
                         <table
                             id="tonoRight_tbl"
                             data-side-pagination="server"
@@ -319,7 +319,7 @@
                     </div>
                 </div>
                 <div class="row bg-left">
-                    <div class="col"> <!-- left table rx-->
+                    <div class="col"> <!-- left table tono-->
                         <table
                         id="tonoLeft_tbl"
                         data-toggle="table"
@@ -385,6 +385,31 @@
                         </table>
                     </div>
                 </div>
+                <div class="row bg-right">
+                    <div class="col"> <!-- right table km-->
+                        <table
+                        id="kmRight_tbl"
+                        data-side-pagination="server"
+                        data-pagination="true"
+                        data-page-size="5"
+                        data-search="false"
+                        data-query-params="queryParams"
+                        data-response-handler="responseHandler_km"
+                        data-detail-formatter="detailFormatter_km"
+                        data-detail-view="true"
+                        data-detail-view-icon="true"
+                        >
+                            <thead>
+                                <tr>
+                                    <th data-field="timestamp" data-sortable="false">Timestamp</th>
+                                    <th data-field="formulak1" data-sortable="false">K1</th>
+                                    <th data-field="formulak2" data-sortable="false">K2</th>
+                                    <th data-field="operate" data-formatter="operateFormatter_km" data-events="operateEvents_km">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
             </div>
             <div class="col"> <!-- left column -->
                 <div class="row">
@@ -422,6 +447,31 @@
                             </thead>
                         </table>
                     </div> 
+                </div>
+                <div class="row bg-left">
+                    <div class="col"> <!-- left table km-->
+                        <table
+                        id="kmLeft_tbl"
+                        data-side-pagination="server"
+                        data-pagination="true"
+                        data-page-size="5"
+                        data-search="false"
+                        data-query-params="queryParams"
+                        data-response-handler="responseHandler_km"
+                        data-detail-formatter="detailFormatter_km"
+                        data-detail-view="true"
+                        data-detail-view-icon="true"
+                        >
+                            <thead>
+                                <tr>
+                                    <th data-field="timestamp" data-sortable="false">Timestamp</th>
+                                    <th data-field="formulak1" data-sortable="false">K1</th>
+                                    <th data-field="formulak2" data-sortable="false">K2</th>
+                                    <th data-field="operate" data-formatter="operateFormatter_km" data-events="operateEvents_km">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div> <!-- end row rx-->
@@ -2409,9 +2459,22 @@ var $cert_tbl = $('#cert_tbl').bootstrapTable({
     url: API_CERT
 });
 
+// table listing km right eye by user
+const API_KMRIGHT = HOSTURL + "/myapp/api/km?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+var $kmRight = $('#kmRight_tbl').bootstrapTable({
+    url: API_KMRIGHT
+});
+
+// table listing km right eye by user
+const API_KMLEFT = HOSTURL + "/myapp/api/km?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
+    url: API_KMLEFT
+});
+
 // tables list
 const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl',
     '#rxRight_tbl','#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl',
+    '#kmRight_tbl', '#kmLeft_tbl',
     '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl', '#cert_tbl'];
 
 // init tinymce
