@@ -50,8 +50,8 @@ $('#btnMxRx').click(function(){
           if (data.count > 0 && data.status != 'error') {
               let html = [];
               for (item of dataObj) {
-                  prescObj['onset']=item['onset'];
-                  prescObj['ended']=item['ended'];
+                  prescObj['onset']=item['onset'].split('-').reverse().join('/');
+                  prescObj['ended']=item['ended'].split('-').reverse().join('/');
                   let content = renderMedicObj(item);
                   contentAggregate += content;
                   html.push('<tr>');
