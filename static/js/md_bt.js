@@ -684,6 +684,18 @@ function detailFormatter_km(index, row) {
     return html.join('');
 };
 
+function rowStyle_km(row,index) {
+    console.log(index);
+    let bg = "white";
+    if (index %2 ===0) {
+        bg = "papayawhip";
+    }
+    return { 
+                css: { 'background-color': bg }
+            };
+};
+
+
 // tono tables parameters
 // todo: add search to select techo
 function responseHandler_tono(res) { 
