@@ -685,7 +685,6 @@ function detailFormatter_km(index, row) {
 };
 
 function rowStyle_km(row,index) {
-    console.log(index);
     let bg = "white";
     if (index %2 ===0) {
         bg = "papayawhip";

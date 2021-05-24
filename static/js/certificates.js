@@ -15,6 +15,21 @@ certificateObj['centerurl']=usermdObj['officeurl']
 
 certificateObj['qrcode']='Signed by '+certificateObj['doctortitle']+' uuid:';
 
+var reportObj = {};
+
+function getRightAutoRx(){
+    return $.get(API_RXRIGHT+'&rx_origin.eq=autorx');
+};
+
+function getLeftAutoRx(){
+    return $.get(API_RXLEFT+'&rx_origin.eq=autorx');
+};
+
+$.when(getRightAutoRx(),getLeftAutoRx()).done(function(autorx1,autorx2){
+    console.log('right:',autorx1[0]['items'][0]['sph_far']);
+    console.log('left:',autorx2[0]['items'][0]['sph_far']);
+});
+
 function presenceCert(){
     let certdefault=['<p>Je, soussigné Docteur en Médecine, certifie avoir examiné: </p>'];
     certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
@@ -76,6 +91,23 @@ function docCert() {
     let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
     let timecreation = creationstamp.toJSON().slice(11,19);
     certdefault.push('<p> ce '+ datecreation + ' à ' + timecreation+'.</p>');
+    certdefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
+    certdefault.push('<p>Cordialement,</p>');
+    certdefault.push('<p><strong>Dr.'+userObj['last_name'].toUpperCase()+' '+userObj['first_name']+' '+'</strong></p>');
+    return certdefault.join('');
+};
+
+function reportCert() {
+    let certdefault =[];
+    certdefault.push('<p>Cher Confrère, chère Consoeur, </p>');
+    certdefault.push('<p>J\'ai examiné: </p>');
+    certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
+    let dbstamp = new Date(wlObj['worklist']['created_on']);
+    let creationstamp = dbstamp.addHours(timeOffsetInHours*2);
+    let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
+    let timecreation = creationstamp.toJSON().slice(11,19);
+    certdefault.push('<p> ce '+ datecreation + ' à ' + timecreation+'.</p>');
+    certdefault.push('<p> L\'examen montre: <br/>');
     certdefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
     certdefault.push('<p>Cordialement,</p>');
     certdefault.push('<p><strong>Dr.'+userObj['last_name'].toUpperCase()+' '+userObj['first_name']+' '+'</strong></p>');
