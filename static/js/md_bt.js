@@ -524,21 +524,21 @@ function responseHandler_rx(res) {
             'sph_far': list[i].sph_far,
             'cyl_far': list[i].cyl_far,
             'axis_far': list[i].axis_far,
-            'rx_far': list[i].sph_far+'('+list[i].cyl_far+'x'+list[i].axis_far+')',
+            'rx_far': list[i].sph_far+'('+list[i].cyl_far+'x'+list[i].axis_far+'°)',
             'se_far': (parseFloat(list[i].sph_far)+0.5*parseFloat(list[i].cyl_far)).toFixed(2),
             'va_int': list[i].va_int,
             'opto_int': list[i].opto_int,
             'sph_int': list[i].sph_int,
             'cyl_int': list[i].cyl_int,
             'axis_int': list[i].axis_int,
-            'rx_int': list[i].sph_int+'('+list[i].cyl_int+'x'+list[i].axis_int+')',
+            'rx_int': list[i].sph_int+'('+list[i].cyl_int+'x'+list[i].axis_int+'°)',
             'va_close': list[i].va_close,
             'add': (parseFloat(list[i].sph_close)-parseFloat(list[i].sph_far)).toFixed(2),
             'opto_close': list[i].opto_close,
             'sph_close': list[i].sph_close,
             'cyl_close': list[i].cyl_close,
             'axis_close': list[i].axis_close,
-            'rx_close': list[i].sph_close+'('+list[i].cyl_close+'x'+list[i].axis_close+')',
+            'rx_close': list[i].sph_close+'('+list[i].cyl_close+'x'+list[i].axis_close+'°)',
             'note': list[i].note,
             'laterality': list[i]['laterality'],
             'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
@@ -616,6 +616,72 @@ function cellStyle_formula(value,row) {
             'background-color': bg
         }
     };
+};
+
+// km tables
+function responseHandler_km(res) { // used if data-response-handler="responseHandler_wl"
+    let list = res.items;
+    let display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'id_auth_user': list[i].id_auth_user,
+            'id_worklist': list[i].id_worklist,
+            'timestamp': list[i]['timestamp'].split('T').join(' '),
+            'laterality': list[i]['laterality'],
+            'k1': list[i].k1,
+            'axis1': list[i].axis1,
+            'k2': list[i].k2,
+            'axis2': list[i].axis2,
+            'note': list[i].note,
+            'formulak1': list[i].k1+'D x'+list[i].axis1+'°',
+            'formulak2': list[i].k2+'D x'+list[i].axis2+'°',
+            'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
+            'modified_by': list[i]['mod.id'],
+            'modified_on': list[i]['modified_on'],
+            'created_by': list[i]['creator.id'],
+            'created_by_name': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
+            'created_on': list[i]['created_on']
+        });
+    });
+    return {    rows: display, 
+                total: res.count,
+                };
+};
+
+function operateFormatter_km(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="edit" href="javascript:void(0)" title="Edit tono/pachy"><i class="fas fa-edit"></i></a>');
+    html.push('<a class="cache ms-1" href="javascript:void(0)" title="Cache km"><i class="fas fa-file-import"></i></a>');
+    html.push('</div>');
+    return html.join('');
+  };
+
+window.operateEvents_km = {
+    'click .edit': function (e, value, row, index) {
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        window.location.href = '/myapp/modalityCtr/autorx/'+row.id_worklist;
+    },
+    'click .cache': function (e, value, row, index) {
+        // todo: to implement
+    }
+};
+
+function detailFormatter_km(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">K1: </span>'+ row.k1+'D x '+row.axis1+'°</p>');
+    html.push('<p class=""><span class="fw-bold">K2: </span>'+ row.k2+'D x '+row.axis2+'°</p>');
+    html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ row.laterality +'</p>');
+    html.push('</div>');
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Timestamp: </span>'+ row.timestamp +'</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by_name+' on '+row.created_on+'</p>');
+    html.push('<p class=""><span class="fw-bold">Modified by: </span>'+ row.modified_by_name+' on '+row.modified_on+'</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
 };
 
 // tono tables parameters
