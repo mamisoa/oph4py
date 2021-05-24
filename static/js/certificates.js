@@ -19,7 +19,7 @@ function presenceCert(){
     let certdefault=['<p>Je, soussigné Docteur en Médecine, certifie avoir examiné: </p>'];
     certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
     let today = new Date().addHours(timeOffsetInHours).toJSON().slice(11,19);
-    let creationstamp = new Date(wlObj['worklist']['created_on']).addHours(timeOffsetInHours);
+    let creationstamp = new Date(wlObj['worklist']['created_on']).addHours(timeOffsetInHours*2);
     let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
     let timecreation = creationstamp.toJSON().slice(11,19);
     certdefault.push('<p> ce '+ datecreation + ' de ' + timecreation +' à '+ today+'.</p>');
@@ -31,10 +31,10 @@ function sickCert(onset,ended,exit) {
     let certdefault=['<p>Je, soussigné Docteur en Médecine, certifie avoir examiné: </p>'];
     certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
     let today = new Date().addHours(timeOffsetInHours).toJSON().slice(11,19);
-    let creationstamp = new Date(wlObj['worklist']['created_on']).addHours(timeOffsetInHours);
+    let creationstamp = new Date(wlObj['worklist']['created_on']).addHours(timeOffsetInHours*2);
     let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
     let timecreation = creationstamp.toJSON().slice(11,19);
-    certdefault.push('<p> ce '+ datecreation + ' à ' + timecreation+'.</p>');
+    certdefault.push('<p> ce '+ datecreation + ' de ' + timecreation +' à '+ today+'.</p>');
     let start = onset.split('-').reverse().join('/'), end = ended.split('-').reverse().join('/');
     certdefault.push('<p> Ce patient est inapte au travail du <strong>'+start+' au '+ end +' inclus</strong>.</p>');
     if (exit == 'no') {
@@ -57,7 +57,7 @@ function freeCert() {
     let certdefault =[];
     certdefault.push('<p>J\'ai examiné: </p>');
     certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
-    let creationstamp = new Date(wlObj['worklist']['created_on']).addHours(timeOffsetInHours);
+    let creationstamp = new Date(wlObj['worklist']['created_on']).addHours(timeOffsetInHours*2);
     let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
     let timecreation = creationstamp.toJSON().slice(11,19);
     certdefault.push('<p> ce '+ datecreation + ' à ' + timecreation+'.</p>');
@@ -72,7 +72,7 @@ function docCert() {
     certdefault.push('<p>Cher Confrère, chère Consoeur, </p>');
     certdefault.push('<p>J\'ai examiné: </p>');
     certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
-    let creationstamp = new Date(wlObj['worklist']['created_on']).addHours(timeOffsetInHours);
+    let creationstamp = new Date(wlObj['worklist']['created_on']).addHours(timeOffsetInHours*2);
     let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
     let timecreation = creationstamp.toJSON().slice(11,19);
     certdefault.push('<p> ce '+ datecreation + ' à ' + timecreation+'.</p>');
