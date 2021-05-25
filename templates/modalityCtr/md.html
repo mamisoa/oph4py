@@ -2462,13 +2462,13 @@ var $cert_tbl = $('#cert_tbl').bootstrapTable({
 });
 
 // table listing km right eye by user
-const API_KMRIGHT = HOSTURL + "/myapp/api/km?id_auth_user.eq="+patientId+"laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_KMRIGHT = HOSTURL + "/myapp/api/km?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 var $kmRight = $('#kmRight_tbl').bootstrapTable({
     url: API_KMRIGHT
 });
 
 // table listing km right eye by user
-const API_KMLEFT = HOSTURL + "/myapp/api/km?id_auth_user.eq="+patientId+"laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_KMLEFT = HOSTURL + "/myapp/api/km?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
     url: API_KMLEFT
 });
