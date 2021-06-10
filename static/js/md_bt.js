@@ -147,6 +147,7 @@ function queryParams(params) {
             toggle="";
         }
     }
+    console.log('s:',s);
     return s; // remove the first &
 };
 
