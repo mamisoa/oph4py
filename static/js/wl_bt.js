@@ -8,7 +8,7 @@ function queryParams_wl(params) {
         s_wl =""
     } else {
         if (search[0]!= undefined) {
-            s_wl = "id_auth_user.last_name.startswith=" + capitalize(search[0]);
+            s_wl = "id_auth_user.last_name.contains=" + search[0];
         } else {
             s_wl = "";
         };
