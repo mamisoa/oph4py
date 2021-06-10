@@ -57,7 +57,7 @@ function queryParams_wl(params) {
         // console.log(params.offset);
         s_wl += "&@limit="+params.limit;
     }
-    console.log('s_wl',s_wl);
+    // console.log('s_wl',s_wl);
     return decodeURI(encodeURI(s_wl));
 };
 
