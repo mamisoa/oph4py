@@ -1091,10 +1091,10 @@ const btnArr = ['#btnAddKmRight','#btnAddKmLeft', '#btnAddRxRight', '#btnAddRxLe
 <script type="text/javascript">
 
 // init tables
-const API_RXRIGHT = HOSTURL + "/myapp/api/rx?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+patientId+"&@order=~id";
-const API_RXLEFT = HOSTURL + "/myapp/api/rx?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+patientId+"&@order=~id";
-const API_KMRIGHT = HOSTURL + "/myapp/api/km?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+patientId+"&@order=~id";
-const API_KMLEFT = HOSTURL + "/myapp/api/km?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_auth_user.eq="+patientId+"&@order=~id";
+const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_KMRIGHT = HOSTURL + "/myapp/api/km?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_KMLEFT = HOSTURL + "/myapp/api/km?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 
 var $rxRight = $('#rxRight_tbl').bootstrapTable({
     url: API_RXRIGHT
