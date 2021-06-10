@@ -42,6 +42,7 @@ def autorx(wlId):
     hosturl = LOCAL_URL
     user = auth.get_user()
     wldb = db.worklist
+    patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
         join=[
             db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
