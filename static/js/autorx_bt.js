@@ -74,18 +74,12 @@ function responseHandler_km(res) { // used if data-response-handler="responseHan
 
 function queryParams(params) {
     var s="";
-    if (params.limit != "0") {
-        // console.log(params.offset);
-        s += "@limit="+params.limit;
-    } else {
-        s=""
-    };
     if (params.offset != "0") {
-        // console.log(params.offset);
-        s += "&@offset="+params.offset;
-    } else {
-        s=""
-    };
+        s =="" ? s += "@offset=" + params.offset : s += "&@offset=" + params.offset;
+    }
+    if (params.limit != "0") {
+        s =="" ? s += "@limit=" + params.limit: s += "&@limit=" + params.limit
+    }
     console.log('s:',s);
     // return decodeURI(encodeURI(s.slice(1-s.length))); // remove the first &
     return s; // remove the first &
