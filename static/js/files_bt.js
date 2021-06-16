@@ -76,7 +76,7 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'procedure': list[i]['procedure.exam_name'],
             'modality': list[i]['modality.modality_name'],
             'laterality': list[i]['laterality'],
-            'requested_time': list[i]['requested_time'].split('T').join(' '),
+            'requested_time': '<strong>'+list[i]['requested_time'].split('T').join('</strong> '),
             'status_flag': list[i]['status_flag'],
             'counter': list[i]['counter'],
             'warning': list[i]['warning'],
@@ -197,6 +197,22 @@ function counterFormatter_wl(value,row){
     html.push('<div class="d-flex justify-content-between"><span class="badge rounded-pill bg-primary mx-1">'+row.counter+'</span>');
     html.push('</div>');
     return html.join('');
+};
+
+function cellStyle_timeslot(value,row) {
+    let statusColor = {'requested':'#ffcc99' , 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999', 'doctorDone': '#00FF00' };
+    let bg;
+    if (row.modality == 'MD' && row.status_flag =='done'){
+        bg = statusColor['doctorDone'];
+    } else {
+        bg = statusColor[row.status_flag];
+    };
+    return {    
+        css: { 
+            'font-weight': 'bold',
+            'background-color': bg
+        }
+    };
 };
 
 function rowAttributes_wl(row,index) { // set tooltip values
