@@ -61,6 +61,12 @@ function queryParams_wl(params) {
     return decodeURI(encodeURI(s_wl));
 };
 
+function styleTimeslot(ts) {
+    let arr = ts.split('T');
+    let res = '<strong>'+arr[0].split('-').reverse().join('/')+'</strong> '+arr[1];
+    return res;
+}
+
 function responseHandler_wl(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
     let display = [];
@@ -76,7 +82,7 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'procedure': list[i]['procedure.exam_name'],
             'modality': list[i]['modality.modality_name'],
             'laterality': list[i]['laterality'],
-            'requested_time': '<strong>'+list[i]['requested_time'].split('T').join('</strong> '),
+            'requested_time': styleTimeslot(list[i]['requested_time']),
             'status_flag': list[i]['status_flag'],
             'counter': list[i]['counter'],
             'warning': list[i]['warning'],
