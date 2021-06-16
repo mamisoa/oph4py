@@ -128,6 +128,7 @@ function refreshList(listName){
             $('#ulUserItems').append('<li class="list-group-item">Membership: <span class="fw-bold">' + checkIfDataIsNull(item.membership['membership']) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Date of birth: <span class="fw-bold">' + checkIfDataIsNull(item.dob) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Gender: <span class="fw-bold">' + checkIfDataIsNull(item.gender['sex']) + '</span></li>');
+            $('#ulUserItems').append('<li class="list-group-item">SSN: <span class="fw-bold">' + checkIfDataIsNull(item.ssn) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Marital status: <span class="fw-bold">' + checkIfDataIsNull(item['marital.marital_status']) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Nationality: <span class="fw-bold">' + checkIfDataIsNull(item.nationality) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Country of birth: <span class="fw-bold">' + checkIfDataIsNull(item.birth_country) + '</span></li>');
