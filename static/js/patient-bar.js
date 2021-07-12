@@ -3,8 +3,8 @@
 $('input[name=id_auth_user]').val(patientObj['id']); // set patient id in forms
 $('input[name=id_worklist]').val(wlObj['worklist']['id']); // set patient id in forms
 $('#wlItemDetails .patientName').html(patientObj['first_name']+' '+patientObj['last_name'].toUpperCase());
-$('#wlItemDetails .patientDob').html(patientObj['dob'].split('-').reverse().join('/')+' ('+getAge(patientObj['dob'])+'yo)');
-$('#wlItemDetails .patientId').html('#'+patientObj['id']);
+patientObj['dob'] != null ? $('#wlItemDetails .patientDob').html(patientObj['dob'].split('-').reverse().join('/')+' ('+getAge(patientObj['dob'])+'yo)') : $('#wlItemDetails .patientDob').html('DOB: n/a');
+$('#wlItemDetails .patientId').html('#'+patientObj['id']+' NISS: '+checkIfDataIsNull(patientObj['ssn']));
 $('#wlItemDetails .timeslot').html(wlObj['worklist']['requested_time'].split('T').join(' '));
 $('#wlItemDetails .modality').html(wlObj['modality']['modality_name']);
 $('#wlItemDetails .laterality').html(wlObj['worklist']['laterality']);
