@@ -89,11 +89,9 @@ def api(tablename, rec_id=None):
     db.photo_id.created_by.readable = db.photo_id.modified_by.readable = db.photo_id.created_on.readable = db.photo_id.modified_on.readable = db.photo_id.id_auth_user.readable = True
     if (tablename == "auth_user" and request.method == "PUT" and "id" in request.json): # check if email, password, first_name, last_name 
         # request.json["password"]=db(db.auth_user.id == 1).select(db.auth_user.password).first()[0]
-        db.auth_user.password.readable = False
-        db.auth_user.password.writable  = False
         row=db(db.auth_user.id == request.json["id"]).select(db.auth_user.ALL).first()
-        #if "password" not in request.json:
-        #    request.json["password"]= row.password
+        if "password" not in request.json:
+            request.json["password"]= row.password
         if "email" not in request.json:
             request.json["email"]= row.email
         if "first_name" not in request.json:
