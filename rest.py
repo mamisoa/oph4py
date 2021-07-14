@@ -76,6 +76,7 @@ def beid():
 # http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=identity!:id_auth_user[first_name,last_name] -> denormalised (flat)
 @action('api/<tablename>/', method=['GET','POST','PUT']) # PUT ok
 @action('api/<tablename>/<rec_id>', method=['GET','PUT','DELETE']) # delete OK get OK post OK
+@action.uses(db)
 def api(tablename, rec_id=None):
     db.phone.id_auth_user.writable= db.address.id_auth_user.writable = True
     db.phone.id_auth_user.readable = db.address.id_auth_user.readable = True
@@ -88,9 +89,11 @@ def api(tablename, rec_id=None):
     db.photo_id.created_by.readable = db.photo_id.modified_by.readable = db.photo_id.created_on.readable = db.photo_id.modified_on.readable = db.photo_id.id_auth_user.readable = True
     if (tablename == "auth_user" and request.method == "PUT" and "id" in request.json): # check if email, password, first_name, last_name 
         # request.json["password"]=db(db.auth_user.id == 1).select(db.auth_user.password).first()[0]
+        db.auth_user.password.readable = False
+        db.auth_user.password.writable  = False
         row=db(db.auth_user.id == request.json["id"]).select(db.auth_user.ALL).first()
-        if "password" not in request.json:
-            request.json["password"]= row.password
+        #if "password" not in request.json:
+        #    request.json["password"]= row.password
         if "email" not in request.json:
             request.json["email"]= row.email
         if "first_name" not in request.json:
@@ -110,6 +113,7 @@ def api(tablename, rec_id=None):
 
 @action('octopus/api/<tablename>/', method=['GET','POST','PUT']) # PUT ok
 @action('octopus/api/<tablename>/<rec_id>', method=['GET','PUT','DELETE']) # delete OK get OK post OK
+@action.uses(db)
 def octopus(tablename, rec_id=None):
     try:
         json_resp = RestAPI(dbo,policy)(request.method,tablename,rec_id,request.GET,request.json)
