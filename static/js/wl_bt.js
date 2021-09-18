@@ -231,13 +231,24 @@ function counterFormatter_wl(value,row){
     let html = [];
     let lastmodif = Date.parse(row.modified_on);
     var rightnow = new Date();
-    // console.log('Rightnow:',rightnow);
-    // console.log('Lastmodif:',lastmodif);
+    // console.log('Rightnow:'+row.id,rightnow);
+    // console.log('Lastmodif:'+row.id,lastmodif);
     let elapse = Math.round((rightnow-lastmodif)/1000)-timeOffset;
-    // console.log('elapse:',elapse);
+    // console.log('elapse:'+row.id,elapse);
+    let elapsestyle = "bg-light text-dark";
+    // todo: only if done
+    if (elapse >= (30*60) && elapse <= (45*60)) {
+        elapsestyle ="bg-warning text-dark";
+    } else if (elapse > (24*60*60)) {
+        elapsestyle ="d-none";
+    } else if (elapse > (60*60)) {
+        elapsestyle ="bg-danger";
+    };
     timer_id.push('#timer_'+row.id);
     html.push('<div class="d-flex justify-content-between"><span class="badge rounded-pill bg-primary mx-1">'+row.counter+'</span>');
-    html.push('<span id="timer_'+row.id+'" class="badge rounded-pill bg-light text-dark mx-1">'+elapse+'</span>');
+    if (row.status_flag != "done") {
+        html.push('<span id="timer_'+row.id+'" class="badge rounded-pill '+elapsestyle+' mx-1">'+elapse+'</span>');
+    };
     html.push('</div>');
     return html.join('');
 };
