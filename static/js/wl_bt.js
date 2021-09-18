@@ -238,7 +238,7 @@ function counterFormatter_wl(value,row){
     let elapsestyle = "bg-light text-dark";
     if (elapse >= (30*60) && elapse <= (45*60)) {
         elapsestyle ="bg-warning text-dark";
-    } else if (elapse > (60*60)) {
+    } else if (elapse > (45*60)) {
         elapsestyle ="bg-danger";
     };
     timer_id.push('#timer_'+row.id);
