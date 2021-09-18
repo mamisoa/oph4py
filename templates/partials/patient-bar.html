@@ -1,18 +1,13 @@
 
 <div class="container-fluid mb-1 patient-id sticky-top" id="wlItemDetails">
     <div class="row mb-3 d-flex justify-content-center align-items-center">
-        <div id="patientIdDiv" class="col-4 text-end">
+        <div id="patientIdDiv" class="col text-end">
             <h2 class="patientName"></h2>
             <h3 class="patientDob text-muted"></h3>
             <h4 class="patientId fst-italic"></h4>
         </div>
-        <div class="col-4" id="photoDiv">
+        <div class="col" id="photoDiv">
             <img id="photoId" src="" alt="Photo from EID">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-start align-items-center">
-            <a class="btn btn-primary" href="javascript:history.back()" role="button">Back</a>
         </div>
         <div class="col">
             <p>Task: #[[ = wlId ]] </p>
@@ -30,14 +25,19 @@
             <p>Warning: <span class="warning bg-danger text-wrap p-1" style="color: white;"></span></p>
             <p>Status: <span class="status"></span></p>
         </div>
-        <div class="col d-flex justify-content-end align-items-center">
-            <button class="btn btn-warning mx-2" id="btnUnlockTask" type="button">Unlock <i class="fas fa-unlock"></i></button>
-            <button class="btn btn-primary mx-2" id="btnTaskDone" type="button">Done <i class="fas fa-check"></i></button>
-        </div>
     </div>
     <div class="row">
         <div id="mdHistory" class="col d-flex justify-content-center align-items-center">
-            Older MD
+            Previous contacts:
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-start align-items-center">
+            <a class="btn btn-primary" href="javascript:history.back()" role="button">Back</a>
+        </div>
+        <div class="col d-flex justify-content-end align-items-center">
+            <button class="btn btn-warning mx-2" id="btnUnlockTask" type="button">Unlock <i class="fas fa-unlock"></i></button>
+            <button class="btn btn-primary mx-2" id="btnTaskDone" type="button">Done <i class="fas fa-check"></i></button>
         </div>
     </div>
 </div>
