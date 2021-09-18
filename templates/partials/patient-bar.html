@@ -35,6 +35,11 @@
             <button class="btn btn-primary mx-2" id="btnTaskDone" type="button">Done <i class="fas fa-check"></i></button>
         </div>
     </div>
+    <div class="row">
+        <div id="mdHistory" class="col d-flex justify-content-center align-items-center">
+            Older MD
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
@@ -47,4 +52,24 @@ const seniorDict = [[ = XML(seniorDict) ]];
 const seniorObj = seniorDict[0];
 const patientObj = wlDict[0]['auth_user'];
 const patientId = patientObj['id'];
+const mdHistory = [[ 
+    try: mdHistory
+    except NameError: response.write('[]')
+    else: response.write(XML(mdHistory))
+    pass
+    ]];
+
+// MD history
+mdHistory.forEach(function (arrayItem) {
+    let id = arrayItem.id;
+    let ts = arrayItem.requested_time;
+    let setbtnclass = ""
+    if (id == wlId) {
+        setbtnclass = "disabled";
+    };
+    console.log("Id: ", id);
+    console.log("Timeslot: ", ts);
+    document.getElementById("mdHistory").innerHTML += '<button class="btn btn-primary '+setbtnclass+' mx-2 btnmdHistory" data-mdId="'+id+'" type="button">'+ts+'</button>';
+    });
+
 </script>
