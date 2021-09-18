@@ -381,6 +381,13 @@ function queryParams_wl(params) {
     return decodeURI(encodeURI(s_wl));
 };
 
+function styleTimeslot(ts) {
+    let arr = ts.split('T');
+    // arr[1] is time arr[0] is date
+    let res = '<strong>'+arr[0].split('-').reverse().join('/')+'</strong> '+arr[1];
+    return res;
+};
+
 function responseHandler_wl(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
     let display = [];
@@ -395,7 +402,7 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'procedure': list[i]['procedure.exam_name'],
             'modality': list[i]['modality.modality_name'],
             'laterality': list[i]['laterality'],
-            'requested_time': list[i]['requested_time'],
+            'requested_time': styleTimeslot(list[i]['requested_time']),
             'status_flag': list[i]['status_flag'],
             'counter': list[i]['counter'],
             'warning': list[i]['warning'],
@@ -488,7 +495,7 @@ function counterFormatter_wl(value,row){
     let elapsestyle = "bg-light text-dark";
     if (elapse >= (30*60) && elapse <= (45*60)) {
         elapsestyle ="bg-warning text-dark";
-    } else if (elapse > (60*60)) {
+    } else if (elapse > (45*60)) {
         elapsestyle ="bg-danger";
     };
     timer_id.push('#timer_'+row.id);
