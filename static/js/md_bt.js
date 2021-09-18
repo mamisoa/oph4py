@@ -486,17 +486,16 @@ function counterFormatter_wl(value,row){
     let elapse = Math.round((rightnow-lastmodif)/1000)-timeOffset;
     // console.log('elapse:'+row.id,elapse);
     let elapsestyle = "bg-light text-dark";
-    // todo: only if done
     if (elapse >= (30*60) && elapse <= (45*60)) {
         elapsestyle ="bg-warning text-dark";
-    } else if (elapse > (24*60*60)) {
-        elapsestyle ="d-none";
     } else if (elapse > (60*60)) {
         elapsestyle ="bg-danger";
     };
     timer_id.push('#timer_'+row.id);
+    // console.log('row.status=',row.status_flag);
     html.push('<div class="d-flex justify-content-between"><span class="badge rounded-pill bg-primary mx-1">'+row.counter+'</span>');
-    if (row.status_flag != "done") {
+    // if over 1 day, elapse counter is not shown
+    if (elapse < (24*60*60)) {
         html.push('<span id="timer_'+row.id+'" class="badge rounded-pill '+elapsestyle+' mx-1">'+elapse+'</span>');
     };
     html.push('</div>');
