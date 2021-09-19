@@ -163,3 +163,11 @@ def companies(path=None):
                 orderby=[db.auth_user.username],
                 search_queries=[['Search by Name', lambda val: db.auth_user.username.contains(val)]])
     return dict(grid=grid)
+
+@action('listdir')
+@action.uses('listdir.html', session, auth.user, db, flash)
+def listdir():
+    user = auth.get_user()
+    hosturl = LOCAL_URL
+    test = 5
+    return locals()
