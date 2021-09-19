@@ -14,6 +14,13 @@ from .settings import LOCAL_URL, ASSETS_FOLDER
 from .manage import dropdownSelect, rows2json
 from .controllers import getMembershipId
 
+# get standard index in db for patient/user profile
+mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
+genderId = {
+    db(db.gender.sex == 'Male').select(db.gender.id).first().id : "Male",
+    db(db.gender.sex == 'Female').select(db.gender.id).first().id : "Female",
+    db(db.gender.sex == 'Other').select(db.gender.id).first().id : "Other" }
+
 # tono controller
 @action('tono')
 @action('modalityCtr/tono/<wlId>')
@@ -110,7 +117,8 @@ def md(wlId):
         left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     userdb = db.auth_user
-    mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
+    # mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
+    genderObj = genderId
     mdHistory = db((db.worklist.modality_dest == mdId) & (db.worklist.id_auth_user == patientId)).select().as_json()
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
