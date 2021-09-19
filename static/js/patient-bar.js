@@ -4,9 +4,7 @@ $('input[name=id_auth_user]').val(patientObj['id']); // set patient id in forms
 $('input[name=id_worklist]').val(wlObj['worklist']['id']); // set patient id in forms
 $('#wlItemDetails .patientName').html(patientObj['first_name']+' '+patientObj['last_name'].toUpperCase());
 patientObj['dob'] != null ? $('#wlItemDetails .patientDob').html(patientObj['dob'].split('-').reverse().join('/')+' ('+getAge(patientObj['dob'])+'yo)') : $('#wlItemDetails .patientDob').html('DOB: n/a');
-let gender;
-patientObj['gender'] == 1 ? (gender = 'Male') : (patientObj['gender'] == 2 ? gender = 'Female': gender = 'Other');
-$('#wlItemDetails .patientGender').html('Gender: '+ gender);
+$('#wlItemDetails .patientGender').html('Gender: '+ genderIdObj[patientObj['gender']]);
 $('#wlItemDetails .patientId').html('#'+patientObj['id']+' NISS: '+checkIfDataIsNull(patientObj['ssn']));
 $('#wlItemDetails .timeslot').html(wlObj['worklist']['requested_time'].split('T').join(' '));
 $('#wlItemDetails .modality').html(wlObj['modality']['modality_name']);
