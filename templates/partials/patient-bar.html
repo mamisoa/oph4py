@@ -1,14 +1,6 @@
 
 <div class="container-fluid mb-1 patient-id sticky-top" id="wlItemDetails">
     <div class="row mb-3 d-flex justify-content-center align-items-center">
-        <div id="patientIdDiv" class="col text-end">
-            <h2 class="patientName"></h2>
-            <h3 class="patientDob text-muted"></h3>
-            <h4 class="patientId fst-italic"></h4>
-        </div>
-        <div class="col" id="photoDiv">
-            <img id="photoId" src="" alt="Photo from EID">
-        </div>
         <div class="col">
             <p>Task: #[[ = wlId ]] </p>
             <p>Timeslot: <span class="timeslot"></span></p>
@@ -16,6 +8,14 @@
         <div class="col">
             <p>Modality: <span class="modality"></span></p>
             <p>Laterality: <span class="laterality"></span></p>
+        </div>
+        <div id="patientIdDiv" class="col text-end">
+            <h2 class="patientName"></h2>
+            <h3 class="patientDob text-muted"></h3>
+            <h4 class="patientId fst-italic"></h4>
+        </div>
+        <div class="col" id="photoDiv">
+            <img id="photoId" src="" alt="Photo from EID">
         </div>
         <div class="col">
             <p>Provider: <span class="provider"></span></p>
@@ -57,18 +57,5 @@ const mdHistory = [[
     else: response.write(XML(mdHistory))
     pass
     ]];
-
-// MD history
-mdHistory.forEach(function (arrayItem) {
-    let id = arrayItem.id;
-    let ts = arrayItem.requested_time;
-    let setbtnclass = ""
-    if (id == wlId) {
-        setbtnclass = "disabled";
-    };
-    console.log("Id: ", id);
-    console.log("Timeslot: ", ts);
-    document.getElementById("mdHistory").innerHTML += '<button class="btn btn-primary '+setbtnclass+' mx-2 btnmdHistory" data-mdId="'+id+'" type="button">'+ts+'</button>';
-    });
 
 </script>

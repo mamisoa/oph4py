@@ -98,6 +98,19 @@ $('#btnUnlockTask').click(function(){
     } else {};
 });
 
+// MD history
+mdHistory.forEach(function (arrayItem) {
+    let id = arrayItem.id;
+    let ts = arrayItem.requested_time;
+    let setbtnclass = ""
+    if (id == wlId) {
+        setbtnclass = "disabled";
+    };
+    // console.log("Id: ", id);
+    // console.log("Timeslot: ", ts);
+    document.getElementById("mdHistory").innerHTML += '<button class="btn btn-primary '+setbtnclass+' mx-2 btnmdHistory" data-mdId="'+id+'" type="button">'+ts+'</button>';
+});
+
 $('.btnmdHistory').click(function(){
     // console.log("btn id is:",this.dataset.mdid);
     window.location.href = '/myapp/modalityCtr/md/'+this.dataset.mdid;
