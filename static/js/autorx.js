@@ -1,5 +1,8 @@
 refreshTables(tablesArr);
 
+// remove class top-fixed from topnav
+document.getElementById('topNavbar').classList.remove('fixed-top');
+
 // set counters
 var idRxArr = ['#idRightRx','#idLeftRx', '#rxFormModal']; 
 var sphCylArr = ['sph_far', 'sph_int', 'sph_close','cyl_far', 'cyl_int', 'cyl_close'];

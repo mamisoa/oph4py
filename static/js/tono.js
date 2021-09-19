@@ -1,5 +1,8 @@
 refreshTables(tablesArr);
 
+// remove class top-fixed from topnav
+document.getElementById('topNavbar').classList.remove('fixed-top');
+
 // hide pachy when techno is apla
 // if val(), change by chaining trigger("change")
 $('#tonoPachyForm [name=techno]').change(function() {
