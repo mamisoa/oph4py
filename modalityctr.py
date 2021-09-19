@@ -28,6 +28,7 @@ genderId = {
 def tono(wlId):
     hosturl = LOCAL_URL
     user = auth.get_user()
+    genderObj = genderId # used in patient-bar
     wldb = db.worklist
     wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
         join=[
@@ -48,6 +49,7 @@ def tono(wlId):
 def autorx(wlId):
     hosturl = LOCAL_URL
     user = auth.get_user()
+    genderObj = genderId # used in patient-bar
     wldb = db.worklist
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
@@ -104,6 +106,7 @@ def md(wlId):
     userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
     db.auth_user.password.readable = False
     db.auth_user.password.writable  = False
+    genderObj = genderId # used in patient-bar
     wldb = db.worklist
     wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
         join=[
@@ -117,8 +120,6 @@ def md(wlId):
         left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     userdb = db.auth_user
-    # mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
-    genderObj = genderId
     mdHistory = db((db.worklist.modality_dest == mdId) & (db.worklist.id_auth_user == patientId)).select().as_json()
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
