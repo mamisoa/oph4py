@@ -75,7 +75,12 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
       set = Math.round(set*100)/100;
       sign == true? (set > 0? result='+'+set.toFixed(precision) : (result=set.toFixed(precision))) : result=set.toFixed(precision);
       $(id_count+' input.counter_'+count_class).val(result).trigger('change');
-    } else {};
+    } else {
+      set = max;
+      set = Math.round(set*100)/100;
+      sign == true? (set > 0? result='+'+set.toFixed(precision) : (result=set.toFixed(precision))) : result=set.toFixed(precision);
+      $(id_count+' input.counter_'+count_class).val(result).trigger('change');
+    };
     if (count_class == 'add_close') {
       add = set + parseFloat($(id_count+' input.sph_far').val());
       $(id_count+' input.sph_close').val(round2dec(add));
@@ -105,7 +110,12 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
       set = Math.round(set*100)/100;
       sign == true? (set > 0? result='+'+set.toFixed(precision) : (result=set.toFixed(precision))) : result=set.toFixed(precision);
       $(id_count+' input.counter_'+count_class).val(result).trigger('change');
-    } else {};
+    } else {
+      set = min;
+      set = Math.round(set*100)/100;
+      sign == true? (set > 0? result='+'+set.toFixed(precision) : (result=set.toFixed(precision))) : result=set.toFixed(precision);
+      $(id_count+' input.counter_'+count_class).val(result).trigger('change');
+    };
     if (count_class == 'add_close') {
       add = set + parseFloat($(id_count+' input.sph_far').val());
       $(id_count+' input.sph_close').val(round2dec(add));
