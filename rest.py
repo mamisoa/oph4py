@@ -5,6 +5,7 @@ from yatl.helpers import A
 from .common import db, dbo, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
 from pydal.restapi import RestAPI, Policy
+from .settings import MACHINES_FOLDER
 
 policy = Policy()
 policy.set('*','GET', authorize=True, limit=1000, allowed_patterns=['*'])
@@ -133,4 +134,16 @@ def do_upload():
     #     return 'File extension not allowed.'
     upload.save('uploads/')
     return True
-    
+
+@action('rest/l80', method=['GET'])
+def l80():
+    import os, json, bottle
+    response = bottle.response
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    list = []
+    with os.scandir(MACHINES_FOLDER+'/rx/l80/ClientDB') as itr:
+        for e in itr:
+            if e.is_dir():
+                list.append({"file" : e.name, "path" : e.path})
+    infos_json = json.dumps(list)
+    return infos_json

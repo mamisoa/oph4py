@@ -1,0 +1,48 @@
+[[extend 'baseof.html']]
+[[ block left_nav ]]
+<li class="nav-item">
+    <a href="[[=URL('user')]]" class="nav-link">Users</a>
+</li>
+[[ end]]
+
+<div class="container">
+    <button class="btn btn-warning mx-2" id="getList" type="button">Get list</button>
+</div>
+
+<div id="list" class="container">
+</div>
+
+<div>
+    <p>User is: [[= XML(globals().get('user',{})) ]]</p>
+</div>
+
+[[ block js_scripts]]
+
+<script type="text/javascript">
+
+const HOSTURL = "[[ = hosturl ]]";
+
+    $('#getList').click(function(){
+        $.ajax({
+            url: HOSTURL + "/myapp/rest/l80",
+            contentType: 'application/json',
+            dataType: 'json',
+            method: 'GET'
+        })
+        .done(function(data){
+            html = [];
+            console.log(data);
+            html.push('<ul class="list-group">');
+            for (let e in data) {
+                html.push('<li class="list-group-item">');
+                html.push('File name: '+ data[e]["file"] + ' - Path: '+ data[e]["path"]);
+                html.push('</li>');
+            };
+            html.push('</ul>');
+            html=html.join('');
+            document.getElementById('list').innerHTML += html;
+        });
+    })
+</script>
+
+[[ end ]]
