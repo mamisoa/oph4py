@@ -63,3 +63,7 @@ section#main {
   -o-transition: all .5s ease-in; 
   -webkit-transition: all .5s ease-in; 
 }
+
+#cHxDiv {
+  scroll-margin-top: 240px;
+}
