@@ -114,5 +114,5 @@ mdHistory.forEach(function (arrayItem) {
 
 $('.btnmdHistory').click(function(){
     // console.log("btn id is:",this.dataset.mdid);
-    window.location.href = '/myapp/modalityCtr/md/'+this.dataset.mdid;
+    window.location.href = '/myapp/modalityCtr/md/'+this.dataset.mdid+'/#cHxDiv';
 });
