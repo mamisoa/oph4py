@@ -61,6 +61,10 @@ $('#searchForm').submit(function(e) {
     let dataObj = JSON.parse(dataStr);
     console.log('dataObj:',dataObj);
     let searchList = dataObj['searchStr'].split(',');
+    if (searchList[0] == undefined)
+        { searchList[0] = ''};
+    if (searchList[1] == undefined)
+        { searchList[1] = ''};
     console.log('searchList:',searchList);
     let reg = new RegExp(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*'+"#",'i');
     let searchFile = searchList.join('#')+'#';
@@ -72,6 +76,7 @@ $('#searchForm').submit(function(e) {
         method: 'GET'
     })
     .done(function(data){
+        document.getElementById('list').innerHTML = "";
         html = [];
         console.log(data);
         for (let e in data) {
