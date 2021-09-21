@@ -172,7 +172,73 @@ def l80s():
                         exams = []
                         for echild in childitr:
                             if echild.is_dir():
-                                exams.append(echild.name)
+                                rx = []
+                                try:
+                                    with open(echild.path+'/WF/LeftWF_Meas_1.txt','r') as reader:
+                                        s = 0
+                                        c = 0
+                                        a = 0
+                                        for line in reader:
+                                            # get SPHERE
+                                            if s == 3:
+                                                if 'R_3=' in line:
+                                                    sph3 = float(line.split('=')[1])
+                                                    rx.append({'sph3':sph3})
+                                                s -=1
+                                            elif s == 2:
+                                                if 'R_5=' in line:
+                                                    sph5 = float(line.split('=')[1])
+                                                    rx.append({'sph5':sph5})
+                                                s -=1
+                                            elif s == 1:
+                                                if 'R_7=' in line:
+                                                    sph7 = float(line.split('=')[1])
+                                                    rx.append({'sph7':sph7})
+                                                s -=1 # s = 0
+                                            if '[SPHERE]' in line:
+                                                # read 3 next lines to get values
+                                                s = 3
+                                            # get CYL
+                                            if c == 3:
+                                                if 'R_3=' in line:
+                                                    cyl3 = float(line.split('=')[1])
+                                                    rx.append({'cyl3':cyl3})
+                                                c -=1
+                                            elif c == 2:
+                                                if 'R_5=' in line:
+                                                    cyl5 = float(line.split('=')[1])
+                                                    rx.append({'cyl5':cyl5})
+                                                c -=1
+                                            elif c == 1:
+                                                if 'R_7=' in line:
+                                                    cyl7 = float(line.split('=')[1])
+                                                    rx.append({'cyl7':cyl7})
+                                                c -=1 # c = 0
+                                            if '[CYLINDER]' in line:
+                                                # read 3 next lines to get values
+                                                c = 3
+                                            # get AXIS
+                                            if a == 3:
+                                                if 'R_3=' in line:
+                                                    axis3 = float(line.split('=')[1])
+                                                    rx.append({'axis3':axis3})
+                                                a -=1
+                                            elif a == 2:
+                                                if 'R_5=' in line:
+                                                    axis5 = float(line.split('=')[1])
+                                                    rx.append({'axis5':axis5})
+                                                a -=1
+                                            elif a == 1:
+                                                if 'R_7=' in line:
+                                                    axis7 = float(line.split('=')[1])
+                                                    rx.append({'axis7':axis7})
+                                                a -=1 # c = 0
+                                            if '[AXIS]' in line:
+                                                # read 3 next lines to get values
+                                                a = 3
+                                except: # file not found
+                                    pass
+                                exams.append({echild.name:rx})
                         list[-1]['exams'] = exams
     infos_json = json.dumps(list)
     return infos_json
