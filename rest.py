@@ -147,3 +147,32 @@ def l80():
                 list.append({"file" : e.name, "path" : e.path})
     infos_json = json.dumps(list)
     return infos_json
+
+@action('rest/l80s', method=['GET'])
+def l80s():
+    import os, json, bottle, re
+    response = bottle.response
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    if 'lastname' in request.query:
+        lastname = request.query.get('lastname')
+    else:
+        lastname = ''
+    if 'firstname' in request.query:
+        firstname = request.query.get('firstname')
+    else:
+        firstname = ''
+    searchList = [lastname, firstname]
+    list = []
+    with os.scandir(MACHINES_FOLDER+'/rx/l80/ClientDB') as itr:
+        for e in itr:
+            if e.is_dir(): # check if directory
+                if re.search(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*'+"#",e.name,flags=re.IGNORECASE):
+                    list.append({"file" : e.name, "path" : e.path})
+                    with os.scandir(MACHINES_FOLDER+'/rx/l80/ClientDB/'+e.name) as childitr:
+                        exams = []
+                        for echild in childitr:
+                            if echild.is_dir():
+                                exams.append(echild.name)
+                        list[-1]['exams'] = exams
+    infos_json = json.dumps(list)
+    return infos_json
