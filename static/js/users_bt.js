@@ -8,7 +8,7 @@ function queryParams(params) {
         s =""
     } else {
         if (search[0]!= undefined) {
-            s = "last_name.startswith=" + capitalize(search[0]);
+            s = "last_name.contains=" + search[0];
         } else {
             s = "";
         }

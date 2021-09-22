@@ -17,7 +17,8 @@ section#main {
 
 .patient-id {
   background-color: #E9FFE8;
-  padding-top: 70px ;
+  /* padding-top: 70px ; */
+  padding-top: 10px ;
 }
 
 .bg-neutral {
@@ -62,4 +63,8 @@ section#main {
   -moz-transition: all .5s ease-in;
   -o-transition: all .5s ease-in; 
   -webkit-transition: all .5s ease-in; 
+}
+
+#cHxDiv {
+  scroll-margin-top: 240px;
 }

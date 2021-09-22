@@ -3,8 +3,9 @@
 $('input[name=id_auth_user]').val(patientObj['id']); // set patient id in forms
 $('input[name=id_worklist]').val(wlObj['worklist']['id']); // set patient id in forms
 $('#wlItemDetails .patientName').html(patientObj['first_name']+' '+patientObj['last_name'].toUpperCase());
-$('#wlItemDetails .patientDob').html(patientObj['dob'].split('-').reverse().join('/')+' ('+getAge(patientObj['dob'])+'yo)');
-$('#wlItemDetails .patientId').html('#'+patientObj['id']);
+patientObj['dob'] != null ? $('#wlItemDetails .patientDob').html(patientObj['dob'].split('-').reverse().join('/')+' ('+getAge(patientObj['dob'])+'yo)') : $('#wlItemDetails .patientDob').html('DOB: n/a');
+$('#wlItemDetails .patientGender').html('Gender: '+ genderIdObj[patientObj['gender']]);
+$('#wlItemDetails .patientId').html('#'+patientObj['id']+' NISS: '+checkIfDataIsNull(patientObj['ssn']));
 $('#wlItemDetails .timeslot').html(wlObj['worklist']['requested_time'].split('T').join(' '));
 $('#wlItemDetails .modality').html(wlObj['modality']['modality_name']);
 $('#wlItemDetails .laterality').html(wlObj['worklist']['laterality']);
@@ -96,4 +97,22 @@ $('#btnUnlockTask').click(function(){
         setWlItemStatus(dataStr);
         document.location.reload();
     } else {};
+});
+
+// MD history
+mdHistory.forEach(function (arrayItem) {
+    let id = arrayItem.id;
+    let ts = arrayItem.requested_time;
+    let setbtnclass = ""
+    if (id == wlId) {
+        setbtnclass = "disabled";
+    };
+    // console.log("Id: ", id);
+    // console.log("Timeslot: ", ts);
+    document.getElementById("mdHistory").innerHTML += '<button class="btn btn-primary '+setbtnclass+' mx-2 btnmdHistory" data-mdId="'+id+'" type="button">'+ts+'</button>';
+});
+
+$('.btnmdHistory').click(function(){
+    // console.log("btn id is:",this.dataset.mdid);
+    window.location.href = '/myapp/modalityCtr/md/'+this.dataset.mdid+'/#cHxDiv';
 });

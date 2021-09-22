@@ -171,7 +171,7 @@ $('#userForm input[name=first_name]').change(function(){
     let t = new Date();
     suffix = $('#userForm input[name=first_name]').val().split(' ').join('')+parseInt(t.getMilliseconds())+parseInt(t.getSeconds());
     $('#userForm input[name=username]').val(suffix);
-    $('#userForm input[name=email]').val(suffix+'@gmail.com');
+    $('#userForm input[name=email]').val(suffix+'@nomail.com');
 });
 
 // get id from b-eid
