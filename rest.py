@@ -261,9 +261,9 @@ def getTopo(path,filename,side):
                 if '[Sim_K]' in line:
                     # read 6 next lines to get values
                     k = 6
-                if '[Topo]' in line:
+                #if '[Topo]' in line:
                     # read 6 next lines to get values
-                    k = 6
+                #    k = 6
         return topo
     except:
         return False
@@ -297,26 +297,28 @@ def l80s():
                                     for d in mitr:
                                         if d.is_dir():
                                             with os.scandir(d.path) as ditr: # files measure level
+                                                mes = []
                                                 for f in ditr:
                                                     if f.is_file():
                                                         data = []
                                                         p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF)_Meas_(?P<index>[0-9]+).txt')
                                                         m = p.search(f.name)
-                                                        # exams.append(m.group())
+                                                        #exams.append(f.name)
                                                         if m != None:
                                                             # WF
                                                             if m.group('exam') == 'WF':
                                                                 wf = getWF(echild.path,f.name,m.group('side').lower())
                                                                 if wf != False:
                                                                     data.append(wf)
-                                                            if m.group('exam') == 'Topo':
+                                                            elif m.group('exam') == 'Topo':
                                                                 topo = getTopo(echild.path,f.name,m.group('side').lower())
                                                                 if topo != False:
-                                                                    data.append(topo)
+                                                                    data.append(topo) # not executed???
                                                             rx = { m.group('exam')+'_'+m.group('index') : data }
-                                                            exams.append({echild.name:rx})
                                                         else:
-                                                            exams.append(f.name + ' did not match')
+                                                            rx = { f.name : ' did not match'}
+                                                        mes.append(rx)
+                            exams.append({echild.name : mes })
                         list[-1]['exams'] = exams
     infos_json = json.dumps(list)
     return infos_json
