@@ -5,6 +5,7 @@ from yatl.helpers import A
 from .common import db, dbo, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
 from pydal.restapi import RestAPI, Policy
+from .settings import MACHINES_FOLDER
 
 policy = Policy()
 policy.set('*','GET', authorize=True, limit=1000, allowed_patterns=['*'])
@@ -76,6 +77,7 @@ def beid():
 # http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=identity!:id_auth_user[first_name,last_name] -> denormalised (flat)
 @action('api/<tablename>/', method=['GET','POST','PUT']) # PUT ok
 @action('api/<tablename>/<rec_id>', method=['GET','PUT','DELETE']) # delete OK get OK post OK
+@action.uses(db)
 def api(tablename, rec_id=None):
     db.phone.id_auth_user.writable= db.address.id_auth_user.writable = True
     db.phone.id_auth_user.readable = db.address.id_auth_user.readable = True
@@ -110,6 +112,7 @@ def api(tablename, rec_id=None):
 
 @action('octopus/api/<tablename>/', method=['GET','POST','PUT']) # PUT ok
 @action('octopus/api/<tablename>/<rec_id>', method=['GET','PUT','DELETE']) # delete OK get OK post OK
+@action.uses(db)
 def octopus(tablename, rec_id=None):
     try:
         json_resp = RestAPI(dbo,policy)(request.method,tablename,rec_id,request.GET,request.json)
@@ -131,4 +134,111 @@ def do_upload():
     #     return 'File extension not allowed.'
     upload.save('uploads/')
     return True
-    
+
+@action('rest/l80', method=['GET'])
+def l80():
+    import os, json, bottle
+    response = bottle.response
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    list = []
+    with os.scandir(MACHINES_FOLDER+'/rx/l80/ClientDB') as itr:
+        for e in itr:
+            if e.is_dir():
+                list.append({"file" : e.name, "path" : e.path})
+    infos_json = json.dumps(list)
+    return infos_json
+
+@action('rest/l80s', method=['GET'])
+def l80s():
+    import os, json, bottle, re
+    response = bottle.response
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    if 'lastname' in request.query:
+        lastname = request.query.get('lastname')
+    else:
+        lastname = ''
+    if 'firstname' in request.query:
+        firstname = request.query.get('firstname')
+    else:
+        firstname = ''
+    searchList = [lastname, firstname]
+    list = []
+    with os.scandir(MACHINES_FOLDER+'/rx/l80/ClientDB') as itr:
+        for e in itr:
+            if e.is_dir(): # check if directory
+                if re.search(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*'+"#",e.name,flags=re.IGNORECASE):
+                    list.append({"file" : e.name, "path" : e.path})
+                    with os.scandir(MACHINES_FOLDER+'/rx/l80/ClientDB/'+e.name) as childitr:
+                        exams = []
+                        for echild in childitr:
+                            if echild.is_dir():
+                                rx = []
+                                try:
+                                    with open(echild.path+'/WF/LeftWF_Meas_1.txt','r') as reader:
+                                        s = 0
+                                        c = 0
+                                        a = 0
+                                        for line in reader:
+                                            # get SPHERE
+                                            if s == 3:
+                                                if 'R_3=' in line:
+                                                    sph3 = float(line.split('=')[1])
+                                                    rx.append({'sph3':sph3})
+                                                s -=1
+                                            elif s == 2:
+                                                if 'R_5=' in line:
+                                                    sph5 = float(line.split('=')[1])
+                                                    rx.append({'sph5':sph5})
+                                                s -=1
+                                            elif s == 1:
+                                                if 'R_7=' in line:
+                                                    sph7 = float(line.split('=')[1])
+                                                    rx.append({'sph7':sph7})
+                                                s -=1 # s = 0
+                                            if '[SPHERE]' in line:
+                                                # read 3 next lines to get values
+                                                s = 3
+                                            # get CYL
+                                            if c == 3:
+                                                if 'R_3=' in line:
+                                                    cyl3 = float(line.split('=')[1])
+                                                    rx.append({'cyl3':cyl3})
+                                                c -=1
+                                            elif c == 2:
+                                                if 'R_5=' in line:
+                                                    cyl5 = float(line.split('=')[1])
+                                                    rx.append({'cyl5':cyl5})
+                                                c -=1
+                                            elif c == 1:
+                                                if 'R_7=' in line:
+                                                    cyl7 = float(line.split('=')[1])
+                                                    rx.append({'cyl7':cyl7})
+                                                c -=1 # c = 0
+                                            if '[CYLINDER]' in line:
+                                                # read 3 next lines to get values
+                                                c = 3
+                                            # get AXIS
+                                            if a == 3:
+                                                if 'R_3=' in line:
+                                                    axis3 = float(line.split('=')[1])
+                                                    rx.append({'axis3':axis3})
+                                                a -=1
+                                            elif a == 2:
+                                                if 'R_5=' in line:
+                                                    axis5 = float(line.split('=')[1])
+                                                    rx.append({'axis5':axis5})
+                                                a -=1
+                                            elif a == 1:
+                                                if 'R_7=' in line:
+                                                    axis7 = float(line.split('=')[1])
+                                                    rx.append({'axis7':axis7})
+                                                a -=1 # c = 0
+                                            if '[AXIS]' in line:
+                                                # read 3 next lines to get values
+                                                a = 3
+                                except: # file not found
+                                    pass
+                                exams.append({echild.name:rx})
+                        list[-1]['exams'] = exams
+    infos_json = json.dumps(list)
+    return infos_json

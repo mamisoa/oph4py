@@ -9,10 +9,17 @@ from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added 
 from py4web.utils.grid import Grid
 
 # import settings
-from .settings import LOCAL_URL, ASSETS_FOLDER
+from .settings import LOCAL_URL, ASSETS_FOLDER, MACHINES_FOLDER
 
 from .manage import dropdownSelect, rows2json
 from .controllers import getMembershipId
+
+# get standard index in db for patient/user profile
+mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
+genderId = {
+    db(db.gender.sex == 'Male').select(db.gender.id).first().id : "Male",
+    db(db.gender.sex == 'Female').select(db.gender.id).first().id : "Female",
+    db(db.gender.sex == 'Other').select(db.gender.id).first().id : "Other" }
 
 # tono controller
 @action('tono')
@@ -21,6 +28,7 @@ from .controllers import getMembershipId
 def tono(wlId):
     hosturl = LOCAL_URL
     user = auth.get_user()
+    genderObj = genderId # used in patient-bar
     wldb = db.worklist
     wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
         join=[
@@ -41,7 +49,9 @@ def tono(wlId):
 def autorx(wlId):
     hosturl = LOCAL_URL
     user = auth.get_user()
+    genderObj = genderId # used in patient-bar
     wldb = db.worklist
+    patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
         join=[
             db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
@@ -96,6 +106,7 @@ def md(wlId):
     userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
     db.auth_user.password.readable = False
     db.auth_user.password.writable  = False
+    genderObj = genderId # used in patient-bar
     wldb = db.worklist
     wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
         join=[
@@ -109,6 +120,7 @@ def md(wlId):
         left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     userdb = db.auth_user
+    mdHistory = db((db.worklist.modality_dest == mdId) & (db.worklist.id_auth_user == patientId)).select().as_json()
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
     for row in rows:

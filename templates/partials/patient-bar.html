@@ -1,19 +1,6 @@
 
 <div class="container-fluid mb-1 patient-id sticky-top" id="wlItemDetails">
     <div class="row mb-3 d-flex justify-content-center align-items-center">
-        <div id="patientIdDiv" class="col-4 text-end">
-            <h2 class="patientName"></h2>
-            <h3 class="patientDob text-muted"></h3>
-            <h4 class="patientId fst-italic"></h4>
-        </div>
-        <div class="col-4" id="photoDiv">
-            <img id="photoId" src="" alt="Photo from EID">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-start align-items-center">
-            <a class="btn btn-primary" href="javascript:history.back()" role="button">Back</a>
-        </div>
         <div class="col">
             <p>Task: #[[ = wlId ]] </p>
             <p>Timeslot: <span class="timeslot"></span></p>
@@ -22,6 +9,15 @@
             <p>Modality: <span class="modality"></span></p>
             <p>Laterality: <span class="laterality"></span></p>
         </div>
+        <div id="patientIdDiv" class="col text-end">
+            <h2 class="patientName"></h2>
+            <h3 class="patientDob text-muted"></h3>
+            <h4 class="patientId fst-italic"></h4>
+            <h4 class="patientGender fst-italic"></h4>
+        </div>
+        <div class="col" id="photoDiv">
+            <img id="photoId" src="" alt="Photo from EID">
+        </div>
         <div class="col">
             <p>Provider: <span class="provider"></span></p>
             <p>Senior: <span class="senior"></span></p>
@@ -29,6 +25,15 @@
         <div class="col">
             <p>Warning: <span class="warning bg-danger text-wrap p-1" style="color: white;"></span></p>
             <p>Status: <span class="status"></span></p>
+        </div>
+    </div>
+    <div class="row">
+        <div id="mdHistory" class="col d-flex justify-content-center align-items-center">
+        </div>
+    </div>
+    <div class="row pb-2">
+        <div class="col d-flex justify-content-start align-items-center">
+            <a class="btn btn-primary" href="javascript:history.back()" role="button">Back</a>
         </div>
         <div class="col d-flex justify-content-end align-items-center">
             <button class="btn btn-warning mx-2" id="btnUnlockTask" type="button">Unlock <i class="fas fa-unlock"></i></button>
@@ -47,4 +52,11 @@ const seniorDict = [[ = XML(seniorDict) ]];
 const seniorObj = seniorDict[0];
 const patientObj = wlDict[0]['auth_user'];
 const patientId = patientObj['id'];
+const mdHistory = [[ 
+    try: mdHistory
+    except NameError: response.write('[]')
+    else: response.write(XML(mdHistory))
+    pass
+    ]];
+const genderIdObj = [[ = XML(genderObj) ]];
 </script>

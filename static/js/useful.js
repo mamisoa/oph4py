@@ -127,8 +127,8 @@ function crud(table,id='0',req='POST',data) {
         })
         .done(function(data) {
             console.log(data);
-            status = data.status;
-            message = data.message;
+            // status = data.status;
+            // message = data.message;
             errors = "";
             if (data.status == "error") {
                 for (i in data.errors) {

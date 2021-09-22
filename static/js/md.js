@@ -1,6 +1,8 @@
 // refresh tables
 // refreshTables(tablesArr);
 
+// remove class top-fixed from topnav
+document.getElementById('topNavbar').classList.remove('fixed-top');
 
 // frequency autocomplete
 $('#mxModal input[name=frequency]').autoComplete({

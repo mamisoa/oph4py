@@ -1,0 +1,95 @@
+[[extend 'baseof.html']]
+[[ block left_nav ]]
+<li class="nav-item">
+    <a href="[[=URL('user')]]" class="nav-link">Users</a>
+</li>
+[[ end]]
+
+<div class="container">
+    <button class="btn btn-warning mx-2" id="getList" type="button">Get list</button>
+</div>
+
+<div class="container">
+    <form id="searchForm">
+        <div class="form-group">
+          <label for="searchText">Search</label>
+          <input type="text" name="searchStr" class="form-control" id="searchText" aria-describedby="search" placeholder="Lastname,firstname">
+          <small id="searchHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<div id="list" class="container">
+</div>
+
+<div>
+    <p>User is: [[= XML(globals().get('user',{})) ]]</p>
+</div>
+
+[[ block js_scripts]]
+<script src="js/jquery.serialize-object.min.js"></script>
+<script type="text/javascript">
+const HOSTURL = "[[ = hosturl ]]";
+
+$('#getList').click(function(){
+    $.ajax({
+        url: HOSTURL + "/myapp/rest/l80",
+        contentType: 'application/json',
+        dataType: 'json',
+        method: 'GET'
+    })
+    .done(function(data){
+        html = [];
+        console.log(data);
+        html.push('<ul class="list-group">');
+        for (let e in data) {
+            html.push('<li class="list-group-item">');
+            html.push('File name: '+ data[e]["file"] + ' - Path: '+ data[e]["path"]);
+            html.push('</li>');
+        };
+        html.push('</ul>');
+        html=html.join('');
+        document.getElementById('list').innerHTML += html;
+    });
+});
+
+$('#searchForm').submit(function(e) {
+    e.preventDefault();
+    let dataStr = $(this).serializeJSON();
+    console.log('dataStr:',dataStr);
+    let dataObj = JSON.parse(dataStr);
+    console.log('dataObj:',dataObj);
+    let searchList = dataObj['searchStr'].split(',');
+    if (searchList[0] == undefined)
+        { searchList[0] = ''};
+    if (searchList[1] == undefined)
+        { searchList[1] = ''};
+    console.log('searchList:',searchList);
+    let reg = new RegExp(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*'+"#",'i');
+    let searchFile = searchList.join('#')+'#';
+    console.log('searchFile:',searchFile);
+    $.ajax({
+        url: HOSTURL + "/myapp/rest/l80",
+        contentType: 'application/json',
+        dataType: 'json',
+        method: 'GET'
+    })
+    .done(function(data){
+        document.getElementById('list').innerHTML = "";
+        html = [];
+        console.log(data);
+        for (let e in data) {
+            let meta = data[e];
+            if (reg.test(meta['file'])) {
+                html.push('<p>Patient '+ searchList +' found in file: '+meta['file']);
+            }
+        };
+        html=html.join('');
+        document.getElementById('list').innerHTML += html;
+    });
+});
+
+</script>
+
+[[ end ]]

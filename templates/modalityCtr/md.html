@@ -2,6 +2,10 @@
 
 [[ block page_head]]
 <link href="css/bootstrap-table.min.css" rel="stylesheet">
+<style>
+    /* overide when topnavbar is not fixed-top */
+    section#main { margin-top: 0px; }
+</style>
 [[ end ]]
 
 [[ block left_nav ]]
@@ -880,7 +884,6 @@
         </div>
     </div>
 </div>
-[[ if userMembership == 'Doctor':]]
 <div id="cc-container" class="container-fluid mb-3"> <!-- container conclusions -->
     <div class="row mb-3">
         <div class="col">
@@ -1011,7 +1014,6 @@
         </div>
     </div>
 </div>
-
 <div id="x-container" class="container-fluid mb-3"> <!-- container actions -->
     <div class="row mb-3 big-title bg-warning">
         <div class="col">
@@ -1019,6 +1021,7 @@
         </div>
     </div>
     <div class="row mb-3 actions">
+        [[ if userMembership == 'Doctor':]]
         <div class="col">
             <div class="row">
                 <div class="col">
@@ -1088,6 +1091,7 @@
                 </div>
             </div>
         </div> <!-- end medical action col row-->
+        [[ pass ]]
         <div class="col">
             <div class="row">
                 <div class="col">
@@ -1191,6 +1195,7 @@
             </div>
         </div>
     </div>
+    [[ if userMembership == 'Doctor':]]
     <div class="row mb-3 actions">
         <div class="col">
             <div class="row">
@@ -1219,8 +1224,10 @@
             </div>
         </div>
     </div>
+    [[ pass ]]
 </div>
 
+[[ if userMembership == 'Doctor':]]
 <div id="bill-container" class="container-fluid mb-3"> <!-- container billing -->
     <div class="row mb-3 big-title bg-success">
         <div class="col">

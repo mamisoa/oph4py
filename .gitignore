@@ -6,5 +6,4 @@ databases/
 !init_db_129.csv
 settings.py
 .vscode
-machines/l80/*
-machines/vs100/*
+machines/

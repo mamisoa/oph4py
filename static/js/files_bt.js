@@ -8,7 +8,7 @@ function queryParams_wl(params) {
         s_wl =""
     } else {
         if (search[0]!= undefined) {
-            s_wl = "id_auth_user.last_name.startswith=" + capitalize(search[0]);
+            s_wl = "id_auth_user.last_name.contains=" + search[0];
         } else {
             s_wl = "";
         };
@@ -61,6 +61,12 @@ function queryParams_wl(params) {
     return decodeURI(encodeURI(s_wl));
 };
 
+function styleTimeslot(ts) {
+    let arr = ts.split('T');
+    let res = '<strong>'+arr[0].split('-').reverse().join('/')+'</strong> '+arr[1];
+    return res;
+};
+
 function responseHandler_wl(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
     let display = [];
@@ -76,7 +82,7 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'procedure': list[i]['procedure.exam_name'],
             'modality': list[i]['modality.modality_name'],
             'laterality': list[i]['laterality'],
-            'requested_time': list[i]['requested_time'].split('T').join(' '),
+            'requested_time': styleTimeslot(list[i]['requested_time']),
             'status_flag': list[i]['status_flag'],
             'counter': list[i]['counter'],
             'warning': list[i]['warning'],
@@ -197,6 +203,22 @@ function counterFormatter_wl(value,row){
     html.push('<div class="d-flex justify-content-between"><span class="badge rounded-pill bg-primary mx-1">'+row.counter+'</span>');
     html.push('</div>');
     return html.join('');
+};
+
+function cellStyle_timeslot(value,row) {
+    let statusColor = {'requested':'#ffcc99' , 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999', 'doctorDone': '#00FF00' };
+    let bg;
+    if (row.modality == 'MD' && row.status_flag =='done'){
+        bg = statusColor['doctorDone'];
+    } else {
+        bg = statusColor[row.status_flag];
+    };
+    return {    
+        css: { 
+            'font-weight': 'bold',
+            'background-color': bg
+        }
+    };
 };
 
 function rowAttributes_wl(row,index) { // set tooltip values

@@ -8,7 +8,7 @@ function queryParams_wl(params) {
         s_wl =""
     } else {
         if (search[0]!= undefined) {
-            s_wl = "id_auth_user.last_name.startswith=" + capitalize(search[0]);
+            s_wl = "id_auth_user.last_name.contains=" + search[0];
         } else {
             s_wl = "";
         };
@@ -61,6 +61,12 @@ function queryParams_wl(params) {
     return decodeURI(encodeURI(s_wl));
 };
 
+function styleTimeslot(ts) {
+    let arr = ts.split('T');
+    let res = '<strong>'+arr[1]+'</strong> '+arr[0].split('-').reverse().join('/');
+    return res;
+};
+
 function responseHandler_wl(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
     let display = [];
@@ -76,7 +82,7 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
             'procedure': list[i]['procedure.exam_name'],
             'modality': list[i]['modality.modality_name'],
             'laterality': list[i]['laterality'],
-            'requested_time': list[i]['requested_time'].split('T').reverse().join(' '),
+            'requested_time': styleTimeslot(list[i]['requested_time']),
             'status_flag': list[i]['status_flag'],
             'counter': list[i]['counter'],
             'warning': list[i]['warning'],
@@ -225,13 +231,23 @@ function counterFormatter_wl(value,row){
     let html = [];
     let lastmodif = Date.parse(row.modified_on);
     var rightnow = new Date();
-    // console.log('Rightnow:',rightnow);
-    // console.log('Lastmodif:',lastmodif);
+    // console.log('Rightnow:'+row.id,rightnow);
+    // console.log('Lastmodif:'+row.id,lastmodif);
     let elapse = Math.round((rightnow-lastmodif)/1000)-timeOffset;
-    // console.log('elapse:',elapse);
+    // console.log('elapse:'+row.id,elapse);
+    let elapsestyle = "bg-light text-dark";
+    if (elapse >= (30*60) && elapse <= (45*60)) {
+        elapsestyle ="bg-warning text-dark";
+    } else if (elapse > (45*60)) {
+        elapsestyle ="bg-danger";
+    };
     timer_id.push('#timer_'+row.id);
+    // console.log('row.status=',row.status_flag);
     html.push('<div class="d-flex justify-content-between"><span class="badge rounded-pill bg-primary mx-1">'+row.counter+'</span>');
-    html.push('<span id="timer_'+row.id+'" class="badge rounded-pill bg-light text-dark mx-1">'+elapse+'</span>');
+    // if over 1 day, elapse counter is not shown
+    if (elapse < (24*60*60)) {
+        html.push('<span id="timer_'+row.id+'" class="badge rounded-pill '+elapsestyle+' mx-1">'+elapse+'</span>');
+    };
     html.push('</div>');
     return html.join('');
 };
