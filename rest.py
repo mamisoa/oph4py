@@ -163,12 +163,13 @@ def l80s():
         firstname = ''
     searchList = [lastname, firstname]
     list = []
-    with os.scandir(MACHINES_FOLDER+'/rx/l80/ClientDB') as itr:
+    workingDir = '/l80/working_dir21/ClientDB'
+    with os.scandir(MACHINES_FOLDER+workingDir) as itr:
         for e in itr:
             if e.is_dir(): # check if directory
                 if re.search(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*'+"#",e.name,flags=re.IGNORECASE):
                     list.append({"file" : e.name, "path" : e.path})
-                    with os.scandir(MACHINES_FOLDER+'/rx/l80/ClientDB/'+e.name) as childitr:
+                    with os.scandir(MACHINES_FOLDER+workingDir+'/'+e.name) as childitr:
                         exams = []
                         for echild in childitr:
                             if echild.is_dir():
@@ -183,17 +184,17 @@ def l80s():
                                             if s == 3:
                                                 if 'R_3=' in line:
                                                     sph3 = float(line.split('=')[1])
-                                                    rx.append({'sph3':sph3})
+                                                    rx.append({'sph3_le' : sph3})
                                                 s -=1
                                             elif s == 2:
                                                 if 'R_5=' in line:
                                                     sph5 = float(line.split('=')[1])
-                                                    rx.append({'sph5':sph5})
+                                                    rx.append({'sph5_le' : sph5})
                                                 s -=1
                                             elif s == 1:
                                                 if 'R_7=' in line:
                                                     sph7 = float(line.split('=')[1])
-                                                    rx.append({'sph7':sph7})
+                                                    rx.append({'sph7_le' : sph7})
                                                 s -=1 # s = 0
                                             if '[SPHERE]' in line:
                                                 # read 3 next lines to get values
@@ -202,17 +203,17 @@ def l80s():
                                             if c == 3:
                                                 if 'R_3=' in line:
                                                     cyl3 = float(line.split('=')[1])
-                                                    rx.append({'cyl3':cyl3})
+                                                    rx.append({'cyl3_le' : cyl3})
                                                 c -=1
                                             elif c == 2:
                                                 if 'R_5=' in line:
                                                     cyl5 = float(line.split('=')[1])
-                                                    rx.append({'cyl5':cyl5})
+                                                    rx.append({'cyl5_le' : cyl5})
                                                 c -=1
                                             elif c == 1:
                                                 if 'R_7=' in line:
                                                     cyl7 = float(line.split('=')[1])
-                                                    rx.append({'cyl7':cyl7})
+                                                    rx.append({'cyl7_le' : cyl7})
                                                 c -=1 # c = 0
                                             if '[CYLINDER]' in line:
                                                 # read 3 next lines to get values
@@ -221,21 +222,175 @@ def l80s():
                                             if a == 3:
                                                 if 'R_3=' in line:
                                                     axis3 = float(line.split('=')[1])
-                                                    rx.append({'axis3':axis3})
+                                                    rx.append({'axis3_le' : axis3})
                                                 a -=1
                                             elif a == 2:
                                                 if 'R_5=' in line:
                                                     axis5 = float(line.split('=')[1])
-                                                    rx.append({'axis5':axis5})
+                                                    rx.append({'axis5_le' : axis5})
                                                 a -=1
                                             elif a == 1:
                                                 if 'R_7=' in line:
                                                     axis7 = float(line.split('=')[1])
-                                                    rx.append({'axis7':axis7})
+                                                    rx.append({'axis7_le' : axis7})
                                                 a -=1 # c = 0
                                             if '[AXIS]' in line:
                                                 # read 3 next lines to get values
                                                 a = 3
+                                            # get PD
+                                            if 'Pd=' in line:
+                                                pd_le = float(line.split('=')[1])
+                                                rx.append({'pd_le': pd_le})
+                                except: # file not found
+                                    pass
+                                try:
+                                    with open(echild.path+'/WF/RightWF_Meas_1.txt','r') as reader:
+                                        s = 0
+                                        c = 0
+                                        a = 0
+                                        for line in reader:
+                                            # get SPHERE
+                                            if s == 3:
+                                                if 'R_3=' in line:
+                                                    sph3 = float(line.split('=')[1])
+                                                    rx.append({'sph3_re' : sph3})
+                                                s -=1
+                                            elif s == 2:
+                                                if 'R_5=' in line:
+                                                    sph5 = float(line.split('=')[1])
+                                                    rx.append({'sph5_re' : sph5})
+                                                s -=1
+                                            elif s == 1:
+                                                if 'R_7=' in line:
+                                                    sph7 = float(line.split('=')[1])
+                                                    rx.append({'sph7_re' : sph7})
+                                                s -=1 # s = 0
+                                            if '[SPHERE]' in line:
+                                                # read 3 next lines to get values
+                                                s = 3
+                                            # get CYL
+                                            if c == 3:
+                                                if 'R_3=' in line:
+                                                    cyl3 = float(line.split('=')[1])
+                                                    rx.append({'cyl3_re' : cyl3})
+                                                c -=1
+                                            elif c == 2:
+                                                if 'R_5=' in line:
+                                                    cyl5 = float(line.split('=')[1])
+                                                    rx.append({'cyl5_re' : cyl5})
+                                                c -=1
+                                            elif c == 1:
+                                                if 'R_7=' in line:
+                                                    cyl7 = float(line.split('=')[1])
+                                                    rx.append({'cyl7_re' : cyl7})
+                                                c -=1 # c = 0
+                                            if '[CYLINDER]' in line:
+                                                # read 3 next lines to get values
+                                                c = 3
+                                            # get AXIS
+                                            if a == 3:
+                                                if 'R_3=' in line:
+                                                    axis3 = float(line.split('=')[1])
+                                                    rx.append({'axis3_re' : axis3})
+                                                a -=1
+                                            elif a == 2:
+                                                if 'R_5=' in line:
+                                                    axis5 = float(line.split('=')[1])
+                                                    rx.append({'axis5_re': axis5})
+                                                a -=1
+                                            elif a == 1:
+                                                if 'R_7=' in line:
+                                                    axis7 = float(line.split('=')[1])
+                                                    rx.append({'axis7_re': axis7})
+                                                a -=1 # c = 0
+                                            if '[AXIS]' in line:
+                                                # read 3 next lines to get values
+                                                a = 3
+                                            # get PD
+                                            if 'Pd=' in line:
+                                                pd_re = float(line.split('=')[1])
+                                                rx.append({'pd_re': pd_re})
+                                except: # file not found
+                                    pass
+                                    # TOPO
+                                try:
+                                    with open(echild.path+'/Topo/RightTopo_Meas_1.txt','r') as reader:
+                                        k = 0
+                                        for line in reader:
+                                            # get Sim_K
+                                            if k == 6:
+                                                if 'K1=' in line:
+                                                    k1 = float(line.split('=')[1])
+                                                    rx.append({'k1_re': k1})
+                                                k -=1
+                                            elif k == 5:
+                                                if 'K1_axis=' in line:
+                                                    k1_axis = float(line.split('=')[1])
+                                                    rx.append({'k1_axis_re': k1_axis})
+                                                k -=1
+                                            elif k == 4:
+                                                if 'K2=' in line:
+                                                    k2 = float(line.split('=')[1])
+                                                    rx.append({'k2_re': k2})
+                                                k -=1 # s = 0
+                                            elif k == 3:
+                                                if 'K2_axis=' in line:
+                                                    k2_axis = float(line.split('=')[1])
+                                                    rx.append({'k2_axis_re': k2_axis})
+                                                k -=1
+                                            elif k == 2:
+                                                if 'Cyl=' in line:
+                                                    kcyl = float(line.split('=')[1])
+                                                    rx.append({'kcyl_re': kcyl})
+                                                k -=1
+                                            elif k == 1:
+                                                if 'Avg=' in line:
+                                                    km = float(line.split('=')[1])
+                                                    rx.append({'km_re': km})
+                                                k -=1 # k = 0
+                                            if '[Sim_K]' in line:
+                                                # read 6 next lines to get values
+                                                k = 6
+                                except: # file not found
+                                    pass
+                                try:
+                                    with open(echild.path+'/Topo/LeftTopo_Meas_1.txt','r') as reader:
+                                        k = 0
+                                        for line in reader:
+                                            # get Sim_K
+                                            if k == 6:
+                                                if 'K1=' in line:
+                                                    k1 = float(line.split('=')[1])
+                                                    rx.append({'k1_le': k1})
+                                                k -=1
+                                            elif k == 5:
+                                                if 'K1_axis=' in line:
+                                                    k1_axis = float(line.split('=')[1])
+                                                    rx.append({'k1_axis_le': k1_axis})
+                                                k -=1
+                                            elif k == 4:
+                                                if 'K2=' in line:
+                                                    k2 = float(line.split('=')[1])
+                                                    rx.append({'k2_le': k2})
+                                                k -=1 # s = 0
+                                            elif k == 3:
+                                                if 'K2_axis=' in line:
+                                                    k2_axis = float(line.split('=')[1])
+                                                    rx.append({'k2_axis_le': k2_axis})
+                                                k -=1
+                                            elif k == 2:
+                                                if 'Cyl=' in line:
+                                                    kcyl = float(line.split('=')[1])
+                                                    rx.append({'kcyl_le': kcyl})
+                                                k -=1
+                                            elif k == 1:
+                                                if 'Avg=' in line:
+                                                    km = float(line.split('=')[1])
+                                                    rx.append({'km_le': km})
+                                                k -=1 # k = 0
+                                            if '[Sim_K]' in line:
+                                                # read 6 next lines to get values
+                                                k = 6
                                 except: # file not found
                                     pass
                                 exams.append({echild.name:rx})
