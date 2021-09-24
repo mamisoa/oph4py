@@ -5,7 +5,7 @@ from yatl.helpers import A
 from .common import db, dbo, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
 from pydal.restapi import RestAPI, Policy
-from .settings import MACHINES_FOLDER
+from .settings import MACHINES_FOLDER, L80_FOLDER
 
 policy = Policy()
 policy.set('*','GET', authorize=True, limit=1000, allowed_patterns=['*'])
@@ -283,13 +283,13 @@ def l80s():
         firstname = ''
     searchList = [lastname, firstname]
     list = []
-    workingDir = '/l80/working_dir21/ClientDB'
-    with os.scandir(MACHINES_FOLDER+workingDir) as itr:
+    # workingDir = '/l80/working_dir21/ClientDB'
+    with os.scandir(L80_FOLDER) as itr:
         for e in itr:
             if e.is_dir(): # check if directory
                 if re.search(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*'+"#",e.name,flags=re.IGNORECASE):
                     list.append({"file" : e.name, "path" : e.path})
-                    with os.scandir(MACHINES_FOLDER+workingDir+'/'+e.name) as childitr: # in patient folder
+                    with os.scandir(L80_FOLDER+'/'+e.name) as childitr: # in patient folder
                         exams = []
                         for echild in childitr: # in exam folder
                             if echild.is_dir():
