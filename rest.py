@@ -309,11 +309,13 @@ def l80s():
                                                             if m.group('exam') == 'WF':
                                                                 wf = getWF(echild.path,f.name,m.group('side').lower())
                                                                 if wf != False:
-                                                                    data.append(wf)
+                                                                    data.append({f.name: wf})
+                                                                    exams.append({f.name: wf})
                                                             elif m.group('exam') == 'Topo':
                                                                 topo = getTopo(echild.path,f.name,m.group('side').lower())
                                                                 if topo != False:
-                                                                    data.append(topo) # not executed???
+                                                                    data.append({f.name : topo }) # not executed???
+                                                                    exams.append({f.name : topo })
                                                             rx = { m.group('exam')+'_'+m.group('index') : data }
                                                         else:
                                                             rx = { f.name : ' did not match'}
