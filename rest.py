@@ -293,34 +293,30 @@ def l80s():
                         exams = []
                         for echild in childitr: # in exam folder
                             if echild.is_dir():
+                                mes = []
                                 with os.scandir(echild.path) as mitr: # exam folder WF or TOPO
                                     for d in mitr:
                                         if d.is_dir():
                                             with os.scandir(d.path) as ditr: # files measure level
-                                                mes = []
+                                                data = []
                                                 for f in ditr:
                                                     if f.is_file():
-                                                        data = []
                                                         p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF)_Meas_(?P<index>[0-9]+).txt')
                                                         m = p.search(f.name)
-                                                        #exams.append(f.name)
                                                         if m != None:
-                                                            # WF
                                                             if m.group('exam') == 'WF':
                                                                 wf = getWF(echild.path,f.name,m.group('side').lower())
                                                                 if wf != False:
                                                                     data.append({f.name: wf})
-                                                                    exams.append({f.name: wf})
-                                                            elif m.group('exam') == 'Topo':
+                                                            if m.group('exam') == 'Topo':
                                                                 topo = getTopo(echild.path,f.name,m.group('side').lower())
                                                                 if topo != False:
-                                                                    data.append({f.name : topo }) # not executed???
-                                                                    exams.append({f.name : topo })
+                                                                    data.append({f.name : topo })
                                                             rx = { m.group('exam')+'_'+m.group('index') : data }
                                                         else:
                                                             rx = { f.name : ' did not match'}
                                                         mes.append(rx)
-                            exams.append({echild.name : mes })
+                                    exams.append({echild.name : mes })
                         list[-1]['exams'] = exams
     infos_json = json.dumps(list)
     return infos_json
