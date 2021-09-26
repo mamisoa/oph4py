@@ -287,7 +287,7 @@ def l80s():
     with os.scandir(L80_FOLDER) as itr:
         for e in itr:
             if e.is_dir(): # check if directory
-                if re.search(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*'+"#",e.name,flags=re.IGNORECASE):
+                if re.search(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*',e.name,flags=re.IGNORECASE):
                     list.append({"file" : e.name, "path" : e.path})
                     with os.scandir(L80_FOLDER+'/'+e.name) as childitr: # in patient folder
                         exams = []

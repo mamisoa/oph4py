@@ -21,6 +21,21 @@
 </div>
 
 <div id="list" class="container">
+    <table class="table tablewf">
+        <thead>
+          <tr>
+            <th scope="col">Last</th>
+            <th scope="col">First</th>
+            <th scope="col">Datetime</th>
+            <th scope="col">Side</th>
+            <th scope="col">Sph</th>
+            <th scope="col">Cyl</th>
+            <th scope="col">Axis</th>
+          </tr>
+        </thead>
+        <tbody id="table-data">
+        </tbody>
+    </table>
 </div>
 
 <div>
@@ -54,6 +69,8 @@ $('#getList').click(function(){
     });
 });
 
+let myArray;
+
 $('#searchForm').submit(function(e) {
     e.preventDefault();
     let dataStr = $(this).serializeJSON();
@@ -76,32 +93,82 @@ $('#searchForm').submit(function(e) {
         method: 'GET'
     })
     .done(function(data){
-        document.getElementById('list').innerHTML = "";
-        html = [];
-        console.log(data);
-        for (let e of data) {
-            console.log(e['file']);
-            for ( let exam in e['exams'] ) {
-                // console.log(e['exams'][exam]);
-                for ( let i in e['exams'][exam]) {
-                    // console.log(e['exams'][exam][i]);
-                    for ( mes of e['exams'][exam][i]) {
-                        // console.log(mes);
-                        for ( b in mes) {
-                            // console.log(b);
-                            for ( a of mes[b]) {
-                                // console.log(a);
-                                for (z of a) {
-                                    console.log(z['sph3_left']);
+        document.getElementById('table-data').innerHTML = "";
+        myArray = data;
+        // console.log(data);
+        myArray.forEach(
+            e => {
+                html = [];
+                row = {};
+                arrPatientid = e.file.split('#');
+                console.log(arrPatientid);
+                row['lastname'] = arrPatientid[0];
+                row['firstname'] = arrPatientid[1];
+                e.exams.forEach( dictExamstime => 
+                Object.keys(dictExamstime).forEach(i => 
+                    {   
+                        dictExamstime[i].forEach( dictExams => {
+                            console.log(Object.keys(dictExamstime)[0]); // Object.keys(dictExamstime)[0] date of exam
+                            row['datetime'] = Object.keys(dictExamstime)[0];
+                            Object.keys(dictExams).forEach( arrMes =>
+                                {
+                                    console.log(arrMes); // arrMes name of exam, dictExams[arrMes] is an object containing mesures
+                                    dictExams[arrMes].forEach( mes =>
+                                        {
+                                            Object.keys(mes).forEach( key =>
+                                                {
+                                                    // console.log(mes[key]);
+                                                    Object.keys(mes[key]).forEach( m => 
+                                                    {
+                                                        console.log(arrMes,m,mes[key][m]); // m is the type of measure, mes[key][m] is the measure
+                                                        if (arrMes.includes('_L')) {
+                                                                row['side'] = 'LEFT';
+                                                            }
+                                                            else if (arrMes.includes('_R')) {
+                                                                row['side'] = 'RIGHT';
+                                                            };
+                                                        if (arrMes.includes('WF')) {
+                                                            row['type'] = 'WF';
+                                                            if (m.includes('sph5')) {
+                                                                row['sph'] = mes[key][m];
+                                                            }
+                                                            else if (m.includes('cyl5')) {
+                                                                row['cyl'] = mes[key][m];
+                                                            }
+                                                            else if (m.includes('axis5')) {
+                                                                row['axis'] = mes[key][m];
+                                                            };
+                                                        } else if (arrMes.includes('Topo')) {
+                                                            row['type'] = 'TOPO';
+                                                        };
+                                                    });
+                                                }
+                                            );
+                                            if (row['type'] == 'WF') {
+                                                html.push('<tr>');
+                                                html.push('<td>'+row['lastname']+'</td>');
+                                                html.push('<td>'+row['firstname']+'</td>');
+                                                html.push('<td>'+row['datetime']+'</td>');
+                                                html.push('<td>'+row['side']+'</td>');
+                                                html.push('<td>'+row['sph']+'</td>');
+                                                html.push('<td>'+row['cyl']+'</td>');
+                                                html.push('<td>'+row['axis']+'</td>');
+                                                html.push('</tr>');
+                                                html=html.join('');
+                                                console.log(html);
+                                                document.getElementById('table-data').innerHTML += html;
+                                                html = [];
+                                            };
+                                        }
+                                    );
                                 }
-                            }
+                            );
                         }
-                    }
-                }
-            };
-        };
-        // html=html.join('');
-        // document.getElementById('list').innerHTML += html;
+                    )}
+                )
+            )
+            }
+        );
     });
 });
 
