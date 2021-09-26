@@ -31,9 +31,30 @@
             <th scope="col">Sph</th>
             <th scope="col">Cyl</th>
             <th scope="col">Axis</th>
+            <th scope="col">Export</th>
           </tr>
         </thead>
-        <tbody id="table-data">
+        <tbody id="table-data-wf">
+        </tbody>
+    </table>
+</div>
+
+<div id="list" class="container">
+    <table class="table tablewf">
+        <thead>
+          <tr>
+            <th scope="col">Last</th>
+            <th scope="col">First</th>
+            <th scope="col">Datetime</th>
+            <th scope="col">Side</th>
+            <th scope="col">k1</th>
+            <th scope="col">k1_axis</th>
+            <th scope="col">k2</th>
+            <th scope="col">k2_axis</th>
+            <th scope="col">Export</th>
+          </tr>
+        </thead>
+        <tbody id="table-data-topo">
         </tbody>
     </table>
 </div>
@@ -69,8 +90,6 @@ $('#getList').click(function(){
     });
 });
 
-let myArray;
-
 $('#searchForm').submit(function(e) {
     e.preventDefault();
     let dataStr = $(this).serializeJSON();
@@ -93,10 +112,11 @@ $('#searchForm').submit(function(e) {
         method: 'GET'
     })
     .done(function(data){
-        document.getElementById('table-data').innerHTML = "";
-        myArray = data;
+        document.getElementById('table-data-wf').innerHTML = "";
+        document.getElementById('table-data-topo').innerHTML = "";
+        // myArray = data
         // console.log(data);
-        myArray.forEach(
+        data.forEach(
             e => {
                 html = [];
                 row = {};
@@ -112,7 +132,7 @@ $('#searchForm').submit(function(e) {
                             row['datetime'] = Object.keys(dictExamstime)[0];
                             Object.keys(dictExams).forEach( arrMes =>
                                 {
-                                    console.log(arrMes); // arrMes name of exam, dictExams[arrMes] is an object containing mesures
+                                    // console.log(arrMes); // arrMes name of exam, dictExams[arrMes] is an object containing mesures
                                     dictExams[arrMes].forEach( mes =>
                                         {
                                             Object.keys(mes).forEach( key =>
@@ -120,7 +140,7 @@ $('#searchForm').submit(function(e) {
                                                     // console.log(mes[key]);
                                                     Object.keys(mes[key]).forEach( m => 
                                                     {
-                                                        console.log(arrMes,m,mes[key][m]); // m is the type of measure, mes[key][m] is the measure
+                                                        // console.log(arrMes,m,mes[key][m]); // m is the type of measure, mes[key][m] is the measure
                                                         if (arrMes.includes('_L')) {
                                                                 row['side'] = 'LEFT';
                                                             }
@@ -140,11 +160,22 @@ $('#searchForm').submit(function(e) {
                                                             };
                                                         } else if (arrMes.includes('Topo')) {
                                                             row['type'] = 'TOPO';
+                                                            if (m.includes('k1') && !(m.includes('axis'))) {
+                                                                row['k1'] = mes[key][m];
+                                                            } else if (m.includes('k1_axis')) {
+                                                                row['k1_axis'] = mes[key][m];
+                                                            } else if (m.includes('k2') && !(m.includes('axis'))) {
+                                                                row['k2'] = mes[key][m];
+                                                            } else if (m.includes('k2_axis')) {
+                                                                row['k2_axis'] = mes[key][m];
+                                                            }
                                                         };
                                                     });
+                                                    //
                                                 }
                                             );
                                             if (row['type'] == 'WF') {
+                                                // console.log(row);
                                                 html.push('<tr>');
                                                 html.push('<td>'+row['lastname']+'</td>');
                                                 html.push('<td>'+row['firstname']+'</td>');
@@ -153,12 +184,30 @@ $('#searchForm').submit(function(e) {
                                                 html.push('<td>'+row['sph']+'</td>');
                                                 html.push('<td>'+row['cyl']+'</td>');
                                                 html.push('<td>'+row['axis']+'</td>');
+                                                html.push('<td data-side="' + row['side'] +'" data-sph="'+ row['sph'] +'" data-cyl="'+ row['cyl'] +'" data-axis="'+ row['axis'] +'"><i class="fas fa-file-download"></i></td>');
                                                 html.push('</tr>');
                                                 html=html.join('');
-                                                console.log(html);
-                                                document.getElementById('table-data').innerHTML += html;
+                                                // console.log(html);
+                                                document.getElementById('table-data-wf').innerHTML += html;
                                                 html = [];
-                                            };
+                                            } else if (row['type'] == 'TOPO') {
+                                                // console.log(row);
+                                                html.push('<tr>');
+                                                html.push('<td>'+row['lastname']+'</td>');
+                                                html.push('<td>'+row['firstname']+'</td>');
+                                                html.push('<td>'+row['datetime']+'</td>');
+                                                html.push('<td>'+row['side']+'</td>');
+                                                html.push('<td>'+row['k1']+'</td>');
+                                                html.push('<td>'+row['k1_axis']+'</td>');
+                                                html.push('<td>'+row['k2']+'</td>');
+                                                html.push('<td>'+row['k2_axis']+'</td>');
+                                                html.push('<td data-side="' + row['side'] +'" data-k1="'+ row['k1'] +'" data-k1-axis="'+ row['k1_axis'] +'" data-k2="'+ row['k2'] +'" data-k2-axis="'+ row['k2_axis'] +'"><i class="fas fa-file-download"></i></td>');
+                                                html.push('</tr>');
+                                                html=html.join('');
+                                                // console.log(html);
+                                                document.getElementById('table-data-topo').innerHTML += html;
+                                                html = [];
+                                            };      
                                         }
                                     );
                                 }
