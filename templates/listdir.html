@@ -66,11 +66,11 @@ $('#searchForm').submit(function(e) {
     if (searchList[1] == undefined)
         { searchList[1] = ''};
     console.log('searchList:',searchList);
-    let reg = new RegExp(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*'+"#",'i');
+    // let reg = new RegExp(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*'+"#",'i');
     let searchFile = searchList.join('#')+'#';
     console.log('searchFile:',searchFile);
     $.ajax({
-        url: HOSTURL + "/myapp/rest/l80",
+        url: HOSTURL + "/myapp/rest/l80s?lastname="+searchList[0]+"&firstname="+searchList[1],
         contentType: 'application/json',
         dataType: 'json',
         method: 'GET'
@@ -79,14 +79,29 @@ $('#searchForm').submit(function(e) {
         document.getElementById('list').innerHTML = "";
         html = [];
         console.log(data);
-        for (let e in data) {
-            let meta = data[e];
-            if (reg.test(meta['file'])) {
-                html.push('<p>Patient '+ searchList +' found in file: '+meta['file']);
-            }
+        for (let e of data) {
+            console.log(e['file']);
+            for ( let exam in e['exams'] ) {
+                // console.log(e['exams'][exam]);
+                for ( let i in e['exams'][exam]) {
+                    // console.log(e['exams'][exam][i]);
+                    for ( mes of e['exams'][exam][i]) {
+                        // console.log(mes);
+                        for ( b in mes) {
+                            // console.log(b);
+                            for ( a of mes[b]) {
+                                // console.log(a);
+                                for (z of a) {
+                                    console.log(z['sph3_left']);
+                                }
+                            }
+                        }
+                    }
+                }
+            };
         };
-        html=html.join('');
-        document.getElementById('list').innerHTML += html;
+        // html=html.join('');
+        // document.getElementById('list').innerHTML += html;
     });
 });
 
