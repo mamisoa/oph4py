@@ -5,7 +5,7 @@ from yatl.helpers import A
 from .common import db, dbo, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
 from pydal.restapi import RestAPI, Policy
-from .settings import MACHINES_FOLDER, L80_FOLDER
+from .settings import MACHINES_FOLDER, L80_FOLDER, VX100_FOLDER
 
 policy = Policy()
 policy.set('*','GET', authorize=True, limit=1000, allowed_patterns=['*'])
@@ -135,22 +135,15 @@ def do_upload():
     upload.save('uploads/')
     return True
 
-@action('rest/l80', method=['GET'])
-def l80():
-    import os, json, bottle
-    response = bottle.response
-    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
-    list = []
-    with os.scandir(MACHINES_FOLDER+'/rx/l80/ClientDB') as itr:
-        for e in itr:
-            if e.is_dir():
-                list.append({"file" : e.name, "path" : e.path})
-    infos_json = json.dumps(list)
-    return infos_json
-
-def getWF(path,filename,side):
+def getWF(machine,path,filename,side):
+    if machine == 'vx100':
+        code = 'utf-16-le'
+    elif machine == 'l80':
+        code = 'us-ascii'
+    else:
+        code = 'utf8'
     try:
-        with open(path+'/WF/'+filename,'r') as reader:
+        with open(path+'/WF/'+filename,'r', encoding=code) as reader:
             s = 0
             c = 0
             a = 0
@@ -221,9 +214,15 @@ def getWF(path,filename,side):
     except:
         return False
 
-def getTopo(path,filename,side):
+def getTopo(machine,path,filename,side):
+    if machine == 'vx100':
+        code = 'utf-16-le'
+    elif machine == 'l80':
+        code = 'us-ascii'
+    else:
+        code = 'utf8'
     try:
-        with open(path+'/Topo/'+filename,'r') as reader:
+        with open(path+'/Topo/'+filename,'r', encoding=code) as reader:
             topo = []
             k = 0
             for line in reader:
@@ -268,8 +267,8 @@ def getTopo(path,filename,side):
     except:
         return False
 
-@action('rest/l80s', method=['GET'])
-def l80s():
+@action('rest/machines/<machine>/', method=['GET']) 
+def l80s(machine=L80_FOLDER):
     import os, json, bottle, re
     response = bottle.response
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
@@ -282,14 +281,17 @@ def l80s():
     else:
         firstname = ''
     searchList = [lastname, firstname]
+    if machine == 'l80':
+        WORKING_FOLDER = L80_FOLDER
+    elif machine == 'vx100':
+        WORKING_FOLDER = VX100_FOLDER
     list = []
-    # workingDir = '/l80/working_dir21/ClientDB'
-    with os.scandir(L80_FOLDER) as itr:
+    with os.scandir(WORKING_FOLDER) as itr:
         for e in itr:
             if e.is_dir(): # check if directory
                 if re.search(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*',e.name,flags=re.IGNORECASE):
                     list.append({"file" : e.name, "path" : e.path})
-                    with os.scandir(L80_FOLDER+'/'+e.name) as childitr: # in patient folder
+                    with os.scandir(WORKING_FOLDER+'/'+e.name) as childitr: # in patient folder
                         exams = []
                         for echild in childitr: # in exam folder
                             if echild.is_dir():
@@ -307,13 +309,17 @@ def l80s():
                                                         m = p.search(f.name)
                                                         if m != None:
                                                             if m.group('exam') == 'WF':
-                                                                wf = getWF(echild.path,f.name,m.group('side').lower())
+                                                                wf = getWF(machine,echild.path,f.name,m.group('side').lower())
                                                                 if wf != False:
                                                                     data.append(wf)
+                                                                else:
+                                                                    data.append({echild.path+'/'+f.name:'nothing found!'})
                                                             if m.group('exam') == 'Topo':
-                                                                topo = getTopo(echild.path,f.name,m.group('side').lower())
+                                                                topo = getTopo(machine,echild.path,f.name,m.group('side').lower())
                                                                 if topo != False:
                                                                     data.append(topo)
+                                                                else:
+                                                                    data.append({echild.path+'/'+f.name:'nothing found!'})
                                                             rx = { m.group('exam')+'_'+m.group('index')+'_'+m.group('side')[0] : data }
                                                         # else:
                                                         #     rx = { f.name : ' did not match'}
@@ -323,5 +329,3 @@ def l80s():
                         list[-1]['exams'] = exams
     infos_json = json.dumps(list)
     return infos_json
-
-            
