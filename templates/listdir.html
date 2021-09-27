@@ -15,6 +15,10 @@
           <label for="searchText">Search</label>
           <input type="text" name="searchStr" class="form-control" id="searchText" aria-describedby="search" placeholder="Lastname,firstname">
           <small id="searchHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+          <select class="form-select" name="machine" aria-label="Default select example">
+            <option selected value="l80">L80</option>
+            <option value="vx100">VX100</option>
+          </select>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
@@ -96,6 +100,10 @@ $('#searchForm').submit(function(e) {
     console.log('dataStr:',dataStr);
     let dataObj = JSON.parse(dataStr);
     console.log('dataObj:',dataObj);
+    let machine ='l80';
+    if (dataObj['machine'] == 'vx100') {
+        machine = 'vx100';
+    };
     let searchList = dataObj['searchStr'].split(',');
     if (searchList[0] == undefined)
         { searchList[0] = ''};
@@ -106,7 +114,7 @@ $('#searchForm').submit(function(e) {
     let searchFile = searchList.join('#')+'#';
     console.log('searchFile:',searchFile);
     $.ajax({
-        url: HOSTURL + "/myapp/rest/l80s?lastname="+searchList[0]+"&firstname="+searchList[1],
+        url: HOSTURL + "/myapp/rest/machines/"+machine+"?lastname="+searchList[0]+"&firstname="+searchList[1],
         contentType: 'application/json',
         dataType: 'json',
         method: 'GET'
@@ -114,8 +122,7 @@ $('#searchForm').submit(function(e) {
     .done(function(data){
         document.getElementById('table-data-wf').innerHTML = "";
         document.getElementById('table-data-topo').innerHTML = "";
-        // myArray = data
-        // console.log(data);
+        console.log(data);
         data.forEach(
             e => {
                 html = [];
