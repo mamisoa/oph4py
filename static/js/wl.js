@@ -277,8 +277,27 @@ $('#newWlItemForm').submit(function(e) {
                         console.log('WlItemObj:',itemDataObj);                   
                         itemDataObj["message_unique_id"] = uuid.unique_id;
                         let itemDataStr = JSON.stringify(itemDataObj);
-                        crud('worklist','0', req, itemDataStr);
+                        crud('worklist','0', req, itemDataStr);                 
                         $(el).remove(); // remove wl item element node when posted
+                    })
+                    .then(function() {
+                        getTableInfo('modality',itemDataObj['modality_dest'])
+                            .then(function(modality){
+                                if (modality['items'][0]['modality_name'].toLowerCase() == 'l80') {
+                                    console.log('L80 detected');
+                                    getTableInfo('auth_user',itemDataObj['id_auth_user'])
+                                        .then(function(user){
+                                            console.log('user:',user['items'][0]['first_name']);
+                                        })
+                                    // then call ajax function
+                                    // to trigger python to check
+                                    // if patient exist in L80/VX100 -> do nothing
+                                    // if not -> create patient folder and add to index.txt & sort
+                                    // add in both machines
+                                } else {
+                                    console.log('not L80');
+                                };
+                            })
                     })
                     .then(function(){
                         $table_wl.bootstrapTable('refresh');

@@ -99,6 +99,23 @@ function getUuid() {
     ); // promise return data
 };
 
+function getTableInfo(table,id) {
+    let API_URL = HOSTURL+'/myapp/api/'+table+'/'+id;
+    return Promise.resolve(
+        $.ajax({
+            url: API_URL,
+            contentType: 'application/json',
+            dataType: 'json',
+            method: 'GET',
+            success: function(data) {
+                // console.log(data['items']);
+                // if modality = l80
+                // call 
+            }
+        })
+    );
+};
+
 // refreshTables in array
 function refreshTables(tblArr) {
     for (tbl of tablesArr) {
@@ -150,4 +167,19 @@ function crud(table,id='0',req='POST',data) {
 function setWlItemStatus (dataStr) {
     // console.log('dataStrPut:',dataStr);
     crud('worklist','0','PUT', dataStr);
+};
+
+function getVisionixData(machine="l80",lastname="",firstname="") {
+    let API_URL = HOSTURL+'/myapp/rest/machines/'+machine+'?lastname='+lastname+'&firstname='+firstname;
+    return Promise.resolve(
+        $.ajax({
+            url: API_URL,
+            contentType: 'application/json',
+            dataType: 'json',
+            method: 'GET',
+            success: function(data) {
+                // console.log(data);
+            }
+        })
+    );
 };
