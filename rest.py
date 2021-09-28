@@ -306,16 +306,16 @@ def l80s(machine=L80_FOLDER):
                                                     if f.is_file():
                                                         rx = {}
                                                         p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF)_Meas_(?P<index>[0-9]+).txt')
-                                                        m = p.search(f.name)
+                                                        m = p.search(f.name) # get the file
                                                         if m != None:
                                                             if m.group('exam') == 'WF':
-                                                                wf = getWF(machine,echild.path,f.name,m.group('side').lower())
+                                                                wf = getWF(machine,echild.path,f.name,m.group('side').lower()) # get the mesures from file
                                                                 if wf != False:
                                                                     data.append(wf)
                                                                 else:
                                                                     data.append({echild.path+'/'+f.name:'nothing found!'})
                                                             if m.group('exam') == 'Topo':
-                                                                topo = getTopo(machine,echild.path,f.name,m.group('side').lower())
+                                                                topo = getTopo(machine,echild.path,f.name,m.group('side').lower()) # get the mesures from file
                                                                 if topo != False:
                                                                     data.append(topo)
                                                                 else:
