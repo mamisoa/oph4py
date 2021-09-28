@@ -7,3 +7,4 @@ databases/
 settings.py
 .vscode
 machines/
+patients/
