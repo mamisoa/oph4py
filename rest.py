@@ -267,6 +267,36 @@ def getTopo(machine,path,filename,side):
     except:
         return False
 
+@action('rest/scan_visionix/<machine>/', method=['GET']) 
+def scan_visionix(machine,lastname='',firstname=''):
+    import os,json,bottle,re
+    response = bottle.response
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    if 'lastname' in request.query:
+        lastname = request.query.get('lastname')
+    else:
+        lastname = ''
+    if 'firstname' in request.query:
+        firstname = request.query.get('firstname')
+    else:
+        firstname = ''
+    searchList = [lastname, firstname]
+    list = { 'count': 0, 'results' : []}
+    if (machine == 'l80') or (machine == 'vx100'):
+        searchList = [searchList[0],searchList[1]]
+        if machine == 'l80':
+            WORKING_FOLDER = L80_FOLDER
+        elif machine == 'vx100':
+            WORKING_FOLDER = VX100_FOLDER
+        with os.scandir(WORKING_FOLDER) as itr:
+            for e in itr:
+                if e.is_dir(): # check if directory
+                    if re.search(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*',e.name,flags=re.IGNORECASE):
+                        list['results'].append({"file" : e.name, "path" : e.path})
+                        list['count'] += 1
+    infos_json = json.dumps(list)
+    return infos_json
+
 @action('rest/machines/<machine>/', method=['GET']) 
 def l80s(machine=L80_FOLDER):
     import os, json, bottle, re
@@ -281,6 +311,66 @@ def l80s(machine=L80_FOLDER):
     else:
         firstname = ''
     searchList = [lastname, firstname]
+    dirList = json.loads(scan_visionix(machine,searchList[0],searchList[1]))
+    list = []
+    if dirList['count'] > 0:
+        for folder in dirList['results']:
+            with os.scandir(folder['path']) as patientFolderitr:
+                exams = []
+                for examsFolders in patientFolderitr: # datetime exam folders
+                    if examsFolders.is_dir():
+                        mes = []
+                        with os.scandir(examsFolders.path) as examFolderitr: # topo wf folder
+                            for exam in examFolderitr:
+                                if exam.is_dir():
+                                    with os.scandir(exam.path) as examitr:
+                                        for f in examitr:
+                                            data = []
+                                            if f.is_file():
+                                                rx = {}
+                                                p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF)_Meas_(?P<index>[0-9]+).txt')
+                                                m = p.search(f.name) # get the file
+                                                if m != None:
+                                                    if m.group('exam') == 'WF':
+                                                        wf = getWF(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
+                                                        if wf != False:
+                                                            data.append(wf)
+                                                        else:
+                                                            data.append({examsFolders.path+'/'+f.name:'nothing found!'})
+                                                    if m.group('exam') == 'Topo':
+                                                        topo = getTopo(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
+                                                        if topo != False:
+                                                            data.append(topo)
+                                                        else:
+                                                            data.append({examsFolders.path+'/'+f.name:'nothing found!'})
+                                                    rx = { m.group('exam')+'_'+m.group('index')+'_'+m.group('side')[0] : data }
+                                                # else:
+                                                #    rx = { f.name : ' did not match'}
+                                                if rx != {}:
+                                                    mes.append(rx)
+                        exams.append({examsFolders.name : mes })
+                list=exams
+    infos_json = json.dumps(list)
+    return infos_json
+
+@action('rest/update_machine/<machine>/', method=['GET']) 
+def update_machine(machine='l80'):
+    res = []
+    if machine != 'l80':
+        return res
+    import os, json, bottle, re
+    response = bottle.response
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    if 'lastname' in request.query:
+        lastname = request.query.get('lastname')
+    else:
+        lastname = ''
+    if 'firstname' in request.query:
+        firstname = request.query.get('firstname')
+    else:
+        firstname = ''
+    searchList = [lastname, firstname]
+    # check l80
     if machine == 'l80':
         WORKING_FOLDER = L80_FOLDER
     elif machine == 'vx100':
