@@ -297,6 +297,55 @@ def scan_visionix(machine,lastname='',firstname=''):
     infos_json = json.dumps(list)
     return infos_json
 
+# create a patient folder in visionix L80 or VX100
+@action('rest/create_visionix/<machine>/', method=['GET']) 
+def scan_visionix(machine,lastname='_',firstname='_',dob='_'):
+    import os,json
+    res = { 'result': 'success'}
+    if 'lastname' in request.query:
+        lastname = request.query.get('lastname')
+    if 'firstname' in request.query:
+        firstname = request.query.get('firstname')
+    if (machine == 'l80' or machine == 'vx100'):
+        if machine == 'l80':
+            folder = L80_FOLDER
+            coding= 'latin-1'
+        else:
+            folder = VX100_FOLDER
+            coding = 'utf-8'
+        # create file
+        filename = lastname + '#' + firstname
+        try:
+            os.mkdir(folder+'/'+filename)
+        except:
+            return json.dumps({'result':'error creating folder: '+folder+'/'+filename})
+        # add to index and sort
+        list = []
+        count = 0 #
+        try:
+            with open(folder+'/'+'Index.txt','r', encoding = coding ) as index:
+                for line in index:
+                    list.append(line)
+                    count +=1
+        except:
+            return json.dumps({'result':'error reading index:' +folder+'/'+filename + '/Index.txt'})
+        # add new patient
+        list.append(filename+'*'+lastname+'%'+firstname+'\n')
+        # remove counter
+        list.remove(list[0])
+        list= sorted(list, key=str.casefold)
+        list.insert(0,str(count)+'\n')
+        try:
+            with open(folder+'/'+'Index.txt','w', encoding = coding) as index:
+                for line in list:
+                    index.write(line)
+        except:
+            return json.dumps({'result':'error creating index:' +folder+'/'+filename + '/Index.txt'})
+    else:
+        return json.dumps({'result':'no machine matching found'})
+    return json.dumps(res)
+
+
 @action('rest/machines/<machine>/', method=['GET']) 
 def l80s(machine=L80_FOLDER):
     import os, json, bottle, re
