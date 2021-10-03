@@ -297,54 +297,103 @@ def scan_visionix(machine,lastname='',firstname=''):
     infos_json = json.dumps(list)
     return infos_json
 
+# create XML file for VX100
+def createxml_vx100(id='',lastname='',firstname='',dob='',sex=''):
+    from xml.dom import minidom
+    # set XML file
+    root = minidom.Document()
+    optic = root.createElement('optic')
+    root.appendChild(optic)
+    optometry = root.createElement('optometry')
+    optic.appendChild(optometry)
+    # patient node
+    patient = root.createElement('patient')
+    optometry.appendChild(patient)
+    ide = root.createElement('id')
+    patient.appendChild(ide)
+    first_name = root.createElement('first_name')
+    patient.appendChild(first_name)
+    last_name = root.createElement('last_name')
+    patient.appendChild(last_name)
+    birthday = root.createElement('birthday')
+    patient.appendChild(birthday)
+    gender = root.createElement('gender')
+    patient.appendChild(gender)
+    # add text nodes
+    first_name.appendChild(root.createTextNode(firstname))
+    last_name.appendChild(root.createTextNode(lastname))
+    birthday.appendChild(root.createTextNode(dob))
+    gender.appendChild(root.createTextNode(sex))
+    ide.appendChild(root.createTextNode(id))
+    # generate xml
+    xmlstr = root.toprettyxml(indent='\t')
+    try:
+        with open(VX100_FOLDER+'/'+'patient.xml', 'w', encoding='utf-8') as f:
+            f.write(xmlstr)
+        return { 'result': 'success'}
+    except:
+        return { 'result': 'cannot create patient'}
+
+# check if patient exists in folder, if not create folder and update Index.txt
+def addpatient_l80(firstname,lastname):
+    import os
+    folder = L80_FOLDER
+    coding= 'latin-1'
+    # create file
+    filename = lastname + '#' + firstname
+    try:
+        os.mkdir(folder+'/'+filename)
+    except:
+        return {'result':'error creating folder: '+folder+'/'+filename}
+    # add to index and sort
+    list = []
+    count = 0 #
+    try:
+        with open(folder+'/'+'Index.txt','r', encoding = coding ) as index:
+            for line in index:
+                list.append(line)
+                count +=1
+    except:
+        return {'result':'error reading index:' +folder+'/'+filename + '/Index.txt'}
+    # add new patient
+    list.append(filename+'*'+lastname+'%'+firstname+'\n')
+    # remove counter
+    list.remove(list[0])
+    list= sorted(list, key=str.casefold)
+    list.insert(0,str(count)+'\n')
+    try:
+        with open(folder+'/'+'Index.txt','w', encoding = coding) as index:
+            for line in list:
+                index.write(line)
+            return {'result':'success'}
+    except:
+        return {'result':'error creating index:' +folder+'/'+filename + '/Index.txt'}
+
 # create a patient folder in visionix L80 or VX100
 @action('rest/create_visionix/<machine>/', method=['GET']) 
-def create_visionix(machine,lastname='_',firstname='_',dob='_'):
-    import os,json
+def create_visionix(machine,lastname='_',firstname='_',dob='', id='', sex=''):
+    import os,json,bottle
+    response = bottle.response
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     res = { 'result': 'success'}
     if 'lastname' in request.query:
         lastname = request.query.get('lastname')
     if 'firstname' in request.query:
         firstname = request.query.get('firstname')
+    if 'dob' in request.query:
+        dob = request.query.get('dob')
+    if 'sex' in request.query:
+        sex = request.query.get('sex')
+    if 'id' in request.query:
+        id = request.query.get('id')
     if (machine == 'l80' or machine == 'vx100'):
         if machine == 'l80':
-            folder = L80_FOLDER
-            coding= 'latin-1'
-        else:
-            folder = VX100_FOLDER
-            coding = 'utf-8'
-        # create file
-        filename = lastname + '#' + firstname
-        try:
-            os.mkdir(folder+'/'+filename)
-        except:
-            return json.dumps({'result':'error creating folder: '+folder+'/'+filename})
-        # add to index and sort
-        list = []
-        count = 0 #
-        try:
-            with open(folder+'/'+'Index.txt','r', encoding = coding ) as index:
-                for line in index:
-                    list.append(line)
-                    count +=1
-        except:
-            return json.dumps({'result':'error reading index:' +folder+'/'+filename + '/Index.txt'})
-        # add new patient
-        list.append(filename+'*'+lastname+'%'+firstname+'\n')
-        # remove counter
-        list.remove(list[0])
-        list= sorted(list, key=str.casefold)
-        list.insert(0,str(count)+'\n')
-        try:
-            with open(folder+'/'+'Index.txt','w', encoding = coding) as index:
-                for line in list:
-                    index.write(line)
-        except:
-            return json.dumps({'result':'error creating index:' +folder+'/'+filename + '/Index.txt'})
+            res = addpatient_l80(firstname,lastname)
+        elif machine == 'vx100':
+            res = createxml_vx100(id,lastname,firstname,dob,sex)
     else:
-        return json.dumps({'result':'no machine matching found'})
+        res = { 'result': 'no matching machine'}
     return json.dumps(res)
-
 
 @action('rest/machines/<machine>/', method=['GET']) 
 def l80s(machine=L80_FOLDER):
