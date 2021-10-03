@@ -299,7 +299,7 @@ def scan_visionix(machine,lastname='',firstname=''):
 
 # create a patient folder in visionix L80 or VX100
 @action('rest/create_visionix/<machine>/', method=['GET']) 
-def scan_visionix(machine,lastname='_',firstname='_',dob='_'):
+def create_visionix(machine,lastname='_',firstname='_',dob='_'):
     import os,json
     res = { 'result': 'success'}
     if 'lastname' in request.query:
