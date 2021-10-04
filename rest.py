@@ -5,7 +5,7 @@ from yatl.helpers import A
 from .common import db, dbo, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
 from pydal.restapi import RestAPI, Policy
-from .settings import MACHINES_FOLDER, L80_FOLDER, VX100_FOLDER
+from .settings import MACHINES_FOLDER, L80_FOLDER, VX100_FOLDER, VX100_XML_FOLDER
 
 policy = Policy()
 policy.set('*','GET', authorize=True, limit=1000, allowed_patterns=['*'])
@@ -300,7 +300,7 @@ def scan_visionix(machine,lastname='',firstname=''):
 # create XML file for VX100
 def createxml_vx100(id='',lastname='',firstname='',dob='',sex=''):
     from xml.dom import minidom
-    xmlfolder = 'xml/'
+    xmlfolder = VX100_XML_FOLDER
     # set XML file
     root = minidom.Document()
     # root.setAttribute('standalone', 'yes')
@@ -351,12 +351,13 @@ def createxml_vx100(id='',lastname='',firstname='',dob='',sex=''):
     ide.appendChild(root.createTextNode(id))
     # generate xml
     xmlstr = root.toprettyxml(encoding='UTF-8',indent='\t')
-    # try:
-    with open(VX100_FOLDER+'/'+ xmlfolder +'patient.xml', 'wb') as f:
-        f.write(xmlstr)
-    return { 'result': 'success'}
-    # except:
-        # return { 'result': 'cannot create patient'}
+    filename = id + '_'+lastname+'_'+firstname+'_'+dob
+    try:
+        with open(VX100_FOLDER+ xmlfolder +'/'+filename+'.xml', 'wb') as f:
+            f.write(xmlstr)
+        return { 'result': 'success'}
+    except:
+        return { 'result': 'cannot create patient'}
 
 # check if patient exists in folder, if not create folder and update Index.txt
 def addpatient_l80(firstname,lastname):
@@ -399,7 +400,7 @@ def create_visionix(machine,lastname='_',firstname='_',dob='', id='', sex=''):
     import os,json,bottle
     response = bottle.response
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
-    res = { 'result': 'success'}
+    res = { 'result': 'error'}
     if 'lastname' in request.query:
         lastname = request.query.get('lastname')
     if 'firstname' in request.query:
@@ -417,6 +418,7 @@ def create_visionix(machine,lastname='_',firstname='_',dob='', id='', sex=''):
             res = createxml_vx100(id,lastname,firstname,dob,sex)
     else:
         res = { 'result': 'no matching machine'}
+    # default res = error
     return json.dumps(res)
 
 @action('rest/machines/<machine>/', method=['GET']) 

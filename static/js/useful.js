@@ -116,6 +116,23 @@ function getTableInfo(table,id) {
     );
 };
 
+function getUserInfo(id) {
+    let API_URL = HOSTURL + '/myapp/api/auth_user/' + id +'?@lookup=gender!:gender[sex]';
+    return Promise.resolve(
+        $.ajax({
+            url: API_URL,
+            contentType: 'application/json',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                // console.log(data['items']);
+                // if modality = l80
+                // call 
+            }
+        })
+    );
+};
+
 // refreshTables in array
 function refreshTables(tblArr) {
     for (tbl of tablesArr) {
@@ -169,6 +186,7 @@ function setWlItemStatus (dataStr) {
     crud('worklist','0','PUT', dataStr);
 };
 
+//  use as promise
 function getVisionixData(machine="l80",lastname="",firstname="") {
     let API_URL = HOSTURL+'/myapp/rest/machines/'+machine+'?lastname='+lastname+'&firstname='+firstname;
     return Promise.resolve(
@@ -182,4 +200,24 @@ function getVisionixData(machine="l80",lastname="",firstname="") {
             }
         })
     );
+};
+
+// use to populate patient in L80 or VX100
+function addPatientVisionix(machine,id='',lastname='', firstname='',dob='',sex='') {
+    sex == 'Female'? sex = 'f': (sex == 'Male'? sex = 'm': sex ='');
+    let API_URL = HOSTURL + '/myapp/rest/create_visionix/' + machine + '?lastname=' + lastname + '&firstname=' + firstname
+        + '&id=' + id + '&sex=' + sex + '&dob=' + dob;
+    $.ajax({
+        url: API_URL,
+        contentType: 'application/json',
+        dataType: 'json',
+        method: 'GET',
+        success: function (data) {
+            if (data.result == 'success') {
+                displayToast('success', 'add L80/VX100', data.result, '3000');
+            } else {
+                displayToast('error', 'add L80/VX100', data.result, '3000');
+            }
+        }
+    });
 };

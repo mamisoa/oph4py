@@ -285,17 +285,27 @@ $('#newWlItemForm').submit(function(e) {
                             .then(function(modality){
                                 if (modality['items'][0]['modality_name'].toLowerCase() == 'l80') {
                                     console.log('L80 detected');
-                                    getTableInfo('auth_user',itemDataObj['id_auth_user'])
+                                    getUserInfo(itemDataObj['id_auth_user'])
                                         .then(function(user){
-                                            console.log('user:',user['items'][0]['first_name']);
+                                            let firstname = user['items'][0]['first_name'];
+                                            let lastname = user['items'][0]['last_name'];
+                                            let dob = user['items'][0]['dob'];
+                                            let id = user['items'][0]['id'];
+                                            let sex = user['items'][0]['gender.sex'];
+                                            // console.log('useritem: ', user['items'][0]);
+                                            addPatientVisionix('vx100', id, firstname, lastname, dob, sex);
+                                            addPatientVisionix('l80', id, firstname, lastname, dob, sex);
                                         })
+                                        .then(function () {
+                                            $table_wl.bootstrapTable('refresh');
+                                        });
                                     // then call ajax function
                                     // to trigger python to check
                                     // if patient exist in L80/VX100 -> do nothing
                                     // if not -> create patient folder and add to index.txt & sort
                                     // add in both machines
                                 } else {
-                                    console.log('not L80');
+                                    // console.log('not L80');
                                 };
                             })
                     })
