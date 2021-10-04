@@ -293,17 +293,12 @@ $('#newWlItemForm').submit(function(e) {
                                             let id = user['items'][0]['id'];
                                             let sex = user['items'][0]['gender.sex'];
                                             // console.log('useritem: ', user['items'][0]);
-                                            addPatientVisionix('vx100', id, firstname, lastname, dob, sex);
-                                            addPatientVisionix('l80', id, firstname, lastname, dob, sex);
+                                            addPatientVisionix('vx100', id, lastname, firstname, dob, sex);
+                                            addPatientVisionix('l80', id, lastname, firstname, dob, sex);
                                         })
                                         .then(function () {
                                             $table_wl.bootstrapTable('refresh');
                                         });
-                                    // then call ajax function
-                                    // to trigger python to check
-                                    // if patient exist in L80/VX100 -> do nothing
-                                    // if not -> create patient folder and add to index.txt & sort
-                                    // add in both machines
                                 } else {
                                     // console.log('not L80');
                                 };
