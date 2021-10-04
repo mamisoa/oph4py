@@ -78,6 +78,10 @@ function checkIfDataIsNull(data, dft='n/a') {
     return (data == null || data =='')? dft : data ; 
 };
 
+function removeAccent(str) {
+    return str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+};
+
 function getUuid() {
     return Promise.resolve(
         $.ajax({
