@@ -287,8 +287,8 @@ $('#newWlItemForm').submit(function(e) {
                                     console.log('L80 detected');
                                     getUserInfo(itemDataObj['id_auth_user'])
                                         .then(function(user){
-                                            let firstname = user['items'][0]['first_name'];
-                                            let lastname = user['items'][0]['last_name'];
+                                            let firstname = removeAccent(user['items'][0]['first_name']);
+                                            let lastname = removeAccent(user['items'][0]['last_name']);
                                             let dob = user['items'][0]['dob'];
                                             let id = user['items'][0]['id'];
                                             let sex = user['items'][0]['gender.sex'];
