@@ -300,25 +300,49 @@ def scan_visionix(machine,lastname='',firstname=''):
 # create XML file for VX100
 def createxml_vx100(id='',lastname='',firstname='',dob='',sex=''):
     from xml.dom import minidom
+    xmlfolder = 'xml/'
     # set XML file
     root = minidom.Document()
+    # root.setAttribute('standalone', 'yes')
     optic = root.createElement('optic')
     root.appendChild(optic)
     optometry = root.createElement('optometry')
     optic.appendChild(optometry)
-    # patient node
+    # patient node , birthday is compulsory
     patient = root.createElement('patient')
     optometry.appendChild(patient)
-    ide = root.createElement('id')
+    ide = root.createElement('ID')
     patient.appendChild(ide)
     first_name = root.createElement('first_name')
     patient.appendChild(first_name)
     last_name = root.createElement('last_name')
     patient.appendChild(last_name)
-    birthday = root.createElement('birthday')
-    patient.appendChild(birthday)
     gender = root.createElement('gender')
     patient.appendChild(gender)
+    birthday = root.createElement('birthday')
+    patient.appendChild(birthday)
+    # address
+    address = root.createElement('address')
+    patient.appendChild(address)
+    street = root.createElement('street')
+    address.appendChild(street)
+    street2 = root.createElement('street2')
+    address.appendChild(street2)
+    zip = root.createElement('zip')
+    address.appendChild(zip)
+    city = root.createElement('city')
+    address.appendChild(city)
+    # contact
+    contact = root.createElement('contact')
+    patient.appendChild(contact)
+    phone = root.createElement('phone')
+    contact.appendChild(phone)
+    mobile_phone = root.createElement('mobile_phone')
+    contact.appendChild(mobile_phone)
+    fax = root.createElement('fax')
+    contact.appendChild(fax)
+    email = root.createElement('email')
+    contact.appendChild(email)
     # add text nodes
     first_name.appendChild(root.createTextNode(firstname))
     last_name.appendChild(root.createTextNode(lastname))
@@ -326,13 +350,13 @@ def createxml_vx100(id='',lastname='',firstname='',dob='',sex=''):
     gender.appendChild(root.createTextNode(sex))
     ide.appendChild(root.createTextNode(id))
     # generate xml
-    xmlstr = root.toprettyxml(indent='\t')
-    try:
-        with open(VX100_FOLDER+'/'+'patient.xml', 'w', encoding='utf-8') as f:
-            f.write(xmlstr)
-        return { 'result': 'success'}
-    except:
-        return { 'result': 'cannot create patient'}
+    xmlstr = root.toprettyxml(encoding='UTF-8',indent='\t')
+    # try:
+    with open(VX100_FOLDER+'/'+ xmlfolder +'patient.xml', 'wb') as f:
+        f.write(xmlstr)
+    return { 'result': 'success'}
+    # except:
+        # return { 'result': 'cannot create patient'}
 
 # check if patient exists in folder, if not create folder and update Index.txt
 def addpatient_l80(firstname,lastname):
