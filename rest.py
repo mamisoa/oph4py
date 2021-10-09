@@ -2,7 +2,7 @@
 
 from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
 from yatl.helpers import A
-from .common import db, dbo, session, T, cache, auth, logger, authenticated, unauthenticated, flash
+from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash # ,dbo
 
 from pydal.restapi import RestAPI, Policy
 from .settings import MACHINES_FOLDER, L80_FOLDER, VX100_FOLDER, VX100_XML_FOLDER
@@ -223,7 +223,7 @@ def getTopo(machine,path,filename,side):
         code = 'utf8'
     try:
         with open(path+'/Topo/'+filename,'r', encoding=code) as reader:
-            topo = []
+            topo = {'topo': filename }
             k = 0
             for line in reader:
                 # get Sim_K
