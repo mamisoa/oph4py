@@ -50,12 +50,12 @@ db = DAL(
     entity_quoting = True
 )
 
-dbo = DAL(
+""" dbo = DAL(
     settings.DB_OCTOPUS,
     folder=settings.DBO_FOLDER,
     pool_size=settings.DB_POOL_SIZE,
     migrate_enabled=False
-)
+) """
 
 # #######################################################
 # define global objects that may or may not be used by the actions
