@@ -475,8 +475,19 @@ def l80s(machine=L80_FOLDER):
                                                 #     mes.append(rx)
                                             if data != []:
                                                 mes.append(data)
-                        patient['mesurements'].update({ examsFolders.name : mes })
-                        # patient[examsFolders.name] = mes
+                        # format examsFoldername
+                        month = { 'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04',
+                                'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug': '08',
+                                'Sep' : '09', 'Oct': '10', 'Nov': '11', 'Dec': '12' }
+                        dateFolderList = (examsFolders.name).split(' ')
+                        dateFolderList[1] = month[dateFolderList[1]] # replace month str by num
+                        yearTimeList = (dateFolderList.pop(-1)).split('#') # extrude  and list year,time
+                        yearTimeList[1] = ':'.join(yearTimeList[1].split('-')) # replace - by : in time
+                        dateFolderList.append(yearTimeList[0]) # year
+                        dateFolderList.reverse()
+                        dateFolder = '-'.join(dateFolderList)
+                        dateFolder += 'T'+yearTimeList[1] 
+                        patient['mesurements'].update({ dateFolder : mes })
             exams.append(patient)
         list=exams
     infos_json = json.dumps(list)
