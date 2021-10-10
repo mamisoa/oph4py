@@ -440,6 +440,7 @@ def l80s(machine=L80_FOLDER):
     if dirList['count'] > 0:
         exams = []
         for folder in dirList['results']:
+            patient = {'patient': folder['file'], 'mesurements' : {} }
             with os.scandir(folder['path']) as patientFolderitr:
                 for examsFolders in patientFolderitr: # datetime exam folders
                     if examsFolders.is_dir():
@@ -474,7 +475,9 @@ def l80s(machine=L80_FOLDER):
                                                 #     mes.append(rx)
                                             if data != []:
                                                 mes.append(data)
-                        exams.append({ 'patient': folder['file'] , examsFolders.name : mes })
+                        patient['mesurements'].update({ examsFolders.name : mes })
+                        # patient[examsFolders.name] = mes
+            exams.append(patient)
         list=exams
     infos_json = json.dumps(list)
     return infos_json
