@@ -440,41 +440,11 @@ def l80s(machine=L80_FOLDER):
     if dirList['count'] > 0:
         exams = []
         for folder in dirList['results']:
-            patient = {'patient': folder['file'], 'mesurements' : {} }
+            patient = {'patient': folder['file'], 'count' : 0 , 'mesurements' : [] }
             with os.scandir(folder['path']) as patientFolderitr:
                 for examsFolders in patientFolderitr: # datetime exam folders
                     if examsFolders.is_dir():
                         mes = []
-                        with os.scandir(examsFolders.path) as examFolderitr: # topo wf folder
-                            for exam in examFolderitr:
-                                if exam.is_dir():
-                                    with os.scandir(exam.path) as examitr:
-                                        for f in examitr:
-                                            data = []
-                                            if f.is_file():
-                                                # rx = {}
-                                                p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF)_Meas_(?P<index>[0-9]+).txt')
-                                                m = p.search(f.name) # get the file
-                                                if m != None:
-                                                    if m.group('exam') == 'WF':
-                                                        wf = getWF(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
-                                                        if wf != False:
-                                                            data.append(wf)
-                                                        else:
-                                                            data.append({examsFolders.path+'/'+f.name:'nothing found!'})
-                                                    if m.group('exam') == 'Topo':
-                                                        topo = getTopo(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
-                                                        if topo != False:
-                                                            data.append(topo)
-                                                        else:
-                                                            data.append({examsFolders.path+'/'+f.name:'nothing found!'})
-                                                    # rx = data
-                                                # else:
-                                                #    rx = { f.name : ' did not match'}
-                                                # if rx != {}:
-                                                #     mes.append(rx)
-                                            if data != []:
-                                                mes.append(data)
                         # format examsFoldername
                         month = { 'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04',
                                 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug': '08',
@@ -487,7 +457,40 @@ def l80s(machine=L80_FOLDER):
                         dateFolderList.reverse()
                         dateFolder = '-'.join(dateFolderList)
                         dateFolder += 'T'+yearTimeList[1] 
-                        patient['mesurements'].update({ dateFolder : mes })
+                        with os.scandir(examsFolders.path) as examFolderitr: # topo wf folder
+                            for exam in examFolderitr:
+                                if exam.is_dir():
+                                    with os.scandir(exam.path) as examitr:
+                                        for f in examitr:
+                                            data = [] # contains all mesurements for a specific date
+                                            if f.is_file():
+                                                # rx = {}
+                                                p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF)_Meas_(?P<index>[0-9]+).txt')
+                                                m = p.search(f.name) # get the file
+                                                if m != None:
+                                                    patient['count'] +=1
+                                                    if m.group('exam') == 'WF':
+                                                        wf = getWF(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
+                                                        if wf != False:
+                                                            wf['date'] = dateFolder
+                                                            data.append(wf)
+                                                        else:
+                                                            data.append({examsFolders.path+'/'+f.name:'nothing found!'})
+                                                    if m.group('exam') == 'Topo':
+                                                        topo = getTopo(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
+                                                        if topo != False:
+                                                            topo['date'] = dateFolder
+                                                            data.append(topo)
+                                                        else:
+                                                            data.append({examsFolders.path+'/'+f.name:'nothing found!'})
+                                                    # rx = data
+                                                # else:
+                                                #    rx = { f.name : ' did not match'}
+                                                # if rx != {}:
+                                                #     mes.append(rx)
+                                            if data != []:
+                                                mes.extend(data)
+                        patient['mesurements'].extend(mes)
             exams.append(patient)
         list=exams
     infos_json = json.dumps(list)
