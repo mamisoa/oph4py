@@ -1,6 +1,6 @@
 let test = 'test';
 function responseHandler_vx(res) { // used if data-response-handler="responseHandler_vl"
-    let list = res['mesurements'];
+    let list = res.mesurements;
     let display = [];
     test = res;
     $.each(list, function (i) {

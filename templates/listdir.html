@@ -74,16 +74,13 @@
         <div class="col">
             <div>RIGHT EYE</div>
             <table
-                id="visionix-right_tbl"
+                id="visionixRight_tbl"
                 data-side-pagination="server"
                 data-toggle="table"
                 data-pagination="true"
                 data-page-size="10"
                 data-search="false"
-                data-query-params="queryParams"
                 data-response-handler="responseHandler_vx"
-                data-detail-formatter="detailFormatter_vx"
-                data-detail-view="true"
                 data-detail-view-icon="true"
                 >
                 <thead>
@@ -102,7 +99,7 @@
         <div class="col">
             <div>LEFT EYE</div>
             <table
-                id="visionix-left_tbl"
+                id="visionixLeft_tbl"
                 data-side-pagination="server"
                 data-toggle="table"
                 data-pagination="true"
@@ -146,16 +143,16 @@ patient['firstname']='';
 // table listing right measurement for patient in visionix
 const API_VISIONIX_R = HOSTURL + '/myapp/rest/machines/vx100';
 //?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=right'
-var $visionixright_tbl = $('#visionix-right_tbl').bootstrapTable({
+var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
     url: API_VISIONIX_R
 });
 
-// table listing left measurement for patient in visionix
+// // table listing left measurement for patient in visionix
 const API_VISIONIX_L = HOSTURL + '/myapp/rest/machines/vx100' ;
-// ?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=left'
-var $visionixleft_tbl = $('#visionix-left_tbl').bootstrapTable({
-    url: API_VISIONIX_L
-});
+// // ?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=left'
+// var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
+//     url: API_VISIONIX_L
+// });
 
 </script>
 
