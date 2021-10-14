@@ -1,4 +1,10 @@
 [[extend 'baseof.html']]
+[[ block page_head]]
+<link href="css/bootstrap-table.min.css" rel="stylesheet">
+<style>
+</style>
+[[ end ]]
+
 [[ block left_nav ]]
 <li class="nav-item">
     <a href="[[=URL('user')]]" class="nav-link">Users</a>
@@ -63,14 +69,91 @@
     </table>
 </div>
 
+<div class="container">
+    <div class="row right_eye">
+        <div class="col">
+            <div>RIGHT EYE</div>
+            <table
+                id="visionix-right_tbl"
+                data-side-pagination="server"
+                data-toggle="table"
+                data-pagination="true"
+                data-page-size="10"
+                data-search="false"
+                data-query-params="queryParams"
+                data-response-handler="responseHandler_vx"
+                data-detail-formatter="detailFormatter_vx"
+                data-detail-view="true"
+                data-detail-view-icon="true"
+                >
+                <thead>
+                    <tr>
+                        <th data-field="date" data-sortable="true">Datetime</th>
+                        <th data-field="patient" data-sortable="false">Patient</th>
+                        <th data-field="exam" data-sortable="true">Exam</th>
+                        <th data-field="Rx" data-sortable="false">Rx</th>
+                        <th data-field="Kx" data-sortable="false">Kx</th>
+                        <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_kx">Action
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="col">
+            <div>LEFT EYE</div>
+            <table
+                id="visionix-left_tbl"
+                data-side-pagination="server"
+                data-toggle="table"
+                data-pagination="true"
+                data-page-size="10"
+                data-search="false"
+                data-query-params="queryParams"
+                data-response-handler="responseHandler_vx"
+                data-detail-formatter="detailFormatter_vx"
+                data-detail-view="true"
+                data-detail-view-icon="true"
+                >
+                <thead>
+                    <tr>
+                        <th data-field="date" data-sortable="true">Datetime</th>
+                        <th data-field="patient" data-sortable="false">Patient</th>
+                        <th data-field="exam" data-sortable="true">Exam</th>
+                        <th data-field="" data-sortable="false">Rx</th>
+                        <th data-field="kx" data-sortable="false">Kx</th>
+                        <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_kx">Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
 <div>
     <p>User is: [[= XML(globals().get('user',{})) ]]</p>
 </div>
 
 [[ block js_scripts]]
+<script src="js/bootstrap-table/bootstrap-table.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/listdir-bt.js"></script>
 <script type="text/javascript">
 const HOSTURL = "[[ = hosturl ]]";
+let patient = {};
+patient['lastname']='a';
+patient['firstname']='';
+
+// table listing right measurement for patient in visionix
+const API_VISIONIX_R = HOSTURL + '/myapp/rest/machines/vx100?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=right'
+var $visionixright_tbl = $('#visionix-right_tbl').bootstrapTable({
+    url: API_VISIONIX_R
+});
+
+// table listing left measurement for patient in visionix
+const API_VISIONIX_L = HOSTURL + '/myapp/rest/machines/vx100?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=left'
+var $visionixleft_tbl = $('#visionix-left_tbl').bootstrapTable({
+    url: API_VISIONIX_L
+});
 
 $('#getList').click(function(){
     $.ajax({
