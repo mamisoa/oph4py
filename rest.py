@@ -267,6 +267,7 @@ def getTopo(machine,path,filename,side):
     except:
         return False
 
+# check if patient exists in Visionix machines, if so send Json output with corresponding file and path
 @action('rest/scan_visionix/<machine>/', method=['GET']) 
 def scan_visionix(machine,lastname='',firstname=''):
     import os,json,bottle,re
@@ -372,7 +373,7 @@ def addpatient_l80(firstname,lastname):
         return {'result':'error creating folder: '+folder+'/'+filename}
     # add to index and sort
     list = []
-    count = 0 #
+    count = 0
     try:
         with open(folder+'/'+'Index.txt','r', encoding = coding ) as index:
             for line in index:
@@ -421,8 +422,9 @@ def create_visionix(machine,lastname='_',firstname='_',dob='', id='', sex=''):
     # default res = error
     return json.dumps(res)
 
+# bootstrap-table optimized JSON output from Visionix machines L80/VX100
 @action('rest/machines/<machine>/', method=['GET']) 
-def l80s(machine=L80_FOLDER):
+def get_visionix_mes(machine=L80_FOLDER):
     import os, json, bottle, re
     response = bottle.response
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
@@ -464,7 +466,6 @@ def l80s(machine=L80_FOLDER):
                                         for f in examitr:
                                             data = [] # contains all mesurements for a specific date
                                             if f.is_file():
-                                                # rx = {}
                                                 p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF)_Meas_(?P<index>[0-9]+).txt')
                                                 m = p.search(f.name) # get the file
                                                 if m != None:
@@ -483,82 +484,10 @@ def l80s(machine=L80_FOLDER):
                                                             data.append(topo)
                                                         else:
                                                             data.append({examsFolders.path+'/'+f.name:'nothing found!'})
-                                                    # rx = data
-                                                # else:
-                                                #    rx = { f.name : ' did not match'}
-                                                # if rx != {}:
-                                                #     mes.append(rx)
                                             if data != []:
                                                 mes.extend(data)
                         patient['mesurements'].extend(mes)
             exams.append(patient)
         list=exams
-    infos_json = json.dumps(list)
-    return infos_json
-
-@action('rest/update_machine/<machine>/', method=['GET']) 
-def update_machine(machine='l80'):
-    res = []
-    if machine != 'l80':
-        return res
-    import os, json, bottle, re
-    response = bottle.response
-    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
-    if 'lastname' in request.query:
-        lastname = request.query.get('lastname')
-    else:
-        lastname = ''
-    if 'firstname' in request.query:
-        firstname = request.query.get('firstname')
-    else:
-        firstname = ''
-    searchList = [lastname, firstname]
-    # check l80
-    if machine == 'l80':
-        WORKING_FOLDER = L80_FOLDER
-    elif machine == 'vx100':
-        WORKING_FOLDER = VX100_FOLDER
-    list = []
-    with os.scandir(WORKING_FOLDER) as itr:
-        for e in itr:
-            if e.is_dir(): # check if directory
-                if re.search(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*',e.name,flags=re.IGNORECASE):
-                    list.append({"file" : e.name, "path" : e.path})
-                    with os.scandir(WORKING_FOLDER+'/'+e.name) as childitr: # in patient folder
-                        exams = []
-                        for echild in childitr: # in exam folder
-                            if echild.is_dir():
-                                mes = []
-                                with os.scandir(echild.path) as mitr: # exam folder WF or TOPO
-                                    for d in mitr:
-                                        if d.is_dir():
-                                            with os.scandir(d.path) as ditr: # files measure level
-                                                # data = []
-                                                for f in ditr:
-                                                    data = []
-                                                    if f.is_file():
-                                                        rx = {}
-                                                        p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF)_Meas_(?P<index>[0-9]+).txt')
-                                                        m = p.search(f.name) # get the file
-                                                        if m != None:
-                                                            if m.group('exam') == 'WF':
-                                                                wf = getWF(machine,echild.path,f.name,m.group('side').lower()) # get the mesures from file
-                                                                if wf != False:
-                                                                    data.append(wf)
-                                                                else:
-                                                                    data.append({echild.path+'/'+f.name:'nothing found!'})
-                                                            if m.group('exam') == 'Topo':
-                                                                topo = getTopo(machine,echild.path,f.name,m.group('side').lower()) # get the mesures from file
-                                                                if topo != False:
-                                                                    data.append(topo)
-                                                                else:
-                                                                    data.append({echild.path+'/'+f.name:'nothing found!'})
-                                                            rx = { m.group('exam')+'_'+m.group('index')+'_'+m.group('side')[0] : data }
-                                                        # else:
-                                                        #     rx = { f.name : ' did not match'}
-                                                        if rx != {}:
-                                                            mes.append(rx)
-                                    exams.append({echild.name : mes })
-                        list[-1]['exams'] = exams
     infos_json = json.dumps(list)
     return infos_json
