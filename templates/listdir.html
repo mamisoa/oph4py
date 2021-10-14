@@ -140,175 +140,21 @@
 <script type="text/javascript">
 const HOSTURL = "[[ = hosturl ]]";
 let patient = {};
-patient['lastname']='a';
+patient['lastname']='ch';
 patient['firstname']='';
 
 // table listing right measurement for patient in visionix
-const API_VISIONIX_R = HOSTURL + '/myapp/rest/machines/vx100?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=right'
+const API_VISIONIX_R = HOSTURL + '/myapp/rest/machines/vx100';
+//?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=right'
 var $visionixright_tbl = $('#visionix-right_tbl').bootstrapTable({
     url: API_VISIONIX_R
 });
 
 // table listing left measurement for patient in visionix
-const API_VISIONIX_L = HOSTURL + '/myapp/rest/machines/vx100?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=left'
+const API_VISIONIX_L = HOSTURL + '/myapp/rest/machines/vx100' ;
+// ?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=left'
 var $visionixleft_tbl = $('#visionix-left_tbl').bootstrapTable({
     url: API_VISIONIX_L
-});
-
-$('#getList').click(function(){
-    $.ajax({
-        url: HOSTURL + "/myapp/rest/l80",
-        contentType: 'application/json',
-        dataType: 'json',
-        method: 'GET'
-    })
-    .done(function(data){
-        html = [];
-        console.log(data);
-        html.push('<ul class="list-group">');
-        for (let e in data) {
-            html.push('<li class="list-group-item">');
-            html.push('File name: '+ data[e]["file"] + ' - Path: '+ data[e]["path"]);
-            html.push('</li>');
-        };
-        html.push('</ul>');
-        html=html.join('');
-        document.getElementById('list').innerHTML += html;
-    });
-});
-
-$('#searchForm').submit(function(e) {
-    e.preventDefault();
-    let dataStr = $(this).serializeJSON();
-    console.log('dataStr:',dataStr);
-    let dataObj = JSON.parse(dataStr);
-    console.log('dataObj:',dataObj);
-    let machine ='l80';
-    if (dataObj['machine'] == 'vx100') {
-        machine = 'vx100';
-    };
-    let searchList = dataObj['searchStr'].split(',');
-    if (searchList[0] == undefined)
-        { searchList[0] = ''};
-    if (searchList[1] == undefined)
-        { searchList[1] = ''};
-    console.log('searchList:',searchList);
-    // let reg = new RegExp(searchList[0]+'\\w*'+'#'+searchList[1]+'\\w*'+"#",'i');
-    let searchFile = searchList.join('#')+'#';
-    console.log('searchFile:',searchFile);
-    $.ajax({
-        url: HOSTURL + "/myapp/rest/machines/"+machine+"?lastname="+searchList[0]+"&firstname="+searchList[1],
-        contentType: 'application/json',
-        dataType: 'json',
-        method: 'GET'
-    })
-    .done(function(data){
-        document.getElementById('table-data-wf').innerHTML = "";
-        document.getElementById('table-data-topo').innerHTML = "";
-        console.log(data);
-        data.forEach(
-            e => {
-                html = [];
-                row = {};
-                arrPatientid = e.file.split('#');
-                console.log(arrPatientid);
-                row['lastname'] = arrPatientid[0];
-                row['firstname'] = arrPatientid[1];
-                e.exams.forEach( dictExamstime => 
-                Object.keys(dictExamstime).forEach(i => 
-                    {   
-                        dictExamstime[i].forEach( dictExams => {
-                            console.log(Object.keys(dictExamstime)[0]); // Object.keys(dictExamstime)[0] date of exam
-                            row['datetime'] = Object.keys(dictExamstime)[0];
-                            Object.keys(dictExams).forEach( arrMes =>
-                                {
-                                    // console.log(arrMes); // arrMes name of exam, dictExams[arrMes] is an object containing mesures
-                                    dictExams[arrMes].forEach( mes =>
-                                        {
-                                            Object.keys(mes).forEach( key =>
-                                                {
-                                                    // console.log(mes[key]);
-                                                    Object.keys(mes[key]).forEach( m => 
-                                                    {
-                                                        // console.log(arrMes,m,mes[key][m]); // m is the type of measure, mes[key][m] is the measure
-                                                        if (arrMes.includes('_L')) {
-                                                                row['side'] = 'LEFT';
-                                                            }
-                                                            else if (arrMes.includes('_R')) {
-                                                                row['side'] = 'RIGHT';
-                                                            };
-                                                        if (arrMes.includes('WF')) {
-                                                            row['type'] = 'WF';
-                                                            if (m.includes('sph5')) {
-                                                                row['sph'] = mes[key][m];
-                                                            }
-                                                            else if (m.includes('cyl5')) {
-                                                                row['cyl'] = mes[key][m];
-                                                            }
-                                                            else if (m.includes('axis5')) {
-                                                                row['axis'] = mes[key][m];
-                                                            };
-                                                        } else if (arrMes.includes('Topo')) {
-                                                            row['type'] = 'TOPO';
-                                                            if (m.includes('k1') && !(m.includes('axis'))) {
-                                                                row['k1'] = mes[key][m];
-                                                            } else if (m.includes('k1_axis')) {
-                                                                row['k1_axis'] = mes[key][m];
-                                                            } else if (m.includes('k2') && !(m.includes('axis'))) {
-                                                                row['k2'] = mes[key][m];
-                                                            } else if (m.includes('k2_axis')) {
-                                                                row['k2_axis'] = mes[key][m];
-                                                            }
-                                                        };
-                                                    });
-                                                    //
-                                                }
-                                            );
-                                            if (row['type'] == 'WF') {
-                                                // console.log(row);
-                                                html.push('<tr>');
-                                                html.push('<td>'+row['lastname']+'</td>');
-                                                html.push('<td>'+row['firstname']+'</td>');
-                                                html.push('<td>'+row['datetime']+'</td>');
-                                                html.push('<td>'+row['side']+'</td>');
-                                                html.push('<td>'+row['sph']+'</td>');
-                                                html.push('<td>'+row['cyl']+'</td>');
-                                                html.push('<td>'+row['axis']+'</td>');
-                                                html.push('<td data-side="' + row['side'] +'" data-sph="'+ row['sph'] +'" data-cyl="'+ row['cyl'] +'" data-axis="'+ row['axis'] +'"><i class="fas fa-file-download"></i></td>');
-                                                html.push('</tr>');
-                                                html=html.join('');
-                                                // console.log(html);
-                                                document.getElementById('table-data-wf').innerHTML += html;
-                                                html = [];
-                                            } else if (row['type'] == 'TOPO') {
-                                                // console.log(row);
-                                                html.push('<tr>');
-                                                html.push('<td>'+row['lastname']+'</td>');
-                                                html.push('<td>'+row['firstname']+'</td>');
-                                                html.push('<td>'+row['datetime']+'</td>');
-                                                html.push('<td>'+row['side']+'</td>');
-                                                html.push('<td>'+row['k1']+'</td>');
-                                                html.push('<td>'+row['k1_axis']+'</td>');
-                                                html.push('<td>'+row['k2']+'</td>');
-                                                html.push('<td>'+row['k2_axis']+'</td>');
-                                                html.push('<td data-side="' + row['side'] +'" data-k1="'+ row['k1'] +'" data-k1-axis="'+ row['k1_axis'] +'" data-k2="'+ row['k2'] +'" data-k2-axis="'+ row['k2_axis'] +'"><i class="fas fa-file-download"></i></td>');
-                                                html.push('</tr>');
-                                                html=html.join('');
-                                                // console.log(html);
-                                                document.getElementById('table-data-topo').innerHTML += html;
-                                                html = [];
-                                            };      
-                                        }
-                                    );
-                                }
-                            );
-                        }
-                    )}
-                )
-            )
-            }
-        );
-    });
 });
 
 </script>

@@ -135,7 +135,7 @@ def do_upload():
     upload.save('uploads/')
     return True
 
-def getWF(machine,path,filename,side):
+def getWF(machine,path,filename,side,patient):
     if machine == 'vx100':
         code = 'utf-16-le'
     elif machine == 'l80':
@@ -147,7 +147,7 @@ def getWF(machine,path,filename,side):
             s = 0
             c = 0
             a = 0
-            rx = { 'file': filename, 'exam' : 'wf', 'side' : side }
+            rx = { 'patient' : patient , 'file': filename, 'exam' : 'wf', 'side' : side }
             for line in reader:
                 # get SPHERE
                 if s == 3:
@@ -214,7 +214,7 @@ def getWF(machine,path,filename,side):
     except:
         return False
 
-def getTopo(machine,path,filename,side):
+def getTopo(machine,path,filename,side,patient):
     if machine == 'vx100':
         code = 'utf-16-le'
     elif machine == 'l80':
@@ -223,7 +223,7 @@ def getTopo(machine,path,filename,side):
         code = 'utf8'
     try:
         with open(path+'/Topo/'+filename,'r', encoding=code) as reader:
-            topo = { 'file': filename, 'exam': 'topo', 'side' : side }
+            topo = {'patient' : patient , 'file': filename, 'exam': 'topo', 'side' : side }
             k = 0
             for line in reader:
                 # get Sim_K
@@ -444,7 +444,7 @@ def get_visionix_mes(machine=L80_FOLDER):
     dirList = json.loads(scan_visionix(machine,searchList[0],searchList[1]))
     list = []
     if dirList['count'] > 0:
-        exams = []
+        exams = { 'count' : 0 , 'mesurements' : [] }
         for folder in dirList['results']:
             patient = {'patient': folder['file'], 'count' : 0 , 'mesurements' : [] }
             with os.scandir(folder['path']) as patientFolderitr:
@@ -476,23 +476,25 @@ def get_visionix_mes(machine=L80_FOLDER):
                                                     if (m.group('side').lower() == side or side == 'both'):
                                                         patient['count'] +=1
                                                         if m.group('exam') == 'WF':
-                                                            wf = getWF(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
+                                                            wf = getWF(machine,examsFolders.path,f.name,m.group('side').lower(),folder['file']) # get the mesures from file
                                                             if wf != False:
+                                                                exams['count'] += 1
                                                                 wf['date'] = dateFolder
                                                                 data.append(wf)
                                                             else:
                                                                 data.append({examsFolders.path+'/'+f.name:'nothing found!'})
                                                         if m.group('exam') == 'Topo':
-                                                            topo = getTopo(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
+                                                            topo = getTopo(machine,examsFolders.path,f.name,m.group('side').lower(),folder['file']) # get the mesures from file
                                                             if topo != False:
+                                                                exams['count'] += 1
                                                                 topo['date'] = dateFolder
                                                                 data.append(topo)
                                                             else:
                                                                 data.append({examsFolders.path+'/'+f.name:'nothing found!'})
                                             if data != []:
                                                 mes.extend(data)
-                        patient['mesurements'].extend(mes)
-            exams.append(patient)
+                        exams['mesurements'].extend(mes)
+            # exams.append(patient)
         list=exams
     infos_json = json.dumps(list)
     return infos_json

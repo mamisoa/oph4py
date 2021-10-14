@@ -1,6 +1,8 @@
-function responseHandler_vx(res) { // used if data-response-handler="responseHandler_wl"
-    let list = res.mesurements;
+let test = 'test';
+function responseHandler_vx(res) { // used if data-response-handler="responseHandler_vl"
+    let list = res['mesurements'];
     let display = [];
+    test = res;
     $.each(list, function (i) {
         display.push({
             'date': list[i]['date'],
