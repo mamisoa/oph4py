@@ -436,6 +436,10 @@ def get_visionix_mes(machine=L80_FOLDER):
         firstname = request.query.get('firstname')
     else:
         firstname = ''
+    if 'side' in request.query:
+        side = request.query.get('side')
+    else:
+        side = 'both'
     searchList = [lastname, firstname]
     dirList = json.loads(scan_visionix(machine,searchList[0],searchList[1]))
     list = []
@@ -469,21 +473,22 @@ def get_visionix_mes(machine=L80_FOLDER):
                                                 p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF)_Meas_(?P<index>[0-9]+).txt')
                                                 m = p.search(f.name) # get the file
                                                 if m != None:
-                                                    patient['count'] +=1
-                                                    if m.group('exam') == 'WF':
-                                                        wf = getWF(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
-                                                        if wf != False:
-                                                            wf['date'] = dateFolder
-                                                            data.append(wf)
-                                                        else:
-                                                            data.append({examsFolders.path+'/'+f.name:'nothing found!'})
-                                                    if m.group('exam') == 'Topo':
-                                                        topo = getTopo(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
-                                                        if topo != False:
-                                                            topo['date'] = dateFolder
-                                                            data.append(topo)
-                                                        else:
-                                                            data.append({examsFolders.path+'/'+f.name:'nothing found!'})
+                                                    if (m.group('side').lower() == side or side == 'both'):
+                                                        patient['count'] +=1
+                                                        if m.group('exam') == 'WF':
+                                                            wf = getWF(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
+                                                            if wf != False:
+                                                                wf['date'] = dateFolder
+                                                                data.append(wf)
+                                                            else:
+                                                                data.append({examsFolders.path+'/'+f.name:'nothing found!'})
+                                                        if m.group('exam') == 'Topo':
+                                                            topo = getTopo(machine,examsFolders.path,f.name,m.group('side').lower()) # get the mesures from file
+                                                            if topo != False:
+                                                                topo['date'] = dateFolder
+                                                                data.append(topo)
+                                                            else:
+                                                                data.append({examsFolders.path+'/'+f.name:'nothing found!'})
                                             if data != []:
                                                 mes.extend(data)
                         patient['mesurements'].extend(mes)
