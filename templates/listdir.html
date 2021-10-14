@@ -76,21 +76,18 @@
             <table
                 id="visionixRight_tbl"
                 data-side-pagination="server"
-                data-toggle="table"
                 data-pagination="true"
                 data-page-size="10"
                 data-search="false"
                 data-response-handler="responseHandler_vx"
-                data-detail-view-icon="true"
                 >
                 <thead>
                     <tr>
                         <th data-field="date" data-sortable="true">Datetime</th>
                         <th data-field="patient" data-sortable="false">Patient</th>
                         <th data-field="exam" data-sortable="true">Exam</th>
-                        <th data-field="Rx" data-sortable="false">Rx</th>
-                        <th data-field="Kx" data-sortable="false">Kx</th>
-                        <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_kx">Action
+                        <th data-field="rx" data-sortable="false">Rx</th>
+                        <th data-field="kx" data-sortable="false">Kx</th>
                         </th>
                     </tr>
                 </thead>
@@ -101,24 +98,18 @@
             <table
                 id="visionixLeft_tbl"
                 data-side-pagination="server"
-                data-toggle="table"
                 data-pagination="true"
                 data-page-size="10"
                 data-search="false"
-                data-query-params="queryParams"
                 data-response-handler="responseHandler_vx"
-                data-detail-formatter="detailFormatter_vx"
-                data-detail-view="true"
-                data-detail-view-icon="true"
                 >
                 <thead>
                     <tr>
                         <th data-field="date" data-sortable="true">Datetime</th>
                         <th data-field="patient" data-sortable="false">Patient</th>
                         <th data-field="exam" data-sortable="true">Exam</th>
-                        <th data-field="" data-sortable="false">Rx</th>
+                        <th data-field="rx" data-sortable="false">Rx</th>
                         <th data-field="kx" data-sortable="false">Kx</th>
-                        <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_kx">Action</th>
                     </tr>
                 </thead>
             </table>
@@ -133,6 +124,7 @@
 [[ block js_scripts]]
 <script src="js/bootstrap-table/bootstrap-table.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/useful.js"></script>
 <script src="js/listdir-bt.js"></script>
 <script type="text/javascript">
 const HOSTURL = "[[ = hosturl ]]";
@@ -144,15 +136,21 @@ patient['firstname']='';
 const API_VISIONIX_R = HOSTURL + '/myapp/rest/machines/vx100';
 //?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=right'
 var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
-    url: API_VISIONIX_R
+     url: API_VISIONIX_R
 });
 
-// // table listing left measurement for patient in visionix
+// table listing left measurement for patient in visionix
 const API_VISIONIX_L = HOSTURL + '/myapp/rest/machines/vx100' ;
-// // ?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=left'
-// var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
-//     url: API_VISIONIX_L
-// });
+// ?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=left'
+var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
+    url: API_VISIONIX_L,
+    onLoadSuccess: function(data) {
+        console.log('data',data);
+    },
+    onLoadError: function(status) {
+        console.log('status',status);
+    }
+});
 
 </script>
 

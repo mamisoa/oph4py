@@ -29,9 +29,23 @@ function round2dec(num) {
     return num;
 };
 
+// round 2 decimal unsigned
+function round2decunsigned(num) {
+    num = Math.round(num*100)/100;
+    num = num.toFixed(2);
+    return num;
+};
+
 // round to closer quarter
 function round2qter(num) {
     return (Math.round(num * 4) / 4).toFixed(2);
+};
+
+// round to closer quarter signed
+function round2qtersigned(num) {
+    num = (Math.round(num * 4) / 4).toFixed(2);
+    num >0? num='+'+num : {};
+    return num ;
 };
 
 // Capitalize first character

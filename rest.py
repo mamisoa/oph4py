@@ -235,7 +235,7 @@ def getTopo(machine,path,filename,side,patient):
                 elif k == 5:
                     if 'K1_axis=' in line:
                         k1_axis = float(line.split('=')[1])
-                        topo['k1'] = k1_axis
+                        topo['k1_axis'] = k1_axis
                     k -=1
                 elif k == 4:
                     if 'K2=' in line:
