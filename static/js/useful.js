@@ -21,31 +21,23 @@ function diopter2mm(diopters) {
     return (337.50/diopters).toFixed(2);
 };
 
-// round 2 decimal
-function round2dec(num) {
+// round 2 decimal - default with sign
+function round2dec(num,sign=true) {
     num = Math.round(num*100)/100;
     num = num.toFixed(2);
-    num >0? num='+'+num : {};
+    if (sign == true) {
+        num >0? num='+'+num : {};
+    };
     return num;
 };
 
-// round 2 decimal unsigned
-function round2decunsigned(num) {
-    num = Math.round(num*100)/100;
-    num = num.toFixed(2);
-    return num;
-};
-
-// round to closer quarter
-function round2qter(num) {
-    return (Math.round(num * 4) / 4).toFixed(2);
-};
-
-// round to closer quarter signed
-function round2qtersigned(num) {
+// round to closer quarter - default with no sign
+function round2qter(num,sign=false) {
     num = (Math.round(num * 4) / 4).toFixed(2);
-    num >0? num='+'+num : {};
-    return num ;
+    if (sign == true) {
+        num >0? num='+'+num : {};
+    };
+    return num;
 };
 
 // Capitalize first character
@@ -63,6 +55,11 @@ function norm(str) {
 // password generator
 function passGen() {
     return Math.random().toString(36)+Math.random().toString(36).toUpperCase().split('').sort(function(){return 0.5-Math.random()}).join('')
+};
+
+// convert date string yyyy-mm-dd in dd/mm/yyyy
+function datestr2eu(datestr) {
+    return datestr.split('-').reverse().join('/');
 };
 
 // set tz info

@@ -69,13 +69,12 @@
     </table>
 </div>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row right_eye">
         <div class="col">
             <div>RIGHT EYE</div>
             <table
                 id="visionixRight_tbl"
-                data-side-pagination="server"
                 data-pagination="true"
                 data-page-size="10"
                 data-search="false"
@@ -87,7 +86,8 @@
                         <th data-field="patient" data-sortable="false">Patient</th>
                         <th data-field="exam" data-sortable="true">Exam</th>
                         <th data-field="rx" data-sortable="false">Rx</th>
-                        <th data-field="kx" data-sortable="false">Kx</th>
+                        <th data-field="k1str" data-sortable="false">K1</th>
+                        <th data-field="k2str" data-sortable="false">K2</th>
                         </th>
                     </tr>
                 </thead>
@@ -97,7 +97,6 @@
             <div>LEFT EYE</div>
             <table
                 id="visionixLeft_tbl"
-                data-side-pagination="server"
                 data-pagination="true"
                 data-page-size="10"
                 data-search="false"
@@ -109,7 +108,8 @@
                         <th data-field="patient" data-sortable="false">Patient</th>
                         <th data-field="exam" data-sortable="true">Exam</th>
                         <th data-field="rx" data-sortable="false">Rx</th>
-                        <th data-field="kx" data-sortable="false">Kx</th>
+                        <th data-field="k1str" data-sortable="false">K1</th>
+                        <th data-field="k2str" data-sortable="false">K2</th>
                     </tr>
                 </thead>
             </table>
@@ -129,18 +129,18 @@
 <script type="text/javascript">
 const HOSTURL = "[[ = hosturl ]]";
 let patient = {};
-patient['lastname']='ch';
+patient['lastname']='';
 patient['firstname']='';
 
 // table listing right measurement for patient in visionix
-const API_VISIONIX_R = HOSTURL + '/myapp/rest/machines/vx100';
+const API_VISIONIX_R = HOSTURL + '/myapp/rest/machines/l80';
 //?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=right'
 var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
      url: API_VISIONIX_R
 });
 
 // table listing left measurement for patient in visionix
-const API_VISIONIX_L = HOSTURL + '/myapp/rest/machines/vx100' ;
+const API_VISIONIX_L = HOSTURL + '/myapp/rest/machines/l80' ;
 // ?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=left'
 var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
     url: API_VISIONIX_L,
