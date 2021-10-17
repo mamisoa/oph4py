@@ -14,7 +14,7 @@ function responseHandler(res) { // used if data-response-handler="responseHandle
             'sph_far': list[i].sph_far,
             'cyl_far': list[i].cyl_far,
             'axis_far': list[i].axis_far,
-            'rx_far': list[i].sph_far+'('+list[i].cyl_far+'x'+list[i].axis_far+')',
+            'rx_far': round2dec(list[i].sph_far)+'('+round2dec(list[i].cyl_far)+'x'+list[i].axis_far+')',
             'se_far': (parseFloat(list[i].sph_far)+0.5*parseFloat(list[i].cyl_far)).toFixed(2),
             'va_int': list[i].va_int,
             'opto_int': list[i].opto_int,
