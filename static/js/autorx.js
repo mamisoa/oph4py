@@ -142,7 +142,6 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
 // set default state for refraction
 
 // set changes when From is selected
-// let idArr = ['#idRightRx', '#idLeftRx', '#rxFormModal'];
 for (let rx of idRxArr) {
   let arr;
   if (idRxArr.indexOf(rx) == 0) { // if right side ie first index
@@ -176,15 +175,31 @@ for (let rx of idRxArr) {
   });
   // if origin of rx is autorx, cyclo, dil -> hide int and close, reset them to 0 and hide them
   $(rx+' input[name=rx_origin]').change(function () {
+    if (rx == '#idRightRx') {
+      console.log('#idRightRx changed');
+      $('#idLeftRx input[name=rx_origin][value="'+$('#idRightRx input[name=rx_origin]:checked').val()+'"]').prop('checked', true);
+    } else if (rx == '#idLeftRx') {
+      console.log('#leftTypeDiv changed');
+      $('#idRightRx input[name=rx_origin][value="'+$('#idLeftRx input[name=rx_origin]:checked').val()+'"]').prop('checked', true);
+    };
     if (($(rx+' input[name=rx_origin]:checked').val() == 'trial') || ($(rx+' input[name=rx_origin]:checked').val() == 'glass')) {
-      $(arr[0]).removeClass('visually-hidden');
+      // if glass or trial, show (right/left)TypeDiv and set default values
+      // $(arr[0]).removeClass('visually-hidden');
+      $('#rightTypeDiv').removeClass('visually-hidden');
+      $('#leftTypeDiv').removeClass('visually-hidden');
+      // $('#idGetFromMachines').addClass('visually-hidden');
       if (rx != '#rxFormModal') {
         $(rx+' input[name=va_far]').val('1.0');
         $(rx+' input[name=va_int]').val('');
         $(rx+' input[name=va_close]').val('');
       };
     } else {
-      $(arr[0]).addClass('visually-hidden'); // hide 
+      // else if not glass or trial, hide (right/left)TypeDiv and set default values
+      // and show get buttons
+      // $(arr[0]).addClass('visually-hidden');
+      $('#rightTypeDiv').addClass('visually-hidden');
+      $('#leftTypeDiv').addClass('visually-hidden');
+      // $('#idGetFromMachines').removeClass('visually-hidden');
       if (rx != '#rxFormModal') {
         $(rx+' input[name=va_far]').val('');
         $(rx+' input[name=va_int]').val(''); // no int vision as default, before 1.0
@@ -209,6 +224,9 @@ for (let rx of idRxArr) {
 // set default glass then rx_origin (order important)
 $('input[name=glass_type]').val(['monofocal']).trigger('change');
 $('input[name=rx_origin]').val(['autorx']).trigger('change');
+
+// sync right and left rx type
+
 
 // set rx submit buttons
 $('#idRightRx').submit(function(e){
