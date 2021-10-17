@@ -241,33 +241,7 @@
             </div>
             <div class="row"> <!-- row right table -->
                 <div class="col">
-                    <table
-                    id="rxRight_tbl"
-                    data-side-pagination="server"
-                    data-pagination="true"
-                    data-page-size="5"
-                    data-search="false"
-                    data-query-params="queryParams"
-                    data-response-handler="responseHandler"
-                    data-detail-formatter="detailFormatter"
-                    data-row-style="rowStyle_type"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    >
-                        <thead>
-                            <tr>
-                                <th data-field="timestamp" data-sortable="true">Timestamp</th>
-                                <th data-field="rx_origin" data-sortable="true">Type</th>
-                                <th data-field="note" data-sortable="false">Note</th>
-                                <th data-field="va_far" data-sortable="true">VA far</th>
-                                <th data-field="rx_far" data-cell-style="cellStyle_formula" data-sortable="false">Rx far</th>
-                                <th data-field="se_far" data-sortable="false">SE</th>
-                                <th data-field="add" data-cell-style="cellStyle_formula" data-sortable="false">Add</th>
-                                <th data-field="va_close" data-sortable="true">VA close</th>
-                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    ***
                 </div>
             </div>
         </div>  <!-- end col right-->
@@ -492,6 +466,63 @@
             </div>
             <div class="row"> <!-- row left table -->
                 <div class="col">
+                    ***
+                </div>
+            </div>
+        </div>  <!-- end col left-->
+    </div> <!-- end main row -->
+    <div class="row text-center big-title">
+        <div class="col">
+            <button id="btnAddRx" class="btn btn-primary" type="submit">Submit Rx<i class=" mx-2 fas fa-plus"></i></button>
+        </div>
+    </div>
+    <div class="row mt-3 text-center refraction">
+        <div class="col"> <!-- col right-->
+            <div class="row"> <!-- title right -->
+                <div class="col title-right">
+                    <h2>Right Eye</h2>
+                </div>
+            </div> <!-- end title right -->
+            <div class="row">
+                <div class="col"> <!-- col table right -->
+                    <table
+                    id="rxRight_tbl"
+                    data-side-pagination="server"
+                    data-pagination="true"
+                    data-page-size="5"
+                    data-search="false"
+                    data-query-params="queryParams"
+                    data-response-handler="responseHandler"
+                    data-detail-formatter="detailFormatter"
+                    data-row-style="rowStyle_type"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    >
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="true">Timestamp</th>
+                                <th data-field="rx_origin" data-sortable="true">Type</th>
+                                <th data-field="note" data-sortable="false">Note</th>
+                                <th data-field="va_far" data-sortable="true">VA far</th>
+                                <th data-field="rx_far" data-cell-style="cellStyle_formula" data-sortable="false">Rx far</th>
+                                <th data-field="se_far" data-sortable="false">SE</th>
+                                <th data-field="add" data-cell-style="cellStyle_formula" data-sortable="false">Add</th>
+                                <th data-field="va_close" data-sortable="true">VA close</th>
+                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div> <!-- end col table right -->
+            </div>
+        </div>  <!-- end col left-->
+        <div class="col"> <!-- col left-->
+            <div class="row"> <!-- title left -->
+                <div class="col title-left">
+                    <h2>left Eye</h2>
+                </div>
+            </div> <!-- end title left -->
+            <div class="row">
+                <div class="col"> <!-- col table left -->
                     <table
                     id="rxLeft_tbl"
                     data-side-pagination="server"
@@ -519,10 +550,10 @@
                             </tr>
                         </thead>
                     </table>
-                </div>
+                </div> <!-- end col table right -->
             </div>
-        </div>  <!-- end col left-->
-    </div> <!-- end main row -->
+        </div>  <!-- end col right-->
+    </div>
 </div>
 
 <div class="container-fluid">
