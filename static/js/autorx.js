@@ -221,6 +221,11 @@ $('#idLeftRx').submit(function (e) {
   rxInsert('#idLeftRx', 'left');
 });
 
+$('#btnAddBothRx').click(function () {
+  rxInsert('#idRightRx','right');
+  rxInsert('#idLeftRx', 'left');
+});
+
 $('#idRightKm').submit(function(e){
   e.preventDefault();
   kmInsert('#idRightKm','right');
