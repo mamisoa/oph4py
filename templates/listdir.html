@@ -131,19 +131,17 @@
 <script type="text/javascript">
 const HOSTURL = "[[ = hosturl ]]";
 let patient = {};
-patient['lastname']='';
+patient['lastname']='abes';
 patient['firstname']='';
 
 // table listing right measurement for patient in visionix
-const API_VISIONIX_R = HOSTURL + '/myapp/rest/machines/l80';
-//?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=right'
+const API_VISIONIX_R = HOSTURL + '/myapp/rest/machines/l80?lastname='+patient['lastname'] +'&firstname='+patient['firstname']+'&side=right'
 var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
-     url: API_VISIONIX_R
+    url: API_VISIONIX_R
 });
 
 // table listing left measurement for patient in visionix
-const API_VISIONIX_L = HOSTURL + '/myapp/rest/machines/l80' ;
-// ?lastname'+patient['lastname'] +'&firstname='+patient['firstname']+'&side=left'
+const API_VISIONIX_L = HOSTURL + '/myapp/rest/machines/l80?lastname='+patient['lastname'] +'&firstname='+patient['firstname']+'&side=left'
 var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
     url: API_VISIONIX_L,
     onLoadSuccess: function(data) {

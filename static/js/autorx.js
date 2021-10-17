@@ -285,6 +285,41 @@ $('#kmFormModal').submit(function(e) {
   $('#kmModal').modal('hide');
 });
 
+// show machineModal
+$('#btnGetFromL80').click(function() {
+  $('#machineModal').modal('show');
+});
+
+$('#btnRefreshMachineL80').click(function() {
+    $('#visionixRight_tbl').bootstrapTable(
+      'refresh',
+      {
+      url: API_L80_R
+      }
+    );
+    $('#visionixLeft_tbl').bootstrapTable(
+      'refresh',
+      {
+      url: API_L80_L
+      }
+    );
+});
+
+$('#btnRefreshMachineVx100').click(function() {
+  $('#visionixRight_tbl').bootstrapTable(
+    'refresh',
+    {
+    url: API_VX100_R
+    }
+  );
+  $('#visionixLeft_tbl').bootstrapTable(
+    'refresh',
+    {
+    url: API_VX100_L
+    }
+  );
+});
+
 // domId eg #idRightRx , laterality eg 'right', default status = measure
 function rxInsert(domId,laterality,status=1) {
   let dataStr = $(domId).serializeJSON();

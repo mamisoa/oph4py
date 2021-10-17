@@ -1095,6 +1095,79 @@
     </div>
 </div>
 
+<!-- Modal machineModal -->
+<div class="modal fade" id="machineModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Import from machine</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row"> <!-- table row div-->
+                                <div class="col">
+                                    <div>RIGHT EYE</div>
+                                    <table
+                                        id="visionixRight_tbl"
+                                        data-pagination="true"
+                                        data-page-size="10"
+                                        data-search="false"
+                                        data-response-handler="responseHandler_vx"
+                                        >
+                                        <thead>
+                                            <tr>
+                                                <th data-field="date" data-sortable="true">Datetime</th>
+                                                <th data-field="patient" data-sortable="false">Patient</th>
+                                                <th data-field="exam" data-sortable="true">Exam</th>
+                                                <th data-field="rx" data-sortable="false">Rx</th>
+                                                <th data-field="k1str" data-sortable="false">K1</th>
+                                                <th data-field="k2str" data-sortable="false">K2</th>
+                                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                                <div class="col">
+                                    <div>LEFT EYE</div>
+                                    <table
+                                        id="visionixLeft_tbl"
+                                        data-pagination="true"
+                                        data-page-size="10"
+                                        data-search="false"
+                                        data-response-handler="responseHandler_vx"
+                                        >
+                                        <thead>
+                                            <tr>
+                                                <th data-field="date" data-sortable="true">Datetime</th>
+                                                <th data-field="patient" data-sortable="false">Patient</th>
+                                                <th data-field="exam" data-sortable="true">Exam</th>
+                                                <th data-field="rx" data-sortable="false">Rx</th>
+                                                <th data-field="k1str" data-sortable="false">K1</th>
+                                                <th data-field="k2str" data-sortable="false">K2</th>
+                                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div> <!-- end machine table row div-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="toolbar">
+                    <button id="btnRefreshMachineL80" class="btn btn-secondary">L80</button>
+                    <button id="btnRefreshMachineVx100" class="btn btn-secondary">VX100</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 [[ block js_scripts]]
 
 <script type="text/javascript">
@@ -1142,6 +1215,18 @@ const tablesArr = ['#rxRight_tbl','#rxLeft_tbl','#kmRight_tbl','#kmLeft_tbl'];
 $('#rxRight_tbl').on('post-body.bs.table', function () {
     // $('#rxLeft_tbl').bootstrapTable('refresh');
     // $('.loading-wrap').addClass('visually-hidden'); // loading bug?
+});
+
+// table listing right measurement for patient in visionix
+const API_L80_R = HOSTURL + '/myapp/rest/machines/l80?lastname='+patientObj['last_name'] +'&firstname='+patientObj['first_name']+'&side=right'
+const API_L80_L = HOSTURL + '/myapp/rest/machines/l80?lastname='+patientObj['last_name'] +'&firstname='+patientObj['first_name']+'&side=left'
+const API_VX100_R = HOSTURL + '/myapp/rest/machines/vx100?lastname='+patientObj['last_name'] +'&firstname='+patientObj['first_name']+'&side=right'
+const API_VX100_L = HOSTURL + '/myapp/rest/machines/vx100?lastname='+patientObj['last_name'] +'&firstname='+patientObj['first_name']+'&side=left'
+var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
+    url: API_L80_R
+});
+var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
+    url: API_L80_L
 });
 
 </script>
