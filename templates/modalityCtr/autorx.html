@@ -229,11 +229,24 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <div class="col">
+                                <div class="col-3">
+                                    <label for="timestampRight" class="form-label">Timestamp:</label>
+                                    <input id="timestampRight" type="datetime-local" step="1" class="form-control" name="timestamp">
+                                    <div id="requestTimeHelpRight" class="form-text">Adjust timestamp</div>
+                                </div>
+                                <div class="col-6">
                                     <label for="noteRight" class="form-label">Note:</label>
                                     <input id="noteRight" type="text" class="form-control" name="note">
                                     <div id="noteRightHelp" class="form-text">Note</div>
                                 </div>
+                                <div class="col-3">
+                                    <label for="statusRxRight" class="form-label">Status:</label>
+                                    <div class="input-group">
+                                        <select id="statusRxRight" class="form-select" aria-label="Choose status for rx" name="status">
+                                            [[ = statusRxOptions]]
+                                        </select>
+                                    </div>
+                                </div>                               
                             </div>
                             <div class="row mb-3 text-center">
                                 <div class="row mb-3" id="rxRightSubmit">
@@ -449,11 +462,24 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <div class="col">
+                                <div class="col-3">
+                                    <label for="timestampLeft" class="form-label">Timestamp:</label>
+                                    <input id="timestampLeft" type="datetime-local" step="1" class="form-control" name="timestamp">
+                                    <div id="requestTimeHelpLeft" class="form-text">Adjust timestamp</div>
+                                </div>
+                                <div class="col-6">
                                     <label for="noteLeft" class="form-label">Note:</label>
                                     <input id="noteLeft" type="text" class="form-control" name="note">
                                     <div id="noteLeftHelp" class="form-text">Note</div>
                                 </div>
+                                <div class="col-3">
+                                    <label for="statusRxLeft" class="form-label">Status:</label>
+                                    <div class="input-group">
+                                        <select id="statusRxLeft" class="form-select" aria-label="Choose status for rx" name="status">
+                                            [[ = statusRxOptions]]
+                                        </select>
+                                    </div>
+                                </div>                               
                             </div>
                             <div class="row mb-3 text-center">
                                 <div class="row mb-3" id="rxLeftSubmit">
@@ -972,7 +998,7 @@
                                     <div class="col">
                                         <label for="statusRx" class="form-label">Status:</label>
                                         <div class="input-group">
-                                            <select class="form-select form-select-sm" aria-label="Choose status for rx" name="status">
+                                            <select id="statusRx" class="form-select form-select-sm" aria-label="Choose status for rx" name="status">
                                                 [[ = statusRxOptions]]
                                             </select>
                                         </div>
@@ -1125,7 +1151,7 @@
                                                 <th data-field="rx" data-sortable="false">Rx</th>
                                                 <th data-field="k1str" data-sortable="false">K1</th>
                                                 <th data-field="k2str" data-sortable="false">K2</th>
-                                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_vx" data-events="operateEvents_vx">Action</th>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -1148,7 +1174,7 @@
                                                 <th data-field="rx" data-sortable="false">Rx</th>
                                                 <th data-field="k1str" data-sortable="false">K1</th>
                                                 <th data-field="k2str" data-sortable="false">K2</th>
-                                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_vx" data-events="operateEvents_vx">Action</th>
                                             </tr>
                                         </thead>
                                     </table>
