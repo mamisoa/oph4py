@@ -328,11 +328,11 @@ $('#btnRefreshMachineVx100').click(function() {
 function rxInsert(domId,laterality,status=1) {
   let dataStr = $(domId).serializeJSON();
   let dataObj = JSON.parse(dataStr);
-  console.log('rx dataObj',dataObj);
+  console.log('rx dataObj:',dataObj);
   dataObj['laterality'] = laterality;
   // dataObj['status'] = status;
   // dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
-  console.log('rx_origin',dataObj['rx_origin']);
+  // console.log('rx_origin',dataObj['rx_origin']);
   if ((dataObj['rx_origin'] != 'glass') && (dataObj['rx_origin'] != 'trial')) {
     dataObj['glass_type'] = 'na';
     dataObj['va_close'] = dataObj['va_int']='';
