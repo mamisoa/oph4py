@@ -11,6 +11,10 @@ var addArr = ['add_int', 'add_close'];
 var vaFarArr = ['va_far', 'va_int'];
 var vaCloseArr = ['va_close'];
 
+// set rx timestamps
+$('#timestampRight').val(new Date().addHours(timeOffsetInHours).toJSON().slice(0,16))
+$('#timestampLeft').val(new Date().addHours(timeOffsetInHours).toJSON().slice(0,16))
+
 for (let id of idRxArr) {
   for (let sph of sphCylArr) {
       setCounter(id,sph,0.25,-30,30,2,true);    
@@ -324,10 +328,10 @@ $('#btnRefreshMachineVx100').click(function() {
 function rxInsert(domId,laterality,status=1) {
   let dataStr = $(domId).serializeJSON();
   let dataObj = JSON.parse(dataStr);
-  // console.log(dataObj);
+  console.log('rx dataObj',dataObj);
   dataObj['laterality'] = laterality;
-  dataObj['status'] = status;
-  dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
+  // dataObj['status'] = status;
+  // dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
   console.log('rx_origin',dataObj['rx_origin']);
   if ((dataObj['rx_origin'] != 'glass') && (dataObj['rx_origin'] != 'trial')) {
     dataObj['glass_type'] = 'na';

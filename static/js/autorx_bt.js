@@ -30,6 +30,7 @@ function responseHandler(res) { // used if data-response-handler="responseHandle
             'axis_close': list[i].axis_close,
             'rx_close': list[i].sph_close+'('+list[i].cyl_close+'x'+list[i].axis_close+')',
             'note': list[i].note,
+            'status': list[i].status,
             'laterality': list[i]['laterality'],
             'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
             'modified_by': list[i]['mod.id'],
@@ -120,6 +121,7 @@ window.operateEvents = {
         $('#rxFormModal [name=cyl_close]').val(row.cyl_close);
         $('#rxFormModal [name=axis_close]').val(row.axis_close);
         $('#rxFormModal [name=note]').val(row.note);
+        $('#rxFormModal [name=status]').val(row.status);
         let add_int = round2dec(parseFloat(row.sph_int)-parseFloat(row.sph_far));
         let add_close = round2dec(parseFloat(row.sph_close)-parseFloat(row.sph_far));
         console.log('add_close',add_close);
@@ -298,14 +300,14 @@ function responseHandler_vx(res) { // used if data-response-handler="responseHan
                 };
 };
 
-function operateFormatter(value, row, index) {
+function operateFormatter_vx(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="import" href="javascript:void(0)" title="Cache '+row.side+' rx"><i class="fas fa-file-import"></i></a>');
     html.push('</div>');
     return html.join('');
 };
 
-window.operateEvents = {
+window.operateEvents_vx = {
     'click .import': function (e, value, row, index) {
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
         let side = capitalize(row.side);
