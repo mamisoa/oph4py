@@ -244,7 +244,7 @@ db.define_table('rx',
     Field('note','string'),
     Field('laterality','string', required=True),
     Field('status','reference status_rx', required=True, default='1'),
-    Field('id_duplicate', 'integer'),
+    Field('id_pair', 'string'),
     auth.signature)
 
 db.rx.rx_origin.requires = IS_IN_SET(('autorx','glass','trial','cyclo','dil'))
