@@ -14,21 +14,23 @@
 [[ include 'partials/patient-bar.html' ]]
 
 <div class="container-fluid mb-3">
-    <div class="row text-center big-title">
+    <div class="row text-center big-title mb-2" style="background-color: #E0F2F1;">
         <div class="col">
             <h1><a role="button" data-bs-toggle="collapse" href=".refraction">Refraction</a></h1>
         </div>
     </div>
-    <div class="row mb-3 d-flex justify-content-center align-items-center">
-        <div class="col text-center" id="idGetFromMachines">
-            <label for="btnGetFromL80" class="form-label">Import from:</label>
+    <div class="row d-flex justify-content-center align-items-center mx-2" style="background-color: #BBDEFB;">
+        <div class="col text-center my-2" id="idGetFromMachines">
             <div>
-                <button id="btnGetFromL80" class="btn btn-primary" type="button">L80</button>
-                <button id="btnGetFromVx100" class="btn btn-primary" type="button">VX100</button>
+                <button id="btnGetFromL80" class="btn btn-primary btn-sm" type="button">L80</button>
+                <button id="btnGetFromVx100" class="btn btn-primary btn-sm" type="button">VX100</button>
+                <button id="btnGetFromCviris" class="btn btn-primary btn-sm" type="button">CV5 Iris</button>
+                <button id="btnGetFromCvcrist" class="btn btn-primary btn-sm" type="button">CV5 Crist</button>
+                <button id="btnGetFromCvcornea" class="btn btn-primary btn-sm" type="button">CV5 Cornea</button>
             </div>
         </div>
     </div>
-    <div class="row mt-3 text-center refraction">
+    <div class="row mt-1 text-center refraction">
         <div class="col"> <!-- col right-->
             <div class="row"> <!-- row right title -->
                 <div class="col title-right">
@@ -496,9 +498,9 @@
             </div>
         </div>  <!-- end col left-->
     </div> <!-- end main row -->
-    <div class="row text-center big-title">
+    <div class="row text-center mx-2">
         <div class="col">
-            <button id="btnAddBothRx" class="btn btn-primary" type="button">Submit Rx<i class=" mx-2 fas fa-plus"></i></button>
+            <button id="btnAddBothRx" class="btn btn-primary my-2" type="button">Submit Rx<i class=" mx-2 fas fa-plus"></i></button>
         </div>
     </div>
     <div class="row mt-3 text-center refraction">
@@ -572,7 +574,7 @@
 </div>
 
 <div class="container-fluid">
-    <div class="row text-center big-title">
+    <div class="row text-center big-title" style="background-color: #E0F2F1;">
         <h1><a role="button" data-bs-toggle="collapse" href=".keratometry">Keratometry</a></h1>
     </div>
     <div class="row mt-3 text-center keratometry">
@@ -1126,7 +1128,7 @@
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Import from machine</h5>
+                <h5 class="modal-title" id="importMachineTitle">Import from machine</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1135,7 +1137,7 @@
                         <div class="col">
                             <div class="row"> <!-- table row div-->
                                 <div class="col">
-                                    <div>RIGHT EYE</div>
+                                    <div class="title-right">RIGHT EYE</div>
                                     <table
                                         id="visionixRight_tbl"
                                         data-pagination="true"
@@ -1158,7 +1160,7 @@
                                     </table>
                                 </div>
                                 <div class="col">
-                                    <div>LEFT EYE</div>
+                                    <div class="title-left">LEFT EYE</div>
                                     <table
                                         id="visionixLeft_tbl"
                                         data-pagination="true"
