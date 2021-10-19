@@ -244,8 +244,9 @@ $('#idLeftRx').submit(function (e) {
 });
 
 $('#btnAddBothRx').click(function () {
-  rxInsert('#idRightRx','right');
-  rxInsert('#idLeftRx', 'left');
+  let id_pair = Date.now();
+  rxInsert('#idRightRx','right',id_pair);
+  rxInsert('#idLeftRx', 'left',id_pair);
 });
 
 $('#idRightKm').submit(function(e){
@@ -319,11 +320,12 @@ $('#btnGetFromVx100').click(function() {
 });
 
 // domId eg #idRightRx , laterality eg 'right', default status = measure
-function rxInsert(domId,laterality,status=1) {
+function rxInsert(domId,laterality,id_pair, status=1) {
   let dataStr = $(domId).serializeJSON();
   let dataObj = JSON.parse(dataStr);
   console.log('rx dataObj:',dataObj);
   dataObj['laterality'] = laterality;
+  dataObj['id_pair'] = Math.round(id_pair).toString();
   // dataObj['status'] = status;
   // dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
   // console.log('rx_origin',dataObj['rx_origin']);
@@ -333,7 +335,7 @@ function rxInsert(domId,laterality,status=1) {
   };
   delete dataObj['add_int'];
   delete dataObj['add_close'];
-  // console.log('dataObj',dataObj);
+  console.log('dataObj',dataObj);
   dataStr = JSON.stringify(dataObj);
   crud('rx','0','POST', dataStr);
   $('#rx'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
