@@ -30,6 +30,7 @@ function responseHandler(res) { // used if data-response-handler="responseHandle
             'axis_close': list[i].axis_close,
             'rx_close': list[i].sph_close+'('+list[i].cyl_close+'x'+list[i].axis_close+')',
             'note': list[i].note,
+            'id_pair': list[i].id_pair,
             'status': list[i].status,
             'laterality': list[i]['laterality'],
             'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
@@ -136,31 +137,6 @@ window.operateEvents = {
     }
 };
 
-function detailFormatter(index, row) {
-    let html = ['<div class="container-fluid"><div class="row">'];
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
-    html.push('<p class=""><span class="fw-bold">Timestamp: </span>'+ row.timestamp +'</p>');
-    html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
-    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by+'</p>');
-    html.push('</div>');
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">Origin: </span>'+ row.rx_origin+'</p>');
-    html.push('<p class=""><span class="fw-bold">Type: </span>'+ row.glass_type+'</p>');
-    html.push('<p class=""><span class="fw-bold">Rx far: </span>'+ row.rx_far +'</p>');
-    html.push('<p class=""><span class="fw-bold">Rx int: </span>'+ row.rx_int +'</p>');
-    html.push('<p class=""><span class="fw-bold">Rx close: </span>'+ row.rx_close+'(Add+'+row.add+')</p>');
-    html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ row.laterality +'</p>');
-    html.push('</div>');
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_far +'</p>');
-    html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_int +'</p>');
-    html.push('<p class=""><span class="fw-bold">Va far: </span>'+ row.va_close +'</p>');
-    html.push('</div>');
-    html.push('</div></div>');
-    return html.join('');
-};
-
 function rowStyle_type(row) {
     let bg, statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' };
     row.rx_origin != undefined ? bg = statusColor[row.rx_origin] : bg = "white";
@@ -232,6 +208,7 @@ function detailFormatter(index, row) {
     html.push('</div>');
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">ID_pair: </span>'+ row.id_pair);
     html.push('<p class=""><span class="fw-bold">Timestamp: </span>'+ row.timestamp +'</p>');
     html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by_name+' on '+row.created_on+'</p>');
     html.push('<p class=""><span class="fw-bold">Modified by: </span>'+ row.modified_by_name+' on '+row.modified_on+'</p>');
