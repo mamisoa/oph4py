@@ -96,7 +96,7 @@ function operateFormatter(value, row, index) {
 
 window.operateEvents = {
     'click .edit': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         document.getElementById("rxFormModal").reset();
         $('#rxFormModal [name=id]').val(row.id);
         $('#rxFormModal [name=id_auth_user]').val(row.id_auth_user);
@@ -190,7 +190,7 @@ function operateFormatter_km(value, row, index) {
 
 window.operateEvents_km = {
     'click .edit': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         document.getElementById("kmFormModal").reset();
         $('#kmFormModal [name=id]').val(row.id);
         $('#kmFormModal [name=id_auth_user]').val(row.id_auth_user);
@@ -286,8 +286,8 @@ function responseHandler_vx(res) { // used if data-response-handler="responseHan
             'k1str': kx[0],
             'k2str': kx[1],
             'rx': rx,
-            'k1': diopter2mm(list[i]['k1']),
-            'k2': diopter2mm(list[i]['k2']),
+            'k1': list[i]['k1'] == null?list[i]['k1']:diopter2mm(list[i]['k1']),
+            'k2': list[i]['k2'] == null?list[i]['k1']:diopter2mm(list[i]['k2']),
             'k1_axis': list[i]['k1_axis'],
             'k2_axis': list[i]['k2_axis'],
             'sph5': list[i]['sph5'],
@@ -318,13 +318,17 @@ window.operateEvents_vx = {
         // have to add uuid for each pair of rx
         // $('#rxFormModal [name=va_far]').val(row.va_far);
         // $('#rxFormModal [name=opto_far]').val(row.opto_far);
-        $(domIdRx + ' [name=sph_far]').val(round2qter(row.sph5,true)).trigger('change');
-        $(domIdRx + ' [name=cyl_far]').val(round2qter(row.cyl5,true)).trigger('change');
-        $(domIdRx + ' [name=axis_far]').val(Math.round(row.axis5)).trigger('change');
-        $(domIdKm + ' [name=k1]').val(row.k1);
-        $(domIdKm + ' [name=axis1]').val(row.k1_axis);
-        $(domIdKm + ' [name=k2]').val(row.k2);
-        $(domIdKm + ' [name=axis2]').val(row.k2_axis);
+        if (row.exam == 'topo') {
+            $(domIdKm + ' [name=k1]').val(row.k1);
+            $(domIdKm + ' [name=axis1]').val(row.k1_axis);
+            $(domIdKm + ' [name=k2]').val(row.k2);
+            $(domIdKm + ' [name=axis2]').val(row.k2_axis);
+        };
+        if (row.exam == 'wf') {
+            $(domIdRx + ' [name=sph_far]').val(round2qter(row.sph5,true)).trigger('change');
+            $(domIdRx + ' [name=cyl_far]').val(round2qter(row.cyl5,true)).trigger('change');
+            $(domIdRx + ' [name=axis_far]').val(Math.round(row.axis5)).trigger('change');
+        };
         // $('#rxFormModal [name=axis_far]').val(row.axis_far);
         // $('#rxFormModal [name=va_int]').val(row.va_int);
         // $('#rxFormModal [name=opto_int]').val(row.opto_int);
