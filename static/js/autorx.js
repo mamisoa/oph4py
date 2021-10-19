@@ -289,39 +289,33 @@ $('#kmFormModal').submit(function(e) {
   $('#kmModal').modal('hide');
 });
 
-// show machineModal
-$('#btnGetFromL80').click(function() {
-  $('#machineModal').modal('show');
-});
-
-$('#btnRefreshMachineL80').click(function() {
-    $('#visionixRight_tbl').bootstrapTable(
-      'refresh',
-      {
-      url: API_L80_R
-      }
-    );
-    $('#visionixLeft_tbl').bootstrapTable(
-      'refresh',
-      {
-      url: API_L80_L
-      }
-    );
-});
-
-$('#btnRefreshMachineVx100').click(function() {
+function refreshMachine(machine='l80') {
+  let API_R, API_L;
+  machine == 'l80'? [API_R,API_L] = [API_L80_R,API_L80_L] : [API_R,API_L] = [API_VX100_R,API_VX100_L];
   $('#visionixRight_tbl').bootstrapTable(
     'refresh',
     {
-    url: API_VX100_R
+    url: API_R
     }
   );
   $('#visionixLeft_tbl').bootstrapTable(
     'refresh',
     {
-    url: API_VX100_L
+    url: API_L
     }
   );
+};
+
+// show machineModal
+$('#btnGetFromL80').click(function() {
+  refreshMachine('l80');
+  document.getElementById('importMachineTitle').innerHTML = 'Import from L80'
+  $('#machineModal').modal('show');
+});
+$('#btnGetFromVx100').click(function() {
+  refreshMachine('vx100');
+  document.getElementById('importMachineTitle').innerHTML = 'Import from VX100'
+  $('#machineModal').modal('show');
 });
 
 // domId eg #idRightRx , laterality eg 'right', default status = measure

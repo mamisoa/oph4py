@@ -89,6 +89,7 @@ function checkIfDataIsNull(data, dft='n/a') {
     return (data == null || data =='')? dft : data ; 
 };
 
+// remove accents but not diacritics?
 function removeAccent(str) {
     return str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
 };
