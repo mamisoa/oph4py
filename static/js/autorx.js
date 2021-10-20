@@ -229,8 +229,13 @@ for (let rx of idRxArr) {
 $('input[name=glass_type]').val(['monofocal']).trigger('change');
 $('input[name=rx_origin]').val(['autorx']).trigger('change');
 
-// sync right and left rx type
-
+// sync right and left timstamp
+$('#idRightRx input[name="timestamp"]').change(function () {
+  $('#idLeftRx input[name="timestamp"]').val($('#idRightRx input[name="timestamp"]'));
+});
+$('#idLeftRx input[name="timestamp"]').change(function(){
+  $('#idRightRx input[name="timestamp"]').val($('#idLeftRx input[name="timestamp"]'));
+});
 
 // set rx submit buttons
 $('#idRightRx').submit(function(e){
