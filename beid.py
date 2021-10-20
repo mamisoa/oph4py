@@ -28,6 +28,27 @@ MAP_MOIS = {
     "DEC"  : "12"
     }
 
+# check format dd/mm/yyyy
+def checkDate(date):
+    try:
+        [d, m, y] = date.split()
+        m = MAP_MOIS[m]
+        if (int(d) <1 or int(d) >31):
+            d= '01'
+        if (int(m) <1 or int(m) >12):
+            m = '01'
+        if (int(y) <1900 or int(y) >2080):
+            y = '1900'
+        return '/'.join([d, m, y])
+    except Exception as e:
+        try:
+            if isinstance(int(date.split().pop()), int):
+                return "01/01/"+date.split().pop()
+            else:
+                return ''
+        except:
+            return ''
+
 ID = [0x3F, 0x00, 0xDF, 0x01, 0x40, 0x31]
 ADDRESS = [0x3F, 0x00, 0xDF, 0x01, 0x40, 0x33]
 PHOTO = [0x3F, 0x00, 0xDF, 0x01, 0x40, 0x35]
@@ -78,7 +99,8 @@ def read_infos(device, read_photo = False):
     "suffixe" : infos[8],
     "nationalite" : infos[9],
     "lieu_naissance" : infos[10],
-    "date_naissance" : infos[11].split()[0] + "/" + MAP_MOIS[infos[11].split()[1]] + "/" + infos[11].split()[2],
+    # "date_naissance" : infos[11].split()[0] + "/" + MAP_MOIS[infos[11].split()[1]] + "/" + infos[11].split()[2]),
+    "date_naissance" : checkDate(infos[11]),
     "sexe" : infos[12],
     }
 

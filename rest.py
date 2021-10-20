@@ -65,10 +65,9 @@ def beid():
         # sleep(2)
         infos = read_infos(r, read_photo=True)
         infos['photo'] =  b64encode(infos['photo']).decode('utf8')
-        infos_json = json.dumps(infos)
     except Exception as e:
-        infos = { 'results': 'cannot read card', 'erreur': e}
-        # infos_json = {}
+        infos = { 'results': 'cannot read card', 'erreur': e.args}
+    infos_json = json.dumps(infos)
     return infos_json
 
 
