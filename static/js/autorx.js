@@ -231,10 +231,10 @@ $('input[name=rx_origin]').val(['autorx']).trigger('change');
 
 // sync right and left timstamp
 $('#idRightRx input[name="timestamp"]').change(function () {
-  $('#idLeftRx input[name="timestamp"]').val($('#idRightRx input[name="timestamp"]'));
+  $('#idLeftRx input[name="timestamp"]').val($('#idRightRx input[name="timestamp"]').val());
 });
 $('#idLeftRx input[name="timestamp"]').change(function(){
-  $('#idRightRx input[name="timestamp"]').val($('#idLeftRx input[name="timestamp"]'));
+  $('#idRightRx input[name="timestamp"]').val($('#idLeftRx input[name="timestamp"]').val());
 });
 
 // set rx submit buttons
