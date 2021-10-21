@@ -5,7 +5,7 @@ from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash # ,dbo
 
 from pydal.restapi import RestAPI, Policy
-from .settings import MACHINES_FOLDER, L80_FOLDER, VX100_FOLDER, VX100_XML_FOLDER
+from .settings import MACHINES_FOLDER, L80_FOLDER, VX100_FOLDER, VX100_XML_FOLDER, UPLOAD_FOLDER
 
 policy = Policy()
 policy.set('*','GET', authorize=True, limit=1000, allowed_patterns=['*'])
@@ -120,19 +120,6 @@ def octopus(tablename, rec_id=None):
     except ValueError: 
         response.status = 400
         return
-
-@action('upload', method=['POST'])
-def do_upload():
-    import os
-    upload = request.files.get('upload')
-    file1 = open("uploads/called.txt","w")
-    file1.write("function called \n")
-    file1.close()
-    # name, ext = os.path.splitext(upload.filename)
-    # if ext not in ('.pdf'):
-    #     return 'File extension not allowed.'
-    upload.save('uploads/')
-    return True
 
 def getWF(machine,path,filename,side,patient):
     from math import pi
@@ -501,5 +488,32 @@ def get_visionix_mes(machine=L80_FOLDER):
 
 @action('upload', method=['POST'])
 def do_upload():
-    file = request.files.file
-    return file.filename
+    import os, json, bottle
+    response = bottle.response
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    file = request.files.get('file')
+    re_dict = { 'filename': file.filename }
+    name, ext = os.path.splitext(file.filename)
+    if ext not in ('.png','.jpg','.jpeg','.webp','.pdf'):
+        re_dict.update({ 'status' : 'error', 'error' : 'File extension not allowed.'})
+        return json.dumps(re_dict)
+    try:
+        file.save(UPLOAD_FOLDER)
+        re_dict.update({ 'status' : 'saved'})
+    except Exception as e:
+        re_dict.update({ 'status' : 'error', 'error' : e.args[0] })
+    re = json.dumps(re_dict)
+    return re
+
+# @action('upload', method=['POST'])
+# def do_upload():
+#     import os
+#     upload = request.files.get('upload')
+#     file1 = open("uploads/called.txt","w")
+#     file1.write("function called \n")
+#     file1.close()
+#     # name, ext = os.path.splitext(upload.filename)
+#     # if ext not in ('.pdf'):
+#     #     return 'File extension not allowed.'
+#     upload.save('uploads/')
+#     return True
