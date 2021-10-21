@@ -119,6 +119,26 @@
     </div>
 </div>
 
+<form action="myapp/upload" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="formFile" class="form-label">Default file input example</label>
+        <input class="form-control" type="file" id="formFile" name="file">
+    </div>
+    <div class="mb-3">
+        <label for="formFileMultiple" class="form-label">Multiple files input example</label>
+        <input class="form-control" type="file" id="formFileMultiple" multiple>
+    </div>
+        <label for="formFileLg" class="form-label">Large file input example</label>
+        <input class="form-control form-control-lg" id="formFileLg" type="file">
+    </div>
+    <label for="exampleColorInput" class="form-label">Color picker</label>
+    <input type="color" class="form-control form-control-color" id="exampleColorInput" value="#563d7c"
+        title="Choose your color">
+    <div class="col-12">
+        <button class="btn btn-primary" type="submit">Submit form</button>
+    </div>
+</form>
+
 <div>
     <p>User is: [[= XML(globals().get('user',{})) ]]</p>
 </div>
