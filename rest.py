@@ -135,6 +135,7 @@ def do_upload():
     return True
 
 def getWF(machine,path,filename,side,patient):
+    from math import pi
     if machine == 'vx100':
         code = 'utf-16-le'
     elif machine == 'l80':
@@ -187,19 +188,19 @@ def getWF(machine,path,filename,side,patient):
                     # read 3 next lines to get values
                     c = 3
                 # get AXIS
-                if a == 3:
+                if a == 3: # en radian !!!
                     if 'R_3=' in line:
-                        axis3 = float(line.split('=')[1])
+                        axis3 = float(line.split('=')[1])*180/pi
                         rx['axis3'] = axis3
                     a -=1
                 elif a == 2:
                     if 'R_5=' in line:
-                        axis5 = float(line.split('=')[1])
+                        axis5 = float(line.split('=')[1])*180/pi
                         rx['axis5'] = axis5
                     a -=1
                 elif a == 1:
                     if 'R_7=' in line:
-                        axis7 = float(line.split('=')[1])
+                        axis7 = float(line.split('=')[1])*180/pi
                         rx['axis7'] = axis7
                     a -=1 # c = 0
                 if '[AXIS]' in line:
