@@ -38,6 +38,8 @@ $('#btnGxRx').click(function() {
         };
         console.log('Choosen Rx',item);
         // put everything in table
+        let itemBtn = item;
+        delete itemBtn.note;
         if (item['laterality']=='right') {
             let html =[];
             html.push('<tr>'); // row
@@ -51,7 +53,7 @@ $('#btnGxRx').click(function() {
             html.push(item['rx_far']+' Add+'+item['add']);
             html.push('</td>');
             html.push('<td>'); // 4th col
-            html.push('<button type="button" class="btn btn-primary btn-sm print-rx" onclick="rxDataButton(this.getAttribute(\'data-rx-obj\'),\'right\');" data-rx-obj=\''+JSON.stringify(item)+'\'><i class="fas fa-file-import"></i></button>');
+            html.push('<button type="button" class="btn btn-primary btn-sm print-rx" onclick="rxDataButton(this.getAttribute(\'data-rx-obj\'),\'right\');" data-rx-obj=\''+JSON.stringify(itemBtn)+'\'><i class="fas fa-file-import"></i></button>');
             html.push('</td>');
             html.push('</tr>'); // end row
             htmlR.push(html.join(''));
@@ -68,7 +70,7 @@ $('#btnGxRx').click(function() {
             html.push(item['rx_far']+' Add+'+item['add']);
             html.push('</td>');
             html.push('<td>'); // 4th col
-            html.push('<button type="button" class="btn btn-primary btn-sm print-rx" onclick="rxDataButton(this.getAttribute(\'data-rx-obj\'),\'left\');" data-rx-obj=\''+JSON.stringify(item)+'\'><i class="fas fa-file-import"></i></button>');
+            html.push('<button type="button" class="btn btn-primary btn-sm print-rx" onclick="rxDataButton(this.getAttribute(\'data-rx-obj\'),\'left\');" data-rx-obj=\''+JSON.stringify(itemBtn)+'\'><i class="fas fa-file-import"></i></button>');
             html.push('</td>');
             html.push('</tr>'); // end row
             htmlL.push(html.join(''));
