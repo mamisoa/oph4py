@@ -498,3 +498,8 @@ def get_visionix_mes(machine=L80_FOLDER):
         list=exams
     infos_json = json.dumps(list)
     return infos_json
+
+@action('upload', method=['POST'])
+def do_upload():
+    file = request.files.file
+    return file.filename
