@@ -5,7 +5,7 @@ from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash # ,dbo
 
 from pydal.restapi import RestAPI, Policy
-from .settings import MACHINES_FOLDER, L80_FOLDER, VX100_FOLDER, VX100_XML_FOLDER, UPLOAD_FOLDER
+from .settings import MACHINES_FOLDER, L80_FOLDER, VX100_FOLDER, VX100_XML_FOLDER, UPLOAD_FOLDER, LM_FOLDER
 
 policy = Policy()
 policy.set('*','GET', authorize=True, limit=1000, allowed_patterns=['*'])
@@ -505,15 +505,44 @@ def do_upload():
     re = json.dumps(re_dict)
     return re
 
-# @action('upload', method=['POST'])
-# def do_upload():
-#     import os
-#     upload = request.files.get('upload')
-#     file1 = open("uploads/called.txt","w")
-#     file1.write("function called \n")
-#     file1.close()
-#     # name, ext = os.path.splitext(upload.filename)
-#     # if ext not in ('.pdf'):
-#     #     return 'File extension not allowed.'
-#     upload.save('uploads/')
-#     return True
+# side R or L
+def xmlLm2dict(side):
+    path = './/nsLM:'+side+'/'
+    lmdict = {
+        'lmSph'+side : path+'nsLM:Sphere',
+        'lmCyl'+side : path+'nsLM:Cylinder',
+        'lmAxis'+side : path+'nsLM:Axis',
+        'lmAxis'+side : path+'nsLM:Axis',
+        'lmH'+side : path+'nsLM:H',
+        'lmV'+side : path+'nsLM:V',
+    }
+    return lmdict
+
+@action('readCv5000Xml', methods=['GET'])
+# origin: lm, rm, export
+# import from CV export and delete file
+def readCv5000Xml(origin):
+    import os,json,bottle
+    from lxml import etree as ET
+    response = bottle.response
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    with open(LM_FOLDER+'/M-Serial4011_20211023_124344281_TOPCON_CL-300_00.xml') as xmlfile:
+        tree = ET.parse(xmlfile)
+    root = tree.getroot()
+    ns = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance', 
+        'nsCommon': 'http://www.joia.or.jp/standardized/namespaces/Common',
+        'nsLM': 'http://www.joia.or.jp/standardized/namespaces/LM'}
+    lm = { 'status': 'OK' , 'mesures' : {}}
+    try:
+        r = xmlLm2dict('R')
+        for mes in r:
+            lm['mesures'].update({ mes : [ el.text for el in tree.iterfind(r[mes],ns)][0]})
+        l = xmlLm2dict('L')
+        for mes in l:
+            lm['mesures'].update({ mes : [ el.text for el in tree.iterfind(l[mes],ns)][0]})
+    except Exception as e:
+        lm['status'] = 'error'
+        lm.update({'error': e.args[0]})
+    res = json.dumps(lm)
+    return res
+
