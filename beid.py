@@ -7,26 +7,45 @@ from smartcard.CardMonitoring import CardMonitor, CardObserver
 MAP_MOIS = {
     "JANV" : "01",
     "JAN"  : "01",
+    "JANU" : "01",
     "FEVR" : "02",
+    "FEBR" : "02",
     "FEV"  : "02",
+    "FEB"  : "02",
     "MARS" : "03",
+    "MAAR" : "03",
     "MAR"  : "03",
     "AVRI" : "04",
+    "APRI" : "04",
     "AVR"  : "04",
+    "APR"  : "04",
     "MAI"  : "05",
+    "MEI"  : "05",
     "JUIN" : "06",
+    "JUNI" : "06",
     "JUIL" : "07",
+    "JULI" : "07",
     "AOUT" : "08",
+    "AUGU" : "08",
     "AOU"  : "08",
+    "AUG"  : "08",
     "SEPT" : "09",
     "SEP"  : "09",
     "OCTO" : "10",
+    "OKTO" : "10",
     "OCT"  : "10",
+    "OKT"  : "10",
     "NOVE" : "11",
     "NOV"  : "11",
     "DECE" : "12",
     "DEC"  : "12"
     }
+
+MAP_GENDER = {
+    "M" : "M",
+    "F" : "F",
+    "V" : "F"
+}
 
 # check format dd/mm/yyyy
 def checkDate(date):
@@ -99,9 +118,9 @@ def read_infos(device, read_photo = False):
     "suffixe" : infos[8],
     "nationalite" : infos[9],
     "lieu_naissance" : infos[10],
-    # "date_naissance" : infos[11].split()[0] + "/" + MAP_MOIS[infos[11].split()[1]] + "/" + infos[11].split()[2]),
+    "dob_original" : infos[11],
     "date_naissance" : checkDate(infos[11]),
-    "sexe" : infos[12],
+    "sexe" : MAP_GENDER[infos[12]]
     }
 
     # select file : adresse
