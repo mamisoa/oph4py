@@ -8,3 +8,4 @@ settings.py
 .vscode
 machines/
 patients/
+upload/
