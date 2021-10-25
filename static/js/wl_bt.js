@@ -245,7 +245,7 @@ function counterFormatter_wl(value,row){
     // console.log('row.status=',row.status_flag);
     html.push('<div class="d-flex justify-content-between"><span class="badge rounded-pill bg-primary mx-1">'+row.counter+'</span>');
     // if over 1 day, elapse counter is not shown
-    if (elapse < (24*60*60)) {
+    if (elapse < (24*60*60) && row.status_flag != 'done') {
         html.push('<span id="timer_'+row.id+'" class="badge rounded-pill '+elapsestyle+' mx-1">'+elapse+'</span>');
     };
     html.push('</div>');
