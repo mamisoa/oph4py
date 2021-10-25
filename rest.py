@@ -254,6 +254,31 @@ def getTopo(machine,path,filename,side,patient):
     except:
         return False
 
+def getARK(machine,path,filename,side,patient):
+    from math import pi
+    import re
+    if machine == 'vx100':
+        code = 'utf-16-le'
+    elif machine == 'l80':
+        code = 'us-ascii'
+    else:
+        code = 'utf8'
+    # p1 = re.compile('(?P<section>\[[A-Z]+\])')
+    p1 = re.compile('(?P<section>\[AR\])')
+    p2 = re.compile('(?P<key>.+)=(?P<value>.+)')
+    rx = {'patient': patient, 'file': filename, 'exam': 'ark', 'side': side}
+    try:
+        with open(path+'/ARK/'+filename,'r', encoding=code) as reader:
+            lines = [ line.split('\n')[0] for line in reader]
+        for el in lines:
+            m1= p1.search(el)
+            if m1 != None:
+                flag = True ### to be continued
+        return True
+    except:
+        return False
+
+
 # check if patient exists in Visionix machines, if so send Json output with corresponding file and path
 @action('rest/scan_visionix/<machine>/', method=['GET']) 
 def scan_visionix(machine,lastname='',firstname=''):
@@ -457,7 +482,7 @@ def get_visionix_mes(machine=L80_FOLDER):
                                         for f in examitr:
                                             data = [] # contains all mesurements for a specific date
                                             if f.is_file():
-                                                p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF)_Meas_(?P<index>[0-9]+).txt')
+                                                p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF|ARK)_Meas_(?P<index>[0-9]+).txt')
                                                 m = p.search(f.name) # get the file
                                                 if m != None:
                                                     if (m.group('side').lower() == side or side == 'both'):
@@ -478,6 +503,15 @@ def get_visionix_mes(machine=L80_FOLDER):
                                                                 data.append(topo)
                                                             else:
                                                                 data.append({examsFolders.path+'/'+f.name:'nothing found!'})
+                                                        if m.group('exam') == 'ARK':
+                                                            ark = getARK(machine, examsFolders.path, f.name, m.group(
+                                                                'side').lower(), folder['file'])  # get the mesures from file
+                                                            if ark != False:
+                                                                exams['count'] += 1
+                                                                topo['date'] = dateFolder
+                                                                data.append(ark)
+                                                            else:
+                                                                data.append({examsFolders.path+'/'+f.name: 'nothing found!'})
                                             if data != []:
                                                 mes.extend(data)
                         exams['mesurements'].extend(mes)
