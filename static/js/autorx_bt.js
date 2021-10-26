@@ -319,11 +319,23 @@ window.operateEvents_vx = {
             $(domIdRx + ' [name=sph_far]').val(round2qter(row.sph5,true)).trigger('change');
             $(domIdRx + ' [name=cyl_far]').val(round2qter(row.cyl5,true)).trigger('change');
             $(domIdRx + ' [name=axis_far]').val(Math.round(row.axis5)).trigger('change');
+            $(domIdRx + ' [name=sph_int]').val(round2qter(row.sph5, true)).trigger('change');
+            $(domIdRx + ' [name=cyl_int]').val(round2qter(row.cyl5, true)).trigger('change');
+            $(domIdRx + ' [name=axis_int]').val(Math.round(row.axis5)).trigger('change');
+            $(domIdRx + ' [name=sph_close]').val(round2qter(row.sph5, true)).trigger('change');
+            $(domIdRx + ' [name=cyl_close]').val(round2qter(row.cyl5, true)).trigger('change');
+            $(domIdRx + ' [name=axis_close]').val(Math.round(row.axis5)).trigger('change');
         };
         if (row.exam == 'ark') {
             $(domIdRx + ' [name=sph_far]').val(round2qter(row.sph5, true)).trigger('change');
             $(domIdRx + ' [name=cyl_far]').val(round2qter(row.cyl5, true)).trigger('change');
             $(domIdRx + ' [name=axis_far]').val(Math.round(row.axis5)).trigger('change');
+            $(domIdRx + ' [name=sph_int]').val(round2qter(row.sph5, true)).trigger('change');
+            $(domIdRx + ' [name=cyl_int]').val(round2qter(row.cyl5, true)).trigger('change');
+            $(domIdRx + ' [name=axis_int]').val(Math.round(row.axis5)).trigger('change');
+            $(domIdRx + ' [name=sph_close]').val(round2qter(row.sph5, true)).trigger('change');
+            $(domIdRx + ' [name=cyl_close]').val(round2qter(row.cyl5, true)).trigger('change');
+            $(domIdRx + ' [name=axis_close]').val(Math.round(row.axis5)).trigger('change');
             $(domIdKm + ' [name=k1]').val(row.k1);
             $(domIdKm + ' [name=axis1]').val(row.k1_axis);
             $(domIdKm + ' [name=k2]').val(row.k2);
