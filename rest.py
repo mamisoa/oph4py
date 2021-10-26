@@ -123,135 +123,81 @@ def octopus(tablename, rec_id=None):
 
 def getWF(machine,path,filename,side,patient):
     from math import pi
+    import configparser
+    config = configparser.ConfigParser()
     if machine == 'vx100':
-        code = 'utf-16-le'
+        code = 'utf16'
     elif machine == 'l80':
         code = 'us-ascii'
     else:
         code = 'utf8'
+    rx = { 'patient' : patient , 'file': filename, 'exam' : 'wf', 'side' : side }
     try:
-        with open(path+'/WF/'+filename,'r', encoding=code) as reader:
-            s = 0
-            c = 0
-            a = 0
-            rx = { 'patient' : patient , 'file': filename, 'exam' : 'wf', 'side' : side }
-            for line in reader:
-                # get SPHERE
-                if s == 3:
-                    if 'R_3=' in line:
-                        sph3 = float(line.split('=')[1])
-                        rx['sph3'] = sph3
-                    s -=1
-                elif s == 2:
-                    if 'R_5=' in line:
-                        sph5 = float(line.split('=')[1])
-                        rx['sph5'] = sph5
-                    s -=1
-                elif s == 1:
-                    if 'R_7=' in line:
-                        sph7 = float(line.split('=')[1])
-                        rx['sph7'] = sph7
-                    s -=1 # s = 0
-                if '[SPHERE]' in line:
-                    # read 3 next lines to get values
-                    s = 3
-                # get CYL
-                if c == 3:
-                    if 'R_3=' in line:
-                        cyl3 = float(line.split('=')[1])
-                        rx['cyl3'] = cyl3
-                    c -=1
-                elif c == 2:
-                    if 'R_5=' in line:
-                        cyl5 = float(line.split('=')[1])
-                        rx['cyl5'] = cyl5
-                    c -=1
-                elif c == 1:
-                    if 'R_7=' in line:
-                        cyl7 = float(line.split('=')[1])
-                        rx['cyl7'] = cyl7
-                    c -=1 # c = 0
-                if '[CYLINDER]' in line:
-                    # read 3 next lines to get values
-                    c = 3
-                # get AXIS
-                if a == 3: # en radian !!!
-                    if 'R_3=' in line:
-                        axis3 = float(line.split('=')[1])*180/pi
-                        rx['axis3'] = axis3
-                    a -=1
-                elif a == 2:
-                    if 'R_5=' in line:
-                        axis5 = float(line.split('=')[1])*180/pi
-                        rx['axis5'] = axis5
-                    a -=1
-                elif a == 1:
-                    if 'R_7=' in line:
-                        axis7 = float(line.split('=')[1])*180/pi
-                        rx['axis7'] = axis7
-                    a -=1 # c = 0
-                if '[AXIS]' in line:
-                    # read 3 next lines to get values
-                    a = 3
-                # get PD
-                if 'Pd=' in line:
-                    pd_re = float(line.split('=')[1])
-                    rx['pd'] = pd_re
+        with open(path+'/WF/'+filename,'r', encoding=code) as file:
+            config.read_file(file)
+        sph_dict = dict(config.items('SPHERE'))
+        cyl_dict = dict(config.items('CYLINDER'))
+        axis_dict = dict(config.items('AXIS'))
+        [rx['sph3'],rx['cyl3'],rx['axis3']] = [float(sph_dict['r_3']),float(cyl_dict['r_3']),float(axis_dict['r_3'])*180/pi]
+        [rx['sph5'],rx['cyl5'],rx['axis5']] = [float(sph_dict['r_5']),float(cyl_dict['r_5']),float(axis_dict['r_5'])*180/pi]
+        [rx['sph7'],rx['cyl7'],rx['axis7']] = [float(sph_dict['r_7']),float(cyl_dict['r_7']),float(axis_dict['r_7'])*180/pi]
         return rx
-    except:
+    except Exception as e:
+        rx['error'] = e.args[0]
         return False
 
 def getTopo(machine,path,filename,side,patient):
+    import configparser
+    config = configparser.ConfigParser(allow_no_value=True)
     if machine == 'vx100':
-        code = 'utf-16-le'
+        config = configparser.ConfigParser()
+        code = 'utf16'
+    elif machine == 'l80':
+        config = configparser.ConfigParser(allow_no_value=True)
+        code = 'us-ascii'
+    else:
+        code = 'utf8'
+    topo = {'patient' : patient , 'file': filename, 'exam': 'topo', 'side' : side }
+    try:
+        with open(path+'/Topo/'+filename,'r', encoding=code) as file:
+            config.read_file(file)
+        simk_dict = dict(config.items('Sim_K'))
+        topo_dict = dict(config.items('TOPO'))
+        if machine == 'vx100':
+            kc_dict = dict(config.items('KERATOCONUS'))
+            topo['kpi'] = float(kc_dict['kpi'])
+        [topo['k1'], topo['k2'], topo['k1_axis'], topo['k2_axis'], topo['kcyl'], topo['pd']] = [
+            float(simk_dict['k1']),float(simk_dict['k2']),
+            float(simk_dict['k1_axis']),float(simk_dict['k2_axis']),
+            float(simk_dict['cyl']), float(topo_dict['pd'])]
+        return topo
+    except Exception as e:
+        topo['error'] = str(e)
+        return topo
+
+def getARK(machine,path,filename,side,patient):
+    from math import pi
+    import configparser
+    config = configparser.ConfigParser()
+    if machine == 'vx100':
+        code = 'utf16'
     elif machine == 'l80':
         code = 'us-ascii'
     else:
         code = 'utf8'
+    rx = {'patient': patient, 'file': filename, 'exam': 'ark', 'side': side}
     try:
-        with open(path+'/Topo/'+filename,'r', encoding=code) as reader:
-            topo = {'patient' : patient , 'file': filename, 'exam': 'topo', 'side' : side }
-            k = 0
-            for line in reader:
-                # get Sim_K
-                if k == 6:
-                    if 'K1=' in line:
-                        k1 = float(line.split('=')[1])
-                        topo['k1'] = k1
-                    k -=1
-                elif k == 5:
-                    if 'K1_axis=' in line:
-                        k1_axis = float(line.split('=')[1])
-                        topo['k1_axis'] = k1_axis
-                    k -=1
-                elif k == 4:
-                    if 'K2=' in line:
-                        k2 = float(line.split('=')[1])
-                        topo['k2'] = k2
-                    k -=1 # s = 0
-                elif k == 3:
-                    if 'K2_axis=' in line:
-                        k2_axis = float(line.split('=')[1])
-                        topo['k2_axis'] = k2_axis
-                    k -=1
-                elif k == 2:
-                    if 'Cyl=' in line:
-                        kcyl = float(line.split('=')[1])
-                        topo['kcyl'] = kcyl
-                    k -=1
-                elif k == 1:
-                    if 'Avg=' in line:
-                        km = float(line.split('=')[1])
-                        topo['km'] = km
-                    k -=1 # k = 0
-                if '[Sim_K]' in line:
-                    # read 6 next lines to get values
-                    k = 6
-                #if '[Topo]' in line:
-                    # read 6 next lines to get values
-                #    k = 6
-        return topo
-    except:
+        with open(path+'/ARK/'+filename,'r', encoding=code) as file:
+            config.read_file(file)
+        ar = dict(config.items('AR'))
+        [rx['sph3'],rx['cyl3'],rx['axis3']] = [float(ar['sphere_3']),float(ar['cylinder_3']),float(ar['axis_3'])*180/pi]
+        [rx['sph5'],rx['cyl5'],rx['axis5']] = [float(ar['sphere_5']),float(ar['cylinder_5']),float(ar['axis_5'])*180/pi]
+        [rx['sph7'],rx['cyl7'],rx['axis7']] = [float(ar['sphere_7']),float(ar['cylinder_7']),float(ar['axis_7'])*180/pi]
+        kr = dict(config.items('KR'))
+        [rx['k1'],rx['k2'],rx['k1_axis'],rx['k2_axis'], rx['kcyl']] = [float(kr['k1']),float(kr['k2']),kr['k1_axis'],kr['k2_axis'], float(kr['simk_cyl'])]
+        return rx
+    except Exception as e:
+        rx['error'] = e.args[0]
         return False
 
 # check if patient exists in Visionix machines, if so send Json output with corresponding file and path
@@ -457,7 +403,7 @@ def get_visionix_mes(machine=L80_FOLDER):
                                         for f in examitr:
                                             data = [] # contains all mesurements for a specific date
                                             if f.is_file():
-                                                p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF)_Meas_(?P<index>[0-9]+).txt')
+                                                p = re.compile('(?P<side>Left|Right)(?P<exam>Topo|WF|ARK)_Meas_(?P<index>[0-9]+).txt')
                                                 m = p.search(f.name) # get the file
                                                 if m != None:
                                                     if (m.group('side').lower() == side or side == 'both'):
@@ -478,6 +424,14 @@ def get_visionix_mes(machine=L80_FOLDER):
                                                                 data.append(topo)
                                                             else:
                                                                 data.append({examsFolders.path+'/'+f.name:'nothing found!'})
+                                                        if m.group('exam') == 'ARK':
+                                                            ark = getARK(machine, examsFolders.path, f.name, m.group('side').lower(), folder['file'])  # get the mesures from file
+                                                            if ark != False:
+                                                                exams['count'] += 1
+                                                                ark['date'] = dateFolder
+                                                                data.append(ark)
+                                                            else:
+                                                                data.append({examsFolders.path+'/'+f.name: 'nothing found!'})
                                             if data != []:
                                                 mes.extend(data)
                         exams['mesurements'].extend(mes)
