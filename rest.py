@@ -256,28 +256,32 @@ def getTopo(machine,path,filename,side,patient):
 
 def getARK(machine,path,filename,side,patient):
     from math import pi
-    import re
+    # import re
+    import configparser
+    config = configparser.ConfigParser()
     if machine == 'vx100':
-        code = 'utf-16-le'
+        code = 'utf16'
     elif machine == 'l80':
         code = 'us-ascii'
     else:
         code = 'utf8'
     # p1 = re.compile('(?P<section>\[[A-Z]+\])')
-    p1 = re.compile('(?P<section>\[AR\])')
-    p2 = re.compile('(?P<key>.+)=(?P<value>.+)')
+    # p1 = re.compile('(?P<section>\[AR\])')
+    # p2 = re.compile('(?P<key>.+)=(?P<value>.+)')
     rx = {'patient': patient, 'file': filename, 'exam': 'ark', 'side': side}
     try:
-        with open(path+'/ARK/'+filename,'r', encoding=code) as reader:
-            lines = [ line.split('\n')[0] for line in reader]
-        for el in lines:
-            m1= p1.search(el)
-            if m1 != None:
-                flag = True ### to be continued
-        return True
-    except:
+        with open(path+'/ARK/'+filename,'r', encoding=code) as file:
+            config.read_file(file)
+        ar = dict(config.items('AR'))
+        [rx['sph3'],rx['cyl3'],rx['axis3']] = [float(ar['sphere_3']),float(ar['cylinder_3']),float(ar['axis_3'])]
+        [rx['sph5'],rx['cyl5'],rx['axis5']] = [float(ar['sphere_5']),float(ar['cylinder_5']),float(ar['axis_5'])]
+        [rx['sph7'],rx['cyl7'],rx['axis7']] = [float(ar['sphere_7']),float(ar['cylinder_7']),float(ar['axis_7'])]
+        kr = dict(config.items('KR'))
+        [rx['k1'],rx['k2'],rx['k1_axis'],rx['k2_axis'], rx['kcyl']] = [float(kr['k1']),float(kr['k2']),kr['k1_axis'],kr['k2_axis'], float(kr['simk_cyl'])]
+        return rx
+    except Exception as e:
+        rx['error'] = e.args[0]
         return False
-
 
 # check if patient exists in Visionix machines, if so send Json output with corresponding file and path
 @action('rest/scan_visionix/<machine>/', method=['GET']) 
@@ -504,11 +508,10 @@ def get_visionix_mes(machine=L80_FOLDER):
                                                             else:
                                                                 data.append({examsFolders.path+'/'+f.name:'nothing found!'})
                                                         if m.group('exam') == 'ARK':
-                                                            ark = getARK(machine, examsFolders.path, f.name, m.group(
-                                                                'side').lower(), folder['file'])  # get the mesures from file
+                                                            ark = getARK(machine, examsFolders.path, f.name, m.group('side').lower(), folder['file'])  # get the mesures from file
                                                             if ark != False:
                                                                 exams['count'] += 1
-                                                                topo['date'] = dateFolder
+                                                                ark['date'] = dateFolder
                                                                 data.append(ark)
                                                             else:
                                                                 data.append({examsFolders.path+'/'+f.name: 'nothing found!'})
