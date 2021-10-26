@@ -123,82 +123,27 @@ def octopus(tablename, rec_id=None):
 
 def getWF(machine,path,filename,side,patient):
     from math import pi
+    import configparser
+    config = configparser.ConfigParser()
     if machine == 'vx100':
-        code = 'utf-16-le'
+        code = 'utf16'
     elif machine == 'l80':
         code = 'us-ascii'
     else:
         code = 'utf8'
+    rx = { 'patient' : patient , 'file': filename, 'exam' : 'wf', 'side' : side }
     try:
-        with open(path+'/WF/'+filename,'r', encoding=code) as reader:
-            s = 0
-            c = 0
-            a = 0
-            rx = { 'patient' : patient , 'file': filename, 'exam' : 'wf', 'side' : side }
-            for line in reader:
-                # get SPHERE
-                if s == 3:
-                    if 'R_3=' in line:
-                        sph3 = float(line.split('=')[1])
-                        rx['sph3'] = sph3
-                    s -=1
-                elif s == 2:
-                    if 'R_5=' in line:
-                        sph5 = float(line.split('=')[1])
-                        rx['sph5'] = sph5
-                    s -=1
-                elif s == 1:
-                    if 'R_7=' in line:
-                        sph7 = float(line.split('=')[1])
-                        rx['sph7'] = sph7
-                    s -=1 # s = 0
-                if '[SPHERE]' in line:
-                    # read 3 next lines to get values
-                    s = 3
-                # get CYL
-                if c == 3:
-                    if 'R_3=' in line:
-                        cyl3 = float(line.split('=')[1])
-                        rx['cyl3'] = cyl3
-                    c -=1
-                elif c == 2:
-                    if 'R_5=' in line:
-                        cyl5 = float(line.split('=')[1])
-                        rx['cyl5'] = cyl5
-                    c -=1
-                elif c == 1:
-                    if 'R_7=' in line:
-                        cyl7 = float(line.split('=')[1])
-                        rx['cyl7'] = cyl7
-                    c -=1 # c = 0
-                if '[CYLINDER]' in line:
-                    # read 3 next lines to get values
-                    c = 3
-                # get AXIS
-                if a == 3: # en radian !!!
-                    if 'R_3=' in line:
-                        axis3 = float(line.split('=')[1])*180/pi
-                        rx['axis3'] = axis3
-                    a -=1
-                elif a == 2:
-                    if 'R_5=' in line:
-                        axis5 = float(line.split('=')[1])*180/pi
-                        rx['axis5'] = axis5
-                    a -=1
-                elif a == 1:
-                    if 'R_7=' in line:
-                        axis7 = float(line.split('=')[1])*180/pi
-                        rx['axis7'] = axis7
-                    a -=1 # c = 0
-                if '[AXIS]' in line:
-                    # read 3 next lines to get values
-                    a = 3
-                # get PD
-                if 'Pd=' in line:
-                    pd_re = float(line.split('=')[1])
-                    rx['pd'] = pd_re
+        with open(path+'/WF/'+filename,'r', encoding=code) as file:
+            config.read_file(file)
+        sph_dict = dict(config.items('SPHERE'))
+        cyl_dict = dict(config.items('CYLINDER'))
+        axis_dict = dict(config.items('AXIS'))
+        [rx['sph3'],rx['cyl3'],rx['axis3']] = [float(sph_dict['r_3']),float(cyl_dict['r_3']),float(axis_dict['r_3'])*180/pi]
+        [rx['sph5'],rx['cyl5'],rx['axis5']] = [float(sph_dict['r_5']),float(cyl_dict['r_5']),float(axis_dict['r_5'])*180/pi]
+        [rx['sph7'],rx['cyl7'],rx['axis7']] = [float(sph_dict['r_7']),float(cyl_dict['r_7']),float(axis_dict['r_7'])*180/pi]
         return rx
-    except:
+    except Exception as e:
+        rx['error'] = e.args[0]
         return False
 
 def getTopo(machine,path,filename,side,patient):
