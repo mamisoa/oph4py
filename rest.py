@@ -256,7 +256,6 @@ def getTopo(machine,path,filename,side,patient):
 
 def getARK(machine,path,filename,side,patient):
     from math import pi
-    # import re
     import configparser
     config = configparser.ConfigParser()
     if machine == 'vx100':
@@ -265,17 +264,14 @@ def getARK(machine,path,filename,side,patient):
         code = 'us-ascii'
     else:
         code = 'utf8'
-    # p1 = re.compile('(?P<section>\[[A-Z]+\])')
-    # p1 = re.compile('(?P<section>\[AR\])')
-    # p2 = re.compile('(?P<key>.+)=(?P<value>.+)')
     rx = {'patient': patient, 'file': filename, 'exam': 'ark', 'side': side}
     try:
         with open(path+'/ARK/'+filename,'r', encoding=code) as file:
             config.read_file(file)
         ar = dict(config.items('AR'))
-        [rx['sph3'],rx['cyl3'],rx['axis3']] = [float(ar['sphere_3']),float(ar['cylinder_3']),float(ar['axis_3'])]
-        [rx['sph5'],rx['cyl5'],rx['axis5']] = [float(ar['sphere_5']),float(ar['cylinder_5']),float(ar['axis_5'])]
-        [rx['sph7'],rx['cyl7'],rx['axis7']] = [float(ar['sphere_7']),float(ar['cylinder_7']),float(ar['axis_7'])]
+        [rx['sph3'],rx['cyl3'],rx['axis3']] = [float(ar['sphere_3']),float(ar['cylinder_3']),float(ar['axis_3'])*180/pi]
+        [rx['sph5'],rx['cyl5'],rx['axis5']] = [float(ar['sphere_5']),float(ar['cylinder_5']),float(ar['axis_5'])*180/pi]
+        [rx['sph7'],rx['cyl7'],rx['axis7']] = [float(ar['sphere_7']),float(ar['cylinder_7']),float(ar['axis_7'])*180/pi]
         kr = dict(config.items('KR'))
         [rx['k1'],rx['k2'],rx['k1_axis'],rx['k2_axis'], rx['kcyl']] = [float(kr['k1']),float(kr['k2']),kr['k1_axis'],kr['k2_axis'], float(kr['simk_cyl'])]
         return rx
