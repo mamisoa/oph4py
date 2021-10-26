@@ -148,10 +148,12 @@ def getWF(machine,path,filename,side,patient):
 
 def getTopo(machine,path,filename,side,patient):
     import configparser
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(allow_no_value=True)
     if machine == 'vx100':
+        config = configparser.ConfigParser()
         code = 'utf16'
     elif machine == 'l80':
+        config = configparser.ConfigParser(allow_no_value=True)
         code = 'us-ascii'
     else:
         code = 'utf8'
@@ -160,13 +162,17 @@ def getTopo(machine,path,filename,side,patient):
         with open(path+'/Topo/'+filename,'r', encoding=code) as file:
             config.read_file(file)
         simk_dict = dict(config.items('Sim_K'))
-        kc_dict = dict(config.items('KERATOCONUS'))
         topo_dict = dict(config.items('TOPO'))
-        [topo['k1'], topo['k2'], topo['k1_axis'], topo['k2_axis'], topo['kcyl']] = [float(simk_dict['k1']),float(simk_dict['k2']),float(simk_dict['k1_axis']),float(simk_dict['k2_axis']),float(simk_dict['cyl'])]
-        [topo['pd'], topo['kpi']] = [float(topo_dict['pd']), float(kc_dict['kpi'])]
+        if machine == 'vx100':
+            kc_dict = dict(config.items('KERATOCONUS'))
+            topo['kpi'] = float(kc_dict['kpi'])
+        [topo['k1'], topo['k2'], topo['k1_axis'], topo['k2_axis'], topo['kcyl'], topo['pd']] = [
+            float(simk_dict['k1']),float(simk_dict['k2']),
+            float(simk_dict['k1_axis']),float(simk_dict['k2_axis']),
+            float(simk_dict['cyl']), float(topo_dict['pd'])]
         return topo
     except Exception as e:
-        topo['error'] = e.args[0]
+        topo['error'] = str(e)
         return topo
 
 def getARK(machine,path,filename,side,patient):
