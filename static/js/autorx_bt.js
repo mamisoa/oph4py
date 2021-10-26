@@ -239,11 +239,25 @@ function responseHandler_vx(res) { // used if data-response-handler="responseHan
     let list = res.mesurements;
     let display = [];
     let kx,rx;
+    console.log('kx:',kx)
     $.each(list, function (i) {
-        list[i]['exam'] == 'topo'? kx = [round2dec(list[i]['k1'],false)+'x'+list[i]['k1_axis']+'°',
-            round2dec(list[i]['k2'],false)+'x'+list[i]['k2_axis']+'°' ] : kx =[null,null];
-        list[i]['exam'] == 'wf'? rx = (round2qter(list[i]['sph5'],true)+'(' +
-            round2qter(list[i]['cyl5'],true)+'x'+Math.round(list[i]['axis5'])+'°)') : rx = null;
+        if (list[i]['exam'] == 'ark') {
+            rx = (round2qter(list[i]['sph5'], true) + '(' +
+                round2qter(list[i]['cyl5'], true) + 'x' + Math.round(list[i]['axis5']) + '°)');
+            kx = [round2dec(list[i]['k1'], false) + 'x' + list[i]['k1_axis'] + '°',
+            round2dec(list[i]['k2'], false) + 'x' + list[i]['k2_axis'] + '°'];
+        } else if (list[i]['exam'] == 'topo'){
+            kx = [round2dec(list[i]['k1'], false) + 'x' + list[i]['k1_axis'] + '°',
+                round2dec(list[i]['k2'], false) + 'x' + list[i]['k2_axis'] + '°'];
+            rx = null;
+        } else if (list[i]['exam'] == 'wf') {
+            rx = (round2qter(list[i]['sph5'], true) + '(' +
+                round2qter(list[i]['cyl5'], true) + 'x' + Math.round(list[i]['axis5']) + '°)');
+            kx = [null,null];
+        } else {
+            rx = null;
+            kx = [null, null];
+        };
         let datetime = list[i]['date'].split('T');
         datetime[0] = datestr2eu(datetime[0]);
         datetime = datetime.join(' ');
@@ -305,25 +319,27 @@ window.operateEvents_vx = {
             $(domIdRx + ' [name=sph_far]').val(round2qter(row.sph5,true)).trigger('change');
             $(domIdRx + ' [name=cyl_far]').val(round2qter(row.cyl5,true)).trigger('change');
             $(domIdRx + ' [name=axis_far]').val(Math.round(row.axis5)).trigger('change');
+            $(domIdRx + ' [name=sph_int]').val(round2qter(row.sph5, true)).trigger('change');
+            $(domIdRx + ' [name=cyl_int]').val(round2qter(row.cyl5, true)).trigger('change');
+            $(domIdRx + ' [name=axis_int]').val(Math.round(row.axis5)).trigger('change');
+            $(domIdRx + ' [name=sph_close]').val(round2qter(row.sph5, true)).trigger('change');
+            $(domIdRx + ' [name=cyl_close]').val(round2qter(row.cyl5, true)).trigger('change');
+            $(domIdRx + ' [name=axis_close]').val(Math.round(row.axis5)).trigger('change');
         };
-        // $('#rxFormModal [name=axis_far]').val(row.axis_far);
-        // $('#rxFormModal [name=va_int]').val(row.va_int);
-        // $('#rxFormModal [name=opto_int]').val(row.opto_int);
-        // $('#rxFormModal [name=sph_int]').val(row.sph_int);
-        // $('#rxFormModal [name=cyl_int]').val(row.cyl_int);
-        // $('#rxFormModal [name=axis_int]').val(row.axis_int);
-        // $('#rxFormModal [name=va_close]').val(row.va_close);
-        // $('#rxFormModal [name=opto_close]').val(row.opto_close);
-        // $('#rxFormModal [name=sph_close]').val(row.sph_close);
-        // $('#rxFormModal [name=cyl_close]').val(row.cyl_close);
-        // $('#rxFormModal [name=axis_close]').val(row.axis_close);
-        // $('#rxFormModal [name=note]').val(row.note);
-        // let add_int = round2dec(parseFloat(row.sph_int)-parseFloat(row.sph_far));
-        // let add_close = round2dec(parseFloat(row.sph_close)-parseFloat(row.sph_far));
-        // console.log('add_close',add_close);
-        // $('#rxFormModal [name=add_int]').val(add_int).trigger('change');
-        // $('#rxFormModal [name=add_close]').val(add_close).trigger('change');
-        // $('#rxFormModal [name=methodRxModalSubmit]').val('PUT');
-        // $('#rxModal').modal('show');
+        if (row.exam == 'ark') {
+            $(domIdRx + ' [name=sph_far]').val(round2qter(row.sph5, true)).trigger('change');
+            $(domIdRx + ' [name=cyl_far]').val(round2qter(row.cyl5, true)).trigger('change');
+            $(domIdRx + ' [name=axis_far]').val(Math.round(row.axis5)).trigger('change');
+            $(domIdRx + ' [name=sph_int]').val(round2qter(row.sph5, true)).trigger('change');
+            $(domIdRx + ' [name=cyl_int]').val(round2qter(row.cyl5, true)).trigger('change');
+            $(domIdRx + ' [name=axis_int]').val(Math.round(row.axis5)).trigger('change');
+            $(domIdRx + ' [name=sph_close]').val(round2qter(row.sph5, true)).trigger('change');
+            $(domIdRx + ' [name=cyl_close]').val(round2qter(row.cyl5, true)).trigger('change');
+            $(domIdRx + ' [name=axis_close]').val(Math.round(row.axis5)).trigger('change');
+            $(domIdKm + ' [name=k1]').val(row.k1);
+            $(domIdKm + ' [name=axis1]').val(row.k1_axis);
+            $(domIdKm + ' [name=k2]').val(row.k2);
+            $(domIdKm + ' [name=axis2]').val(row.k2_axis);
+        };
     }
 };
