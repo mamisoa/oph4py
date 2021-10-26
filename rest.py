@@ -147,57 +147,27 @@ def getWF(machine,path,filename,side,patient):
         return False
 
 def getTopo(machine,path,filename,side,patient):
+    import configparser
+    config = configparser.ConfigParser()
     if machine == 'vx100':
-        code = 'utf-16-le'
+        code = 'utf16'
     elif machine == 'l80':
         code = 'us-ascii'
     else:
         code = 'utf8'
+    topo = {'patient' : patient , 'file': filename, 'exam': 'topo', 'side' : side }
     try:
-        with open(path+'/Topo/'+filename,'r', encoding=code) as reader:
-            topo = {'patient' : patient , 'file': filename, 'exam': 'topo', 'side' : side }
-            k = 0
-            for line in reader:
-                # get Sim_K
-                if k == 6:
-                    if 'K1=' in line:
-                        k1 = float(line.split('=')[1])
-                        topo['k1'] = k1
-                    k -=1
-                elif k == 5:
-                    if 'K1_axis=' in line:
-                        k1_axis = float(line.split('=')[1])
-                        topo['k1_axis'] = k1_axis
-                    k -=1
-                elif k == 4:
-                    if 'K2=' in line:
-                        k2 = float(line.split('=')[1])
-                        topo['k2'] = k2
-                    k -=1 # s = 0
-                elif k == 3:
-                    if 'K2_axis=' in line:
-                        k2_axis = float(line.split('=')[1])
-                        topo['k2_axis'] = k2_axis
-                    k -=1
-                elif k == 2:
-                    if 'Cyl=' in line:
-                        kcyl = float(line.split('=')[1])
-                        topo['kcyl'] = kcyl
-                    k -=1
-                elif k == 1:
-                    if 'Avg=' in line:
-                        km = float(line.split('=')[1])
-                        topo['km'] = km
-                    k -=1 # k = 0
-                if '[Sim_K]' in line:
-                    # read 6 next lines to get values
-                    k = 6
-                #if '[Topo]' in line:
-                    # read 6 next lines to get values
-                #    k = 6
+        with open(path+'/Topo/'+filename,'r', encoding=code) as file:
+            config.read_file(file)
+        simk_dict = dict(config.items('Sim_K'))
+        kc_dict = dict(config.items('KERATOCONUS'))
+        topo_dict = dict(config.items('TOPO'))
+        [topo['k1'], topo['k2'], topo['k1_axis'], topo['k2_axis'], topo['kcyl']] = [float(simk_dict['k1']),float(simk_dict['k2']),float(simk_dict['k1_axis']),float(simk_dict['k2_axis']),float(simk_dict['cyl'])]
+        [topo['pd'], topo['kpi']] = [float(topo_dict['pd']), float(kc_dict['kpi'])]
         return topo
-    except:
-        return False
+    except Exception as e:
+        topo['error'] = e.args[0]
+        return topo
 
 def getARK(machine,path,filename,side,patient):
     from math import pi
