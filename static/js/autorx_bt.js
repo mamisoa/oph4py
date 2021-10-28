@@ -237,9 +237,9 @@ function detailFormatter_km(index, row) {
 // import machine bs-table
 function responseHandler_vx(res) { // used if data-response-handler="responseHandler_vl"
     let list = res.mesurements;
+    console.log(list);
     let display = [];
     let kx,rx;
-    console.log('kx:',kx)
     $.each(list, function (i) {
         if (list[i]['exam'] == 'ark') {
             rx = (round2qter(list[i]['sph5'], true) + '(' +
@@ -268,6 +268,7 @@ function responseHandler_vx(res) { // used if data-response-handler="responseHan
                 patient.push(element);
             };
         });
+        // console.log('kx:', kx, 'rx', rx)
         patient = patient.join(' ');
         display.push({
             'date': datetime,
