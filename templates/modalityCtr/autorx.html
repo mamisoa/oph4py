@@ -1243,10 +1243,10 @@ $('#rxRight_tbl').on('post-body.bs.table', function () {
 });
 
 // table listing right measurement for patient in visionix
-const API_L80_R = HOSTURL + '/myapp/rest/machines/l80?lastname='+patientObj['last_name'] +'&firstname='+patientObj['first_name']+'&side=right'
-const API_L80_L = HOSTURL + '/myapp/rest/machines/l80?lastname='+patientObj['last_name'] +'&firstname='+patientObj['first_name']+'&side=left'
-const API_VX100_R = HOSTURL + '/myapp/rest/machines/vx100?lastname='+patientObj['last_name'] +'&firstname='+patientObj['first_name']+'&side=right'
-const API_VX100_L = HOSTURL + '/myapp/rest/machines/vx100?lastname='+patientObj['last_name'] +'&firstname='+patientObj['first_name']+'&side=left'
+const API_L80_R = HOSTURL + '/myapp/rest/machines/l80?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=right'
+const API_L80_L = HOSTURL + '/myapp/rest/machines/l80?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=left'
+const API_VX100_R = HOSTURL + '/myapp/rest/machines/vx100?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=right'
+const API_VX100_L = HOSTURL + '/myapp/rest/machines/vx100?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=left'
 var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
     url: API_L80_R
 });
