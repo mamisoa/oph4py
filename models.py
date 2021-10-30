@@ -242,6 +242,8 @@ db.define_table('rx',
     Field('cyl_close','decimal(4,2)'),
     Field('axis_close', 'integer'),
     Field('note','string'),
+    Field('pd05','decimal(4,2)'), # half pupils distance
+    Field('color','string'),
     Field('laterality','string', required=True),
     Field('status','reference status_rx', required=True, default='1'),
     Field('id_pair', 'string'),

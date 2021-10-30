@@ -237,6 +237,14 @@ $('#idLeftRx input[name="timestamp"]').change(function(){
   $('#idRightRx input[name="timestamp"]').val($('#idLeftRx input[name="timestamp"]').val());
 });
 
+// sync color picker
+$('#idRightRx input[name="color"]').change(function(){
+  $('#idLeftRx input[name="color"]').val($('#idRightRx input[name="color"]').val());
+});
+$('#idLeftRx input[name="color"]').change(function(){
+  $('#idRightRx input[name="color"]').val($('#idLeftRx input[name="color"]').val());
+});
+
 // set rx submit buttons
 $('#idRightRx').submit(function(e){
   e.preventDefault();

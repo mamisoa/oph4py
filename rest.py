@@ -166,10 +166,10 @@ def getTopo(machine,path,filename,side,patient):
         if machine == 'vx100':
             kc_dict = dict(config.items('KERATOCONUS'))
             topo['kpi'] = float(kc_dict['kpi'])
-        [topo['k1'], topo['k2'], topo['k1_axis'], topo['k2_axis'], topo['kcyl'], topo['pd']] = [
+        [topo['k1'], topo['k2'], topo['k1_axis'], topo['k2_axis'], topo['kcyl'], topo['pd05']] = [
             float(simk_dict['k1']),float(simk_dict['k2']),
             float(simk_dict['k1_axis']),float(simk_dict['k2_axis']),
-            float(simk_dict['cyl']), float(topo_dict['pd'])]
+            float(simk_dict['cyl']), float(topo_dict['pd'])/2]
         return topo
     except Exception as e:
         topo['error'] = str(e)
@@ -195,6 +195,8 @@ def getARK(machine,path,filename,side,patient):
         [rx['sph7'],rx['cyl7'],rx['axis7']] = [float(ar['sphere_7']),float(ar['cylinder_7']),float(ar['axis_7'])*180/pi]
         kr = dict(config.items('KR'))
         [rx['k1'],rx['k2'],rx['k1_axis'],rx['k2_axis'], rx['kcyl']] = [float(kr['k1']),float(kr['k2']),kr['k1_axis'],kr['k2_axis'], float(kr['simk_cyl'])]
+        topo = dict(config.items('TOPO'))
+        rx['pd05'] = float(topo['pd'])/2
         return rx
     except Exception as e:
         rx['error'] = e.args[0]
