@@ -29,6 +29,8 @@ function responseHandler(res) { // used if data-response-handler="responseHandle
             'cyl_close': list[i].cyl_close,
             'axis_close': list[i].axis_close,
             'rx_close': list[i].sph_close+'('+list[i].cyl_close+'x'+list[i].axis_close+')',
+            'pd05' : list[i]['pd05'],
+            'color' : list[i]['color'],
             'note': list[i].note,
             'id_pair': list[i].id_pair,
             'status': list[i].status,
@@ -122,6 +124,8 @@ window.operateEvents = {
         $('#rxFormModal [name=cyl_close]').val(row.cyl_close);
         $('#rxFormModal [name=axis_close]').val(row.axis_close);
         $('#rxFormModal [name=note]').val(row.note);
+        $('#rxFormModal [name=pd05]').val(row.pd05);
+        $('#rxFormModal [name=color]').val(row.color);
         $('#rxFormModal [name=status]').val(row.status);
         let add_int = round2dec(parseFloat(row.sph_int)-parseFloat(row.sph_far));
         let add_close = round2dec(parseFloat(row.sph_close)-parseFloat(row.sph_far));
@@ -148,10 +152,22 @@ function rowStyle_type(row) {
 function cellStyle_formula(value,row) {
     let bg, statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' };
     row.rx_origin != undefined ? bg = statusColor[row.rx_origin] : bg = "white";
+
     return {    
         css: { 
             'font-weight': 'bold',
             'background-color': bg
+        }
+    };
+};
+
+function cellStyle(value,row) {
+    let statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' };
+    row.color != undefined ? bg = row.color : bg = statusColor[row.rx_origin];
+    return {    
+        css: { 
+            'background-color': bg,
+            'color': bg
         }
     };
 };
@@ -282,6 +298,7 @@ function responseHandler_vx(res) { // used if data-response-handler="responseHan
             'k2': list[i]['k2'] == null?list[i]['k1']:diopter2mm(list[i]['k2']),
             'k1_axis': list[i]['k1_axis'],
             'k2_axis': list[i]['k2_axis'],
+            'pd05' : list[i]['pd05'],
             'sph5': list[i]['sph5'],
             'cyl5': list[i]['cyl5'],
             'axis5': list[i]['axis5']
@@ -315,6 +332,7 @@ window.operateEvents_vx = {
             $(domIdKm + ' [name=axis1]').val(row.k1_axis);
             $(domIdKm + ' [name=k2]').val(row.k2);
             $(domIdKm + ' [name=axis2]').val(row.k2_axis);
+            $(domIdRx + ' [name=pd05]').val(row.pd05);
         };
         if (row.exam == 'wf') {
             $(domIdRx + ' [name=sph_far]').val(round2qter(row.sph5,true)).trigger('change');
@@ -341,6 +359,7 @@ window.operateEvents_vx = {
             $(domIdKm + ' [name=axis1]').val(row.k1_axis);
             $(domIdKm + ' [name=k2]').val(row.k2);
             $(domIdKm + ' [name=axis2]').val(row.k2_axis);
+            $(domIdRx + ' [name=pd05]').val(row.pd05);
         };
     }
 };
