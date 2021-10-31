@@ -99,3 +99,60 @@ for kx in kmdata:
     [mes.update({ 'Average' + e.tag.split('}')[1] + side : e.text }) for e in kx.findall('./nsKM:Average/',ns)]
     km['measures'].append(mes)
 print(km)
+
+
+# -------------------------------------------------------------------------
+# first attempt to get LM text
+# side R or L
+def xmlLm2dict(side):
+    path = './/nsLM:'+side+'/'
+    lmdict = {
+        'lmSph'+side : path+'nsLM:Sphere',
+        'lmCyl'+side : path+'nsLM:Cylinder',
+        'lmAxis'+side : path+'nsLM:Axis',
+        'lmAxis'+side : path+'nsLM:Axis',
+        'lmH'+side : path+'nsLM:H',
+        'lmV'+side : path+'nsLM:V',
+        'lmAdd1'+side : path+'nsLM:Add1',
+        'lmAdd2'+side : path+'nsLM:Add2',
+    }
+    return lmdict
+
+@action('readCv5000Xml', methods=['GET'])
+# origin: lm, rm, export
+# import from CV export and delete file
+def readCv5000Xml():
+    import os,glob,json,bottle
+    from lxml import etree as ET
+    response = bottle.response
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    # xmlfiles = glob.glob(LM_FOLDER+'/cv-iris/*.xml')
+    xmlfiles = glob.glob(RM_FOLDER+'/cv-crist/test_import2.xml')
+    latestfile = max(xmlfiles, key=os.path.getctime)
+    with open(latestfile) as xmlfile:
+        tree = ET.parse(xmlfile)
+    root = tree.getroot()
+    ns = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance', 
+        'nsCommon': 'http://www.joia.or.jp/standardized/namespaces/Common',
+        'nsLM': 'http://www.joia.or.jp/standardized/namespaces/LM',
+        'nsSBJ' : "http://www.joia.or.jp/standardized/namespaces/SBJ"
+        }
+    lm = { 'status': 'OK' , 'filename': latestfile, 'mesures' : {}}
+    try:
+        r = xmlLm2dict('R')
+        for mes in r:
+            lm['mesures'].update({ mes : [ el.text for el in tree.iterfind(r[mes],ns)][0]})
+        l = xmlLm2dict('L')
+        for mes in l:
+            lm['mesures'].update({ mes : [ el.text for el in tree.iterfind(l[mes],ns)][0]})
+    except Exception as e:
+        lm['status'] = 'error'
+        lm.update({'error': e.args[0]})
+    try:
+        t = root.xpath('.//nsSBJ:TypeName[text()="Current Spectacles"]/..', namespaces= ns)
+        lm['current'] = [el.tag for el in t]
+    except Exception as e2:
+        lm.update({'error2': str(e2)})
+    res = json.dumps(lm)
+    return res
+
