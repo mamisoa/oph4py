@@ -110,7 +110,7 @@ mdHistory.forEach(function (arrayItem) {
     };
     // console.log("Id: ", id);
     // console.log("Timeslot: ", ts);
-    document.getElementById("mdHistory").innerHTML += '<button class="btn btn-primary '+setbtnclass+' mx-2 btnmdHistory" data-mdId="'+id+'" type="button">'+ts+'</button>';
+    document.getElementById("mdHistory").innerHTML += '<button class="btn btn-primary btn-sm '+setbtnclass+' mx-2 btnmdHistory" data-mdId="'+id+'" type="button">'+ts+'</button>';
 });
 
 $('.btnmdHistory').click(function(){
