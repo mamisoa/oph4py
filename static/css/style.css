@@ -68,3 +68,8 @@ section#main {
 #cHxDiv {
   scroll-margin-top: 240px;
 }
+
+.whitebg {
+  background-color: #FFFFFF;
+  padding: 3px;
+}

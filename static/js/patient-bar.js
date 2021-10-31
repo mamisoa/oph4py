@@ -6,7 +6,8 @@ $('#wlItemDetails .patientName').html(patientObj['first_name']+' '+patientObj['l
 patientObj['dob'] != null ? $('#wlItemDetails .patientDob').html(patientObj['dob'].split('-').reverse().join('/')+' ('+getAge(patientObj['dob'])+'yo)') : $('#wlItemDetails .patientDob').html('DOB: n/a');
 $('#wlItemDetails .patientGender').html('Gender: '+ genderIdObj[patientObj['gender']]);
 $('#wlItemDetails .patientId').html('#'+patientObj['id']+' NISS: '+checkIfDataIsNull(patientObj['ssn']));
-$('#wlItemDetails .timeslot').html(wlObj['worklist']['requested_time'].split('T').join(' '));
+$('#wlItemDetails .timeslot').html(datetime2eu(wlObj['worklist']['requested_time']));
+patientObj['user_notes'] != null? $('#wlItemDetails .user_notes').html(patientObj['user_notes']) : $('#wlItemDetails .user_notes').removeClass('whitebg');
 $('#wlItemDetails .modality').html(wlObj['modality']['modality_name']);
 $('#wlItemDetails .laterality').html(wlObj['worklist']['laterality']);
 $('#wlItemDetails .provider').html(providerObj['first_name']+' '+providerObj['last_name']);
