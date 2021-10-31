@@ -125,7 +125,7 @@ def users(membership='Patient'):
 
 # patients worklist 
 @action('worklist', method=['POST','GET']) # route
-@action.uses('worklist.html', session, T, auth, db)
+@action.uses('worklist.html', session, T, auth.user, db)
 def worklist():
     hosturl = LOCAL_URL
     localbeid = LOCAL_BEID

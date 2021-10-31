@@ -93,7 +93,7 @@ def initFields(wlId,table,lat=""):
 
 @action('md')
 @action('modalityCtr/md/<wlId>')
-@action.uses(session, auth, db,'modalityCtr/md.html')
+@action.uses(session, auth.user, db,'modalityCtr/md.html')
 def md(wlId):
     import base64
     from datetime import datetime
@@ -104,6 +104,9 @@ def md(wlId):
     hosturl = LOCAL_URL
     user = auth.get_user()
     userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
+    userHierarchy = db(db.membership.id == user['membership']).select(db.membership.hierarchy).first()['hierarchy']
+    if userHierarchy >= 2:
+        redirect(URL('worklist'))
     db.auth_user.password.readable = False
     db.auth_user.password.writable  = False
     genderObj = genderId # used in patient-bar
