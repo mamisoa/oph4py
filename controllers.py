@@ -41,9 +41,7 @@ from .settings import LOCAL_URL # DB_OCTOPUS
 from functools import reduce
 from py4web.utils.grid import Grid
 
-def getMembershipId(role):
-    query = db(db.membership.membership == role).select().first()['id']
-    return query
+from .useful import getMembershipId
 
 @unauthenticated("index", "index.html")
 def index():
