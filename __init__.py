@@ -12,6 +12,7 @@ from . import manage
 from . import rest
 from . import modalityctr
 from . import defaults
+from . import useful
 from .modules.visionix import vx_rest
 
 # optional parameters

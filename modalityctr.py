@@ -11,8 +11,8 @@ from py4web.utils.grid import Grid
 # import settings
 from .settings import LOCAL_URL, ASSETS_FOLDER, MACHINES_FOLDER
 
-from .manage import dropdownSelect, rows2json
-from .controllers import getMembershipId
+# import userful
+from .useful import dropdownSelect, rows2json, getMembershipId
 
 # get standard index in db for patient/user profile
 mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
