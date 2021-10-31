@@ -52,6 +52,11 @@ function norm(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 };
 
+// remove accents but not diacritics?
+function removeAccent(str) {
+    return str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+};
+
 // password generator
 function passGen() {
     return Math.random().toString(36)+Math.random().toString(36).toUpperCase().split('').sort(function(){return 0.5-Math.random()}).join('')
@@ -61,6 +66,13 @@ function passGen() {
 function datestr2eu(datestr) {
     return datestr.split('-').reverse().join('/');
 };
+
+// convert datetime yyyymmdd hh:mm:ss to dd/mm/yyyy hh:mm:ss
+function datetime2eu(datetimestr) {
+    let datetimelst = datetimestr.split(' ')
+    datetimelst[0] = datetimelst[0].split('-').reverse().join('/')
+    return datetimelst.join(' ')
+}
 
 // set tz info
 Date.prototype.addHours = function(h) {
@@ -87,11 +99,6 @@ function hmsToSeconds(s) {
 // check if datastr is null
 function checkIfDataIsNull(data, dft='n/a') {
     return (data == null || data =='')? dft : data ; 
-};
-
-// remove accents but not diacritics?
-function removeAccent(str) {
-    return str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
 };
 
 function getUuid() {
