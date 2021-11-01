@@ -1,5 +1,5 @@
-[[ import sys ]]
-[[ sys.path.insert(1, '/home/mamisoa16/code/py4web/apps/myapp') ]]
+[[ import sys, os ]]
+[[ sys.path.insert(1, os.path.join(sys.path[0], '../..')) ]]
 [[ from settings import TIMEOFFSET ]]
 
 <!DOCTYPE html>
