@@ -25,11 +25,11 @@ function responseHandler_airPachy(res) { // used if data-response-handler="respo
 function queryParams_airPachy(params) {
     var s="";
     if (params.offset != "0") {
-        console.log(params.offset);
+        // console.log(params.offset);
         s += "&@offset="+params.offset;
     }
     if (params.limit != "0") {
-        console.log(params.offset);
+        // console.log(params.offset);
         s += "&@limit="+params.limit;
     }
     return decodeURI(encodeURI(s.slice(1-s.length))); // remove the first &

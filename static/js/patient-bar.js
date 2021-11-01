@@ -97,8 +97,7 @@ $('#btnUnlockTask').click(function(){
         dataObj['status_flag'] = 'processing';
         dataObj['counter'] = 1;
         dataStr = JSON.stringify(dataObj);
-        setWlItemStatus(dataStr);
-        document.location.reload();
+        crudp('worklist','0','PUT', dataStr).then(function(){document.location.reload()});
     } else {};
 });
 

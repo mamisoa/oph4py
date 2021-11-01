@@ -212,8 +212,7 @@ const crudp = function(table,id='0',req='POST',data) {
 // set wlItem status: done processing and counter adjustment
 // id is in the dataStr
 function setWlItemStatus (dataStr) {
-    // console.log('dataStrPut:',dataStr);
-    crudp('worklist','0','PUT', dataStr);
+    return crudp('worklist','0','PUT', dataStr);
 };
 
 //  use as promise

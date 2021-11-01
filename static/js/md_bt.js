@@ -433,7 +433,7 @@ window.operateEvents_wl = {
             dataObj['counter'] = row.counter;
             dataStr = JSON.stringify(dataObj);
             setWlItemStatus(dataStr);
-        }
+        };
         let controller = modalityDict[row.modality];
         link = HOSTURL+'/myapp/modalityCtr/'+controller+'/'+row.id
         window.location.href = link;
