@@ -76,7 +76,7 @@ def beid():
 # http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=identity!:id_auth_user[first_name,last_name] -> denormalised (flat)
 @action('api/<tablename>/', method=['GET','POST','PUT']) # PUT ok
 @action('api/<tablename>/<rec_id>', method=['GET','PUT','DELETE']) # delete OK get OK post OK
-@action.uses(db)
+@action.uses(db,session)
 def api(tablename, rec_id=None):
     db.phone.id_auth_user.writable= db.address.id_auth_user.writable = True
     db.phone.id_auth_user.readable = db.address.id_auth_user.readable = True

@@ -53,11 +53,11 @@ const seniorDict = [[ = XML(seniorDict) ]];
 const seniorObj = seniorDict[0];
 const patientObj = wlDict[0]['auth_user'];
 const patientId = patientObj['id'];
-const mdHistory = [[ 
-    try: mdHistory
-    except NameError: response.write('[]')
-    else: response.write(XML(mdHistory))
-    pass
-    ]];
+const mdHistory = 
+[[ if 'mdHistory' is locals():]]
+[[ = XML(mdHistory) ]];
+[[ else:]]
+[[='[]']]
+[[ pass ]];
 const genderIdObj = [[ = XML(genderObj) ]];
 </script>
