@@ -90,8 +90,7 @@ def getARK(machine,path,filename,side,patient):
 # check if patient exists in Visionix machines, if so send Json output with corresponding file and path
 @action('rest/scan_visionix/<machine>/', method=['GET']) 
 def scan_visionix(machine,lastname='',firstname=''):
-    import os,json,bottle,re
-    response = bottle.response
+    import os,json,re
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     if 'lastname' in request.query:
         lastname = request.query.get('lastname')
@@ -218,8 +217,7 @@ def addpatient_l80(firstname,lastname):
 # create a patient folder in visionix L80 or VX100
 @action('rest/create_visionix/<machine>/', method=['GET']) 
 def create_visionix(machine,lastname='_',firstname='_',dob='', id='', sex=''):
-    import os,json,bottle
-    response = bottle.response
+    import os,json
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     res = { 'result': 'error'}
     if 'lastname' in request.query:
@@ -245,8 +243,7 @@ def create_visionix(machine,lastname='_',firstname='_',dob='', id='', sex=''):
 # bootstrap-table optimized JSON output from Visionix machines L80/VX100
 @action('rest/machines/<machine>/', method=['GET']) 
 def get_visionix_mes(machine=L80_FOLDER):
-    import os, json, bottle, re
-    response = bottle.response
+    import os, json, re
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     if 'lastname' in request.query:
         lastname = request.query.get('lastname')
