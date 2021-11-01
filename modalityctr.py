@@ -26,7 +26,6 @@ genderId = {
 @action('modalityCtr/tono/<wlId>')
 @action.uses(session, auth, db,'modalityCtr/tono.html')
 def tono(wlId):
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
     genderObj = genderId # used in patient-bar
@@ -48,7 +47,6 @@ def tono(wlId):
 @action('modalityCtr/autorx/<wlId>')
 @action.uses(session, auth, db,'modalityCtr/autorx.html')
 def autorx(wlId):
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
     genderObj = genderId # used in patient-bar
@@ -99,7 +97,6 @@ def initFields(wlId,table,lat=""):
 def md(wlId):
     import base64
     from datetime import datetime
-    timeOffset = TIMEOFFSET
     response.headers['Cross-Origin-Embedder-Policy']='require-corp'
     response.headers['Cross-Origin-Opener-Policy']='same-origin'
     hosturl = LOCAL_URL
@@ -159,7 +156,6 @@ def md(wlId):
 @action.uses(session, auth, db,'modalityCtr/hello.html')
 def hello(wlId):
     import base64
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     database = db._tables
     user = auth.get_user()

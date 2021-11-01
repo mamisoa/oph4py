@@ -1,3 +1,7 @@
+[[ import sys ]]
+[[ sys.path.insert(1, '/home/mamisoa16/code/py4web/apps/myapp') ]]
+[[ from settings import TIMEOFFSET ]]
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -55,6 +59,7 @@
       </nav>
     </header>
     <!-- beginning of HTML inserted by extending template -->
+    [[ =XML((sys.path[0].split('\\'))[0]+'/apps/myapp') ]]
     <section id="main">
         [[if globals().get('flash'):]]
         <div class="container">
@@ -83,7 +88,7 @@
     <script src="js/jquery.toast.min.js"></script> <!-- jquery toast js https://github.com/kamranahmedse/jquery-toast-plugin.git -->
     <script src="js/baseof.js"></script>
     <script type="text/javascript">
-        const timeOffsetInHours = [[ = timeOffset ]];
+        const timeOffsetInHours = [[ = TIMEOFFSET ]];
         const timeOffset = 3600*timeOffsetInHours; // in sec
     </script>
     [[block js_scripts]]
