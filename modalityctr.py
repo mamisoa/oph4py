@@ -24,7 +24,7 @@ genderId = {
 # tono controller
 @action('tono')
 @action('modalityCtr/tono/<wlId>')
-@action.uses('modalityCtr/tono.html', session, auth, db)
+@action.uses(session, auth, db,'modalityCtr/tono.html')
 def tono(wlId):
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
@@ -46,7 +46,7 @@ def tono(wlId):
 # autorx controller
 @action('autorx')
 @action('modalityCtr/autorx/<wlId>')
-@action.uses('modalityCtr/autorx.html', session, auth, db)
+@action.uses(session, auth, db,'modalityCtr/autorx.html')
 def autorx(wlId):
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
@@ -156,7 +156,7 @@ def md(wlId):
 # helloworld controller
 @action('hello')
 @action('modalityCtr/hello/<wlId>')
-@action.uses('modalityCtr/hello.html', session, auth, db)
+@action.uses(session, auth, db,'modalityCtr/hello.html')
 def hello(wlId):
     import base64
     timeOffset = TIMEOFFSET
