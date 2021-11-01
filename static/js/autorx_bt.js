@@ -253,7 +253,7 @@ function detailFormatter_km(index, row) {
 // import machine bs-table
 function responseHandler_vx(res) { // used if data-response-handler="responseHandler_vl"
     let list = res.mesurements;
-    console.log(list);
+    // console.log(list);
     let display = [];
     let kx,rx;
     $.each(list, function (i) {
