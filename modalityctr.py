@@ -9,7 +9,7 @@ from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added 
 from py4web.utils.grid import Grid
 
 # import settings
-from .settings import LOCAL_URL, ASSETS_FOLDER, MACHINES_FOLDER
+from .settings import LOCAL_URL, ASSETS_FOLDER, MACHINES_FOLDER, TIMEOFFSET
 
 # import userful
 from .useful import dropdownSelect, rows2json, getMembershipId
@@ -26,6 +26,7 @@ genderId = {
 @action('modalityCtr/tono/<wlId>')
 @action.uses('modalityCtr/tono.html', session, auth, db)
 def tono(wlId):
+    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
     genderObj = genderId # used in patient-bar
@@ -47,6 +48,7 @@ def tono(wlId):
 @action('modalityCtr/autorx/<wlId>')
 @action.uses('modalityCtr/autorx.html', session, auth, db)
 def autorx(wlId):
+    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
     genderObj = genderId # used in patient-bar
@@ -97,8 +99,7 @@ def initFields(wlId,table,lat=""):
 def md(wlId):
     import base64
     from datetime import datetime
-    # response.set_header('Cross-Origin-Embedder-Policy','require-corp')
-    # response.set_header('Cross-Origin-Opener-Policy','same-origin')
+    timeOffset = TIMEOFFSET
     response.headers['Cross-Origin-Embedder-Policy']='require-corp'
     response.headers['Cross-Origin-Opener-Policy']='same-origin'
     hosturl = LOCAL_URL
@@ -158,6 +159,7 @@ def md(wlId):
 @action.uses('modalityCtr/hello.html', session, auth, db)
 def hello(wlId):
     import base64
+    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     database = db._tables
     user = auth.get_user()
