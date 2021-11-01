@@ -62,7 +62,7 @@ function queryParams_wl(params) {
 };
 
 function styleTimeslot(ts) {
-    let arr = ts.split('T');
+    let arr = ts.split(' ');
     let res = '<strong>'+arr[0].split('-').reverse().join('/')+'</strong> '+arr[1];
     return res;
 };
