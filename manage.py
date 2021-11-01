@@ -17,7 +17,7 @@ from .useful import dropdownSelect, getMembershipId
 ## edit user/id from auth_user
 @action('user')
 @action('user/<rec_id>')
-@action.uses('manage/user.html', session, auth, db)
+@action.uses(session, auth, db,'manage/user.html')
 def user(rec_id="1"):
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
@@ -43,8 +43,8 @@ def user(rec_id="1"):
 # list users from membership
 @action('manage/users', method=['POST','GET']) # route
 @action('manage/users/<membership>')
-# @action.uses('manage/users.html', session, T, auth, db)
-@action.uses('manage/users.html', session, T, db)
+# @action.uses(session, T, auth, db,'manage/users.html')
+@action.uses(session, T, db, 'manage/users.html')
 def users(membership='Patient'):
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
@@ -81,7 +81,7 @@ def users(membership='Patient'):
 
 # patients worklist 
 @action('worklist', method=['POST','GET']) # route
-@action.uses('worklist.html', session, T, auth.user, db)
+@action.uses(session, T, auth.user, db, 'worklist.html')
 def worklist():
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
@@ -134,7 +134,7 @@ def worklist():
 
 @action('manage/medications')
 @action('manage/medications/<rec_id>')
-@action.uses('manage/medications.html', session, auth, db)
+@action.uses(session, auth, db, 'manage/medications.html')
 def medications(rec_id="1"):
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
@@ -145,7 +145,7 @@ def medications(rec_id="1"):
 
 @action('manage/allergy')
 @action('manage/allergy/<rec_id>')
-@action.uses('manage/allergy.html', session, auth, db)
+@action.uses(session, auth, db,'manage/allergy.html')
 def allergy(rec_id="1"):
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
@@ -156,7 +156,7 @@ def allergy(rec_id="1"):
 
 @action('manage/diseases')
 @action('manage/diseases/<rec_id>')
-@action.uses('manage/diseases.html', session, auth, db)
+@action.uses(session, auth, db,'manage/diseases.html')
 def diseases(rec_id="1"):
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
@@ -167,7 +167,7 @@ def diseases(rec_id="1"):
 
 @action('manage/lenses')
 @action('manage/lenses/<rec_id>')
-@action.uses('manage/lenses.html', session, auth, db)
+@action.uses(session, auth, db,'manage/lenses.html')
 def medications(rec_id="1"):
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
@@ -175,7 +175,7 @@ def medications(rec_id="1"):
     return locals()
 
 @action('manage/files', method=['POST','GET']) # route
-@action.uses('manage/files.html', session, T, auth, db)
+@action.uses(session, T, auth, db,'manage/files.html')
 def files():
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
@@ -201,7 +201,7 @@ def files():
 
 ## import users 
 @action('import_users')
-@action.uses('generic.html', T, db)
+@action.uses(T, db,'generic.html')
 def import_users():
     # hosturl = LOCAL_URL
     import os
@@ -211,7 +211,7 @@ def import_users():
     return dict(message="OK")
 
 @action('db_truncate')
-@action.uses('generic.html', T, db, auth.user)
+@action.uses(T, db, auth.user,'generic.html')
 def truncate_db():
     hosturl = LOCAL_URL
     for table_name in db.tables():
@@ -220,7 +220,7 @@ def truncate_db():
 
 # TODO: add action uses aut.user to all sensible pages
 @action("manage/db")
-@action.uses('manage/manage_db.html', T, auth.user, db, flash)
+@action.uses(T, auth.user, db, flash,'manage/manage_db.html')
 def manage_db():
     timeOffset = TIMEOFFSET
     tablesArr = db._tables
@@ -413,7 +413,7 @@ def combo():
 # manage billing summary
 @action('billing/summary')
 @action('billing/summary/<rec_id>')
-@action.uses('billing/summary.html', session, auth, db)
+@action.uses(session, auth, db,'billing/summary.html')
 def summary(rec_id):
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL

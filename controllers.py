@@ -82,7 +82,7 @@ def check_duplicate(form):
 
 @action("test", method=['POST','GET']) # route
 @action('test/<membership>')
-@action.uses('test.html', session, T, auth, db, flash)
+@action.uses(session, T, auth, db, flash, 'test.html')
 def test(membership=6):
     hosturl = LOCAL_URL
     user = auth.get_user()
@@ -119,7 +119,7 @@ def test(membership=6):
     return locals()
 
 @action("facilities", method=['GET', 'POST'])
-@action.uses('facilities.html', session, auth.user, db, flash) # add auth.user and db to get 
+@action.uses(session, auth.user, db, flash,'facilities.html') # add auth.user and db to get 
 def facilities():
     user = auth.get_user() # needed to transfer globals to view
     form = Form([
@@ -134,7 +134,7 @@ def facilities():
     return dict(form=form, user=user)
 
 @action("testtable", method=['GET', 'POST'])
-@action.uses('testtable.html', session, auth.user, db, flash)
+@action.uses(session, auth.user, db, flash, 'testtable.html')
 def testtable():
     user = auth.get_user()
     form = Form([
@@ -163,7 +163,7 @@ def companies(path=None):
     return dict(grid=grid)
 
 @action('listdir')
-@action.uses('listdir.html', session, auth.user, db, flash)
+@action.uses(session, auth.user, db, flash,'listdir.html')
 def listdir():
     user = auth.get_user()
     hosturl = LOCAL_URL
