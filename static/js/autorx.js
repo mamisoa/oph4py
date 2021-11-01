@@ -180,10 +180,10 @@ for (let rx of idRxArr) {
   // if origin of rx is autorx, cyclo, dil -> hide int and close, reset them to 0 and hide them
   $(rx+' input[name=rx_origin]').change(function () {
     if (rx == '#idRightRx') {
-      console.log('#idRightRx changed');
+      // console.log('#idRightRx changed');
       $('#idLeftRx input[name=rx_origin][value="'+$('#idRightRx input[name=rx_origin]:checked').val()+'"]').prop('checked', true);
     } else if (rx == '#idLeftRx') {
-      console.log('#leftTypeDiv changed');
+      // console.log('#leftTypeDiv changed');
       $('#idRightRx input[name=rx_origin][value="'+$('#idLeftRx input[name=rx_origin]:checked').val()+'"]').prop('checked', true);
     };
     if (($(rx+' input[name=rx_origin]:checked').val() == 'trial') || ($(rx+' input[name=rx_origin]:checked').val() == 'glass')) {
@@ -235,6 +235,43 @@ $('#idRightRx input[name="timestamp"]').change(function () {
 });
 $('#idLeftRx input[name="timestamp"]').change(function(){
   $('#idRightRx input[name="timestamp"]').val($('#idLeftRx input[name="timestamp"]').val());
+});
+
+// sync right and left glass_type
+function eventSyncRight() {
+  $('#idLeftRx input[name="glass_type"][value="'+$('#idRightRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true);
+  $('#idLeftRx input[name="glass_type"]').trigger('change');
+};
+function eventSyncLeft() {
+  $('#idRightRx input[name="glass_type"][value="'+$('#idLeftRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true);
+  $('#idRightRx input[name="glass_type"]').trigger('change');
+};
+
+function syncRx() {
+  // console.log('syncRx function called');
+  $('#idRightRx input[name="glass_type"]').on('change', eventSyncRight);
+  $('#idLeftRx input[name="glass_type"]').on('change', eventSyncLeft);
+  $('#btnLink').hasClass('unlocked')?$('#btnLink').removeClass('unlocked'):{};
+  !$('#btnLink').hasClass('locked')?$('#btnLink').addClass('locked').html('<i class="fas fa-lock mx-1"></i>'):{};
+  // console.log('locked!');
+};
+// default btnLink is locked -> sync
+syncRx();
+
+// if bntLink is clicked -> 
+// 1) check if class locked exists -> is so, a) remove event on change on glass_type b) change class locked to unlocked c) change text to unlock icon
+// is locked absent AND unlocked present -> a) check if events on glass_type, add events b) change class unlocked to lock c) change text to lock icon
+$('#btnLink').click(function () {
+  // console.log('btnLink clicked');
+  if ($('#btnLink').hasClass('locked') && !$('#btnLink').hasClass('unlocked')) {
+    $('#idRightRx input[name="glass_type"]').off('change', eventSyncRight);
+    $('#idLeftRx input[name="glass_type"]').off('change', eventSyncLeft);
+    $('#btnLink').addClass('unlocked').html('<i class="fas fa-unlock mx-1"></i>');
+    $('#btnLink').removeClass('locked');
+    // console.log('unlocked!');
+  } else if ($('#btnLink').hasClass('unlocked') && !$('#btnLink').hasClass('locked')) {
+    syncRx();
+  };
 });
 
 // sync color picker
