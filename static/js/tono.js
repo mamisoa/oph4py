@@ -73,7 +73,7 @@ function tonoPachyInsert(domId,laterality, techno='air') {
     o['laterality'] = laterality;
     o['techno'] = techno;
     o['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
-    console.log('o',o);
+    // console.log('o',o);
     oStr = JSON.stringify(o);
     crudp('tono','0','POST', oStr).then(data => refreshTables());
     techno == 'air'? $('#airPachy'+capitalize(laterality)+'_tbl').bootstrapTable('refresh') : $('#apla'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');

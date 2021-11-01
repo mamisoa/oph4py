@@ -137,8 +137,7 @@ window.operateEvents_wl = {
                 dataObj['status_flag'] = 'processing';
             }
             dataStr = JSON.stringify(dataObj);
-            setWlItemStatus(dataStr);
-            $table_wl.bootstrapTable('refresh');
+            setWlItemStatus(dataStr).then(function () {$table_wl.bootstrapTable('refresh')});
         }
     },
     'click .done': function (e, value, row, index) {
@@ -148,8 +147,7 @@ window.operateEvents_wl = {
             dataObj['status_flag'] = 'done';
             dataObj['counter'] = 0;
             dataStr = JSON.stringify(dataObj);
-            setWlItemStatus(dataStr);
-            $table_wl.bootstrapTable('refresh');
+            setWlItemStatus(dataStr).then(function () {$table_wl.bootstrapTable('refresh')});
         }
     },
     'click .modality_ctr': function (e, value, row, index) {
@@ -159,8 +157,7 @@ window.operateEvents_wl = {
             dataObj['status_flag'] = 'processing';
             dataObj['counter'] = row.counter;
             dataStr = JSON.stringify(dataObj);
-            setWlItemStatus(dataStr);
-            $table_wl.bootstrapTable('refresh');
+            setWlItemStatus(dataStr).then(function () {$table_wl.bootstrapTable('refresh')});
         }
         let controller = modalityDict[row.modality];
         let link = HOSTURL+'/myapp/modalityCtr/'+controller+'/'+row.id
@@ -177,8 +174,7 @@ window.operateEvents_wl = {
             dataObj['status_flag'] = 'processing';
             dataObj['counter'] = 1;
             dataStr = JSON.stringify(dataObj);
-            setWlItemStatus(dataStr);
-            $table_wl.bootstrapTable('refresh');
+            setWlItemStatus(dataStr).then(function () {$table_wl.bootstrapTable('refresh')});
         } else {};
     }
 };
