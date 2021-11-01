@@ -7,6 +7,7 @@ from pydal.validators import CRYPT # to encrypt passwords
 
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 from py4web.utils.grid import Grid
+from py4web.utils.factories import Inject
 
 # import settings
 from .settings import LOCAL_URL, LOCAL_BEID, DEFAULT_PROVIDER, DEFAULT_SENIOR, TIMEOFFSET
@@ -19,7 +20,6 @@ from .useful import dropdownSelect, getMembershipId
 @action('user/<rec_id>')
 @action.uses(session, auth, db,'manage/user.html')
 def user(rec_id="1"):
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     localbeid = LOCAL_BEID
     user = auth.get_user()
@@ -46,7 +46,6 @@ def user(rec_id="1"):
 # @action.uses(session, T, auth, db,'manage/users.html')
 @action.uses(session, T, db, 'manage/users.html')
 def users(membership='Patient'):
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     # user = auth.get_user()
     test="Test OK"
@@ -83,7 +82,6 @@ def users(membership='Patient'):
 @action('worklist', method=['POST','GET']) # route
 @action.uses(session, T, auth.user, db, 'worklist.html')
 def worklist():
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     localbeid = LOCAL_BEID
     user = auth.get_user()
@@ -136,7 +134,6 @@ def worklist():
 @action('manage/medications/<rec_id>')
 @action.uses(session, auth, db, 'manage/medications.html')
 def medications(rec_id="1"):
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
@@ -147,7 +144,6 @@ def medications(rec_id="1"):
 @action('manage/allergy/<rec_id>')
 @action.uses(session, auth, db,'manage/allergy.html')
 def allergy(rec_id="1"):
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
@@ -158,7 +154,6 @@ def allergy(rec_id="1"):
 @action('manage/diseases/<rec_id>')
 @action.uses(session, auth, db,'manage/diseases.html')
 def diseases(rec_id="1"):
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
@@ -169,7 +164,6 @@ def diseases(rec_id="1"):
 @action('manage/lenses/<rec_id>')
 @action.uses(session, auth, db,'manage/lenses.html')
 def medications(rec_id="1"):
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
@@ -177,7 +171,6 @@ def medications(rec_id="1"):
 @action('manage/files', method=['POST','GET']) # route
 @action.uses(session, T, auth, db,'manage/files.html')
 def files():
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
     test="Test OK"
@@ -222,7 +215,6 @@ def truncate_db():
 @action("manage/db")
 @action.uses(T, auth.user, db, flash,'manage/manage_db.html')
 def manage_db():
-    timeOffset = TIMEOFFSET
     tablesArr = db._tables
     hosturl = LOCAL_URL
     user = auth.get_user()
@@ -403,7 +395,6 @@ def restore():
 @action('manage/combo')
 @action.uses(session, db, 'manage/combo.html')
 def combo():
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     procedureOptions=dropdownSelect(db.procedure,db.procedure.fields[2],1) # table to show is procedure, field to show=name, selected value is id=1, value is index
     modalityOptions=dropdownSelect(db.modality,db.modality.fields[1],1)
@@ -415,7 +406,6 @@ def combo():
 @action('billing/summary/<rec_id>')
 @action.uses(session, auth, db,'billing/summary.html')
 def summary(rec_id):
-    timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
     row = db(db.auth_user.id == rec_id).select().first()
