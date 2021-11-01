@@ -50,13 +50,12 @@ def generate_unique_id():
 # TODO: add header to allow CORS on distant card reader
 @action('api/beid', method=['GET'])
 def beid():
-    import json, bottle
+    import json
     from base64 import b64encode
     from .beid import scan_readers, read_infos, triggered_decorator
     from time import sleep
     r = scan_readers()[0]
     infos_json = {}
-    response = bottle.response
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
