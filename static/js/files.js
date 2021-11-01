@@ -35,8 +35,7 @@ function delWlItem (id) {
         },
         callback: function (result) {
             if (result == true) {
-                crud('worklist',id,'DELETE');
-                $table_wl.bootstrapTable('refresh');
+                crudp('worklist',id,'DELETE').then( data => $table_wl.bootstrapTable('refresh'));
             } else {
                 console.log('This was logged in the callback: ' + result);
             }

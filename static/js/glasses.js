@@ -663,12 +663,11 @@ $('#GxRxFormModal').submit(function(e) {
             finalDbObj['pdf_report'] = JSON.stringify(finalPresc);
             let finalDbStr = JSON.stringify(finalDbObj);
             console.log('finalDbObj:',finalDbObj);
-            crud('glasses_rx_list','0','POST',finalDbStr);
+            crudp('glasses_rx_list','0','POST',finalDbStr).then( data => $('#GxRx_tbl').bootstrapTable('refresh'));
             let pdf= pdfMake.createPdf(finalPresc);
             // pdf.download('rx');
             pdf.print()
             // document.getElementById('GxRxFormModal').reset();
-            $('#GxRx_tbl').bootstrapTable('refresh');
             $('#GxRxModal').modal('hide');
         });
 });

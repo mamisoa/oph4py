@@ -322,8 +322,7 @@ $('#rxFormModal').submit(function (e) {
   let req = dataObj['methodRxModalSubmit'];
   delete dataObj['methodRxModalSubmit'];
   dataStr = JSON.stringify(dataObj);
-  crud('rx','0', req, dataStr);
-  refreshTables(tablesArr);
+  crudp('rx','0', req, dataStr).then(data => refreshTables());
   $('#rxModal').modal('hide');
 });
 
@@ -335,8 +334,7 @@ $('#kmFormModal').submit(function(e) {
   delete dataObj['methodKmModalSubmit'];
   // console.log("dataForm",dataObj);
   dataStr = JSON.stringify(dataObj);
-  crud('km','0', req, dataStr);
-  refreshTables(tablesArr);
+  crudp('km','0', req, dataStr).then(data => refreshTables());
   $('#kmModal').modal('hide');
 });
 
@@ -387,8 +385,7 @@ function rxInsert(domId,laterality,id_pair, status=1) {
   delete dataObj['add_close'];
   console.log('dataObj',dataObj);
   dataStr = JSON.stringify(dataObj);
-  crud('rx','0','POST', dataStr);
-  $('#rx'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
+  crudp('rx','0','POST', dataStr).then( data => $('#rx'+capitalize(laterality)+'_tbl').bootstrapTable('refresh'));
 };
 
 // domId eg #idRightRx , laterality eg 'right', default status = measure
@@ -400,8 +397,7 @@ function kmInsert(domId,laterality) {
   dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
   console.log('dataObj',dataObj);
   dataStr = JSON.stringify(dataObj);
-  crud('km','0','POST', dataStr);
-  $('#km'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
+  crudp('km','0','POST', dataStr).then( data => $('#km'+capitalize(laterality)+'_tbl').bootstrapTable('refresh'));
 };
 
 function delItem (id,table) {
@@ -420,8 +416,7 @@ function delItem (id,table) {
       },
       callback: function (result) {
           if (result == true) {
-              crud(table,id,'DELETE');
-              refreshTables(tablesArr);
+              crudp(table,id,'DELETE').then( data => refreshTables(tablesArr))
           } else {
               console.log('This was logged in the callback: ' + result);
           }

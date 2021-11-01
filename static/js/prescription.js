@@ -40,7 +40,7 @@ var fonts = {
 // fill the mxRxModal prescription module
 $('#btnMxRx').click(function(){
   // get medications from current wl and not prescribed
-  getWlItemData('mx',wlId,'','&prescribed=False&@lookup=medic!:id_medic_ref')
+  getWlItemData('mx',wlId,'','prescribed=False&@lookup=medic!:id_medic_ref')
       .then(function(data){
           prescObj['name']=patientObj['last_name'];
           prescObj['firstname']=patientObj['first_name'];
@@ -95,7 +95,7 @@ $('#mxRxModalPrint').click(function(){
                     delete item['created_on'];
                     console.log('item:',item);
                     let dataStr = JSON.stringify(item);
-                    crud('mx','0','PUT',dataStr);
+                    crudp('mx','0','PUT',dataStr);
                 }; // end for loop
                 console.log('prescObj:',prescObj);
                 var presc = {
@@ -205,13 +205,14 @@ $('#mxRxModalPrint').click(function(){
                     medicRxObj['pdf_report']=JSON.stringify(presc);
                     // console.log('medicRxObj',medicRxObj);
                     let medicRxStr = JSON.stringify(medicRxObj);
-                    crud('medical_rx_list','0','POST',medicRxStr);
-                    $('#mxrx_tbl').bootstrapTable('refresh');
+                    crudp('medical_rx_list','0','POST',medicRxStr).then(function(){
+                        $('#mxrx_tbl').bootstrapTable('refresh');
+                        $mxWl_tbl.bootstrapTable('refresh');
+                        $mx_tbl.bootstrapTable('refresh');
+                    });
                     $('#mxRxModal').modal('hide');
                 } else {
                     displayToast('error','Medication list empty', 'No medication to prescribe',3000);
-                }
-                $mxWl_tbl.bootstrapTable('refresh');
-                $mx_tbl.bootstrapTable('refresh');
+                };
                 });
             }); // end prescription module

@@ -277,8 +277,7 @@ $('#newWlItemForm').submit(function(e) {
                         console.log('WlItemObj:',itemDataObj);                   
                         itemDataObj["message_unique_id"] = uuid.unique_id;
                         let itemDataStr = JSON.stringify(itemDataObj);
-                        crud('worklist','0', req, itemDataStr);                 
-                        $(el).remove(); // remove wl item element node when posted
+                        crudp('worklist','0', req, itemDataStr).then( data => $(el).remove()); // remove wl item element node when posted
                     })
                     .then(function() {
                         getTableInfo('modality',itemDataObj['modality_dest'])
@@ -318,7 +317,7 @@ $('#newWlItemForm').submit(function(e) {
         delete itemDataPutObj['modality_destPut'];
         itemDataPutStr = JSON.stringify(itemDataPutObj);
         // console.log('PUT data:',itemDataPutObj);
-        crud('worklist','0','PUT',itemDataPutStr);
+        crudp('worklist','0','PUT',itemDataPutStr);
         hideDiv('#modality_destPutDiv', 'visually-hidden','add');
         hideDiv('#modality_destDiv', 'visually-hidden','remove');
     };
@@ -342,8 +341,7 @@ function delWlItem (id) {
         },
         callback: function (result) {
             if (result == true) {
-                crud('worklist',id,'DELETE');
-                $table_wl.bootstrapTable('refresh');
+                crudp('worklist',id,'DELETE').then( data => $table_wl.bootstrapTable('refresh'));
             } else {
                 console.log('This was logged in the callback: ' + result);
             }

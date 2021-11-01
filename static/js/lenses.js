@@ -18,8 +18,7 @@ function delItem (id,table,desc) {
         },
         callback: function (result) {
             if (result == true) {
-                crud(table,id,'DELETE');
-                refreshTables(tablesArr);
+                crudp(table,id,'DELETE').then( data => refreshTables(tablesArr));
             } else {
                 console.log('This was logged in the callback: ' + result);
             }
@@ -39,8 +38,7 @@ $('#lensFormModal').submit(function(e){
     dataObj['toricity']=$('#lensFormModal input[name=toricity]').prop('checked');
     dataStr= JSON.stringify(dataObj);
     console.log("dataForm",dataObj);
-    crud('cl','0',req,dataStr); 
-    $lens_tbl.bootstrapTable('refresh'); 
+    crudp('cl','0',req,dataStr).then( data => $lens_tbl.bootstrapTable('refresh'));
     $('#lensModal').modal('hide');
     $('#lensModal .modal-title').html('New lens');
     document.getElementById("lensFormModal").reset(); 

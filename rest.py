@@ -41,8 +41,7 @@ def valid_date(datestring):
 
 @action('api/uuid', method=['GET'])
 def generate_unique_id():
-    import uuid, bottle, json
-    response = bottle.response
+    import uuid, json
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     unique_id = str(uuid.uuid4().hex)
     return json.dumps({"unique_id": unique_id})

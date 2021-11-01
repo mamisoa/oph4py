@@ -271,9 +271,8 @@ $('#userAuth_userForm').submit(function(e) {
     formData['id']=id;
     formData = JSON.stringify(formData); // change to string
     console.log(formData);
-    crud('auth_user',id,'PUT',formData);
+    crudp('auth_user',id,'PUT',formData).then( data => refreshList('userauth_user'));
     $('#userDetailsModal').modal('toggle');
-    refreshList('userauth_user');
     return false;
 });
 
@@ -318,8 +317,7 @@ function userFormSubmit(table) {
     delete formData['id'+capitalize(table)+'Submit'];
     formData = JSON.stringify(formData); // change to string
     console.log(formData);
-    crud(table,rec,req,data=formData); // already sending an info toast and reset form
-    refreshList('user'+capitalize(table));
+    crudp(table,rec,req,data=formData).then( data => refreshList('user'+capitalize(table)));
     document.getElementById('user'+capitalize(table)+'Form').reset(); // reset form to default
     $('#user'+capitalize(table)+'Modal').modal('toggle');
     return false;
@@ -344,8 +342,7 @@ function confirmDel(id='0', table) {
             if (result == false) {
                 console.log(id.toString()+' not deleted');
             } else {
-                crud(table,id,'DELETE');
-                refreshList('user'+capitalize(table));
+                crudp(table,id,'DELETE').then( data => refreshList('user'+capitalize(table)));
                 console.log(id.toString()+' DELETED');
             }
         }
@@ -431,8 +428,7 @@ $('#userMd_paramForm').submit(function(e) {
     formStr = JSON.stringify(formData); // change to string
     console.log(formData);
     console.log('method',req);
-    crud('md_params',id,req,formStr);
+    crudp('md_params',id,req,formStr).then( data => refreshList('userMd_param'));
     $('#userMd_paramModal').modal('hide');
-    refreshList('userMd_param');
     return false;
 });

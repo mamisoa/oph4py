@@ -11,6 +11,6 @@ $('#newComboForm').submit(function(e) {
         dataObj['id_modality']=modality;
         dataStr = JSON.stringify(dataObj);
         console.log('dataStr:',dataStr);
-        crud('combo','0','POST',dataStr);
+        crudp('combo','0','POST',dataStr);
     }
 });

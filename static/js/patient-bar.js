@@ -71,16 +71,18 @@ $('#btnTaskDone').click(function() {
                     dataObj['status_flag'] = 'done';
                     dataObj['counter'] = 0;
                     dataStr = JSON.stringify(dataObj);
-                    let res =crud('worklist','0','PUT', dataStr);
-                    console.log("update result:",res);
-                    getWlDetails(wlId) // check if set to done successful and disable forms
-                        .then(function (itemObj) {
-                            wlObj['worklist'] = Object.assign({},itemObj.items[0]); // update wlObj worklist 
-                            if (wlObj['status_flag'] == 'done') {
-                                $('#wlItemDetails .status').html(wlObj['status_flag']);
-                                disableBtn(btnArr);
-                            };
-                            window.location.href = '/myapp/worklist';
+                    crudp('worklist','0','PUT', dataStr)
+                        .then( function(data){
+                            console.log("update result:",data);
+                            getWlDetails(wlId) // check if set to done successful and disable forms
+                                .then(function (itemObj) {
+                                    wlObj['worklist'] = Object.assign({},itemObj.items[0]); // update wlObj worklist 
+                                    if (wlObj['status_flag'] == 'done') {
+                                        $('#wlItemDetails .status').html(wlObj['status_flag']);
+                                        disableBtn(btnArr);
+                                    };
+                                    window.location.href = '/myapp/worklist';
+                                });
                         });
                 }
             } // end if

@@ -170,43 +170,50 @@ function disableBtn(buttonsArr) {
     }
 };
 
-// crud(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
-function crud(table,id='0',req='POST',data) {
-    // console.log(data);
-    let API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
-    let mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
-    $.ajax({
-        url: API_URL,
-        data: data,
-        contentType: 'application/json',
-        dataType: 'json',
-        method: req
+// crudp(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
+const crudp = function(table,id='0',req='POST',data) {
+    return new Promise((resolve, reject) => {
+        // console.log(data);
+        let API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
+        let mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
+        $.ajax({
+            url: API_URL,
+            data: data,
+            contentType: 'application/json',
+            dataType: 'json',
+            method: req,
+            success: function (data) {
+                    console.log(data);
+                    // status = data.status;
+                    // message = data.message;
+                    errors = "";
+                    if (data.status == "error") {
+                        for (i in data.errors) {
+                            errors += data.errors[i]+'</br>';
+                        };
+                        text = errors;
+                        displayToast('error',data.message,errors,'3000');
+                        };
+                    if (data.status == "success") {
+                        text='User id: '+(req == 'DELETE'? id : data.id)+mode;
+                        displayToast('success', table+' '+mode,text,'3000');
+                        };
+                    resolve(data); // sent when resolved
+                },
+            error: function(error) {
+                reject(error);
+                }
+            });
         })
-        .done(function(data) {
-            console.log(data);
-            // status = data.status;
-            // message = data.message;
-            errors = "";
-            if (data.status == "error") {
-                for (i in data.errors) {
-                    errors += data.errors[i]+'</br>';
-                };
-                text = errors;
-                displayToast('error',data.message,errors,'3000');
-            };
-            if (data.status == "success") {
-                text='User id: '+(req == 'DELETE'? id : data.id)+mode;
-                displayToast('success', table+' '+mode,text,'3000');
-            };
-            return data;
-        });
 };
+
+
 
 // set wlItem status: done processing and counter adjustment
 // id is in the dataStr
 function setWlItemStatus (dataStr) {
     // console.log('dataStrPut:',dataStr);
-    crud('worklist','0','PUT', dataStr);
+    crudp('worklist','0','PUT', dataStr);
 };
 
 //  use as promise
