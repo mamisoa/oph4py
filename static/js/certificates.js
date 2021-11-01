@@ -338,8 +338,7 @@ $('#certificateFormModal').submit(function(e) {
             finalDbObj['pdf_report'] = JSON.stringify(finalPresc);
             let finalDbStr = JSON.stringify(finalDbObj);
             // console.log('finalDbObj:',finalDbObj);
-            crud('certificates','0','POST',finalDbStr);
-            $cert_tbl.bootstrapTable('refresh');
+            crudp('certificates','0','POST',finalDbStr).then( data => $cert_tbl.bootstrapTable('refresh'));
             let pdf= pdfMake.createPdf(finalPresc);
             pdf.print();
             // document.getElementById('certificateFormModal').reset();

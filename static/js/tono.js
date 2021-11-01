@@ -75,7 +75,7 @@ function tonoPachyInsert(domId,laterality, techno='air') {
     o['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
     console.log('o',o);
     oStr = JSON.stringify(o);
-    crud('tono','0','POST', oStr);
+    crudp('tono','0','POST', oStr).then(data => refreshTables());
     techno == 'air'? $('#airPachy'+capitalize(laterality)+'_tbl').bootstrapTable('refresh') : $('#apla'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
 };
 
@@ -102,8 +102,7 @@ function delTonoPachy (id) {
         },
         callback: function (result) {
             if (result == true) {
-                crud('tono',id,'DELETE');
-                refreshTables();
+                crudp('tono',id,'DELETE').then(data => refreshTables());
             } else {
                 console.log('This was logged in the callback: ' + result);
             }
@@ -119,9 +118,8 @@ $('#tonoPachyForm').submit(function (e){
     let req = dataObj['methodTonoPachySubmit'];
     delete dataObj['methodTonoPachySubmit'];
     dataStr = JSON.stringify(dataObj);
-    crud('tono','0',req,dataStr);
+    crudp('tono','0',req,dataStr).then(data => refreshTables());
     $('#tonoPachyModal').modal('hide');
-    refreshTables();
 });
 
 // delete tono
@@ -141,8 +139,7 @@ function delTonoPachy (id) {
         },
         callback: function (result) {
             if (result == true) {
-                crud('tono',id,'DELETE');
-                refreshTables();
+                crudp('tono',id,'DELETE').then(data => refreshTables());
             } else {
                 console.log('This was logged in the callback: ' + result);
             }

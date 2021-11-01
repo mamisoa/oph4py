@@ -307,12 +307,13 @@ $('#mxFormModal').submit(function(e){
         newMedicObj['name']=dataObj['medication'];
         newMedicObj['delivery']=dataObj['delivery'];
         newMedicStr = JSON.stringify(newMedicObj);
-        crud('medic_ref','0','POST',newMedicStr);
+        crudp('medic_ref','0','POST',newMedicStr);
     };
-    crud('mx','0',req,dataStr);
+    crudp('mx','0',req,dataStr).then(function () {
+        $mx_tbl.bootstrapTable('refresh');
+        $mxWl_tbl.bootstrapTable('refresh');
+    });
     document.getElementById('mxFormModal').reset();
-    $mx_tbl.bootstrapTable('refresh');
-    $mxWl_tbl.bootstrapTable('refresh');
     $('#mxModal').modal('hide');
 });
 
@@ -333,11 +334,10 @@ $('#axFormModal').submit(function(e){
         let newMedicObj = {};
         newMedicObj['name']=dataObj['agent'];
         newMedicStr = JSON.stringify(newMedicObj);
-        crud('agent','0','POST',newMedicStr);
+        crudp('agent','0','POST',newMedicStr);
     };    
-    crud('allergy','0',req,dataStr); 
+    crudp('allergy','0',req,dataStr).then( data => $ax_tbl.bootstrapTable('refresh'));
     document.getElementById('axFormModal').reset();
-    $ax_tbl.bootstrapTable('refresh'); 
     $('#axModal').modal('hide'); 
 });
 
@@ -360,13 +360,14 @@ $('#mHxFormModal').submit(function(e){
         newMedicObj['category']=dataObj['category'];
         newMedicStr = JSON.stringify(newMedicObj);
         // console.log("newMedicObj",newMedicObj);
-        crud('disease_ref','0','POST',newMedicStr);
+        crudp('disease_ref','0','POST',newMedicStr);
     };    
-    crud('phistory','0',req,dataStr); 
-    $mHx_tbl.bootstrapTable('refresh'); 
-    $sHx_tbl.bootstrapTable('refresh');
-    $oHx_tbl.bootstrapTable('refresh');
-    $coding.bootstrapTable('refresh');
+    crudp('phistory','0',req,dataStr).then( function() {
+        $mHx_tbl.bootstrapTable('refresh'); 
+        $sHx_tbl.bootstrapTable('refresh');
+        $oHx_tbl.bootstrapTable('refresh');
+        $coding.bootstrapTable('refresh');
+    });
     document.getElementById('mHxFormModal').reset();
     $('#mHxModal').modal('hide'); 
 });
@@ -387,8 +388,7 @@ function delItem (id,table,desc) {
         },
         callback: function (result) {
             if (result == true) {
-                crud(table,id,'DELETE');
-                refreshTables(tablesArr);
+                crudp(table,id,'DELETE').then( data => refreshTables(tablesArr));
             } else {
                 console.log('This was logged in the callback: ' + result);
             }
@@ -419,8 +419,7 @@ setCounter('#mxFormModal', 'intake', 0.25,0.25,100);
 // id is in the dataStr
 function setWlItemStatus (dataStr) {
     // console.log('dataStrPut:',dataStr);
-    crud('worklist','0','PUT', dataStr);
-    $table_wl.bootstrapTable('refresh');    
+    crudp('worklist','0','PUT', dataStr).then( data => $table_wl.bootstrapTable('refresh'));    
 };
 
 // set timers 
@@ -481,9 +480,15 @@ $('#clearCache').click(function(){
 
 // promise to get item wl fields value
 function getWlItemData(table,wlId,lat='',options='') {
-    let WURL;
+    let WURL, lookup='mod!:modified_by[id,first_name,last_name]', filters = options.split('@lookup=');
+    if ( filters[1] != undefined ) {
+        lookup += ','+filters[1].split('&')[0]
+        filters[1].split('&')[1] != undefined ? options = filters[0]+ filters[1].split('&')[1] : options = filters[0];
+    }
+    console.log('lookup',lookup);
+    console.log('lookup',options);
     if (lat == '') {
-        WURL = HOSTURL+"/myapp/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId+"&"+options;
+        WURL = HOSTURL+"/myapp/api/"+table+"?@lookup="+lookup+"&id_worklist.eq="+wlId+"&"+options;
     } else {
         WURL = HOSTURL+"/myapp/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId+'&laterality.eq='+lat+"&"+options;
     }
@@ -539,7 +544,7 @@ function setSubmit(domId,table, fieldsArr,lat) {
                 };
                 dataStr= JSON.stringify(dataObj);
                 // console.log("dataForm from setSubmit",dataObj);
-                crud(table,'0',req,dataStr);
+                crudp(table,'0',req,dataStr);
                 $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');
                 getWlItemData(table,wlId,lat)
                     .then(function(data) {
@@ -631,7 +636,7 @@ function setOneSubmit(domId,table,lat) {
                 dataObj['description']=capitalize(dataObj['description']);
                 dataStr= JSON.stringify(dataObj);
                 // console.log("dataForm",dataObj);
-                crud(table,'0',req,dataStr);
+                crudp(table,'0',req,dataStr);
                 $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');            
             })
     });    

@@ -78,7 +78,7 @@ $('#userForm').submit(function(e) {
                     console.log('addressObj: ', addressObj);
                     addressStr = JSON.stringify(addressObj);
                     console.log('address present:',addressObj);
-                    crud('address','0','POST',addressStr); 
+                    crudp('address','0','POST',addressStr); 
                 } else {
                     console.log('No address recorded');
                 };
@@ -86,7 +86,7 @@ $('#userForm').submit(function(e) {
                     mobileObj['id_auth_user']=data.id;
                     console.log('mobiledata present:',mobileObj);
                     let mobileStr = JSON.stringify(mobileObj);
-                    crud('phone','0','POST',mobileStr); 
+                    crudp('phone','0','POST',mobileStr); 
                 } else {
                     console.log('No mobile data recorded');
                 }; 
@@ -143,8 +143,7 @@ function delUser (id) {
         },
         callback: function (result) {
             if (result == true) {
-                crud('auth_user',id,'DELETE');
-                $table.bootstrapTable('refresh');
+                crudp('auth_user',id,'DELETE').then($table.bootstrapTable('refresh'));
             } else {
                 console.log('This was logged in the callback: ' + result);
             }

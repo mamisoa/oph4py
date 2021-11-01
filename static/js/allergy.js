@@ -18,8 +18,7 @@ function delItem (id,table,desc) {
         },
         callback: function (result) {
             if (result == true) {
-                crud(table,id,'DELETE');
-                refreshTables(tablesArr);
+                crudp(table,id,'DELETE').then(data => refreshTables());
             } else {
                 console.log('This was logged in the callback: ' + result);
             }
@@ -39,8 +38,7 @@ $('#agentsFormModal').submit(function(e){
     delete dataObj['methodAgentsModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     console.log("dataForm",dataObj);
-    crud('agent','0',req,dataStr); 
-    $agents_tbl.bootstrapTable('refresh'); 
+    crudp('agent','0',req,dataStr).then(data => $agents_tbl.bootstrapTable('refresh'));
     $('#agentsModal').modal('hide'); 
     $('#agentsModal .modal-title').html('New agent');
     document.getElementById("agentsFormModal").reset();
