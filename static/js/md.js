@@ -669,7 +669,6 @@ updateHandlersOneField('#folForm');
 updateHandlersOneField('#bilForm');
 
 // update field on focus and highlight if changed
-
 function monitorValueChangeOneField(domId,table,lat) {
     $(domId+' textarea').focus(function(){
         getWlItemData(table,wlId,lat)
