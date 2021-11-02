@@ -61,6 +61,8 @@ def index():
 @action('test/<membership>')
 @action.uses(session, T, auth, db, flash, 'test.html')
 def test(membership=6):
+    timeOffset = TIMEOFFSET
+    time
     hosturl = LOCAL_URL
     user = auth.get_user()
     userId=user['username']
@@ -133,6 +135,7 @@ def testtable():
 @action('companies/<path:path>', method=['POST', 'GET'])
 @action.uses(session, db, auth, 'grid.html')
 def companies(path=None):
+    timeOffset = TIMEOFFSET
     grid = Grid(path,
                 query=reduce(lambda a, b: (a & b), [db.auth_user.id > 0]),
                 orderby=[db.auth_user.username],
@@ -142,6 +145,7 @@ def companies(path=None):
 @action('listdir')
 @action.uses(session, auth.user, db, flash,'listdir.html')
 def listdir():
+    timeOffset = TIMEOFFSET
     user = auth.get_user()
     hosturl = LOCAL_URL
     test = 5
