@@ -1,6 +1,6 @@
 lmfile = './lxml/xml/lm/M-Serial4010_20211023_121330187_TOPCON_CL-300_00.xml'
 exportfile = './lxml/xml/rm/cv-iris/0013_20211002_204149125_TOPCON_CV-5000_19216810164.xml'
-exportfile2 = './lxml/xml/rm/cv-iris/0013_20211002_223710125_TOPCON_CV-5000_19216810164.xml'
+exportfile2 = '/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-crist/4138_20211023_155951421_TOPCON_CV-5000_19216810155.xml'
 exportfile3 = './lxml/xml/rm/cv-cornea/1244_20211002_220225000_TOPCON_CV-5000_19216810167.xml'
 xmlfile = exportfile2
 ns = {
@@ -101,58 +101,58 @@ for kx in kmdata:
 print(km)
 
 
-# -------------------------------------------------------------------------
-# first attempt to get LM text
-# side R or L
-def xmlLm2dict(side):
-    path = './/nsLM:'+side+'/'
-    lmdict = {
-        'lmSph'+side : path+'nsLM:Sphere',
-        'lmCyl'+side : path+'nsLM:Cylinder',
-        'lmAxis'+side : path+'nsLM:Axis',
-        'lmAxis'+side : path+'nsLM:Axis',
-        'lmH'+side : path+'nsLM:H',
-        'lmV'+side : path+'nsLM:V',
-        'lmAdd1'+side : path+'nsLM:Add1',
-        'lmAdd2'+side : path+'nsLM:Add2',
-    }
-    return lmdict
+# # -------------------------------------------------------------------------
+# # first attempt to get LM text
+# # side R or L
+# def xmlLm2dict(side):
+#     path = './/nsLM:'+side+'/'
+#     lmdict = {
+#         'lmSph'+side : path+'nsLM:Sphere',
+#         'lmCyl'+side : path+'nsLM:Cylinder',
+#         'lmAxis'+side : path+'nsLM:Axis',
+#         'lmAxis'+side : path+'nsLM:Axis',
+#         'lmH'+side : path+'nsLM:H',
+#         'lmV'+side : path+'nsLM:V',
+#         'lmAdd1'+side : path+'nsLM:Add1',
+#         'lmAdd2'+side : path+'nsLM:Add2',
+#     }
+#     return lmdict
 
-@action('readCv5000Xml', methods=['GET'])
-# origin: lm, rm, export
-# import from CV export and delete file
-def readCv5000Xml():
-    import os,glob,json,bottle
-    from lxml import etree as ET
-    response = bottle.response
-    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
-    # xmlfiles = glob.glob(LM_FOLDER+'/cv-iris/*.xml')
-    xmlfiles = glob.glob(RM_FOLDER+'/cv-crist/test_import2.xml')
-    latestfile = max(xmlfiles, key=os.path.getctime)
-    with open(latestfile) as xmlfile:
-        tree = ET.parse(xmlfile)
-    root = tree.getroot()
-    ns = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance', 
-        'nsCommon': 'http://www.joia.or.jp/standardized/namespaces/Common',
-        'nsLM': 'http://www.joia.or.jp/standardized/namespaces/LM',
-        'nsSBJ' : "http://www.joia.or.jp/standardized/namespaces/SBJ"
-        }
-    lm = { 'status': 'OK' , 'filename': latestfile, 'mesures' : {}}
-    try:
-        r = xmlLm2dict('R')
-        for mes in r:
-            lm['mesures'].update({ mes : [ el.text for el in tree.iterfind(r[mes],ns)][0]})
-        l = xmlLm2dict('L')
-        for mes in l:
-            lm['mesures'].update({ mes : [ el.text for el in tree.iterfind(l[mes],ns)][0]})
-    except Exception as e:
-        lm['status'] = 'error'
-        lm.update({'error': e.args[0]})
-    try:
-        t = root.xpath('.//nsSBJ:TypeName[text()="Current Spectacles"]/..', namespaces= ns)
-        lm['current'] = [el.tag for el in t]
-    except Exception as e2:
-        lm.update({'error2': str(e2)})
-    res = json.dumps(lm)
-    return res
+# @action('readCv5000Xml', methods=['GET'])
+# # origin: lm, rm, export
+# # import from CV export and delete file
+# def readCv5000Xml():
+#     import os,glob,json,bottle
+#     from lxml import etree as ET
+#     response = bottle.response
+#     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+#     # xmlfiles = glob.glob(LM_FOLDER+'/cv-iris/*.xml')
+#     xmlfiles = glob.glob(RM_FOLDER+'/cv-crist/test_import2.xml')
+#     latestfile = max(xmlfiles, key=os.path.getctime)
+#     with open(latestfile) as xmlfile:
+#         tree = ET.parse(xmlfile)
+#     root = tree.getroot()
+#     ns = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance', 
+#         'nsCommon': 'http://www.joia.or.jp/standardized/namespaces/Common',
+#         'nsLM': 'http://www.joia.or.jp/standardized/namespaces/LM',
+#         'nsSBJ' : "http://www.joia.or.jp/standardized/namespaces/SBJ"
+#         }
+#     lm = { 'status': 'OK' , 'filename': latestfile, 'mesures' : {}}
+#     try:
+#         r = xmlLm2dict('R')
+#         for mes in r:
+#             lm['mesures'].update({ mes : [ el.text for el in tree.iterfind(r[mes],ns)][0]})
+#         l = xmlLm2dict('L')
+#         for mes in l:
+#             lm['mesures'].update({ mes : [ el.text for el in tree.iterfind(l[mes],ns)][0]})
+#     except Exception as e:
+#         lm['status'] = 'error'
+#         lm.update({'error': e.args[0]})
+#     try:
+#         t = root.xpath('.//nsSBJ:TypeName[text()="Current Spectacles"]/..', namespaces= ns)
+#         lm['current'] = [el.tag for el in t]
+#     except Exception as e2:
+#         lm.update({'error2': str(e2)})
+#     res = json.dumps(lm)
+#     return res
 
