@@ -1,0 +1,18 @@
+<nsSBJ:US21test>
+    <nsSBJ:No.13B>
+        <nsSBJ:R unit="prism">2.00</nsSBJ:R>
+        <nsSBJ:RBase>BI</nsSBJ:RBase>
+        <nsSBJ:L unit="prism">2.00</nsSBJ:L>
+        <nsSBJ:LBase>BI</nsSBJ:LBase>
+    </nsSBJ:No.13B>
+    <nsSBJ:No.14B>
+        <nsSBJ:R unit="D">-1.75</nsSBJ:R>
+        <nsSBJ:L unit="D">1.25</nsSBJ:L>
+    </nsSBJ:No.14B>
+    <nsSBJ:No.18A>
+        <nsSBJ:R unit="prism">1.80</nsSBJ:R>
+        <nsSBJ:RBase>BD</nsSBJ:RBase>
+        <nsSBJ:L unit="prism">1.70</nsSBJ:L>
+        <nsSBJ:LBase>BU</nsSBJ:LBase>
+    </nsSBJ:No.18A>
+</nsSBJ:US21test>

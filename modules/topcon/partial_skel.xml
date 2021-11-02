@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Ophthalmology xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:nsCommon="http://www.joia.or.jp/standardized/namespaces/Common"
+	xmlns:nsSBJ="http://www.joia.or.jp/standardized/namespaces/SBJ" xsi:schemaLocation="http://www.joia.or.jp/standardized/namespaces/Common Common_schema.xsd http://www.joia.or.jp/standardized/namespaces/SBJ SBJ_schema.xsd">
+	<nsCommon:Common>
+		
+	</nsCommon:Common>
+	<nsSBJ:Measure type="SBJ">
+		<nsSBJ:RefractionTest>
+			<nsSBJ:Type No="1">
+				<nsSBJ:TypeName>Prescription</nsSBJ:TypeName>
+				<nsSBJ:ExamDistance No="1">
+					
+				</nsSBJ:ExamDistance>
+				<nsSBJ:ExamDistance No="2">
+					
+				</nsSBJ:ExamDistance>
+			</nsSBJ:Type>
+			<nsSBJ:Type No="2">
+				<nsSBJ:TypeName>Full Correction</nsSBJ:TypeName>
+				<nsSBJ:ExamDistance No="1">
+					
+				</nsSBJ:ExamDistance>
+				<nsSBJ:ExamDistance No="2">
+					
+				</nsSBJ:ExamDistance>
+			</nsSBJ:Type>
+			<nsSBJ:Type No="3">
+				<nsSBJ:TypeName>Unaided Data</nsSBJ:TypeName>
+				<nsSBJ:ExamDistance No="1">
+					
+				</nsSBJ:ExamDistance>
+				<nsSBJ:ExamDistance No="2">
+					
+				</nsSBJ:ExamDistance>
+			</nsSBJ:Type>
+			<nsSBJ:Type No="4">
+				<nsSBJ:TypeName>Objective Data</nsSBJ:TypeName>
+				<nsSBJ:ExamDistance No="1">
+					
+				</nsSBJ:ExamDistance>
+				<nsSBJ:ExamDistance No="2">
+					
+				</nsSBJ:ExamDistance>
+			</nsSBJ:Type>
+			<nsSBJ:Type No="5">
+				<nsSBJ:TypeName>Current Spectacles</nsSBJ:TypeName>
+				<nsSBJ:ExamDistance No="1">
+					
+				</nsSBJ:ExamDistance>
+				<nsSBJ:ExamDistance No="2">
+					
+				</nsSBJ:ExamDistance>
+			</nsSBJ:Type>
+			<nsSBJ:Type No="6">
+				<nsSBJ:TypeName>Last Prescription</nsSBJ:TypeName>
+				<nsSBJ:ExamDistance No="1">
+					
+				</nsSBJ:ExamDistance>
+				<nsSBJ:ExamDistance No="2">
+					
+				</nsSBJ:ExamDistance>
+			</nsSBJ:Type>
+		</nsSBJ:RefractionTest>
+		<nsSBJ:BinoVisionTest>
+			
+		</nsSBJ:BinoVisionTest>
+		<nsSBJ:US21test>
+			
+		</nsSBJ:US21test>
+	</nsSBJ:Measure>
+    <nsKM:Measure type="KM">
+
+    </nsKM:Measure>
+</Ophthalmology>

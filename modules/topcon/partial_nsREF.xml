@@ -1,0 +1,47 @@
+<nsREF:Measure type="REF">
+    <nsREF:VD unit="mm">12.00</nsREF:VD>
+    <nsREF:DiopterStep unit="D"/>
+    <nsREF:AxisStep unit="deg"/>
+    <nsREF:CylinderMode/>
+    <nsREF:REF>
+        <nsREF:R>
+            <nsREF:List No="1">
+                <nsREF:Sphere unit="D">4.75</nsREF:Sphere>
+                <nsREF:Cylinder unit="D">-1.50</nsREF:Cylinder>
+                <nsREF:Axis unit="deg">92</nsREF:Axis>
+                <nsREF:SE unit="D">4.00</nsREF:SE>
+                <nsREF:CataractMode/>
+                <nsREF:IOLMode/>
+                <nsREF:ConfidenceIndex/>
+            </nsREF:List>
+            <nsREF:Median>
+                <nsREF:Sphere unit="D">4.75</nsREF:Sphere>
+                <nsREF:Cylinder unit="D">-1.50</nsREF:Cylinder>
+                <nsREF:Axis unit="deg">92</nsREF:Axis>
+                <nsREF:SE unit="D">4.00</nsREF:SE>
+            </nsREF:Median>
+        </nsREF:R>
+        <nsREF:L>
+            <nsREF:List No="1">
+                <nsREF:Sphere unit="D">4.50</nsREF:Sphere>
+                <nsREF:Cylinder unit="D">-0.75</nsREF:Cylinder>
+                <nsREF:Axis unit="deg">71</nsREF:Axis>
+                <nsREF:SE unit="D">4.13</nsREF:SE>
+                <nsREF:CataractMode/>
+                <nsREF:IOLMode/>
+                <nsREF:ConfidenceIndex/>
+            </nsREF:List>
+            <nsREF:Median>
+                <nsREF:Sphere unit="D">4.50</nsREF:Sphere>
+                <nsREF:Cylinder unit="D">-0.75</nsREF:Cylinder>
+                <nsREF:Axis unit="deg">71</nsREF:Axis>
+                <nsREF:SE unit="D">4.13</nsREF:SE>
+            </nsREF:Median>
+        </nsREF:L>
+    </nsREF:REF>
+    <nsREF:PD>
+        <nsREF:WorkingDistance unit="cm"/>
+        <nsREF:Distance unit="mm">68.0</nsREF:Distance>
+        <nsREF:Near unit="mm"/>
+    </nsREF:PD>
+</nsREF:Measure>
