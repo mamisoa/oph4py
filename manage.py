@@ -7,7 +7,7 @@ from pydal.validators import CRYPT # to encrypt passwords
 
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 from py4web.utils.grid import Grid
-from py4web.utils.factories import Inject
+# from py4web.utils.factories import Inject
 
 # import settings
 from .settings import LOCAL_URL, LOCAL_BEID, DEFAULT_PROVIDER, DEFAULT_SENIOR, TIMEOFFSET
