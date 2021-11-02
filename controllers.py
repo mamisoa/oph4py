@@ -41,7 +41,8 @@ from .settings import LOCAL_URL # DB_OCTOPUS
 from functools import reduce
 from py4web.utils.grid import Grid
 
-from .useful import getMembershipId
+# useful
+from .useful import getMembershipId, dropdownSelect, check_duplicate
 
 @unauthenticated("index", "index.html")
 def index():
@@ -55,30 +56,6 @@ def index():
     db_patients_count = db(db.auth_user.membership==getMembershipId('Patient')).count()
     db_entries_count = db(db.auth_user).count()
     return locals()
-
-def dropdownSelect(table,fieldId,defaultId): ## eg table=db.gender fieldId=db.gender.fields[0] defaultId=0
-    selectOptions=""
-    for selection in db(table.id>0).select(table.ALL):
-        if selection.id == defaultId:
-            selectOptions = CAT(selectOptions, OPTION(selection[fieldId],_selected="selected",_value=str(selection.id)))
-        else:
-            selectOptions = CAT(selectOptions, OPTION(selection[fieldId],_value=str(selection.id)))
-    selectOptions = XML(selectOptions)
-    return selectOptions # html <option value=""></option>
-
-def check_duplicate(form):
-    if not form.errors:
-        query_email = (db.auth_user.email == form.vars['email'])
-        query_username = (db.auth_user.username == form.vars['username'])
-        if (db(query_email).count() + db(query_username).count() == 2):
-            form.errors['email'] = T('Email already taken')
-            form.errors['username'] = T('and username already taken')
-        elif (db(query_email).count() != 0):
-            form.errors['email'] = T('Email already taken')
-            form.errors['username'] = ""
-        elif (db(query_username).count() != 0):
-            form.errors['username'] = T('Username already taken')
-            form.errors['email'] = ""
 
 @action("test", method=['POST','GET']) # route
 @action('test/<membership>')
