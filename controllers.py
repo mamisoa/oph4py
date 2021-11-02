@@ -35,7 +35,7 @@ from pydal.tools.tags import Tags
 from pydal.validators import CRYPT # to encrypt passwords
 
 # import settings
-from .settings import LOCAL_URL # DB_OCTOPUS
+from .settings import LOCAL_URL, TIMEOFFSET # DB_OCTOPUS
 
 # grid
 from functools import reduce
@@ -46,6 +46,7 @@ from .useful import getMembershipId, dropdownSelect, check_duplicate
 
 @unauthenticated("index", "index.html")
 def index():
+    timeOffset = TIMEOFFSET
     user = auth.get_user()
     message = T("Hello {first_name}!".format(**user) if user else "Hello. You should sign in!")
     db_admins_count = db(db.auth_user.membership==getMembershipId('Admin')).count()
