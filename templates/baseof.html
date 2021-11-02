@@ -1,6 +1,11 @@
 [[ import sys, os ]]
+[[ try:]]
 [[ sys.path.insert(1, os.path.join(sys.path[0], '../..')) ]]
 [[ from settings import TIMEOFFSET ]]
+[[ except: ]]
+[[ sys.path.insert(1, os.path.join(sys.path[0], './apps/myapp')) ]]
+[[ from settings import TIMEOFFSET ]]
+[[ pass ]]
 
 <!DOCTYPE html>
 <html>
