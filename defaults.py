@@ -4,7 +4,7 @@ This file defines the default values in models
 
 from .common import db, Field # add auth for auto.signature
 from pydal.validators import *
-from py4web.utils.tags import Tags
+from pydal.tools.tags import Tags
 from py4web import action
 
 # todo to update and add a button!
