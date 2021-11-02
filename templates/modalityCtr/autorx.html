@@ -1227,6 +1227,71 @@
     </div>
 </div>
 
+<!-- Modal cvModal -->
+<div class="modal fade" id="cvModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importcvTitle">Import from machine</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row"> <!-- table row div-->
+                                <div class="col">
+                                    <div class="title-right">Refractions</div>
+                                    <table
+                                        id="cvRx_tbl"
+                                        data-pagination="true"
+                                        data-page-size="10"
+                                        data-search="false"
+                                        data-response-handler="responseHandler_cvrx"
+                                        >
+                                        <thead>
+                                            <tr>
+                                                <th data-field="type" data-sortable="true">Type</th>
+                                                <th data-field="rxright" data-sortable="false">Right Rx</th>
+                                                <th data-field="rxleft" data-sortable="true">Left Rx</th>
+                                                <th data-field="pd" data-sortable="false">Pupils distance</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_cvrx" data-events="operateEvents_cvrx">Action</th>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                                <div class="col">
+                                    <div class="title-left">Keratometry</div>
+                                    <table
+                                        id="cvKx_tbl"
+                                        data-pagination="true"
+                                        data-page-size="10"
+                                        data-search="false"
+                                        data-response-handler="responseHandler_cvkm"
+                                        >
+                                        <thead>
+                                            <tr>
+                                                <th data-field="kmrightstr" data-sortable="false">Kx right</th>
+                                                <th data-field="kmleftstr" data-sortable="false">Kx left</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_cvkx" data-events="operateEvents_kx">Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div> <!-- end machine table row div-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 [[ block js_scripts]]
 
 <script type="text/javascript">
