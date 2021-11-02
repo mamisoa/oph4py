@@ -30,7 +30,7 @@ from yatl.helpers import A, XML, OPTION, CAT
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
 from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
-from py4web.utils.tags import Tags
+from pydal.tools.tags import Tags
 
 from pydal.validators import CRYPT # to encrypt passwords
 

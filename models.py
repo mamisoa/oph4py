@@ -4,7 +4,7 @@ This file defines the database models
 
 from .common import db, Field, auth, groups # ,dbo # add auth for auto.signature
 from pydal.validators import *
-from py4web.utils.tags import Tags
+from pydal.tools.tags import Tags
 
 import uuid
 import random
