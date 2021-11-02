@@ -1,0 +1,23 @@
+<nsCommon:Common>
+    <nsCommon:Company>TOPCON</nsCommon:Company>
+    <nsCommon:ModelName>CV-5000</nsCommon:ModelName>
+    <nsCommon:MachineNo>1921681114</nsCommon:MachineNo>
+    <nsCommon:ROMVersion>2.04.00</nsCommon:ROMVersion>
+    <nsCommon:Version>1.2</nsCommon:Version>
+    <nsCommon:Date>2012-10-18</nsCommon:Date>
+    <nsCommon:Time>16:01:25.062</nsCommon:Time>
+    <nsCommon:Patient>
+        <nsCommon:No.>7</nsCommon:No.>
+        <nsCommon:ID>3141592</nsCommon:ID>
+        <nsCommon:FirstName>Test</nsCommon:FirstName>
+        <nsCommon:MiddleName/>
+        <nsCommon:LastName/>
+        <nsCommon:Sex/>
+        <nsCommon:Age>39</nsCommon:Age>
+        <nsCommon:DOB/>
+        <nsCommon:NameJ1/>
+        <nsCommon:NameJ2/>
+    </nsCommon:Patient>
+    <Duration>00:14:32</Duration>
+    <DateFormat>D_M_Y</DateFormat>
+</nsCommon:Common>

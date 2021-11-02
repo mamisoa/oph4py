@@ -1,0 +1,92 @@
+<nsKM:Measure type="KM">
+    <nsKM:DiopterStep unit="D"/>
+    <nsKM:AxisStep unit="deg"/>
+    <nsKM:CylinderMode/>
+    <nsKM:RefractiveIndex>1.3375</nsKM:RefractiveIndex>
+    <nsKM:KM>
+        <nsKM:R>
+            <nsKM:List No="1">
+                <nsKM:R1>
+                    <nsKM:Radius unit="mm">7.82</nsKM:Radius>
+                    <nsKM:Power unit="D">43.25</nsKM:Power>
+                    <nsKM:Axis unit="deg">86</nsKM:Axis>
+                </nsKM:R1>
+                <nsKM:R2>
+                    <nsKM:Radius unit="mm">7.70</nsKM:Radius>
+                    <nsKM:Power unit="D">43.75</nsKM:Power>
+                    <nsKM:Axis unit="deg">176</nsKM:Axis>
+                </nsKM:R2>
+                <nsKM:Average>
+                    <nsKM:Radius unit="mm">7.76</nsKM:Radius>
+                    <nsKM:Power unit="D"/>
+                </nsKM:Average>
+                <nsKM:Cylinder>
+                    <nsKM:Power unit="D">-0.75</nsKM:Power>
+                    <nsKM:Axis unit="deg">86</nsKM:Axis>
+                </nsKM:Cylinder>
+            </nsKM:List>
+            <nsKM:Median>
+                <nsKM:R1>
+                    <nsKM:Radius unit="mm">7.82</nsKM:Radius>
+                    <nsKM:Power unit="D">43.25</nsKM:Power>
+                    <nsKM:Axis unit="deg">86</nsKM:Axis>
+                </nsKM:R1>
+                <nsKM:R2>
+                    <nsKM:Radius unit="mm">7.70</nsKM:Radius>
+                    <nsKM:Power unit="D">43.75</nsKM:Power>
+                    <nsKM:Axis unit="deg">176</nsKM:Axis>
+                </nsKM:R2>
+                <nsKM:Average>
+                    <nsKM:Radius unit="mm">7.76</nsKM:Radius>
+                    <nsKM:Power unit="D"/>
+                </nsKM:Average>
+                <nsKM:Cylinder>
+                    <nsKM:Power unit="D">-0.75</nsKM:Power>
+                    <nsKM:Axis unit="deg">86</nsKM:Axis>
+                </nsKM:Cylinder>
+            </nsKM:Median>
+        </nsKM:R>
+        <nsKM:L>
+            <nsKM:List No="1">
+                <nsKM:R1>
+                    <nsKM:Radius unit="mm">7.77</nsKM:Radius>
+                    <nsKM:Power unit="D">43.50</nsKM:Power>
+                    <nsKM:Axis unit="deg">121</nsKM:Axis>
+                </nsKM:R1>
+                <nsKM:R2>
+                    <nsKM:Radius unit="mm">7.70</nsKM:Radius>
+                    <nsKM:Power unit="D">43.75</nsKM:Power>
+                    <nsKM:Axis unit="deg">31</nsKM:Axis>
+                </nsKM:R2>
+                <nsKM:Average>
+                    <nsKM:Radius unit="mm">7.74</nsKM:Radius>
+                    <nsKM:Power unit="D"/>
+                </nsKM:Average>
+                <nsKM:Cylinder>
+                    <nsKM:Power unit="D">-0.50</nsKM:Power>
+                    <nsKM:Axis unit="deg">121</nsKM:Axis>
+                </nsKM:Cylinder>
+            </nsKM:List>
+            <nsKM:Median>
+                <nsKM:R1>
+                    <nsKM:Radius unit="mm">7.77</nsKM:Radius>
+                    <nsKM:Power unit="D">43.50</nsKM:Power>
+                    <nsKM:Axis unit="deg">121</nsKM:Axis>
+                </nsKM:R1>
+                <nsKM:R2>
+                    <nsKM:Radius unit="mm">7.70</nsKM:Radius>
+                    <nsKM:Power unit="D">43.75</nsKM:Power>
+                    <nsKM:Axis unit="deg">31</nsKM:Axis>
+                </nsKM:R2>
+                <nsKM:Average>
+                    <nsKM:Radius unit="mm">7.74</nsKM:Radius>
+                    <nsKM:Power unit="D"/>
+                </nsKM:Average>
+                <nsKM:Cylinder>
+                    <nsKM:Power unit="D">-0.50</nsKM:Power>
+                    <nsKM:Axis unit="deg">121</nsKM:Axis>
+                </nsKM:Cylinder>
+            </nsKM:Median>
+        </nsKM:L>
+    </nsKM:KM>
+</nsKM:Measure>

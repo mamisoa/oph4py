@@ -1,0 +1,20 @@
+<nsSBJ:BinoVisionTest>
+    <nsSBJ:Aniseikonia>
+        <nsSBJ:Type No="1">
+            <nsSBJ:TypeName>Full Correction</nsSBJ:TypeName>
+            <nsSBJ:ExamDistance No="1">
+                <nsSBJ:Distance unit="cm">500.000</nsSBJ:Distance>
+                <nsSBJ:H unit="%">3.5</nsSBJ:H>
+                <nsSBJ:HStatus>R&gt;L</nsSBJ:HStatus>
+                <nsSBJ:V unit="%">3.5</nsSBJ:V>
+                <nsSBJ:VStatus>R&lt;L</nsSBJ:VStatus>
+            </nsSBJ:ExamDistance>
+        </nsSBJ:Type>
+    </nsSBJ:Aniseikonia>
+    <nsSBJ:Worth4Dots>
+        <nsSBJ:ExamDistance No="1">
+            <nsSBJ:Distance unit="cm">500.000</nsSBJ:Distance>
+            <nsSBJ:Result>4 Dots</nsSBJ:Result>
+        </nsSBJ:ExamDistance>
+    </nsSBJ:Worth4Dots>
+</nsSBJ:BinoVisionTest>

@@ -1,92 +1,150 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <base href="[[=URL('static')]]/">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAA=="/>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/bootstrap.min.css"> <!-- bootstrap 5.0beta css -->
-    <link rel="stylesheet" href="css/fontawesome5/all.min.css">
+    <base href="[[=URL('static')]]/" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="shortcut icon"
+      href="data:image/x-icon;base64,AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAA=="
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <!-- bootstrap 5.0beta css -->
+    <link rel="stylesheet" href="css/fontawesome5/all.min.css" />
     <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous"> -->
-    <style>.py4web-validation-error{margin-top:-16px; font-size:0.8em;color:red}</style>
-    <link rel="stylesheet" href="css/jquery.toast.min.css"> <!-- jquery toast css https://github.com/kamranahmedse/jquery-toast-plugin.git -->
-    [[block page_head]]<!-- individual pages can customize header here -->[[end]]
+    <style>
+      .py4web-validation-error {
+        margin-top: -16px;
+        font-size: 0.8em;
+        color: red;
+      }
+    </style>
+    <link rel="stylesheet" href="css/jquery.toast.min.css" />
+    <!-- jquery toast css https://github.com/kamranahmedse/jquery-toast-plugin.git -->
+    [[block page_head]]
+    <!-- individual pages can customize header here -->
+    [[end]]
   </head>
   <body>
     <header>
       <!-- Navigation bar -->
-      <nav id="topNavbar" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <nav
+        id="topNavbar"
+        class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
+      >
         <div class="container-fluid">
-            <a href="[[=URL('index')]]" class="navbar-brand">Oph4py</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                    <li class="nav-item">
-                        <a href="[[=URL('index')]]" class="nav-link">Home</a>
-                    </li>
-                    [[ include 'partials/nav.html' ]]
-                    [[block left_nav]]<!-- li a nav-item -->[[end]]
-                </ul>
-                <ul class="navbar ms-auto mb-2 mb-md-0">
-                    [[if globals().get('user'):]]
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="loginBtn" role="button" data-bs-toggle="dropdown" aria-expanded="false">[[=globals().get('user',{}).get('email')]]</a>
-                        <div class="dropdown-menu" aria-labelledby="loginBtn">
-                            <a href="[[=URL('auth/profile')]]" class="dropdown-item">Edit profile</a>
-                            <a href="[[=URL('auth/change_password')]]" class="dropdown-item">Change Password</a>
-                            <a href="[[=URL('auth/logout')]]" class="dropdown-item">Logout</a>
-                        </div>
-                    </li>
-                    [[else:]]
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="loginBtn" role="button" data-bs-toggle="dropdown" aria-expanded="false">Not logged</a>
-                        <div class="dropdown-menu" aria-labelledby="loginBtn">
-                            <a href="[[=URL('auth/register')]]" class="dropdown-item">Register</a>
-                            <a href="[[=URL('auth/login')]]" class="dropdown-item">Sign in</a>
-                        </div>
-                    </li>
-                    [[pass]]
-                </ul>
-            </div>
+          <a href="[[=URL('index')]]" class="navbar-brand">Oph4py</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarCollapse"
+            aria-controls="navbarCollapse"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+              <li class="nav-item">
+                <a href="[[=URL('index')]]" class="nav-link">Home</a>
+              </li>
+              [[ include 'partials/nav.html' ]] [[block left_nav]]<!-- li a nav-item -->[[end]]
+            </ul>
+            <ul class="navbar ms-auto mb-2 mb-md-0">
+              [[if globals().get('user'):]]
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="loginBtn"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  >[[=globals().get('user',{}).get('email')]]</a
+                >
+                <div class="dropdown-menu" aria-labelledby="loginBtn">
+                  <a href="[[=URL('auth/profile')]]" class="dropdown-item"
+                    >Edit profile</a
+                  >
+                  <a
+                    href="[[=URL('auth/change_password')]]"
+                    class="dropdown-item"
+                    >Change Password</a
+                  >
+                  <a href="[[=URL('auth/logout')]]" class="dropdown-item"
+                    >Logout</a
+                  >
+                </div>
+              </li>
+              [[else:]]
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="loginBtn"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  >Not logged</a
+                >
+                <div class="dropdown-menu" aria-labelledby="loginBtn">
+                  <a href="[[=URL('auth/register')]]" class="dropdown-item"
+                    >Register</a
+                  >
+                  <a href="[[=URL('auth/login')]]" class="dropdown-item"
+                    >Sign in</a
+                  >
+                </div>
+              </li>
+              [[pass]]
+            </ul>
+          </div>
         </div>
       </nav>
     </header>
     <!-- beginning of HTML inserted by extending template -->
     <section id="main">
-        [[if globals().get('flash'):]]
-        <div class="container">
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <!-- Flash alert messages, first optional one in data-alert -->
-                <strong>[[=XML(globals().get('flash',{}).get('message'))]]</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+      [[if globals().get('flash'):]]
+      <div class="container">
+        <div
+          class="alert alert-warning alert-dismissible fade show"
+          role="alert"
+        >
+          <!-- Flash alert messages, first optional one in data-alert -->
+          <strong>[[=XML(globals().get('flash',{}).get('message'))]]</strong>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
         </div>
-        [[pass]]
-        <div class="container-fluid">
-            [[include]]
-        </div>    <!-- content injected by extending page -->
+      </div>
+      [[pass]]
+      <div class="container-fluid">[[include]]</div>
+      <!-- content injected by extending page -->
     </section>
     <!-- end of HTML inserted by extending template -->
     <footer class="footer">
-        <div class="d-flex justify-content-center">
-            <span class="text-muted">Powered by py4web</span>
-        </div>  
+      <div class="d-flex justify-content-center">
+        <span class="text-muted">Powered by py4web</span>
+      </div>
     </footer>
-    </body>
+  </body>
   <!-- You've gotta have utils.js -->
-    <script src="js/utils.js"></script>
-    <script src="js/bootstrap.bundle.min.js"></script> <!-- bootstrap 5.0 beta js (bundle contains popper) -->
-    <script src="js/jquery-3.5.1.min.js"></script>
-    <script src="js/jquery.toast.min.js"></script> <!-- jquery toast js https://github.com/kamranahmedse/jquery-toast-plugin.git -->
-    <script src="js/baseof.js"></script>
-    <script type="text/javascript">
-        // const timeOffsetInHours = [[ = TIMEOFFSET ]];
-        // const timeOffset = 3600*timeOffsetInHours; // in sec
-    </script>
-    [[block js_scripts]]
-    <!-- individual pages can add scripts here -->
-    [[end]]
+  <script src="js/utils.js"></script>
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <!-- bootstrap 5.0 beta js (bundle contains popper) -->
+  <script src="js/jquery-3.5.1.min.js"></script>
+  <script src="js/jquery.toast.min.js"></script>
+  <!-- jquery toast js https://github.com/kamranahmedse/jquery-toast-plugin.git -->
+  <script src="js/baseof.js"></script>
+  <script type="text/javascript">
+  </script>
+  [[block js_scripts]]
+  <!-- individual pages can add scripts here -->
+  [[end]]
 </html>

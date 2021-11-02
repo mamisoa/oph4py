@@ -250,7 +250,7 @@ function detailFormatter_km(index, row) {
     return html.join('');
 };
 
-// import machine bs-table
+// import visionix machine in bs-table
 function responseHandler_vx(res) { // used if data-response-handler="responseHandler_vl"
     let list = res.mesurements;
     // console.log(list);
@@ -362,4 +362,63 @@ window.operateEvents_vx = {
             $(domIdRx + ' [name=pd05]').val(row.pd05);
         };
     }
+};
+
+// import cv5000 in bs-table
+function responseHandler_cvrx(res) {
+    let list = res.mesurements;
+    // console.log(list);
+    let display = [];
+    let kx,rx;
+    $.each(list, function (i) {
+        if (list[i]['exam'] == 'ark') {
+            rx = (round2qter(list[i]['sph5'], true) + '(' +
+                round2qter(list[i]['cyl5'], true) + 'x' + Math.round(list[i]['axis5']) + '°)');
+            kx = [round2dec(list[i]['k1'], false) + 'x' + list[i]['k1_axis'] + '°',
+            round2dec(list[i]['k2'], false) + 'x' + list[i]['k2_axis'] + '°'];
+        } else if (list[i]['exam'] == 'topo'){
+            kx = [round2dec(list[i]['k1'], false) + 'x' + list[i]['k1_axis'] + '°',
+                round2dec(list[i]['k2'], false) + 'x' + list[i]['k2_axis'] + '°'];
+            rx = null;
+        } else if (list[i]['exam'] == 'wf') {
+            rx = (round2qter(list[i]['sph5'], true) + '(' +
+                round2qter(list[i]['cyl5'], true) + 'x' + Math.round(list[i]['axis5']) + '°)');
+            kx = [null,null];
+        } else {
+            rx = null;
+            kx = [null, null];
+        };
+        let datetime = list[i]['date'].split('T');
+        datetime[0] = datestr2eu(datetime[0]);
+        datetime = datetime.join(' ');
+        let patientfolder = list[i]['patient'].split('#')
+        let patient = [];
+        patientfolder.forEach((element,index) => {
+            if (index <= 2 && element != '_' ) {
+                patient.push(element);
+            };
+        });
+        // console.log('kx:', kx, 'rx', rx)
+        patient = patient.join(' ');
+        display.push({
+            'date': datetime,
+            'patient': patient,
+            'exam': list[i]['exam'],
+            'side': list[i]['side'],
+            'k1str': kx[0],
+            'k2str': kx[1],
+            'rx': rx,
+            'k1': list[i]['k1'] == null?list[i]['k1']:diopter2mm(list[i]['k1']),
+            'k2': list[i]['k2'] == null?list[i]['k1']:diopter2mm(list[i]['k2']),
+            'k1_axis': list[i]['k1_axis'],
+            'k2_axis': list[i]['k2_axis'],
+            'pd05' : list[i]['pd05'],
+            'sph5': list[i]['sph5'],
+            'cyl5': list[i]['cyl5'],
+            'axis5': list[i]['axis5']
+        });
+    });
+    return {    rows: display, 
+                total: res.count,
+                };
 };
