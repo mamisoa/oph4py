@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Ophthalmology xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:nsCommon="http://www.joia.or.jp/standardized/namespaces/Common"
+	xmlns:nsSBJ="http://www.joia.or.jp/standardized/namespaces/SBJ"
+	xmlns:nsLM="http://www.joia.or.jp/standardized/namespaces/LM"
+	xmlns:nsREF="http://www.joia.or.jp/standardized/namespaces/REF"
+	xmlns:nsKM="http://www.joia.or.jp/standardized/namespaces/KM" xsi:schemaLocation="http://www.joia.or.jp/standardized/namespaces/Common Common_schema.xsd http://www.joia.or.jp/standardized/namespaces/SBJ SBJ_schema.xsd">
+	<nsCommon:Common>
+	</nsCommon:Common>
+	<nsSBJ:Measure type="SBJ">
+		<nsSBJ:RefractionTest>
+			<nsSBJ:Type No="1">
+			</nsSBJ:Type>
+		</nsSBJ:RefractionTest>
+		<nsSBJ:BinoVisionTest>
+		</nsSBJ:BinoVisionTest>
+		<nsSBJ:US21test>
+		</nsSBJ:US21test>
+	</nsSBJ:Measure>
+	<nsKM:Measure type="KM">
+	</nsKM:Measure>
+</Ophthalmology>

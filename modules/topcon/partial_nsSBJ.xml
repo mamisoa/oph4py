@@ -1,45 +1,52 @@
-<nsSBJ:Measure type="SBJ">
-    <nsSBJ:RefractionTest>
-        <nsSBJ:Type No="2">
-            <nsSBJ:TypeName>Full Correction</nsSBJ:TypeName>
-            <nsSBJ:ExamDistance No="1">
-                <nsSBJ:Distance unit="cm">500.000</nsSBJ:Distance>
-                <nsSBJ:RefractionData>
-                    <nsSBJ:R>
-                        <nsSBJ:Sph unit="D">-0.75</nsSBJ:Sph>
-                        <nsSBJ:Cyl unit="D">-1.75</nsSBJ:Cyl>
-                        <nsSBJ:Axis unit="deg">45</nsSBJ:Axis>
-                        <nsSBJ:HPri unit="prism">0.50</nsSBJ:HPri>
-                        <nsSBJ:HBase>BO</nsSBJ:HBase>
-                        <nsSBJ:VPri unit="prism">1.00</nsSBJ:VPri>
-                        <nsSBJ:VBase>BD</nsSBJ:VBase>
-                        <nsSBJ:Prism unit="prism">1.12</nsSBJ:Prism>
-                        <nsSBJ:Angle unit="deg">243</nsSBJ:Angle>
-                    </nsSBJ:R>
-                    <nsSBJ:L>
-                        <nsSBJ:Sph unit="D">-2.00</nsSBJ:Sph>
-                        <nsSBJ:Cyl unit="D">-2.25</nsSBJ:Cyl>
-                        <nsSBJ:Axis unit="deg">90</nsSBJ:Axis>
-                        <nsSBJ:HPri unit="prism">0.50</nsSBJ:HPri>
-                        <nsSBJ:HBase>BO</nsSBJ:HBase>
-                        <nsSBJ:VPri unit="prism">1.00</nsSBJ:VPri>
-                        <nsSBJ:VBase>BU</nsSBJ:VBase>
-                        <nsSBJ:Prism unit="prism">1.12</nsSBJ:Prism>
-                        <nsSBJ:Angle unit="deg">63</nsSBJ:Angle>
-                    </nsSBJ:L>
-                    <nsSBJ:VD unit="mm">13.75</nsSBJ:VD>
-                </nsSBJ:RefractionData>
-                <nsSBJ:VA>
-                    <nsSBJ:R unit="decimal"> 0.20</nsSBJ:R>
-                    <nsSBJ:L unit="decimal"> 0.00</nsSBJ:L>
-                    <nsSBJ:B unit="decimal"> 0.10</nsSBJ:B>
-                </nsSBJ:VA>
-                <nsSBJ:PD>
-                    <nsSBJ:R unit="mm">31.75</nsSBJ:R>
-                    <nsSBJ:L unit="mm">31.75</nsSBJ:L>
-                    <nsSBJ:B unit="mm">63.50</nsSBJ:B>
-                </nsSBJ:PD>
-            </nsSBJ:ExamDistance>
-        </nsSBJ:Type>
-    </nsSBJ:RefractionTest>
-</nsSBJ:Measure>
+<Ophthalmology xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:nsCommon="http://www.joia.or.jp/standardized/namespaces/Common"
+    xmlns:nsSBJ="http://www.joia.or.jp/standardized/namespaces/SBJ"
+    xmlns:nsLM="http://www.joia.or.jp/standardized/namespaces/LM"
+    xmlns:nsREF="http://www.joia.or.jp/standardized/namespaces/REF"
+    xmlns:nsKM="http://www.joia.or.jp/standardized/namespaces/KM" xsi:schemaLocation="http://www.joia.or.jp/standardized/namespaces/Common Common_schema.xsd http://www.joia.or.jp/standardized/namespaces/SBJ SBJ_schema.xsd">
+    <nsSBJ:Measure type="SBJ">
+        <nsSBJ:RefractionTest>
+            <nsSBJ:Type No="2">
+                <nsSBJ:TypeName>Full Correction</nsSBJ:TypeName>
+                <nsSBJ:ExamDistance No="1">
+                    <nsSBJ:Distance unit="cm">500.000</nsSBJ:Distance>
+                    <nsSBJ:RefractionData>
+                        <nsSBJ:R>
+                            <nsSBJ:Sph unit="D">-0.75</nsSBJ:Sph>
+                            <nsSBJ:Cyl unit="D">-1.75</nsSBJ:Cyl>
+                            <nsSBJ:Axis unit="deg">45</nsSBJ:Axis>
+                            <nsSBJ:HPri unit="prism">0.50</nsSBJ:HPri>
+                            <nsSBJ:HBase>BO</nsSBJ:HBase>
+                            <nsSBJ:VPri unit="prism">1.00</nsSBJ:VPri>
+                            <nsSBJ:VBase>BD</nsSBJ:VBase>
+                            <nsSBJ:Prism unit="prism">1.12</nsSBJ:Prism>
+                            <nsSBJ:Angle unit="deg">243</nsSBJ:Angle>
+                        </nsSBJ:R>
+                        <nsSBJ:L>
+                            <nsSBJ:Sph unit="D">-2.00</nsSBJ:Sph>
+                            <nsSBJ:Cyl unit="D">-2.25</nsSBJ:Cyl>
+                            <nsSBJ:Axis unit="deg">90</nsSBJ:Axis>
+                            <nsSBJ:HPri unit="prism">0.50</nsSBJ:HPri>
+                            <nsSBJ:HBase>BO</nsSBJ:HBase>
+                            <nsSBJ:VPri unit="prism">1.00</nsSBJ:VPri>
+                            <nsSBJ:VBase>BU</nsSBJ:VBase>
+                            <nsSBJ:Prism unit="prism">1.12</nsSBJ:Prism>
+                            <nsSBJ:Angle unit="deg">63</nsSBJ:Angle>
+                        </nsSBJ:L>
+                        <nsSBJ:VD unit="mm">13.75</nsSBJ:VD>
+                    </nsSBJ:RefractionData>
+                    <nsSBJ:VA>
+                        <nsSBJ:R unit="decimal"> 0.20</nsSBJ:R>
+                        <nsSBJ:L unit="decimal"> 0.00</nsSBJ:L>
+                        <nsSBJ:B unit="decimal"> 0.10</nsSBJ:B>
+                    </nsSBJ:VA>
+                    <nsSBJ:PD>
+                        <nsSBJ:R unit="mm">31.75</nsSBJ:R>
+                        <nsSBJ:L unit="mm">31.75</nsSBJ:L>
+                        <nsSBJ:B unit="mm">63.50</nsSBJ:B>
+                    </nsSBJ:PD>
+                </nsSBJ:ExamDistance>
+            </nsSBJ:Type>
+        </nsSBJ:RefractionTest>
+    </nsSBJ:Measure>
+</Ophthalmology>
