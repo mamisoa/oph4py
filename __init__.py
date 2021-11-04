@@ -14,7 +14,7 @@ from . import modalityctr
 from . import defaults
 from . import useful
 from .modules.visionix import vx_rest
-from .modules.topcon import cv5000_rest
+from .modules.topcon import cv5000_rest, cv5000xml
 
 # optional parameters
 __version__ = "0.0.0"

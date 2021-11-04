@@ -243,8 +243,9 @@ db.define_table('rx',
     Field('axis_close', 'integer'),
     Field('note','string'),
     Field('pd05','decimal(4,2)'), # half pupils distance
-    Field('prismd', 'decimal(4,2)'), # prism in diopters
+    Field('Vprismd', 'decimal(4,2)'), # prism in diopters
     Field('Vbase', 'string'),
+    Field('Hprismd', 'decimal(4,2)'), # prism in diopters
     Field('Hbase', 'string'),
     Field('pangle', 'integer'), # prism angle
     Field('color','string'),
