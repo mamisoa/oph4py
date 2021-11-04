@@ -57,10 +57,11 @@ def createCV5000xml(resDict):
     rootSBJExamDistance = root.findall('.//nsSBJ:ExamDistance',ns)
     for item in mesLst:
         rootSBJType = root.findall('.//nsSBJ:Type[@No="'+item['Type No']+'"]',ns)
-        ed = rootSBJType[0].xpath('.//nsSBJ:ExamDistance/RefractionData',namespaces=ns)
-        if len(list(ed)) == 0:
+        ed = rootSBJType[0].findall('.//nsSBJ:ExamDistance/nsSBJ:RefractionData',ns)
+        if len(ed) == 0:
             for node in rootSBJType[0].findall('.//nsSBJ:ExamDistance',ns):
                 ET.SubElement(node, f'{{{ns["nsSBJ"]}}}RefractionData')
+    
     # return examDistanceDict
     return ET.tostring(root, pretty_print=True).decode()
 
