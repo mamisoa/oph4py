@@ -58,10 +58,12 @@ def createCV5000xml(resDict):
     for item in mesLst:
         rootSBJType = root.findall('.//nsSBJ:Type[@No="'+item['Type No']+'"]',ns)
         ed = rootSBJType[0].findall('.//nsSBJ:ExamDistance/nsSBJ:RefractionData',ns)
-        if len(ed) == 0:
+        if len(ed) == 0: # if no RefractionData -> add node refractiondata, add nsSBJside
             for node in rootSBJType[0].findall('.//nsSBJ:ExamDistance',ns):
-                ET.SubElement(node, f'{{{ns["nsSBJ"]}}}RefractionData')
-    
+                rootSBJRefractionData = ET.SubElement(node, f'{{{ns["nsSBJ"]}}}RefractionData')
+                for s in examDistanceDict[ item['Type No'] ]: # for Type No -> side (R or L) -> Distance list
+                    for d in s: # loop distance in side
+                        cSubElement(rootSBJRefractionData, f'{{{ns["nsSBJ"]}}}Distance', {"unit": "cm"}, d)
     # return examDistanceDict
     return ET.tostring(root, pretty_print=True).decode()
 
