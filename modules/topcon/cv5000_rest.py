@@ -32,43 +32,35 @@ def importCV5000(machine):
     ## REFRACTION
     # get all refraction data: Full Correction, Objective Data, Current Spectacles, Prescription
     rfdata = root.findall('.//*nsSBJ:RefractionData', ns)
-    rx = { 'filename' : xmlfile , 'count' : 0 , 'measures': []}
+    rx = { 'filename' : xmlfile , 'count' : len(rfdata) , 'measures': []}
     for rf in rfdata:
-        mes = { 'R': {'side': 'R'}, 'L': {'side': 'L'}}
+        mes = {}
         # get nsSBJ:TypeName
         typeName = {'TypeName' : (rf.findall('../../nsSBJ:TypeName',ns)[0]).text}
-        mes['R'].update(typeName)
-        mes['L'].update(typeName)
+        mes.update(typeName)
         # print([(e.tag,e.attrib) for e in rf.findall('../..',ns)]) # nsSBJ:Type
-        typeNo = {'Type No' : (rf.findall('../..',ns)[0].attrib)['No'] }
-        mes['R'].update(typeNo) # nsSBJ:Type
-        mes['L'].update(typeNo) # nsSBJ:Type
+        typeNo = {'TypeNo' : (rf.findall('../..',ns)[0].attrib)['No'] }
+        mes.update(typeNo) # nsSBJ:Type
         # get nsSBJ:Distance
         Distance = {'Distance' : (rf.findall('../nsSBJ:Distance',ns)[0]).text} ## always only one node
-        mes['R'].update(Distance) # nsSBJ:ExamDistance
-        mes['L'].update(Distance) # nsSBJ:ExamDistance
+        mes.update(Distance) # nsSBJ:ExamDistance
         vadict = {}
         [vadict.update({'va'+((e.tag).split('}'))[1]: e.text}) for e in rf.findall('../nsSBJ:VA/',ns)]
-        mes['R'].update(vadict)
-        mes['L'].update(vadict)
+        mes.update(vadict)
         pddict = {} 
         [pddict.update({'pd'+((e.tag).split('}'))[1]: e.text}) for e in rf.findall('../nsSBJ:PD/',ns)]
         # print([{e.tag: e.text} for e in rf.findall('../nsSBJ:PD/',ns)]) # iterate all child nodes nsSBJ:PD
-        mes['R'].update(pddict)
-        mes['L'].update(pddict)
+        mes.update(pddict)
         # nsSBJ:R
         rdict = {}
-        [rdict.update({((e.tag).split('}'))[1]: e.text}) for e in rf.findall('.//nsSBJ:R/',ns)]
-        mes['R'].update(rdict)
-        rx['measures'].append(mes['R'])
+        [rdict.update({((e.tag).split('}'))[1]+'R': e.text}) for e in rf.findall('.//nsSBJ:R/',ns)]
+        mes.update(rdict)
         # print([{e.tag: e.text} for e in rf.findall('.//nsSBJ:R/',ns)]) # iterate all child nodes nsSBJ:R
         # print([{e.tag: e.text} for e in rf.findall('.//nsSBJ:L/',ns)]) # iterate all child nodes nsSBJ:L
         ldict = {}
-        [ldict.update({((e.tag).split('}'))[1]: e.text}) for e in rf.findall('.//nsSBJ:L/',ns)]
+        [ldict.update({((e.tag).split('}'))[1]+'L': e.text}) for e in rf.findall('.//nsSBJ:L/',ns)]
         mes.update(ldict)
-        mes['L'].update(ldict)
-        rx['measures'].append(mes['L'])
-    rx['count'] = len(rx['measures'])
+        rx['measures'].append(mes)
     ## KERATOMETRY
     # get keratometry data from file
     kmdata = root.findall('.//*nsKM:Median', ns)
