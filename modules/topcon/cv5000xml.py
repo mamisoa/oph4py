@@ -32,6 +32,7 @@ def createCV5000xml(resDict):
     rxTxt =''
     ## nsSBJ:RefractionData
     for mes in mesLst:
+        ## todo: have to sanitize values eg check if not a number, change to ""  isnumeric() method
         if mes['TypeNo'] not in typeno:
             mes['edNo'] = 1
             t = Template(nsSBJExamDistance).safe_substitute(mes)
