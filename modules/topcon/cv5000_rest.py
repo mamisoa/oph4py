@@ -32,32 +32,43 @@ def importCV5000(machine):
     ## REFRACTION
     # get all refraction data: Full Correction, Objective Data, Current Spectacles, Prescription
     rfdata = root.findall('.//*nsSBJ:RefractionData', ns)
-    rx = { 'filename' : xmlfile , 'count' : len(rfdata) , 'measures': []}
+    rx = { 'filename' : xmlfile , 'count' : 0 , 'measures': []}
     for rf in rfdata:
-        mes = {}
+        mes = { 'R': {'side': 'R'}, 'L': {'side': 'L'}}
         # get nsSBJ:TypeName
-        mes.update({'TypeName' : (rf.findall('../../nsSBJ:TypeName',ns)[0]).text})
+        typeName = {'TypeName' : (rf.findall('../../nsSBJ:TypeName',ns)[0]).text}
+        mes['R'].update(typeName)
+        mes['L'].update(typeName)
         # print([(e.tag,e.attrib) for e in rf.findall('../..',ns)]) # nsSBJ:Type
-        mes.update({'Type No' : (rf.findall('../..',ns)[0].attrib)['No'] }) # nsSBJ:Type
-        # get nsSBJ:ExamDistance
-        mes.update({'ExamDistance' : (rf.findall('../nsSBJ:Distance',ns)[0]).text}) # nsSBJ:ExamDistance
-        # nsSBJ:R
-        rdict = {}
-        [rdict.update({((e.tag).split('}'))[1]+'R': e.text}) for e in rf.findall('.//nsSBJ:R/',ns)]
-        mes.update(rdict)
-        # print([{e.tag: e.text} for e in rf.findall('.//nsSBJ:R/',ns)]) # iterate all child nodes nsSBJ:R
-        # print([{e.tag: e.text} for e in rf.findall('.//nsSBJ:L/',ns)]) # iterate all child nodes nsSBJ:L
-        ldict = {} 
-        [ldict.update({((e.tag).split('}'))[1]+'L': e.text}) for e in rf.findall('.//nsSBJ:L/',ns)]
-        mes.update(ldict)
+        typeNo = {'Type No' : (rf.findall('../..',ns)[0].attrib)['No'] }
+        mes['R'].update(typeNo) # nsSBJ:Type
+        mes['L'].update(typeNo) # nsSBJ:Type
+        # get nsSBJ:Distance
+        Distance = {'Distance' : (rf.findall('../nsSBJ:Distance',ns)[0]).text} ## always only one node
+        mes['R'].update(Distance) # nsSBJ:ExamDistance
+        mes['L'].update(Distance) # nsSBJ:ExamDistance
         vadict = {}
         [vadict.update({'va'+((e.tag).split('}'))[1]: e.text}) for e in rf.findall('../nsSBJ:VA/',ns)]
-        mes.update(vadict)
+        mes['R'].update(vadict)
+        mes['L'].update(vadict)
         pddict = {} 
         [pddict.update({'pd'+((e.tag).split('}'))[1]: e.text}) for e in rf.findall('../nsSBJ:PD/',ns)]
         # print([{e.tag: e.text} for e in rf.findall('../nsSBJ:PD/',ns)]) # iterate all child nodes nsSBJ:PD
-        mes.update(pddict)
-        rx['measures'].append(mes)
+        mes['R'].update(pddict)
+        mes['L'].update(pddict)
+        # nsSBJ:R
+        rdict = {}
+        [rdict.update({((e.tag).split('}'))[1]: e.text}) for e in rf.findall('.//nsSBJ:R/',ns)]
+        mes['R'].update(rdict)
+        rx['measures'].append(mes['R'])
+        # print([{e.tag: e.text} for e in rf.findall('.//nsSBJ:R/',ns)]) # iterate all child nodes nsSBJ:R
+        # print([{e.tag: e.text} for e in rf.findall('.//nsSBJ:L/',ns)]) # iterate all child nodes nsSBJ:L
+        ldict = {}
+        [ldict.update({((e.tag).split('}'))[1]: e.text}) for e in rf.findall('.//nsSBJ:L/',ns)]
+        mes.update(ldict)
+        mes['L'].update(ldict)
+        rx['measures'].append(mes['L'])
+    rx['count'] = len(rx['measures'])
     ## KERATOMETRY
     # get keratometry data from file
     kmdata = root.findall('.//*nsKM:Median', ns)
@@ -66,10 +77,10 @@ def importCV5000(machine):
         mes = {}
         # print(kx.findall('..')) # gives a set!
         side = list(iter(([{e.tag.split('}')[1]} for e in kx.findall('..',ns)][0])))[0]
-        [mes.update({ 'R1' + e.tag.split('}')[1] + side : e.text }) for e in kx.findall('./nsKM:R1/',ns)]
-        [mes.update({ 'R2' + e.tag.split('}')[1] + side : e.text }) for e in kx.findall('./nsKM:R2/',ns)]
-        [mes.update({ 'Cyl' + e.tag.split('}')[1] + side : e.text }) for e in kx.findall('./nsKM:Cylinder/',ns)]
-        [mes.update({ 'Average' + e.tag.split('}')[1] + side : e.text }) for e in kx.findall('./nsKM:Average/',ns)]
+        [mes.update({ 'R1' + e.tag.split('}')[1] : e.text }) for e in kx.findall('./nsKM:R1/',ns)]
+        [mes.update({ 'R2' + e.tag.split('}')[1] : e.text }) for e in kx.findall('./nsKM:R2/',ns)]
+        [mes.update({ 'Cyl' + e.tag.split('}')[1] : e.text }) for e in kx.findall('./nsKM:Cylinder/',ns)]
+        [mes.update({ 'Average' + e.tag.split('}')[1] : e.text }) for e in kx.findall('./nsKM:Average/',ns)]
         mes.update({ 'side' : side })
         km['measures'].append(mes)
     return { 'RMpath': RMpath, 'machine': machine,'rx' : rx, 'km': km }
@@ -77,7 +88,7 @@ def importCV5000(machine):
 # set machine in TOPCON_DICT 
 @action('rest/getCV5000', method=['GET']) 
 def getCV5000():
-    import os,json,re
+    import json
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     machinedict = TOPCON_DICT
     if 'machine' in request.query:
@@ -85,6 +96,4 @@ def getCV5000():
     else:
         machine = 'default'
     res = importCV5000(machine)
-    json_res = json.dumps(res)
-    return json_res
-
+    return json.dumps(res)
