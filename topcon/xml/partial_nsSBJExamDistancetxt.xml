@@ -1,0 +1,38 @@
+<nsSBJ:ExamDistance No="$edNo">
+    <nsSBJ:Distance unit="cm">$Distance</nsSBJ:Distance>
+    <nsSBJ:RefractionData>
+        <nsSBJ:R>
+            <nsSBJ:Sph unit="D">$SphR</nsSBJ:Sph>
+            <nsSBJ:Cyl unit="D">$CylR</nsSBJ:Cyl>
+            <nsSBJ:Axis unit="deg">$AxisR</nsSBJ:Axis>
+            <nsSBJ:HPri unit="prism">$HPriR</nsSBJ:HPri>
+            <nsSBJ:HBase>$HBaseR</nsSBJ:HBase>
+            <nsSBJ:VPri unit="prism">$VPriR</nsSBJ:VPri>
+            <nsSBJ:VBase>$VBaseR</nsSBJ:VBase>
+            <nsSBJ:Prism unit="prism">$PrismR</nsSBJ:Prism>
+            <nsSBJ:Angle unit="deg">$AngleR</nsSBJ:Angle>
+        </nsSBJ:R>
+        <nsSBJ:L>
+            <nsSBJ:Sph unit="D">$SphL</nsSBJ:Sph>
+            <nsSBJ:Cyl unit="D">$CylL</nsSBJ:Cyl>
+            <nsSBJ:Axis unit="deg">$AxisL</nsSBJ:Axis>
+            <nsSBJ:HPri unit="prism">$HPriL</nsSBJ:HPri>
+            <nsSBJ:HBase>$HBaseL</nsSBJ:HBase>
+            <nsSBJ:VPri unit="prism">$VPriL</nsSBJ:VPri>
+            <nsSBJ:VBase>$VBaseL</nsSBJ:VBase>
+            <nsSBJ:Prism unit="prism">$PrismL</nsSBJ:Prism>
+            <nsSBJ:Angle unit="deg">$AngleL</nsSBJ:Angle>
+        </nsSBJ:L>
+        <nsSBJ:VD unit="mm">12.00</nsSBJ:VD>
+    </nsSBJ:RefractionData>
+    <nsSBJ:VA>
+        <nsSBJ:R unit="decimal">$vaR</nsSBJ:R>
+        <nsSBJ:L unit="decimal">$vaL</nsSBJ:L>
+        <nsSBJ:B unit="decimal">$vaB</nsSBJ:B>
+    </nsSBJ:VA>
+    <nsSBJ:PD>
+        <nsSBJ:R unit="mm">$pdR</nsSBJ:R>
+        <nsSBJ:L unit="mm">$pdL</nsSBJ:L>
+        <nsSBJ:B unit="mm">$pdB</nsSBJ:B>
+    </nsSBJ:PD>
+</nsSBJ:ExamDistance>

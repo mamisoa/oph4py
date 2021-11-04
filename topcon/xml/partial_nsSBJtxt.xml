@@ -1,0 +1,6 @@
+<nsSBJ:RefractionTest>
+    <nsSBJ:Type No="$TypeNo">
+        <nsSBJ:TypeName>$TypeName</nsSBJ:TypeName>
+        $ExamDistance
+    </nsSBJ:Type>
+</nsSBJ:RefractionTest>
