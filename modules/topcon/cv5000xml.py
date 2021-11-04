@@ -54,16 +54,33 @@ def createCV5000xml(resDict):
         # create nsSBJExamDistance No
         for i,d in enumerate(examDistanceDict[e], start=1):
                 rootSBJExamDistance = ET.SubElement(rootSBJType, f'{{{ns["nsSBJ"]}}}ExamDistance', {"No": str(i)})
-    rootSBJExamDistance = root.findall('.//nsSBJ:ExamDistance',ns)
     for item in mesLst:
         rootSBJType = root.findall('.//nsSBJ:Type[@No="'+item['Type No']+'"]',ns)
         ed = rootSBJType[0].findall('.//nsSBJ:ExamDistance/nsSBJ:RefractionData',ns)
         if len(ed) == 0: # if no RefractionData -> add node refractiondata, add nsSBJside
             for node in rootSBJType[0].findall('.//nsSBJ:ExamDistance',ns):
                 rootSBJRefractionData = ET.SubElement(node, f'{{{ns["nsSBJ"]}}}RefractionData')
-                for s in examDistanceDict[ item['Type No'] ]: # for Type No -> side (R or L) -> Distance list
-                    for d in s: # loop distance in side
-                        cSubElement(rootSBJRefractionData, f'{{{ns["nsSBJ"]}}}Distance', {"unit": "cm"}, d)
+                for s,sdict in examDistanceDict[ item['Type No'] ].items(): # for Type No -> side (R or L) -> Distance list
+                    cSubElement(rootSBJRefractionData, f'{{{ns["nsSBJ"]}}}'+s)
+    ed = [] # concat distances and zip with examdistance
+    for key in examDistanceDict:
+        for side,d in examDistanceDict[key].items():
+            tmp = []
+            if d not in tmp:
+                tmp.extend(d)
+        ed.extend(tmp)
+    for node,d in zip(root.findall('.//nsSBJ:ExamDistance',ns),ed):
+        cSubElement(node,f'{{{ns["nsSBJ"]}}}Distance', {"unit":"cm"}, d)
+    # for item in mesLst:
+    #     rootSBJType = root.findall('.//nsSBJ:Type[@No="'+item['Type No']+'"]/nsSBJ:ExamDistance',ns)
+    #     dist = rootSBJType[0].findall('.//nsSBJ:Distance',ns)
+    #     dump.append(dist[0].tag+' ')
+        # for node in rootSBJType[0]: # in a specific TypeNo, nodes = ExamDistance
+        #     rootSBJside = node.findall('.//nsSBJ:'+item['side'],ns)
+        #     rootSBJsideChildren = node.findall('.//nsSBJ:'+item['side']+'/*',ns)
+        #     if len(rootSBJsideChildren) == 0: # add all measures in free examdistance node for a specific type
+        #         cSubElement(rootSBJside[0], f'{{{ns["nsSBJ"]}}}Axis', None, item['Axis'])
+    # return dump
     # return examDistanceDict
     return ET.tostring(root, pretty_print=True).decode()
 
