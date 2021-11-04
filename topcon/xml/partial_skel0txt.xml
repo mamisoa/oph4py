@@ -5,6 +5,7 @@
 	xmlns:nsREF="http://www.joia.or.jp/standardized/namespaces/REF"
 	xmlns:nsKM="http://www.joia.or.jp/standardized/namespaces/KM" xsi:schemaLocation="http://www.joia.or.jp/standardized/namespaces/Common Common_schema.xsd http://www.joia.or.jp/standardized/namespaces/SBJ SBJ_schema.xsd">
 	<nsCommon:Common>
+	$common
 	</nsCommon:Common>
 	<nsSBJ:Measure type="SBJ">
 		$refractionTest
@@ -14,5 +15,6 @@
 		</nsSBJ:US21test>
 	</nsSBJ:Measure>
 	<nsKM:Measure type="KM">
+		$km
 	</nsKM:Measure>
 </Ophthalmology>

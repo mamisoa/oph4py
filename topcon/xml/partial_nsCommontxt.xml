@@ -1,0 +1,21 @@
+<nsCommon:Company>LINUX</nsCommon:Company>
+<nsCommon:ModelName>OPH4PY</nsCommon:ModelName>
+<nsCommon:MachineNo>2600</nsCommon:MachineNo>
+<nsCommon:ROMVersion>0.666</nsCommon:ROMVersion>
+<nsCommon:Version>1.2</nsCommon:Version>
+<nsCommon:Date>$date</nsCommon:Date>
+<nsCommon:Time>$time</nsCommon:Time>
+<nsCommon:Patient>
+    <nsCommon:No.>$patientid</nsCommon:No.>
+    <nsCommon:ID>$patientid</nsCommon:ID>
+    <nsCommon:FirstName>$firstname</nsCommon:FirstName>
+    <nsCommon:MiddleName/>
+    <nsCommon:LastName>$lastname</nsCommon:LastName>
+    <nsCommon:Sex>$gender</nsCommon:Sex>
+    <nsCommon:Age>$age</nsCommon:Age>
+    <nsCommon:DOB>$dob</nsCommon:DOB>
+    <nsCommon:NameJ1/>
+    <nsCommon:NameJ2/>
+</nsCommon:Patient>
+<Duration>00:09:41</Duration>
+<DateFormat>D_M_Y</DateFormat>

@@ -1,0 +1,12 @@
+<nsKM:DiopterStep unit="D"/>
+<nsKM:AxisStep unit="deg"/>
+<nsKM:CylinderMode/>
+<nsKM:RefractiveIndex>1.3375</nsKM:RefractiveIndex>
+<nsKM:KM>
+    <nsKM:R>
+        $kmR
+    </nsKM:R>
+    <nsKM:L>
+        $kmL
+    </nsKM:L>
+</nsKM:KM>
