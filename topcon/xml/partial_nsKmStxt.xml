@@ -1,0 +1,40 @@
+<nsKM:List No="1">
+    <nsKM:R1>
+        <nsKM:Radius unit="mm">$R1Radius</nsKM:Radius>
+        <nsKM:Power unit="D">$R1Power</nsKM:Power>
+        <nsKM:Axis unit="deg">$R1Axis</nsKM:Axis>
+    </nsKM:R1>
+    <nsKM:R2>
+        <nsKM:Radius unit="mm">$R2Radius</nsKM:Radius>
+        <nsKM:Power unit="D">$R2Power</nsKM:Power>
+        <nsKM:Axis unit="deg">$R2Axis</nsKM:Axis>
+    </nsKM:R2>
+    <nsKM:Average>
+        <nsKM:Radius unit="mm">$AverageRadius</nsKM:Radius>
+        <nsKM:Power unit="D">$AveragePower</nsKM:Power>
+    </nsKM:Average>
+    <nsKM:Cylinder>
+        <nsKM:Power unit="D">$CylPower</nsKM:Power>
+        <nsKM:Axis unit="deg">$CylAxis</nsKM:Axis>
+    </nsKM:Cylinder>
+</nsKM:List>
+<nsKM:Median>
+    <nsKM:R1>
+        <nsKM:Radius unit="mm">$R1Radius</nsKM:Radius>
+        <nsKM:Power unit="D">$R1Power</nsKM:Power>
+        <nsKM:Axis unit="deg">$R1Axis</nsKM:Axis>
+    </nsKM:R1>
+    <nsKM:R2>
+        <nsKM:Radius unit="mm">$R2Radius</nsKM:Radius>
+        <nsKM:Power unit="D">$R2Power</nsKM:Power>
+        <nsKM:Axis unit="deg">$R2Axis</nsKM:Axis>
+    </nsKM:R2>
+    <nsKM:Average>
+        <nsKM:Radius unit="mm">$AverageRadius</nsKM:Radius>
+        <nsKM:Power unit="D">$AveragePower</nsKM:Power>
+    </nsKM:Average>
+    <nsKM:Cylinder>
+        <nsKM:Power unit="D">$CylPower</nsKM:Power>
+        <nsKM:Axis unit="deg">$CylAxis</nsKM:Axis>
+    </nsKM:Cylinder>
+</nsKM:Median>

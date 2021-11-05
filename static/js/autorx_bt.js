@@ -364,61 +364,101 @@ window.operateEvents_vx = {
     }
 };
 
-// import cv5000 in bs-table
+// import cv5000 rx in bs-table
 function responseHandler_cvrx(res) {
-    let list = res.mesurements;
+    let list = res['rx']['measures'];
     // console.log(list);
     let display = [];
-    let kx,rx;
     $.each(list, function (i) {
-        if (list[i]['exam'] == 'ark') {
-            rx = (round2qter(list[i]['sph5'], true) + '(' +
-                round2qter(list[i]['cyl5'], true) + 'x' + Math.round(list[i]['axis5']) + '°)');
-            kx = [round2dec(list[i]['k1'], false) + 'x' + list[i]['k1_axis'] + '°',
-            round2dec(list[i]['k2'], false) + 'x' + list[i]['k2_axis'] + '°'];
-        } else if (list[i]['exam'] == 'topo'){
-            kx = [round2dec(list[i]['k1'], false) + 'x' + list[i]['k1_axis'] + '°',
-                round2dec(list[i]['k2'], false) + 'x' + list[i]['k2_axis'] + '°'];
-            rx = null;
-        } else if (list[i]['exam'] == 'wf') {
-            rx = (round2qter(list[i]['sph5'], true) + '(' +
-                round2qter(list[i]['cyl5'], true) + 'x' + Math.round(list[i]['axis5']) + '°)');
-            kx = [null,null];
-        } else {
-            rx = null;
-            kx = [null, null];
-        };
-        let datetime = list[i]['date'].split('T');
-        datetime[0] = datestr2eu(datetime[0]);
-        datetime = datetime.join(' ');
-        let patientfolder = list[i]['patient'].split('#')
-        let patient = [];
-        patientfolder.forEach((element,index) => {
-            if (index <= 2 && element != '_' ) {
-                patient.push(element);
-            };
-        });
-        // console.log('kx:', kx, 'rx', rx)
-        patient = patient.join(' ');
         display.push({
-            'date': datetime,
-            'patient': patient,
-            'exam': list[i]['exam'],
-            'side': list[i]['side'],
-            'k1str': kx[0],
-            'k2str': kx[1],
-            'rx': rx,
-            'k1': list[i]['k1'] == null?list[i]['k1']:diopter2mm(list[i]['k1']),
-            'k2': list[i]['k2'] == null?list[i]['k1']:diopter2mm(list[i]['k2']),
-            'k1_axis': list[i]['k1_axis'],
-            'k2_axis': list[i]['k2_axis'],
-            'pd05' : list[i]['pd05'],
-            'sph5': list[i]['sph5'],
-            'cyl5': list[i]['cyl5'],
-            'axis5': list[i]['axis5']
+            'TypeName': list['TypeName'],
+            'TypeNo': list['TypeNo'],
+            'Distance': list['Distance'],
+            'vaR': list['vaR'],
+            'vaL': list['VaL'],
+            'vaB': list['vaB'],
+            'pdR': list['31.75'],
+            'pdL': list['31.75'],
+            'pdB': list['pdB'],
+            'SphR': list['SphR'],
+            'CylR': list['CylR'],
+            'AxisR': list['AxisR'],
+            'HPriR': list['HPriR'],
+            'HBaseR': list['HBaseR'],
+            'VPriR': list['VpriR'],
+            'VBaseR': list['VBaseR'],
+            'PrismR': list['PrismR'],
+            'AngleR': list['AngleR'],
+            'SphL': list['SphL'],
+            'CylL': list['CylL'],
+            'AxisL': list['AxisL'],
+            'HPriL': list['HPriL'],
+            'HBaseL': list['HbaseL'],
+            'VPriL': list['VPriL'],
+            'VBaseL': list['BU'],
+            'PrismL': list['PrismL'],
+            'AngleL': list['AngleL'],
+            'rxright': `${list['SphR']}(${list['CylR']}x${list['AxisR']})`+ checkIfDataIsNull(list['vaR'],''),
+            'rxleft': `${list['SphR']}(${list['CylR']}x${list['AxisR']})`+ checkIfDataIsNull(list['vaR'],''),
+            'pupild': `${list['pdB']}mm`
         });
     });
     return {    rows: display, 
                 total: res.count,
                 };
+};
+
+function operateFormatter_cvrx(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="import" href="javascript:void(0)" title="Cache '+row.side+' rx"><i class="fas fa-file-import"></i></a>');
+    html.push('</div>');
+    return html.join('');
+};
+
+window.operateEvents_cvrx = {
+    'click .import': function (e, value, row, index) {
+        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // crud right rx
+        // crud left rx
+    }
+};
+
+// import cv5000 km in bs-table
+function responseHandler_cvrx(res) {
+    let list = res['km']['measures'];
+    // console.log(list);
+    let display = [];
+    $.each(list, function (i) {
+        display.push({
+            'R1Radius': list['R1RadiusR'],
+            'R1Power': list['R1PowerR'],
+            'R1Axis': list['R1AxisR'],
+            'R2Radius': list['R2RadiusR'],
+            'R2Power': list['R2PowerR'],
+            'R2Axis': list['R2AxisR'],
+            'CylPower': list['-0.75'],
+            'CylAxis': list['1'],
+            'AverageRadius': list['7.81'],
+            'AveragePower': list['43.25'],
+            'side': list['side']
+        });
+    });
+    return {    rows: display, 
+                total: res.count,
+                };
+};
+
+function operateFormatter_cvrx(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="import" href="javascript:void(0)" title="Cache '+row.side+' rx"><i class="fas fa-file-import"></i></a>');
+    html.push('</div>');
+    return html.join('');
+};
+
+window.operateEvents_cvrx = {
+    'click .import': function (e, value, row, index) {
+        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // crud right rx
+        // crud left rx
+    }
 };
