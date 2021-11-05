@@ -25,8 +25,7 @@ def createCV5000xml(resDict):
     nsSBJ = Path(TOPCON_XML+'/partial_nsSBJtxt.xml').read_text()
     nsSBJExamDistance = Path(TOPCON_XML+'/partial_nsSBJExamDistancetxt.xml').read_text()
     nsKm = Path(TOPCON_XML+'/partial_nsKmtxt.xml').read_text()
-    nsKmR = Path(TOPCON_XML+'/partial_nsKmRtxt.xml').read_text()
-    nsKmL = Path(TOPCON_XML+'/partial_nsKmLtxt.xml').read_text()
+    nsKmS = Path(TOPCON_XML+'/partial_nsKmStxt.xml').read_text()
     nsCommon = Path(TOPCON_XML+'/partial_nsCommontxt.xml').read_text()
     typeno = { } # {typeNo1 : txt, typeNo2 : txt ... typeNon : txt}
     rxTxt =''
@@ -48,9 +47,9 @@ def createCV5000xml(resDict):
     [kmR, kmL] = ['','']
     for mes in meskLst:
         if mes['side'] == 'R':
-            kmR = Template(nsKmR).safe_substitute(mes)
+            kmR = Template(nsKmS).safe_substitute(mes)
         if mes['side'] == 'L':
-            kmL = Template(nsKmL).safe_substitute(mes)
+            kmL = Template(nsKmS).safe_substitute(mes)
     kmTxt = Template(nsKm).safe_substitute({"kmR" : kmR , "kmL" : kmL })
     common = Template(nsCommon).safe_substitute(patDict)
     full = Template(skel).safe_substitute({ "refractionTest" : rxTxt , "km" : kmTxt, "common": common })

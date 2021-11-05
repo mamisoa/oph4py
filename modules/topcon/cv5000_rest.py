@@ -69,10 +69,10 @@ def importCV5000(machine):
         mes = {}
         # print(kx.findall('..')) # gives a set!
         side = list(iter(([{e.tag.split('}')[1]} for e in kx.findall('..',ns)][0])))[0]
-        [mes.update({ 'R1' + e.tag.split('}')[1]+side : e.text }) for e in kx.findall('./nsKM:R1/',ns)]
-        [mes.update({ 'R2' + e.tag.split('}')[1]+side : e.text }) for e in kx.findall('./nsKM:R2/',ns)]
-        [mes.update({ 'Cyl' + e.tag.split('}')[1]+side : e.text }) for e in kx.findall('./nsKM:Cylinder/',ns)]
-        [mes.update({ 'Average' + e.tag.split('}')[1]+side : e.text }) for e in kx.findall('./nsKM:Average/',ns)]
+        [mes.update({ 'R1' + e.tag.split('}')[1] : e.text }) for e in kx.findall('./nsKM:R1/',ns)]
+        [mes.update({ 'R2' + e.tag.split('}')[1] : e.text }) for e in kx.findall('./nsKM:R2/',ns)]
+        [mes.update({ 'Cyl' + e.tag.split('}')[1] : e.text }) for e in kx.findall('./nsKM:Cylinder/',ns)]
+        [mes.update({ 'Average' + e.tag.split('}')[1] : e.text }) for e in kx.findall('./nsKM:Average/',ns)]
         mes.update({ 'side' : side })
         km['measures'].append(mes)
     return { 'RMpath': RMpath, 'machine': machine,'rx' : rx, 'km': km }

@@ -1232,7 +1232,7 @@
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="importcvTitle">Import from machine</h5>
+                <h5 class="modal-title" id="importcvTitle">Import from CV-5000</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1254,7 +1254,7 @@
                                                 <th data-field="type" data-sortable="true">Type</th>
                                                 <th data-field="rxright" data-sortable="false">Right Rx</th>
                                                 <th data-field="rxleft" data-sortable="true">Left Rx</th>
-                                                <th data-field="pd" data-sortable="false">Pupils distance</th>
+                                                <th data-field="pdb" data-sortable="false">Pupils distance</th>
                                                 <th data-field="operate" data-formatter="operateFormatter_cvrx" data-events="operateEvents_cvrx">Action</th>
                                                 </th>
                                             </tr>
@@ -1341,7 +1341,7 @@ $('#rxRight_tbl').on('post-body.bs.table', function () {
     // $('.loading-wrap').addClass('visually-hidden'); // loading bug?
 });
 
-// table listing right measurement for patient in visionix
+// table listing right and left measurements for patient from visionix l80/vx100
 const API_L80_R = HOSTURL + '/myapp/rest/machines/l80?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=right'
 const API_L80_L = HOSTURL + '/myapp/rest/machines/l80?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=left'
 const API_VX100_R = HOSTURL + '/myapp/rest/machines/vx100?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=right'
@@ -1351,6 +1351,15 @@ var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
 });
 var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
     url: API_L80_L
+});
+
+// table listing right measurement for patient from topcon cv5000
+const API_CV5000 = HOSTURL + '/myapp/rest/getCV5000'
+var $cvRx_tbl = $('#cvRx_tbl').bootstrapTable({
+    url: API_CV5000
+});
+var $cvKm_tbl = $('#cvKm_tbl').bootstrapTable({
+    url: API_CV5000
 });
 
 </script>
