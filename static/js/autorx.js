@@ -431,13 +431,12 @@ $.each(CV5000lst, function(i){
     $('#cvRx_tbl').bootstrapTable('refresh', { url: API_CV5000+'?machine='+CV5000lst[i] });
     $('#cvKm_tbl').bootstrapTable('refresh', { url: API_CV5000+'?machine='+CV5000lst[i] });
     $('#importcvTitle').html(`Import from <strong>${CV5000lst[i].toUpperCase()}</strong>`);
+    document.getElementById('btnExport2cv5000').dataset.machine = CV5000lst[i];
     $('#cvModal').modal('show');
   });
 });
 
-let cvModalEl = document.getElementById('cvModal')
-cvModalEl.addEventListener('hide.bs.modal', function (event) {
-  console.log("cvModal hidden!");
+function deletecvTblNode() {
   // remove child cvtblBody
   const nodetoRemove = document.getElementById('cvtblBody');
   while (nodetoRemove.lastElementChild) {
@@ -446,33 +445,47 @@ cvModalEl.addEventListener('hide.bs.modal', function (event) {
   // init exportDict
   exportDict['rx']= {'count': '0', 'measures' : [] };
   exportDict['km']= {'count': '0', 'measures' : [] };
+};
+
+
+let cvModalEl = document.getElementById('cvModal')
+cvModalEl.addEventListener('hide.bs.modal', function (event) {
+  console.log("cvModal hidden!");
+  // remove child cvtblBody
+  deletecvTblNode();
 });
 
-$('#export2cv5000').click(function(){
-  return Promise.resolve(
+$('#btnExport2cv5000').click(function(){
+  let machine = this.getAttribute('data-machine');
+  console.log('export launch:', JSON.stringify(exportDict));
     $.ajax({
-        url: HOSTURL+"rest/exportCV5000xml",
-        contentType: 'application/json',
-        dataType: 'json',
-        method: 'POST',
-        data: exportDict,
-        success: function (data) {
-          console.log(data);
-          // status = data.status;
-          // message = data.message;
-          errors = "";
-          if (data.status == "error") {
-              for (i in data.errors) {
-                  errors += data.errors[i]+'</br>';
-              };
-              text = errors;
-              displayToast('error',data.message,errors,'3000');
-              };
-          if (data.status == "success") {
-              text='User id: '+(req == 'DELETE'? id : data.id)+mode;
-              displayToast('success', table+' '+mode,text,'3000');
-              };
-        }
-    })
-  );
-});
+      url: HOSTURL+`/myapp/rest/exportCV5000xml?${machine}`,
+      contentType: 'application/json',
+      dataType: 'json',
+      type: 'POST',
+      data: JSON.stringify(exportDict),
+      success: function (data) {
+        console.log(data);
+        // status = data.status;
+        // message = data.message;
+        errors = "";
+        if (data.status == "error") {
+            for (i in data.errors) {
+                errors += data.errors[i]+'</br>';
+            };
+            text = errors;
+            console.log('errors: ', text);
+            displayToast('error',data.message,errors,'3000');
+            };
+        if (data.status == "success") {
+            text=`Export to ${data['machine']} done!</br>${data['xmlfilepath']} written`;
+            displayToast('success', data['message'],text,'3000');
+            };
+      },
+      error: function (err) {
+        console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
+        displayToast('error','Server error','Can\'t reach server to export xml file','3000');
+      }
+    });
+  $('#cvModal').modal('hide');
+})
