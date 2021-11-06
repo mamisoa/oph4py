@@ -3,14 +3,35 @@ from yatl.helpers import XML
 from ...common import session, T, cache
 from ...settings import TOPCON_DICT, TOPCON_XML, LM_FOLDER, RM_FOLDER
 
+# import userful
+# from .useful import 
+
 from lxml import etree as ET
 from .cv5000_rest import importCV5000
+
 
 # useful function to create a node with an attribute and text in one line
 def cSubElement(_parent, _tag, attrib={}, _text=None, nsmap=None, **_extra):
     res = ET.SubElement(_parent, _tag, attrib, nsmap, **_extra)
     res.text = _text
     return res
+
+def initMissingKeyDict(mesDict, mesType): # mesType is 'rx' or 'km'
+    possibleMesTypeArgument = ['rx','km']
+    if (mesType == None) or (mesType not in possibleMesTypeArgument):
+        return mesDict
+    diffKmLst = ['R1Radius', 'R1Power', 'R1Axis', 'R2Radius', 'R2Power', 'R2Axis', 'AverageRadius', 'AveragePower', 'CylPower','CylAxis']
+    diffRxLst = ['Distance', 
+        'SphR', 'CylR', 'AxisR', 'HPrisR', 'HBaseR', 'VPriR', 'VBaseR', 'PrismR', 'AngleR',
+        'SphL', 'CylL', 'AxisL', 'HPrisL', 'HBaseL', 'VPriL', 'VBaseL', 'PrismL', 'AngleL',
+        'vaR','vaL','vaB','pdR','pdB','pdR'
+        ]
+    diffLst = diffRxLst if mesType == 'rx' else diffKmLst
+    for key in diffLst:
+        if key not in mesDict:
+            mesDict.update({ key : ''})
+    return mesDict
+
 
 def createCV5000xml(resDict):
     rxDict = resDict['rx']
@@ -34,10 +55,12 @@ def createCV5000xml(resDict):
         ## todo: have to sanitize values eg check if not a number, change to ""  isnumeric() method
         if mes['TypeNo'] not in typeno:
             mes['edNo'] = 1
+            mes = initMissingKeyDict(mes,'rx')
             t = Template(nsSBJExamDistance).safe_substitute(mes)
             typeno.update({mes['TypeNo']: {'txt': t, 'TypeName': mes['TypeName'], 'edNo': '1' }})
         else:
             mes['edNo'] = str(int(typeno[ mes['TypeNo'] ]['edNo'])+1)
+            mes = initMissingKeyDict(mes,'rx')
             t = Template(nsSBJExamDistance).safe_substitute(mes)
             typeno[mes['TypeNo']]['txt'] += t
     for k,v in typeno.items(): # include each ExamDistance in correponding typeNo
@@ -47,8 +70,10 @@ def createCV5000xml(resDict):
     [kmR, kmL] = ['','']
     for mes in meskLst:
         if mes['side'] == 'R':
+            mes = initMissingKeyDict(mes,'km')
             kmR = Template(nsKmS).safe_substitute(mes)
         if mes['side'] == 'L':
+            mes = initMissingKeyDict(mes,'km')
             kmL = Template(nsKmS).safe_substitute(mes)
     kmTxt = Template(nsKm).safe_substitute({"kmR" : kmR , "kmL" : kmL })
     common = Template(nsCommon).safe_substitute(patDict)
@@ -108,4 +133,4 @@ def exportCV5000xml():
             xmlfile.write(resDict)
         return json.dumps({'status': 'success', 'message': f'Export to {machine} done', 'errors': 'None', 'machine': machine, 'xmlfilepath' : filename })
     except Exception as e:
-        return json.dumps({'status': 'error', 'message': f'Export to {machine} failed', 'errors' : [e.args[0],e.args[1]], 'data': importDict } )
+        return json.dumps({'status': 'error', 'message': f'Export to {machine} failed', 'errors' : [e.args[0]], 'data': importDict } )
