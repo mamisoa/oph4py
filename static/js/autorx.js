@@ -434,3 +434,17 @@ $.each(CV5000lst, function(i){
     $('#cvModal').modal('show');
   });
 });
+
+$('#export2cv5000').click(function(){
+  // FIXME: post json, get xml , make button specific to machine ...
+  $.ajax({
+    type: "GET",
+    url: HOSTURL+"rest/exportCV5000xml",
+    data: exportDict,
+    cache: false,
+    dataType: "json",
+    success: function(xml) {
+      console.log(xml);
+    }
+  });
+});
