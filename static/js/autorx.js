@@ -423,3 +423,14 @@ function delItem (id,table) {
       }
   });
 };
+
+// init cv buttons
+$.each(CV5000lst, function(i){
+  // refresh tables in modal
+  $('#btnGetFrom'+CV5000lst[i]).click(function(){
+    $('#cvRx_tbl').bootstrapTable('refresh', { url: API_CV5000+'?machine='+CV5000lst[i] });
+    $('#cvKm_tbl').bootstrapTable('refresh', { url: API_CV5000+'?machine='+CV5000lst[i] });
+    $('#importcvTitle').html(`Import from <strong>${CV5000lst[i].toUpperCase()}</strong>`);
+    $('#cvModal').modal('show');
+  });
+});

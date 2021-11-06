@@ -371,94 +371,177 @@ function responseHandler_cvrx(res) {
     let display = [];
     $.each(list, function (i) {
         display.push({
-            'TypeName': list['TypeName'],
-            'TypeNo': list['TypeNo'],
-            'Distance': list['Distance'],
-            'vaR': list['vaR'],
-            'vaL': list['VaL'],
-            'vaB': list['vaB'],
-            'pdR': list['31.75'],
-            'pdL': list['31.75'],
-            'pdB': list['pdB'],
-            'SphR': list['SphR'],
-            'CylR': list['CylR'],
-            'AxisR': list['AxisR'],
-            'HPriR': list['HPriR'],
-            'HBaseR': list['HBaseR'],
-            'VPriR': list['VpriR'],
-            'VBaseR': list['VBaseR'],
-            'PrismR': list['PrismR'],
-            'AngleR': list['AngleR'],
-            'SphL': list['SphL'],
-            'CylL': list['CylL'],
-            'AxisL': list['AxisL'],
-            'HPriL': list['HPriL'],
-            'HBaseL': list['HbaseL'],
-            'VPriL': list['VPriL'],
-            'VBaseL': list['BU'],
-            'PrismL': list['PrismL'],
-            'AngleL': list['AngleL'],
-            'rxright': `${list['SphR']}(${list['CylR']}x${list['AxisR']})`+ checkIfDataIsNull(list['vaR'],''),
-            'rxleft': `${list['SphR']}(${list['CylR']}x${list['AxisR']})`+ checkIfDataIsNull(list['vaR'],''),
-            'pupild': `${list['pdB']}mm`
+            'type': list[i]['TypeName'],
+            'TypeNo': list[i]['TypeNo'],
+            'Distance': list[i]['Distance'],
+            'vaR': list[i]['vaR'],
+            'vaL': list[i]['VaL'],
+            'vaB': list[i]['vaB'],
+            'pdR': list[i]['31.75'],
+            'pdL': list[i]['31.75'],
+            'pdB': list[i]['pdB'],
+            'SphR': list[i]['SphR'],
+            'CylR': list[i]['CylR'],
+            'AxisR': list[i]['AxisR'],
+            'HPriR': list[i]['HPriR'],
+            'HBaseR': list[i]['HBaseR'],
+            'VPriR': list[i]['VpriR'],
+            'VBaseR': list[i]['VBaseR'],
+            'PrismR': list[i]['PrismR'],
+            'AngleR': list[i]['AngleR'],
+            'SphL': list[i]['SphL'],
+            'CylL': list[i]['CylL'],
+            'AxisL': list[i]['AxisL'],
+            'HPriL': list[i]['HPriL'],
+            'HBaseL': list[i]['HbaseL'],
+            'VPriL': list[i]['VPriL'],
+            'VBaseL': list[i]['BU'],
+            'PrismL': list[i]['PrismL'],
+            'AngleL': list[i]['AngleL'],
+            'rxright': `${list[i]['SphR']}(${list[i]['CylR']}x${list[i]['AxisR']}°) `+`VA=${checkIfDataIsNull(list[i]['vaR'])}`,
+            'rxleft': `${list[i]['SphL']}(${list[i]['CylL']}x${list[i]['AxisL']}°) `+ `VA=${checkIfDataIsNull(list[i]['vaL'])}`,
+            'pupilsd': `${list[i]['pdB']}mm`
         });
     });
     return {    rows: display, 
-                total: res.count,
+                total: list.count,
                 };
 };
 
 function operateFormatter_cvrx(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
-    html.push('<a class="import" href="javascript:void(0)" title="Cache '+row.side+' rx"><i class="fas fa-file-import"></i></a>');
+    html.push('<a class="import" href="javascript:void(0)" title="cache '+index+' km"><i class="fas fa-file-download"></i></a>');
     html.push('</div>');
     return html.join('');
 };
 
 window.operateEvents_cvrx = {
     'click .import': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        cacheCVtbl(JSON.stringify(row),'rx')
         // crud right rx
         // crud left rx
     }
 };
 
+function rowStyle_rx(row) {
+    let bg, statusColor = {'Objective Data':'white' , 'Full Correction':'white', 'Prescription': '#00FF00',
+        'Current Spectacles': 'papayawhip', 'Last Prescription': 'papayawhip' };
+    row.type != undefined ? bg = statusColor[row.type] : bg = "white";
+    return { 
+                css: { 'background-color': bg }
+            };
+};
+
 // import cv5000 km in bs-table
-function responseHandler_cvrx(res) {
+function responseHandler_cvkm(res) {
     let list = res['km']['measures'];
     // console.log(list);
     let display = [];
     $.each(list, function (i) {
         display.push({
-            'R1Radius': list['R1RadiusR'],
-            'R1Power': list['R1PowerR'],
-            'R1Axis': list['R1AxisR'],
-            'R2Radius': list['R2RadiusR'],
-            'R2Power': list['R2PowerR'],
-            'R2Axis': list['R2AxisR'],
-            'CylPower': list['-0.75'],
-            'CylAxis': list['1'],
-            'AverageRadius': list['7.81'],
-            'AveragePower': list['43.25'],
-            'side': list['side']
+            'R1Radius': list[i]['R1Radius'],
+            'R1Power': list[i]['R1Power'],
+            'R1Axis': list[i]['R1Axis'],
+            'R2Radius': list[i]['R2Radius'],
+            'R2Power': list[i]['R2Power'],
+            'R2Axis': list[i]['R2Axis'],
+            'CylPower': list[i]['CylPower'],
+            'CylAxis': list[i]['CylAxis'],
+            'AverageRadius': list[i]['AverageRadius'],
+            'AveragePower': list[i]['AveragePower'],
+            'side': list[i]['side'],
+            'kmformula': `R1=${list[i]['R1Radius']}x${list[i]['R1Axis']}° - R2=${list[i]['R2Radius']}x${list[i]['R2Axis']}°`
         });
     });
     return {    rows: display, 
-                total: res.count,
+                total: list.count,
                 };
 };
 
-function operateFormatter_cvrx(value, row, index) {
+function operateFormatter_cvkm(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
-    html.push('<a class="import" href="javascript:void(0)" title="Cache '+row.side+' rx"><i class="fas fa-file-import"></i></a>');
+    html.push('<a class="import" href="javascript:void(0)" title="cache '+index+' km"><i class="fas fa-file-download"></i></a>');
     html.push('</div>');
     return html.join('');
 };
 
-window.operateEvents_cvrx = {
+window.operateEvents_cvkm = {
     'click .import': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        // crud right rx
-        // crud left rx
+        cacheCVtbl(JSON.stringify(row),'km')
+        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        // crud right km
+        // crud left km
     }
 };
+
+function rowStyle_km(row) {
+    let bg, statusColor = {'R':'#F0F8FF' , 'L':'#FFF5EE'};
+    row.side != undefined ? bg = statusColor[row.side] : bg = "white";
+    return { 
+                css: { 'background-color': bg }
+            };
+};
+
+cvtblCounter = 1;
+exportDict = {
+    'patient': {
+        'firstName': patientObj.first_name,
+        'lastName' : patientObj.last_name,
+        'patientid': patientObj.id,
+        'gender' : genderIdObj[patientObj['gender']],
+        'dob' : patientObj.dob,
+        'age' : getAge(patientObj.dob),
+        'date' : getToday()['date'],
+        'time' : getToday()['time']
+    },
+    rx: {
+        'count': '0',
+        'measures' : []
+    },
+    km :{
+        'count': '0',
+        'measures' : []
+    }
+};
+
+function removecvMeasure(mesType,id) {
+    $(`#cvtrcounter_${id}`).remove();
+    console.log(exportDict[mesType]['measures']);
+    exportDict[mesType]['measures'].forEach(function(measure, index) {
+        console.log('measure',measure);
+        if (measure['id'] == id) {
+            console.log('to delete', delete exportDict[mesType]['measures'][index]);
+            exportDict[mesType]['measures'].splice(index,1);
+            };
+        exportDict[mesType]['count'] = String(parseInt(exportDict[mesType]['count'],10)-1);
+        }
+    );
+};
+
+function cacheCVtbl(data, datatype) {
+    data = JSON.parse(data);
+    console.log(data);
+    if (data == {} || data == undefined) { return; };
+    let html = [];
+    html.push(`<tr id="cvtrcounter_${cvtblCounter}">`);
+    html.push(`<td>${cvtblCounter}</td>`);
+    html.push(`<td>${datatype}</td>`);
+    if (datatype == 'rx') {
+        html.push(`<td>RE: ${data.rxright} LE: ${data.rxleft}</td>`);
+        data['id']=cvtblCounter;
+        exportDict['rx']['measures'].push(data);
+        exportDict['rx']['count'] = String(1+parseInt(exportDict['rx']['count'],10))
+    } else {
+        html.push(`<td>${data.side}E: ${data.kmformula}</td>`);
+        data['id']=cvtblCounter;
+        exportDict['km']['measures'].push(data);
+        exportDict['km']['count'] = String(1+parseInt(exportDict['km']['count'],10))
+    }
+    html.push(`<td><button type="button" onclick="removecvMeasure('${datatype}',${cvtblCounter});" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button></td>`);
+    html.push('</tr>');
+    cvtblCounter += 1;
+    document.getElementById("cvtblBody").innerHTML += html.join('');
+    console.log('item count:', document.getElementById('cvtblBody').childElementCount);
+};
+
