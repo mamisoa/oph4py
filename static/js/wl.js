@@ -267,6 +267,7 @@ $('#newWlItemForm').submit(function(e) {
     e.preventDefault();
     let req = $('#methodWlItemSubmit').val();
     if (req =='POST') {
+        // FIXME: wlItemsCounter will be lower if an item is deleted???
         for (let i = 0; i<=wlItemsCounter+1; i++) {
             let el = "#wlItem"+parseInt(i);
             if ($(el).length != 0) {

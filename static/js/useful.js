@@ -16,6 +16,15 @@ function getAge(dateString) {
     }
 };
 
+// get today's date in string
+function getToday() {
+    yourDate = new Date();
+    const offset = yourDate.getTimezoneOffset()
+    yourDate = new Date(yourDate.getTime() - (offset*60*1000))
+    return {'date': yourDate.toISOString().split('T')[0], 'time': yourDate.toISOString().split('T')[1].split('Z')[0] };
+}
+
+
 // diopters to mm
 function diopter2mm(diopters) {
     return (337.50/diopters).toFixed(2);
@@ -98,7 +107,7 @@ function hmsToSeconds(s) {
 
 // check if datastr is null
 function checkIfDataIsNull(data, dft='n/a') {
-    return (data == null || data =='')? dft : data ; 
+    return (data == null || data =='' || data == 'undefined')? dft : data ; 
 };
 
 function getUuid() {

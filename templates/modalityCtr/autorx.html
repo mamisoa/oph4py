@@ -25,9 +25,9 @@
                 <button id="btnLink" class="btn btn-warning me-2" type="button"></button>
                 <button id="btnGetFromL80" class="btn btn-primary btn-sm" type="button">L80</button>
                 <button id="btnGetFromVx100" class="btn btn-primary btn-sm" type="button">VX100</button>
-                <button id="btnGetFromCviris" class="btn btn-primary btn-sm" type="button">CV5 Iris</button>
-                <button id="btnGetFromCvcrist" class="btn btn-primary btn-sm" type="button">CV5 Crist</button>
-                <button id="btnGetFromCvcornea" class="btn btn-primary btn-sm" type="button">CV5 Cornea</button>
+                <button id="btnGetFromcv-iris" class="btn btn-primary btn-sm" type="button">CV5 Iris</button>
+                <button id="btnGetFromcv-crist" class="btn btn-primary btn-sm" type="button">CV5 Crist</button>
+                <button id="btnGetFromcv-cornea" class="btn btn-primary btn-sm" type="button">CV5 Cornea</button>
             </div>
         </div>
     </div>
@@ -1247,6 +1247,7 @@
                                         data-pagination="true"
                                         data-page-size="10"
                                         data-search="false"
+                                        data-row-style="rowStyle_rx"
                                         data-response-handler="responseHandler_cvrx"
                                         >
                                         <thead>
@@ -1254,7 +1255,7 @@
                                                 <th data-field="type" data-sortable="true">Type</th>
                                                 <th data-field="rxright" data-sortable="false">Right Rx</th>
                                                 <th data-field="rxleft" data-sortable="true">Left Rx</th>
-                                                <th data-field="pdb" data-sortable="false">Pupils distance</th>
+                                                <th data-field="pupilsd" data-sortable="false">Pupils distance</th>
                                                 <th data-field="operate" data-formatter="operateFormatter_cvrx" data-events="operateEvents_cvrx">Action</th>
                                                 </th>
                                             </tr>
@@ -1264,17 +1265,18 @@
                                 <div class="col">
                                     <div class="title-left">Keratometry</div>
                                     <table
-                                        id="cvKx_tbl"
+                                        id="cvKm_tbl"
                                         data-pagination="true"
                                         data-page-size="10"
                                         data-search="false"
+                                        data-row-style="rowStyle_km"
                                         data-response-handler="responseHandler_cvkm"
                                         >
                                         <thead>
                                             <tr>
-                                                <th data-field="kmrightstr" data-sortable="false">Kx right</th>
-                                                <th data-field="kmleftstr" data-sortable="false">Kx left</th>
-                                                <th data-field="operate" data-formatter="operateFormatter_cvkx" data-events="operateEvents_kx">Action</th>
+                                                <th data-field="kmformula" data-sortable="false">Kx</th>
+                                                <th data-field="side" data-sortable="false">Side</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_cvkm" data-events="operateEvents_cvkm">Action</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -1282,9 +1284,25 @@
                             </div> <!-- end machine table row div-->
                         </div>
                     </div>
+                    <div class="row">
+                        <table id="cvModaltbl" class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Formula</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cvtblBody">
+                
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
+                <button id="export2cv5000" type="button" class="btn btn-primary" data-bs-dismiss="modal">Export</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -1354,6 +1372,7 @@ var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
 });
 
 // table listing right measurement for patient from topcon cv5000
+const CV5000lst = ['cv-iris', 'cv-cornea', 'cv-crist']
 const API_CV5000 = HOSTURL + '/myapp/rest/getCV5000'
 var $cvRx_tbl = $('#cvRx_tbl').bootstrapTable({
     url: API_CV5000
