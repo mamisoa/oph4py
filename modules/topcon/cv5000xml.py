@@ -126,7 +126,7 @@ def exportCV5000xml():
     #     }
     # }
     ## write file
-    filename = RM_FOLDER+f'/{importDict["machine"]}/{importDict["machine"]}_{now.strftime("%Y%m%d")}_{now.strftime("%H%M%S%f")}_OPH4PY_2600.xml'
+    filename = RM_FOLDER+f'/{importDict["machine"]}/{importDict["patient"]["patientid"]}_{now.strftime("%Y%m%d")}_{now.strftime("%H%M%S%f")}_OPH4PY_2600.xml'
     try:
         resDict = createCV5000xml(importDict) # create xml
         with open(filename, 'w') as xmlfile:

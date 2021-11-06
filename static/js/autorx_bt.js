@@ -428,7 +428,7 @@ window.operateEvents_cvrx = {
 function rowStyle_rx(row) {
     let bg, statusColor = {'Objective Data':'white' , 'Full Correction':'white', 'Prescription': '#00FF00',
         'Current Spectacles': 'papayawhip', 'Last Prescription': 'papayawhip' };
-    row.type != undefined ? bg = statusColor[row.type] : bg = "white";
+    row.TypeName != undefined ? bg = statusColor[row.TypeName] : bg = "white";
     return { 
                 css: { 'background-color': bg }
             };
@@ -488,8 +488,8 @@ function rowStyle_km(row) {
 cvtblCounter = 1;
 exportDict = {
     'patient': {
-        'firstName': patientObj.first_name,
-        'lastName' : patientObj.last_name,
+        'firstname': patientObj.first_name,
+        'lastname' : patientObj.last_name,
         'patientid': patientObj['id'].toString(),
         'gender' : genderIdObj[patientObj['gender']],
         'dob' : patientObj.dob,
