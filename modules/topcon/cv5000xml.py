@@ -69,13 +69,18 @@ def exportCV5000xml():
         machine = request.query.get('machine')
     else:
         machine = 'default'
-    patient = {'firstname': 'Steve', 'lastname': 'Jobs', 'patientid': '2600',
-        'gender': 'Male', 'age': '66', 'dob': '2000-01-01',
-        'date': now.strftime("%Y-%m-%d"), 'time': now.strftime("%H:%M:%S")
-        }
-    # importDict = { 'machine': 'test', 'rx': { 'count':20 , 'measures': [ { 'sph': '-1.25', 'cyl' : '-0.50'} ]} }
+    # importDict = { 'machine': 'test',
+    #   'rx': { 'count':20 ,
+    #       'patient' : {'firstname': 'Steve', 'lastname': 'Jobs', 'patientid': '2600',
+    #           'gender': 'Male', 'age': '66', 'dob': '2000-01-01',
+    #           'date': now.strftime("%Y-%m-%d"), 'time': now.strftime("%H:%M:%S")
+    #       },
+    #       'measures': [ { 'sph': '-1.25', 'cyl' : '-0.50'} ]
+    #   }
+    # }
     # importDict = importCV5000(machine)
     # importDict.update({"patient" : patient})
-    resDict = createCV5000xml(importDict)
+    resDict = createCV5000xml(importDict) # create xml
     ## write file
+    # filename = 
     return resDict

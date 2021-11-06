@@ -435,16 +435,44 @@ $.each(CV5000lst, function(i){
   });
 });
 
+let cvModalEl = document.getElementById('cvModal')
+cvModalEl.addEventListener('hide.bs.modal', function (event) {
+  console.log("cvModal hidden!");
+  // remove child cvtblBody
+  const nodetoRemove = document.getElementById('cvtblBody');
+  while (nodetoRemove.lastElementChild) {
+    nodetoRemove.removeChild(nodetoRemove.lastElementChild);
+  };
+  // init exportDict
+  exportDict['rx']= {'count': '0', 'measures' : [] };
+  exportDict['km']= {'count': '0', 'measures' : [] };
+});
+
 $('#export2cv5000').click(function(){
-  // FIXME: post json, get xml , make button specific to machine ...
-  $.ajax({
-    type: "GET",
-    url: HOSTURL+"rest/exportCV5000xml",
-    data: exportDict,
-    cache: false,
-    dataType: "json",
-    success: function(xml) {
-      console.log(xml);
-    }
-  });
+  return Promise.resolve(
+    $.ajax({
+        url: HOSTURL+"rest/exportCV5000xml",
+        contentType: 'application/json',
+        dataType: 'json',
+        method: 'POST',
+        data: exportDict,
+        success: function (data) {
+          console.log(data);
+          // status = data.status;
+          // message = data.message;
+          errors = "";
+          if (data.status == "error") {
+              for (i in data.errors) {
+                  errors += data.errors[i]+'</br>';
+              };
+              text = errors;
+              displayToast('error',data.message,errors,'3000');
+              };
+          if (data.status == "success") {
+              text='User id: '+(req == 'DELETE'? id : data.id)+mode;
+              displayToast('success', table+' '+mode,text,'3000');
+              };
+        }
+    })
+  );
 });
