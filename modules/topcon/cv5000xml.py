@@ -1,7 +1,7 @@
 from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
 from yatl.helpers import XML
 from ...common import session, T, cache
-from ...settings import TOPCON_DICT, TOPCON_XML
+from ...settings import TOPCON_DICT, TOPCON_XML, LM_FOLDER, RM_FOLDER
 
 from lxml import etree as ET
 from .cv5000_rest import importCV5000
@@ -62,25 +62,50 @@ def exportCV5000xml():
     import json
     from datetime import datetime
     now = datetime.now()
-    response.headers['Content-Type'] = 'application/xml;charset=UTF-8'
+    response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    # response.headers['Content-Type'] = 'application/xml;charset=UTF-8'
     importDict = request.json
-    machinedict = TOPCON_DICT
+    machineDict = TOPCON_DICT
     if 'machine' in request.query:
         machine = request.query.get('machine')
     else:
-        machine = 'default'
-    # importDict = { 'machine': 'test',
-    #   'rx': { 'count':20 ,
-    #       'patient' : {'firstname': 'Steve', 'lastname': 'Jobs', 'patientid': '2600',
-    #           'gender': 'Male', 'age': '66', 'dob': '2000-01-01',
-    #           'date': now.strftime("%Y-%m-%d"), 'time': now.strftime("%H:%M:%S")
-    #       },
-    #       'measures': [ { 'sph': '-1.25', 'cyl' : '-0.50'} ]
-    #   }
+        machine = machineDict['default']
+    if 'machine' in importDict:
+        machine = importDict['machine']
+    # use this for unittest
+    # importDict = {
+    #     "RMpath": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris",
+    #     'patient' : {
+    #         'firstname': 'Steve', 'lastname': 'Jobs', 'patientid': '2600', 'gender': 'Male', 'age': '66', 'dob': '2000-01-01',
+    #             'date': now.strftime("%Y-%m-%d"), 'time': now.strftime("%H:%M:%S")
+    #             },
+    #     "machine": "cv-iris",
+    #     "rx": {
+    #         "filename": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
+    #         "count": 0,
+    #         "measures": []
+    #         },
+    #     "km": {
+    #         "filename": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
+    #         "count": 2,
+    #         "measures": [
+    #             {
+    #                 "R1Radius": "7.92", "R1Power": "42.50", "R1Axis": "148",  "R2Radius": "7.75", "R2Power": "43.50", "R2Axis": "58", "CylPower": "-1.00",
+    #                 "CylAxis": "148", "AverageRadius": "7.83", "AveragePower": None, "side": "R"
+    #             },
+    #             { 
+    #                 "R1Radius": "7.86", "R1Power": "43.00", "R1Axis": "21", "R2Radius": "7.73", "R2Power": "43.75", "R2Axis": "111", "CylPower": "-0.75",
+    #                 "CylAxis": "21", "AverageRadius": "7.79", "AveragePower": None, "side": "L"
+    #             }
+    #         ]
+    #     }
     # }
-    # importDict = importCV5000(machine)
-    # importDict.update({"patient" : patient})
-    resDict = createCV5000xml(importDict) # create xml
     ## write file
-    # filename = 
-    return resDict
+    filename = RM_FOLDER+f'/{importDict["machine"]}/{importDict["machine"]}_{now.strftime("%Y%m%d")}_{now.strftime("%H%M%S%f")}_OPH4PY_2600.xml'
+    try:
+        resDict = createCV5000xml(importDict) # create xml
+        with open(filename, 'w') as xmlfile:
+            xmlfile.write(resDict)
+        return json.dumps({'status': 'success', 'message': f'Export to {machine} done', 'errors': 'None', 'machine': machine, 'xmlfilepath' : filename })
+    except Exception as e:
+        return json.dumps({'status': 'error', 'message': f'Export to {machine} failed', 'errors' : [e.args[0],e.args[1]], 'data': importDict } )

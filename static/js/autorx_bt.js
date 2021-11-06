@@ -490,18 +490,18 @@ exportDict = {
     'patient': {
         'firstName': patientObj.first_name,
         'lastName' : patientObj.last_name,
-        'patientid': patientObj.id,
+        'patientid': patientObj['id'].toString(),
         'gender' : genderIdObj[patientObj['gender']],
         'dob' : patientObj.dob,
-        'age' : getAge(patientObj.dob),
+        'age' : getAge(patientObj.dob).toString(),
         'date' : getToday()['date'],
         'time' : getToday()['time']
     },
-    rx: {
+    'rx': {
         'count': '0',
         'measures' : []
     },
-    km :{
+    'km' :{
         'count': '0',
         'measures' : []
     }
@@ -533,11 +533,13 @@ function cacheCVtbl(data, datatype) {
         html.push(`<td>RE: ${data.rxright} LE: ${data.rxleft}</td>`);
         data['id']=cvtblCounter;
         exportDict['rx']['measures'].push(data);
+        exportDict.push({'machine' : data['rx']['measures']['machine']});
         exportDict['rx']['count'] = String(1+parseInt(exportDict['rx']['count'],10))
     } else {
         html.push(`<td>${data.side}E: ${data.kmformula}</td>`);
         data['id']=cvtblCounter;
         exportDict['km']['measures'].push(data);
+        exportDict['machine']=data['machine'];
         exportDict['km']['count'] = String(1+parseInt(exportDict['km']['count'],10))
     }
     html.push(`<td><button type="button" onclick="removecvMeasure('${datatype}',${cvtblCounter});" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button></td>`);
