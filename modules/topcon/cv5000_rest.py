@@ -89,3 +89,22 @@ def getCV5000():
         machine = 'default'
     res = importCV5000(machine)
     return json.dumps(res)
+    # res = {
+    #   "RMpath": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris",
+    #   "machine": "cv-iris",
+    #   "rx": {
+    #       "filename": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
+    #       "count": 0,
+    #       "measures": []
+    #   },
+    #   "km": {
+    #       "filename": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
+    #       "count": 2,
+    #       "measures": [
+    #           {
+    #               "R1Radius": "7.92", "R1Power": "42.50", "R1Axis": "148", "R2Radius": "7.75", "R2Power": "43.50", "R2Axis": "58",
+    #               "CylPower": "-1.00", "CylAxis": "148", "AverageRadius": "7.83", "AveragePower": null, "side": "R" },
+    #           {  "R1Radius": "7.86", "R1Power": "43.00", "R1Axis": "21", "R2Radius": "7.73", "R2Power": "43.75", "R2Axis": "111",
+    #               "CylPower": "-0.75", "CylAxis": "21", "AverageRadius": "7.79", "AveragePower": null, "side": "L" }
+    #        ]}
+    # }

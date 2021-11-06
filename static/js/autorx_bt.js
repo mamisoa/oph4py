@@ -371,6 +371,7 @@ function responseHandler_cvrx(res) {
     let display = [];
     $.each(list, function (i) {
         display.push({
+            'machine': res['machine'],
             'type': list[i]['TypeName'],
             'TypeNo': list[i]['TypeNo'],
             'Distance': list[i]['Distance'],
@@ -440,6 +441,7 @@ function responseHandler_cvkm(res) {
     let display = [];
     $.each(list, function (i) {
         display.push({
+            'machine': res['machine'],
             'R1Radius': list[i]['R1Radius'],
             'R1Power': list[i]['R1Power'],
             'R1Axis': list[i]['R1Axis'],
