@@ -57,12 +57,13 @@ def createCV5000xml(resDict):
     full = etree.tostring(root, encoding='UTF-8', xml_declaration=True ,pretty_print=True).decode()
     return full
 
-@action('rest/exportCV5000xml', method=['GET'])
+@action('rest/exportCV5000xml', method=['GET', 'POST'])
 def exportCV5000xml():
     import json
     from datetime import datetime
     now = datetime.now()
     response.headers['Content-Type'] = 'application/xml;charset=UTF-8'
+    importDict = request.json
     machinedict = TOPCON_DICT
     if 'machine' in request.query:
         machine = request.query.get('machine')
@@ -73,7 +74,8 @@ def exportCV5000xml():
         'date': now.strftime("%Y-%m-%d"), 'time': now.strftime("%H:%M:%S")
         }
     # importDict = { 'machine': 'test', 'rx': { 'count':20 , 'measures': [ { 'sph': '-1.25', 'cyl' : '-0.50'} ]} }
-    importDict = importCV5000(machine)
-    importDict.update({"patient" : patient})
+    # importDict = importCV5000(machine)
+    # importDict.update({"patient" : patient})
     resDict = createCV5000xml(importDict)
+    ## write file
     return resDict
