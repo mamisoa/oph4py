@@ -372,14 +372,14 @@ function responseHandler_cvrx(res) {
     $.each(list, function (i) {
         display.push({
             'machine': res['machine'],
-            'type': list[i]['TypeName'],
+            'TypeName': list[i]['TypeName'],
             'TypeNo': list[i]['TypeNo'],
             'Distance': list[i]['Distance'],
             'vaR': list[i]['vaR'],
-            'vaL': list[i]['VaL'],
+            'vaL': list[i]['vaL'],
             'vaB': list[i]['vaB'],
-            'pdR': list[i]['31.75'],
-            'pdL': list[i]['31.75'],
+            'pdR': list[i]['pdR'],
+            'pdL': list[i]['pdL'],
             'pdB': list[i]['pdB'],
             'SphR': list[i]['SphR'],
             'CylR': list[i]['CylR'],
@@ -533,7 +533,7 @@ function cacheCVtbl(data, datatype) {
         html.push(`<td>RE: ${data.rxright} LE: ${data.rxleft}</td>`);
         data['id']=cvtblCounter;
         exportDict['rx']['measures'].push(data);
-        exportDict.push({'machine' : data['rx']['measures']['machine']});
+        exportDict['machine']=data['machine'];
         exportDict['rx']['count'] = String(1+parseInt(exportDict['rx']['count'],10))
     } else {
         html.push(`<td>${data.side}E: ${data.kmformula}</td>`);
