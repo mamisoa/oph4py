@@ -489,3 +489,39 @@ $('#btnExport2cv5000').click(function(){
     });
   $('#cvModal').modal('hide');
 })
+
+function exportDict2app(data){
+  statusDict = { 'Prescription': 'prescribed', 'Full Correction' : 'measure', 
+    'Latest prescription': 'measure', 'Current Spectacles': 'measure', 'Objective Data': 'measure' };
+  rx_originDict = { 'Prescription': 'trial', 'Full Correction' : 'autorx', 
+  'Latest prescription': 'glass', 'Current Spectacles': 'glass', 'Objective Data': 'trial' };
+  return
+  
+};
+
+statusRxDict = {};
+Object.keys(statusRxIndex).forEach( key => ( a[statusRxIndex[key]['id']] = statusRxIndex[key]['status']));
+
+// FIXME: missing addition !!!
+function exportDictFormat(xdict) {
+  let dataObj = {};
+  let kmLst = xdict['km'], rxLst = xdict['rx'], patientDict = xdict['patient'];
+  dataObj['timestamp']= getToday()['date']+'T'+getToday()['time'].split('.')[0];
+  dataObj['id_auth_user'] = wlObj['auth_user']['id'];
+  dataObj['id_worklist'] = wlObj['worklist']['id'];
+
+  let rxSideLst = ['Sph', 'Cyl', 'Axis', 'HPris', 'HBase', 'VPri', 'VBase', 'Prism', 'Angle']
+  rxList.forEach(mes => {
+      let cloneDataObjR = JSON.parse(JSON.stringify(dataObj)); // deepcopy
+      let cloneDataObjL = JSON.parse(JSON.stringify(dataObj)); // deepcopy
+      let mesKeyLst = Object.keys(mes); // keys in measures
+      mesKeyLst.forEach(key => {
+        if (key.slice(0,-1) in rxSideLst) {
+          if (key.slice(-1) == 'R') {
+            cloneDataObjR[key] = cloneDataObjL[key];
+          }
+        }
+      })
+    }
+  );
+}
