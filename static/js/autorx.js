@@ -499,10 +499,13 @@ function exportDict2app(data){
   
 };
 
-statusRxDict = {};
-Object.keys(statusRxIndex).forEach( key => ( a[statusRxIndex[key]['id']] = statusRxIndex[key]['status']));
+// statusRxDict = {};
+// Object.keys(statusRxIndex).forEach( key => ( statusRxDict[statusRxIndex[key]['id']] = statusRxIndex[key]['status']));
+statusRxDict = statusRxIndex.reduce((acc,item) => {
+  return { ...acc, [item['id']]: item['status']};
+}, {});
 
-// FIXME: missing addition !!!
+// FIXME: calculate addition !!!
 function exportDictFormat(xdict) {
   let dataObj = {};
   let kmLst = xdict['km'], rxLst = xdict['rx'], patientDict = xdict['patient'];
@@ -512,13 +515,16 @@ function exportDictFormat(xdict) {
 
   let rxSideLst = ['Sph', 'Cyl', 'Axis', 'HPris', 'HBase', 'VPri', 'VBase', 'Prism', 'Angle']
   rxList.forEach(mes => {
+      // if key ends with L, remove the last letter of the key and inject key to correponding object
       let cloneDataObjR = JSON.parse(JSON.stringify(dataObj)); // deepcopy
       let cloneDataObjL = JSON.parse(JSON.stringify(dataObj)); // deepcopy
+      cloneDataObjR['id_pair'] = cloneDataObjL['id_pair'] = Date.now();
       let mesKeyLst = Object.keys(mes); // keys in measures
       mesKeyLst.forEach(key => {
         if (key.slice(0,-1) in rxSideLst) {
-          if (key.slice(-1) == 'R') {
-            cloneDataObjR[key] = cloneDataObjL[key];
+          let field = key.slice(-1);
+          if ( field == 'R') {
+            cloneDataObjR[field] = cloneDataObjL[key];
           }
         }
       })
