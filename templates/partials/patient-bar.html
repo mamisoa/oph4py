@@ -54,7 +54,7 @@ const seniorObj = seniorDict[0];
 const patientObj = wlDict[0]['auth_user'];
 const patientId = patientObj['id'];
 const mdHistory = 
-[[ if 'mdHistory' is locals():]]
+[[ if 'mdHistory' in locals():]]
 [[ = XML(mdHistory) ]];
 [[ else:]]
 [[='[]']]
