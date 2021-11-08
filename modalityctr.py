@@ -107,7 +107,7 @@ def md(wlId):
     user = auth.get_user()
     userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
     userHierarchy = db(db.membership.id == user['membership']).select(db.membership.hierarchy).first()['hierarchy']
-    if userHierarchy >= 2:
+    if userHierarchy >= 3:
         redirect(URL('worklist'))
     db.auth_user.password.readable = False
     db.auth_user.password.writable  = False
