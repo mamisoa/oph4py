@@ -285,18 +285,21 @@ $('#idLeftRx input[name="color"]').change(function(){
 // set rx submit buttons
 $('#idRightRx').submit(function(e){
   e.preventDefault();
-  rxInsert('#idRightRx','right');
+  $.when(rxInsert('#idRightRx','right')).done(function(){refreshTables();});
+  //refreshTables();
 });
 
 $('#idLeftRx').submit(function (e) {
   e.preventDefault();
-  rxInsert('#idLeftRx', 'left');
+  $.when(rxInsert('#idLeftRx','left')).done(function(){refreshTables();});
+  // rxInsert('#idLeftRx', 'left');
+  //refreshTables();
 });
 
 $('#btnAddBothRx').click(function () {
   let id_pair = Date.now();
-  rxInsert('#idRightRx','right',id_pair);
-  rxInsert('#idLeftRx', 'left',id_pair);
+  $.when(rxInsert('#idRightRx','right',id_pair),(rxInsert('#idLeftRx', 'left',id_pair)))
+	.done(function(){refreshTables();})
 });
 
 $('#idRightKm').submit(function(e){
@@ -385,7 +388,8 @@ function rxInsert(domId,laterality,id_pair, status=1) {
   delete dataObj['add_close'];
   console.log('dataObj',dataObj);
   dataStr = JSON.stringify(dataObj);
-  crudp('rx','0','POST', dataStr).then( data => $('#rx'+capitalize(laterality)+'_tbl').bootstrapTable('refresh'));
+  // crudp('rx','0','POST', dataStr).then( data => $('#rx'+capitalize(laterality)+'_tbl').bootstrapTable('refresh'));
+  return crudp('rx','0','POST', dataStr);
 };
 
 // domId eg #idRightRx , laterality eg 'right', default status = measure

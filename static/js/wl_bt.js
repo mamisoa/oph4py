@@ -62,9 +62,10 @@ function queryParams_wl(params) {
 };
 
 function styleTimeslot(ts) {
-    let arr = ts.split(' ');
-    let res = '<strong>'+arr[1]+'</strong> '+arr[0].split('-').reverse().join('/');
-    return res;
+    // let arr = ts.split(' ');
+    // let res = '<strong>'+arr[1]+'</strong> '+arr[0].split('-').reverse().join('/');
+    return ts;
+    // return res;
 };
 
 function responseHandler_wl(res) { // used if data-response-handler="responseHandler_wl"

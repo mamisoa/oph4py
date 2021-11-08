@@ -100,7 +100,7 @@ def api(tablename, rec_id=None):
             request.json["username"]= row.username
     try:
         json_resp = RestAPI(db,policy)(request.method,tablename,rec_id,request.GET,request.json)
-        # json_resp RestAPI(db,policy)(request.method,tablename,rec_id,request.GET,request.POST) 
+        #json_resp = RestAPI(db,policy)(request.method,tablename,rec_id,request.GET,request.POST) 
         db.commit()
         return json_resp
     except ValueError: 
