@@ -212,6 +212,7 @@ function detailFormatter(index, row) {
         html.push('<p class=""><span class="fw-bold">Rx int: </span>'+ row.rx_int +'</p>');
         html.push('<p class=""><span class="fw-bold">Rx close: </span>'+ row.rx_close+'(Add+'+row.add+')</p>');
     };
+    html.push('<p class=""><span class="fw-bold">PD: </span>' + parseFloat(row.pd05)*2 + 'mm</p>');
     html.push('</div>');
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ (row.laterality).toUpperCase() +'</p>');

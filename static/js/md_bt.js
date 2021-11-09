@@ -557,6 +557,7 @@ function responseHandler_rx(res) {
             'cyl_close': list[i].cyl_close,
             'axis_close': list[i].axis_close,
             'rx_close': list[i].sph_close+'('+list[i].cyl_close+'x'+list[i].axis_close+'°)',
+            'pd05': list[i]['pd05'],
             'note': list[i].note,
             'laterality': list[i]['laterality'],
             'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
@@ -605,6 +606,7 @@ function detailFormatter_rx(index, row) {
     html.push('<p class=""><span class="fw-bold">Type: </span>'+ row.glass_type+'</p>');
     html.push('<p class=""><span class="fw-bold">Rx far: </span>'+ row.rx_far +'</p>');
     html.push('<p class=""><span class="fw-bold">Rx int: </span>'+ row.rx_int +'</p>');
+    html.push('<p class=""><span class="fw-bold">PD: </span>' + parseFloat(row.pd05) * 2 + 'mm</p>');
     html.push('<p class=""><span class="fw-bold">Rx close: </span>'+ row.rx_close+'(Add+'+row.add+')</p>');
     html.push('<p class=""><span class="fw-bold">Note: </span>'+ row.note +'</p>');
     html.push('</div>');
