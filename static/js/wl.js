@@ -249,7 +249,7 @@ function putWlModal(wlId){
             document.getElementById("procedureSelect").value= field['procedure.id'];
             document.getElementById("providerSelect").value= field['provider.id'];
             document.getElementById("seniorSelect").value= field['senior.id'];
-            document.getElementById("requested_time").value= field['requested_time'];
+            document.getElementById("requested_time").value= field['requested_time'].split(' ').join('T');
             document.getElementById("modality_destSelectPut").value= field['modality.id'];
             $("[name=laterality]").val([field.laterality]);
             $("[name=status_flag]").val([field.status_flag]);
