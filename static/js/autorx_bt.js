@@ -150,18 +150,31 @@ function rowStyle_type(row) {
 };
 
 function cellStyle_formula(value,row) {
-    let bg, statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' };
+    let bg, statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' }, fontColor='black';
     row.rx_origin != undefined ? bg = statusColor[row.rx_origin] : bg = "white";
-
+    row.se_far == 0 ? {} : ( row.se_far < 0  ? fontColor = 'firebrick' : fontColor='forestgreen');
     return {    
         css: { 
+            'color': fontColor, 
             'font-weight': 'bold',
             'background-color': bg
         }
     };
 };
 
-function cellStyle(value,row) {
+function cellStyle_add(value,row) {
+    let bg, statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' };
+    row.rx_origin != undefined ? bg = statusColor[row.rx_origin] : bg = "white";
+    return {    
+        css: { 
+            'background-color': bg,
+            'font-weight': 'bold'
+        }
+    };
+};
+
+
+function cellStyle_color(value,row) {
     let statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' };
     row.color != undefined ? bg = row.color : bg = statusColor[row.rx_origin];
     return {    
