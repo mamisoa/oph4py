@@ -727,6 +727,27 @@ function rowStyle_km(row,index) {
             };
 };
 
+function cellStyle_k1(value,row) {
+    let font={ 'color': 'black', 'weight' : 'normal'};
+    ( row.k1 <=40.50 || row.k1 >=46.50) ? font = { 'color': 'red', 'weight' : 'bold '} : {};
+    return {    
+        css: { 
+            'font-weight': font.weight,
+            'color': font.color
+        }
+    };
+};
+
+function cellStyle_k2(value,row) {
+    let font={ 'color': 'black', 'weight' : 'normal'};
+    ( row.k2 <=40.50 || row.k2 >=46.50) ? font = { 'color': 'red', 'weight' : 'bold '} : {};
+    return {    
+        css: { 
+            'font-weight': font.weight,
+            'color': font.color
+        }
+    };
+};
 
 // tono tables parameters
 // todo: add search to select techo
