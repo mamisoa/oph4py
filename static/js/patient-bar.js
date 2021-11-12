@@ -21,8 +21,11 @@ if (wlObj['worklist']['status_flag'] == 'done') {
 };
 wlObj['worklist']['warning'] != null? $('#wlItemDetails .warning').html('<i class="fas fa-exclamation-circle"></i> '+wlObj['worklist']['warning']) : $('#wlItemDetails .warning').html('').removeClass('bg-danger text-wrap');
 if (patientObj['photob64'] == null) {
-    $('#photoDiv').addClass('visually-hidden');
-    $('#patientIdDiv').removeClass('text-end').addClass('text-center');
+    document.getElementById("photoId").setAttribute("height", 200);
+    document.getElementById("photoId").setAttribute("width", 150);
+    genderIdObj[patientObj['gender']] == "Male" ? document.getElementById("photoId").setAttribute("src", HOSTURL+"/myapp/static/images/assets/avatar/mini-man.svg") : document.getElementById("photoId").setAttribute("src", HOSTURL+"/myapp/static/images/assets/avatar/mini-woman.svg");
+    // $('#photoDiv').addClass('visually-hidden');
+    // $('#patientIdDiv').removeClass('text-end').addClass('text-center');
 } else {
     document.getElementById("photoId").setAttribute("src",patientObj['photob64']);
 };
