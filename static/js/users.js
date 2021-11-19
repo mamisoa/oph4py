@@ -21,7 +21,7 @@ $('#userForm').submit(function(e) {
         addressArr = addressStr.match(regex);
         addressObj['home_num'] = addressArr[0];
         addressObj['box_num'] = addressArr[1] == undefined ? '' : addressArr[1];
-        addressObj['address1'] = addressStr.split(addressArr[0])[0];
+        addressObj['address1'] = addressArr == null ? addressStr : addressStr.split(addressArr[0])[0];
         addressObj['zipcode'] = formObj['zipcode'];
         addressObj['town'] = formObj['town'];
         addressObj['country'] = 'Belgique';
