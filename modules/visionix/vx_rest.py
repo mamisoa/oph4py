@@ -26,10 +26,11 @@ def getWF(machine,path,filename,side,patient):
         [rx['sph3'],rx['cyl3'],rx['axis3']] = [float(sph_dict['r_3']),float(cyl_dict['r_3']),float(axis_dict['r_3'])*180/pi]
         [rx['sph5'],rx['cyl5'],rx['axis5']] = [float(sph_dict['r_5']),float(cyl_dict['r_5']),float(axis_dict['r_5'])*180/pi]
         [rx['sph7'],rx['cyl7'],rx['axis7']] = [float(sph_dict['r_7']),float(cyl_dict['r_7']),float(axis_dict['r_7'])*180/pi]
-        return rx
+        rx['status'] = 'success'
     except Exception as e:
+        rx['status'] = 'error'
         rx['error'] = e.args[0]
-        return False
+    return rx
 
 def getTopo(machine,path,filename,side,patient):
     import configparser
@@ -55,10 +56,11 @@ def getTopo(machine,path,filename,side,patient):
             float(simk_dict['k1']),float(simk_dict['k2']),
             float(simk_dict['k1_axis']),float(simk_dict['k2_axis']),
             float(simk_dict['cyl']), float(topo_dict['pd'])/2]
-        return topo
+        topo['status'] = 'success'
     except Exception as e:
         topo['error'] = str(e)
-        return topo
+        topo['status'] = 'error'
+    return topo
 
 def getARK(machine,path,filename,side,patient):
     from math import pi
@@ -80,12 +82,13 @@ def getARK(machine,path,filename,side,patient):
         [rx['sph7'],rx['cyl7'],rx['axis7']] = [float(ar['sphere_7']),float(ar['cylinder_7']),float(ar['axis_7'])*180/pi]
         kr = dict(config.items('KR'))
         [rx['k1'],rx['k2'],rx['k1_axis'],rx['k2_axis'], rx['kcyl']] = [float(kr['k1']),float(kr['k2']),kr['k1_axis'],kr['k2_axis'], float(kr['simk_cyl'])]
-        topo = dict(config.items('TOPO'))
-        rx['pd05'] = float(topo['pd'])/2
-        return rx
+        topo = dict(config.items('GENERAL'))
+        rx['pd05'] = float(topo['pd'])
+        rx['status'] = 'success'
     except Exception as e:
         rx['error'] = e.args[0]
-        return False
+        rx['status'] = 'error'
+    return rx
 
 # check if patient exists in Visionix machines, if so send Json output with corresponding file and path
 @action('rest/scan_visionix/<machine>/', method=['GET']) 
@@ -294,28 +297,22 @@ def get_visionix_mes(machine=L80_FOLDER):
                                                         patient['count'] +=1
                                                         if m.group('exam') == 'WF':
                                                             wf = getWF(machine,examsFolders.path,f.name,m.group('side').lower(),folder['file']) # get the mesures from file
-                                                            if wf != False:
+                                                            if wf['status'] != 'error':
                                                                 exams['count'] += 1
-                                                                wf['date'] = dateFolder
-                                                                data.append(wf)
-                                                            else:
-                                                                data.append({examsFolders.path+'/'+f.name:'nothing found!'})
+                                                            wf['date'] = dateFolder
+                                                            data.append(wf)
                                                         if m.group('exam') == 'Topo':
                                                             topo = getTopo(machine,examsFolders.path,f.name,m.group('side').lower(),folder['file']) # get the mesures from file
-                                                            if topo != False:
+                                                            if topo['status'] != 'error':
                                                                 exams['count'] += 1
-                                                                topo['date'] = dateFolder
-                                                                data.append(topo)
-                                                            else:
-                                                                data.append({examsFolders.path+'/'+f.name:'nothing found!'})
+                                                            topo['date'] = dateFolder
+                                                            data.append(topo)
                                                         if m.group('exam') == 'ARK':
                                                             ark = getARK(machine, examsFolders.path, f.name, m.group('side').lower(), folder['file'])  # get the mesures from file
-                                                            if ark != False:
+                                                            if ark['status'] != 'error':
                                                                 exams['count'] += 1
-                                                                ark['date'] = dateFolder
-                                                                data.append(ark)
-                                                            else:
-                                                                data.append({examsFolders.path+'/'+f.name: 'nothing found!'})
+                                                            ark['date'] = dateFolder
+                                                            data.append(ark)
                                             if data != []:
                                                 mes.extend(data)
                         exams['mesurements'].extend(mes)
