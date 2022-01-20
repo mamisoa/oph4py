@@ -371,8 +371,8 @@ $('#CxRxFormModal').submit(function(e) {
                             margin: [0, 10, 0, 10],
                             alignment: 'center',
                             text: [
-                                'Annexe 15ter',
-                                { text: 'bis\n', italics: true },
+                                'Annexe 15',
+                                { text: 'ter\n', italics: true },
                                 'PRESCRIPTION MEDICALE POUR LENTILLES DE CONTACT'
                                 ]
                         },
