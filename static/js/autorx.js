@@ -158,6 +158,13 @@ for (let rx of idRxArr) {
   // if glass_type is mono or na -> typeDiv hide int and close
   // else show typeDiv int and close
   $(rx + ' input[name=glass_type]').change(function(){
+    if (rx == '#idRightRx') {
+      // sync Left
+      // $('#idLeftRx input[name="glass_type"][value="'+$('#idRightRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true);
+    } else if ( rx == '#idLeftRx') {
+      // sync Right
+      // $('#idRightRx input[name="glass_type"][value="'+$('#idLeftRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true);
+    };
     if ( ($(rx + ' input[name=glass_type]:checked').val() == 'monofocal') || ($(rx + ' input[name=glass_type]:checked').val() == 'na') ) {
       for (hide of arr.slice(1)) {
         $(hide).addClass('visually-hidden');
@@ -171,6 +178,7 @@ for (let rx of idRxArr) {
       for (show of arr.slice(1)) {
         $(show).removeClass('visually-hidden');
         if (rx != '#rxFormModal') {
+          $(rx+' input[name=va_far]').val('1.0');
           $(rx+' input[name=va_int]').val(''); // no int vision as default, before 1.0
           $(rx+' input[name=va_close]').val('2');
         };
@@ -182,9 +190,13 @@ for (let rx of idRxArr) {
     if (rx == '#idRightRx') {
       // console.log('#idRightRx changed');
       $('#idLeftRx input[name=rx_origin][value="'+$('#idRightRx input[name=rx_origin]:checked').val()+'"]').prop('checked', true);
+      // sync Left
+      // $('#idLeftRx input[name="glass_type"][value="'+$('#idRightRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true).trigger('change');
     } else if (rx == '#idLeftRx') {
       // console.log('#leftTypeDiv changed');
       $('#idRightRx input[name=rx_origin][value="'+$('#idLeftRx input[name=rx_origin]:checked').val()+'"]').prop('checked', true);
+      // sync Right
+      // $('#idRightRx input[name="glass_type"][value="'+$('#idLeftRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true).trigger('change');
     };
     if (($(rx+' input[name=rx_origin]:checked').val() == 'trial') || ($(rx+' input[name=rx_origin]:checked').val() == 'glass')) {
       // if glass or trial, show (right/left)TypeDiv and set default values
@@ -195,7 +207,7 @@ for (let rx of idRxArr) {
       if (rx != '#rxFormModal') {
         $(rx+' input[name=va_far]').val('1.0');
         $(rx+' input[name=va_int]').val('');
-        $(rx+' input[name=va_close]').val('');
+        $(rx+' input[name=va_close]').val('2');
       };
     } else {
       // else if not glass or trial, hide (right/left)TypeDiv and set default values
@@ -207,7 +219,7 @@ for (let rx of idRxArr) {
       if (rx != '#rxFormModal') {
         $(rx+' input[name=va_far]').val('');
         $(rx+' input[name=va_int]').val(''); // no int vision as default, before 1.0
-        $(rx+' input[name=va_close]').val('2');
+        $(rx+' input[name=va_close]').val('');
         for (hide of arr.slice(1)) {
           $(hide).addClass('visually-hidden');
         };
@@ -239,16 +251,18 @@ $('#idLeftRx input[name="timestamp"]').change(function(){
 
 // sync right and left glass_type
 function eventSyncRight() {
-  $('#idLeftRx input[name="glass_type"][value="'+$('#idRightRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true);
-  $('#idLeftRx input[name="glass_type"]').trigger('change');
+  $('#idLeftRx input[name="glass_type"][value="'+$('#idRightRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true).trigger('change');
+  // $('#idLeftRx input[name="glass_type"]').trigger('change');
+  // $('#idLeftRx input[name="rx_origin"]').trigger('change'); //
 };
 function eventSyncLeft() {
-  $('#idRightRx input[name="glass_type"][value="'+$('#idLeftRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true);
-  $('#idRightRx input[name="glass_type"]').trigger('change');
+  $('#idRightRx input[name="glass_type"][value="'+$('#idLeftRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true).trigger('change');
+  // $('#idRightRx input[name="glass_type"]').trigger('change');
+  // $('#idRightRx input[name="rx_origin"]').trigger('change'); //
 };
 
 function syncRx() {
-  // console.log('syncRx function called');
+  console.log('syncRx function called');
   $('#idRightRx input[name="glass_type"]').on('change', eventSyncRight);
   $('#idLeftRx input[name="glass_type"]').on('change', eventSyncLeft);
   $('#btnLink').hasClass('unlocked')?$('#btnLink').removeClass('unlocked'):{};
