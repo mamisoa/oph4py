@@ -205,9 +205,9 @@
             </div> <!-- end div row mHx sHx -->
         </div>
     </div>
-    [[ if userMembership == 'Doctor':]]
     <div class="row history">
         <h3 class="big-title bg-info"><a role="button" data-bs-toggle="collapse" href=".oHx">Ocular history</a></h3>
+        [[ if userMembership == 'Doctor':]]
         <div class="row mb-3 bg-neutral"> <!-- row oHx-->
             <div class="col oHx">
                 <table
@@ -237,6 +237,7 @@
                 </table>
             </div> <!-- end oHx col-->
         </div> <!-- end oHx row-->
+        [[ pass ]]
         <div class="row mb-3 oHx"> <!-- row wlHx-->
             <div class="col">
                 <h4><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h4>
@@ -481,8 +482,7 @@
                 </div>
             </div>
         </div> <!-- end row rx-->
-    </div> <!-- end row oHx --> 
-    [[ pass ]]
+    </div> <!-- end row oHx -->
 </div>
 <div class="container-fluid mb-3" id="cHxDiv">
     <div class="row">
