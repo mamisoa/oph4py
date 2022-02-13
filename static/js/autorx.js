@@ -275,6 +275,7 @@ $('#btnLink').click(function () {
 });
 
 // sync color picker
+// TODO: remove color picker in autoRx, Dil, Cyclo and set to white
 $('#idRightRx input[name="color"]').change(function(){
   $('#idLeftRx input[name="color"]').val($('#idRightRx input[name="color"]').val());
 });
