@@ -17,25 +17,64 @@ certificateObj['qrcode']='Signed by '+certificateObj['doctortitle']+' uuid:';
 
 var reportObj = {};
 
-// gets all autoRx on right
+// autoRx variable
+var autorxObjFill = { 
+        sphR : '', cylR :'', axisR: '', vafR: '',
+        sphL : '', cylL :'', axisL: '', vafR: ''
+    };
+// gets all autoRx
 function getRightAutoRx(){
     return $.get(API_RXRIGHT+'&rx_origin.eq=autorx');
 };
-
-// gets all autoRx on left
 function getLeftAutoRx(){
     return $.get(API_RXLEFT+'&rx_origin.eq=autorx');
 };
-
 $.when(getRightAutoRx(),getLeftAutoRx()).done(function(autorxRight,autorxLeft){
     // console.log(autorxRight[0]['items']);
     if (autorxRight[0]['items'].length > 0) {
         // console.log(autorxRight[0]['items']);
-        console.log('right:',autorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
+        autorxObjFill['sphR'] = autorxRight[0]['items'][0]['sph_far'];
+        autorxObjFill['cylR'] = autorxRight[0]['items'][0]['cyl_far'];
+        autorxObjFill['axisR'] = autorxRight[0]['items'][0]['axis_far'];
+        // console.log('right:',autorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
     };
     if (autorxLeft[0]['items'].length > 0) {
-        console.log('right:',autorxLeft[0]['items'][0]['sph_far']);
+        autorxObjFill['sphL'] = autorxLeft[0]['items'][0]['sph_far'];
+        autorxObjFill['cylL'] = autorxLeft[0]['items'][0]['cyl_far'];
+        autorxObjFill['axisL'] = autorxLeft[0]['items'][0]['axis_far'];
+        //console.log('right:',autorxLeft[0]['items'][0]['sph_far']);
     };
+    console.log(autorxObjFill);
+});
+
+// cycloRx variable
+var cyclorxObjFill = { 
+    sphR : '', cylR :'', axisR: '', vafR: '',
+    sphL : '', cylL :'', axisL: '', vafR: ''
+};
+// gets all autoRx
+function getRightCycloRx(){
+return $.get(API_RXRIGHT+'&rx_origin.eq=cyclo');
+};
+function getLeftCycloRx(){
+return $.get(API_RXLEFT+'&rx_origin.eq=cyclo');
+};
+$.when(getRightCycloRx(),getLeftCycloRx()).done(function(cyclorxRight,cyclorxLeft){
+// console.log(autorxRight[0]['items']);
+if (cyclorxRight[0]['items'].length > 0) {
+    // console.log(autorxRight[0]['items']);
+    cyclorxObjFill['sphR'] = cyclorxRight[0]['items'][0]['sph_far'];
+    cyclorxObjFill['cylR'] = cyclorxRight[0]['items'][0]['cyl_far'];
+    cyclorxObjFill['axisR'] = cyclorxRight[0]['items'][0]['axis_far'];
+    // console.log('right:',cyclorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
+};
+if (cyclorxLeft[0]['items'].length > 0) {
+    cyclorxObjFill['sphL'] = cyclorxLeft[0]['items'][0]['sph_far'];
+    cyclorxObjFill['cylL'] = cyclorxLeft[0]['items'][0]['cyl_far'];
+    cyclorxObjFill['axisL'] = cyclorxLeft[0]['items'][0]['axis_far'];
+    //console.log('right:',cyclorxLeft[0]['items'][0]['sph_far']);
+};
+console.log(cyclorxObjFill);
 });
 
 function presenceCert(){
@@ -165,8 +204,8 @@ function preopCert() {
         preopdefault.push('<ul>');
             preopdefault.push('<li>la réfraction objective suivante sous <strong>cyloplégie</strong>:');
                 preopdefault.push('<ul>');
-                    preopdefault.push('<li> Oeil droit (OD) : ( x °)</li>');
-                    preopdefault.push('<li> Oeil gauche (OG): ( x °)</li>');
+                    preopdefault.push(`<li> Oeil droit (OD) : ${cyclorxObjFill['sphR']}(${cyclorxObjFill['cylR']} x ${cyclorxObjFill['axisR']}°)</li>`);
+                    preopdefault.push(`<li> Oeil gauche (OG): ${cyclorxObjFill['sphR']}(${cyclorxObjFill['cylR']} x ${cyclorxObjFill['axisR']} °)</li>`);
                 preopdefault.push('</ul>');
             preopdefault.push('</li>');
             preopdefault.push('<li>une acuité visuelle <strong>avec la correction optimale</strong>:');
