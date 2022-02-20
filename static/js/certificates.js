@@ -17,17 +17,25 @@ certificateObj['qrcode']='Signed by '+certificateObj['doctortitle']+' uuid:';
 
 var reportObj = {};
 
+// gets all autoRx on right
 function getRightAutoRx(){
     return $.get(API_RXRIGHT+'&rx_origin.eq=autorx');
 };
 
+// gets all autoRx on left
 function getLeftAutoRx(){
     return $.get(API_RXLEFT+'&rx_origin.eq=autorx');
 };
 
-$.when(getRightAutoRx(),getLeftAutoRx()).done(function(autorx1,autorx2){
-    console.log('right:',autorx1[0]['items'][0]['sph_far']);
-    console.log('left:',autorx2[0]['items'][0]['sph_far']);
+$.when(getRightAutoRx(),getLeftAutoRx()).done(function(autorxRight,autorxLeft){
+    // console.log(autorxRight[0]['items']);
+    if (autorxRight[0]['items'].length > 0) {
+        // console.log(autorxRight[0]['items']);
+        console.log('right:',autorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
+    };
+    if (autorxLeft[0]['items'].length > 0) {
+        console.log('right:',autorxLeft[0]['items'][0]['sph_far']);
+    };
 });
 
 function presenceCert(){
@@ -85,34 +93,97 @@ function freeCert() {
 function docCert() {
     let certdefault =[];
     certdefault.push('<p>Cher Confrère, chère Consoeur, </p>');
-    certdefault.push('<p>J\'ai examiné: </p>');
-    certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
+    certdefault.push('<p>J\'ai examiné: <strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong> ')
     let creationstamp = new Date(wlObj['worklist']['created_on']).addHours(timeOffsetInHours*2);
     let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
     let timecreation = creationstamp.toJSON().slice(11,19);
-    certdefault.push('<p> ce '+ datecreation + ' à ' + timecreation+'.</p>');
+    certdefault.push('ce '+ datecreation + ' à ' + timecreation+'.</p>');
+    certdefault.push('<p>L\'examen montre:');
+        certdefault.push('<ul>');
+            certdefault.push('<li>une acuité visuelle avec la correction optimale:');
+                certdefault.push('<ul>');
+                    certdefault.push('<li>Oeil droit (OD) : 1.0 P2 avec ( x °) add+0</li>');
+                    certdefault.push('<li>Oeil gauche (OG): 1.0 P2 avec ( x °) add+0</li>');
+                certdefault.push('</ul>');
+            certdefault.push('</li>');
+            certdefault.push('<li>une tension oculaire mesurée à l\'air pulsé respective de OD: 15 mmHg/550µm et OG: 15 mmHg/550µm </li>');
+            certdefault.push('<li>une biomicroscopie antérieure:');
+                certdefault.push('<ul>');
+                    certdefault.push('<li>OD: sans particularité');
+                    certdefault.push('<li>OG: sans particularité</li>');
+                certdefault.push('</ul>');
+            certdefault.push('</li>');
+            certdefault.push('<li>une biomicroscopie postérieure:');
+                certdefault.push('<ul>');
+                    certdefault.push('<li>OD: sans particularité');
+                    certdefault.push('<li>OG: sans particularité</li>');
+                certdefault.push('</ul>');
+            certdefault.push('</li>');
+        certdefault.push('</ul>');
+    certdefault.push('</p>');
+    certdefault.push('<p><strong>En conclusion:</strong>');
+        certdefault.push('<ol>');
+            certdefault.push('<li>Conclusion 1</li>');
+            certdefault.push('<li>Conclusion 2</li>');
+        certdefault.push('</ol>');
+    certdefault.push('</p>');
+    certdefault.push('<p>Un contrôle annuel est souhaitable.</p>');
     certdefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
     certdefault.push('<p>Cordialement,</p>');
     certdefault.push('<p><strong>Dr.'+userObj['last_name'].toUpperCase()+' '+userObj['first_name']+' '+'</strong></p>');
     return certdefault.join('');
 };
 
-function reportCert() {
-    let certdefault =[];
-    certdefault.push('<p>Cher Confrère, chère Consoeur, </p>');
-    certdefault.push('<p>J\'ai examiné: </p>');
-    certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
+function orthoCert() {
+    let orthodefault =[];
+    orthodefault.push('<p>Cher Confrère, chère Consoeur, </p>');
+    orthodefault.push('<p>J\'ai examiné: <strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong> ')
     let dbstamp = new Date(wlObj['worklist']['created_on']);
     let creationstamp = dbstamp.addHours(timeOffsetInHours*2);
     let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
     let timecreation = creationstamp.toJSON().slice(11,19);
-    certdefault.push('<p> ce '+ datecreation + ' à ' + timecreation+'.</p>');
-    certdefault.push('<p> L\'examen montre: <br/>');
-    certdefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
-    certdefault.push('<p>Cordialement,</p>');
-    certdefault.push('<p><strong>Dr.'+userObj['last_name'].toUpperCase()+' '+userObj['first_name']+' '+'</strong></p>');
-    return certdefault.join('');
+    orthodefault.push('ce '+ datecreation + ' à ' + timecreation+'.</p>');
+    orthodefault.push('<p>Il/Elle nécessite une <strong>rééducation orthoptique de 10 séances (771736)</strong> à raison de <strong>2 fois par semaine</strong>, ');
+    orthodefault.push('pour une <strong>insuffisance de convergence</strong>, dans le but d\'<strong>améliorer son amplitude de fusion</strong>.<\p>')
+    orthodefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
+    orthodefault.push('<p>Cordialement,</p>');
+    orthodefault.push('<p><strong>Dr.'+userObj['last_name'].toUpperCase()+' '+userObj['first_name']+' '+'</strong></p>');
+    return orthodefault.join('');
 };
+
+function preopCert() {
+    let preopdefault =[];
+    preopdefault.push('<p>Cher Confrère, chère Consoeur, </p>');
+    preopdefault.push('<p>J\'ai examiné: <strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong> ')
+    let dbstamp = new Date(wlObj['worklist']['created_on']);
+    let creationstamp = dbstamp.addHours(timeOffsetInHours*2);
+    let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
+    let timecreation = creationstamp.toJSON().slice(11,19);
+    preopdefault.push('ce '+ datecreation + ' à ' + timecreation+' ');
+    preopdefault.push('dans le cadre d\'un examen préopératoire à une <strong>chirurgie réfractive de l\'oeil droit et de l\'oeil gauche</strong> prévue le <strong>'+ datecreation + '</strong>.</p>');
+    preopdefault.push('<p>L\'examen montre:');
+        preopdefault.push('<ul>');
+            preopdefault.push('<li>la réfraction objective suivante sous <strong>cyloplégie</strong>:');
+                preopdefault.push('<ul>');
+                    preopdefault.push('<li> Oeil droit (OD) : ( x °)</li>');
+                    preopdefault.push('<li> Oeil gauche (OG): ( x °)</li>');
+                preopdefault.push('</ul>');
+            preopdefault.push('</li>');
+            preopdefault.push('<li>une acuité visuelle <strong>avec la correction optimale</strong>:');
+                preopdefault.push('<ul>');
+                    preopdefault.push('<li> OD: 1.0</li>');
+                    preopdefault.push('<li> OG: 1.0</li>');
+                preopdefault.push('</ul>');
+            preopdefault.push('</li>');
+        preopdefault.push('</ul>');
+    preopdefault.push('</p>');
+    preopdefault.push('<p>Je joins à ce certificat le devis n° .</p>');
+    preopdefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
+    preopdefault.push('<p>Cordialement,</p>');
+    preopdefault.push('<p><strong>Dr.'+userObj['last_name'].toUpperCase()+' '+userObj['first_name']+' '+'</strong></p>');
+    return preopdefault.join('');
+};
+
 
 var certificateModal = document.getElementById('certificateModal')
 certificateModal.addEventListener('show.bs.modal', function (event) {
@@ -139,6 +210,14 @@ certificateModal.addEventListener('show.bs.modal', function (event) {
         $('#certificateDest').val('AU MEDECIN DE DROIT');
         $('#certificateTitle').val('RAPPORT MEDICAL');
         certdefault.push(docCert());
+    } else if ($(btn).data('certFlag') == "ortho") {
+        $('#certificateDest').val('AU MEDECIN CONSEIL');
+        $('#certificateTitle').val('PRESCRIPTION');
+        certdefault.push(orthoCert());
+    } else if ($(btn).data('certFlag') == "preop") {
+        $('#certificateDest').val('AU MEDECIN CONSEIL');
+        $('#certificateTitle').val('RAPPORT MEDICAL');
+        certdefault.push(preopCert());
     } else {
         console.log('free cert');
         certdefault.push(freeCert());

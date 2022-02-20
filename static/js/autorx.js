@@ -143,6 +143,34 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
   });
 };
 
+
+// sync right and left glass_type
+
+function eventSync(rx,display='') {
+  if (rx == '#idRightRx') {
+    // sync LeftRx
+    console.log('#idRightRx changed');
+    $('#idLeftRx input[name=rx_origin][value="'+$('#idRightRx input[name=rx_origin]:checked').val()+'"]').prop('checked', true);
+    $('#idLeftRx input[name=va_far]').val($('#idRightRx input[name="va_far"]').val());
+    $('#idLeftRx input[name=va_int]').val($('#idRightRx input[name="va_int"]').val());
+    $('#idLeftRx input[name=va_close]').val($('#idRightRx input[name="va_close"]').val());
+    if ( display == '') {
+      display == 'hide'?$('#leftTypeDiv').addClass('visually-hidden'):$('#leftTypeDiv').removeClass('visually-hidden');
+    };
+  } else if ( rx == '#idLeftRx') {
+    // sync RightRx
+    console.log('#idLeftRx changed');
+    $('#idRightRx input[name=rx_origin][value="'+$('#idLeftRx input[name=rx_origin]:checked').val()+'"]').prop('checked', true);
+    $('#idRightRx input[name=va_far]').val($('#idLeftRx input[name="va_far"]').val());
+    $('#idRightRx input[name=va_int]').val($('#idLeftRx input[name="va_int"]').val());
+    $('#idRightRx input[name=va_close]').val($('#idLeftRx input[name="va_close"]').val());
+    if (display != ''){
+      display == 'hide'?$('#rightTypeDiv').addClass('visually-hidden'):$('#rightTypeDiv').removeClass('visually-hidden');   
+    };
+  };
+};
+
+
 // set default state for refraction
 
 // set changes when From is selected
@@ -158,13 +186,6 @@ for (let rx of idRxArr) {
   // if glass_type is mono or na -> typeDiv hide int and close
   // else show typeDiv int and close
   $(rx + ' input[name=glass_type]').change(function(){
-    if (rx == '#idRightRx') {
-      // sync Left
-      // $('#idLeftRx input[name="glass_type"][value="'+$('#idRightRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true);
-    } else if ( rx == '#idLeftRx') {
-      // sync Right
-      // $('#idRightRx input[name="glass_type"][value="'+$('#idLeftRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true);
-    };
     if ( ($(rx + ' input[name=glass_type]:checked').val() == 'monofocal') || ($(rx + ' input[name=glass_type]:checked').val() == 'na') ) {
       for (hide of arr.slice(1)) {
         $(hide).addClass('visually-hidden');
@@ -172,6 +193,7 @@ for (let rx of idRxArr) {
           $(rx+' input[name=va_far]').val('1.0');
           $(rx+' input[name=va_int]').val('');
           $(rx+' input[name=va_close]').val('');
+          eventSync(rx,'hide');
         };
       };
     } else {
@@ -181,23 +203,14 @@ for (let rx of idRxArr) {
           $(rx+' input[name=va_far]').val('1.0');
           $(rx+' input[name=va_int]').val(''); // no int vision as default, before 1.0
           $(rx+' input[name=va_close]').val('2');
+          eventSync(rx,'show');
         };
       };
     };
+    //eventSync(rx);
   });
   // if origin of rx is autorx, cyclo, dil -> hide int and close, reset them to 0 and hide them
   $(rx+' input[name=rx_origin]').change(function () {
-    if (rx == '#idRightRx') {
-      // console.log('#idRightRx changed');
-      $('#idLeftRx input[name=rx_origin][value="'+$('#idRightRx input[name=rx_origin]:checked').val()+'"]').prop('checked', true);
-      // sync Left
-      // $('#idLeftRx input[name="glass_type"][value="'+$('#idRightRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true).trigger('change');
-    } else if (rx == '#idLeftRx') {
-      // console.log('#leftTypeDiv changed');
-      $('#idRightRx input[name=rx_origin][value="'+$('#idLeftRx input[name=rx_origin]:checked').val()+'"]').prop('checked', true);
-      // sync Right
-      // $('#idRightRx input[name="glass_type"][value="'+$('#idLeftRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true).trigger('change');
-    };
     if (($(rx+' input[name=rx_origin]:checked').val() == 'trial') || ($(rx+' input[name=rx_origin]:checked').val() == 'glass')) {
       // if glass or trial, show (right/left)TypeDiv and set default values
       // $(arr[0]).removeClass('visually-hidden');
@@ -234,6 +247,7 @@ for (let rx of idRxArr) {
         $(rx+' input[name=add_close]').val(round2dec(0));
       };
     };
+    eventSync(rx,'');
   });
 };
 
@@ -249,22 +263,11 @@ $('#idLeftRx input[name="timestamp"]').change(function(){
   $('#idRightRx input[name="timestamp"]').val($('#idLeftRx input[name="timestamp"]').val());
 });
 
-// sync right and left glass_type
-function eventSyncRight() {
-  $('#idLeftRx input[name="glass_type"][value="'+$('#idRightRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true).trigger('change');
-  // $('#idLeftRx input[name="glass_type"]').trigger('change');
-  // $('#idLeftRx input[name="rx_origin"]').trigger('change'); //
-};
-function eventSyncLeft() {
-  $('#idRightRx input[name="glass_type"][value="'+$('#idLeftRx input[name="glass_type"]:checked').val()+'"]').prop('checked', true).trigger('change');
-  // $('#idRightRx input[name="glass_type"]').trigger('change');
-  // $('#idRightRx input[name="rx_origin"]').trigger('change'); //
-};
 
 function syncRx() {
   console.log('syncRx function called');
-  $('#idRightRx input[name="glass_type"]').on('change', eventSyncRight);
-  $('#idLeftRx input[name="glass_type"]').on('change', eventSyncLeft);
+  // $('#idRightRx input[name="glass_type"]').on('change', eventSyncRight);
+  // $('#idLeftRx input[name="glass_type"]').on('change', eventSyncLeft);
   $('#btnLink').hasClass('unlocked')?$('#btnLink').removeClass('unlocked'):{};
   !$('#btnLink').hasClass('locked')?$('#btnLink').addClass('locked').html('<i class="fas fa-lock mx-1"></i>'):{};
   // console.log('locked!');
