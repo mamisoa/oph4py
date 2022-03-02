@@ -205,7 +205,7 @@ function preopCert() {
             preopdefault.push('<li>la réfraction objective suivante sous <strong>cyloplégie</strong>:');
                 preopdefault.push('<ul>');
                     preopdefault.push(`<li> Oeil droit (OD) : ${cyclorxObjFill['sphR']}(${cyclorxObjFill['cylR']} x ${cyclorxObjFill['axisR']}°)</li>`);
-                    preopdefault.push(`<li> Oeil gauche (OG): ${cyclorxObjFill['sphR']}(${cyclorxObjFill['cylR']} x ${cyclorxObjFill['axisR']} °)</li>`);
+                    preopdefault.push(`<li> Oeil gauche (OG): ${cyclorxObjFill['sphL']}(${cyclorxObjFill['cylL']} x ${cyclorxObjFill['axisL']} °)</li>`);
                 preopdefault.push('</ul>');
             preopdefault.push('</li>');
             preopdefault.push('<li>une acuité visuelle <strong>avec la correction optimale</strong>:');
