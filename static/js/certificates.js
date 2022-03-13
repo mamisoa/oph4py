@@ -102,7 +102,7 @@ $.when(getRightTrialRx(),getLeftTrialRx()).done(function(trialrxRight,trialrxLef
     if (trialrxLeft[0]['items'].length > 0) {
         trialrxObjFill['sphL'] = trialrxLeft[0]['items'][0]['sph_far'];
         trialrxObjFill['cylL'] = trialrxLeft[0]['items'][0]['cyl_far'];
-        trialrxObjFill['axisL'] = trialrxRight[0]['items'][0]['axis_far'];
+        trialrxObjFill['axisL'] = trialrxLeft[0]['items'][0]['axis_far'];
         trialrxObjFill['vafL'] = trialrxLeft[0]['items'][0]['va_far'].toFixed(2);
         //console.log('right:',cyclorxLeft[0]['items'][0]['sph_far']);
     };
