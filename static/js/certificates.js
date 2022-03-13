@@ -50,7 +50,7 @@ $.when(getRightAutoRx(),getLeftAutoRx()).done(function(autorxRight,autorxLeft){
 // cycloRx variable
 var cyclorxObjFill = { 
     sphR : '', cylR :'', axisR: '', vafR: '',
-    sphL : '', cylL :'', axisL: '', vafR: ''
+    sphL : '', cylL :'', axisL: '', vafL: ''
 };
 // gets all autoRx
 function getRightCycloRx(){
@@ -81,7 +81,7 @@ $.when(getRightCycloRx(),getLeftCycloRx()).done(function(cyclorxRight,cyclorxLef
 // trialRx variable
 var trialrxObjFill = { 
     sphR : '', cylR :'', axisR: '', vafR: '',
-    sphL : '', cylL :'', axisL: '', vafR: ''
+    sphL : '', cylL :'', axisL: '', vafL: ''
 };
 function getRightTrialRx(){
     return $.get(API_RXRIGHT+'&rx_origin.eq=trial');
@@ -96,12 +96,13 @@ $.when(getRightTrialRx(),getLeftTrialRx()).done(function(trialrxRight,trialrxLef
         trialrxObjFill['sphR'] = trialrxRight[0]['items'][0]['sph_far'];
         trialrxObjFill['cylR'] = trialrxRight[0]['items'][0]['cyl_far'];
         trialrxObjFill['axisR'] = trialrxRight[0]['items'][0]['axis_far'];
+        trialrxObjFill['vafR'] = trialrxRight[0]['items'][0]['va_far'];
         // console.log('right:',cyclorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
     };
     if (trialrxLeft[0]['items'].length > 0) {
         trialrxObjFill['sphL'] = trialrxLeft[0]['items'][0]['sph_far'];
         trialrxObjFill['cylL'] = trialrxLeft[0]['items'][0]['cyl_far'];
-        trialrxObjFill['axisL'] = trialrxLeft[0]['items'][0]['axis_far'];
+        trialrxObjFill['vafL'] = trialrxLeft[0]['items'][0]['va_far'];
         //console.log('right:',cyclorxLeft[0]['items'][0]['sph_far']);
     };
     console.log(trialrxObjFill);
@@ -199,8 +200,8 @@ function docCert() {
         certdefault.push('<ul>');
             certdefault.push('<li>une acuité visuelle avec la correction optimale:</li>');
                 certdefault.push('<ul>');
-                    certdefault.push(`<li> Oeil droit (OD) : ${trialrxObjFill['sphR']}(${trialrxObjFill['cylR']} x ${trialrxObjFill['axisR']}°)</li>`);
-                    certdefault.push(`<li> Oeil gauche (OG): ${trialrxObjFill['sphL']}(${trialrxObjFill['cylL']} x ${trialrxObjFill['axisL']} °)</li>`);
+                    certdefault.push(`<li> Oeil droit (OD) : ${trialrxObjFill['vafR']} ${trialrxObjFill['sphR']}(${trialrxObjFill['cylR']} x ${trialrxObjFill['axisR']}°)</li>`);
+                    certdefault.push(`<li> Oeil gauche (OG): ${trialrxObjFill['vafL']} ${trialrxObjFill['sphL']}(${trialrxObjFill['cylL']} x ${trialrxObjFill['axisL']} °)</li>`);
                 certdefault.push('</ul>');
             certdefault.push('</li>');
             certdefault.push(`<li>une tension oculaire mesurée à l\'air pulsé respective de OD: ${tonoObjFill['tonoR']}mmHg/${tonoObjFill['pachyR']}µm et OG: ${tonoObjFill['tonoL']}mmHg/${tonoObjFill['pachyL']}µm </li>`);
