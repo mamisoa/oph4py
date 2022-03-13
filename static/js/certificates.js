@@ -128,8 +128,8 @@ $.when(getRightTono(),getLeftTono()).done(function(tonoRight,tonoLeft){
     };
     if (tonoLeft[0]['items'].length > 0) {
         // console.log(autorxRight[0]['items']);
-        tonoObjFill['tonoR'] = tonoLeft[0]['items'][0]['tonometry'];
-        tonoObjFill['pachyR'] = tonoLeft[0]['items'][0]['pachymetry'];
+        tonoObjFill['tonoL'] = tonoLeft[0]['items'][0]['tonometry'];
+        tonoObjFill['pachyL'] = tonoLeft[0]['items'][0]['pachymetry'];
         // console.log('right:',tonoLeft[0]['items'][0]['tonometry']); // gets NEWEST tono
     };
     console.log(tonoObjFill);
