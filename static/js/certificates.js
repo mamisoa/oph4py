@@ -77,6 +77,12 @@ $.when(getRightCycloRx(),getLeftCycloRx()).done(function(cyclorxRight,cyclorxLef
     console.log(cyclorxObjFill);
 });
 
+
+// trialRx variable
+var trialrxObjFill = { 
+    sphR : '', cylR :'', axisR: '', vafR: '',
+    sphL : '', cylL :'', axisL: '', vafR: ''
+};
 function getRightTrialRx(){
     return $.get(API_RXRIGHT+'&rx_origin.eq=trial');
 };
@@ -100,8 +106,6 @@ $.when(getRightTrialRx(),getLeftTrialRx()).done(function(trialrxRight,trialrxLef
     };
     console.log(trialrxObjFill);
 });
-
-
 
 function presenceCert(){
     let certdefault=['<p>Je, soussigné Docteur en Médecine, certifie avoir examiné: </p>'];
