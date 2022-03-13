@@ -107,6 +107,34 @@ $.when(getRightTrialRx(),getLeftTrialRx()).done(function(trialrxRight,trialrxLef
     console.log(trialrxObjFill);
 });
 
+// tono variable
+var tonoObjFill = { 
+    tonoR : '', pachyR: '',
+    tonoL : '', pachyL: ''
+};
+function getRightTono(){
+    return $.get(API_TONORIGHT);
+};
+function getLeftTono(){
+    return $.get(API_TONOLEFT);
+};
+$.when(getRightTono(),getLeftTono()).done(function(tonoRight,tonoLeft){
+    // console.log(autorxRight[0]['items']);
+    if (tonoRight[0]['items'].length > 0) {
+        // console.log(autorxRight[0]['items']);
+        tonoObjFill['tonoR'] = tonoRight[0]['items'][0]['tonometry'];
+        tonoObjFill['pachyR'] = tonoRight[0]['items'][0]['pachymetry'];
+        // console.log('right:',tonoRight[0]['items'][0]['tonometry']); // gets NEWEST tono
+    };
+    if (tonoLeft[0]['items'].length > 0) {
+        // console.log(autorxRight[0]['items']);
+        tonoObjFill['tonoR'] = tonoLeft[0]['items'][0]['tonometry'];
+        tonoObjFill['pachyR'] = tonoLeft[0]['items'][0]['pachymetry'];
+        // console.log('right:',tonoLeft[0]['items'][0]['tonometry']); // gets NEWEST tono
+    };
+    console.log(tonoObjFill);
+});
+
 function presenceCert(){
     let certdefault=['<p>Je, soussigné Docteur en Médecine, certifie avoir examiné: </p>'];
     certdefault.push('<p><strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong></p>')
@@ -175,7 +203,7 @@ function docCert() {
                     certdefault.push(`<li> Oeil gauche (OG): ${trialrxObjFill['sphL']}(${trialrxObjFill['cylL']} x ${trialrxObjFill['axisL']} °)</li>`);
                 certdefault.push('</ul>');
             certdefault.push('</li>');
-            certdefault.push('<li>une tension oculaire mesurée à l\'air pulsé respective de OD: 15 mmHg/550µm et OG: 15 mmHg/550µm </li>');
+            certdefault.push(`<li>une tension oculaire mesurée à l\'air pulsé respective de OD: ${tonoObjFill['tonoR']}mmHg/${tonoObjFill['pachyR']}µm et OG: ${tonoObjFill['tonoL']}mmHg/${tonoObjFill['pachyL']}µm </li>`);
             certdefault.push('<li>une biomicroscopie antérieure:');
                 certdefault.push('<ul>');
                     certdefault.push('<li>OD: sans particularité</li>');
