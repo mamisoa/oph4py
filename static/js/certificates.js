@@ -54,28 +54,54 @@ var cyclorxObjFill = {
 };
 // gets all autoRx
 function getRightCycloRx(){
-return $.get(API_RXRIGHT+'&rx_origin.eq=cyclo');
+    return $.get(API_RXRIGHT+'&rx_origin.eq=cyclo');
 };
 function getLeftCycloRx(){
-return $.get(API_RXLEFT+'&rx_origin.eq=cyclo');
+    return $.get(API_RXLEFT+'&rx_origin.eq=cyclo');
 };
 $.when(getRightCycloRx(),getLeftCycloRx()).done(function(cyclorxRight,cyclorxLeft){
-// console.log(autorxRight[0]['items']);
-if (cyclorxRight[0]['items'].length > 0) {
     // console.log(autorxRight[0]['items']);
-    cyclorxObjFill['sphR'] = cyclorxRight[0]['items'][0]['sph_far'];
-    cyclorxObjFill['cylR'] = cyclorxRight[0]['items'][0]['cyl_far'];
-    cyclorxObjFill['axisR'] = cyclorxRight[0]['items'][0]['axis_far'];
-    // console.log('right:',cyclorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
-};
-if (cyclorxLeft[0]['items'].length > 0) {
-    cyclorxObjFill['sphL'] = cyclorxLeft[0]['items'][0]['sph_far'];
-    cyclorxObjFill['cylL'] = cyclorxLeft[0]['items'][0]['cyl_far'];
-    cyclorxObjFill['axisL'] = cyclorxLeft[0]['items'][0]['axis_far'];
-    //console.log('right:',cyclorxLeft[0]['items'][0]['sph_far']);
-};
-console.log(cyclorxObjFill);
+    if (cyclorxRight[0]['items'].length > 0) {
+        // console.log(autorxRight[0]['items']);
+        cyclorxObjFill['sphR'] = cyclorxRight[0]['items'][0]['sph_far'];
+        cyclorxObjFill['cylR'] = cyclorxRight[0]['items'][0]['cyl_far'];
+        cyclorxObjFill['axisR'] = cyclorxRight[0]['items'][0]['axis_far'];
+        // console.log('right:',cyclorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
+    };
+    if (cyclorxLeft[0]['items'].length > 0) {
+        cyclorxObjFill['sphL'] = cyclorxLeft[0]['items'][0]['sph_far'];
+        cyclorxObjFill['cylL'] = cyclorxLeft[0]['items'][0]['cyl_far'];
+        cyclorxObjFill['axisL'] = cyclorxLeft[0]['items'][0]['axis_far'];
+        //console.log('right:',cyclorxLeft[0]['items'][0]['sph_far']);
+    };
+    console.log(cyclorxObjFill);
 });
+
+function getRightTrialRx(){
+    return $.get(API_RXRIGHT+'&rx_origin.eq=trial');
+};
+function getLeftTrialRx(){
+    return $.get(API_RXLEFT+'&rx_origin.eq=trial');
+};
+$.when(getRightTrialRx(),getLeftTrialRx()).done(function(trialrxRight,trialrxLeft){
+    // console.log(autorxRight[0]['items']);
+    if (trialrxRight[0]['items'].length > 0) {
+        // console.log(autorxRight[0]['items']);
+        trialrxObjFill['sphR'] = trialrxRight[0]['items'][0]['sph_far'];
+        trialrxObjFill['cylR'] = trialrxRight[0]['items'][0]['cyl_far'];
+        trialrxObjFill['axisR'] = trialrxRight[0]['items'][0]['axis_far'];
+        // console.log('right:',cyclorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
+    };
+    if (trialrxLeft[0]['items'].length > 0) {
+        trialrxObjFill['sphL'] = trialrxLeft[0]['items'][0]['sph_far'];
+        trialrxObjFill['cylL'] = trialrxLeft[0]['items'][0]['cyl_far'];
+        trialrxObjFill['axisL'] = trialrxLeft[0]['items'][0]['axis_far'];
+        //console.log('right:',cyclorxLeft[0]['items'][0]['sph_far']);
+    };
+    console.log(trialrxObjFill);
+});
+
+
 
 function presenceCert(){
     let certdefault=['<p>Je, soussigné Docteur en Médecine, certifie avoir examiné: </p>'];
@@ -139,22 +165,22 @@ function docCert() {
     certdefault.push('ce '+ datecreation + ' à ' + timecreation+'.</p>');
     certdefault.push('<p>L\'examen montre:');
         certdefault.push('<ul>');
-            certdefault.push('<li>une acuité visuelle avec la correction optimale:');
+            certdefault.push('<li>une acuité visuelle avec la correction optimale:</li>');
                 certdefault.push('<ul>');
-                    certdefault.push('<li>Oeil droit (OD) : 1.0 P2 avec ( x °) add+0</li>');
-                    certdefault.push('<li>Oeil gauche (OG): 1.0 P2 avec ( x °) add+0</li>');
+                    certdefault.push(`<li> Oeil droit (OD) : ${trialrxObjFill['sphR']}(${trialrxObjFill['cylR']} x ${trialrxObjFill['axisR']}°)</li>`);
+                    certdefault.push(`<li> Oeil gauche (OG): ${trialrxObjFill['sphL']}(${trialrxObjFill['cylL']} x ${trialrxObjFill['axisL']} °)</li>`);
                 certdefault.push('</ul>');
             certdefault.push('</li>');
             certdefault.push('<li>une tension oculaire mesurée à l\'air pulsé respective de OD: 15 mmHg/550µm et OG: 15 mmHg/550µm </li>');
             certdefault.push('<li>une biomicroscopie antérieure:');
                 certdefault.push('<ul>');
-                    certdefault.push('<li>OD: sans particularité');
+                    certdefault.push('<li>OD: sans particularité</li>');
                     certdefault.push('<li>OG: sans particularité</li>');
                 certdefault.push('</ul>');
             certdefault.push('</li>');
             certdefault.push('<li>une biomicroscopie postérieure:');
                 certdefault.push('<ul>');
-                    certdefault.push('<li>OD: sans particularité');
+                    certdefault.push('<li>OD: sans particularité</li>');
                     certdefault.push('<li>OG: sans particularité</li>');
                 certdefault.push('</ul>');
             certdefault.push('</li>');
