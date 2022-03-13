@@ -270,8 +270,8 @@ function preopCert() {
             preopdefault.push('</li>');
             preopdefault.push('<li>une acuité visuelle <strong>avec la correction optimale</strong>:</li>');
                 preopdefault.push('<ul>');
-                    preopdefault.push('<li> OD: 1.0</li>');
-                    preopdefault.push('<li> OG: 1.0</li>');
+                    preopdefault.push(`<li> OD: ${trialrxObjFill['vafR']}</li>`);
+                    preopdefault.push(`<li> OG: ${trialrxObjFill['vafL']}</li>`);
                 preopdefault.push('</ul>');
             preopdefault.push('</li>');
         preopdefault.push('</ul>');
