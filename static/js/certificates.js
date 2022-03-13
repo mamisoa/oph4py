@@ -96,13 +96,14 @@ $.when(getRightTrialRx(),getLeftTrialRx()).done(function(trialrxRight,trialrxLef
         trialrxObjFill['sphR'] = trialrxRight[0]['items'][0]['sph_far'];
         trialrxObjFill['cylR'] = trialrxRight[0]['items'][0]['cyl_far'];
         trialrxObjFill['axisR'] = trialrxRight[0]['items'][0]['axis_far'];
-        trialrxObjFill['vafR'] = trialrxRight[0]['items'][0]['va_far'];
+        trialrxObjFill['vafR'] = trialrxRight[0]['items'][0]['va_far'].toFixed(2);
         // console.log('right:',cyclorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
     };
     if (trialrxLeft[0]['items'].length > 0) {
         trialrxObjFill['sphL'] = trialrxLeft[0]['items'][0]['sph_far'];
         trialrxObjFill['cylL'] = trialrxLeft[0]['items'][0]['cyl_far'];
-        trialrxObjFill['vafL'] = trialrxLeft[0]['items'][0]['va_far'];
+        trialrxObjFill['axisL'] = trialrxRight[0]['items'][0]['axis_far'];
+        trialrxObjFill['vafL'] = trialrxLeft[0]['items'][0]['va_far'].toFixed(2);
         //console.log('right:',cyclorxLeft[0]['items'][0]['sph_far']);
     };
     console.log(trialrxObjFill);
