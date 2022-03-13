@@ -202,13 +202,13 @@ function preopCert() {
     preopdefault.push('dans le cadre d\'un examen préopératoire à une <strong>chirurgie réfractive de l\'oeil droit et de l\'oeil gauche</strong> prévue le <strong>'+ datecreation + '</strong>.</p>');
     preopdefault.push('<p>L\'examen montre:');
         preopdefault.push('<ul>');
-            preopdefault.push('<li>la réfraction objective suivante sous <strong>cyloplégie</strong>:');
+            preopdefault.push('<li>la réfraction objective suivante sous <strong>cyloplégie</strong>:</li>');
                 preopdefault.push('<ul>');
                     preopdefault.push(`<li> Oeil droit (OD) : ${cyclorxObjFill['sphR']}(${cyclorxObjFill['cylR']} x ${cyclorxObjFill['axisR']}°)</li>`);
                     preopdefault.push(`<li> Oeil gauche (OG): ${cyclorxObjFill['sphL']}(${cyclorxObjFill['cylL']} x ${cyclorxObjFill['axisL']} °)</li>`);
                 preopdefault.push('</ul>');
             preopdefault.push('</li>');
-            preopdefault.push('<li>une acuité visuelle <strong>avec la correction optimale</strong>:');
+            preopdefault.push('<li>une acuité visuelle <strong>avec la correction optimale</strong>:</li>');
                 preopdefault.push('<ul>');
                     preopdefault.push('<li> OD: 1.0</li>');
                     preopdefault.push('<li> OG: 1.0</li>');
