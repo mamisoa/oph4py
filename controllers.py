@@ -35,7 +35,7 @@ from pydal.tools.tags import Tags
 from pydal.validators import CRYPT # to encrypt passwords
 
 # import settings
-from .settings import LOCAL_URL, TIMEOFFSET # DB_OCTOPUS
+from .settings import ENV_STATUS, LOCAL_URL, TIMEOFFSET # DB_OCTOPUS
 
 # grid
 from functools import reduce
@@ -46,6 +46,7 @@ from .useful import getMembershipId, dropdownSelect, check_duplicate
 
 @unauthenticated("index", "index.html")
 def index():
+    env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     user = auth.get_user()
     message = T("Hello {first_name}!".format(**user) if user else "Hello. You should sign in!")
@@ -62,6 +63,7 @@ def index():
 @action('test/<membership>')
 @action.uses(session, T, auth, db, flash, 'test.html')
 def test(membership=6):
+    env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     time
     hosturl = LOCAL_URL
@@ -101,6 +103,7 @@ def test(membership=6):
 @action("facilities", method=['GET', 'POST'])
 @action.uses(session, auth.user, db, flash,'facilities.html') # add auth.user and db to get 
 def facilities():
+    env_status = ENV_STATUS
     user = auth.get_user() # needed to transfer globals to view
     form = Form([
         Field('facility_name'),
@@ -116,6 +119,7 @@ def facilities():
 @action("testtable", method=['GET', 'POST'])
 @action.uses(session, auth.user, db, flash, 'testtable.html')
 def testtable():
+    env_status = ENV_STATUS
     user = auth.get_user()
     form = Form([
         Field('test_name'),
