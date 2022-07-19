@@ -26,6 +26,7 @@ genderId = {
 @action('modalityCtr/tono/<wlId>')
 @action.uses(session, auth, db,'modalityCtr/tono.html')
 def tono(wlId):
+    env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
@@ -48,6 +49,7 @@ def tono(wlId):
 @action('modalityCtr/autorx/<wlId>')
 @action.uses(session, auth, db,'modalityCtr/autorx.html')
 def autorx(wlId):
+    env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
@@ -98,6 +100,7 @@ def initFields(wlId,table,lat=""):
 @action('modalityCtr/md/<wlId>')
 @action.uses(session, auth.user, db,'modalityCtr/md.html')
 def md(wlId):
+    env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     import base64
     from datetime import datetime
@@ -159,6 +162,7 @@ def md(wlId):
 @action('modalityCtr/hello/<wlId>')
 @action.uses(session, auth, db,'modalityCtr/hello.html')
 def hello(wlId):
+    env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     import base64
     hosturl = LOCAL_URL
