@@ -1,0 +1,36 @@
+gender
+desc: gender
+dependancies: none
+
+marital_status
+desc: marital status
+dependancies: none
+
+membership
+desc: admin level
+dependancies: none
+
+modality_controller
+desc: machine parameters and measures
+dependancies: none
+
+modality_family
+desc: machine family
+dependancies: none
+
+procedure
+desc: procedure sequence (list of exams in sequence)
+dependancies: none
+
+modality
+desc: machine
+dependancies: modality_controller
+
+procedure_family
+desc: cross table linking procedure, modality, modality_family
+dependancies: procedure, modality, modality_family
+
+combo
+desc: combo exams
+dependancies: procedure, modality
+

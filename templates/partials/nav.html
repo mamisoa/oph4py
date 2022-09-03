@@ -1,9 +1,15 @@
+[[ if 'userMembership' not in locals():]]
+[[ userMembership = None]]
+[[ pass]]
+[[ if userMembership != None:]]
 <li class="nav-item">
     <a href="[[=URL('worklist')]]" class="nav-link">Worklist</a>
 </li>
 <li class="nav-item">
     <a href="[[=URL('manage/files')]]" class="nav-link">Files</a>
 </li>
+[[ pass ]]
+[[ if userMembership == 'Admin':]]
 <li class="nav-item dropdown">
     <a href="" class="nav-link dropdown-toggle" id="dd-manage" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
     <ul class="dropdown-menu" aria-labelledby="dd-manage">
@@ -26,6 +32,7 @@
         <li><a class="dropdown-item" href="[[=URL('import_users')]]">Import auth_user CSV</a></li>
     </ul>
 </li>
+[[ pass ]]
 <li class="nav-item">
     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasCache" role="button" aria-controls="offcanvasCache">
         Cache
