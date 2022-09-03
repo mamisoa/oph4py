@@ -48,6 +48,7 @@ MAP_GENDER = {
 }
 
 # check format dd/mm/yyyy
+# TODO use NISS to get dob
 def checkDate(date):
     try:
         [d, m, y] = date.split()
