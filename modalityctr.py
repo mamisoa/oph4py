@@ -9,7 +9,7 @@ from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added 
 from py4web.utils.grid import Grid
 
 # import settings
-from .settings import LOCAL_URL, ASSETS_FOLDER, MACHINES_FOLDER, TIMEOFFSET
+from .settings import LOCAL_URL, ASSETS_FOLDER, MACHINES_FOLDER, TIMEOFFSET, ENV_STATUS
 
 # import userful
 from .useful import dropdownSelect, rows2json, getMembershipId
