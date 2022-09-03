@@ -15,11 +15,20 @@ from .settings import LOCAL_URL, ASSETS_FOLDER, MACHINES_FOLDER, TIMEOFFSET, ENV
 from .useful import dropdownSelect, rows2json, getMembershipId
 
 # get standard index in db for patient/user profile
-mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
-genderId = {
-    db(db.gender.sex == 'Male').select(db.gender.id).first().id : "Male",
-    db(db.gender.sex == 'Female').select(db.gender.id).first().id : "Female",
-    db(db.gender.sex == 'Other').select(db.gender.id).first().id : "Other" }
+# TODO remove try and check if new installation
+try:
+    mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
+    genderId = {
+        db(db.gender.sex == 'Male').select(db.gender.id).first().id : "Male",
+        db(db.gender.sex == 'Female').select(db.gender.id).first().id : "Female",
+        db(db.gender.sex == 'Other').select(db.gender.id).first().id : "Other" }
+except Exception as e:
+    mdId = 1
+    genderId = {
+        0 : "Male",
+        1 : "Female",
+        2 : "Other"
+    }
 
 # tono controller
 @action('tono')
