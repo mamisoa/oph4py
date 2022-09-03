@@ -10,7 +10,7 @@ from py4web.utils.grid import Grid
 # from py4web.utils.factories import Inject
 
 # import settings
-from .settings import ENV_STATUS, LOCAL_URL, LOCAL_BEID, DEFAULT_PROVIDER, DEFAULT_SENIOR, TIMEOFFSET
+from .settings import ENV_STATUS, LOCAL_URL, LOCAL_BEID, DEFAULT_PROVIDER, DEFAULT_SENIOR, TIMEOFFSET, NEW_INSTALLATION
 
 # import useful
 from .useful import dropdownSelect, getMembershipId
@@ -25,6 +25,7 @@ def user(rec_id="1"):
     hosturl = LOCAL_URL
     localbeid = LOCAL_BEID
     user = auth.get_user()
+    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
     row = db(db.auth_user.id == rec_id).select().first()
     username = row.username
     membership = row.membership
@@ -46,13 +47,14 @@ def user(rec_id="1"):
 @action('manage/users', method=['POST','GET']) # route
 @action('manage/users/<membership>')
 # @action.uses(session, T, auth, db,'manage/users.html')
-@action.uses(session, T, db, 'manage/users.html')
+@action.uses(session, T, db, auth.user, 'manage/users.html')
 def users(membership='Patient'):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
-    # user = auth.get_user()
+    user = auth.get_user()
     test="Test OK"
+    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
     try: # check if membership exists
         check_group= db(db.membership.membership == membership).isempty()
     except ValueError:
@@ -91,6 +93,7 @@ def worklist():
     hosturl = LOCAL_URL
     localbeid = LOCAL_BEID
     user = auth.get_user()
+    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
     test="Test OK"
     membership = 6
     class_icon = 'fa-user'
@@ -105,7 +108,7 @@ def worklist():
     genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1)
     sendingFacilityOptions = dropdownSelect(db.facility,db.facility.fields[1],1) # defaultId = 1 (desk1)
     receivingFacilityOptions = dropdownSelect(db.facility,db.facility.fields[1],3) # defaultId = 3 (iris)
-    routineid=db(db.procedure.exam_name.startswith("Routine")).select().first()['id'] # id
+    routineid = db(db.procedure.exam_name.startswith("Routine")).select().first()['id'] # id
     procedureOptions = dropdownSelect(db.procedure,db.procedure.fields[2],routineid) # field exam_name defaultId = 4 (routine consultation)
     providerOptions=""
     for provider in db((db.auth_user.membership>=getMembershipId('Doctor'))&(db.auth_user.membership<=getMembershipId('Medical assistant'))).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
@@ -117,7 +120,8 @@ def worklist():
     seniorOptions = ""
     # medicalmembership = db((db.membership.hierarchy==1)|(db.membership.hierarchy==2)).select(
     #     db.membership.ALL, db.auth_user.last_name,left=db.auth_user.on(db.auth_user.membership == db.auth_user.id)).as_dict()
-    for senior in db((db.auth_user.membership >= 1) & (db.auth_user.membership <= 4)).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
+    idMembershipDoctor = db(db.membership.membership == 'Doctor').select(db.membership.id).first()['id']
+    for senior in db(db.auth_user.membership == idMembershipDoctor).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
         if senior.last_name == DEFAULT_SENIOR :  # make "House" as default option
             seniorOptions = CAT(seniorOptions, OPTION(
                 senior.last_name + ' ' + senior.first_name, _selected="selected", _value=str(senior.id)))
@@ -189,6 +193,10 @@ def files():
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
     user = auth.get_user()
+    if 'membership' in user:
+        userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
+    else:
+        userMembership = None
     test="Test OK"
     membership = 6
     class_icon = 'fa-user'

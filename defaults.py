@@ -59,6 +59,7 @@ def set_defaults_db():
     db.modality_family.insert(family="Multiple")
     db.modality_family.insert(family="Laser")
     db.modality_family.insert(family="Dilatation")
+    db.modality_family.insert(family="Myosis")
     db.commit()
     # modality_controller reference to: nothing 160421
     db.modality_controller.insert(modality_controller_name="autorx") #1
@@ -75,7 +76,8 @@ def set_defaults_db():
     db.modality_controller.insert(modality_controller_name="oct") #34
     db.modality_controller.insert(modality_controller_name="yag") #37
     db.commit()
-    # medic reference to: nothing , better to download the table
+    # medic reference to: nothing 
+    # TODO: better to download the table
     db.medic_ref.insert(name="DAFALGAN FORTE 1g", brand="Bristol Mayers", package="Boite de 40cp",active_ingredient="paracetamol", dosage = "['1g']", form="pill", delivery="PO")
     db.medic_ref.insert(name="TOBRADEX", brand="Alcon", packaging="Collyre de 5ml", active_ingredient="['dexamethasone,'tobramycine']", dosage = "['1mg','3mg']", form="drop", delivery="both")
     #  agent (allergy) reference to: nothing, better to download the table
@@ -109,7 +111,7 @@ def set_defaults_db():
     # procedure reference to : nothing 160421
     db.procedure.insert(loinc_code="autorxc66", exam_name="AutoRx",exam_description="Automatic refraction",cycle_num="1", procedure_seq="1") #1
     db.procedure.insert(loinc_code="topoc66", exam_name="Corneal mapping",exam_description="Corneal mapping",cycle_num="1", procedure_seq="1") # 4
-    db.procedure.insert(loinc_code="biometryc66", exam_name="Optical biometry",exam_description="Optical biometry",cycle_num="1", procedure_seq="1") #7
+    db.procedure.insert(loinc_code="biometryc66", exam_name="Biometry",exam_description="Optical biometry",cycle_num="1", procedure_seq="1") #7
     db.procedure.insert(loinc_code="routinec66", exam_name="Routine consultation",exam_description="Routine consultation",cycle_num="1", procedure_seq="4") #10 
     db.procedure.insert(loinc_code="glaucoma1c66", exam_name="Glaucoma consultation",exam_description="Glaucoma consultation with visual field and OCT",cycle_num="1", procedure_seq="6") #13
     db.procedure.insert(loinc_code="keratoconusc66", exam_name="Keratoconus consultation",exam_description="Keratoconus consultation with corneal mapping",cycle_num="1", procedure_seq="5") #16
@@ -120,26 +122,228 @@ def set_defaults_db():
     db.procedure.insert(loinc_code="octpapc66", exam_name="OCT glaucoma",exam_description="Optic nerve layer OCT on papil and retina",cycle_num="1", procedure_seq="1") #31
     db.procedure.insert(loinc_code="cycloc66", exam_name="Cycloplegia",exam_description="Cycloplegia",cycle_num="1", procedure_seq="1") #34
     db.procedure.insert(loinc_code="dilc66", exam_name="Dilatation",exam_description="Dilatation of pupils",cycle_num="1", procedure_seq="1") #37
+    db.procedure.insert(loinc_code="vfc66", exam_name="Visual field",exam_description="Visual field",cycle_num="1", procedure_seq="1")
+    db.procedure.insert(loinc_code="chauffeurc66", exam_name="Examen chauffeur",exam_description="Examen chauffeur groupe 2",cycle_num="1", procedure_seq="1")
+    db.procedure.insert(loinc_code="childrenc66", exam_name="Children",exam_description="Children exam",cycle_num="1", procedure_seq="3")
+    db.procedure.insert(loinc_code="myoc66", exam_name="Myosis",exam_description="Pupils' myosis",cycle_num="1", procedure_seq="1")
     db.commit()
     # modality reference to: modality_controller 160421
-    moddb = db.modality_controller
-    db.modality.insert(modality_name="L80", id_modality_controller=db(moddb.modality_controller_name == 'autorx').select(moddb.id).first()['id']) # ctrl is autorx
-    db.modality.insert(modality_name="VX-120", id_modality_controller=db(moddb.modality_controller_name == 'autorx').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="TonoRef", id_modality_controller=db(moddb.modality_controller_name == 'tono').select(moddb.id).first()['id']) 
-    db.modality.insert(modality_name="TonoCan", id_modality_controller=db(moddb.modality_controller_name == 'tono').select(moddb.id).first()['id']) 
-    db.modality.insert(modality_name="Octopus 900", id_modality_controller=db(moddb.modality_controller_name == 'visualfield').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="FDT", id_modality_controller=db(moddb.modality_controller_name == 'visualfield').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="OCT Maestro", id_modality_controller=db(moddb.modality_controller_name == 'oct').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="Pentacam", id_modality_controller=db(moddb.modality_controller_name == 'topo').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="Anterion", id_modality_controller=db(moddb.modality_controller_name == 'anterion').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="Visucam", id_modality_controller=db(moddb.modality_controller_name == 'fluo').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="CEM-500", id_modality_controller=db(moddb.modality_controller_name == 'cem500').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="Lenstar", id_modality_controller=db(moddb.modality_controller_name == 'lenstar').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="Multiple", id_modality_controller=db(moddb.modality_controller_name == 'none').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="MD", id_modality_controller=db(moddb.modality_controller_name == 'md').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="YAG Lumenis", id_modality_controller=db(moddb.modality_controller_name == 'yag').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="Cyclopentol", id_modality_controller=db(moddb.modality_controller_name == 'autorx').select(moddb.id).first()['id'])
-    db.modality.insert(modality_name="Mix Tropicol/Phenylephrine", id_modality_controller=db(moddb.modality_controller_name == 'none').select(moddb.id).first()['id'])
+    modcdb = db.modality_controller
+    db.modality.insert(modality_name="L80", id_modality_controller=db(modcdb.modality_controller_name == 'autorx').select(modcdb.id).first()['id']) # ctrl is autorx
+    db.modality.insert(modality_name="VX-120", id_modality_controller=db(modcdb.modality_controller_name == 'autorx').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="TonoRef", id_modality_controller=db(modcdb.modality_controller_name == 'tono').select(modcdb.id).first()['id']) 
+    db.modality.insert(modality_name="TonoCan", id_modality_controller=db(modcdb.modality_controller_name == 'tono').select(modcdb.id).first()['id']) 
+    db.modality.insert(modality_name="Octopus 900", id_modality_controller=db(modcdb.modality_controller_name == 'visualfield').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="Octopus 600", id_modality_controller=db(modcdb.modality_controller_name == 'visualfield').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="FDT", id_modality_controller=db(modcdb.modality_controller_name == 'visualfield').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="OCT Maestro", id_modality_controller=db(modcdb.modality_controller_name == 'oct').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="Pentacam", id_modality_controller=db(modcdb.modality_controller_name == 'topo').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="Anterion", id_modality_controller=db(modcdb.modality_controller_name == 'anterion').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="Visucam", id_modality_controller=db(modcdb.modality_controller_name == 'fluo').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="CEM-500", id_modality_controller=db(modcdb.modality_controller_name == 'cem500').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="Lenstar", id_modality_controller=db(modcdb.modality_controller_name == 'lenstar').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="Multiple", id_modality_controller=db(modcdb.modality_controller_name == 'none').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="MD", id_modality_controller=db(modcdb.modality_controller_name == 'md').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="YAG Lumenis", id_modality_controller=db(modcdb.modality_controller_name == 'yag').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="Cyclopentol", id_modality_controller=db(modcdb.modality_controller_name == 'autorx').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="Mix Tropicol/Phenylephrine", id_modality_controller=db(modcdb.modality_controller_name == 'none').select(modcdb.id).first()['id'])
+    db.modality.insert(modality_name="Isoptoatropine", id_modality_controller=db(modcdb.modality_controller_name == 'none').select(modcdb.id).first()['id'])
+    db.commit()
+    # procedure_family reference to: procedure, modality, modality_family
+    procdb = db.procedure
+    moddb = db.modality
+    modfdb = db.modality_family
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'AutoRx').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'L80').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'refraction').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'AutoRx').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'VX-120').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'refraction').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Corneal mapping').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Pentacam').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'corneal mapping').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Corneal mapping').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Anterion').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'corneal mapping').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Biometry').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Multiple').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'Multiple').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Routine consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Multiple').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'Multiple').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Glaucoma consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Multiple').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'Multiple').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Keratoconus consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Multiple').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'Multiple').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'SLT').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Multiple').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'Multiple').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Iridotomy').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Multiple').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'Multiple').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Capsulotomy').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Multiple').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'Multiple').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'OCT macula').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'OCT Maestro').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'OCT').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'OCT glaucoma').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'OCT Maestro').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'OCT').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Cycloplegia').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'L80').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'refraction').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Dilatation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Mix Tropicol/Phenylephrine').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'Dilatation').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Myosis').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Isoptoatropine').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'Myosis').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Visual field').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Octopus 900').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'visual field').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Visual field').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Octopus 600').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'visual field').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Visual field').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'FDT').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'visual field').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Examen chauffeur').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Multiple').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'Multiple').select(modfdb.id).first()['id'])
+    db.procedure_family.insert(
+        id_procedure=db(procdb.exam_name == 'Children').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Multiple').select(moddb.id).first()['id'],
+        id_modality_family=db(modfdb.family == 'Multiple').select(modfdb.id).first()['id'])
+    db.commit()
+    # combo reference to: procedure, modality
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Routine consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'L80').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Routine consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'TonoRef').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Routine consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'MD').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Glaucoma consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'L80').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Glaucoma consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'TonoRef').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Glaucoma consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Octopus 900').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Glaucoma consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'OCT Maestro').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Glaucoma consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'MD').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Keratoconus consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'L80').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Keratoconus consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'TonoRef').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Keratoconus consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Pentacam').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Keratoconus consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Anterion').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Keratoconus consultation').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'MD').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Examen chauffeur').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'L80').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Examen chauffeur').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'TonoRef').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Examen chauffeur').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Octopus 900').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Examen chauffeur').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'MD').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Capsulotomy').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'YAG Lumenis').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Capsulotomy').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Mix Tropicol/Phenylephrine').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Capsulotomy').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'MD').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Iridotomy').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'YAG Lumenis').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Iridotomy').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Isoptoatropine').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Iridotomy').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'MD').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'SLT').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'YAG Lumenis').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'SLT').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Isoptoatropine').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'SLT').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'MD').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Biometry').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'L80').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Biometry').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'TonoRef').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Biometry').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Lenstar').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Biometry').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Anterion').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Biometry').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'OCT Maestro').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Biometry').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'Mix Tropicol/Phenylephrine').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Biometry').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'MD').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Children').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'L80').select(moddb.id).first()['id'])
+    db.combo.insert(
+        id_procedure=db(procdb.exam_name == 'Children').select(procdb.id).first()['id'],
+        id_modality=db(moddb.modality_name == 'MD').select(moddb.id).first()['id'])
     db.commit()
     return True
     

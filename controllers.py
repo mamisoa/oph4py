@@ -35,7 +35,7 @@ from pydal.tools.tags import Tags
 from pydal.validators import CRYPT # to encrypt passwords
 
 # import settings
-from .settings import ENV_STATUS, LOCAL_URL, TIMEOFFSET # DB_OCTOPUS
+from .settings import ENV_STATUS, LOCAL_URL, TIMEOFFSET, NEW_INSTALLATION # DB_OCTOPUS
 
 # grid
 from functools import reduce
@@ -44,11 +44,18 @@ from py4web.utils.grid import Grid
 # useful
 from .useful import getMembershipId, dropdownSelect, check_duplicate
 
-@unauthenticated("index", "index.html")
+
+# @unauthenticated("index", "index.html")
+@action('index')
+@action.uses(session, auth.user, db,'index.html')
 def index():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     user = auth.get_user()
+    if "NEW_INSTALLATION" in globals():
+        if NEW_INSTALLATION == True:
+            redirect(URL('isNew'))
+    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
     message = T("Hello {first_name}!".format(**user) if user else "Hello. You should sign in!")
     db_admins_count = db(db.auth_user.membership==getMembershipId('Admin')).count()
     db_doctors_count = db(db.auth_user.membership==getMembershipId('Doctor')).count()
@@ -57,6 +64,14 @@ def index():
     db_assistants_count = db(db.auth_user.membership==getMembershipId('Administrative')).count()
     db_patients_count = db(db.auth_user.membership==getMembershipId('Patient')).count()
     db_entries_count = db(db.auth_user).count()
+    return locals()
+
+@action('isNew')
+@action.uses(session, auth.user, db, 'test/isnew.html')
+def isNew():
+    env_status = ENV_STATUS
+    timeOffset = TIMEOFFSET
+    userMembership = None
     return locals()
 
 @action("test", method=['POST','GET']) # route
