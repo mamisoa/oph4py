@@ -9,22 +9,20 @@ from py4web import action
 
 # todo to update and add a button!
 @action('set_defaults_db')
+@action.uses(db)
 def set_defaults_db():
     # gender reference to: nothing
     db.gender.insert(sex="Male")
     db.gender.insert(sex="Female")
     db.gender.insert(sex="Other")
-    db.commit()
     # ethny reference to: nothing
     db.ethny.insert(ethny="Caucasian")
     db.ethny.insert(ethny="Black")
     db.ethny.insert(ethny="Hispanic")
     db.ethny.insert(ethny="Arabic")
-    db.commit()
     # marital reference to: nothing
     db.marital.insert(marital_status="single")
     db.marital.insert(marital_status="married")
-    db.commit()
     # membership reference to: nothing
     db.membership.insert(membership="Admin", hierarchy="0")
     db.membership.insert(membership="Doctor", hierarchy="1") #2
@@ -32,12 +30,10 @@ def set_defaults_db():
     db.membership.insert(membership="Medical assistant", hierarchy="2") #4
     db.membership.insert(membership="Administrative", hierarchy="3")
     db.membership.insert(membership="Patient", hierarchy="99") #6
-    db.commit()
     # data_origin reference to: nothing
     db.data_origin.insert(origin="Home")
     db.data_origin.insert(origin="Mobile")
     db.data_origin.insert(origin="Work")
-    db.commit()
     # facility reference to: nothing
     db.facility.insert(facility_name="Desk1")
     db.facility.insert(facility_name="Desk2")
@@ -48,7 +44,6 @@ def set_defaults_db():
     db.facility.insert(facility_name="Exam1")
     db.facility.insert(facility_name="Exam2")
     db.facility.insert(facility_name="Reunion")
-    db.commit()
     # facility reference to: nothing 160421
     db.modality_family.insert(family="refraction")
     db.modality_family.insert(family="corneal mapping")
@@ -60,7 +55,6 @@ def set_defaults_db():
     db.modality_family.insert(family="Laser")
     db.modality_family.insert(family="Dilatation")
     db.modality_family.insert(family="Myosis")
-    db.commit()
     # modality_controller reference to: nothing 160421
     db.modality_controller.insert(modality_controller_name="autorx") #1
     db.modality_controller.insert(modality_controller_name="tono") #4
@@ -75,7 +69,6 @@ def set_defaults_db():
     db.modality_controller.insert(modality_controller_name="md") #31
     db.modality_controller.insert(modality_controller_name="oct") #34
     db.modality_controller.insert(modality_controller_name="yag") #37
-    db.commit()
     # medic reference to: nothing 
     # TODO: better to download the table
     db.medic_ref.insert(name="DAFALGAN FORTE 1g", brand="Bristol Mayers", package="Boite de 40cp",active_ingredient="paracetamol", dosage = "['1g']", form="pill", delivery="PO")
@@ -85,7 +78,6 @@ def set_defaults_db():
     db.agent.insert(name="Penicilline", code="penC66", description="penicillin allergy")
     db.agent.insert(name="NSAID", code="nsaidC66", description="NSAID allergy")
     db.agent.insert(name="Bactrim", code="bactrimC66", description="Bactrim allergy")
-    db.commit()
     # reference to: nothing
     db.auto_dict.insert(keywd="frequency", keyoption = "qd")
     db.auto_dict.insert(keywd="frequency", keyoption = "bid")
@@ -95,19 +87,16 @@ def set_defaults_db():
     db.auto_dict.insert(keywd="frequency", keyoption = "2x/j")
     db.auto_dict.insert(keywd="frequency", keyoption = "3x/j")
     db.auto_dict.insert(keywd="frequency", keyoption = "4x/j")
-    db.commit()
     # status_rx reference to: nothing
     db.status_rx.insert(status="measure")
     db.status_rx.insert(status="prescribed")
     db.status_rx.insert(status="duplicate")
-    db.commit()
     # optotype reference to: nothing
     db.optotype.insert(distance="far", opto="Monoyer")
     db.optotype.insert(distance="far", opto="Snellen")
     db.optotype.insert(distance="far", opto="ETDRS")
     db.optotype.insert(distance="close", opto="Parinaud")
     db.optotype.insert(distance="close", opto="Jaeger")
-    db.commit()
     # procedure reference to : nothing 160421
     db.procedure.insert(loinc_code="autorxc66", exam_name="AutoRx",exam_description="Automatic refraction",cycle_num="1", procedure_seq="1") #1
     db.procedure.insert(loinc_code="topoc66", exam_name="Corneal mapping",exam_description="Corneal mapping",cycle_num="1", procedure_seq="1") # 4
@@ -126,7 +115,6 @@ def set_defaults_db():
     db.procedure.insert(loinc_code="chauffeurc66", exam_name="Examen chauffeur",exam_description="Examen chauffeur groupe 2",cycle_num="1", procedure_seq="1")
     db.procedure.insert(loinc_code="childrenc66", exam_name="Children",exam_description="Children exam",cycle_num="1", procedure_seq="3")
     db.procedure.insert(loinc_code="myoc66", exam_name="Myosis",exam_description="Pupils' myosis",cycle_num="1", procedure_seq="1")
-    db.commit()
     # modality reference to: modality_controller 160421
     modcdb = db.modality_controller
     db.modality.insert(modality_name="L80", id_modality_controller=db(modcdb.modality_controller_name == 'autorx').select(modcdb.id).first()['id']) # ctrl is autorx
@@ -148,7 +136,6 @@ def set_defaults_db():
     db.modality.insert(modality_name="Cyclopentol", id_modality_controller=db(modcdb.modality_controller_name == 'autorx').select(modcdb.id).first()['id'])
     db.modality.insert(modality_name="Mix Tropicol/Phenylephrine", id_modality_controller=db(modcdb.modality_controller_name == 'none').select(modcdb.id).first()['id'])
     db.modality.insert(modality_name="Isoptoatropine", id_modality_controller=db(modcdb.modality_controller_name == 'none').select(modcdb.id).first()['id'])
-    db.commit()
     # procedure_family reference to: procedure, modality, modality_family
     procdb = db.procedure
     moddb = db.modality
@@ -237,7 +224,6 @@ def set_defaults_db():
         id_procedure=db(procdb.exam_name == 'Children').select(procdb.id).first()['id'],
         id_modality=db(moddb.modality_name == 'Multiple').select(moddb.id).first()['id'],
         id_modality_family=db(modfdb.family == 'Multiple').select(modfdb.id).first()['id'])
-    db.commit()
     # combo reference to: procedure, modality
     db.combo.insert(
         id_procedure=db(procdb.exam_name == 'Routine consultation').select(procdb.id).first()['id'],
@@ -344,6 +330,5 @@ def set_defaults_db():
     db.combo.insert(
         id_procedure=db(procdb.exam_name == 'Children').select(procdb.id).first()['id'],
         id_modality=db(moddb.modality_name == 'MD').select(moddb.id).first()['id'])
-    db.commit()
     return True
     

@@ -47,7 +47,7 @@ from .useful import getMembershipId, dropdownSelect, check_duplicate
 
 # @unauthenticated("index", "index.html")
 @action('index')
-@action.uses(session, auth.user, db,'index.html')
+@action.uses(session, auth, db,'index.html')
 def index():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
@@ -55,7 +55,8 @@ def index():
     if "NEW_INSTALLATION" in globals():
         if NEW_INSTALLATION == True:
             redirect(URL('isNew'))
-    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
+    if 'membership' in user:
+        userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
     message = T("Hello {first_name}!".format(**user) if user else "Hello. You should sign in!")
     db_admins_count = db(db.auth_user.membership==getMembershipId('Admin')).count()
     db_doctors_count = db(db.auth_user.membership==getMembershipId('Doctor')).count()
@@ -80,7 +81,6 @@ def isNew():
 def test(membership=6):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
-    time
     hosturl = LOCAL_URL
     user = auth.get_user()
     userId=user['username']
