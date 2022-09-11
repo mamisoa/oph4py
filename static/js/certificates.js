@@ -242,7 +242,7 @@ function orthoCert() {
     let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
     let timecreation = creationstamp.toJSON().slice(11,19);
     orthodefault.push('ce '+ datecreation + ' à ' + timecreation+'.</p>');
-    orthodefault.push('<p>Il/Elle nécessite une <strong>rééducation orthoptique de 10 séances (771736)</strong> à raison de <strong>2 fois par semaine</strong>, ');
+    orthodefault.push('<p>Il/Elle nécessite une <strong>rééducation orthoptique de 10 séances (771536)</strong> à raison de <strong>2 fois par semaine</strong>, ');
     orthodefault.push('pour une <strong>insuffisance de convergence</strong>, dans le but d\'<strong>améliorer son amplitude de fusion</strong>.<\p>')
     orthodefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
     orthodefault.push('<p>Cordialement,</p>');
