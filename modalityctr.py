@@ -168,6 +168,60 @@ def md(wlId):
     logo64 = base64.b64encode(open(logo_img_path, "rb").read())
     return locals()
 
+@action('gp')
+@action('modalityCtr/gp/<wlId>')
+@action.uses(session, auth.user, db,'modalityCtr/gp.html')
+def md(wlId):
+    env_status = ENV_STATUS
+    timeOffset = TIMEOFFSET
+    import base64
+    from datetime import datetime
+    response.headers['Cross-Origin-Embedder-Policy']='require-corp'
+    response.headers['Cross-Origin-Opener-Policy']='same-origin'
+    hosturl = LOCAL_URL
+    user = auth.get_user()
+    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
+    userHierarchy = db(db.membership.id == user['membership']).select(db.membership.hierarchy).first()['hierarchy']
+    if userHierarchy >= 3:
+        redirect(URL('worklist'))
+    db.auth_user.password.readable = False
+    db.auth_user.password.writable  = False
+    genderObj = genderId # used in patient-bar
+    wldb = db.worklist
+    wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
+        join=[
+            db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
+            db.modality.on(db.modality.id == wldb.modality_dest),
+            ]
+        ).as_json()
+    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
+        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
+    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
+        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
+    patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    userdb = db.auth_user
+    mdHistory = db((db.worklist.modality_dest == mdId) & (db.worklist.id_auth_user == patientId)).select().as_json()
+    modalityDict = {}
+    rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
+    for row in rows:
+        modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
+    # init all fields
+    currentHx = initFields(wlId,'current_hx')
+    soap = initFields(wlId,'soap')
+    ccx = initFields(wlId,'ccx')
+    followup = initFields(wlId,'followup')
+    billing = initFields(wlId,'billing')
+    mddb=db.md_params
+    mdParams= db(mddb.id_auth_user == user['id']).select(mddb.id_auth_user,mddb.inami,mddb.email,mddb.officename,mddb.officeaddress,mddb.officezip,mddb.officetown,mddb.officeurl,mddb.officephone,mddb.companynum,mddb.companyname,mddb.companyiban,mddb.companyaddress).first().as_dict()
+    userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
+    # glasses assets
+    axe_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/axe.png'
+    logo_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/logo.jpg'
+    axe64 = base64.b64encode(open(axe_img_path, "rb").read())
+    logo64 = base64.b64encode(open(logo_img_path, "rb").read())
+    return locals()
+
+
 # helloworld controller
 @action('hello')
 @action('modalityCtr/hello/<wlId>')
