@@ -9,7 +9,7 @@
     <a href="[[=URL('manage/files')]]" class="nav-link">Files</a>
 </li>
 [[ pass ]]
-[[ if userMembership == 'Admin':]]
+[[ if (userMembership == 'Admin'or userMembership =='Doctor') :]]
 <li class="nav-item dropdown">
     <a href="" class="nav-link dropdown-toggle" id="dd-manage" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
     <ul class="dropdown-menu" aria-labelledby="dd-manage">
