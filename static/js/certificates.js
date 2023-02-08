@@ -283,6 +283,38 @@ function preopCert() {
     return preopdefault.join('');
 };
 
+function postopCert() {
+    let postopdefault =[];
+    postopdefault.push('<p>Cher Confrère, chère Consoeur, </p>');
+    postopdefault.push('<p>J\'ai examiné: <strong>'+patientObj['last_name']+' '+patientObj['first_name']+' DN'+patientObj['dob'].split('-').reverse().join('/')+' NN'+ checkIfDataIsNull(patientObj['ssn'],'(n/a)')+'</strong> ')
+    let dbstamp = new Date(wlObj['worklist']['created_on']);
+    let creationstamp = dbstamp.addHours(timeOffsetInHours*2);
+    let datecreation = creationstamp.toJSON().slice(0,10).split('-').reverse().join('/');
+    let timecreation = creationstamp.toJSON().slice(11,19);
+    postopdefault.push('ce '+ datecreation + ' à ' + timecreation+' ');
+    postopdefault.push('dans le cadre d\'un examen postopératoire à une <strong>chirurgie réfractive de l\'oeil droit et de l\'oeil gauche</strong> ayant eu lieu le <strong>'+ datecreation + '</strong>.</p>');
+    postopdefault.push('<p>L\'examen montre:');
+        postopdefault.push('<ul>');
+            postopdefault.push('<li>la réfraction objective suivante:</li>');
+                postopdefault.push('<ul>');
+                    postopdefault.push(`<li> Oeil droit (OD) : ${autorxObjFill['sphR']}(${autorxObjFill['cylR']} x ${autorxObjFill['axisR']}°)</li>`);
+                    postopdefault.push(`<li> Oeil gauche (OG): ${autorxObjFill['sphL']}(${autorxObjFill['cylL']} x ${autorxObjFill['axisL']} °)</li>`);
+                postopdefault.push('</ul>');
+            postopdefault.push('</li>');
+            postopdefault.push('<li>une acuité visuelle <strong>sans correction</strong>:</li>');
+                postopdefault.push('<ul>');
+                    postopdefault.push(`<li> OD: 1.0</li>`);
+                    postopdefault.push(`<li> OG: 1.0</li>`);
+                postopdefault.push('</ul>');
+            postopdefault.push('</li>');
+        postopdefault.push('</ul>');
+    postopdefault.push('</p>');
+    postopdefault.push('<p>Je joins à ce certificat la facture n° .</p>');
+    postopdefault.push('<p>Je reste à votre disposition pour toute information complémentaire.</p>');
+    postopdefault.push('<p>Cordialement,</p>');
+    postopdefault.push('<p><strong>Dr.'+userObj['last_name'].toUpperCase()+' '+userObj['first_name']+' '+'</strong></p>');
+    return postopdefault.join('');
+};
 
 var certificateModal = document.getElementById('certificateModal')
 certificateModal.addEventListener('show.bs.modal', function (event) {
@@ -317,6 +349,10 @@ certificateModal.addEventListener('show.bs.modal', function (event) {
         $('#certificateDest').val('AU MEDECIN CONSEIL');
         $('#certificateTitle').val('RAPPORT MEDICAL');
         certdefault.push(preopCert());
+    } else if ($(btn).data('certFlag') == "postop") {
+        $('#certificateDest').val('AU MEDECIN CONSEIL');
+        $('#certificateTitle').val('RAPPORT MEDICAL');
+        certdefault.push(postopCert());
     } else {
         console.log('free cert');
         certdefault.push(freeCert());
