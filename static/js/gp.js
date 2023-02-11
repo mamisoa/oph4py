@@ -100,136 +100,6 @@ $('#mHxModal input[name=title]').autoComplete({
     }
 });
 
-// lens right autocomplete
-$('#CxRxFormModal input[name=lensnameR]').autoComplete({
-    bootstrapVersion: '4',
-    minLength: '1',
-    resolverSettings: {
-        url: API_LENSES,
-        queryKey: 'name.contains'
-    },
-    events: {
-        searchPost: function(res) {
-            if (res.count == 0) {
-                // $('#mxModal input[name=id_medic_ref]').val('');
-            }
-            return res.items;
-        }   
-    },
-    formatResult: function(item) {
-        // console.log(item);
-        $('#CxRxFormModal input[name=materialR]').val(checkIfDataIsNull(item.material,'-'));
-        $('#CxRxFormModal input[name=designR]').val(checkIfDataIsNull(item.design,'-'));
-        $('#CxRxFormModal input[name=edgeR]').val(checkIfDataIsNull(item.edge,'-'));
-        $('#CxRxFormModal input[name=opticalzoneR]').val(checkIfDataIsNull(item.opticalzone,'-'));
-        $('#CxRxFormModal input[name=basecurveR]').val(checkIfDataIsNull(item.basecurve,'-'));
-        $('#CxRxFormModal input[name=diameterR]').val(checkIfDataIsNull(item.diameter,'-'));
-        if (item.rigidity =='soft') {
-            if (item.toricity != true) {
-                // console.log('Lens choosen if soft spheric');
-                $('#CxRxModal input[name=g1sspheric]').prop('checked',true).trigger('change');
-                $('#CxRxModal input[name=g1storic]').prop('checked',false);
-            } else {
-                // console.log('Lens choosen if soft toric');
-                $('#CxRxModal input[name=g1storic]').prop('checked',true).trigger('change');
-                $('#CxRxModal input[name=g1sspheric]').prop('checked',false);
-            };
-        } else { // other than soft
-            $('#CxRxModal input[name=g1sspheric]').prop('checked',false).trigger('change');
-            $('#CxRxModal input[name=g1storic]').prop('checked',false).trigger('change');
-        };
-        return {
-            text: item.name+' ('+item.brand+')'
-        }
-    }
-});
-
-$('#CxRxFormModal input[name=lensnameL]').autoComplete({
-    bootstrapVersion: '4',
-    minLength: '1',
-    resolverSettings: {
-        url: API_LENSES,
-        queryKey: 'name.contains'
-    },
-    events: {
-        searchPost: function(res) {
-            if (res.count == 0) {
-            }
-            return res.items;
-        }   
-    },
-    formatResult: function(item) {
-        // console.log(item);
-        $('#CxRxModal input[name=materialL]').val(checkIfDataIsNull(item.material,'-'));
-        $('#CxRxModal input[name=designL]').val(checkIfDataIsNull(item.design,'-'));
-        $('#CxRxModal input[name=edgeL]').val(checkIfDataIsNull(item.edge,'-'));
-        $('#CxRxModal input[name=opticalzoneL]').val(checkIfDataIsNull(item.opticalzone,''));
-        $('#CxRxModal input[name=basecurveL]').val(checkIfDataIsNull(item.basecurve,''));
-        $('#CxRxModal input[name=diameterL]').val(checkIfDataIsNull(item.diameter,''));
-        if (item.rigidity =='soft') {
-            if (item.toricity != true) {
-                // console.log('Lens choosen if soft spheric');
-                $('#CxRxModal input[name=g1sspheric]').prop('checked',true).trigger('change');
-                $('#CxRxModal input[name=g1storic]').prop('checked',false);
-            } else {
-                // console.log('Lens choosen if soft toric');
-                $('#CxRxModal input[name=g1storic]').prop('checked',true).trigger('change');
-                $('#CxRxModal input[name=g1sspheric]').prop('checked',false);
-            };
-        } else { // other than soft
-            $('#CxRxModal input[name=g1sspheric]').prop('checked',false).trigger('change');
-            $('#CxRxModal input[name=g1storic]').prop('checked',false).trigger('change');
-        };
-        return {
-            text: item.name+' ('+item.brand+')'
-        };
-    }
-});
-
-// cleaning solution autocomplete
-$('#CxRxFormModal input[name=cleaningR]').autoComplete({
-    bootstrapVersion: '4',
-    minLength: '1',
-    resolverSettings: {
-        url: API_CLEANING,
-        queryKey: 'name.contains'
-    },
-    events: {
-        searchPost: function(res) {
-            if (res.count == 0) {
-            }
-            return res.items;
-        }   
-    },
-    formatResult: function(item) {
-        $('#CxRxFormModal input[name=cleaningL]').val(item.name+' ('+item.brand+')').trigger('change');
-        return {
-            text: item.name+' ('+item.brand+')'
-        };
-    }
-});
-
-$('#CxRxFormModal input[name=cleaningL]').autoComplete({
-    bootstrapVersion: '4',
-    minLength: '1',
-    resolverSettings: {
-        url: API_CLEANING,
-        queryKey: 'name.contains'
-    },
-    events: {
-        searchPost: function(res) {
-            if (res.count == 0) {
-            }
-            return res.items;
-        }   
-    },
-    formatResult: function(item) {
-        return {
-            text: item.name+' ('+item.brand+')'
-        };
-    }
-});
-
 // init modal according to the button that called it, before it is shown
 // set mHxModal parameters by default: category
 // diagnosis associated to a worklist item have a WlId, NOT the others
@@ -513,7 +383,7 @@ function getWlItemData(table,wlId,lat='',options='') {
     )
 };
 
-// set submit forms
+// set multiple field submit forms
 var antFieldsArr = ['outer','cornea','ant_chamb','iris','lens','other'],
     postFieldsArr = ['post_chamb','vitreous','retina','macula','papil','other'];
 
@@ -556,10 +426,12 @@ function setSubmit(domId,table, fieldsArr,lat) {
     });        
 }
 
-setSubmit('#antRightForm','ant_biom',antFieldsArr,'right');
-setSubmit('#antLeftForm','ant_biom', antFieldsArr,'left');
-setSubmit('#postRightForm','post_biom', postFieldsArr,'right');
-setSubmit('#postLeftForm','post_biom', postFieldsArr,'left');
+// Examples:
+// setSubmit('#antRightForm','ant_biom',antFieldsArr,'right');
+// setSubmit('#antLeftForm','ant_biom', antFieldsArr,'left');
+// setSubmit('#postRightForm','post_biom', postFieldsArr,'right');
+// setSubmit('#postLeftForm','post_biom', postFieldsArr,'left');
+
 
 // set events handlers to update fields
 function updateHandlersFields(table,domId,fieldsArr,lat='') {
@@ -586,10 +458,12 @@ function updateHandlersFields(table,domId,fieldsArr,lat='') {
     };
 }
 
-updateHandlersFields('ant_biom','#antRightForm', antFieldsArr,'right');
-updateHandlersFields('ant_biom','#antLeftForm', antFieldsArr,'left');
-updateHandlersFields('post_biom','#postRightForm', postFieldsArr,'right');
-updateHandlersFields('post_biom','#postLeftForm', postFieldsArr,'left');
+// Examples
+// updateHandlersFields('ant_biom','#antRightForm', antFieldsArr,'right');
+// updateHandlersFields('ant_biom','#antLeftForm', antFieldsArr,'left');
+// updateHandlersFields('post_biom','#postRightForm', postFieldsArr,'right');
+// updateHandlersFields('post_biom','#postLeftForm', postFieldsArr,'left');
+
 
 // trigger change at each value change
 function monitorValueChange(domId,fieldsArr) {
@@ -601,20 +475,16 @@ function monitorValueChange(domId,fieldsArr) {
     };
 };
 
-monitorValueChange('#antRightForm', antFieldsArr);
-monitorValueChange('#antLeftForm', antFieldsArr);
-monitorValueChange('#postRightForm', postFieldsArr);
-monitorValueChange('#postLeftForm', postFieldsArr);
 
 // motility 
 
 // set form submit with 1 field 'description', not laterality
 // domId = formId eg #motForm
 
-// todo: to implement
+// TODO: to implement
 // key is domId, value is table
 oneFieldObj = {
-        '#cHxForm': 'current_hx','#motForm':'motility', '#phoForm':'phoria', '#pupForm':'pupils',
+        '#cHxForm': 'current_hx','#motForm':'motility', '#phoForm':'phoria', '#pupForm':'pupils', '#soapForm':'soap',
         '#ccxForm':'ccx', '#ccxRForm':'ccx','#ccxLForm':'ccx','#folForm':'followup','#bilForm':'billing' };
 
 function setOneSubmit(domId,table,lat) {
@@ -642,7 +512,9 @@ function setOneSubmit(domId,table,lat) {
     });    
 };
 
+// parameter: #formId , tableName, laterality
 setOneSubmit('#cHxForm','current_hx');
+setOneSubmit('#soapForm','soap');
 setOneSubmit('#motForm','motility');
 setOneSubmit('#phoForm','phoria');
 setOneSubmit('#pupForm','pupils');
@@ -664,6 +536,7 @@ function updateHandlersOneField(domId) {
 };
 
 updateHandlersOneField('#cHxForm');
+updateHandlersOneField('#soapForm');
 updateHandlersOneField('#motForm');
 updateHandlersOneField('#phoForm');
 updateHandlersOneField('#pupForm');
@@ -693,6 +566,7 @@ function monitorValueChangeOneField(domId,table,lat) {
 }
 
 monitorValueChangeOneField('#cHxForm','current_hx');
+monitorValueChangeOneField('#soapForm','soap');
 monitorValueChangeOneField('#motForm','motility');
 monitorValueChangeOneField('#phoForm','phoria');
 monitorValueChangeOneField('#pupForm','pupils');
@@ -710,79 +584,4 @@ function renderMedicObj(medicObj) {
     let posology=item['unit_per_intake']+' '+checkIfDataIsNull(medicObj['medic.form'],'unit(s)')+' '+medicObj['frequency'];
     content.push('S/'+ posology+'\n');
     return content.join('');
-};
-
-// testing pdf blob to download file on server
-function testpdf(){
-    let text=  {
-        content: [
-            'First paragraph',
-            'Another paragraph, this time a little bit longer to make sure, this line will be divided into at least two lines',
-            usermdObj['companyname']
-        ]
-    };
-    let pdf= pdfMake.createPdf(text);
-    let form = new FormData();
-    // pdf.getBuffer((blob) => {
-    //     console.log('blob uploading...');
-    //     form.append('upload', blob, 'test.pdf');
-    //     fetch(HOSTURL+"/myapp/upload", {method:"POST", body:form})
-    //     .then(response => console.log(response));
-    // });
-    pdf.getBlob((blob) => {
-        // console.log('blob uploading...');
-        form.append('upload', blob, 'test.pdf');
-        fetch(HOSTURL+"/myapp/upload", {method:"POST", body:blob})
-        .then(response => response.text())
-        .then(data => console.log(data));
-    });
-    pdf.download();
-};
-
-function printRx(table,id) {
-    $.ajax({
-        type: "GET",
-        url: HOSTURL+"/myapp/api/"+table+"?id.eq="+id,
-        dataType: "json",
-        success: function (data) {
-            // console.log(data); 
-            let item=data.items[0];
-            if (data.status == 'error' || data.count == 0) {
-                displayToast('error', 'GET error', 'Cannot retrieve prescription', '3000');
-            } else {                    
-                displayToast('info', 'GET success', 'Prescription retrieved #' + id, '3000');
-                let pdfObj = JSON.parse(item['pdf_report']);
-                let pdf= pdfMake.createPdf(pdfObj);
-                pdf.print()
-            }
-        },
-        error: function (er) {
-            console.log(er);
-        }
-    });
-};
-
-function printGxRx(table,id) {
-    $.ajax({
-        type: "GET",
-        url: HOSTURL+"/myapp/api/"+table+"?id.eq="+id,
-        dataType: "json",
-        success: function (data) {
-            // console.log(data); 
-            let item=data.items[0];
-            if (data.status == 'error' || data.count == 0) {
-                displayToast('error', 'GET error', 'Cannot retrieve prescription', '3000');
-            } else {                    
-                displayToast('info', 'GET success', 'Prescription retrieved #' + id, '3000');
-                let pdfObj = JSON.parse(item['pdf_report']);
-                pdfObj['watermark']['text']='Duplicata';
-                // console.log('pdfObj:',pdfObj);
-                let pdf= pdfMake.createPdf(pdfObj);
-                pdf.print()
-            }
-        },
-        error: function (er) {
-            console.log(er);
-        }
-    });
 };

@@ -208,17 +208,15 @@ def md(wlId):
     # init all fields
     currentHx = initFields(wlId,'current_hx')
     soap = initFields(wlId,'soap')
+    motility = initFields(wlId,'motility')
+    phoria = initFields(wlId,'phoria')
+    pupils = initFields(wlId,'pupils')
     ccx = initFields(wlId,'ccx')
     followup = initFields(wlId,'followup')
     billing = initFields(wlId,'billing')
     mddb=db.md_params
     mdParams= db(mddb.id_auth_user == user['id']).select(mddb.id_auth_user,mddb.inami,mddb.email,mddb.officename,mddb.officeaddress,mddb.officezip,mddb.officetown,mddb.officeurl,mddb.officephone,mddb.companynum,mddb.companyname,mddb.companyiban,mddb.companyaddress).first().as_dict()
     userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
-    # glasses assets
-    axe_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/axe.png'
-    logo_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/logo.jpg'
-    axe64 = base64.b64encode(open(axe_img_path, "rb").read())
-    logo64 = base64.b64encode(open(logo_img_path, "rb").read())
     return locals()
 
 

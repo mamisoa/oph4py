@@ -590,6 +590,13 @@ db.define_table('certificates',
     Field('pdf_report','blob'),
     auth.signature)
 
+#soap
+db.define_table('soap',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('description','string'),
+    auth.signature)
+
 """ ## OCTOPUS
 dbo.define_table('tbl_basic_patient',
     Field('pk_patient',type='id'),
