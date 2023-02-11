@@ -1,3 +1,6 @@
+// add visibility to main modalities
+let mainModalityArr = ['MD', 'GP']
+
 // medications table
 function responseHandler_mx(res) { // used if data-response-handler="responseHandler_mx"
     let list = res.items;
