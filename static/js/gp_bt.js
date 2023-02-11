@@ -1,5 +1,4 @@
-// medications table
-function responseHandler_mx(res) { // used if data-response-handler="responseHandler_mx"
+function responseHandler_mx(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
     let display = [];
     $.each(list, function (i) {
@@ -34,8 +33,7 @@ function responseHandler_mx(res) { // used if data-response-handler="responseHan
     };
 };
 
-// allergies table
-function responseHandler_ax(res) { // used if data-response-handler="responseHandler_ax"
+function responseHandler_ax(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
     let display = [];
     $.each(list, function (i) {
@@ -62,8 +60,7 @@ function responseHandler_ax(res) { // used if data-response-handler="responseHan
     };
 };
 
-// medical history table
-function responseHandler_msHx(res) { // used if data-response-handler="responseHandler_ms"
+function responseHandler_msHx(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
     let display = [];
     $.each(list, function (i) {
@@ -123,21 +120,6 @@ function queryParams(params) {
             case "timestamp":
                 params.sort = "timestamp";
                 break;
-            case "rx_origin":
-                params.sort = "rx_origin";
-                break;
-            case "va_far":
-                params.sort = "va_far";
-                break;
-            case "tonometry":
-                params.sort = "tonometry";
-                break;
-            case "pachymetry":
-                params.sort = "pachymetry";
-                break;
-            case "techno":
-                params.sort = "techno";
-                break;
             case "category":
                 params.sort = "category";
                 break;
@@ -154,7 +136,6 @@ function queryParams(params) {
     return s; // remove the first &
 };
 
-// add operational icons for medication list
 function operateFormatter_mx(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="edit" href="javascript:void(0)" title="Edit rx"><i class="fas fa-edit"></i></a>');
@@ -163,7 +144,6 @@ function operateFormatter_mx(value, row, index) {
     return html.join('');
 };
 
-// modal button links to edit or remove medication
 window.operateEvents_mx = {
     'click .edit': function (e, value, row, index) {
         // console.log('You click action EDIT on row: ' + JSON.stringify(row));
@@ -190,7 +170,6 @@ window.operateEvents_mx = {
     }
 };
 
-// add operational icons for allergies list
 function operateFormatter_ax(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="edit" href="javascript:void(0)" title="Edit allergy"><i class="fas fa-edit"></i></a>');
@@ -199,7 +178,6 @@ function operateFormatter_ax(value, row, index) {
     return html.join('');
 };
 
-// modal button links to edit or remove allergies
 window.operateEvents_ax = {
     'click .edit': function (e, value, row, index) {
         // console.log('You click action EDIT on row: ' + JSON.stringify(row));
@@ -221,7 +199,6 @@ window.operateEvents_ax = {
     }
 };
 
-// check if value is null and return a default value, else return value
 function checkIfNull(value, resultStrIfNull) { 
     if (value == null) {
         return resultStrIfNull;
@@ -230,7 +207,6 @@ function checkIfNull(value, resultStrIfNull) {
     }
 };
 
-// add operational icons for medical history list
 function operateFormatter_msHx(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="edit" href="javascript:void(0)" title="Edit past history"><i class="fas fa-edit"></i></a>');
@@ -239,7 +215,6 @@ function operateFormatter_msHx(value, row, index) {
     return html.join('');
 };
 
-// modal button links to edit or remove medical history
 window.operateEvents_msHx = {
     'click .edit': function (e, value, row, index) {
         let modalFormId = '#mHxFormModal', modalId = '#mHxModal';
@@ -265,7 +240,6 @@ window.operateEvents_msHx = {
     }
 };
 
-// get details for medication item
 function detailFormatter_mx(index, row) {
     let html = ['<div class="container-fluid"><div class="row">'];
     html.push('<div class="text-start col">');
@@ -292,7 +266,6 @@ function detailFormatter_mx(index, row) {
     return html.join('');
 };
 
-// get details for allergy item
 function detailFormatter_ax(index, row) {
     let html = ['<div class="container-fluid"><div class="row">'];
     html.push('<div class="text-start col">');
@@ -313,7 +286,6 @@ function detailFormatter_ax(index, row) {
     return html.join('');
 };
 
-// get details for medical history item
 function detailFormatter_msHx(index, row) {
     let html = ['<div class="container-fluid"><div class="row">'];
     html.push('<div class="text-start col">');
@@ -337,7 +309,6 @@ function detailFormatter_msHx(index, row) {
     return html.join('');
 };
 
-// styling allergies row
 function rowStyle_ax(row,value) {
     let statusColor = {'atopy':'lightblue', 'intolerance':'papayawhip', 'allergy':'#ff9999'};
     return { 
@@ -402,7 +373,6 @@ function styleTimeslot(ts) {
     return res;
 };
 
-// respondhandler for worklist table
 function responseHandler_wl(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
     let display = [];
@@ -432,7 +402,6 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
                 };
 };
 
-// add operational icons for worklist rows
 function operateFormatter_wl(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="modality_ctr ms-1" href="javascript:void(0)" title="Execute task"><i class="fas fa-heartbeat"></i></a>');
@@ -440,7 +409,6 @@ function operateFormatter_wl(value, row, index) {
     return html.join('');
 };
 
-// add button link for worklist table
 window.operateEvents_wl = {
     'click .modality_ctr': function (e, value, row, index) {
         let dataObj = { 'laterality': row.laterality, 'id': row.id };
@@ -457,7 +425,6 @@ window.operateEvents_wl = {
     }
 };
 
-// style rows in worklist table
 function rowStyle_wl(row,value) {
     let statusColor = {'requested':'#ffcc99' , 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999', 'doctorDone': '#00FF00' };
     let bg;
@@ -471,7 +438,6 @@ function rowStyle_wl(row,value) {
             };
 };
 
-// get details from worklist items
 function detailFormatter_wl(index, row) {
     let lastmodif = Date.parse(row.created_on);
     var rightnow = new Date();
@@ -503,7 +469,6 @@ function detailFormatter_wl(index, row) {
     return html.join('');
 };
 
-// add time elapsed pill to worklist rows
 function counterFormatter_wl(value,row){ 
     let html = [];
     let lastmodif = Date.parse(row.modified_on);
@@ -529,7 +494,6 @@ function counterFormatter_wl(value,row){
     return html.join('');
 };
 
-// add tooltip row to worklist table
 function rowAttributes_wl(row,index) { // set tooltip values
     row.created_by == '' ? createdby = 'created by <strong>unknown</strong>' : createdby = 'created by <strong>'+row.created_by+'</strong>';
     row.created_on == '' ? createdon = ' on <strong>unknown date</strong>' : createdon = ' on <strong>'+row.created_on+'</strong>';
@@ -546,7 +510,7 @@ function rowAttributes_wl(row,index) { // set tooltip values
     };
 };
 
-// responseHandler for refraction table
+// for rx table
 function responseHandler_rx(res) { 
     let list = res.items;
     let display = [];
@@ -594,7 +558,6 @@ function responseHandler_rx(res) {
                 };
 };
 
-// add operationnal buttons to rx table
 function operateFormatter_rx(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="edit" href="javascript:void(0)" title="Edit '+row.laterality+' rx"><i class="fas fa-edit"></i></a>');
@@ -603,7 +566,6 @@ function operateFormatter_rx(value, row, index) {
     return html.join('');
   };
 
-// add button links to edit refraction or add to cache
 window.operateEvents_rx = {
     'click .edit': function (e, value, row, index) {
         // console.log('You click action EDIT on row: ' + JSON.stringify(row));
@@ -616,7 +578,6 @@ window.operateEvents_rx = {
     }
 };
 
-// get details from row rx table
 function detailFormatter_rx(index, row) {
     let html = ['<div class="container-fluid"><div class="row">'];
     html.push('<div class="text-start col">');
@@ -643,7 +604,6 @@ function detailFormatter_rx(index, row) {
     return html.join('');
 };
 
-// add style to row in rx table
 function rowStyle_type(row) {
     let bg, statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' };
     row.rx_origin != undefined ? bg = statusColor[row.rx_origin] : bg = "white";
@@ -652,7 +612,6 @@ function rowStyle_type(row) {
             };
 };
 
-// format formula in a cell of rx table
 function cellStyle_formula(value,row) {
     let bg, statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' }, fontColor='black';
     row.rx_origin != undefined ? bg = statusColor[row.rx_origin] : bg = "white";
@@ -666,7 +625,6 @@ function cellStyle_formula(value,row) {
     };
 };
 
-// format formula in a cell of rx table
 function cellStyle_add(value,row) {
     let bg, statusColor = {'cyclo':'#98ff98' , 'glass':'papayawhip', 'dil':'#98ff98', 'trial':'#00FF00', 'autorx':'white' };
     row.rx_origin != undefined ? bg = statusColor[row.rx_origin] : bg = "white";
@@ -678,174 +636,7 @@ function cellStyle_add(value,row) {
     };
 };
 
-// responsehandler for km tables
-function responseHandler_km(res) { // used if data-response-handler="responseHandler_wl"
-    let list = res.items;
-    let display = [];
-    $.each(list, function (i) {
-        display.push({
-            'id': list[i].id,
-            'id_auth_user': list[i].id_auth_user,
-            'id_worklist': list[i].id_worklist,
-            'timestamp': list[i]['timestamp'].split('T').join(' '),
-            'laterality': list[i]['laterality'],
-            'k1': list[i].k1,
-            'axis1': list[i].axis1,
-            'k2': list[i].k2,
-            'axis2': list[i].axis2,
-            'note': list[i].note,
-            'formulak1': list[i].k1+'D x'+list[i].axis1+'°',
-            'formulak2': list[i].k2+'D x'+list[i].axis2+'°',
-            'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
-            'modified_by': list[i]['mod.id'],
-            'modified_on': list[i]['modified_on'],
-            'created_by': list[i]['creator.id'],
-            'created_by_name': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
-            'created_on': list[i]['created_on']
-        });
-    });
-    return {    rows: display, 
-                total: res.count,
-                };
-};
-
-// add operational buttons to rows in km tables
-function operateFormatter_km(value, row, index) {
-    let html = ['<div class="d-flex justify-content-between">'];
-    html.push('<a class="edit" href="javascript:void(0)" title="Edit tono/pachy"><i class="fas fa-edit"></i></a>');
-    html.push('<a class="cache ms-1" href="javascript:void(0)" title="Cache km"><i class="fas fa-file-import"></i></a>');
-    html.push('</div>');
-    return html.join('');
-  };
-
-// add button links to edit or remove to row in km table
-window.operateEvents_km = {
-    'click .edit': function (e, value, row, index) {
-        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        window.location.href = '/myapp/modalityCtr/autorx/'+row.id_worklist;
-    },
-    'click .cache': function (e, value, row, index) {
-        // todo: to implement
-    }
-};
-
-// get details from rows in km table
-function detailFormatter_km(index, row) {
-    let html = ['<div class="container-fluid"><div class="row">'];
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">K1: </span>'+ row.k1+'D x '+row.axis1+'°</p>');
-    html.push('<p class=""><span class="fw-bold">K2: </span>'+ row.k2+'D x '+row.axis2+'°</p>');
-    html.push('<p class=""><span class="fw-bold">Laterality: </span>'+ row.laterality +'</p>');
-    html.push('</div>');
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
-    html.push('<p class=""><span class="fw-bold">Timestamp: </span>'+ row.timestamp +'</p>');
-    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by_name+' on '+row.created_on+'</p>');
-    html.push('<p class=""><span class="fw-bold">Modified by: </span>'+ row.modified_by_name+' on '+row.modified_on+'</p>');
-    html.push('</div>');
-    html.push('</div></div>');
-    return html.join('');
-};
-
-// style rows in km table
-function rowStyle_km(row,index) {
-    let bg = "white";
-    if (index %2 ===0) {
-        bg = "papayawhip";
-    }
-    return { 
-                css: { 'background-color': bg }
-            };
-};
-
-// stlying normal/anomalous values in km tables
-function cellStyle_k1(value,row) {
-    let font={ 'color': 'black', 'weight' : 'normal'};
-    ( row.k1 <=40.50 || row.k1 >=46.50) ? font = { 'color': 'red', 'weight' : 'bold '} : {};
-    return {    
-        css: { 
-            'font-weight': font.weight,
-            'color': font.color
-        }
-    };
-};
-
-// stlying normal/anomalous values in km tables
-function cellStyle_k2(value,row) {
-    let font={ 'color': 'black', 'weight' : 'normal'};
-    ( row.k2 <=40.50 || row.k2 >=46.50) ? font = { 'color': 'red', 'weight' : 'bold '} : {};
-    return {    
-        css: { 
-            'font-weight': font.weight,
-            'color': font.color
-        }
-    };
-};
-
-// response handler for tono table
-// TODO: add search to select techo
-function responseHandler_tono(res) { 
-    let list = res.items;
-    let display = [];
-    $.each(list, function (i) {
-        display.push({
-            'id': list[i].id,
-            'id_auth_user': list[i].id_auth_user,
-            'id_worklist': list[i].id_worklist,
-            'techno': list[i].techno,
-            'laterality': list[i]['laterality'],
-            'tonometry': highlightValue(list[i]['tonometry'],20,24),
-            'pachymetry': list[i]['pachymetry']==null ?' ': highlightValue(list[i]['pachymetry'],525,500,'low'),
-            'timestamp': list[i]['timestamp'].split('T').join(' '),
-            'modified_by': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
-            'modified_on': list[i]['modified_on'],
-            'created_by': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
-            'created_on': list[i]['created_on']
-        });
-    });
-    return {    rows: display, 
-                total: res.count,
-                };
-};
-
-// query parameters for tono tables
-function queryParams_tono(params) {
-    var s="";
-    if (params.offset != "0") {
-        // console.log(params.offset);
-        s += "&@offset="+params.offset;
-    }
-    if (params.limit != "0") {
-        // console.log(params.offset);
-        s += "&@limit="+params.limit;
-    }
-    return decodeURI(encodeURI(s.slice(1-s.length))); // remove the first &
-};
-
-// add operational buttons to rows in tono table
-function operateFormatter_tono(value, row, index) {
-    let html = ['<div class="d-flex justify-content-between">'];
-    html.push('<a class="edit" href="javascript:void(0)" title="Edit '+row.laterality+' tono"><i class="fas fa-edit"></i></a>');
-    html.push('<a class="cache" href="javascript:void(0)" title="Cache '+row.laterality+' tono"><i class="fas fa-file-import"></i></a>');
-    html.push('</div>');
-    return html.join('');
-  };
-
-// add button link to rows in tono table
-window.operateEvents_tono = {
-    'click .edit': function (e, value, row, index) {
-        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        window.location.href = '/myapp/modalityCtr/tono/'+row.id_worklist;
-    },
-    'click .cache': function (e, value, row, index) {
-        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        tonoObj.push(row);
-        // todo: implement tono in cache
-        // updateCache(tonoObj); 
-    }
-};
-
-// style to highlight abnormal values in tono table
+// highlight abnormal values
 function highlightValue(str,midthreshold,highthreshold, direction = 'high') {
     if (direction == 'high') {
         if (parseFloat(str) >=highthreshold) {
@@ -866,7 +657,6 @@ function highlightValue(str,midthreshold,highthreshold, direction = 'high') {
     };
 };
 
-// get details from rows in tono table
 function detailFormatter_tono(index, row) {
     let html = ['<div class="container-fluid"><div class="row">'];
     html.push('<div class="text-start col">');
@@ -886,120 +676,8 @@ function detailFormatter_tono(index, row) {
     return html.join('');
 };
 
-// responseHandler for prescribed glasses table
-function responseHandler_gx(res) { 
-    let list = res.items;
-    let display = [];
-    $.each(list, function (i) {
-        display.push({
-            'id': list[i].id,
-            'id_auth_user': list[i].id_auth_user,
-            'id_worklist': list[i].id_worklist,
-            'uuid': list[i]['uuid'],
-            'datestamp': list[i]['datestamp'],
-            'glass_type': list[i].glass_type,
-            'sph_farR': list[i].sph_farR,
-            'cyl_farR': list[i].cyl_farR,
-            'axis_farR': list[i].axis_farR,
-            'rx_farR': list[i].sph_farR+'('+list[i].cyl_farR+'x'+list[i].axis_farR+')',
-            'formulaR': list[i].sph_farR+'('+list[i].cyl_farR+'x'+list[i].axis_farR+') Add'+(parseFloat(list[i].sph_closeR)-parseFloat(list[i].sph_farR)).toFixed(2),
-            'se_farR': (parseFloat(list[i].sph_farR)+0.5*parseFloat(list[i].cyl_farR)).toFixed(2),
-            'sph_intR': list[i].sph_intR,
-            'cyl_intR': list[i].cyl_intR,
-            'axis_intR': list[i].axis_intR,
-            'rx_intR': list[i].sph_intR+'('+list[i].cyl_intR+'x'+list[i].axis_intR+')',
-            'addR': (parseFloat(list[i].sph_close)-parseFloat(list[i].sph_far)).toFixed(2),
-            'sph_closeR': list[i].sph_closeR,
-            'cyl_closeR': list[i].cyl_closeR,
-            'axis_closeR': list[i].axis_closeR,
-            'rx_closeR': list[i].sph_closeR+'('+list[i].cyl_closeR+'x'+list[i].axis_closeR+')',
-            // left eye
-            'sph_farL': list[i].sph_farL,
-            'cyl_farL': list[i].cyl_farL,
-            'axis_farL': list[i].axis_farL,
-            'rx_farL': list[i].sph_farL+'('+list[i].cyl_farL+'x'+list[i].axis_farL+')',
-            'formulaL': list[i].sph_farL+'('+list[i].cyl_farL+'x'+list[i].axis_farL+') Add'+(parseFloat(list[i].sph_closeL)-parseFloat(list[i].sph_farL)).toFixed(2),
-            'se_farL': (parseFloat(list[i].sph_farL)+0.5*parseFloat(list[i].cyl_farL)).toFixed(2),
-            'sph_intL': list[i].sph_intL,
-            'cyl_intL': list[i].cyl_intL,
-            'axis_intL': list[i].axis_intL,
-            'rx_intL': list[i].sph_intL+'('+list[i].cyl_intL+'x'+list[i].axis_intL+')',
-            'addL': (parseFloat(list[i].sph_close)-parseFloat(list[i].sph_far)).toFixed(2),
-            'sph_closeL': list[i].sph_closeL,
-            'cyl_closeL': list[i].cyl_closeL,
-            'axis_closeL': list[i].axis_closeL,
-            'rx_closeL': list[i].sph_closeL+'('+list[i].cyl_closeL+'x'+list[i].axis_closeL+')',
-            'remarks': list[i].remarks,
-            'art30': list[i].art30,
-            'prismL': list[i].prismL,
-            'prismR': list[i].prismR,
-            'baseL': list[i].baseL,
-            'baseR': list[i].baseR,
-            'tint': list[i].tint,
-            'photo': list[i].photo,
-            'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
-            'modified_by': list[i]['mod.id'],
-            'modified_on': list[i]['modified_on'],
-            'created_by': list[i]['creator.id'],
-            'created_by_name': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
-            'created_on': list[i]['created_on']
-        });
-    });
-    return {    rows: display, 
-                total: res.count,
-                };
-};
 
-//TODO: check_if_null
-// get details from row in prescribed glasses table
-function detailFormatter_gx(index, row) {
-    let html = ['<div class="container-fluid"><div class="row">'];
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
-    html.push('<p class=""><span class="fw-bold">Unique id: </span>'+ row.uuid);
-    html.push('<p class=""><span class="fw-bold">Datestamp: </span>'+ row.datestamp +'</p>');
-    html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
-    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by+'</p>');
-    html.push('</div>');
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">Type: </span>'+ row.glass_type+'</p>');
-    html.push('<p class=""><span class="fw-bold">Rx right: </span>'+ row.formulaR+'</p>');
-    html.push('<p class=""><span class="fw-bold">Rx left: </span>'+ row.formulaL+'</p>');
-    html.push('<p class=""><span class="fw-bold">Remarks: </span>'+ row.remarks+'</p>');
-    html.push('</div>');
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">Prism right: </span>'+ row.prismR +'</p>');
-    html.push('<p class=""><span class="fw-bold">Base right: </span>'+ row.baseR +'</p>');
-    html.push('<p class=""><span class="fw-bold">Prism left: </span>'+ row.prismL +'</p>');
-    html.push('<p class=""><span class="fw-bold">Base right: </span>'+ row.baseL +'</p>');
-    html.push('</div>');
-    html.push('</div></div>');
-    return html.join('');
-};
-
-// add operational buttons to rows in prescribed glasses table
-function operateFormatter_gx(value, row, index) {
-    let html = ['<div class="d-flex justify-content-between">'];
-    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete prescription"><i class="fas fa-trash-alt"></i></a>');
-    html.push('<a class="print ms-1" href="javascript:void(0)" title="Print glasses prescription"><i class="fas fa-print"></i></a>');
-    html.push('</div>');
-    return html.join('');
-  };
-
-// add operational buttons to rows in prescribed glasses table
-window.operateEvents_gx = {
-    'click .remove': function (e, value, row, index) {
-        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
-        delItem(row.id, 'glasses_rx_list', 'glasses prescription');
-    },
-    'click .print': function (e, value, row, index) {
-        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        printGxRx('glasses_rx_list', row.id);
-    }
-};
-
-// responseHandler to medical prescriptions table
-function responseHandler_mxrx(res) { // used if data-response-handler="responseHandler_mxrx"
+function responseHandler_mxrx(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
     let display = [];
     $.each(list, function (i) {
@@ -1023,7 +701,6 @@ function responseHandler_mxrx(res) { // used if data-response-handler="responseH
     };
 };
 
-// get details from row in medical prescriptions table
 function detailFormatter_mxrx(index, row) {
     let html = ['<div class="container-fluid"><div class="row">'];
     html.push('<div class="text-start col">');
@@ -1041,7 +718,6 @@ function detailFormatter_mxrx(index, row) {
     return html.join('');
 };
 
-// add operational buttons to row in medical prescriptions table
 function operateFormatter_mxrx(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete rx"><i class="fas fa-trash-alt"></i></a>');
@@ -1050,7 +726,6 @@ function operateFormatter_mxrx(value, row, index) {
     return html.join('');
 };
 
-// add button links to row in medical prescriptions table
 window.operateEvents_mxrx = {
     'click .print': function (e, value, row, index) {
         // console.log('You click action EDIT on row: ' + JSON.stringify(row));
@@ -1062,106 +737,8 @@ window.operateEvents_mxrx = {
     }
 };
 
-// responseHandler for contacts prescriptions
-function responseHandler_cxrx(res) { 
-    let list = res.items;
-    let display = [];
-    $.each(list, function (i) {
-        display.push({
-            'id': list[i].id,
-            'id_auth_user': list[i].id_auth_user,
-            'id_worklist': list[i].id_worklist,
-            'uuid': list[i]['uuid'],
-            'datestamp': list[i]['datestamp'],
-            'sph_farR': list[i].sph_farR,
-            'cyl_farR': list[i].cyl_farR,
-            'axis_farR': list[i].axis_farR,
-            'formulaR': list[i].sphR+'('+list[i].cylR+'x'+list[i].axisR+') Add+'+list[i].addcR,
-            'sph_intR': list[i].sph_intR,
-            'cyl_intR': list[i].cyl_intR,
-            'axis_intR': list[i].axis_intR,
-            'addcR': list[i].addcR,
-            'sph_closeR': list[i].sph_closeR,
-            'cyl_closeR': list[i].cyl_closeR,
-            'axis_closeR': list[i].axis_closeR,
-            'lensnameR': list[i].lensnameR,
-            'cleaningR': list[i].cleaningR,
-            // left eye
-            'sph_farL': list[i].sph_farL,
-            'cyl_farL': list[i].cyl_farL,
-            'axis_farL': list[i].axis_farL,
-            'formulaL': list[i].sphL+'('+list[i].cylL+'x'+list[i].axisL+') Add+'+list[i].addcL,
-            'sph_intL': list[i].sph_intL,
-            'cyl_intL': list[i].cyl_intL,
-            'axis_intL': list[i].axis_intL,
-            'addcL': list[i].addcL,
-            'sph_closeL': list[i].sph_closeL,
-            'cyl_closeL': list[i].cyl_closeL,
-            'axis_closeL': list[i].axis_closeL,
-            'lensnameL': list[i].lensnameL,
-            'cleaningL': list[i].cleaningL,
-            'remarks': list[i].remarks,
-            'modified_by_name': list[i]['mod.last_name']+' '+list[i]['mod.first_name'],
-            'modified_by': list[i]['mod.id'],
-            'modified_on': list[i]['modified_on'],
-            'created_by': list[i]['creator.id'],
-            'created_by_name': list[i]['creator.last_name']+' '+list[i]['creator.first_name'],
-            'created_on': list[i]['created_on']
-        });
-    });
-    return {    rows: display, 
-                total: res.count,
-                };
-};
 
-//TODO: check_if_null
-// get details from contact prescriptions table
-function detailFormatter_cxrx(index, row) {
-    let html = ['<div class="container-fluid"><div class="row">'];
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
-    html.push('<p class=""><span class="fw-bold">Unique id: </span>'+ row.uuid);
-    html.push('<p class=""><span class="fw-bold">Datestamp: </span>'+ row.datestamp +'</p>');
-    html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
-    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by+'</p>');
-    html.push('<p class=""><span class="fw-bold">Remarks: </span>'+ row.remarks+'</p>');
-    html.push('</div>');
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">Right lense: </span>'+ row.lensnameR+'</p>');
-    html.push('<p class=""><span class="fw-bold">Rx right: </span>'+ row.formulaR+'</p>');
-    html.push('<p class=""><span class="fw-bold">Cleaning right: </span>'+ row.cleaningR+'</p>');
-    html.push('</div>');
-    html.push('<div class="text-start col">');
-    html.push('<p class=""><span class="fw-bold">Left lense: </span>'+ row.lensnameL+'</p>');
-    html.push('<p class=""><span class="fw-bold">Rx left: </span>'+ row.formulaL+'</p>');
-    html.push('<p class=""><span class="fw-bold">Cleaning left: </span>'+ row.cleaningL+'</p>');
-    html.push('</div>');
-    html.push('</div></div>');
-    return html.join('');
-};
-
-// add operational buttons to row in contacts tables
-function operateFormatter_cxrx(value, row, index) {
-    let html = ['<div class="d-flex justify-content-between">'];
-    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete prescription"><i class="fas fa-trash-alt"></i></a>');
-    html.push('<a class="print ms-1" href="javascript:void(0)" title="Print lenses prescription"><i class="fas fa-print"></i></a>');
-    html.push('</div>');
-    return html.join('');
-  };
-
-// add button links to contacts table
-window.operateEvents_cxrx = {
-    'click .remove': function (e, value, row, index) {
-        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
-        delItem(row.id, 'contacts_rx_list', 'contacts prescription');
-    },
-    'click .print': function (e, value, row, index) {
-        // console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        printGxRx('contacts_rx_list', row.id);
-    }
-};
-
-// responseHandler for certificates table
+// for cert table
 function responseHandler_cert(res) { 
     let list = res.items;
     let display = [];
@@ -1188,8 +765,7 @@ function responseHandler_cert(res) {
                 };
 };
 
-// TODO: check_if_null
-// get details from row in certificates table
+//todo check_if_null
 function detailFormatter_cert(index, row) {
     let html = ['<div class="container-fluid"><div class="row">'];
     html.push('<div class="text-start col">');
@@ -1206,7 +782,6 @@ function detailFormatter_cert(index, row) {
     return html.join('');
 };
 
-// add operational buttons to rows in certificates table
 function operateFormatter_cert(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete certificate"><i class="fas fa-trash-alt"></i></a>');
@@ -1215,7 +790,6 @@ function operateFormatter_cert(value, row, index) {
     return html.join('');
   };
 
-// add button links to rows in certificates table
 window.operateEvents_cert = {
     'click .remove': function (e, value, row, index) {
         // console.log('You click action DELETE on row: ' + JSON.stringify(row));
