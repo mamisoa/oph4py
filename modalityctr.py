@@ -21,12 +21,15 @@ if "NEW_INSTALLATION" in globals():
         pass
     else:
         mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
+        gpId = db(db.modality.modality_name == 'GP').select(db.modality.id).first().id
         genderId = {
             db(db.gender.sex == 'Male').select(db.gender.id).first().id : "Male",
             db(db.gender.sex == 'Female').select(db.gender.id).first().id : "Female",
             db(db.gender.sex == 'Other').select(db.gender.id).first().id : "Other" }
 else:
+    # TODO: create an array for practitioners in modalities
     mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
+    gpId = db(db.modality.modality_name == 'GP').select(db.modality.id).first().id
     genderId = {
         db(db.gender.sex == 'Male').select(db.gender.id).first().id : "Male",
         db(db.gender.sex == 'Female').select(db.gender.id).first().id : "Female",
@@ -200,7 +203,8 @@ def md(wlId):
         left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     userdb = db.auth_user
-    mdHistory = db((db.worklist.modality_dest == mdId) & (db.worklist.id_auth_user == patientId)).select().as_json()
+    # get history from previous main consultations for GP
+    mdHistory = db((db.worklist.modality_dest == gpId) & (db.worklist.id_auth_user == patientId)).select().as_json()
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
     for row in rows:
