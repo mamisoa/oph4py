@@ -1,7 +1,7 @@
-[[ if 'userMembership' not in locals():]]
-[[ userMembership = None]]
+[[ if 'userHierarchy' not in locals():]]
+[[ userHierarchy = 10000]]
 [[ pass]]
-[[ if userMembership != None:]]
+[[ if userHierarchy != None:]]
 <li class="nav-item">
     <a href="[[=URL('worklist')]]" class="nav-link">Worklist</a>
 </li>
@@ -9,7 +9,7 @@
     <a href="[[=URL('manage/files')]]" class="nav-link">Files</a>
 </li>
 [[ pass ]]
-[[ if userMembership == 'Admin':]]
+[[ if userHierarchy < 3 :]]
 <li class="nav-item dropdown">
     <a href="" class="nav-link dropdown-toggle" id="dd-manage" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
     <ul class="dropdown-menu" aria-labelledby="dd-manage">
