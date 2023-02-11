@@ -110,7 +110,7 @@ function operateFormatter_wl(value, row, index) {
     if (modalityDict[row.modality] != 'none') {
         html.push('<a class="modality_ctr ms-1" href="javascript:void(0)" title="Execute task"><i class="fas fa-heartbeat"></i></a>');
     }
-    if (row.modality == 'MD' && row.status_flag =='done'){
+    if ((row.modality == 'MD' || row.modality == 'GP')  && row.status_flag =='done'){
         html.push('<a class="summary ms-1" href="javascript:void(0)" title="Read summary"><i class="fas fa-th-list"></i></a>');
     } else {};
     html.push('</div>');
