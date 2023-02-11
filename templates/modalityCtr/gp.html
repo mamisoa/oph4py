@@ -1,0 +1,1291 @@
+[[extend "baseof.html"]]
+
+[[ block page_head]]
+<link href="css/bootstrap-table.min.css" rel="stylesheet">
+<style>
+    /* overide when topnavbar is not fixed-top */
+    section#main { margin-top: 0px; }
+</style>
+[[ end ]]
+
+[[ block left_nav ]]
+[[ end]]
+
+[[ include 'partials/patient-bar.html' # patient-bar will set all worklist parameters]]
+
+<div class="container-fluid mb-3"> <!-- controller title-->
+    <div class="row big-title bg-neutral">
+        <div class="col">
+            <h1><a role="button" data-bs-toggle="collapse" href=".md">Medical examination</a></h1>
+        </div>
+    </div>
+</div>
+
+<div id="hx-container" class="container-fluid mb-3"> <!-- Hx container-->
+    <div class="row mb-3 big-title bg-primary">
+        <div class="col">
+            <h2><a role="button" data-bs-toggle="collapse" href=".history">Past history</a></h2>
+        </div>
+    </div>
+    <div class="row history">
+        <div class="col">
+            <h3 class="big-title bg-secondary"><a role="button" data-bs-toggle="collapse" href=".gHx">General history</a></h3>
+            <div class="row gHx">
+                <div class="col">
+                    <div class="row mb-3"> <!-- row medications -->
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <h4 class="title-right">Medications</h4>
+                                    <div>
+                                        <button type="button" id="btnNewMx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-status-flag="historyMx" data-mx-flag="historyMx" data-bs-target="#mxModal">
+                                            Add medication<i class="mx-2 fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3 bg-right">
+                                <div class="col">
+                                    <table
+                                        id="mx_tbl"
+                                        data-side-pagination="server"
+                                        data-toggle="table"
+                                        data-pagination="true"
+                                        data-page-size="10"
+                                        data-search="false"
+                                        data-query-params="queryParams"
+                                        data-response-handler="responseHandler_mx"
+                                        data-detail-formatter="detailFormatter_mx"
+                                        data-detail-view="true"
+                                        data-detail-view-icon="true"
+                                        >
+                                        <thead>
+                                            <tr>
+                                                <th data-field="onset" data-sortable="true">Onset</th>
+                                                <th data-field="ended" data-sortable="false">Ended</th>
+                                                <th data-field="medication" data-sortable="true">Medication</th>
+                                                <th data-field="delivery" data-sortable="false">Delivery</th>
+                                                <th data-field="frequency_h" data-sortable="false">Frequency</th>
+                                                <th data-field="note" data-sortable="false">Note</th>
+                                                <th data-field="prescribed" data-sortable="false">Prescribed</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row mb-3">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <h4 class="big-title bg-warning">Allergy</h4>
+                            </div>
+                            <div>
+                                <button type="button" id="btnNewAx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#axModal">
+                                    Add allergy<i class="mx-2 fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mb-3 bg-neutral">
+                            <div class="col">
+                                <table
+                                    id="ax_tbl"
+                                    data-side-pagination="server"
+                                    data-toggle="table"
+                                    data-pagination="true"
+                                    data-page-size="10"
+                                    data-search="false"
+                                    data-query-params="queryParams"
+                                    data-row-style="rowStyle_ax"
+                                    data-response-handler="responseHandler_ax"
+                                    data-detail-formatter="detailFormatter_ax"
+                                    data-detail-view="true"
+                                    data-detail-view-icon="true"
+                                    >
+                                    <thead>
+                                        <tr>
+                                            <th data-field="onset" data-sortable="true">Onset</th>
+                                            <th data-field="ended" data-sortable="false">Ended</th>
+                                            <th data-field="typ" data-sortable="true">Type</th>
+                                            <th data-field="agent" data-sortable="true">Agent</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_ax" data-events="operateEvents_ax">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- end div row medications allergy -->
+            <div class="row gHx">
+                <div class="col">
+                    <div class="row mb-3"> <!-- row mHx -->
+                        <div class="col">
+                            <h4 class="title-right">Medical Hx</h4>
+                            <div>
+                                <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="medical">Add past medical history<i class="mx-2 fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mt-3 bg-right"> <!-- mHx_tbl-->
+                            <div class="col">
+                                <table
+                                    id="mHx_tbl"
+                                    data-side-pagination="server"
+                                    data-toggle="table"
+                                    data-pagination="true"
+                                    data-page-size="10"
+                                    data-search="false"
+                                    data-query-params="queryParams"
+                                    data-response-handler="responseHandler_msHx"
+                                    data-detail-formatter="detailFormatter_msHx"
+                                    data-detail-view="true"
+                                    data-detail-view-icon="true"
+                                    >
+                                    <thead>
+                                        <tr>
+                                            <th data-field="onset" data-sortable="true">Onset</th>
+                                            <th data-field="ended" data-sortable="false">Ended</th>
+                                            <th data-field="title" data-sortable="true">Title</th>
+                                            <th data-field="icd10" data-sortable="true">ICD-10</th>
+                                            <th data-field="site" data-sortable="true">Site</th>
+                                            <th data-field="note" data-sortable="true">Note</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div> <!-- end row mHx_tbl-->
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row mb-3">
+                        <div class="row mb-3">
+                            <h4 class="title-left">Surgical Hx</h4>
+                            <div>
+                                <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="surgical">Add past surgical history<i class="mx-2 fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mb-3 bg-left">
+                            <div class="col">
+                                <table
+                                    id="sHx_tbl"
+                                    data-side-pagination="server"
+                                    data-toggle="table"
+                                    data-pagination="true"
+                                    data-page-size="10"
+                                    data-search="false"
+                                    data-query-params="queryParams"
+                                    data-response-handler="responseHandler_msHx"
+                                    data-detail-formatter="detailFormatter_msHx"
+                                    data-detail-view="true"
+                                    data-detail-view-icon="true"
+                                    >
+                                    <thead>
+                                        <tr>
+                                            <th data-field="onset" data-sortable="true">Onset</th>
+                                            <th data-field="ended" data-sortable="false">Ended</th>
+                                            <th data-field="title" data-sortable="true">Title</th>
+                                            <th data-field="icd10" data-sortable="true">ICD-10</th>
+                                            <th data-field="site" data-sortable="true">Site</th>
+                                            <th data-field="note" data-sortable="true">Note</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- end div row mHx sHx -->
+        </div>
+    </div>
+    <div class="row history">
+        <h3 class="big-title bg-info"><a role="button" data-bs-toggle="collapse" href=".oHx">Ocular history</a></h3>
+        [[ if userMembership == 'Doctor':]]
+        [[ pass ]]
+        <div class="row mb-3 oHx"> <!-- row wlHx-->
+            <div class="col">
+                <h4><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h4>
+                <div id="toolbar-wl">
+                </div>
+                <table id="table-wl"
+                    data-toolbar-align="right"
+                    data-toolbar="#toolbar-wl"
+                    data-id-field="id"
+                    data-toggle="table"
+                    data-side-pagination="server"
+                    data-show-refresh="true"
+                    data-pagination="true"
+                    data-page-size="5"
+                    data-show-columns="true"
+                    data-search="true"
+                    data-search-accent-neutralise="true"
+                    data-visible-search="false"
+                    data-query-params="queryParams_wl"
+                    data-response-handler="responseHandler_wl"
+                    data-row-style="rowStyle_wl"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    data-detail-formatter="detailFormatter_wl"
+                    data-detail-view-by-click="false"
+                    >
+                    <thead class="thead-dark">
+                        <th data-field="id" data-sortable="true">ID</th>
+                        <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
+                        <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">Receving facility:</th>
+                        <th data-field="procedure" data-searchable= "true" data-sortable="true">Procedure:</th>
+                        <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
+                        <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
+                        <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
+                        <th data-field="laterality" data-sortable="false" data-searchable= "false">Laterality:</th>
+                        <th data-field="requested_time" data-sortable="true" data-searchable= "true">Timeslot:</th>
+                        <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
+                        <th data-field="counter" data-searchable= "true" data-sortable="false" data-formatter="counterFormatter_wl">Counter:</th>
+                        <th data-field="warning" data-searchable= "true" data-sortable="false">Warning:</th>
+                        <th data-field="operate" data-formatter="operateFormatter_wl" data-events="operateEvents_wl">Action</th>
+                    </thead>
+                </table>
+            </div>
+        </div> <!-- end row wlHx-->
+    </div> <!-- end row oHx -->
+</div>
+<div class="container-fluid mb-3" id="cHxDiv">
+    <div class="row">
+        <div class="col text-center">
+            <h2 class="big-title bg-info"><a role="button" data-bs-toggle="collapse" href=".cHx">Present History</a></h2>
+        </div>
+    </div>
+    <div class="row cHx py-2 bg-right">
+        <div class="col">
+            <form id="cHxForm" enctype="multipart/form-data" method="POST"> 
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col" id="descriptionCol">
+                            <div class="input-group">
+                                <button id="cHxFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(currentHx['description']) ]]</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input id="idcHx" type="text" class="visually-hidden" name="id" value="[[ = XML(currentHx['id']) ]]"/>
+                <input id="idPatientcHx" type="text" class="visually-hidden" name="id_auth_user"/>
+                <input id="idWlcHx" type="text" class="visually-hidden" name="id_worklist"/>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="cx-container" class="container-fluid mb-3"> <!-- container clinical exams -->
+    <div class="row mb-3 big-title bg-primary">
+        <div>
+            <h2><a role="button" data-bs-toggle="collapse" href=".clinical">Clinical exam</a></h2>
+        </div>
+    </div>
+    [[ if userMembership == 'Doctor':]]
+    <div class="row mb-3 clinical">
+        <div class="col">
+            <div class="row mb-3">
+                <div class="col"> <!-- right eye -->
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-right">SOAP</h3>
+                        </div>
+                    </div>
+                    <div class="row bg-right">
+                        <div class="col py-3"> <!-- soap col -->
+                            <form id="soapForm" enctype="multipart/form-data" method="POST"> 
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <button id="soapFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                                <textarea type="text" id="soap" class="form-control" aria-label="soap examination" 
+                                                    name="description" rows="5" autocomplete="on" >[[ = XML(soap['description']) ]]</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container-fluid">
+                                    <input id="idsoap" type="text" class="visually-hidden" name="id" value="[[ = XML(soap['id']) ]]"/>
+                                    <input id="idPatientsoap" type="text" class="visually-hidden" name="id_auth_user"/>
+                                    <input id="idWlsoap" type="text" class="visually-hidden" name="id_worklist"/>
+                                </div>
+                            </form>
+                        </div> <!-- soap end col -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    [[ pass ]]
+    <div class="row mb-3 clinical">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="big-title bg-secondary"><a role="button" data-bs-toggle="collapse" href=".misc">Miscellaneous</a></h3>
+                        </div>
+                    </div>
+                    <div class="row misc">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <h4 class="big-title">Motility</h4>
+                                </div>
+                            </div>
+                            <div class="row py-2 bg-right">
+                                <div class="col">
+                                    <form id="motForm" enctype="multipart/form-data" method="POST"> 
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="input-group">
+                                                        <button id="motFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(motility['description']) ]]</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input id="idmot" type="text" class="visually-hidden" name="id" value="[[ = XML(motility['id']) ]]"/>
+                                        <input id="idPatientmot" type="text" class="visually-hidden" name="id_auth_user"/>
+                                        <input id="idWlmot" type="text" class="visually-hidden" name="id_worklist"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <h4 class="big-title">Phoria</h4>
+                                </div>
+                            </div>
+                            <div class="row py-2 bg-left">
+                                <div class="col">
+                                    <form id="phoForm" enctype="multipart/form-data" method="POST"> 
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="input-group">
+                                                        <button id="phoFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(phoria['description']) ]]</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input id="idpho" type="text" class="visually-hidden" name="id" value="[[ = XML(phoria['id']) ]]"/>
+                                        <input id="idPatientpho" type="text" class="visually-hidden" name="id_auth_user"/>
+                                        <input id="idWlpho" type="text" class="visually-hidden" name="id_worklist"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <h4 class="big-title">Pupils</h4>
+                                </div>
+                            </div>
+                            <div class="row py-2 bg-right">
+                                <div class="col">
+                                    <form id="pupForm" enctype="multipart/form-data" method="POST"> 
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="input-group">
+                                                        <button id="pupFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(pupils['description']) ]]</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input id="idpup" type="text" class="visually-hidden" name="id" value="[[ = XML(pupils['id']) ]]"/>
+                                        <input id="idPatientpup" type="text" class="visually-hidden" name="id_auth_user"/>
+                                        <input id="idWlpup" type="text" class="visually-hidden" name="id_worklist"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="cc-container" class="container-fluid mb-3"> <!-- container conclusions -->
+    <div class="row mb-3">
+        <div class="col">
+            <div class="row">
+                <div class="col big-title bg-primary">
+                    <h2><a role="button" data-bs-toggle="collapse" href=".dx">Conclusions</a></h2>
+                </div>
+            </div>
+            <div class="row bg-right py-3 dx">
+                <div class="col">
+                    <form id="ccxForm" enctype="multipart/form-data" method="POST"> 
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-group">
+                                        <button id="ccxFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(ccx['description']) ]]</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input id="lateralityccx" type="text" class="visually-hidden" name="laterality" value="na"/>
+                        <input id="idccx" type="text" class="visually-hidden" name="id" value="[[ = XML(ccx['id']) ]]"/>
+                        <input id="idPatientccx" type="text" class="visually-hidden" name="id_auth_user" value="[[=patientId]]"/>
+                        <input id="idWlccx" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3 dx">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3 class="title-right">Coding</h3>
+                </div>
+            </div>
+            <div class="row bg-right">
+                <div class="col ">
+                    <button type="button" id="btnNewCoding" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="medical" data-mhx-flag="code">Add code<i class="mx-2 fas fa-plus"></i></button>
+                    <table
+                        id="coding_tbl"
+                        data-side-pagination="server"
+                        data-toggle="table"
+                        data-pagination="true"
+                        data-page-size="5"
+                        data-search="false"
+                        data-query-params="queryParams"
+                        data-response-handler="responseHandler_msHx"
+                        data-detail-formatter="detailFormatter_msHx"
+                        data-detail-view="true"
+                        data-detail-view-icon="true"
+                        >
+                        <thead>
+                            <tr>
+                                <th data-field="onset" data-sortable="true">Onset</th>
+                                <th data-field="ended" data-sortable="false">Ended</th>
+                                <th data-field="title" data-sortable="true">Title</th>
+                                <th data-field="icd10" data-sortable="true">ICD-10</th>
+                                <th data-field="site" data-sortable="true">Side</th>
+                                <th data-field="note" data-sortable="true">Note</th>
+                                <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div> <!-- end coding col-->
+            </div>
+        </div>
+    </div>
+</div>
+<div id="x-container" class="container-fluid mb-3"> <!-- container actions -->
+    <div class="row mb-3 big-title bg-warning">
+        <div class="col">
+            <h2><a role="button" data-bs-toggle="collapse" href=".actions">Actions</a></h2>
+        </div>
+    </div>
+    <div class="row mb-3 actions">
+        [[ if userMembership == 'Doctor':]]
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <div class="col">
+                        <h3 class="title-right">Medical Rx</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="row bg-right">
+                <div class="col">
+                    <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm " data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnMxRx" class="btn btn-warning btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
+                    <table
+                        id="mxWl_tbl"
+                        data-side-pagination="server"
+                        data-toggle="table"
+                        data-pagination="true"
+                        data-page-size="5"
+                        data-search="false"
+                        data-query-params="queryParams"
+                        data-response-handler="responseHandler_mx"
+                        data-detail-formatter="detailFormatter_mx"
+                        data-detail-view="true"
+                        data-detail-view-icon="true"
+                        >
+                        <thead>
+                            <tr>
+                                <th data-field="onset" data-sortable="true">Onset</th>
+                                <th data-field="ended" data-sortable="false">Ended</th>
+                                <th data-field="medication" data-sortable="true">Medication</th>
+                                <th data-field="delivery" data-sortable="false">Delivery</th>
+                                <th data-field="frequency_h" data-sortable="false">Frequency</th>
+                                <th data-field="note" data-sortable="false">Note</th>
+                                <th data-field="prescribed" data-sortable="false">Prescribed</th>
+                                <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="row bg-right">
+                <div class="col">
+                    <h4 class="title-right">List of printed medical prescriptions</h4>
+                    <table
+                        id="mxrx_tbl"
+                        data-side-pagination="server"
+                        data-toggle="table"
+                        data-pagination="true"
+                        data-page-size="5"
+                        data-search="false"
+                        data-query-params="queryParams"
+                        data-response-handler="responseHandler_mxrx"
+                        data-detail-formatter="detailFormatter_mxrx"
+                        data-detail-view="true"
+                        data-detail-view-icon="true"
+                        >
+                        <thead>
+                            <tr>
+                                <th data-field="created_on" data-sortable="true">Created:</th>
+                                <th data-field="mx_names" data-sortable="false">Medication</th>
+                                <th data-field="operate" data-formatter="operateFormatter_mxrx" data-events="operateEvents_mxrx">Action
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- end medical action col row-->
+        [[ pass ]]
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3 class="title-right">Papers</h3>
+                </div>
+            </div>
+            <div class="row bg-right">
+                <div class="col">
+                    <h4 class="title-right">List of printed certificates</h4>
+                    <button type="button" id="btnNewcertificate" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="presence">Presence certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewcertsickleave" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#sickModal">Sick leave certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewfreecertificate" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="free">Free certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewdoccertificate" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="doc">MD certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <table
+                    id="cert_tbl"
+                    data-side-pagination="server"
+                    data-toggle="table"
+                    data-pagination="true"
+                    data-page-size="5"
+                    data-search="false"
+                    data-query-params="queryParams"
+                    data-response-handler="responseHandler_cert"
+                    data-detail-formatter="detailFormatter_cert"
+                    data-detail-view="true"
+                    data-detail-view-icon="true"
+                    >
+                        <thead>
+                            <tr>
+                                <th data-field="datestamp" data-sortable="true">Datestamp</th>
+                                <th data-field="category" data-sortable="true">Category</th>
+                                <th data-field="operate" data-formatter="operateFormatter_cert" data-events="operateEvents_cert">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    [[ if userMembership == 'Doctor':]]
+    <div class="row mb-3 actions">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3 class="big-title bg-info">Follow-up</h3>
+                </div>
+            </div>
+            <div class="row bg-right py-3">
+                <div class="col">
+                    <form id="folForm" enctype="multipart/form-data" method="POST"> 
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-group">
+                                        <button id="folFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(followup['description']) ]]</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input id="idfol" type="text" class="visually-hidden" name="id" value="[[ = XML(followup['id']) ]]"/>
+                        <input id="idPatientfol" type="text" class="visually-hidden" name="id_auth_user" value="[[=patientId]]"/>
+                        <input id="idWlfol" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    [[ pass ]]
+</div>
+
+[[ if userMembership == 'Doctor':]]
+<div id="bill-container" class="container-fluid mb-3"> <!-- container billing -->
+    <div class="row mb-3 big-title bg-success">
+        <div class="col">
+            <h2><a role="button" data-bs-toggle="collapse" href=".bill">Billing</a></h2>
+        </div>
+    </div>
+    <div class="row mb-3 bill">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-right">Right eye</h3>
+                        </div>
+                    </div>
+                    <div class="row bg-right">
+                        <div class="col">
+                            Billing right eye
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-left">Left eye</h3>
+                        </div>
+                    </div>
+                    <div class="row bg-left">
+                        <div class="col">
+                            Billing left eye
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-right">General</h3>
+                        </div>
+                    </div>
+                    <div class="row bg-right py-3">
+                        <div class="col">
+                            <form id="bilForm" enctype="multipart/form-data" method="POST"> 
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <button id="bilFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                                                <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(billing['description']) ]]</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idbil" type="text" class="visually-hidden" name="id" value="[[ = XML(billing['id']) ]]"/>
+                                <input id="idPatientbil" type="text" class="visually-hidden" name="id_auth_user" value="[[=patientId]]"/>
+                                <input id="idWlbil" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col bg-right">
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+                </div>
+                <div class="col bg-left">
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+                </div>
+                <div class="col bg-right">
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3 bill">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3 class="title-right">Recap</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col bg-right">
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+[[ pass ]]
+<!-- Modal mxModal -->
+<div class="modal fade" id="mxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New medication</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="mxFormModal" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="mxdelivery_modal" class="form-label">Side:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group mxdelivery_modal">
+                                                    <input type="radio" id="mxdelivery_right_modal" name="delivery" class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_right_modal">Right</label>
+                                                    <input type="radio" id="mxdelivery_left_modal" name="delivery" class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_left_modal">Left</label>
+                                                    <input type="radio" id="mxdelivery_both_modal" name="delivery" class="btn-check" value="both" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_both_modal">Both</label>
+                                                    <input type="radio" id="mxdelivery_po_modal" name="delivery" class="btn-check" value="PO" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_po_modal">PO</label>
+                                                    <input type="radio" id="mxdelivery_local_modal" name="delivery" class="btn-check" value="local" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_local_modal">Local</label>
+                                                    <input type="radio" id="mxdelivery_iv_modal" name="delivery" class="btn-check" value="IV" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_iv_modal">IV</label>
+                                                    <input type="radio" id="mxdelivery_im_modal" name="delivery" class="btn-check" value="IM" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mxdelivery_im_modal">IM</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="mxOnset" class="form-label">Onset:</label>
+                                            <input id="mxOnset" type="date" step="1" class="form-control"
+                                                name="onset">
+                                            <div id="mxOnsetHelp" class="form-text">Adjust onset</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="mxEnded" class="form-label">End:</label>
+                                            <input id="mxEnded" type="date" step="1" class="form-control" name="ended">
+                                            <div id="mxEndedHelp" class="form-text">Adjust end date</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="medicModal" class="form-label">Medication:</label>
+                                            <input id="medicModal" type="text" class="form-control" name="medication" autocomplete="off">
+                                            <div id="medicModalHelp" class="form-text">Enter medication name</div>
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="intake_modal" class="form-label">Intake:</label>
+                                            <div class="input-group mb-3">
+                                                <button class="btn btn-outline-secondary counter_down_intake" type="button">-</button>
+                                                <input type="text" class="form-control form-control-sm intake_modal counter_intake text-center" value="1.00" aria-label="Intake" name="unit_per_intake">
+                                                <button class="btn btn-outline-secondary counter_up_intake" type="button">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="freqModal" class="form-label">Frequency:</label>
+                                            <input id="freqModal" type="text" class="form-control" name="frequency" autocomplete="off">
+                                            <div id="freqModalHelp" class="form-text">Enter frequency</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="mxNoteModal" class="form-label">Note:</label>
+                                            <input id="mxNoteModal" type="text" class="form-control" name="note" autocomplete="off">
+                                            <div id="mxNoteModalHelp" class="form-text">Note</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idMx" type="text" class="visually-hidden" name="id_medic_ref" />
+                                <input id="idMxWl" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]" />
+                                <input id="idMxPrescribed" type="text" class="visually-hidden" name="prescribed" />
+                                <input id="idMxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idPatientRx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodMxModalSubmit" type="text" class="visually-hidden" name="methodMxModalSubmit" value="POST" />
+                                <input id="btnMxModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="mxModalSubmit" for="btnMxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal axModal -->
+<div class="modal fade" id="axModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New allergy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="axFormModal" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="typ_modal" class="form-label">Type:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group typ_modal">
+                                                    <input type="radio" id="typ_allergy_modal" name="typ" class="btn-check" value="allergy" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="typ_allergy_modal">Allergy</label>
+                                                    <input type="radio" id="typ_atopy_modal" name="typ" class="btn-check" value="atopy" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="typ_atopy_modal">Atopy</label>
+                                                    <input type="radio" id="typ_intolerance_modal" name="typ" class="btn-check" value="intolerance" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="typ_intolerance_modal">Intolerance</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="axOnset" class="form-label">Onset:</label>
+                                            <input id="axOnset" type="date" step="1" class="form-control"
+                                                name="onset">
+                                            <div id="axOnsetHelp" class="form-text">Adjust onset</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="axEnded" class="form-label">End:</label>
+                                            <input id="axEnded" type="date" step="1" class="form-control" name="ended">
+                                            <div id="axEndedHelp" class="form-text">Adjust end date</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="agentModal" class="form-label">Agent:</label>
+                                            <input id="agentModal" type="text" class="form-control" name="agent" autocomplete="off">
+                                            <div id="medicModalHelp" class="form-text">Enter agent name</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idAgent" type="text" class="visually-hidden" name="id_agent" />
+                                <input id="idAxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idPatientAx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodAxModalSubmit" type="text" class="visually-hidden" name="methodAxModalSubmit" value="POST" />
+                                <input id="btnAxModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="axModalSubmit" for="btnAxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal mHxModal -->
+<div class="modal fade" id="mHxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New medical history</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="mHxFormModal" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="category_modal" class="form-label">Category:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group category_modal">
+                                                    <input type="radio" id="mHxcategory_medical_modal" name="category" class="btn-check" value="medical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxcategory_medical_modal">Medical</label>
+                                                    <input type="radio" id="mHxcategory_surgical_modal" name="category" class="btn-check" value="surgical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxcategory_surgical_modal">Surgical</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="mHxsite_modal" class="form-label">Site:</label>
+                                            <div class="input-group">
+                                                <div class="btn-group site_modal">
+                                                    <input type="radio" id="mHxsite_right_modal" name="site" class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxsite_right_modal">Right</label>
+                                                    <input type="radio" id="mHxsite_left_modal" name="site" class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxsite_left_modal">Left</label>
+                                                    <input type="radio" id="mHxsite_both_modal" name="site" class="btn-check" value="both" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxsite_both_modal">Both</label>
+                                                    <input type="radio" id="mHxsite_local_modal" name="site" class="btn-check" value="local" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxsite_local_modal">Local</label>
+                                                    <input type="radio" id="mHxsite_systemic_modal" name="site" class="btn-check" value="systemic" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="mHxsite_systemic_modal">Systemic</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="mHxOnset" class="form-label">Onset:</label>
+                                            <input id="mHxOnset" type="date" step="1" class="form-control"
+                                                name="onset">
+                                            <div id="mHxOnsetHelp" class="form-text">Adjust onset</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="mHxEnded" class="form-label">End:</label>
+                                            <input id="mHxEnded" type="date" step="1" class="form-control" name="ended">
+                                            <div id="mHxEndedHelp" class="form-text">Adjust end date</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="mHxtitleModal" class="form-label">Title:</label>
+                                            <input id="mHxtitleModal" type="text" class="form-control" name="title" autocomplete="off">
+                                            <div id="mHxtitleModalHelp" class="form-text">Enter disease title</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="mHxnoteModal" class="form-label">Note:</label>
+                                            <input id="mHxnoteModal" type="text" class="form-control" name="note" autocomplete="off">
+                                            <div id="mHxnoteModalHelp" class="form-text">Note</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idDiseaseRef" type="text" class="visually-hidden" name="id_disease_ref" />
+                                <input id="idmHxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idmHxWl" type="text" class="visually-hidden" name="id_worklist" />
+                                <input id="idPatientmHx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodmHxModalSubmit" type="text" class="visually-hidden" name="methodmHxModalSubmit" value="POST" />
+                                <input id="btnmHxModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="mHxModalSubmit" for="btnmHxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal mxRxModal -->
+<div class="modal fade" id="mxRxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Prescription module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="visually-hidden"><canvas id="itf"></canvas></div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Medication</th>
+                                    <th scope="col">Posology</th>
+                                    <th scope="col">Onset</th>
+                                    <th scope="col">End</th>
+                                  </tr>
+                                </thead>
+                                <tbody id="mxRxTd">
+                                    <!-- insert rows <td></td>-->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="mxRxModalPrint" for="btnmxRModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal certificateModal -->
+<div class="modal fade" id="certificateModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Certificate module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form id="certificateFormModal">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <textarea name="content" id="certificateContent">
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <input id="certificateCat" type="text" class="visually-hidden" name="category" />
+                        <input id="certificateDest" type="text" class="visually-hidden" name="destination" />
+                        <input id="certificateTitle" type="text" class="visually-hidden" name="title" />
+                        <input id="certificateOnset" type="text" class="visually-hidden" name="onset" />
+                        <input id="certificateEnded" type="text" class="visually-hidden" name="ended" />
+                        <input id="idcertificateWl" type="text" class="visually-hidden" name="id_worklist" />
+                        <input id="idPatientcertificate" type="text" class="visually-hidden" name="id_auth_user" />
+                        <input id="methodcertificateModalSubmit" type="text" class="visually-hidden" name="methodcertificateModalSubmit" value="POST" />
+                        <input id="btncertificateModalSubmit" type="submit" class="visually-hidden" />
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="certificateModalSubmit" for="btncertificateModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal sickModal -->
+<div class="modal fade" id="sickModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Sick leave module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form id="sickFormModal">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="onsetsick" class="form-label">Onset:</label>
+                                    <input id="onsetsick" type="date" step="1" class="form-control" name="onset">
+                                    <div id="onsetsickHelp" class="form-text">Sick leave onset</div>
+                                </div>
+                                <div class="col">
+                                    <label for="endedsick" class="form-label">End:</label>
+                                    <input id="endedsick" type="date" step="1" class="form-control" name="ended">
+                                    <div id="endedsickHelp" class="form-text">Sick leave end</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="exit" class="form-label">Exit allowance:</label>
+                                    <div class="input-group">
+                                        <div class="btn-group laterality">                                                
+                                            <input type="radio" id="exit_yes" name="exit" class="btn-check" value="yes" autocomplete="off" checked>
+                                            <label class="btn btn-outline-success" for="exit_yes">Yes</label>
+                                            <input type="radio" id="exit_no" name="exit" class="btn-check" value="no" autocomplete="off">
+                                            <label class="btn btn-outline-danger" for="exit_no">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" data-bs-target="#certificateModal" data-bs-toggle="modal" data-bs-dismiss="modal" data-cert-flag="sick">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- cache offcanvas -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCache" aria-labelledby="offcanvas cache">
+    <div class="offcanvas-header">
+      <button type="button" class="btn btn-primary" id="clearCache">Clear cache</button>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <h3 class="big-title">Rx selected</h3>
+                </div>
+                <div class="row">
+                    <ul class="rxUl list-group">
+                    </ul>
+                </div>
+                <div class="row">
+                    <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Origin</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Rx</th>
+                          </tr>
+                        </thead>
+                        <tbody class="rxTd">
+                            <!-- insert rows <td></td>-->
+                        </tbody>
+                      </table>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end offcanvas body-->
+</div>
+
+
+[[ block js_scripts]]
+
+<script type="text/javascript">
+// Global variables
+const HOSTURL = "[[ = hosturl ]]";
+let usermdObj = [[ =XML(mdParams) ]];
+let userObj = [[ =XML(userDict)]];
+// for timer
+let timer_id = [];
+// modality controllers
+let modalityDict = [[ = XML(modalityDict) ]];
+
+// submit btn to disable when done
+const btnArr = ['#btnTaskDone','#btnNewMx', '#btnNewAx','#btnNewmHx', '#btnNewsHx', 'input', 'textarea', '#btnNewCoding','#btnNewMxWl','#btnMxRx','#btnMxRx','#btnGxRx' ];
+
+</script>
+<script src="js/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
+<!-- https://bootstrap-autocomplete.readthedocs.io/en/latest/ -->
+<script src="js/bootstrap-autocomplete.min.js"></script> 
+<script src="js/timer.jquery.min.js"></script>
+<script src="js/useful.js"></script>
+<script src="js/patient-bar.js"></script>
+<script src="js/gp_bt.js"></script>
+<!-- pdfmake and template prescription -->
+<script src="js/pdfmake/pdfmake.min.js"></script>
+<script src="js/pdfmake/vfs_fonts.js"></script>
+<script src="js/jsbarcode/JsBarcode.itf.min.js"></script>
+<script src="js/html-to-pdfmake.js"></script>
+<!-- tinymce -->
+<script src="js/tinymce/tinymce.min.js"></script>
+<script src="js/tinymce/jquery.tinymce.min.js"></script>
+<script type="text/javascript">
+
+// 
+// const API_GP = HOSTURL + "/myapp/api/gp?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+
+// todo: to implement
+// add keywd parameter & keyoptions eg 'frequency&keyoptions.contains=...' for autocomplete
+const API_AUTODICT = HOSTURL + "/myapp/api/auto_dict?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&keywd.eq=";
+
+// API_MEDICATION lists medications for autocomplete
+const API_MEDICATIONS = HOSTURL + "/myapp/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+// API_AGENT lists agents for autocomplete
+const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+// API_DISEASES lists diseases for autocomplete
+const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+
+// table listing ALL medications taken by user
+const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+var $mx_tbl = $('#mx_tbl').bootstrapTable({
+    url: API_MXUSER
+});
+
+// table listing ALL allergy to agents by user
+const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+var $ax_tbl = $('#ax_tbl').bootstrapTable({
+    url: API_AXUSER
+});
+
+// table listing medical history by user
+const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+var $mHx_tbl = $('#mHx_tbl').bootstrapTable({
+    url: API_MHXUSER
+});
+
+// table listing surgical history by user
+const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
+    url: API_SHXUSER
+});
+
+// table listing ocular history by user
+const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
+    url: API_OHXUSER
+});
+
+// table listing procedure worklist for user
+const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&id_auth_user.id.eq='+patientId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
+$table_wl = $('#table-wl').bootstrapTable({
+    url: API_PROCEDURE_LIST,
+    formatSearch: function () {
+    return 'Procedure, modality';
+    }
+});
+
+// API url to get soap
+const API_SOAP = HOSTURL + "/myapp/api/soap?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
+
+
+// table listing code encoded for worklist to user
+const API_CODING = HOSTURL + "/myapp/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq="+ patientId;
+var $coding = $('#coding_tbl').bootstrapTable({
+    url: API_CODING
+});
+
+// table listing medication encoded for current worklist 
+const API_MXWLUSER = HOSTURL + "/myapp/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq="+patientId;
+var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
+    url: API_MXWLUSER
+});
+
+// table listing medication encoded for current worklist 
+const API_MXRX = HOSTURL + "/myapp/api/medical_rx_list?id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
+    url: API_MXRX
+});
+
+// table listing certificates for user
+const API_CERT = HOSTURL + "/myapp/api/certificates?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+var $cert_tbl = $('#cert_tbl').bootstrapTable({
+    url: API_CERT
+});
+
+// tables list
+const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl',
+    '#coding_tbl', '#mxWl_tbl',
+    '#mxrx_tbl', '#cert_tbl'];
+
+// init tinymce
+tinymce.init({
+    selector: '#certificateContent',
+    height: '500px',
+    plugins: 'save print code link table'
+});
+
+$( document ).ready(function() {
+    if (document.referrer.includes('modalityCtr/autorx')) {
+        refreshTables(['#rxRight_tbl','#rxLeft_tbl']);
+        console.log('rx tables should be refreshed');
+    };
+    if (document.referrer.includes('modalityCtr/tono')) {
+        refreshTables(['#tonoRight_tbl','#tonoLeft_tbl']);
+        console.log('tono tables should be refreshed');
+    };
+});
+
+
+if (window.performance.getEntriesByType('navigation')[0].type == 'back_forward' || window.performance.getEntriesByType('navigation')[0].type == 'prerender') {
+        console.log('tables:',tablesArr);
+        refreshTables(tablesArr);
+        console.log(' all tables should be refreshed');
+};
+
+</script>
+<script src="js/gp.js"></script>
+<script src="js/certificates_gp.js"></script>
+[[ end ]]

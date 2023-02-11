@@ -1,6 +1,8 @@
 // set parameters for ajax request from bootstrap-table
-var s_wl="";
-var toggle_wl="";
+let s_wl="";
+let toggle_wl="";
+// add visibility to main modalities
+let mainModalityArr = ['MD', 'GP']
 
 function queryParams_wl(params) {
     search = params.search.split(",");
@@ -110,7 +112,7 @@ function operateFormatter_wl(value, row, index) {
     if (modalityDict[row.modality] != 'none') {
         html.push('<a class="modality_ctr ms-1" href="javascript:void(0)" title="Execute task"><i class="fas fa-heartbeat"></i></a>');
     }
-    if (row.modality == 'MD' && row.status_flag =='done'){
+    if (mainModalityArr.includes(row.modality)  && row.status_flag =='done') {
         html.push('<a class="summary ms-1" href="javascript:void(0)" title="Read summary"><i class="fas fa-th-list"></i></a>');
     } else {};
     html.push('</div>');
@@ -182,7 +184,7 @@ window.operateEvents_wl = {
 function rowStyle_wl(row,value) {
     let statusColor = {'requested':'#ffcc99' , 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999', 'doctorDone': '#00FF00' };
     let bg;
-    if (row.modality == 'MD' && row.status_flag =='done'){
+    if (mainModalityArr.includes(row.modality)  && row.status_flag =='done') {
         bg = statusColor['doctorDone'];
     } else {
         bg = statusColor[row.status_flag];
