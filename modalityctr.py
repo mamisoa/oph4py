@@ -158,7 +158,7 @@ def md(wlId):
     ccxL = initFields(wlId,'ccx','left')
     followup = initFields(wlId,'followup')
     billing = initFields(wlId,'billing')
-    mddb=db.md_params
+    mddb=db.md_params # TODO: if details from doctor is not provided, return "Please provide provider details"
     mdParams= db(mddb.id_auth_user == user['id']).select(mddb.id_auth_user,mddb.inami,mddb.email,mddb.officename,mddb.officeaddress,mddb.officezip,mddb.officetown,mddb.officeurl,mddb.officephone,mddb.companynum,mddb.companyname,mddb.companyiban,mddb.companyaddress).first().as_dict()
     userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
     # glasses assets
