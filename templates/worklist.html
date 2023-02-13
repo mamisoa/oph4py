@@ -25,10 +25,17 @@
                     <button type="button" id="btnFullList" class="btn btn-dark mx-2">Full list</button>
                     <button type="button" id="btnTodaysList" class="btn btn-dark mx-2">Today's list</button>
                 </div>
-                <div class="col">
-                    <select id="selectPractitioner" class="form-control">
+                <div class="col form-floating">
+                    <select class="form-select" id="selectProvider" class="form-control">
                         <option value="">No filter</option>"
                     </select>
+                    <label for="selectProvider">Select provider</label>
+                </div>
+                <div class="col form-floating">
+                    <select class="form-select" id="selectPractitioner" class="form-control">
+                        <option value="">No filter</option>"
+                    </select>
+                    <label for="selectPractitioner">Select practitioner</label>
                 </div>
                 <div class="col">
                     <div id="toolbar-wl">
@@ -414,6 +421,7 @@ let multiplemod = [[ = multiplemod ]];
 
 // Fill the select options
 let practitionerDict = [[ = XML(practitionerDict) ]]
+let providerDict = [[ = XML(providerDict) ]]
 function fillSelect() {
     let select = document.getElementById("selectPractitioner");
     for (let value in practitionerDict) {
@@ -422,7 +430,15 @@ function fillSelect() {
         option.text = value;
         select.add(option);
     }
+    select = document.getElementById("selectProvider");
+    for (let value in providerDict) {
+        let option = document.createElement("option");
+        option.value = providerDict[value];
+        option.text = value;
+        select.add(option);
+    }
 }
+
 // Load when DOM is loaded
 document.addEventListener("DOMContentLoaded", function(event) {
         // Lancer la fonction fillSelect
@@ -483,42 +499,62 @@ $( document ).ready(function() {
     };
 });
 
-$('#btnFullList').click(function () {
-    if (document.getElementById("selectPractitioner").value != '') {
-        $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST+"&senior.id="+document.getElementById("selectPractitioner").value
-        })
+function getFilterStatus() {
+    let key="";
+    if (document.getElementById("selectPractitioner").value != "") {
+        if (document.getElementById("selectProvider").value != "") {
+            // provider AND senior selected
+            key = "&senior.id="+document.getElementById("selectPractitioner").value+"&provider.id="+document.getElementById("selectProvider").value
+        } else {
+            // ONLY senior selected
+            key = "&senior.id="+document.getElementById("selectPractitioner").value
+        }
     } else {
-        $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST
-        })
+        // no senior selected
+        if (document.getElementById("selectProvider").value != "") {
+            // ONLY provider selected
+            key = "&provider.id="+document.getElementById("selectProvider").value
+        } else {
+            // NO selection
+        }
     }
+    return key;
+}
+
+$('#btnFullList').click(function () {
+    let key = getFilterStatus();
+    console.log("key: ",key)
+    $('#table-wl').bootstrapTable('refreshOptions', {
+        url: API_PROCEDURE_LIST+key
+    })
 });
 
 $('#btnTodaysList').click(function () {
-    if (document.getElementById("selectPractitioner").value != '') {
-        $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST_TODAY+"&senior.id="+document.getElementById("selectPractitioner").value
-        })
-    } else {
-        $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST_TODAY
-        })
-    }
+    let key = getFilterStatus();
+    console.log("key: ",key)
+    $('#table-wl').bootstrapTable('refreshOptions', {
+        url: API_PROCEDURE_LIST_TODAY+key
+    })
 });
 
 $('#selectPractitioner').change(function(){
-    console.log('select change:',$(this).val());
-    if ($(this).val() != "") {
-        $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST_TODAY+"&senior.id="+$(this).val()
-        })
-    } else {
-        $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST_TODAY
-        })
-    }
+    console.log('select senior change:',$(this).val());
+    let key = getFilterStatus();
+    console.log("key: ",key);
+    $('#table-wl').bootstrapTable('refreshOptions', {
+    url: API_PROCEDURE_LIST_TODAY+ key
+    })
 });
+
+$('#selectProvider').change(function(){
+    console.log('select provider change:',$(this).val());
+    let key = getFilterStatus();
+    console.log("key: ",key);
+    $('#table-wl').bootstrapTable('refreshOptions', {
+    url: API_PROCEDURE_LIST_TODAY+ key
+    })
+});
+
 
 </script>
 <script src="js/wl.js"></script>
