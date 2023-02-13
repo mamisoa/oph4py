@@ -486,7 +486,7 @@ $( document ).ready(function() {
 $('#btnFullList').click(function () {
     if (document.getElementById("selectPractitioner").value != '') {
         $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST+"&provider.id="+document.getElementById("selectPractitioner").value
+        url: API_PROCEDURE_LIST+"&senior.id="+document.getElementById("selectPractitioner").value
         })
     } else {
         $('#table-wl').bootstrapTable('refreshOptions', {
@@ -498,7 +498,7 @@ $('#btnFullList').click(function () {
 $('#btnTodaysList').click(function () {
     if (document.getElementById("selectPractitioner").value != '') {
         $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST_TODAY+"&provider.id="+document.getElementById("selectPractitioner").value
+        url: API_PROCEDURE_LIST_TODAY+"&senior.id="+document.getElementById("selectPractitioner").value
         })
     } else {
         $('#table-wl').bootstrapTable('refreshOptions', {
@@ -511,7 +511,7 @@ $('#selectPractitioner').change(function(){
     console.log('select change:',$(this).val());
     if ($(this).val() != "") {
         $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST_TODAY+"&provider.id="+$(this).val()
+        url: API_PROCEDURE_LIST_TODAY+"&senior.id="+$(this).val()
         })
     } else {
         $('#table-wl').bootstrapTable('refreshOptions', {
