@@ -139,9 +139,13 @@ def worklist():
     practitionerDict = {}
     practitionerSelect = ['Doctor']
     rows = db(db.membership.membership.contains(practitionerSelect,all=False)).select(join=db.auth_user.on(db.auth_user.membership == db.membership.id))
-    # rows = db(db.membership.id == db.auth_user.membership & db.membership.membership.contains('MD') ).select()
     for row in rows:
         practitionerDict['Dr. '+row.auth_user.first_name+' '+row.auth_user.last_name]=row.auth_user.id
+    providerDict = {}
+    providerSelect = ['Medical assistant','Nurse']
+    rows = db(db.membership.membership.contains(providerSelect,all=False)).select(join=db.auth_user.on(db.auth_user.membership == db.membership.id))
+    for row in rows:
+        providerDict[row.auth_user.first_name+' '+row.auth_user.last_name]=row.auth_user.id
     return locals()
 
 ## manage medic_ref
