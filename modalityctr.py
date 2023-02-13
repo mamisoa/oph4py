@@ -116,7 +116,7 @@ def initFields(wlId,table,lat=""):
 def md(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
-    modalityController = 'MD'
+    modalityController = 'md'
     import base64
     from datetime import datetime
     response.headers['Cross-Origin-Embedder-Policy']='require-corp'
