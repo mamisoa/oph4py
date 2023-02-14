@@ -167,7 +167,7 @@ db.worklist.status_flag.requires=IS_IN_SET(('requested', 'processing', 'done', '
 
 
 ################################################################
-#               procedure                                        #
+#               procedure                                      #
 ################################################################
 
 db.define_table('tono',

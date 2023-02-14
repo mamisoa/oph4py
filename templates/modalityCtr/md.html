@@ -1172,6 +1172,7 @@
                     <button type="button" id="btnNewdoccertificate" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="doc">MD certificate<i class="mx-2 fas fa-plus"></i></button>
                     <button type="button" id="btnNeworthocertificate" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="ortho">Ortho certificate<i class="mx-2 fas fa-plus"></i></button>
                     <button type="button" id="btnNewpreopcertificate" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="preop">Preop certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewpostopcertificate" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="postop">Postop certificate<i class="mx-2 fas fa-plus"></i></button>
                     <table
                     id="cert_tbl"
                     data-side-pagination="server"
@@ -2325,6 +2326,7 @@ var userObj = [[ =XML(userDict)]];
 var timer_id = [];
 // modality controllers
 var modalityDict = [[ = XML(modalityDict) ]];
+let modalityController = '[[ = XML(modalityController) ]]';
 // prescription objects
 var rxObj = [], tonoObj = [] ;
 var prescRxObj = {};

@@ -25,6 +25,18 @@
                     <button type="button" id="btnFullList" class="btn btn-dark mx-2">Full list</button>
                     <button type="button" id="btnTodaysList" class="btn btn-dark mx-2">Today's list</button>
                 </div>
+                <div class="col form-floating">
+                    <select class="form-select" id="selectProvider" class="form-control">
+                        <option value="">No filter</option>"
+                    </select>
+                    <label for="selectProvider">Select provider</label>
+                </div>
+                <div class="col form-floating">
+                    <select class="form-select" id="selectPractitioner" class="form-control">
+                        <option value="">No filter</option>"
+                    </select>
+                    <label for="selectPractitioner">Select practitioner</label>
+                </div>
                 <div class="col">
                     <div id="toolbar-wl">
                         <h2><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h2>
@@ -404,11 +416,37 @@
 <script type="text/javascript">
 
 // modality controllers
-var modalityDict = [[ = XML(modalityDict) ]];
-var multiplemod = [[ = multiplemod ]];
+let modalityDict = [[ = XML(modalityDict) ]];
+let multiplemod = [[ = multiplemod ]];
+
+// Fill the select options
+let practitionerDict = [[ = XML(practitionerDict) ]]
+let providerDict = [[ = XML(providerDict) ]]
+function fillSelect() {
+    let select = document.getElementById("selectPractitioner");
+    for (let value in practitionerDict) {
+        let option = document.createElement("option");
+        option.value = practitionerDict[value];
+        option.text = value;
+        select.add(option);
+    }
+    select = document.getElementById("selectProvider");
+    for (let value in providerDict) {
+        let option = document.createElement("option");
+        option.value = providerDict[value];
+        option.text = value;
+        select.add(option);
+    }
+}
+
+// Load when DOM is loaded
+document.addEventListener("DOMContentLoaded", function(event) {
+        // Lancer la fonction fillSelect
+        fillSelect();
+      });
 
 // for timer
-var timer_id = [];
+let timer_id = [];
 
 // init bootstrat-tables
 const membership = [[=membership]];
@@ -420,6 +458,7 @@ const TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
 const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
 const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
 const API_PROCEDURE_LIST_TODAY = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&created_on.gt='+TODAY_DATE+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
+
 
 var $table = $('#table').bootstrapTable({
     url: API_USER_LIST,
@@ -460,17 +499,62 @@ $( document ).ready(function() {
     };
 });
 
+function getFilterStatus() {
+    let key="";
+    if (document.getElementById("selectPractitioner").value != "") {
+        if (document.getElementById("selectProvider").value != "") {
+            // provider AND senior selected
+            key = "&senior.id="+document.getElementById("selectPractitioner").value+"&provider.id="+document.getElementById("selectProvider").value
+        } else {
+            // ONLY senior selected
+            key = "&senior.id="+document.getElementById("selectPractitioner").value
+        }
+    } else {
+        // no senior selected
+        if (document.getElementById("selectProvider").value != "") {
+            // ONLY provider selected
+            key = "&provider.id="+document.getElementById("selectProvider").value
+        } else {
+            // NO selection
+        }
+    }
+    return key;
+}
+
 $('#btnFullList').click(function () {
+    let key = getFilterStatus();
+    console.log("key: ",key)
     $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST
-    });
+        url: API_PROCEDURE_LIST+key
+    })
 });
 
 $('#btnTodaysList').click(function () {
+    let key = getFilterStatus();
+    console.log("key: ",key)
     $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST_TODAY
-    });
+        url: API_PROCEDURE_LIST_TODAY+key
+    })
 });
+
+$('#selectPractitioner').change(function(){
+    console.log('select senior change:',$(this).val());
+    let key = getFilterStatus();
+    console.log("key: ",key);
+    $('#table-wl').bootstrapTable('refreshOptions', {
+    url: API_PROCEDURE_LIST_TODAY+ key
+    })
+});
+
+$('#selectProvider').change(function(){
+    console.log('select provider change:',$(this).val());
+    let key = getFilterStatus();
+    console.log("key: ",key);
+    $('#table-wl').bootstrapTable('refreshOptions', {
+    url: API_PROCEDURE_LIST_TODAY+ key
+    })
+});
+
 
 </script>
 <script src="js/wl.js"></script>
