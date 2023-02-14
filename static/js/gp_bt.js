@@ -1,3 +1,6 @@
+// add visibility to main modalities
+let mainModalityArr = ['MD', 'GP']
+
 // medications table
 function responseHandler_mx(res) { // used if data-response-handler="responseHandler_mx"
     let list = res.items;
@@ -461,7 +464,7 @@ window.operateEvents_wl = {
 function rowStyle_wl(row,value) {
     let statusColor = {'requested':'#ffcc99' , 'processing':'papayawhip', 'done':'#98ff98', 'cancelled':'#ff9999', 'doctorDone': '#00FF00' };
     let bg;
-    if (row.modality == 'MD' && row.status_flag =='done'){
+    if (mainModalityArr.includes(row.modality)  && row.status_flag =='done') {
         bg = statusColor['doctorDone'];
     } else {
         bg = statusColor[row.status_flag];

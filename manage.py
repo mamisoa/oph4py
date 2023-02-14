@@ -136,6 +136,16 @@ def worklist():
     for row in rows:
         modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
     multiplemod = db((db.modality.modality_name == 'multiple') | (db.modality.modality_name == 'Multiple')).select().first()['id']
+    practitionerDict = {}
+    practitionerSelect = ['Doctor']
+    rows = db(db.membership.membership.contains(practitionerSelect,all=False)).select(join=db.auth_user.on(db.auth_user.membership == db.membership.id))
+    for row in rows:
+        practitionerDict['Dr. '+row.auth_user.first_name+' '+row.auth_user.last_name]=row.auth_user.id
+    providerDict = {}
+    providerSelect = ['Medical assistant','Nurse']
+    rows = db(db.membership.membership.contains(providerSelect,all=False)).select(join=db.auth_user.on(db.auth_user.membership == db.membership.id))
+    for row in rows:
+        providerDict[row.auth_user.first_name+' '+row.auth_user.last_name]=row.auth_user.id
     return locals()
 
 ## manage medic_ref

@@ -21,12 +21,15 @@ if "NEW_INSTALLATION" in globals():
         pass
     else:
         mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
+        gpId = db(db.modality.modality_name == 'GP').select(db.modality.id).first().id
         genderId = {
             db(db.gender.sex == 'Male').select(db.gender.id).first().id : "Male",
             db(db.gender.sex == 'Female').select(db.gender.id).first().id : "Female",
             db(db.gender.sex == 'Other').select(db.gender.id).first().id : "Other" }
 else:
+    # TODO: create an array for practitioners in modalities
     mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
+    gpId = db(db.modality.modality_name == 'GP').select(db.modality.id).first().id
     genderId = {
         db(db.gender.sex == 'Male').select(db.gender.id).first().id : "Male",
         db(db.gender.sex == 'Female').select(db.gender.id).first().id : "Female",
@@ -113,6 +116,7 @@ def initFields(wlId,table,lat=""):
 def md(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    modalityController = 'md'
     import base64
     from datetime import datetime
     response.headers['Cross-Origin-Embedder-Policy']='require-corp'
@@ -158,7 +162,7 @@ def md(wlId):
     ccxL = initFields(wlId,'ccx','left')
     followup = initFields(wlId,'followup')
     billing = initFields(wlId,'billing')
-    mddb=db.md_params
+    mddb=db.md_params # TODO: if details from doctor is not provided, return "Please provide provider details"
     mdParams= db(mddb.id_auth_user == user['id']).select(mddb.id_auth_user,mddb.inami,mddb.email,mddb.officename,mddb.officeaddress,mddb.officezip,mddb.officetown,mddb.officeurl,mddb.officephone,mddb.companynum,mddb.companyname,mddb.companyiban,mddb.companyaddress).first().as_dict()
     userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
     # glasses assets
@@ -174,6 +178,7 @@ def md(wlId):
 def md(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    modalityController = 'gp'
     import base64
     from datetime import datetime
     response.headers['Cross-Origin-Embedder-Policy']='require-corp'
@@ -200,7 +205,8 @@ def md(wlId):
         left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     userdb = db.auth_user
-    mdHistory = db((db.worklist.modality_dest == mdId) & (db.worklist.id_auth_user == patientId)).select().as_json()
+    # get history from previous main consultations for GP
+    mdHistory = db((db.worklist.modality_dest == gpId) & (db.worklist.id_auth_user == patientId)).select().as_json()
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
     for row in rows:
