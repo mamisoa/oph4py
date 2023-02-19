@@ -484,7 +484,8 @@ function monitorValueChange(domId,fieldsArr) {
 // TODO: to implement
 // key is domId, value is table
 oneFieldObj = {
-        '#cHxForm': 'current_hx','#motForm':'motility', '#phoForm':'phoria', '#pupForm':'pupils', '#soapForm':'soap',
+        '#cHxForm': 'current_hx','#motForm':'motility', '#phoForm':'phoria', '#pupForm':'pupils',
+        '#soapForm':'soap',
         '#ccxForm':'ccx', '#ccxRForm':'ccx','#ccxLForm':'ccx','#folForm':'followup','#bilForm':'billing' };
 
 function setOneSubmit(domId,table,lat) {
@@ -575,6 +576,143 @@ monitorValueChangeOneField('#ccxRForm','ccx','right');
 monitorValueChangeOneField('#ccxLForm','ccx','left');
 monitorValueChangeOneField('#folForm','followup');
 monitorValueChangeOneField('#bilForm','billing');
+
+// 3 functions for each form with multiple fields:
+// 1) Submit: check for PUT, capitalize, crud
+// 2) on focus: check in DB if field has changed
+// 3) on change: if field value has changed then submit
+
+// promise to get item wl fields value
+function getWlItemData(table,wlId,lat='',options='') {
+    let WURL, lookup='mod!:modified_by[id,first_name,last_name]', filters = options.split('@lookup=');
+    // TODO: what if filter is undefined?
+    if ( filters[1] != undefined ) {
+        lookup += ','+filters[1].split('&')[0]
+        filters[1].split('&')[1] != undefined ? options = filters[0]+ filters[1].split('&')[1] : options = filters[0];
+    }
+    console.log('lookup',lookup);
+    console.log('lookup',options);
+    // check if laterality
+    if (lat == '') {
+        WURL = HOSTURL+"/myapp/api/"+table+"?@lookup="+lookup+"&id_worklist.eq="+wlId+"&"+options;
+    } else {
+        WURL = HOSTURL+"/myapp/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId+'&laterality.eq='+lat+"&"+options;
+    }
+    return Promise.resolve(
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: WURL,
+            success: function(data) {
+                if (data.status != 'error' && parseInt(data.count) > 0) {
+                    displayToast('success', 'Item exists', 'Count is '+data.count,3000);
+                } else if (data.count == 0) {
+                    displayToast('warning', 'Item not found', 'Items does not exist.',3000);
+                } else {
+                    displayToast('error', 'GET error', 'Request to check failed.');
+                }
+            }, // success
+            error: function (er) {
+                console.log(er);
+            }
+        })
+    )
+};
+
+// set submit forms
+var antFieldsArr = ['outer','cornea','ant_chamb','iris','lens','other'],
+    postFieldsArr = ['post_chamb','vitreous','retina','macula','papil','other'];
+
+function setSubmit(domId,table, fieldsArr,lat) {
+    $(domId).submit(function(e){
+        e.preventDefault();
+        let dataStr = $(this).serializeJSON();
+        let dataObj = JSON.parse(dataStr);
+        let req ;
+        getWlItemData(table,wlId,lat)
+            .then(function(data){
+                if (data.count != 0) {
+                    req = 'PUT';
+                } else {
+                    req = 'POST';
+                    delete dataObj['id'];
+                };
+                // console.log('setSubmit request:',req, 'data.count:',data.count);
+                dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
+                dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
+                // capitalize fields
+                for (field of fieldsArr) {
+                    if (dataObj[field] != "") {
+                        // console.log('capitalize:', field ,dataObj[field]);
+                        dataObj[field]=capitalize(dataObj[field]); // capitalize text objects
+                        $(domId+' input[name='+field+']').val(dataObj[field]); // update fields
+                    } else {};
+                };
+                dataStr= JSON.stringify(dataObj);
+                // console.log("dataForm from setSubmit",dataObj);
+                crudp(table,'0',req,dataStr);
+                $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');
+                getWlItemData(table,wlId,lat)
+                    .then(function(data) {
+                        if (data.count != 0) {
+                            $(domId+' input[name=id]').val(data.items[0].id);
+                        } else {};
+                    })
+            });
+    });        
+}
+
+setSubmit('#antRightForm','ant_biom',antFieldsArr,'right');
+setSubmit('#antLeftForm','ant_biom', antFieldsArr,'left');
+setSubmit('#postRightForm','post_biom', postFieldsArr,'right');
+setSubmit('#postLeftForm','post_biom', postFieldsArr,'left');
+
+// set events handlers to update fields
+function updateHandlersFields(table,domId,fieldsArr,lat='') {
+    for (const field of fieldsArr) {
+        $(domId+' input[name='+field+']').focus(function(){
+            getWlItemData(table,wlId,lat)
+                .then(function(data){
+                    // console.log("from update fields "+field+" :",data, data.count);
+                    if (data.count != 0) {
+                        let item=data.items[0];
+                        $(domId+' input[name=id]').val(item['id']);
+                        // console.log('input value: ', domId+' input[name='+field+']');
+                        if ($(domId+' input[name='+field+']').val()!=item[field] && item[field] != 'None' ) {
+                            // console.log(capitalize(field)+' changed');
+                            // inform if field has changed
+                            let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
+                            displayToast('warning', capitalize(field)+' was changed', capitalize(field)+' was changed by '+modder,6000);
+                            // update input field
+                            $(domId+' input[name='+field+']').val(item[field]);
+                        } else {};
+                    } else {};
+                });
+        });        
+    };
+}
+
+updateHandlersFields('ant_biom','#antRightForm', antFieldsArr,'right');
+updateHandlersFields('ant_biom','#antLeftForm', antFieldsArr,'left');
+updateHandlersFields('post_biom','#postRightForm', postFieldsArr,'right');
+updateHandlersFields('post_biom','#postLeftForm', postFieldsArr,'left');
+
+// trigger change at each value change
+function monitorValueChange(domId,fieldsArr) {
+    for (field of fieldsArr) {
+        $(domId+' input[name='+field+']').change(function() {
+            $(domId+'FormSubmit').removeClass('btn-secondary').addClass('btn-danger');
+            $(domId).submit();
+        })
+    };
+};
+
+monitorValueChange('#antRightForm', antFieldsArr);
+monitorValueChange('#antLeftForm', antFieldsArr);
+monitorValueChange('#postRightForm', postFieldsArr);
+monitorValueChange('#postLeftForm', postFieldsArr);
+//
+
 
 // function to prepare pdf content of prescription 
 function renderMedicObj(medicObj) {
