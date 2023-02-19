@@ -473,7 +473,7 @@ $('#clearCache').click(function(){
     rxObj = [];
 });
 
-// 3 functions for each fields:
+// 3 functions for with multiple fields:
 // 1) Submit: check for PUT, capitalize, crud
 // 2) on focus: check in DB if field has changed
 // 3) on change: if field value has changed then submit
@@ -481,12 +481,14 @@ $('#clearCache').click(function(){
 // promise to get item wl fields value
 function getWlItemData(table,wlId,lat='',options='') {
     let WURL, lookup='mod!:modified_by[id,first_name,last_name]', filters = options.split('@lookup=');
+    // TODO: what if filter is undefined?
     if ( filters[1] != undefined ) {
         lookup += ','+filters[1].split('&')[0]
         filters[1].split('&')[1] != undefined ? options = filters[0]+ filters[1].split('&')[1] : options = filters[0];
     }
     console.log('lookup',lookup);
     console.log('lookup',options);
+    // check if laterality
     if (lat == '') {
         WURL = HOSTURL+"/myapp/api/"+table+"?@lookup="+lookup+"&id_worklist.eq="+wlId+"&"+options;
     } else {
