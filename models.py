@@ -635,6 +635,15 @@ db.define_table('palpation',
     Field('others','string'),
     auth.signature)
 
+# percussion
+db.define_table('percussion',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('abdomen','string'),
+    Field('chest','string'),
+    Field('others','string'),
+    auth.signature)
+
 # neuro
 db.define_table('neuro',
     Field('id_auth_user', 'reference auth_user', required=True),
