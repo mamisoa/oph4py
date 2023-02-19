@@ -407,7 +407,7 @@ function setSubmit(domId,table, fieldsArr,lat) {
                 // capitalize fields
                 for (field of fieldsArr) {
                     if (dataObj[field] != "") {
-                        // console.log('capitalize:', field ,dataObj[field]);
+                        console.log('capitalize:', field ,dataObj[field]);
                         dataObj[field]=capitalize(dataObj[field]); // capitalize text objects
                         $(domId+' input[name='+field+']').val(dataObj[field]); // update fields
                     } else {};
@@ -629,89 +629,15 @@ let inspectionFieldsArr = ['skin','head','hands',
     neuroFieldsArr = ['cranial','motor',
         'sensorial','reflexes','others'];
 
-function setSubmit(domId,table, fieldsArr,lat) {
-    $(domId).submit(function(e){
-        e.preventDefault();
-        let dataStr = $(this).serializeJSON();
-        let dataObj = JSON.parse(dataStr);
-        let req ;
-        getWlItemData(table,wlId,lat)
-            .then(function(data){
-                if (data.count != 0) {
-                    req = 'PUT';
-                } else {
-                    req = 'POST';
-                    delete dataObj['id'];
-                };
-                // console.log('setSubmit request:',req, 'data.count:',data.count);
-                dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
-                dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
-                // capitalize fields
-                for (field of fieldsArr) {
-                    if (dataObj[field] != "") {
-                        // console.log('capitalize:', field ,dataObj[field]);
-                        dataObj[field]=capitalize(dataObj[field]); // capitalize text objects
-                        $(domId+' input[name='+field+']').val(dataObj[field]); // update fields
-                    } else {};
-                };
-                dataStr= JSON.stringify(dataObj);
-                // console.log("dataForm from setSubmit",dataObj);
-                crudp(table,'0',req,dataStr);
-                $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');
-                getWlItemData(table,wlId,lat)
-                    .then(function(data) {
-                        if (data.count != 0) {
-                            $(domId+' input[name=id]').val(data.items[0].id);
-                        } else {};
-                    })
-            });
-    });        
-}
+setSubmit('#inspectionForm','inspection',inspectionFieldsArr);
+setSubmit('#auscultationForm','auscultation', auscultationFieldsArr);
+setSubmit('#palpationForm','palpation', palpationFieldsArr);
+setSubmit('#neuroForm','neuro', neuroFieldsArr);
 
-setSubmit('#inspectionForm','inspection',inspectionFieldsArr,'right');
-setSubmit('#auscultationForm','auscultation', ausculationFieldsArr,'left');
-setSubmit('#palpationForm','palpation', palpationFieldsArr,'right');
-setSubmit('#neuroForm','neuro', neuroFieldsArr,'left');
-
-function updateHandlersFields(table,domId,fieldsArr,lat='') {
-    // set events handlers to update fields
-    for (const field of fieldsArr) {
-        $(domId+' input[name='+field+']').focus(function(){
-            getWlItemData(table,wlId,lat)
-                .then(function(data){
-                    // console.log("from update fields "+field+" :",data, data.count);
-                    if (data.count != 0) {
-                        let item=data.items[0];
-                        $(domId+' input[name=id]').val(item['id']);
-                        // console.log('input value: ', domId+' input[name='+field+']');
-                        if ($(domId+' input[name='+field+']').val()!=item[field] && item[field] != 'None' ) {
-                            // console.log(capitalize(field)+' changed');
-                            // inform if field has changed
-                            let modder=item['mod.first_name']+' '+item['mod.last_name'] +' on '+item['modified_on'] ;
-                            displayToast('warning', capitalize(field)+' was changed', capitalize(field)+' was changed by '+modder,6000);
-                            // update input field
-                            $(domId+' input[name='+field+']').val(item[field]);
-                        } else {};
-                    } else {};
-                });
-        });        
-    };
-}
-
-updateHandlersFields('inspection,','#inspectionForm', inspectionFieldsArr);
+updateHandlersFields('inspection','#inspectionForm', inspectionFieldsArr);
 updateHandlersFields('auscultation','#auscultationForm', auscultationFieldsArr);
 updateHandlersFields('palpation','#palpationForm', palpationFieldsArr);
 updateHandlersFields('neuro','#neuroForm', neuroFieldsArr);
-
-function monitorValueChange(domId,fieldsArr) {
-    // submit change at each value update
-    for (field of fieldsArr) {
-        $(domId+' input[name='+field+']').change(function() {
-            $(domId+'FormSubmit').removeClass('btn-secondary').addClass('btn-danger');
-            $(domId).submit();
-        })
-    };
-};
 
 monitorValueChange('#inspectionForm', inspectionFieldsArr);
 monitorValueChange('#auscultationForm', auscultationFieldsArr);
