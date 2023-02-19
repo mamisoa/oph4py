@@ -423,15 +423,6 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="auscultationChest" class="form-control height-100" aria-label="chest auscultation" 
-                                            name="chest" rows="3" autocomplete="on">[[ = XML(auscultation['chest']) ]]</textarea>
-                                        <label for="auscultationChest">Chest auscultation</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
                                         <textarea type="text" id="auscultationNeck" class="form-control height-100" aria-label="neck auscultation" 
                                             name="neck" rows="3" autocomplete="on">[[ = XML(auscultation['neck']) ]]</textarea>
                                         <label for="auscultationNeck">Neck auscultation</label>
@@ -476,90 +467,54 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="auscultationSkin" class="form-control height-100" aria-label="skin auscultation" 
-                                            name="skin" rows="3" autocomplete="on">[[ = XML(inspection['skin']) ]]</textarea>
-                                        <label for="auscultationSkin">Skin auscultation</label>
+                                        <textarea type="text" id="palpationAbdomen" class="form-control height-100" aria-label="abdomen palpation" 
+                                            name="abdomen" rows="3" autocomplete="on">[[ = XML(palpation['abdomen']) ]]</textarea>
+                                        <label for="palpationAbdomen">Abdomen palpation</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionHead" class="form-control height-100" aria-label="head inspection" 
-                                            name="head" rows="3" autocomplete="on">[[ = XML(inspection['head']) ]]</textarea>
-                                        <label for="inspectionHead">Head inspection</label>
+                                        <textarea type="text" id="palpationChest" class="form-control height-100" aria-label="chest palpation" 
+                                            name="chest" rows="3" autocomplete="on">[[ = XML(palpation['chest']) ]]</textarea>
+                                        <label for="palpationChest">Chest palpation</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionHands" class="form-control height-100" aria-label="hands inspection" 
-                                            name="hands" rows="3" autocomplete="on">[[ = XML(inspection['hands']) ]]</textarea>
-                                        <label for="inspectionHands">Hands inspection</label>
+                                        <textarea type="text" id="palpationGanglions" class="form-control height-100" aria-label="ganglions palpation" 
+                                            name="ganglions" rows="3" autocomplete="on">[[ = XML(palpation['ganglions']) ]]</textarea>
+                                        <label for="palpationGanglions">Ganglions palpation</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionChest" class="form-control height-100" aria-label="chest inspection" 
-                                            name="chest" rows="3" autocomplete="on">[[ = XML(inspection['chest']) ]]</textarea>
-                                        <label for="inspectionChest">Chest inspection</label>
+                                        <textarea type="text" id="palpationArticulations" class="form-control height-100" aria-label="articulations palpation" 
+                                            name="articulations" rows="3" autocomplete="on">[[ = XML(palpation['articulations']) ]]</textarea>
+                                        <label for="palpationArticulations">Articulations palpation</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionAbdomen" class="form-control height-100" aria-label="abdomen inspection" 
-                                            name="abdomen" rows="3" autocomplete="on">[[ = XML(inspection['abdomen']) ]]</textarea>
-                                        <label for="inspectionAbdomen">Abdomen inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionLegs" class="form-control height-100" aria-label="legs inspection" 
-                                            name="legs" rows="3" autocomplete="on">[[ = XML(inspection['legs']) ]]</textarea>
-                                        <label for="inspectionLegs">Legs inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionVeins" class="form-control height-100" aria-label="veins inspection" 
-                                            name="veins" rows="3" autocomplete="on">[[ = XML(inspection['veins']) ]]</textarea>
-                                        <label for="inspectionVeins">Veins inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionGenitals" class="form-control height-100" aria-label="genitals inspection" 
-                                            name="genitals" rows="3" autocomplete="on">[[ = XML(inspection['genitals']) ]]</textarea>
-                                        <label for="inspectionGenitals">Genitals inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionOthers" class="form-control height-100" aria-label="others inspection" 
-                                            name="others" rows="3" autocomplete="on">[[ = XML(inspection['others']) ]]</textarea>
-                                        <label for="inspectionOthers">Others</label>
+                                        <textarea type="text" id="palpationOthers" class="form-control height-100" aria-label="others palpation" 
+                                            name="others" rows="3" autocomplete="on">[[ = XML(palpation['others']) ]]</textarea>
+                                        <label for="palpationOthers">Others</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="container-fluid">
-                            <input id="idinspection" type="text" class="visually-hidden" name="id" value="[[ = XML(inspection['id']) ]]"/>
-                            <input id="idPatientinspection" type="text" class="visually-hidden" name="id_auth_user"/>
-                            <input id="idWlinspection" type="text" class="visually-hidden" name="id_worklist"/>
-                            <button id="inspectionFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                            <input id="idpalpation" type="text" class="visually-hidden" name="id" value="[[ = XML(palpation['id']) ]]"/>
+                            <input id="idPatientpalpation" type="text" class="visually-hidden" name="id_auth_user"/>
+                            <input id="idWlpalpation" type="text" class="visually-hidden" name="id_worklist"/>
+                            <button id="palpationFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
                         </div>
                     </form>
                 </div> <!-- end palpation col -->
@@ -569,95 +524,41 @@
             <div class="row bg-left"> <!-- row percussion -->
                 <h3 class="title-left"><a role="button" data-bs-toggle="collapse" href=".percussion">Percussion</a></h3>
                 <div class="col py-3 percussion"> <!-- percussion col -->
-                    <form id="palpationForm" enctype="multipart/form-data" method="POST"> 
+                    <form id="percussionForm" enctype="multipart/form-data" method="POST"> 
                         <div class="container-fluid">
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="auscultationSkin" class="form-control height-100" aria-label="skin auscultation" 
-                                            name="skin" rows="3" autocomplete="on">[[ = XML(inspection['skin']) ]]</textarea>
-                                        <label for="auscultationSkin">Skin auscultation</label>
+                                        <textarea type="text" id="percussionChest" class="form-control height-100" aria-label="chest percussion" 
+                                            name="chest" rows="3" autocomplete="on">[[ = XML(percussion['chest']) ]]</textarea>
+                                        <label for="percussionChest">Chest percussion</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionHead" class="form-control height-100" aria-label="head inspection" 
-                                            name="head" rows="3" autocomplete="on">[[ = XML(inspection['head']) ]]</textarea>
-                                        <label for="inspectionHead">Head inspection</label>
+                                        <textarea type="text" id="percussionAbdomen" class="form-control height-100" aria-label="abdomen percussion" 
+                                            name="abdomen" rows="3" autocomplete="on">[[ = XML(percussion['abdomen']) ]]</textarea>
+                                        <label for="percussionAbdomen">Abdomen percussion</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionHands" class="form-control height-100" aria-label="hands inspection" 
-                                            name="hands" rows="3" autocomplete="on">[[ = XML(inspection['hands']) ]]</textarea>
-                                        <label for="inspectionHands">Hands inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionChest" class="form-control height-100" aria-label="chest inspection" 
-                                            name="chest" rows="3" autocomplete="on">[[ = XML(inspection['chest']) ]]</textarea>
-                                        <label for="inspectionChest">Chest inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionAbdomen" class="form-control height-100" aria-label="abdomen inspection" 
-                                            name="abdomen" rows="3" autocomplete="on">[[ = XML(inspection['abdomen']) ]]</textarea>
-                                        <label for="inspectionAbdomen">Abdomen inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionLegs" class="form-control height-100" aria-label="legs inspection" 
-                                            name="legs" rows="3" autocomplete="on">[[ = XML(inspection['legs']) ]]</textarea>
-                                        <label for="inspectionLegs">Legs inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionVeins" class="form-control height-100" aria-label="veins inspection" 
-                                            name="veins" rows="3" autocomplete="on">[[ = XML(inspection['veins']) ]]</textarea>
-                                        <label for="inspectionVeins">Veins inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionGenitals" class="form-control height-100" aria-label="genitals inspection" 
-                                            name="genitals" rows="3" autocomplete="on">[[ = XML(inspection['genitals']) ]]</textarea>
-                                        <label for="inspectionGenitals">Genitals inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionOthers" class="form-control height-100" aria-label="others inspection" 
-                                            name="others" rows="3" autocomplete="on">[[ = XML(inspection['others']) ]]</textarea>
-                                        <label for="inspectionOthers">Others</label>
+                                        <textarea type="text" id="percussionOthers" class="form-control height-100" aria-label="others percussion" 
+                                            name="others" rows="3" autocomplete="on">[[ = XML(percussion['others']) ]]</textarea>
+                                        <label for="percussionOthers">Others</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="container-fluid">
-                            <input id="idinspection" type="text" class="visually-hidden" name="id" value="[[ = XML(inspection['id']) ]]"/>
-                            <input id="idPatientinspection" type="text" class="visually-hidden" name="id_auth_user"/>
-                            <input id="idWlinspection" type="text" class="visually-hidden" name="id_worklist"/>
-                            <button id="inspectionFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                            <input id="idpercussion" type="text" class="visually-hidden" name="id" value="[[ = XML(percussion['id']) ]]"/>
+                            <input id="idPatientpercussion" type="text" class="visually-hidden" name="id_auth_user"/>
+                            <input id="idWlpercussion" type="text" class="visually-hidden" name="id_worklist"/>
+                            <button id="percussionFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
                         </div>
                     </form>
                 </div> <!-- end percussion col -->
@@ -666,96 +567,60 @@
         <div class="col-lg-6 col-md-4 col-sm-12"> <!-- col neuro-->
             <div class="row bg-right"> <!-- row neuro -->
                 <h3 class="title-right"><a role="button" data-bs-toggle="collapse" href=".neuro">Neurologic</a></h3>
-                <div class="col py-3 neuro"> <!-- percussion col -->
-                    <form id="palpationForm" enctype="multipart/form-data" method="POST"> 
+                <div class="col py-3 neuro"> <!-- neuro col -->
+                    <form id="neuroForm" enctype="multipart/form-data" method="POST"> 
                         <div class="container-fluid">
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="auscultationSkin" class="form-control height-100" aria-label="skin auscultation" 
-                                            name="skin" rows="3" autocomplete="on">[[ = XML(inspection['skin']) ]]</textarea>
-                                        <label for="auscultationSkin">Skin auscultation</label>
+                                        <textarea type="text" id="neuroHead" class="form-control height-100" aria-label="head neuro" 
+                                            name="head" rows="3" autocomplete="on">[[ = XML(neuro['head']) ]]</textarea>
+                                        <label for="neuroHead">Head neuro</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionHead" class="form-control height-100" aria-label="head inspection" 
-                                            name="head" rows="3" autocomplete="on">[[ = XML(inspection['head']) ]]</textarea>
-                                        <label for="inspectionHead">Head inspection</label>
+                                        <textarea type="text" id="neuroMotor" class="form-control height-100" aria-label="motor neuro" 
+                                            name="motor" rows="3" autocomplete="on">[[ = XML(neuro['motor']) ]]</textarea>
+                                        <label for="neuroMotor">Motor</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionHands" class="form-control height-100" aria-label="hands inspection" 
-                                            name="hands" rows="3" autocomplete="on">[[ = XML(inspection['hands']) ]]</textarea>
-                                        <label for="inspectionHands">Hands inspection</label>
+                                        <textarea type="text" id="neuroSensorial" class="form-control height-100" aria-label="sensorial neuro" 
+                                            name="sensorial" rows="3" autocomplete="on">[[ = XML(neuro['sensorial']) ]]</textarea>
+                                        <label for="neuroSensorial">Sensorial</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionChest" class="form-control height-100" aria-label="chest inspection" 
-                                            name="chest" rows="3" autocomplete="on">[[ = XML(inspection['chest']) ]]</textarea>
-                                        <label for="inspectionChest">Chest inspection</label>
+                                        <textarea type="text" id="neuroReflexes" class="form-control height-100" aria-label="reflexes neuro" 
+                                            name="reflexes" rows="3" autocomplete="on">[[ = XML(neuro['reflexes']) ]]</textarea>
+                                        <label for="neuroReflexes">Reflexes neuro</label>
                                     </div>
                                 </div>
-                            </div>
+                            </div>                    
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionAbdomen" class="form-control height-100" aria-label="abdomen inspection" 
-                                            name="abdomen" rows="3" autocomplete="on">[[ = XML(inspection['abdomen']) ]]</textarea>
-                                        <label for="inspectionAbdomen">Abdomen inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionLegs" class="form-control height-100" aria-label="legs inspection" 
-                                            name="legs" rows="3" autocomplete="on">[[ = XML(inspection['legs']) ]]</textarea>
-                                        <label for="inspectionLegs">Legs inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionVeins" class="form-control height-100" aria-label="veins inspection" 
-                                            name="veins" rows="3" autocomplete="on">[[ = XML(inspection['veins']) ]]</textarea>
-                                        <label for="inspectionVeins">Veins inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionGenitals" class="form-control height-100" aria-label="genitals inspection" 
-                                            name="genitals" rows="3" autocomplete="on">[[ = XML(inspection['genitals']) ]]</textarea>
-                                        <label for="inspectionGenitals">Genitals inspection</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-floating">
-                                        <textarea type="text" id="inspectionOthers" class="form-control height-100" aria-label="others inspection" 
-                                            name="others" rows="3" autocomplete="on">[[ = XML(inspection['others']) ]]</textarea>
-                                        <label for="inspectionOthers">Others</label>
+                                        <textarea type="text" id="neuroOthers" class="form-control height-100" aria-label="others neuro" 
+                                            name="others" rows="3" autocomplete="on">[[ = XML(neuro['others']) ]]</textarea>
+                                        <label for="neuroOthers">Others</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="container-fluid">
-                            <input id="idinspection" type="text" class="visually-hidden" name="id" value="[[ = XML(inspection['id']) ]]"/>
-                            <input id="idPatientinspection" type="text" class="visually-hidden" name="id_auth_user"/>
-                            <input id="idWlinspection" type="text" class="visually-hidden" name="id_worklist"/>
-                            <button id="inspectionFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                            <input id="idneuro" type="text" class="visually-hidden" name="id" value="[[ = XML(neuro['id']) ]]"/>
+                            <input id="idPatientneuro" type="text" class="visually-hidden" name="id_auth_user"/>
+                            <input id="idWlneuro" type="text" class="visually-hidden" name="id_worklist"/>
+                            <button id="neuroFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
                         </div>
                     </form>
                 </div> <!-- end neuro col -->

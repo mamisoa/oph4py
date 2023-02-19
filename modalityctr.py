@@ -220,6 +220,7 @@ def gp(wlId):
     inspection = initFields(wlId,'inspection')
     auscultation = initFields(wlId,'auscultation')
     palpation = initFields(wlId,'palpation')
+    percussion = initFields(wlId,'percussion')
     neuro = initFields(wlId,'neuro')
     motility = initFields(wlId,'motility')
     phoria = initFields(wlId,'phoria')
