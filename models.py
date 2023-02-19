@@ -625,7 +625,7 @@ db.define_table('auscultation',
     auth.signature)
 
 # palpation
-db.define_table('auscultation',
+db.define_table('palpation',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
     Field('abdomen','string'),
