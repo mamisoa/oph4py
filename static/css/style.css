@@ -49,6 +49,11 @@ section#main {
   text-transform: uppercase;
 }
 
+.title-right a, .title-left a {
+  text-decoration: none !important;
+  color: black !important;
+}
+
 .bg-right {
   background-color: #F0F8FF;
 }

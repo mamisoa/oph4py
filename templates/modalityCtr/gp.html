@@ -294,33 +294,11 @@
                 <div class="col"> <!-- col 1 -->
                     <div class="row">
                         <div class="col">
-                            <h3 class="title-right">Clinical exam</h3>
+                            <h3 class="title-right"><a role="button" data-bs-toggle="collapse" href=".inspection">Inspection</a></h3>
                         </div>
                     </div>
-                    <div class="row bg-right"> <!-- row 1 -->
-                        <div class="col py-3 d-none"> <!-- soap col -->
-                            <h4>SOAP</h4>
-                            <form id="soapForm" enctype="multipart/form-data" method="POST"> 
-                                <div class="container-fluid">
-                                    <div class="row mb-3">
-                                        <div class="col">
-                                            <div class="input-group">
-                                                <button id="soapFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
-                                                <textarea type="text" id="soap" class="form-control" aria-label="soap examination" 
-                                                    name="description" rows="5" autocomplete="on" >[[ = XML(soap['description']) ]]</textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="container-fluid">
-                                    <input id="idsoap" type="text" class="visually-hidden" name="id" value="[[ = XML(soap['id']) ]]"/>
-                                    <input id="idPatientsoap" type="text" class="visually-hidden" name="id_auth_user"/>
-                                    <input id="idWlsoap" type="text" class="visually-hidden" name="id_worklist"/>
-                                </div>
-                            </form>
-                        </div> <!-- end soap col -->
+                    <div class="row bg-right inspection"> <!-- row 1 -->
                         <div class="col py-3"> <!-- inspection col -->
-                            <h4 class="text-center">Inspection</h4>
                             <form id="inspectionForm" enctype="multipart/form-data" method="POST"> 
                                 <div class="container-fluid">
                                     <div class="row mb-3">
