@@ -620,8 +620,14 @@ function getWlItemData(table,wlId,lat='',options='') {
 };
 
 // set submit forms
-var antFieldsArr = ['outer','cornea','ant_chamb','iris','lens','other'],
-    postFieldsArr = ['post_chamb','vitreous','retina','macula','papil','other'];
+let inspectionFieldsArr = ['skin','head','hands',
+    'chest','abdomen', 'legs','veins', 'genitals','others'],
+    auscultationFieldsArr = ['lungs','heart',
+    'chest','neck', 'vascular','others'],
+    palpationFieldsArr = ['chest','abdomen',
+        'ganglions','articulations','others']
+    neuroFieldsArr = ['cranial','motor',
+        'sensorial','reflexes','others'];
 
 function setSubmit(domId,table, fieldsArr,lat) {
     $(domId).submit(function(e){
@@ -662,13 +668,13 @@ function setSubmit(domId,table, fieldsArr,lat) {
     });        
 }
 
-setSubmit('#antRightForm','ant_biom',antFieldsArr,'right');
-setSubmit('#antLeftForm','ant_biom', antFieldsArr,'left');
-setSubmit('#postRightForm','post_biom', postFieldsArr,'right');
-setSubmit('#postLeftForm','post_biom', postFieldsArr,'left');
+setSubmit('#inspectionForm','inspection',inspectionFieldsArr,'right');
+setSubmit('#auscultationForm','auscultation', ausculationFieldsArr,'left');
+setSubmit('#palpationForm','palpation', palpationFieldsArr,'right');
+setSubmit('#neuroForm','neuro', neuroFieldsArr,'left');
 
-// set events handlers to update fields
 function updateHandlersFields(table,domId,fieldsArr,lat='') {
+    // set events handlers to update fields
     for (const field of fieldsArr) {
         $(domId+' input[name='+field+']').focus(function(){
             getWlItemData(table,wlId,lat)
@@ -692,13 +698,13 @@ function updateHandlersFields(table,domId,fieldsArr,lat='') {
     };
 }
 
-updateHandlersFields('ant_biom','#antRightForm', antFieldsArr,'right');
-updateHandlersFields('ant_biom','#antLeftForm', antFieldsArr,'left');
-updateHandlersFields('post_biom','#postRightForm', postFieldsArr,'right');
-updateHandlersFields('post_biom','#postLeftForm', postFieldsArr,'left');
+updateHandlersFields('inspection,','#inspectionForm', inspectionFieldsArr);
+updateHandlersFields('auscultation','#auscultationForm', auscultationFieldsArr);
+updateHandlersFields('palpation','#palpationForm', palpationFieldsArr);
+updateHandlersFields('neuro','#neuroForm', neuroFieldsArr);
 
-// trigger change at each value change
 function monitorValueChange(domId,fieldsArr) {
+    // submit change at each value update
     for (field of fieldsArr) {
         $(domId+' input[name='+field+']').change(function() {
             $(domId+'FormSubmit').removeClass('btn-secondary').addClass('btn-danger');
@@ -707,12 +713,10 @@ function monitorValueChange(domId,fieldsArr) {
     };
 };
 
-monitorValueChange('#antRightForm', antFieldsArr);
-monitorValueChange('#antLeftForm', antFieldsArr);
-monitorValueChange('#postRightForm', postFieldsArr);
-monitorValueChange('#postLeftForm', postFieldsArr);
-//
-
+monitorValueChange('#inspectionForm', inspectionFieldsArr);
+monitorValueChange('#auscultationForm', auscultationFieldsArr);
+monitorValueChange('#palpationForm', palpationFieldsArr);
+monitorValueChange('#neuroForm', neuroFieldsArr);
 
 // function to prepare pdf content of prescription 
 function renderMedicObj(medicObj) {
