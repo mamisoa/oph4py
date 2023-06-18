@@ -202,7 +202,7 @@ for (let rx of idRxArr) {
         if (rx != '#rxFormModal') {
           $(rx+' input[name=va_far]').val('1.0');
           $(rx+' input[name=va_int]').val(''); // no int vision as default, before 1.0
-          $(rx+' input[name=va_close]').val('2');
+          $(rx+' input[name=va_close]').val(''); // no close vision by default, before 2 (as P2)
           eventSync(rx,'show');
         };
       };
@@ -220,7 +220,7 @@ for (let rx of idRxArr) {
       if (rx != '#rxFormModal') {
         $(rx+' input[name=va_far]').val('1.0');
         $(rx+' input[name=va_int]').val('');
-        $(rx+' input[name=va_close]').val('2');
+        $(rx+' input[name=va_close]').val(''); // no close vision by default, before 2 (as P2)
       };
     } else {
       // else if not glass or trial, hide (right/left)TypeDiv and set default values
