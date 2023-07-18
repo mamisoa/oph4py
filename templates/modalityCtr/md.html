@@ -483,7 +483,7 @@
             </div>
         </div> <!-- end row rx-->
     </div> <!-- end row oHx -->
-</div>
+</div> <!-- end Hx container-->
 <div class="container-fluid mb-3" id="cHxDiv">
     <div class="row">
         <div class="col text-center">
@@ -509,8 +509,8 @@
             </form>
         </div>
     </div>
-</div>
-<div id="cx-container" class="container-fluid mb-3"> <!-- container clinical exams -->
+</div> <!-- end cHx container-->
+<div id="cx-container" class="container-fluid mb-3"> <!-- container clinical exam -->
     <div class="row mb-3 big-title bg-primary">
         <div>
             <h2><a role="button" data-bs-toggle="collapse" href=".clinical">Clinical exam</a></h2>
@@ -518,15 +518,15 @@
     </div>
     [[ if userMembership == 'Doctor':]]
     <div class="row mb-3 clinical">
-        <div class="col">
-            <div class="row mb-3">
-                <div class="col">
-                    <div class="row">
+        <div class="col"> <!-- 1 col -->
+            <div class="row mb-3"> <!-- 1 row -->
+                <div class="col"> <!-- right eye col -->
+                    <div class="row"> <!-- row title right eye col -->
                         <div class="col">
                             <h3 class="title-right">Right eye</h3>
                         </div>
-                    </div>
-                    <div class="row bg-right">
+                    </div> <!-- end row title right eye col -->
+                    <div class="row bg-right"> <!-- anterior and posterior right forms row -->
                         <div class="col py-3"> <!-- antRight col -->
                             <h5 class="text-center">Anterior exam</h5>
                             <form id="antRightForm" enctype="multipart/form-data" method="POST"> 
@@ -651,15 +651,15 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="row">
+                    </div> <!-- end anterior and posterior right forms row -->
+                </div> <!-- end right eye col -->
+                <div class="col"> <!-- left eye col -->
+                    <div class="row"> <!-- row title left eye col -->
                         <div class="col">
                             <h3 class="title-left">Left eye</h3>
                         </div>
-                    </div>
-                    <div class="row bg-left">
+                    </div> <!-- end row title left eye col -->
+                    <div class="row bg-left"> <!-- anterior and posterior left forms row -->
                         <div class="col py-3"> <!-- antLeft col -->
                             <h5 class="text-center">Anterior exam</h5>
                             <form id="antLeftForm" enctype="multipart/form-data" method="POST"> 
@@ -721,8 +721,8 @@
                                     <button id="antLeftFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
                                 </div>
                             </form>
-                        </div> <!-- antLeft end col -->
-                        <div class="col py-3"> <!-- postLeft col -->
+                        </div> <!-- end antLeft col -->
+                        <div class="col py-3"> <!-- postLeft form col -->
                             <h5 class="text-center">Posterior exam</h5>
                             <form id="postLeftForm" enctype="multipart/form-data" method="POST"> 
                                 <div class="container-fluid">
@@ -783,11 +783,11 @@
                                     <button id="postLeftFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
                                 </div>
                             </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        </div> <!-- end postLeft form col -->
+                    </div> <!-- end anterior and posterior left forms row -->
+                </div> <!-- end left eye col -->
+            </div> <!-- end 1 row -->
+        </div> <!-- end 1 col -->
     </div>
     [[ pass ]]
     <div class="row mb-3 clinical">
@@ -883,7 +883,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> <!-- end clinical exam container-->
 <div id="cc-container" class="container-fluid mb-3"> <!-- container conclusions -->
     <div class="row mb-3">
         <div class="col">
