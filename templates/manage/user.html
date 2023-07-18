@@ -111,28 +111,28 @@
                                 <div class="row mb-3">
                                     <div class="col-3">
                                         <label for="firstName" class="form-label">First name:</label>
-                                        <input id="firstName" type="text" class="form-control" name="first_name">
+                                        <input id="firstName" type="text" class="form-control" name="first_name" autocomplete="off">
                                         <div id="firstNameHelp" class="form-text">Enter your first name</div>
                                     </div>
                                     <div class="col-5">
                                         <label for="lastName" class="form-label">Last name:</label>
-                                        <input id="lastName" type="text" class="form-control" name="last_name">
+                                        <input id="lastName" type="text" class="form-control" name="last_name" autocomplete="off">
                                         <div id="lastNameHelp" class="form-text">Enter your last name</div>
                                     </div>
                                     <div class="col-4">
                                         <label for="maidenName" class="form-label">Maiden name:</label>
-                                        <input id="maidenName" type="text" class="form-control" name="maiden_name">
+                                        <input id="maidenName" type="text" class="form-control" name="maiden_name" autocomplete="off">
                                         <div id="maidenNameHelp" class="form-text">Enter maiden name</div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="email" class="form-label">Email:</label>
-                                        <input id="email" type="email" class="form-control" name="email">
+                                        <input id="email" type="email" class="form-control" name="email" autocomplete="off">
                                         <div id="emailHelp" class="form-text">Enter your email</div>
                                     </div>
                                     <div class="col">
-                                        <label for="membership" class="form-label">Role:</label>
+                                        <label for="membershipSelect" class="form-label">Role:</label>
                                         <select id="membershipSelect" class="form-select" name="membership">
                                             [[ =roleOptions ]]
                                         </select>
@@ -141,14 +141,14 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <label for="gender" class="form-label">Gender:</label>
+                                        <label for="genderSelect" class="form-label">Gender:</label>
                                         <select id="genderSelect" class="form-select" name="gender">
                                             [[ =genderOptions ]]
                                         </select>
                                         <div id="genderpHelp" class="form-text">Choose gender</div>
                                     </div>
                                     <div class="col">
-                                        <label for="marital" class="form-label">Marital status:</label>
+                                        <label for="maritalSelect" class="form-label">Marital status:</label>
                                         <select id="maritalSelect" class="form-select" name="marital">
                                             [[ =maritalOptions ]]
                                         </select>
@@ -179,7 +179,7 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <label for="ethny" class="form-label">Ethny:</label>
+                                        <label for="ethnySelect" class="form-label">Ethny:</label>
                                         <select id="ethnySelect" class="form-select" name="ethny">
                                             [[ =ethnyOptions ]]
                                         </select>
@@ -216,7 +216,7 @@
                                     </div>
                                 </div>
                                 <input id="photob64" type="text" class="visually-hidden" name="photob64"/>
-                                <input id="username" type="text" class="visually-hidden" name="username"/>
+                                <input id="username" type="text" class="visually-hidden" name="username" autocomplete="off"/>
                                 <input id="initials" type="text" class="visually-hidden" name="initials"/>
                                 <input id="chipNumber" type="text" class="visually-hidden" name="chipnumber"/>
                                 <input id="validfrom" type="text" class="visually-hidden" name="validfrom"/>
@@ -250,7 +250,7 @@
                             <form id="userPhoneForm" enctype="multipart/form-data" method="POST">
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <label for="origin" class="form-label">Origin:</label>
+                                        <label for="originPhoneSelect" class="form-label">Origin:</label>
                                         <select id="originPhoneSelect" class="form-select" name="phone_origin">
                                             [[ =originOptions ]]
                                         </select>
@@ -268,7 +268,7 @@
                                     </div>
                                     <div class="col-8">
                                         <label for="phone" class="form-label">Phone:</label>
-                                        <input id="phone" type="text" class="form-control" name="phone">
+                                        <input id="phone" type="text" class="form-control" name="phone" autocomplete="off">
                                         <div id="phoneHelp" class="form-text">Enter phone number</div>
                                     </div>
                                 </div>
@@ -303,7 +303,7 @@
                             <form id="userAddressForm" enctype="multipart/form-data">
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <label for="origin" class="form-label">Origin:</label>
+                                        <label for="originAddressSelect" class="form-label">Origin:</label>
                                         <select id="originAddressSelect" class="form-select" name="address_origin">
                                             [[ =originOptions ]]
                                         </select>
@@ -352,7 +352,7 @@
                                     </div>
                                     <div class="col-6">
                                         <label for="country" class="form-label">Country:</label>
-                                        <input id="country" type="text" class="form-control" name="country">
+                                        <input id="country" type="text" class="form-control" name="country" autocomplete="off">
                                         <div id="countryHelp" class="form-text">Enter country</div>
                                     </div>
                                 </div>
@@ -395,7 +395,7 @@
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="mdEmail" class="form-label">Email:</label>
-                                        <input id="mdEmail" type="email" class="form-control" name="email">
+                                        <input id="mdEmail" type="email" class="form-control" name="email" autocomplete="off">
                                         <div id="mdEmailHelp" class="form-text">Set public email</div>
                                     </div>
                                     <div class="col">
