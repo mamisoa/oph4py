@@ -88,11 +88,12 @@ def autorx(wlId):
     statusRxIndex = db(db.status_rx).select(db.status_rx.id,db.status_rx.status).as_json()
     return locals()
 
-### md controller
-
-# function to init fields in view
-# return an array
 def initFields(wlId,table,lat=""):
+    """
+    Initialize fields in view
+    filter laterality if necessary
+    return a dictionary used in array for view
+    """
     fieldsArr= db[table].fields
     if lat == "":
         query = db(db[table].id_worklist == wlId)
@@ -109,6 +110,8 @@ def initFields(wlId,table,lat=""):
         for i in range(len(fieldsArr)):
             items[fieldsArr[i]]=""
     return items
+
+### md controller
 
 @action('md')
 @action('modalityCtr/md/<wlId>')
@@ -175,7 +178,7 @@ def md(wlId):
 @action('gp')
 @action('modalityCtr/gp/<wlId>')
 @action.uses(session, auth.user, db,'modalityCtr/gp.html')
-def md(wlId):
+def gp(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     modalityController = 'gp'
@@ -214,6 +217,11 @@ def md(wlId):
     # init all fields
     currentHx = initFields(wlId,'current_hx')
     soap = initFields(wlId,'soap')
+    inspection = initFields(wlId,'inspection')
+    auscultation = initFields(wlId,'auscultation')
+    palpation = initFields(wlId,'palpation')
+    percussion = initFields(wlId,'percussion')
+    neuro = initFields(wlId,'neuro')
     motility = initFields(wlId,'motility')
     phoria = initFields(wlId,'phoria')
     pupils = initFields(wlId,'pupils')
@@ -224,7 +232,6 @@ def md(wlId):
     mdParams= db(mddb.id_auth_user == user['id']).select(mddb.id_auth_user,mddb.inami,mddb.email,mddb.officename,mddb.officeaddress,mddb.officezip,mddb.officetown,mddb.officeurl,mddb.officephone,mddb.companynum,mddb.companyname,mddb.companyiban,mddb.companyaddress).first().as_dict()
     userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
     return locals()
-
 
 # helloworld controller
 @action('hello')

@@ -590,12 +590,96 @@ db.define_table('certificates',
     Field('pdf_report','blob'),
     auth.signature)
 
-#soap
+# soap
 db.define_table('soap',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
     Field('description','string'),
     auth.signature)
+
+# inspection
+db.define_table('inspection',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('skin','string'),
+    Field('head','string'),
+    Field('hands','string'),
+    Field('chest','string'),
+    Field('abdomen','string'),
+    Field('legs','string'),
+    Field('veins','string'),
+    Field('genitals','string'),
+    Field('others','string'),
+    auth.signature)
+
+# auscultation
+db.define_table('auscultation',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('lungs','string'),
+    Field('heart','string'),
+    Field('abdomen','string'),
+    Field('neck','string'),
+    Field('vascular','string'),
+    Field('others','string'),
+    auth.signature)
+
+# palpation
+db.define_table('palpation',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('abdomen','string'),
+    Field('chest','string'),
+    Field('ganglions','string'),
+    Field('articulations','string'),
+    Field('others','string'),
+    auth.signature)
+
+# percussion
+db.define_table('percussion',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('abdomen','string'),
+    Field('chest','string'),
+    Field('others','string'),
+    auth.signature)
+
+# neuro
+db.define_table('neuro',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('head','string'),
+    Field('motor','string'),
+    Field('sensorial','string'),
+    Field('reflexes','string'),
+    Field('others','string'),
+    auth.signature)
+
+#vitals
+db.define_table('vitals',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('weight_kg','decimal(4,2)'),
+    Field('weight_lb','decimal(4,2)'),
+    Field('height_cm','decimal(4,2)'),
+    Field('height_in','decimal(4,2)'),
+    Field('waist_cm','decimal(4,2)'),
+    Field('waist_in','decimal(4,2)'),
+    Field('head_cm','decimal(4,2)'),
+    Field('head_in','decimal(4,2)'),
+    Field('systolic','decimal(4,2)'),
+    Field('diastolic','decimal(4,2)'),
+    Field('pulse','integer'),
+    Field('temperature_c','decimal(4,2)'),
+    Field('temperature_f','decimal(4,2)'),
+    Field('temperature_loc','string'),
+    Field('o2saturation','decimal(4,2)'),
+    Field('o2flow','decimal(4,2)'),
+    Field('o2inhaled','decimal(4,2)'),
+    Field('o2flow','decimal(4,2)'),
+    auth.signature)
+
+
 
 """ ## OCTOPUS
 dbo.define_table('tbl_basic_patient',

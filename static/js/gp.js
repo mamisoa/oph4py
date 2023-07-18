@@ -351,6 +351,7 @@ $('#clearCache').click(function(){
 // promise to get item wl fields value
 function getWlItemData(table,wlId,lat='',options='') {
     let WURL, lookup='mod!:modified_by[id,first_name,last_name]', filters = options.split('@lookup=');
+    // TODO: what if filter is undefined ?
     if ( filters[1] != undefined ) {
         lookup += ','+filters[1].split('&')[0]
         filters[1].split('&')[1] != undefined ? options = filters[0]+ filters[1].split('&')[1] : options = filters[0];
@@ -383,11 +384,21 @@ function getWlItemData(table,wlId,lat='',options='') {
     )
 };
 
-// set multiple field submit forms
-var antFieldsArr = ['outer','cornea','ant_chamb','iris','lens','other'],
-    postFieldsArr = ['post_chamb','vitreous','retina','macula','papil','other'];
+
+// TODO: check if field is TEXTAREA or INPUT
+
+let inspectionFieldsArr = ['skin','head','hands',
+    'chest','abdomen', 'legs','veins', 'genitals','others'],
+    auscultationFieldsArr = ['lungs','heart',
+    'abdomen','neck', 'vascular','others'],
+    palpationFieldsArr = ['chest','abdomen',
+        'ganglions','articulations','others'],
+    percussionFieldsArr = ['chest','abdomen','others'],
+    neuroFieldsArr = ['head','motor',
+        'sensorial','reflexes','others'];
 
 function setSubmit(domId,table, fieldsArr,lat) {
+    // set multiple fields submit forms
     $(domId).submit(function(e){
         e.preventDefault();
         let dataStr = $(this).serializeJSON();
@@ -401,15 +412,15 @@ function setSubmit(domId,table, fieldsArr,lat) {
                     req = 'POST';
                     delete dataObj['id'];
                 };
-                // console.log('setSubmit request:',req, 'data.count:',data.count);
+                console.log('setSubmit request:',req, 'data.count:',data.count);
                 dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
                 dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
                 // capitalize fields
                 for (field of fieldsArr) {
                     if (dataObj[field] != "") {
-                        // console.log('capitalize:', field ,dataObj[field]);
+                        console.log('capitalize:', field ,dataObj[field]);
                         dataObj[field]=capitalize(dataObj[field]); // capitalize text objects
-                        $(domId+' input[name='+field+']').val(dataObj[field]); // update fields
+                        $(domId+' textarea[name='+field+']').val(dataObj[field]); // update fields
                     } else {};
                 };
                 dataStr= JSON.stringify(dataObj);
@@ -432,14 +443,20 @@ function setSubmit(domId,table, fieldsArr,lat) {
 // setSubmit('#postRightForm','post_biom', postFieldsArr,'right');
 // setSubmit('#postLeftForm','post_biom', postFieldsArr,'left');
 
+setSubmit('#inspectionForm','inspection',inspectionFieldsArr);
+setSubmit('#auscultationForm','auscultation', auscultationFieldsArr);
+setSubmit('#palpationForm','palpation', palpationFieldsArr);
+setSubmit('#percussionForm','percussion', percussionFieldsArr);
+setSubmit('#neuroForm','neuro', neuroFieldsArr);
 
-// set events handlers to update fields
+
 function updateHandlersFields(table,domId,fieldsArr,lat='') {
+    // set events handlers to update fields
     for (const field of fieldsArr) {
-        $(domId+' input[name='+field+']').focus(function(){
+        $(domId+' textarea[name='+field+']').focus(function(){
             getWlItemData(table,wlId,lat)
                 .then(function(data){
-                    // console.log("from update fields "+field+" :",data, data.count);
+                    //console.log("from update fields "+field+" :",data, data.count);
                     if (data.count != 0) {
                         let item=data.items[0];
                         $(domId+' input[name=id]').val(item['id']);
@@ -464,27 +481,34 @@ function updateHandlersFields(table,domId,fieldsArr,lat='') {
 // updateHandlersFields('post_biom','#postRightForm', postFieldsArr,'right');
 // updateHandlersFields('post_biom','#postLeftForm', postFieldsArr,'left');
 
+updateHandlersFields('inspection','#inspectionForm', inspectionFieldsArr);
+updateHandlersFields('auscultation','#auscultationForm', auscultationFieldsArr);
+updateHandlersFields('palpation','#palpationForm', palpationFieldsArr);
+updateHandlersFields('percussion','#percussionForm', percussionFieldsArr);
+updateHandlersFields('neuro','#neuroForm', neuroFieldsArr);
+
 
 // trigger change at each value change
 function monitorValueChange(domId,fieldsArr) {
     for (field of fieldsArr) {
-        $(domId+' input[name='+field+']').change(function() {
+        $(domId+' textarea[name='+field+']').change(function() {
             $(domId+'FormSubmit').removeClass('btn-secondary').addClass('btn-danger');
             $(domId).submit();
         })
     };
 };
 
-
-// motility 
-
-// set form submit with 1 field 'description', not laterality
-// domId = formId eg #motForm
+monitorValueChange('#inspectionForm', inspectionFieldsArr);
+monitorValueChange('#auscultationForm', auscultationFieldsArr);
+monitorValueChange('#palpationForm', palpationFieldsArr);
+monitorValueChange('#percussionForm', percussionFieldsArr);
+monitorValueChange('#neuroForm', neuroFieldsArr);
 
 // TODO: to implement
 // key is domId, value is table
 oneFieldObj = {
-        '#cHxForm': 'current_hx','#motForm':'motility', '#phoForm':'phoria', '#pupForm':'pupils', '#soapForm':'soap',
+        '#cHxForm': 'current_hx','#motForm':'motility', '#phoForm':'phoria', '#pupForm':'pupils',
+        '#soapForm':'soap',
         '#ccxForm':'ccx', '#ccxRForm':'ccx','#ccxLForm':'ccx','#folForm':'followup','#bilForm':'billing' };
 
 function setOneSubmit(domId,table,lat) {
@@ -575,6 +599,12 @@ monitorValueChangeOneField('#ccxRForm','ccx','right');
 monitorValueChangeOneField('#ccxLForm','ccx','left');
 monitorValueChangeOneField('#folForm','followup');
 monitorValueChangeOneField('#bilForm','billing');
+
+// 3 functions for each form with multiple fields:
+// 1) Submit: check for PUT, capitalize, crud
+// 2) on focus: check in DB if field has changed
+// 3) on change: if field value has changed then submit
+
 
 // function to prepare pdf content of prescription 
 function renderMedicObj(medicObj) {
