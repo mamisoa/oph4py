@@ -120,6 +120,7 @@ function refreshList(listName){
             };
             $('#patientTitle .patientName').html(checkIfDataIsNull(item.first_name,'n/a?')+' '+checkIfDataIsNull(item.last_name,'n/a?'));
             $('#patientTitle .patientDob').html(checkIfDataIsNull(item.dob,'n/a?')+' ('+getAge(checkIfDataIsNull(item.dob,''))+' yo)');
+            $('#patientTitle .patientSSN').html(checkIfDataIsNull('NISS: ' + item.ssn,'NISS: n/a?'));
             // fills list
             $('#ulUserItems').append('<li class="list-group-item">Last name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(item.last_name) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Maiden name: <span class="text-uppercase fw-bold">' + checkIfDataIsNull(item.maiden_name) + '</span></li>');
