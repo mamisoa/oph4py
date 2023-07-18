@@ -207,14 +207,14 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <label for="membership" class="form-label">Role:</label>
+                                        <label for="membershipSelect" class="form-label">Role:</label>
                                         <select id="membershipSelect" class="form-select" name="membership">
                                             [[ =roleOptions ]]
                                         </select>
                                         <div id="membershipHelp" class="form-text">Choose your role</div>
                                     </div>
                                     <div class="col">
-                                        <label for="gender" class="form-label">Gender:</label>
+                                        <label for="genderSelect" class="form-label">Gender:</label>
                                         <select id="genderSelect" class="form-select" name="gender">
                                             [[ =genderOptions ]]
                                         </select>
@@ -261,35 +261,35 @@
                                 <div class="container">
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="sending_facility" class="form-label">From:</label>
+                                            <label for="sendingFacilitySelect" class="form-label">From:</label>
                                             <select id="sendingFacilitySelect" class="form-select" name="sending_facility">
                                                 [[ =sendingFacilityOptions ]]
                                             </select>
                                             <div id="sendingFacilityHelp" class="form-text">Sending facility</div>
                                         </div>
                                         <div class="col">
-                                            <label for="receiving_facility" class="form-label">To:</label>
+                                            <label for="receivingFacilitySelect" class="form-label">To:</label>
                                             <select id="receivingFacilitySelect" class="form-select" name="receiving_facility">
                                                 [[ =receivingFacilityOptions ]]
                                             </select>
                                             <div id="receivingFacilityHelp" class="form-text">Receiving facility</div>
                                         </div>
                                         <div class="col">
-                                            <label for="procedure" class="form-label">Procedure:</label>
+                                            <label for="procedureSelect" class="form-label">Procedure:</label>
                                             <select id="procedureSelect" class="form-select" name="procedure">
                                                 [[ =procedureOptions ]]
                                             </select>
                                             <div id="procedureHelp" class="form-text">Choose procedure</div>
                                         </div>
                                         <div class="col">
-                                            <label for="provider" class="form-label">Provider:</label>
+                                            <label for="providerSelect" class="form-label">Provider:</label>
                                             <select id="providerSelect" class="form-select" name="provider">
                                                 [[ =providerOptions ]]
                                             </select>
                                             <div id="providerHelp" class="form-text">Choose provider</div>
                                         </div>
                                         <div class="col">
-                                            <label for="senior" class="form-label">Senior:</label>
+                                            <label for="seniorSelect" class="form-label">Senior:</label>
                                             <select id="seniorSelect" class="form-select" name="senior">
                                                 [[ =seniorOptions ]]
                                             </select>
@@ -303,13 +303,13 @@
                                             <div id="requestTimeHelp" class="form-text">Choose timeslot</div>
                                         </div>
                                         <div class="col" id="modality_destDiv">
-                                            <label for="modality_dest" class="form-label">Modality:</label>
+                                            <label for="modality_destSelect" class="form-label">Modality:</label>
                                             <select id="modality_destSelect" class="form-select" name="modality_dest">
                                             </select>
                                             <div id="modality_destHelp" class="form-text">Choose modality</div>
                                         </div>
                                         <div class="col visually-hidden" id="modality_destPutDiv">
-                                            <label for="modality_destPut" class="form-label">Modality:</label>
+                                            <label for="modality_destSelectPut" class="form-label">Modality:</label>
                                             <select id="modality_destSelectPut" class="form-select" name="modality_destPut">
                                                 [[ =everyModalityOptions]]
                                             </select>
@@ -318,40 +318,43 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="laterality" class="form-label">Side:</label>
-                                            <div class="input-group">
-                                                <div class="btn-group laterality">                                                
-                                                    <input type="radio" id="laterality_both" name="laterality" class="btn-check" value="both" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="laterality_both">Both</label>
-                                                    <input type="radio" id="laterality_left" name="laterality" class="btn-check" value="left" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="laterality_left">Left</label>
-                                                    <input type="radio" id="laterality_right" name="laterality" class="btn-check" value="right" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="laterality_right">Right</label>
-                                                    <input type="radio" id="laterality_none" name="laterality" class="btn-check" value="none" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="laterality_none">None</label>
+                                            <label class="form-label">Side:
+                                                <div class="input-group" id="lateralityGroup">
+                                                    <div class="btn-group laterality">                                                
+                                                        <input type="radio" id="laterality_both" name="laterality" class="btn-check" value="both" autocomplete="off">
+                                                        <label class="btn btn-outline-primary" for="laterality_both">Both</label>
+                                                        <input type="radio" id="laterality_left" name="laterality" class="btn-check" value="left" autocomplete="off">
+                                                        <label class="btn btn-outline-primary" for="laterality_left">Left</label>
+                                                        <input type="radio" id="laterality_right" name="laterality" class="btn-check" value="right" autocomplete="off">
+                                                        <label class="btn btn-outline-primary" for="laterality_right">Right</label>
+                                                        <input type="radio" id="laterality_none" name="laterality" class="btn-check" value="none" autocomplete="off">
+                                                        <label class="btn btn-outline-primary" for="laterality_none">None</label>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </label>
                                         </div>
                                         <div class="col">
-                                            <label for="status_flag" class="form-label">Status:</label>
-                                            <div class="btn-group statusFlag">                                                
-                                                <input type="radio" id="status_requested" name="status_flag" class="btn-check" value="requested" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="status_requested">Request</label>
-                                                <input type="radio" id="status_processing" name="status_flag" class="btn-check" value="processing" autocomplete="off">
-                                                <label class="btn btn-outline-warning" for="status_processing">Process</label>
-                                                <input type="radio" id="status_done" name="status_flag" class="btn-check" value="done" autocomplete="off">
-                                                <label class="btn btn-outline-success" for="status_done">Done</label>
-                                                <input type="radio" id="status_cancelled" name="status_flag" class="btn-check" value="cancelled" autocomplete="off">
-                                                <label class="btn btn-outline-secondary" for="status_cancelled">Cancel</label>
-                                            </div>
+                                            <label class="form-label">Status:
+                                                <div class="btn-group statusFlag" id="statusFlagGroup">                                                
+                                                    <input type="radio" id="status_requested" name="status_flag" class="btn-check" value="requested" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="status_requested">Request</label>
+                                                    <input type="radio" id="status_processing" name="status_flag" class="btn-check" value="processing" autocomplete="off">
+                                                    <label class="btn btn-outline-warning" for="status_processing">Process</label>
+                                                    <input type="radio" id="status_done" name="status_flag" class="btn-check" value="done" autocomplete="off">
+                                                    <label class="btn btn-outline-success" for="status_done">Done</label>
+                                                    <input type="radio" id="status_cancelled" name="status_flag" class="btn-check" value="cancelled" autocomplete="off">
+                                                    <label class="btn btn-outline-secondary" for="status_cancelled">Cancel</label>
+                                                </div>
+                                            </label>
                                         </div>
                                         <div class="col">
-                                            <label for="counter" class="form-label">Counter:</label>
-                                            <div class="input-group mb-3">
-                                                <button class="btn btn-outline-secondary counter_down" type="button">-</button>
-                                                <input type="text" class="form-control counter text-center" value ="1" aria-label="Counter" name="counter">
-                                                <button class="btn btn-outline-secondary counter_up" type="button">+</button>
-                                            </div>
+                                            <label class="form-label">Counter:
+                                                <div class="input-group mb-3" id="counterGroup">
+                                                    <button class="btn btn-outline-secondary counter_down" type="button">-</button>
+                                                    <input type="text" class="form-control counter text-center" value ="1" aria-label="Counter" name="counter">
+                                                    <button class="btn btn-outline-secondary counter_up" type="button">+</button>
+                                                </div>
+                                            </label>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
