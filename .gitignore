@@ -14,3 +14,4 @@ static/images/assets/avatar/man_avatar_200x200.svg
 static/images/assets/avatar/man_avatar.svg
 static/images/assets/avatar/woman_avatar_200x200.svg
 *..code-workspace
+.DS_store
