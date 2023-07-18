@@ -1,7 +1,7 @@
 [[extend 'baseof.html']]
 
 [[ block page_head]]
-<link href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css" rel="stylesheet">
+<link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
 [[ end ]]
 
 [[ block left_nav ]]
@@ -158,7 +158,7 @@ const API_FOLUSER = HOSTURL + '[[=URL('api','followup')]]' + '?@count=true&@look
 const API_BILUSER = HOSTURL + '[[=URL('api','billing')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
 
 </script>
-<script src="js/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
 <script src="js/useful.js"></script>
