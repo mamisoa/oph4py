@@ -38,7 +38,7 @@
                                     <label for="airRight" class="form-label">Air tonometry (RE):</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
-                                        <input type="text" class="form-control airRight counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="airRight">
+                                        <input type="text" class="form-control airRight counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="airRight" id="airRight">
                                         <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
                                     </div>
                                 </div>
@@ -46,7 +46,7 @@
                                     <label for="pachyRight" class="form-label">Pachymetry (RE):</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_pachy" type="button">-</button>
-                                        <input type="text" class="form-control pachyRight counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachyRight">
+                                        <input type="text" class="form-control pachyRight counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachyRight" id="pachyRight">
                                         <button class="btn btn-outline-secondary counter_up_pachy" type="button">+</button>
                                     </div>
                                 </div>
@@ -64,10 +64,10 @@
                     <form action="" id="airLeftForm">
                         <div class="row">
                             <div class="col">
-                                <label for="airRight" class="form-label">Air tonometry (LE):</label>
+                                <label for="airLeft" class="form-label">Air tonometry (LE):</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
-                                    <input type="text" class="form-control airLeft text-center counter_tono" value ="15" aria-label="Air tonometry" name="airLeft">
+                                    <input type="text" class="form-control airLeft text-center counter_tono" value ="15" aria-label="Air tonometry" name="airLeft" id="airLeft">
                                     <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
                                 </div>                        
                             </div>
@@ -75,7 +75,7 @@
                                 <label for="pachyLeft" class="form-label">Pachymetry (LE):</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_pachy" type="button">-</button>
-                                    <input type="text" class="form-control pachyLeft counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachyLeft">
+                                    <input type="text" class="form-control pachyLeft counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachyLeft" id="pachyLeft">
                                     <button class="btn btn-outline-secondary counter_up_pachy" type="button">+</button>
                                 </div>
                             </div>
@@ -160,7 +160,7 @@
                                     <label for="aplaRight" class="form-label">Aplanation tonometry (RE):</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
-                                        <input type="text" class="form-control aplaRight counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="aplaRight">
+                                        <input type="text" class="form-control aplaRight counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="aplaRight" id="aplaRight">
                                         <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
                                     </div>
                                 </div>                                
@@ -178,10 +178,10 @@
                     <form action="" class="bg-left" id="aplaLeftForm">
                         <div class="row">
                             <div class="col">
-                                <label for="airRight" class="form-label">Aplanation tonometry (LE):</label>
+                                <label for="aplaLeft" class="form-label">Aplanation tonometry (LE):</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
-                                    <input type="text" class="form-control aplaLeft text-center counter_tono" value ="15" aria-label="Air tonometry" name="aplaLeft">
+                                    <input type="text" class="form-control aplaLeft text-center counter_tono" value ="15" aria-label="Air tonometry" name="aplaLeft" id="aplaLeft">
                                     <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
                                 </div>                        
                             </div>
@@ -254,7 +254,7 @@
                             <form id="tonoPachyForm" enctype="multipart/form-data" method="POST">
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <label for="laterality" class="form-label">Side:</label>
+                                        <span class="form-label">Side:</span>
                                         <div class="input-group">
                                             <div class="btn-group laterality">
                                                 <input type="radio" id="laterality_right" name="laterality" class="btn-check" value="right" autocomplete="off">
@@ -265,7 +265,7 @@
                                         </div>
                                     </div>                                    
                                     <div class="col" id="technoDiv">
-                                        <label for="techno" class="form-label">Method:</label>
+                                        <span class="form-label">Method:</span>
                                         <div class="input-group">
                                             <div class="btn-group techno">                                                
                                                 <input type="radio" id="techno_air" name="techno" class="btn-check" value="air" autocomplete="off">
@@ -278,19 +278,19 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <label for="tono" class="form-label">Tonometry:</label>
+                                        <label for="tono_modal" class="form-label">Tonometry:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
-                                            <input type="text" class="form-control tono counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="tonometry">
+                                            <input type="text" class="form-control tono counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="tonometry" id="tono_modal">
                                             <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col">
                                         <div id="pachyDiv">
-                                            <label for="pachy" class="form-label">Pachymetry:</label>
+                                            <label for="pachy_modal" class="form-label">Pachymetry:</label>
                                             <div class="input-group mb-3">
                                                 <button class="btn btn-outline-secondary counter_down_pachy" type="button">-</button>
-                                                <input type="text" class="form-control pachy counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachymetry">
+                                                <input type="text" class="form-control pachy counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachymetry" id="pachy_modal">
                                                 <button class="btn btn-outline-secondary counter_up_pachy" type="button">+</button>
                                             </div>
                                         </div>                                        
