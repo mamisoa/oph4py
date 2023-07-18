@@ -543,7 +543,7 @@
                                         <div class="col">
                                             <div class="form-floating">
                                                 <input type="text" id="antRightouter" class="form-control" aria-label="Outer findings" name="outer" value="[[ = XML(antRight['outer']) ]]" autocomplete="on"/>
-                                                <label for="antRightantChamber">Outer findings (eyelids, conjunctiva...)</label>
+                                                <label for="antRightouter">Outer findings (eyelids, conjunctiva...)</label>
                                             </div>
                                         </div>
                                     </div>
@@ -676,7 +676,7 @@
                                         <div class="col">
                                             <div class="form-floating">
                                                 <input type="text" id="antLeftouter" class="form-control" aria-label="Outer findings" name="outer" value="[[ = XML(antLeft['outer']) ]]" autocomplete="on"/>
-                                                <label for="antLeftantChamber">Outer findings (eyelids, conjunctiva...)</label>
+                                                <label for="antLeftouter">Outer findings (eyelids, conjunctiva...)</label>
                                             </div>
                                         </div>
                                     </div>
@@ -1336,7 +1336,7 @@
                                 <div class="container-fluid">
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="mxdelivery_modal" class="form-label">Side:</label>
+                                            <span class="form-label">Side:</span>
                                             <div class="input-group">
                                                 <div class="btn-group mxdelivery_modal">
                                                     <input type="radio" id="mxdelivery_right_modal" name="delivery" class="btn-check" value="right" autocomplete="off">
@@ -1378,7 +1378,7 @@
                                             <label for="intake_modal" class="form-label">Intake:</label>
                                             <div class="input-group mb-3">
                                                 <button class="btn btn-outline-secondary counter_down_intake" type="button">-</button>
-                                                <input type="text" class="form-control form-control-sm intake_modal counter_intake text-center" value="1.00" aria-label="Intake" name="unit_per_intake">
+                                                <input type="text" class="form-control form-control-sm intake_modal counter_intake text-center" value="1.00" aria-label="Intake" name="unit_per_intake" id="intake_modal">
                                                 <button class="btn btn-outline-secondary counter_up_intake" type="button">+</button>
                                             </div>
                                         </div>
@@ -1432,7 +1432,7 @@
                                 <div class="container-fluid">
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="typ_modal" class="form-label">Type:</label>
+                                            <span class="form-label">Type:</s>
                                             <div class="input-group">
                                                 <div class="btn-group typ_modal">
                                                     <input type="radio" id="typ_allergy_modal" name="typ" class="btn-check" value="allergy" autocomplete="off">
@@ -1498,7 +1498,7 @@
                                 <div class="container-fluid">
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="category_modal" class="form-label">Category:</label>
+                                            <span class="form-label">Category:</span>
                                             <div class="input-group">
                                                 <div class="btn-group category_modal">
                                                     <input type="radio" id="mHxcategory_medical_modal" name="category" class="btn-check" value="medical" autocomplete="off">
@@ -1509,7 +1509,7 @@
                                             </div>
                                         </div>
                                         <div class="col">
-                                            <label for="mHxsite_modal" class="form-label">Site:</label>
+                                            <span class="form-label">Site:</span>
                                             <div class="input-group">
                                                 <div class="btn-group site_modal">
                                                     <input type="radio" id="mHxsite_right_modal" name="site" class="btn-check" value="right" autocomplete="off">
@@ -1725,7 +1725,7 @@
                                 <div class="container-fluid">
                                     <div class="row mb-3">
                                         <div class="col" id="modalTypeDiv">
-                                            <label for="glass_type_modal" class="form-label">Glass type:</label>
+                                            <span class="form-label">Glass type:</span>
                                             <div class="input-group">
                                                 <div class="btn-group glass_type_modal">
                                                     <input type="radio" id="glass_type_monofar_modal" name="glass_type" class="btn-check" value="monofocalfar" autocomplete="off">
@@ -1745,7 +1745,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col" id="art30Div">
-                                            <label for="art30modal" class="form-label">Article 30:</label>
+                                            <span class="form-label">Article 30:</span>
                                             <div class="input-group">
                                                 <div class="btn-group art30_modal">
                                                     <input type="radio" id="art30_no_modal" name="art30" class="btn-check"  value="False" autocomplete="off" checked>
@@ -1795,7 +1795,7 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col" id="tintDiv">
-                                            <label for="tintmodal" class="form-label">Tint:</label>
+                                            <span class="form-label">Tint:</span>
                                             <div class="input-group">
                                                 <div class="btn-group tint_modal">
                                                     <input type="radio" id="tint_no_modal" name="tint" class="btn-check" value="" autocomplete="off" checked>
@@ -1808,7 +1808,7 @@
                                             </div>
                                         </div>
                                         <div class="col" id="tintDiv">
-                                            <label for="photomodal" class="form-label">Photochromic:</label>
+                                            <span class="form-label">Photochromic:</span>
                                             <div class="input-group">
                                                 <div class="btn-group photo_modal">
                                                     <input type="radio" id="photo_no_modal" name="photo" class="btn-check" value="" autocomplete="off" checked>
@@ -2147,7 +2147,7 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col" id="art30CDiv">
-                                            <label for="art30Cmodal" class="form-label">Article 30:</label>
+                                            <span class="form-label">Article 30:</span>
                                             <div class="input-group">
                                                 <div class="btn-group art30C_modal">
                                                     <input type="radio" id="art30C_no_modal" name="art30" class="btn-check"  value="False" autocomplete="off" checked>
@@ -2256,7 +2256,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <label for="exit" class="form-label">Exit allowance:</label>
+                                    <span class="form-label">Exit allowance:</span>
                                     <div class="input-group">
                                         <div class="btn-group laterality">                                                
                                             <input type="radio" id="exit_yes" name="exit" class="btn-check" value="yes" autocomplete="off" checked>
