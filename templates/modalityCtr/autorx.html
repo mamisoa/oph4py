@@ -44,7 +44,7 @@
                         <div class="container-fluid bg-right" >
                             <div class="row mb-3">
                                 <div class="col">
-                                    <label for="rx_origin_right" class="form-label">From:</label>
+                                    <span class="form-label">From:</span>
                                     <div class="input-group">
                                         <div class="btn-group rx_origin_right">
                                             <input type="radio" id="rx_origin_autorx_right" name="rx_origin" class="btn-check" value="autorx" autocomplete="off">
@@ -61,7 +61,7 @@
                                     </div>
                                 </div>
                                 <div class="col" id="rightTypeDiv">
-                                    <label for="glass_type" class="form-label">Type:</label>
+                                    <span for="glass_type" class="form-label">Type:</span>
                                     <div class="input-group">
                                         <div class="btn-group glass_type_right">
                                             <input type="radio" id="glass_type_mono_right" name="glass_type" class="btn-check" value="monofocal" autocomplete="off">
@@ -80,41 +80,41 @@
                             <div class="row mb-3 rxDiv" id="farRight">
                                 <div class="col-2">FAR</div>
                                 <div class="col-2">
-                                    <label for="sph_far" class="form-label">Sph:</label>
+                                    <label for="sph_far_right" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_sph_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_far counter_sph_far text-center" value ="+0.00" aria-label="Sphere right" name="sph_far">
+                                        <input type="text" class="form-control form-control-sm sph_far counter_sph_far text-center" value ="+0.00" aria-label="Sphere right" name="sph_far" id="sph_far_right">
                                         <button class="btn btn-outline-secondary counter_up_sph_far" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="cyl_far" class="form-label">Cyl:</label>
+                                    <label for="cyl_far_right" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_cyl_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_far counter_cyl_far text-center" value ="+0.00" aria-label="Cylinder right" name="cyl_far">
+                                        <input type="text" class="form-control form-control-sm cyl_far counter_cyl_far text-center" value ="+0.00" aria-label="Cylinder right" name="cyl_far" id="cyl_far_right" >
                                         <button class="btn btn-outline-secondary counter_up_cyl_far" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="axis_far" class="form-label">Axis:</label>
+                                    <label for="axis_far_right" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_axis_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_far counter_axis_far text-center" value ="180" aria-label="Cylinder right" name="axis_far">
+                                        <input type="text" class="form-control form-control-sm axis_far counter_axis_far text-center" value ="180" aria-label="Cylinder right" name="axis_far" id="axis_far_right">
                                         <button class="btn btn-outline-secondary counter_up_axis_far" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="va_far" class="form-label">VA:</label>
+                                    <label for="va_far_right" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_va_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_far counter_va_far text-center" value ="" aria-label="Visual acuity" name="va_far">
+                                        <input type="text" class="form-control form-control-sm va_far counter_va_far text-center" value ="" aria-label="Visual acuity" name="va_far" id="va_far_right">
                                         <button class="btn btn-outline-secondary counter_up_va_far" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="opto_far" class="form-label">Opto:</label>
+                                    <label for="opto_far_right" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Default select example" name="opto_far">
+                                        <select class="form-select form-select-sm" aria-label="Default select example" name="opto_far_right" id="opto_far_right">
                                             [[ = optoFarOptions]]
                                         </select>
                                     </div>
@@ -122,49 +122,49 @@
                             </div>                    
                             <div class="row mb-3 rxDiv" id="intRight">
                                 <div class="col-2">
-                                    <label for="add_int" class="form-label">Add for int:</label>
+                                    <label for="add_int_right" class="form-label">Add for int:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_add_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm add_int counter_add_int text-center" value ="+0.00" aria-label="Intermediate addition" name="add_int">
+                                        <input type="text" class="form-control form-control-sm add_int counter_add_int text-center" value ="+0.00" aria-label="Intermediate addition" name="add_int" id="add_int_right">
                                         <button class="btn btn-outline-secondary counter_up_add_int" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="sph_int" class="form-label">Sph:</label>
+                                    <label for="sph_int_right" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_sph_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere right" name="sph_int">
+                                        <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere right" name="sph_int" id="sph_int_right">
                                         <button class="btn btn-outline-secondary counter_up_sph_int" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="cyl_int" class="form-label">Cyl:</label>
+                                    <label for="cyl_int_right" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_cyl_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_int counter_cyl_int text-center" value ="+0.00" aria-label="Cylinder right" name="cyl_int">
+                                        <input type="text" class="form-control form-control-sm cyl_int counter_cyl_int text-center" value ="+0.00" aria-label="Cylinder right" name="cyl_int" id="cyl_int_right">
                                         <button class="btn btn-outline-secondary counter_up_cyl_int" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="axis_int" class="form-label">Axis:</label>
+                                    <label for="axis_int_right" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_axis_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="180" aria-label="Axis right" name="axis_int">
+                                        <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="180" aria-label="Axis right" name="axis_int" id="axis_int_right">
                                         <button class="btn btn-outline-secondary counter_up_axis_int" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="va_int" class="form-label">VA:</label>
+                                    <label for="va_int_right" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_va_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_int counter_va_int text-center" value ="1.00" aria-label="Visual acuity" name="va_int">
+                                        <input type="text" class="form-control form-control-sm va_int counter_va_int text-center" value ="1.00" aria-label="Visual acuity" name="va_int" id="va_int_right">
                                         <button class="btn btn-outline-secondary counter_up_va_int" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="opto_int" class="form-label">Opto:</label>
+                                    <label for="opto_int_right" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Optotype used for intermediate distance" name="opto_int">
+                                        <select class="form-select form-select-sm" aria-label="Optotype used for intermediate distance" name="opto_int" id="opto_int_right">
                                             [[ = optoFarOptions]]
                                         </select>
                                     </div>
@@ -172,49 +172,49 @@
                             </div>
                             <div class="row mb-3 rxDiv" id="closeRight">
                                 <div class="col-2">
-                                    <label for="add_close" class="form-label">Add for close:</label>
+                                    <label for="add_close_right" class="form-label">Add for close:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_add_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm add_close counter_add_close text-center" value ="+0.00" aria-label="Close addition" name="add_close">
+                                        <input type="text" class="form-control form-control-sm add_close counter_add_close text-center" value ="+0.00" aria-label="Close addition" name="add_close" id="add_close_right">
                                         <button class="btn btn-outline-secondary counter_up_add_close" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="sph_close" class="form-label">Sph:</label>
+                                    <label for="sph_close_right" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_sph_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere right" name="sph_close">
+                                        <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere right" name="sph_close" id="sph_close_right">
                                         <button class="btn btn-outline-secondary counter_up_sph_close" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="cyl_close" class="form-label">Cyl:</label>
+                                    <label for="cyl_close_right" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_cyl_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_close counter_cyl_close text-center" value ="+0.00" aria-label="Cylinder right" name="cyl_close">
+                                        <input type="text" class="form-control form-control-sm cyl_close counter_cyl_close text-center" value ="+0.00" aria-label="Cylinder right" name="cyl_close" id="cyl_close_right">
                                         <button class="btn btn-outline-secondary counter_up_cyl_close" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="axis_close" class="form-label">Axis:</label>
+                                    <label for="axis_close_right" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_axis_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_close counter_axis_close text-center" value ="180" aria-label="Axis right" name="axis_close">
+                                        <input type="text" class="form-control form-control-sm axis_close counter_axis_close text-center" value ="180" aria-label="Axis right" name="axis_close" id="axis_close_right">
                                         <button class="btn btn-outline-secondary counter_up_axis_close" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="va_close" class="form-label">VA:</label>
+                                    <label for="va_close_right" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_va_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_close counter_va_close text-center" value ="2" aria-label="Visual acuity" name="va_close">
+                                        <input type="text" class="form-control form-control-sm va_close counter_va_close text-center" value ="2" aria-label="Visual acuity" name="va_close" id="va_close_right">
                                         <button class="btn btn-outline-secondary counter_up_va_close" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="opto_close" class="form-label">Opto:</label>
+                                    <label for="opto_close_right" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Optotype used for close" name="opto_close">
+                                        <select class="form-select form-select-sm" aria-label="Optotype used for close" name="opto_close" id="opto_close_right">
                                             [[ = optoCloseOptions]]
                                         </select>
                                     </div>
@@ -288,7 +288,7 @@
                         <div class="container-fluid bg-left">
                             <div class="row mb-3">
                                 <div class="col">
-                                    <label for="rx_origin_left" class="form-label">From:</label>
+                                    <span class="form-label">From:</span>
                                     <div class="input-group">
                                         <div class="btn-group rx_origin_left">
                                             <input type="radio" id="rx_origin_autorx_left" name="rx_origin" class="btn-check" value="autorx" autocomplete="off">
@@ -305,7 +305,7 @@
                                     </div>
                                 </div>
                                 <div class="col" id="leftTypeDiv">
-                                    <label for="glass_type_left" class="form-label">Type:</label>
+                                    <span class="form-label">Type:</span>
                                     <div class="input-group">
                                         <div class="btn-group glass_type_left">
                                             <input type="radio" id="glass_type_mono_left" name="glass_type" class="btn-check" value="monofocal" autocomplete="off">
@@ -324,41 +324,41 @@
                             <div class="row mb-3 rxDiv" id="farLeft">
                                 <div class="col-2">FAR</div>
                                 <div class="col-2">
-                                    <label for="sph_far" class="form-label">Sph:</label>
+                                    <label for="sph_far_left" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_sph_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_far counter_sph_far text-center" value ="+0.00" aria-label="Sphere left" name="sph_far">
+                                        <input type="text" class="form-control form-control-sm sph_far counter_sph_far text-center" value ="+0.00" aria-label="Sphere left" name="sph_far" id="sph_far_left">
                                         <button class="btn btn-outline-secondary counter_up_sph_far" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="cyl_far" class="form-label">Cyl:</label>
+                                    <label for="cyl_far_left" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_cyl_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_far counter_cyl_far text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_far">
+                                        <input type="text" class="form-control form-control-sm cyl_far counter_cyl_far text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_far" id="cyl_far_left">
                                         <button class="btn btn-outline-secondary counter_up_cyl_far" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="axis_far" class="form-label">Axis:</label>
+                                    <label for="axis_far_left" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_axis_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_far counter_axis_far text-center" value ="180" aria-label="Axis left" name="axis_far">
+                                        <input type="text" class="form-control form-control-sm axis_far counter_axis_far text-center" value ="180" aria-label="Axis left" name="axis_far" id="axis_far_left">
                                         <button class="btn btn-outline-secondary counter_up_axis_far" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="va_far" class="form-label">VA:</label>
+                                    <label for="va_far_left" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_va_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_far counter_va_far text-center" value ="" aria-label="Visual acuity" name="va_far">
+                                        <input type="text" class="form-control form-control-sm va_far counter_va_far text-center" value ="" aria-label="Visual acuity" name="va_far" id="va_far_left">
                                         <button class="btn btn-outline-secondary counter_up_va_far" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="opto_far" class="form-label">Opto:</label>
+                                    <label for="opto_far_left" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Optotype for far" name="opto_far">
+                                        <select class="form-select form-select-sm" aria-label="Optotype for far" name="opto_far" id="opto_far_left">
                                             [[ = optoFarOptions]]
                                         </select>
                                     </div>
@@ -366,49 +366,49 @@
                             </div>
                             <div class="row mb-3 rxDiv" id="intLeft">
                                 <div class="col-2">
-                                    <label for="add_int" class="form-label">Add for int:</label>
+                                    <label for="add_int_left" class="form-label">Add for int:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_add_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm add_int counter_add_int text-center" value ="+0.00" aria-label="Intermediate addition" name="add_int">
+                                        <input type="text" class="form-control form-control-sm add_int counter_add_int text-center" value ="+0.00" aria-label="Intermediate addition" name="add_int" id="add_int_left">
                                         <button class="btn btn-outline-secondary counter_up_add_int" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="sph_int" class="form-label">Sph:</label>
+                                    <label for="sph_int_left" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_sph_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere left" name="sph_int">
+                                        <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere left" name="sph_int" id="sph_int_left">
                                         <button class="btn btn-outline-secondary counter_up_sph_int" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="cyl_int" class="form-label">Cyl:</label>
+                                    <label for="cyl_int_left" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_cyl_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_int counter_cyl_int text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_int">
+                                        <input type="text" class="form-control form-control-sm cyl_int counter_cyl_int text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_int" id="cyl_int_left">
                                         <button class="btn btn-outline-secondary counter_up_cyl_int" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="axis_int" class="form-label">Axis:</label>
+                                    <label for="axis_int_left" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_axis_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="180" aria-label="Axis left" name="axis_int">
+                                        <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="180" aria-label="Axis left" name="axis_int" id="axis_int_left">
                                         <button class="btn btn-outline-secondary counter_up_axis_int" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="va_int" class="form-label">VA:</label>
+                                    <label for="va_int_left" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_va_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_int counter_va_int text-center" value ="1.00" aria-label="Visual acuity" name="va_int">
+                                        <input type="text" class="form-control form-control-sm va_int counter_va_int text-center" value ="1.00" aria-label="Visual acuity" name="va_int" id="va_int_left">
                                         <button class="btn btn-outline-secondary counter_up_va_int" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="opto_int" class="form-label">Opto:</label>
+                                    <label for="opto_int_left" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Optotype used for intermediate distance" name="opto_int">
+                                        <select class="form-select form-select-sm" aria-label="Optotype used for intermediate distance" name="opto_int" id="opto_int_left">
                                             [[ = optoFarOptions]]
                                         </select>
                                     </div>
@@ -416,49 +416,49 @@
                             </div>
                             <div class="row mb-3 rxDiv" id="closeLeft">
                                 <div class="col-2">
-                                    <label for="add_close" class="form-label">Add for close:</label>
+                                    <label for="add_close_left" class="form-label">Add for close:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_add_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm add_close counter_add_close text-center" value ="+0.00" aria-label="Close addition" name="add_close">
+                                        <input type="text" class="form-control form-control-sm add_close counter_add_close text-center" value ="+0.00" aria-label="Close addition" name="add_close" id="add_close_left">
                                         <button class="btn btn-outline-secondary counter_up_add_close" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="sph_close" class="form-label">Sph:</label>
+                                    <label for="sph_close_left" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_sph_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere left" name="sph_close">
+                                        <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere left" name="sph_close" id="sph_close_left">
                                         <button class="btn btn-outline-secondary counter_up_sph_close" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="cyl_close" class="form-label">Cyl:</label>
+                                    <label for="cyl_close_left" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_cyl_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_close counter_cyl_close text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_close">
+                                        <input type="text" class="form-control form-control-sm cyl_close counter_cyl_close text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_close" id="cyl_close_left">
                                         <button class="btn btn-outline-secondary counter_up_cyl_close" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="axis_close" class="form-label">Axis:</label>
+                                    <label for="axis_close_left" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_axis_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_close counter_axis_close text-center" value ="180" aria-label="Axis left" name="axis_close">
+                                        <input type="text" class="form-control form-control-sm axis_close counter_axis_close text-center" value ="180" aria-label="Axis left" name="axis_close" id="axis_close_left">
                                         <button class="btn btn-outline-secondary counter_up_axis_close" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="va_close" class="form-label">VA:</label>
+                                    <label for="va_close_left" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
                                         <button class="btn btn-outline-secondary counter_down_va_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_close counter_va_close text-center" value ="2" aria-label="Visual acuity" name="va_close">
+                                        <input type="text" class="form-control form-control-sm va_close counter_va_close text-center" value ="2" aria-label="Visual acuity" name="va_close" id="va_close_left">
                                         <button class="btn btn-outline-secondary counter_up_va_close" type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <label for="opto_close" class="form-label">Opto:</label>
+                                    <label for="opto_close_left" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Optotype used for close" name="opto_close">
+                                        <select class="form-select form-select-sm" aria-label="Optotype used for close" name="opto_close" id="opto_close_left">
                                             [[ = optoCloseOptions]]
                                         </select>
                                     </div>
@@ -617,13 +617,13 @@
                                 <label for="k1_right" class="form-label">K1:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_km1" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k1_right counter_km1 text-center" value ="43.00" aria-label="K1 right" name="k1">
+                                    <input type="text" class="form-control form-control-sm k1_right counter_km1 text-center" value ="43.00" aria-label="K1 right" name="k1" id="k1_right">
                                     <button class="btn btn-outline-secondary counter_up_km1" type="button">+</button>
                                 </div>
                                 <label for="a1_right" class="form-label">Axis 1:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_axis1" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a1_right counter_axis1 text-center" value ="180" aria-label="Axis 1 right" name="axis1">
+                                    <input type="text" class="form-control form-control-sm a1_right counter_axis1 text-center" value ="180" aria-label="Axis 1 right" name="axis1" id="a1_right">
                                     <button class="btn btn-outline-secondary counter_up_axis1" type="button">+</button>
                                 </div>
                             </div>
@@ -631,13 +631,13 @@
                                 <label for="k2_right" class="form-label">K2:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_km2" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k2_right counter_km2 text-center" value ="43.00" aria-label="K2 right" name="k2">
+                                    <input type="text" class="form-control form-control-sm k2_right counter_km2 text-center" value ="43.00" aria-label="K2 right" name="k2" id="k2_right">
                                     <button class="btn btn-outline-secondary counter_up_km2" type="button">+</button>
                                 </div>
                                 <label for="a2_right" class="form-label">Axis 2:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_axis2" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a2_right counter_axis2 text-center" value ="180" aria-label="Axis 2 right" name="axis2">
+                                    <input type="text" class="form-control form-control-sm a2_right counter_axis2 text-center" value ="180" aria-label="Axis 2 right" name="axis2" id="a2_right">
                                     <button class="btn btn-outline-secondary counter_up_axis2" type="button">+</button>
                                 </div>
                             </div>                            
@@ -712,13 +712,13 @@
                                 <label for="k1_left" class="form-label">K1:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_km1" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k1_left counter_km1 text-center" value ="43.00" aria-label="K1 left" name="k1">
+                                    <input type="text" class="form-control form-control-sm k1_left counter_km1 text-center" value ="43.00" aria-label="K1 left" name="k1" id="k1_left">
                                     <button class="btn btn-outline-secondary counter_up_km1" type="button">+</button>
                                 </div>
                                 <label for="a1_left" class="form-label">Axis 1:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_axis1" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a1_left counter_axis1 text-center" value ="180" aria-label="Axis 1 left" name="axis1">
+                                    <input type="text" class="form-control form-control-sm a1_left counter_axis1 text-center" value ="180" aria-label="Axis 1 left" name="axis1" id="a1_left">
                                     <button class="btn btn-outline-secondary counter_up_axis1" type="button">+</button>
                                 </div>
                             </div>
@@ -726,13 +726,13 @@
                                 <label for="k2_left" class="form-label">K2:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_km2" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k2_left counter_km2 text-center" value ="43.00" aria-label="K2 left" name="k2">
+                                    <input type="text" class="form-control form-control-sm k2_left counter_km2 text-center" value ="43.00" aria-label="K2 left" name="k2" id="k2_left">
                                     <button class="btn btn-outline-secondary counter_up_km2" type="button">+</button>
                                 </div>
                                 <label for="a2_left" class="form-label">Axis 2:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_axis2" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a2_left counter_axis2 text-center" value ="180" aria-label="Axis 2 left" name="axis2">
+                                    <input type="text" class="form-control form-control-sm a2_left counter_axis2 text-center" value ="180" aria-label="Axis 2 left" name="axis2" id="a2_left">
                                     <button class="btn btn-outline-secondary counter_up_axis2" type="button">+</button>
                                 </div>
                             </div>                            
@@ -811,7 +811,7 @@
                             <form id="rxFormModal" enctype="multipart/form-data" method="POST"> 
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <label for="laterality_modal" class="form-label">Side:</label>
+                                        <span class="form-label">Side:</span>
                                         <div class="input-group">
                                             <div class="btn-group laterality_modal">
                                                 <input type="radio" id="laterality_right_modal" name="laterality" class="btn-check" value="right" autocomplete="off">
@@ -822,7 +822,7 @@
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <label for="rx_origin_modal" class="form-label">From:</label>
+                                        <span class="form-label">From:</span>
                                         <div class="input-group">
                                             <div class="btn-group rx_origin_modal">
                                                 <input type="radio" id="rx_origin_autorx_modal" name="rx_origin" class="btn-check" value="autorx" autocomplete="off">
@@ -839,7 +839,7 @@
                                         </div>
                                     </div>
                                     <div class="col" id="modalTypeDiv">
-                                        <label for="glass_type_modal" class="form-label">Type:</label>
+                                        <span class="form-label">Type:</span>
                                         <div class="input-group">
                                             <div class="btn-group glass_type_modal">
                                                 <input type="radio" id="glass_type_mono_modal" name="glass_type" class="btn-check" value="monofocal" autocomplete="off">
@@ -858,41 +858,41 @@
                                 <div class="row mb-3 rxDiv" id="farModal">
                                     <div class="col-2">FAR</div>
                                     <div class="col-2">
-                                        <label for="sph_far" class="form-label">Sph:</label>
+                                        <label for="sph_far_modal" class="form-label">Sph:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_sph_far" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm sph_far counter_sph_far text-center" value ="+0.00" aria-label="Sphere left" name="sph_far">
+                                            <input type="text" class="form-control form-control-sm sph_far counter_sph_far text-center" value ="+0.00" aria-label="Sphere left" name="sph_far" id="sph_far_modal">
                                             <button class="btn btn-outline-secondary counter_up_sph_far" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="cyl_far" class="form-label">Cyl:</label>
+                                        <label for="cyl_far_modal" class="form-label">Cyl:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_cyl_far" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm cyl_far counter_cyl_far text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_far">
+                                            <input type="text" class="form-control form-control-sm cyl_far counter_cyl_far text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_far" id="cyl_far_modal">
                                             <button class="btn btn-outline-secondary counter_up_cyl_far" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="axis_far" class="form-label">Axis:</label>
+                                        <label for="axis_far_modal" class="form-label">Axis:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_axis_far" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm axis_far counter_axis_far text-center" value ="180" aria-label="Axis left" name="axis_far">
+                                            <input type="text" class="form-control form-control-sm axis_far counter_axis_far text-center" value ="180" aria-label="Axis left" name="axis_far" id="axis_far_modal">
                                             <button class="btn btn-outline-secondary counter_up_axis_far" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="va_far" class="form-label">VA:</label>
+                                        <label for="va_far_modal" class="form-label">VA:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_va_far" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm va_far counter_va_far text-center" value ="1.00" aria-label="Visual acuity" name="va_far">
+                                            <input type="text" class="form-control form-control-sm va_far counter_va_far text-center" value ="1.00" aria-label="Visual acuity" name="va_far" id="va_far_modal">
                                             <button class="btn btn-outline-secondary counter_up_va_far" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="opto_far" class="form-label">Opto:</label>
+                                        <label for="opto_far_modal" class="form-label">Opto:</label>
                                         <div class="input-group">
-                                            <select class="form-select form-select-sm" aria-label="Optotype for far" name="opto_far">
+                                            <select class="form-select form-select-sm" aria-label="Optotype for far" name="opto_far" id="opto_far_modal">
                                                 [[ = optoFarOptions]]
                                             </select>
                                         </div>
@@ -900,49 +900,49 @@
                                 </div>
                                 <div class="row mb-3 rxDiv" id="intModal">
                                     <div class="col-2">
-                                        <label for="add_int" class="form-label">Add for int:</label>
+                                        <label for="add_int_modal" class="form-label">Add for int:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_add_int" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm add_int counter_add_int text-center" value ="+0.00" aria-label="Intermediate addition" name="add_int">
+                                            <input type="text" class="form-control form-control-sm add_int counter_add_int text-center" value ="+0.00" aria-label="Intermediate addition" name="add_int" id="add_int_modal">
                                             <button class="btn btn-outline-secondary counter_up_add_int" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="sph_int" class="form-label">Sph:</label>
+                                        <label for="sph_int_modal" class="form-label">Sph:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_sph_int" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere left" name="sph_int">
+                                            <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere left" name="sph_int" id="sph_int_modal">
                                             <button class="btn btn-outline-secondary counter_up_sph_int" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="cyl_int" class="form-label">Cyl:</label>
+                                        <label for="cyl_int_modal" class="form-label">Cyl:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_cyl_int" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm cyl_int counter_cyl_int text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_int">
+                                            <input type="text" class="form-control form-control-sm cyl_int counter_cyl_int text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_int" id="cyl_int_modal">
                                             <button class="btn btn-outline-secondary counter_up_cyl_int" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="axis_int" class="form-label">Axis:</label>
+                                        <label for="axis_int_modal" class="form-label">Axis:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_axis_int" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="180" aria-label="Axis left" name="axis_int">
+                                            <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="180" aria-label="Axis left" name="axis_int" id="axis_int_modal">
                                             <button class="btn btn-outline-secondary counter_up_axis_int" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="va_int" class="form-label">VA:</label>
+                                        <label for="va_int_modal" class="form-label">VA:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_va_int" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm va_int counter_va_int text-center" value ="1.00" aria-label="Visual acuity" name="va_int">
+                                            <input type="text" class="form-control form-control-sm va_int counter_va_int text-center" value ="1.00" aria-label="Visual acuity" name="va_int" id="va_int_modal">
                                             <button class="btn btn-outline-secondary counter_up_va_int" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="opto_int" class="form-label">Opto:</label>
+                                        <label for="opto_int_modal" class="form-label">Opto:</label>
                                         <div class="input-group">
-                                            <select class="form-select form-select-sm" aria-label="Optotype used for intermediate distance" name="opto_int">
+                                            <select class="form-select form-select-sm" aria-label="Optotype used for intermediate distance" name="opto_int" id="opto_int_modal">
                                                 [[ = optoFarOptions]]
                                             </select>
                                         </div>
@@ -950,49 +950,49 @@
                                 </div>
                                 <div class="row mb-3 rxDiv" id="closeModal">
                                     <div class="col-2">
-                                        <label for="add_close" class="form-label">Add for close:</label>
+                                        <label for="add_close_modal" class="form-label">Add for close:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_add_close" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm add_close counter_add_close text-center" value ="+0.00" aria-label="Close addition" name="add_close">
+                                            <input type="text" class="form-control form-control-sm add_close counter_add_close text-center" value ="+0.00" aria-label="Close addition" name="add_close" id="add_close_modal">
                                             <button class="btn btn-outline-secondary counter_up_add_close" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="sph_close" class="form-label">Sph:</label>
+                                        <label for="sph_close_modal" class="form-label">Sph:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_sph_close" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere left" name="sph_close">
+                                            <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere left" name="sph_close" id="sph_close_modal">
                                             <button class="btn btn-outline-secondary counter_up_sph_close" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="cyl_close" class="form-label">Cyl:</label>
+                                        <label for="cyl_close_modal" class="form-label">Cyl:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_cyl_close" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm cyl_close counter_cyl_close text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_close">
+                                            <input type="text" class="form-control form-control-sm cyl_close counter_cyl_close text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_close" id="cyl_close_modal">
                                             <button class="btn btn-outline-secondary counter_up_cyl_close" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="axis_close" class="form-label">Axis:</label>
+                                        <label for="axis_close_modal" class="form-label">Axis:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_axis_close" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm axis_close counter_axis_close text-center" value ="180" aria-label="Axis left" name="axis_close">
+                                            <input type="text" class="form-control form-control-sm axis_close counter_axis_close text-center" value ="180" aria-label="Axis left" name="axis_close" id="axis_close_modal">
                                             <button class="btn btn-outline-secondary counter_up_axis_close" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="va_close" class="form-label">VA:</label>
+                                        <label for="va_close_modal" class="form-label">VA:</label>
                                         <div class="input-group mb-3">
                                             <button class="btn btn-outline-secondary counter_down_va_close" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm va_close counter_va_close text-center" value ="2" aria-label="Visual acuity" name="va_close">
+                                            <input type="text" class="form-control form-control-sm va_close counter_va_close text-center" value ="2" aria-label="Visual acuity" name="va_close" id="va_close_modal">
                                             <button class="btn btn-outline-secondary counter_up_va_close" type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <label for="opto_close" class="form-label">Opto:</label>
+                                        <label for="opto_close_modal" class="form-label">Opto:</label>
                                         <div class="input-group">
-                                            <select class="form-select form-select-sm" aria-label="Optotype used for close" name="opto_close">
+                                            <select class="form-select form-select-sm" aria-label="Optotype used for close" name="opto_close" id="opto_close_modal">
                                                 [[ = optoCloseOptions]]
                                             </select>
                                         </div>
@@ -1074,7 +1074,7 @@
                                 <div class="container-fluid">
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="klaterality_modal" class="form-label">Side:</label>
+                                            <span class="form-label">Side:</span>
                                             <div class="input-group">
                                                 <div class="btn-group klaterality_modal">
                                                     <input type="radio" id="klaterality_right_modal" name="laterality" class="btn-check" value="right" autocomplete="off">
@@ -1095,13 +1095,13 @@
                                             <label for="k1_modal" class="form-label">K1:</label>
                                             <div class="input-group mb-3">
                                                 <button class="btn btn-outline-secondary counter_down_km1" type="button">-</button>
-                                                <input type="text" class="form-control form-control-sm k1_modal counter_km1 text-center" value ="43.00" aria-label="K1" name="k1">
+                                                <input type="text" class="form-control form-control-sm k1_modal counter_km1 text-center" value ="43.00" aria-label="K1" name="k1" id="k1_modal">
                                                 <button class="btn btn-outline-secondary counter_up_km1" type="button">+</button>
                                             </div>
                                             <label for="a1_modal" class="form-label">Axis 1:</label>
                                             <div class="input-group mb-3">
                                                 <button class="btn btn-outline-secondary counter_down_axis1" type="button">-</button>
-                                                <input type="text" class="form-control form-control-sm a1_modal counter_axis1 text-center" value ="180" aria-label="Axis 1" name="axis1">
+                                                <input type="text" class="form-control form-control-sm a1_modal counter_axis1 text-center" value ="180" aria-label="Axis 1" name="axis1" id="a1_modal">
                                                 <button class="btn btn-outline-secondary counter_up_axis1" type="button">+</button>
                                             </div>
                                         </div>
@@ -1109,13 +1109,13 @@
                                             <label for="k2_modal" class="form-label">K2:</label>
                                             <div class="input-group mb-3">
                                                 <button class="btn btn-outline-secondary counter_down_km2" type="button">-</button>
-                                                <input type="text" class="form-control form-control-sm k2_modal counter_km2 text-center" value ="43.00" aria-label="K2" name="k2">
+                                                <input type="text" class="form-control form-control-sm k2_modal counter_km2 text-center" value ="43.00" aria-label="K2" name="k2" id="k2_modal">
                                                 <button class="btn btn-outline-secondary counter_up_km2" type="button">+</button>
                                             </div>
                                             <label for="a2_modal" class="form-label">Axis 2:</label>
                                             <div class="input-group mb-3">
                                                 <button class="btn btn-outline-secondary counter_down_axis2" type="button">-</button>
-                                                <input type="text" class="form-control form-control-sm a2_modal counter_axis2 text-center" value ="180" aria-label="Axis 2" name="axis2">
+                                                <input type="text" class="form-control form-control-sm a2_modal counter_axis2 text-center" value ="180" aria-label="Axis 2" name="axis2" id="a2_modal">
                                                 <button class="btn btn-outline-secondary counter_up_axis2" type="button">+</button>
                                             </div>
                                         </div>                            
