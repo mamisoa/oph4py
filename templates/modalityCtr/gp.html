@@ -1045,7 +1045,7 @@
                                 <div class="container-fluid">
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="mxdelivery_modal" class="form-label">Side:</label>
+                                            <span class="form-label">Side:</span>
                                             <div class="input-group">
                                                 <div class="btn-group mxdelivery_modal">
                                                     <input type="radio" id="mxdelivery_right_modal" name="delivery" class="btn-check" value="right" autocomplete="off">
@@ -1084,10 +1084,10 @@
                                             <div id="medicModalHelp" class="form-text">Enter medication name</div>
                                         </div>
                                         <div class="col-2">
-                                            <label for="intake_modal" class="form-label">Intake:</label>
+                                            <label for="unit_per_intake" class="form-label">Intake:</label>
                                             <div class="input-group mb-3">
                                                 <button class="btn btn-outline-secondary counter_down_intake" type="button">-</button>
-                                                <input type="text" class="form-control form-control-sm intake_modal counter_intake text-center" value="1.00" aria-label="Intake" name="unit_per_intake">
+                                                <input type="text" class="form-control form-control-sm intake_modal counter_intake text-center" value="1.00" aria-label="Intake" name="unit_per_intake" id="unit_per_intake">
                                                 <button class="btn btn-outline-secondary counter_up_intake" type="button">+</button>
                                             </div>
                                         </div>
@@ -1141,7 +1141,7 @@
                                 <div class="container-fluid">
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="typ_modal" class="form-label">Type:</label>
+                                            <span class="form-label">Type:</span>
                                             <div class="input-group">
                                                 <div class="btn-group typ_modal">
                                                     <input type="radio" id="typ_allergy_modal" name="typ" class="btn-check" value="allergy" autocomplete="off">
@@ -1207,7 +1207,7 @@
                                 <div class="container-fluid">
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <label for="category_modal" class="form-label">Category:</label>
+                                            <span class="form-label">Category:</span>
                                             <div class="input-group">
                                                 <div class="btn-group category_modal">
                                                     <input type="radio" id="mHxcategory_medical_modal" name="category" class="btn-check" value="medical" autocomplete="off">
@@ -1218,7 +1218,7 @@
                                             </div>
                                         </div>
                                         <div class="col">
-                                            <label for="mHxsite_modal" class="form-label">Site:</label>
+                                            <span class="form-label">Site:</span>
                                             <div class="input-group">
                                                 <div class="btn-group site_modal">
                                                     <input type="radio" id="mHxsite_right_modal" name="site" class="btn-check" value="right" autocomplete="off">
@@ -1312,7 +1312,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="mxRxModalPrint" for="btnmxRModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
+                <button type="button" id="mxRxModalPrint" class="btn btn-primary">Print</button>
             </div>
         </div>
     </div>
@@ -1383,7 +1383,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <label for="exit" class="form-label">Exit allowance:</label>
+                                    <span class="form-label">Exit allowance:</span>
                                     <div class="input-group">
                                         <div class="btn-group laterality">                                                
                                             <input type="radio" id="exit_yes" name="exit" class="btn-check" value="yes" autocomplete="off" checked>
