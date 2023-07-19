@@ -1459,7 +1459,7 @@ let modalityController = '[[ = XML(modalityController) ]]';
 const btnArr = ['#btnTaskDone','#btnNewMx', '#btnNewAx','#btnNewmHx', '#btnNewsHx', 'input', 'textarea', '#btnNewCoding','#btnNewMxWl','#btnMxRx','#btnGxRx' ];
 
 </script>
-<link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
+<script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
 <!-- https://bootstrap-autocomplete.readthedocs.io/en/latest/ -->
@@ -1480,6 +1480,8 @@ const btnArr = ['#btnTaskDone','#btnNewMx', '#btnNewAx','#btnNewmHx', '#btnNewsH
 
 // 
 // const API_GP = HOSTURL + "/myapp/api/gp?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+
+var logo64 ='data:image/jpg;base64,'+'[[=XML(logo64)]]';
 
 // todo: to implement
 // add keywd parameter & keyoptions eg 'frequency&keyoptions.contains=...' for autocomplete
