@@ -231,6 +231,8 @@ def gp(wlId):
     mddb=db.md_params
     mdParams= db(mddb.id_auth_user == user['id']).select(mddb.id_auth_user,mddb.inami,mddb.email,mddb.officename,mddb.officeaddress,mddb.officezip,mddb.officetown,mddb.officeurl,mddb.officephone,mddb.companynum,mddb.companyname,mddb.companyiban,mddb.companyaddress).first().as_dict()
     userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
+    logo_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/logo.jpg'
+    logo64 = base64.b64encode(open(logo_img_path, "rb").read())
     return locals()
 
 # helloworld controller
