@@ -4,7 +4,7 @@ from py4web import action, request, abort, redirect, URL, Field, response # add 
 
 from ...common import session, T, cache, auth, logger, authenticated, unauthenticated
 
-from ...settings import MACHINES_FOLDER, EYESUITE_WL_FOLDER, EYESUITE_RESULTS_FOLDER
+from ...settings import MACHINES_FOLDER, EYESUITE_FOLDER, EYESUITE_RESULTS_FOLDER
 
 def createWlFile(device, id='', lastname='', firstname='', dob='', sex=''):
     """
@@ -32,13 +32,21 @@ def createWlFile(device, id='', lastname='', firstname='', dob='', sex=''):
     if not id:
         return { 'result': "id is required." }
     
+    machine =""
+
+    if device == 'PERIMETRY_STATIC':
+        machine = 'octopus/worklist/'
+    
+    if device == 'BIOM_MEASUREMENT':
+        machine = 'lenstar/worklist/'
+    
     dob_parts = dob.split('-')
     year, month, day = dob_parts[0], dob_parts[1], dob_parts[2]
     content = f'id_number={id}\rname={lastname.upper()}\rfirstname={firstname.upper()}\r'
     content += f'birthdate_year={year}\rbirthdate_month={month}\rbirthdate_day={day}\r'
     content += f'gender={sex.upper()}\rdevice={device}\r'
     
-    filename = EYESUITE_WL_FOLDER+'patient.txt'
+    filename = EYESUITE_FOLDER+machine+'patient.txt'
 
     try:
         with open(filename, 'w', encoding='utf-8') as file:
