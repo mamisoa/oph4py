@@ -148,6 +148,18 @@ function getTableInfo(table,id) {
     );
 };
 
+
+/**
+ * Get user information in JSON format in denormalized format
+ * from /api/<tablename/>/<rec_id> endpoint
+ *  
+ * @param {int} id - user id.
+ * @returns {string} JSON string with user informations.
+ *
+ * @example
+ * // Returns xxxx TO FILL xxx
+ * const uniqueId = getUserInfo(1);
+ */
 function getUserInfo(id) {
     let API_URL = HOSTURL + '/myapp/api/auth_user/' + id +'?@lookup=gender!:gender[sex]';
     return Promise.resolve(
@@ -165,7 +177,15 @@ function getUserInfo(id) {
     );
 };
 
-// refreshTables in array
+/**
+ * Refresh bootrap-table table
+ *
+ * @returns {string} JSON string with user informations.
+ *
+ * @example
+ * // Returns xxxx TO FILL xxx
+ * const uniqueId = getUserInfo(1);
+ */
 function refreshTables(tblArr) {
     for (tbl of tablesArr) {
       $(tbl).bootstrapTable('refresh');
@@ -173,13 +193,33 @@ function refreshTables(tblArr) {
 };
 
 // disable buttons in array
+/**
+ * disable buttons in from an array of Document identifiers
+ * @param {array} : array of button id
+ *
+ */
 function disableBtn(buttonsArr) {
     for (btn of buttonsArr) {
         $(btn).attr('disabled', true);    
     }
 };
 
-// crudp(table,id,req): table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
+/**
+ * General promise CRUD function
+ * from /api/<tablename/>/<rec_id> endpoint
+ * 
+ * @param {string} table - table name.
+ * @param {string} id - row id.
+ * @returns {string} JSON string with response status.
+ *
+ * @module displayToast
+ *  to display a toast with the response status
+ * 
+ * @example
+ * // Returns xxxx TO FILL xxx
+ * crudp(table,id,req);
+ * table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
+ */
 const crudp = function(table,id='0',req='POST',data) {
     return new Promise((resolve, reject) => {
         // console.log(data);
