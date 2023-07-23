@@ -14,6 +14,23 @@ policy.set('*','PUT', authorize=True)
 policy.set('*','DELETE', authorize=True)
 
 def rows2json (tablename,rows):
+    """
+    Converts a list of rows from a table into a JSON string.
+    
+    This function converts each row in the input list into a JSON object. If the row contains a datetime or date object,
+    it is converted into a string format using strftime. The format for datetime is '%Y-%m-%d %T' and for date, it is '%Y-%m-%d'.
+    The resulting JSON objects are concatenated into a single JSON array, which is then wrapped into a JSON object with the table name as the key.
+
+    Parameters:
+    tablename (str): The name of the table which the rows belong to. This is used as the key in the resulting JSON object.
+    rows (pandas.DataFrame or similar): A list-like object of rows to be converted into a JSON string. Each row should be a dictionary-like object where the keys correspond to the column names and the values correspond to the data in each cell.
+
+    Returns:
+    str: A string representation of the JSON object that contains the table data.
+
+    Raises:
+    TypeError: If any of the values in the rows are neither serializable as JSON nor instances of datetime.datetime or datetime.date.
+    """
     import datetime
     import json
     def date_handler(obj):
@@ -32,6 +49,21 @@ def rows2json (tablename,rows):
     return concat
 
 def valid_date(datestring):
+    """
+    Check if a given date string is a valid date in the format 'YYYY-MM-DD'.
+
+    Parameters:
+        datestring (str): A string representing a date in the format 'YYYY-MM-DD'.
+
+    Returns:
+        bool: True if the datestring is a valid date, False otherwise.
+
+    Example:
+        >>> valid_date('2023-07-23')
+        True
+        >>> valid_date('2023-13-40')
+        False
+    """
     import datetime
     try:
         datetime.datetime.strptime(datestring, '%Y-%m-%d')
@@ -41,6 +73,26 @@ def valid_date(datestring):
 
 @action('api/uuid', method=['GET'])
 def generate_unique_id():
+    """
+    Generate a unique ID (Universally Unique Identifier - UUID) and return it as a JSON response.
+
+    This function is a route handler used in the py4web framework to handle HTTP GET requests
+    targeting the 'api/uuid' endpoint.
+    
+    Dependencies:
+        - uuid: The uuid module is used to generate the unique identifier.
+        - json: The json module is used to convert the response data to a JSON string.
+
+    Returns:
+        str: A JSON string representing the response containing the generated unique ID.
+
+    Example:
+        HTTP GET Request: /api/uuid
+        Response:
+        {
+            "unique_id": "d81d4fae-7d58-4d9f-97d4-9ba66a3e77ad"
+        }
+    """
     import uuid, json
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     unique_id = str(uuid.uuid4().hex)
@@ -49,6 +101,19 @@ def generate_unique_id():
 # TODO: add header to allow CORS on distant card reader
 @action('api/beid', method=['GET'])
 def beid():
+    """
+    Get informations contained in the Belgium EID card and return them as a JSON response
+
+    This function is a route handler used in the py4web framework to handle HTTP GET requests
+    targeting the 'api/beid' endpoint.
+    Dependencies:
+        - uuid: The uuid module is used to generate the unique identifier.
+        - json: The json module is used to convert the response data to a JSON string.
+
+    Returns:
+        str: A JSON string representing the response contained in the EID.
+
+    """
     import json
     from base64 import b64encode
     from .beid import scan_readers, read_infos, triggered_decorator
