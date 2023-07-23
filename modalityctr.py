@@ -110,9 +110,18 @@ def autorx(wlId):
 
 def initFields(wlId,table,lat=""):
     """
-    Initialize fields in view
+    Initialize fields in view and get values or return empty string "" if None
     filter laterality if necessary
     return a dictionary used in array for view
+    Args:
+        wlId (str): The ID of the worklist from which to retrieve information.
+        table(str): table containing fields content
+        lat(str): laterality if applicable, "" if not
+
+    Returns:
+        items(dict)
+            dictionary containing ffield content relative to laterality if applicable
+            exported with [[ = XML(field['description']) ]] in view
     """
     fieldsArr= db[table].fields
     if lat == "":
