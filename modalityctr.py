@@ -40,6 +40,26 @@ else:
 @action('modalityCtr/tono/<wlId>')
 @action.uses(session, auth, db,'modalityCtr/tono.html')
 def tono(wlId):
+    """
+    The 'tono' function is used to retrieve necessary information for encoding tonometry.
+    It fetches details on a specific worklist, along with information on the provider and senior associated with that worklist.
+
+    Args:
+        wlId (str): The ID of the worklist from which to retrieve information.
+
+    Returns:
+        dict: A dictionary containing local information including:
+              - Information on the specific worklist
+              - Information on the provider and senior linked to the worklist
+              - Information about the authenticated user
+              - Environment constants like 'env_status', 'timeOffset', and 'hosturl'
+              
+    Note:
+        Decorators
+            'tono': 
+            'modalityCtr/tono/<wlId>': endpoint
+            'uses' decorators from py4web to specify its behavior and dependencies.
+    """
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     hosturl = LOCAL_URL
