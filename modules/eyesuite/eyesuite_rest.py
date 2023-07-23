@@ -15,7 +15,7 @@ def createWlFile(device, id='', lastname='', firstname='', dob='', sex=''):
         id (str): The ID number.
         lastname (str, optional): The last name. Defaults to an empty string.
         firstname (str, optional): The first name. Defaults to an empty string.
-        dob (str, optional): The date of birth (format: "dd/mm/yyyy"). Defaults to an empty string.
+        dob (str, optional): The date of birth (format: "yyyy-mm-dd"). Defaults to an empty string.
         sex (str, optional): The gender. Defaults to an empty string.
     
     Returns:
@@ -32,16 +32,12 @@ def createWlFile(device, id='', lastname='', firstname='', dob='', sex=''):
     if not id:
         return { 'result': "id is required." }
     
-    content = f'''
-        id_number={id}\r
-        name={lastname.upper()}\r
-        firstname={firstname.upper()}\r
-        birthdate_year={dob[-4:]}\r
-        birthdate_month={dob[3:5]}\r
-        birthdate_day={dob[:2]}\r
-        gender={sex}\r
-        device={device}\r
-        '''
+    dob_parts = dob.split('-')
+    year, month, day = dob_parts[0], dob_parts[1], dob_parts[2]
+    content = f'id_number={id}\rname={lastname.upper()}\rfirstname={firstname.upper()}\r'
+    content += f'birthdate_year={year}\rbirthdate_month={month}\rbirthdate_day={day}\r'
+    content += f'gender={sex.upper()}\rdevice={device}\r'
+    
     filename = EYESUITE_WL_FOLDER+'patient.txt'
 
     try:
@@ -53,7 +49,7 @@ def createWlFile(device, id='', lastname='', firstname='', dob='', sex=''):
     return { 'result': 'success'}
 
 @action('rest/create_eyesuite_wl/<machine>/', method=['POST']) 
-def createWlItem(machine,id,lastname='_',firstname='_',dob='', sex=''):
+def createWlItem(machine,id='1',lastname='_',firstname='_',dob='', sex=''):
     """
     API endpoint '/rest/create_eyesuite_wl/<machine>/'
 

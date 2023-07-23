@@ -72,6 +72,7 @@ var wlItemsJson = [];
 var wlItemsHtml = [];
 var wlItemsCounter = 0;
 var temp;
+
 // add new item in worklist format
 // TODO: remove status_flag -> only needed when modification
 $('#btnWlItemAdd').click(function() {
@@ -284,7 +285,7 @@ $('#newWlItemForm').submit(function(e) {
                         getTableInfo('modality',itemDataObj['modality_dest'])
                             .then(function(modality){
                                 if (modality['items'][0]['modality_name'].toLowerCase() == 'l80') {
-                                    console.log('L80 detected');
+                                    // console.log('L80 detected');
                                     getUserInfo(itemDataObj['id_auth_user'])
                                         .then(function(user){
                                             let firstname = removeAccent(user['items'][0]['first_name']);
@@ -301,6 +302,24 @@ $('#newWlItemForm').submit(function(e) {
                                         });
                                 } else {
                                     // console.log('not L80');
+                                };
+                                if (modality['items'][0]['modality_name'].toLowerCase() == 'octopus 900') {
+                                    console.log('Octopus 900 detected');
+                                    getUserInfo(itemDataObj['id_auth_user'])
+                                        .then(function(user){
+                                            let firstname = removeAccent(user['items'][0]['first_name']);
+                                            let lastname = removeAccent(user['items'][0]['last_name']);
+                                            let dob = user['items'][0]['dob'];
+                                            let id = user['items'][0]['id'];
+                                            let sex = user['items'][0]['gender.sex'];
+                                            console.log('useritem: ', user['items'][0]);
+                                            addPatientEyesuite('PERIMETRY_STATIC',id,lastname, firstname,dob,sex)
+                                        })
+                                        .then(function () {
+                                            $table_wl.bootstrapTable('refresh');
+                                        });
+                                } else {
+                                    console.log('not octopus 900');
                                 };
                             })
                     })
