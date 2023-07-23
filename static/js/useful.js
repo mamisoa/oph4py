@@ -259,3 +259,23 @@ function addPatientVisionix(machine,id='',lastname='', firstname='',dob='',sex='
         }
     });
 };
+
+// use to add item to Eyesuite machines
+function addPatientEyesuite(machine,id='',lastname='', firstname='',dob='',sex='') {
+    sex == 'Female'? sex = 'FEMALE': (sex == 'Male'? sex = 'MALE': sex ='');
+    let API_URL = HOSTURL + '/myapp/rest/create_eyesuite_wl/' + machine +'?id=' + id + '?lastname=' + lastname + '&firstname=' + firstname
+        + '&sex=' + sex + '&dob=' + dob;
+    $.ajax({
+        url: API_URL,
+        contentType: 'application/json',
+        dataType: 'json',
+        method: 'GET',
+        success: function (data) {
+            if (data.result == 'success') {
+                displayToast('success', 'add wl to Eyesuite', data.result, '6000');
+            } else {
+                displayToast('error', 'add wl to Eyesuite', data.result, '6000');
+            }
+        }
+    });
+};
