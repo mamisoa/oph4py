@@ -192,7 +192,6 @@ function refreshTables(tblArr) {
     }
 };
 
-// disable buttons in array
 /**
  * disable buttons in from an array of Document identifiers
  * @param {array} : array of button id
@@ -257,9 +256,11 @@ const crudp = function(table,id='0',req='POST',data) {
 };
 
 
-
-// set wlItem status: done processing and counter adjustment
-// id is in the dataStr
+/**
+ * used to set a task in worklist to DONE and counter tasks to 0
+ * @param {string} : dataStr - contains all the data including id
+ * @module crudp
+ */
 function setWlItemStatus (dataStr) {
     return crudp('worklist','0','PUT', dataStr);
 };
