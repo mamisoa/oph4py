@@ -99,6 +99,8 @@ def generate_unique_id():
     return json.dumps({"unique_id": unique_id})
 
 # TODO: add header to allow CORS on distant card reader
+# TODO: check if triggered_decorator is necessary
+# TODO: check if sleep is necesary for allowing time to read card, or use async ?
 @action('api/beid', method=['GET'])
 def beid():
     """
@@ -107,8 +109,8 @@ def beid():
     This function is a route handler used in the py4web framework to handle HTTP GET requests
     targeting the 'api/beid' endpoint.
     Dependencies:
-        - uuid: The uuid module is used to generate the unique identifier.
-        - json: The json module is used to convert the response data to a JSON string.
+        - beid: module to read eid.
+        - base64: The base64 module is used to convert the image ID in base64 for export to view
 
     Returns:
         str: A JSON string representing the response contained in the EID.
@@ -135,12 +137,25 @@ def beid():
 
 
 # TODO: authentification
-#  http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=phone:id_auth_user -> get phone from auth_user_id
-# http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=identity!:id_auth_user[first_name,last_name] -> denormalised (flat)
+# TODO: correct password PUT -> does not work
 @action('api/<tablename>/', method=['GET','POST','PUT']) # PUT ok
 @action('api/<tablename>/<rec_id>', method=['GET','PUT','DELETE']) # delete OK get OK post OK
 @action.uses(db,session)
 def api(tablename, rec_id=None):
+    """
+    API endpoint for GET, POST, PUT, DELETE a row in a table
+
+    Args:
+        tablename (str): name of the table
+        rec_id (int): id of the row for PUT or DELETE
+    Returns:
+        str: a JSON response from py4web
+    Raises:
+        ValueError: 400 values are not valid
+    Exemples:
+        http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=phone:id_auth_user -> get phone from auth_user_id
+        http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=identity!:id_auth_user[first_name,last_name] -> denormalised (flat)
+    """
     db.phone.id_auth_user.writable= db.address.id_auth_user.writable = True
     db.phone.id_auth_user.readable = db.address.id_auth_user.readable = True
     db.auth_user.password.readable = True
