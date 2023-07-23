@@ -22,7 +22,10 @@ def createWlFile(device, id='', lastname='', firstname='', dob='', sex=''):
         str: The filename of the created text file.
     
     Raises:
-        ValueError: If the device value is invalid or if the ID number is missing.
+        ValueError:
+            device value is invalid
+            the ID number is missing
+        IOError
     """
     if device not in ('PERIMETRY_STATIC', 'BIOM_MEASUREMENT'):
         return { 'result': "Invalid device value. Must be either 'PERIMETRY_STATIC' or 'BIOM_MEASUREMENT'."}
@@ -49,10 +52,22 @@ def createWlFile(device, id='', lastname='', firstname='', dob='', sex=''):
     
     return { 'result': 'success'}
 
-@action('rest/create_eyesuite_wl/<machine>/', method=['GET']) 
+@action('rest/create_eyesuite_wl/<machine>/', method=['POST']) 
 def createWlItem(machine,id,lastname='_',firstname='_',dob='', sex=''):
     """
-    API endpoint for creating patient.txt file
+    API endpoint '/rest/create_eyesuite_wl/<machine>/'
+
+    Check if patient exists in Visionix machines, if so send JSON response with corresponding file and path
+    Args:
+        machine (str): machine 'PERIMETRY_STATIC' or 'BIOM_MEASUREMENT'
+
+    Returns:
+        str: JSON response with a list of patient folders corresponding to first name and last name
+    Raises:
+        from modules
+    Modules:
+        createWLFile: create patient.txt file to eyesuite EMR directory
+    
     """
     import os,json
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'

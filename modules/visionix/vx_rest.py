@@ -7,6 +7,18 @@ from ...common import session, T, cache, auth, logger, authenticated, unauthenti
 from ...settings import MACHINES_FOLDER, L80_FOLDER, VX100_FOLDER, VX100_XML_FOLDER
 
 def getWF(machine,path,filename,side,patient):
+    """
+    Read file in Microsoft Windows ini format to extract refraction from L80 and VX100 machines
+    Args:
+        machine (str): machine 'l80' or 'vx100'
+        path (str): path to directory containing data files
+        side (str): eye side
+        patient (str): patient full name
+    Returns:
+        str: dictionary with refraction related to side
+    Raises:
+        Exception: any error -> set the status to 'error'
+    """
     from math import pi
     import configparser
     config = configparser.ConfigParser()
@@ -33,6 +45,20 @@ def getWF(machine,path,filename,side,patient):
     return rx
 
 def getTopo(machine,path,filename,side,patient):
+    # TODO: get topo parameters and image
+    # TODO: export kpi to view
+    """
+    Read file in Microsoft Windows ini format to extract keratometry from L80 and VX100 machines
+    Args:
+        machine (str): machine 'l80' or 'vx100'
+        path (str): path to directory containing data files
+        side (str): eye side
+        patient (str): patient full name
+    Returns:
+        str: dictionary with keratometry related to side
+    Raises:
+        Exception: any error -> set the status to 'error'
+    """
     import configparser
     config = configparser.ConfigParser(allow_no_value=True)
     if machine == 'vx100':
@@ -63,6 +89,18 @@ def getTopo(machine,path,filename,side,patient):
     return topo
 
 def getARK(machine,path,filename,side,patient):
+    """
+    Read file in Microsoft Windows ini format to extract ARK from L80 and VX100 machines
+    Args:
+        machine (str): machine 'l80' or 'vx100'
+        path (str): path to directory containing data files
+        side (str): eye side
+        patient (str): patient full name
+    Returns:
+        str: dictionary with ARK related to side
+    Raises:
+        Exception: any error -> set the status to 'error'
+    """
     from math import pi
     import configparser
     config = configparser.ConfigParser()
@@ -90,9 +128,21 @@ def getARK(machine,path,filename,side,patient):
         rx['status'] = 'error'
     return rx
 
-# check if patient exists in Visionix machines, if so send Json output with corresponding file and path
 @action('rest/scan_visionix/<machine>/', method=['GET']) 
 def scan_visionix(machine,lastname='',firstname=''):
+    """
+    API endpoint /rest/scan_visionix/<machine>/
+
+    Check if patient exists in Visionix machines, if so send JSON response with corresponding file and path
+    Args:
+        machine (str): machine 'l80' or 'vx100'
+        lastname (str): patient last name
+        firstname (str): patient first name
+    Returns:
+        str: JSON response with a list of patient folders corresponding to first name and last name
+    Raises:
+        #TODO: no error test
+    """
     import os,json,re
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     if 'lastname' in request.query:
@@ -120,8 +170,21 @@ def scan_visionix(machine,lastname='',firstname=''):
     infos_json = json.dumps(list)
     return infos_json
 
-# create XML file for VX100 in waiting list (specific shared directory)
 def createxml_vx100(id='',lastname='',firstname='',dob='',sex=''):
+    """
+    create XML file for VX100 in waiting list (specific shared directory)
+    
+    Args:
+        id (str): patient id
+        lastname (str): patient last name
+        firstname (str): patient first name
+        dob (str): dob (format ?)
+        sex (str): gender (format ?)
+    Returns:
+        str: JSON response status report
+    Raises:
+        exception: any exception returns an 'error' status report
+    """
     from xml.dom import minidom
     xmlfolder = VX100_XML_FOLDER
     # set XML file
@@ -182,8 +245,18 @@ def createxml_vx100(id='',lastname='',firstname='',dob='',sex=''):
     except:
         return { 'result': 'cannot create patient'}
 
-# check if patient exists in folder, if not create folder and update Index.txt
 def addpatient_l80(firstname,lastname):
+    """
+    check if patient exists in folder, if not create folder and update Index.txt
+    # TODO: add id, dob
+    Args:
+        lastname (str): patient last name
+        firstname (str): patient first name
+    Returns:
+        str: JSON response status report
+    Raises:
+        exception: any exception returns an 'error' status report
+    """
     import os
     folder = L80_FOLDER
     coding= 'latin-1'
@@ -220,6 +293,25 @@ def addpatient_l80(firstname,lastname):
 # create a patient folder in visionix L80 or VX100
 @action('rest/create_visionix/<machine>/', method=['GET']) 
 def create_visionix(machine,lastname='_',firstname='_',dob='', id='', sex=''):
+    """
+    API endpoint /rest/create_visionix/<machine>
+
+    Check if patient exists in Visionix machines, if so send JSON response with corresponding file and path
+    Args:
+        machine (str): machine 'l80' or 'vx100'
+        lastname (str): patient last name
+        firstname (str): patient first name
+        dob (str): dob (format ?)
+        id (str): patient id
+        sex (str): gender (format ?)
+    Returns:
+        str: JSON response with a list of patient folders corresponding to first name and last name
+    Raises:
+        errors are reported from modules
+    Modules:
+        addpatient_l80: add patient to l80 folder
+        createpatient_vx100: add patient to vx100 waiting list
+    """
     import os,json
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     res = { 'result': 'error'}
@@ -243,9 +335,23 @@ def create_visionix(machine,lastname='_',firstname='_',dob='', id='', sex=''):
     # default res = error
     return json.dumps(res)
 
-# bootstrap-table optimized JSON output from Visionix machines L80/VX100
 @action('rest/machines/<machine>/', method=['GET']) 
 def get_visionix_mes(machine=L80_FOLDER):
+    """
+    API endpoint rest/machines/<machine>
+
+    Bootstrap-table optimized JSON output from Visionix machines L80/VX100
+    Args:
+        machine (str): machine folder path, by default L80 folder
+    Returns:
+        str: JSON response with corresponding measurements
+    Raises:
+        errors are reported from modules
+    Modules:
+        getWF: get WF measurements
+        getTopo:get keratometry measurements
+        getARK: get ARK measurements
+    """
     import os, json, re
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     if 'lastname' in request.query:
