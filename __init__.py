@@ -18,7 +18,7 @@ from .modules.topcon import cv5000_rest, cv5000xml
 from .modules.eyesuite import eyesuite_rest
 
 # optional parameters
-__version__ = "0.0.0"
-__author__ = "you <you@example.com>"
-__license__ = "anything you want"
+__version__ = "0.0.9"
+__author__ = "Mamisoa Andriantafika <m.andriantafika@ophtalmologiste.be>"
+__license__ = "GPLv3"
 
