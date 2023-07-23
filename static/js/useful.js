@@ -316,7 +316,8 @@ function addPatientEyesuite(machine,id='',lastname='', firstname='',dob='',sex='
                 displayToast('success', 'add wl to Eyesuite', data.result, '6000');
             } else {
                 displayToast('error', 'add wl to Eyesuite', data.result, '6000');
-            }
+            };
+            console.log(data.result);
         }
     });
 };

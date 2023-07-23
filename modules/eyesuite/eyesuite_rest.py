@@ -43,8 +43,11 @@ def createWlFile(device, id='', lastname='', firstname='', dob='', sex=''):
     try:
         with open(filename, 'w', encoding='utf-8') as file:
             file.write(content)
-    except IOError:
-        return { 'result': "Error writing to file: {filename}" }
+    except IOError as e:
+        error_type = type(e).__name__
+        error_description = e.strerror
+        print()
+        return { 'result': f"An {error_type} occurred: {error_description}" }
     
     return { 'result': 'success'}
 
