@@ -5,8 +5,8 @@ $('input[name=id_worklist]').val(wlObj['worklist']['id']); // set patient id in 
 $('#wlItemDetails .patientName').html(patientObj['first_name']+' '+patientObj['last_name'].toUpperCase());
 patientObj['dob'] != null ? $('#wlItemDetails .patientDob').html(patientObj['dob'].split('-').reverse().join('/')+' ('+getAge(patientObj['dob'])+'yo)') : $('#wlItemDetails .patientDob').html('DOB: n/a');
 $('#wlItemDetails .patientGender').html('Gender: '+ genderIdObj[patientObj['gender']]);
-$('#wlItemDetails .patientSsn').html('NISS: '+checkIfDataIsNull(patientObj['ssn']));
-$('#wlItemDetails .patientCard').html('Card #: '+checkIfDataIsNull(patientObj['idc_num']));
+$('#wlItemDetails .patientSsn').html('NISS # '+checkIfDataIsNull(patientObj['ssn']));
+$('#wlItemDetails .patientCard').html('Card # '+checkIfDataIsNull(patientObj['idc_num']));
 $('#wlItemDetails .patientId').html('#'+patientObj['id']);
 $('#wlItemDetails .timeslot').html(datetime2eu(wlObj['worklist']['requested_time']));
 patientObj['user_notes'] != null? $('#wlItemDetails .user_notes').html(patientObj['user_notes']) : $('#wlItemDetails .user_notes').removeClass('whitebg');
