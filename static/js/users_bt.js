@@ -50,7 +50,7 @@ function queryParams(params) {
 function operateFormatter(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="edit" href="javascript:void(0)" title="Edit user"><i class="fas fa-edit"></i></a>');
-    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Remove"><i class="fas fa-trash-alt"></i></a>');
+    // html.push('<a class="remove ms-1" href="javascript:void(0)" title="Remove"><i class="fas fa-trash-alt"></i></a>');
     html.push('<a class="summary ms-1" href="javascript:void(0)" title="Read summary"><i class="fas fa-th-list"></i></a>');
     html.push('<a class="worklist ms-2" href="javascript:void(0)" title="Worklist"><i class="fas fa-list"></i></a>');
     html.push('</div>');
@@ -63,9 +63,9 @@ window.operateEvents = {
       window.location.href = HOSTURL+"/myapp/user/"+row.id;
 
     },
-    'click .remove': function (e, value, row, index) {
-        delUser(row.id);
-    },
+    // 'click .remove': function (e, value, row, index) {
+    //     delUser(row.id);
+    // },
     'click .worklist': function (e, value, row, index) {
         addToWorklist(row.id);
     },
