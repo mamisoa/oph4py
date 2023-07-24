@@ -1,5 +1,8 @@
 // useful functions 
 
+// sleep function
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 // get age
 function getAge(dateString) {
     if (isNaN(Date.parse(dateString))) {
@@ -302,7 +305,7 @@ function addPatientVisionix(machine,id='',lastname='', firstname='',dob='',sex='
 };
 
 // use to add item to Eyesuite machines
-function addPatientEyesuite(machine,id='',lastname='', firstname='',dob='',sex='') {
+async function addPatientEyesuite(machine,id='',lastname='', firstname='',dob='',sex='') {
     let API_URL = HOSTURL + '/myapp/rest/create_eyesuite_wl/' + machine +'?id=' + id + '&lastname=' + lastname + '&firstname=' + firstname
         + '&sex=' + sex + '&dob=' + dob;
     console.log(API_URL);
