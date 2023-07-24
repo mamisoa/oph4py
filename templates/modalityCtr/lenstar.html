@@ -1,0 +1,31 @@
+[[extend "baseof.html"]]
+
+[[ block page_head]]
+<link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
+<style>
+    /* overide when topnavbar is not fixed-top */
+    section#main { margin-top: 0px; }
+</style>
+[[ end ]]
+
+[[ block left_nav ]]
+[[ end]]
+
+[[ include 'partials/patient-bar.html' ]]
+
+<div id="wldetails">
+    <p>Worklist id: [[= wlId ]]</p>
+</div>
+
+[[ block js_scripts]]
+<script type="text/javascript">
+// Global variables
+const HOSTURL = "[[ = hosturl ]]";
+
+</script>
+<script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/useful.js"></script>
+<script src="js/patient-bar.js"></script>
+<script src="js/biometry.js"></script>

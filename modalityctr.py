@@ -264,6 +264,31 @@ def gp(wlId):
     logo64 = base64.b64encode(open(logo_img_path, "rb").read())
     return locals()
 
+# biometry controller
+@action('lenstar')
+@action('modalityCtr/lenstar/<wlId>')
+@action.uses(session, auth, db,'modalityCtr/lenstar.html')
+def lenstar(wlId):
+    env_status = ENV_STATUS
+    timeOffset = TIMEOFFSET
+    hosturl = LOCAL_URL
+    user = auth.get_user()
+    genderObj = genderId # used in patient-bar
+    wldb = db.worklist
+    patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
+        join=[
+            db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
+            db.modality.on(db.modality.id == wldb.modality_dest),
+            ]
+        ).as_json()
+    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
+        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
+    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
+        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
+    return locals()
+
+
 # helloworld controller
 @action('hello')
 @action('modalityCtr/hello/<wlId>')
