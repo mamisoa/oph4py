@@ -319,6 +319,7 @@ $('#newWlItemForm').submit(function(e) {
                                                 machineType = 'PERIMETRY_STATIC';
                                             } else if (modalityLowCase === 'lenstar') {
                                                 machineType = 'BIOM_MEASUREMENT';};
+                                            addPatientEyesuite(machineType, id, lastname, firstname, dob, sex);
                                         })
                                         .then(function () {
                                             $table_wl.bootstrapTable('refresh');
