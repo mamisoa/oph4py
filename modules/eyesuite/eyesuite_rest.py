@@ -98,8 +98,38 @@ def createWlItem(machine,id='1',lastname='_',firstname='_',dob='', sex=''):
 
 # biometry
 
+def convert_to_float(data):
+    """
+    Tries to convert a string to a float. If it can't be converted, it returns None.
+    
+    Parameters:
+    data (str): The string to convert to a float.
+
+    Returns:
+    float or None: The converted float or None if the conversion fails.
+    """
+    try:
+        return float(data)
+    except ValueError:
+        return None
+
+def convert_to_int(data):
+    """
+    Tries to convert a string to a int. If it can't be converted, it returns None.
+    
+    Parameters:
+    data (str): The string to convert to a int.
+
+    Returns:
+    float or None: The converted int or None if the conversion fails.
+    """
+    try:
+        return int(data)
+    except ValueError:
+        return None
+
 # find xml file
-def find_matching_xml(date: str, name: str, firstname: str, ID: str, directory: str = '.'):
+def find_matching_xml(date: str, lastname: str, firstname: str, ID: str = '', directory: str = '.'):
     """
     Returns a list of file paths in a given directory that match the specified format.
 
@@ -116,17 +146,22 @@ def find_matching_xml(date: str, name: str, firstname: str, ID: str, directory: 
     import os,re,glob
     # Convert date to required format
     date = date.replace('-', '_')
-    
-    # Create the regular expression
-    pattern = re.compile(rf"{date}_\d{{2}}_\d{{2}}_{name}_{firstname}_{ID}_biometry.xml$")
+    lastname = lastname.replace(' ', '_')
+    firstname = firstname.replace(' ', '_')
+
+    # Create the regular expression 
+    # \d{4}_\d{2}_\d{2}_\d{2}_\d{2}_LEFEVRE_CARLO(_10139)?(_.{6})?_biometry.xml$
+    reg = rf"\d{{4}}_\d{{2}}_\d{{2}}_\d{{2}}_\d{{2}}(_\d{{2}})?_{lastname}_{firstname}(_{ID})?(_.*)?_biometry.xml$"
+    pattern = re.compile(reg)
     
     # Get the list of all xml files in the directory
     all_files = glob.glob(f"{directory}/*.xml")
     
     # Filter the list to include only those that match the regular expression
     matching_files = [file for file in all_files if pattern.match(os.path.basename(file))]
+    # matching_files = [file for file in all_files]
     
-    return matching_files
+    return matching_files,reg
 
 
 def extract_nested_elements(element, path=""):
@@ -176,9 +211,9 @@ def upload_lenstar(id='',lastname='_',firstname='_'):
         firstname = request.query.get('firstname')
     if 'id' in request.query:
         id = request.query.get('id')
-    filenames = find_matching_xml(directory=path, date=now, name=lastname, firstname=firstname, ID=id)
+    filenames, reg = find_matching_xml(directory=path, date=now, lastname=lastname, firstname=firstname, ID=id)
     if len(filenames) == 0:
-        return {'status': 'error', 'message': 'no xml found', 'params': [id,lastname,firstname,path,now], 'filenames': filenames}
+        return {'status': 'error', 'message': 'no xml found', 'params': [id,lastname,firstname,path,now, reg], 'filenames': filenames}
     lenstar_data = {}
 
     for filename in filenames:
@@ -189,38 +224,101 @@ def upload_lenstar(id='',lastname='_',firstname='_'):
         # Extract the data from the XML
         data = extract_nested_elements(root)
 
+        #check keys
+        keys = [
+            "EXAMINATION/DATE",
+            "EXAMINATION/PATIENT/NAME",
+            "EXAMINATION/PATIENT/FIRSTNAME",
+            "EXAMINATION/PATIENT/BIRTHDAY",
+            "EXAMINATION/EYE@side",
+            "EXAMINATION/EYE/A-SCAN/MODE",
+            "EXAMINATION/EYE/A-SCAN/CENTRAL_CORNEA_THICKNESS",
+            "EXAMINATION/EYE/A-SCAN/AQUEOUS_DEPTH",
+            "EXAMINATION/EYE/A-SCAN/LENSE_THICKNESS",
+            "EXAMINATION/EYE/A-SCAN/AXIAL_LENGTH",
+            "EXAMINATION/EYE/KERATOMETRY/FLAT_MERIDIAN",
+            "EXAMINATION/EYE/KERATOMETRY/STEEP_MERIDIAN",
+            "EXAMINATION/EYE/KERATOMETRY/FLAT_MERIDIAN_AXIS",
+            "EXAMINATION/EYE/WHITE-WHITE/DIAMETER",
+            "EXAMINATION/EYE/WHITE-WHITE/BARYCENTER_X",
+            "EXAMINATION/EYE/WHITE-WHITE/BARYCENTER_Y",
+            "EXAMINATION/EYE/PUPILLOMETRY/DIAMETER",
+            "EXAMINATION/EYE/PUPILLOMETRY/BARYCENTER_X",
+            "EXAMINATION/EYE/PUPILLOMETRY/BARYCENTER_Y",
+            "EXAMINATION/EYE/IMAGEAXIS",
+            "EXAMINATION/EYE/CHECK@type",
+            "EXAMINATION/EYE/CHECK@version",
+            "EXAMINATION/EYE/CHECK/QUALITY",
+            "EXAMINATION/EYE/CHECK/ERROR",
+            "EXAMINATION/EYE/CHECK/ACTIVATION",
+            "COMMENT",
+        ]
+
+        default_value = ''
+
         # Convert the data to the format expected by the database
         lenstar_data[filename] = {
-            "date": data["EXAMINATION/DATE"],
-            "patient_name": data["EXAMINATION/PATIENT/NAME"],
-            "patient_firstname": data["EXAMINATION/PATIENT/FIRSTNAME"],
-            "patient_birthday": data["EXAMINATION/PATIENT/BIRTHDAY"],
-            "eye_side": data["EXAMINATION/EYE@side"],
-            "ascan_mode": data["EXAMINATION/EYE/A-SCAN/MODE"],
-            "central_cornea_thickness": int(data["EXAMINATION/EYE/A-SCAN/CENTRAL_CORNEA_THICKNESS"]),
-            "aqueous_depth": float(data["EXAMINATION/EYE/A-SCAN/AQUEOUS_DEPTH"].replace(',', '.')),
-            "lense_thickness": float(data["EXAMINATION/EYE/A-SCAN/LENSE_THICKNESS"].replace(',', '.')),
-            "axial_length": float(data["EXAMINATION/EYE/A-SCAN/AXIAL_LENGTH"].replace(',', '.')),
-            "flat_meridian": float(data["EXAMINATION/EYE/KERATOMETRY/FLAT_MERIDIAN"].replace(',', '.')),
-            "steep_meridian": float(data["EXAMINATION/EYE/KERATOMETRY/STEEP_MERIDIAN"].replace(',', '.')),
-            "flat_meridian_axis": int(data["EXAMINATION/EYE/KERATOMETRY/FLAT_MERIDIAN_AXIS"]),
-            "white_white_diameter": float(data["EXAMINATION/EYE/WHITE-WHITE/DIAMETER"].replace(',', '.')),
-            "white_white_barycenter_x": float(data["EXAMINATION/EYE/WHITE-WHITE/BARYCENTER_X"].replace(',', '.')),
-            "white_white_barycenter_y": float(data["EXAMINATION/EYE/WHITE-WHITE/BARYCENTER_Y"].replace(',', '.')),
-            "pupillometry_diameter": float(data["EXAMINATION/EYE/PUPILLOMETRY/DIAMETER"].replace(',', '.')),
-            "pupillometry_barycenter_x": float(data["EXAMINATION/EYE/PUPILLOMETRY/BARYCENTER_X"].replace(',', '.')),
-            "pupillometry_barycenter_y": float(data["EXAMINATION/EYE/PUPILLOMETRY/BARYCENTER_Y"].replace(',', '.')),
-            "imageaxis": float(data["EXAMINATION/EYE/IMAGEAXIS"].replace(',', '.')),
-            "check_type": data["EXAMINATION/EYE/CHECK@type"],
-            "check_version": data["EXAMINATION/EYE/CHECK@version"],
-            "quality": int(data["EXAMINATION/EYE/CHECK/QUALITY"]),
-            "error": int(data["EXAMINATION/EYE/CHECK/ERROR"]),
-            "activation": int(data["EXAMINATION/EYE/CHECK/ACTIVATION"]),
-            "comment": data["COMMENT"],
+            "date": data.get(keys[0], default_value),
+            "patient_name": data.get(keys[1], default_value),
+            "patient_firstname": data.get(keys[2], default_value),
+            "patient_birthday": data.get(keys[3], default_value),
+            "eye_side": data.get(keys[4], default_value),
+            "ascan_mode": data.get(keys[5], default_value),
+            "central_cornea_thickness": convert_to_int(data.get(keys[6], default_value)),
+            "aqueous_depth": convert_to_float(data.get(keys[7], default_value).replace(',', '.')),
+            "lense_thickness": convert_to_float(data.get(keys[8], default_value).replace(',', '.')),
+            "axial_length": convert_to_float(data.get(keys[9], default_value).replace(',', '.')),
+            "flat_meridian": convert_to_float(data.get(keys[10], default_value).replace(',', '.')),
+            "steep_meridian": convert_to_float(data.get(keys[11], default_value).replace(',', '.')),
+            "flat_meridian_axis": convert_to_int(data.get(keys[12], default_value)),
+            "white_white_diameter": convert_to_float(data.get(keys[13], default_value).replace(',', '.')),
+            "white_white_barycenter_x": convert_to_float(data.get(keys[14], default_value).replace(',', '.')),
+            "white_white_barycenter_y": convert_to_float(data.get(keys[15], default_value).replace(',', '.')),
+            "pupillometry_diameter": convert_to_float(data.get(keys[16], default_value).replace(',', '.')),
+            "pupillometry_barycenter_x": convert_to_float(data.get(keys[17], default_value).replace(',', '.')),
+            "pupillometry_barycenter_y": convert_to_float(data.get(keys[18], default_value).replace(',', '.')),
+            "imageaxis": convert_to_float(data.get(keys[19], default_value).replace(',', '.')),
+            "check_type": data.get(keys[20], default_value),
+            "check_version": data.get(keys[21], default_value),
+            "quality": convert_to_int(data.get(keys[22], default_value)),
+            "error": convert_to_int(data.get(keys[23], default_value)),
+            "activation": convert_to_int(data.get(keys[24], default_value)),
+            "comment": data.get(keys[25], default_value),
         }
+
+
+        # Convert the data to the format expected by the database
+        # lenstar_data[filename] = {
+        #     "date": data["EXAMINATION/DATE"],
+        #     "patient_name": data["EXAMINATION/PATIENT/NAME"],
+        #     "patient_firstname": data["EXAMINATION/PATIENT/FIRSTNAME"],
+        #     "patient_birthday": data["EXAMINATION/PATIENT/BIRTHDAY"],
+        #     "eye_side": data["EXAMINATION/EYE@side"],
+        #     "ascan_mode": data["EXAMINATION/EYE/A-SCAN/MODE"],
+        #     "central_cornea_thickness": convert_to_int(data["EXAMINATION/EYE/A-SCAN/CENTRAL_CORNEA_THICKNESS"]),
+        #     "aqueous_depth": convert_to_float(data["EXAMINATION/EYE/A-SCAN/AQUEOUS_DEPTH"].replace(',', '.')),
+        #     "lense_thickness": convert_to_float(data["EXAMINATION/EYE/A-SCAN/LENSE_THICKNESS"].replace(',', '.')),
+        #     "axial_length": convert_to_float(data["EXAMINATION/EYE/A-SCAN/AXIAL_LENGTH"].replace(',', '.')),
+        #     "flat_meridian": convert_to_float(data["EXAMINATION/EYE/KERATOMETRY/FLAT_MERIDIAN"].replace(',', '.')),
+        #     "steep_meridian": convert_to_float(data["EXAMINATION/EYE/KERATOMETRY/STEEP_MERIDIAN"].replace(',', '.')),
+        #     "flat_meridian_axis": convert_to_int(data["EXAMINATION/EYE/KERATOMETRY/FLAT_MERIDIAN_AXIS"]),
+        #     "white_white_diameter": convert_to_float(data["EXAMINATION/EYE/WHITE-WHITE/DIAMETER"].replace(',', '.')),
+        #     "white_white_barycenter_x": convert_to_float(data["EXAMINATION/EYE/WHITE-WHITE/BARYCENTER_X"].replace(',', '.')),
+        #     "white_white_barycenter_y": convert_to_float(data["EXAMINATION/EYE/WHITE-WHITE/BARYCENTER_Y"].replace(',', '.')),
+        #     "pupillometry_diameter": convert_to_float(data["EXAMINATION/EYE/PUPILLOMETRY/DIAMETER"].replace(',', '.')),
+        #     "pupillometry_barycenter_x": convert_to_float(data["EXAMINATION/EYE/PUPILLOMETRY/BARYCENTER_X"].replace(',', '.')),
+        #     "pupillometry_barycenter_y": convert_to_float(data["EXAMINATION/EYE/PUPILLOMETRY/BARYCENTER_Y"].replace(',', '.')),
+        #     "imageaxis": convert_to_float(data["EXAMINATION/EYE/IMAGEAXIS"].replace(',', '.')),
+        #     "check_type": data["EXAMINATION/EYE/CHECK@type"],
+        #     "check_version": data["EXAMINATION/EYE/CHECK@version"],
+        #     "quality": convert_to_int(data["EXAMINATION/EYE/CHECK/QUALITY"]),
+        #     "error": convert_to_int(data["EXAMINATION/EYE/CHECK/ERROR"]),
+        #     "activation": convert_to_int(data["EXAMINATION/EYE/CHECK/ACTIVATION"]),
+        #     "comment": data["COMMENT"],
+        # }
 
     # # Insert the data into the database
     # #db.examination.insert(**db_data)
     # # Commit the transaction
     # # db.commit()
-    return { 'status': 'success', 'data': json.dumps(lenstar_data) }
+    return { 'status': 'success', 'data': lenstar_data }

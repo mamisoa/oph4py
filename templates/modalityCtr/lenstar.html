@@ -17,15 +17,133 @@
     <p>Worklist id: [[= wlId ]]</p>
 </div>
 
+<div>
+    <canvas id="myChart"></canvas>
+</div>
+
 [[ block js_scripts]]
 <script type="text/javascript">
 // Global variables
 const HOSTURL = "[[ = hosturl ]]";
 
+let url = HOSTURL + "/myapp/rest/lenstar?lastname=MAHO%20TOMALA&firstname=Anaelle";
+
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
 <script src="js/useful.js"></script>
 <script src="js/patient-bar.js"></script>
-<script src="js/biometry.js"></script>
+<script src="js/lenstar.js"></script>
+
+<script type="text/javascript">
+
+const normativeData = [
+    {"Percentile": 2, "Age (years)": 6, "Axial length (mm)": 21.1},
+    {"Percentile": 2, "Age (years)": 9, "Axial length (mm)": 21.6},
+    {"Percentile": 2, "Age (years)": 16, "Axial length (mm)": 21.9},
+    {"Percentile": 2, "Age (years)": 25, "Axial length (mm)": 21.5},
+    {"Percentile": 5, "Age (years)": 6, "Axial length (mm)": 21.4},
+    {"Percentile": 5, "Age (years)": 9, "Axial length (mm)": 22.0},
+    {"Percentile": 5, "Age (years)": 16, "Axial length (mm)": 22.3},
+    {"Percentile": 5, "Age (years)": 25, "Axial length (mm)": 22.25},
+    {"Percentile": 10, "Age (years)": 6, "Axial length (mm)": 21.75},
+    {"Percentile": 10, "Age (years)": 9, "Axial length (mm)": 22.4},
+    {"Percentile": 10, "Age (years)": 16, "Axial length (mm)": 22.7},
+    {"Percentile": 10, "Age (years)": 25, "Axial length (mm)": 22.7},
+    {"Percentile": 25, "Age (years)": 6, "Axial length (mm)": 22.2},
+    {"Percentile": 25, "Age (years)": 9, "Axial length (mm)": 22.8},
+    {"Percentile": 25, "Age (years)": 16, "Axial length (mm)": 23.1},
+    {"Percentile": 25, "Age (years)": 25, "Axial length (mm)": 23.2},
+    {"Percentile": 50, "Age (years)": 6, "Axial length (mm)": 22.6},
+    {"Percentile": 50, "Age (years)": 9, "Axial length (mm)": 23.3},
+    {"Percentile": 50, "Age (years)": 16, "Axial length (mm)": 23.6},
+    {"Percentile": 50, "Age (years)": 25, "Axial length (mm)": 23.9},
+    {"Percentile": 75, "Age (years)": 6, "Axial length (mm)": 23.0},
+    {"Percentile": 75, "Age (years)": 9, "Axial length (mm)": 23.75},
+    {"Percentile": 75, "Age (years)": 16, "Axial length (mm)": 24.2},
+    {"Percentile": 75, "Age (years)": 25, "Axial length (mm)": 24.75},
+    {"Percentile": 90, "Age (years)": 6, "Axial length (mm)": 23.4},
+    {"Percentile": 90, "Age (years)": 9, "Axial length (mm)": 24.25},
+    {"Percentile": 90, "Age (years)": 16, "Axial length (mm)": 24.6},
+    {"Percentile": 90, "Age (years)": 25, "Axial length (mm)": 25.7},
+    {"Percentile": 95, "Age (years)": 6, "Axial length (mm)": 23.7},
+    {"Percentile": 95, "Age (years)": 9, "Axial length (mm)": 24.75},
+    {"Percentile": 95, "Age (years)": 16, "Axial length (mm)": 25.1},
+    {"Percentile": 95, "Age (years)": 25, "Axial length (mm)": 26.2},
+    {"Percentile": 98, "Age (years)": 6, "Axial length (mm)": 24.0},
+    {"Percentile": 98, "Age (years)": 9, "Axial length (mm)": 25.2},
+    {"Percentile": 98, "Age (years)": 16, "Axial length (mm)": 25.75},
+    {"Percentile": 98, "Age (years)": 25, "Axial length (mm)": 26.9}
+];
+
+// Get unique percentiles
+const percentiles = [...new Set(normativeData.map(item => item.Percentile))];
+
+// Create dataset for each percentile
+const datasets = percentiles.map(percentile => {
+    const dataForPercentile = normativeData.filter(item => item.Percentile === percentile);
+    const data = dataForPercentile.map(item => ({x: item['Age (years)'], y: item['Axial length (mm)']}));
+    return {
+        label: `Percentile ${percentile}`,
+        data: data,
+        fill: false,
+        borderColor: '#' + Math.floor(Math.random()*16777215).toString(16),  // Random color
+    };
+});
+
+
+fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        let ages = [];
+        let axial_lengths = [];
+
+        let dob = new Date("2006-06-29");  // Replace with the actual date of birth
+
+        for(let filePath in data.data) {
+            let exam = data.data[filePath];
+            let examDate = new Date(exam.date.replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
+            let ageInMilliseconds = examDate - dob;
+            let ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);  // Convert from milliseconds to years
+            ages.push(ageInYears.toFixed(2));
+            axial_lengths.push(exam.axial_length);
+        }
+
+        datasets.push({
+                    label: 'Axial Length',
+                    data: axial_lengths,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(0,0,0,0)'
+                });
+
+        let ctx = document.getElementById('myChart').getContext('2d');
+        let myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ages,
+                datasets: datasets
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Age (years)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Axial Length (mm)'
+                        }
+                    }
+                }
+            }
+        });
+    })
+    .catch(error => console.error('Error:', error));
+
+</script>
