@@ -42,7 +42,7 @@ def createWlFile(device, id='', lastname='', firstname='', dob='', sex=''):
     
     dob_parts = dob.split('-')
     year, month, day = dob_parts[0], dob_parts[1], dob_parts[2]
-    content = f'id_number={id}\rname={lastname.upper()}\rfirstname={firstname.upper()}\r'
+    content = f'id_number={id}_oph4py\rname={lastname}\rfirstname={firstname}\r'
     content += f'birthdate_year={year}\rbirthdate_month={month}\rbirthdate_day={day}\r'
     content += f'gender={sex.upper()}\rdevice={device}\r'
     
