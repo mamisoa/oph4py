@@ -83,14 +83,21 @@ const normativeData = [
 const percentiles = [...new Set(normativeData.map(item => item.Percentile))];
 
 // Create dataset for each percentile
-const datasets = percentiles.map(percentile => {
+const datasets = percentiles.map((percentile, index) => {
     const dataForPercentile = normativeData.filter(item => item.Percentile === percentile);
     const data = dataForPercentile.map(item => ({x: item['Age (years)'], y: item['Axial length (mm)']}));
+    
+    // Calculate the shade of blue to red
+    const redValue = Math.floor((255 / (percentiles.length - 1)) * index);
+    const blueValue = 255 - redValue;
+    const borderColor = `rgb(${redValue}, 0, ${blueValue})`;
+    
     return {
         label: `Percentile ${percentile}`,
         data: data,
         fill: false,
-        borderColor: '#' + Math.floor(Math.random()*16777215).toString(16),  // Random color
+        borderColor: borderColor,
+        borderDash: [5, 5], // Array with two values, here [5, 5] represents the dash pattern (5 units on, 5 units off)
     };
 });
 
