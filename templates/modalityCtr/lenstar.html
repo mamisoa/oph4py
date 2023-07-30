@@ -41,65 +41,221 @@ let url = HOSTURL + "/myapp/rest/lenstar?lastname=MAHO%20TOMALA&firstname=Anaell
 <script type="text/javascript">
 
 const normativeData = [
-    {"Percentile": 2, "Age (years)": 6, "Axial length (mm)": 21.1},
-    {"Percentile": 2, "Age (years)": 9, "Axial length (mm)": 21.6},
-    {"Percentile": 2, "Age (years)": 16, "Axial length (mm)": 21.9},
-    {"Percentile": 2, "Age (years)": 25, "Axial length (mm)": 21.5},
-    {"Percentile": 5, "Age (years)": 6, "Axial length (mm)": 21.4},
-    {"Percentile": 5, "Age (years)": 9, "Axial length (mm)": 22.0},
-    {"Percentile": 5, "Age (years)": 16, "Axial length (mm)": 22.3},
-    {"Percentile": 5, "Age (years)": 25, "Axial length (mm)": 22.25},
-    {"Percentile": 10, "Age (years)": 6, "Axial length (mm)": 21.75},
-    {"Percentile": 10, "Age (years)": 9, "Axial length (mm)": 22.4},
-    {"Percentile": 10, "Age (years)": 16, "Axial length (mm)": 22.7},
-    {"Percentile": 10, "Age (years)": 25, "Axial length (mm)": 22.7},
-    {"Percentile": 25, "Age (years)": 6, "Axial length (mm)": 22.2},
-    {"Percentile": 25, "Age (years)": 9, "Axial length (mm)": 22.8},
-    {"Percentile": 25, "Age (years)": 16, "Axial length (mm)": 23.1},
-    {"Percentile": 25, "Age (years)": 25, "Axial length (mm)": 23.2},
-    {"Percentile": 50, "Age (years)": 6, "Axial length (mm)": 22.6},
-    {"Percentile": 50, "Age (years)": 9, "Axial length (mm)": 23.3},
-    {"Percentile": 50, "Age (years)": 16, "Axial length (mm)": 23.6},
-    {"Percentile": 50, "Age (years)": 25, "Axial length (mm)": 23.9},
-    {"Percentile": 75, "Age (years)": 6, "Axial length (mm)": 23.0},
-    {"Percentile": 75, "Age (years)": 9, "Axial length (mm)": 23.75},
-    {"Percentile": 75, "Age (years)": 16, "Axial length (mm)": 24.2},
-    {"Percentile": 75, "Age (years)": 25, "Axial length (mm)": 24.75},
-    {"Percentile": 90, "Age (years)": 6, "Axial length (mm)": 23.4},
-    {"Percentile": 90, "Age (years)": 9, "Axial length (mm)": 24.25},
-    {"Percentile": 90, "Age (years)": 16, "Axial length (mm)": 24.6},
-    {"Percentile": 90, "Age (years)": 25, "Axial length (mm)": 25.7},
-    {"Percentile": 95, "Age (years)": 6, "Axial length (mm)": 23.7},
-    {"Percentile": 95, "Age (years)": 9, "Axial length (mm)": 24.75},
-    {"Percentile": 95, "Age (years)": 16, "Axial length (mm)": 25.1},
-    {"Percentile": 95, "Age (years)": 25, "Axial length (mm)": 26.2},
-    {"Percentile": 98, "Age (years)": 6, "Axial length (mm)": 24.0},
-    {"Percentile": 98, "Age (years)": 9, "Axial length (mm)": 25.2},
-    {"Percentile": 98, "Age (years)": 16, "Axial length (mm)": 25.75},
-    {"Percentile": 98, "Age (years)": 25, "Axial length (mm)": 26.9}
+    {
+        "label": "Percentile 3",
+        "data": [
+            {"x": 4, "y": 21.26},
+            {"x": 5, "y": 21.49},
+            {"x": 6, "y": 21.71},
+            {"x": 7, "y": 21.91},
+            {"x": 8, "y": 22.09},
+            {"x": 9, "y": 22.27},
+            {"x": 10, "y": 22.42},
+            {"x": 11, "y": 22.56},
+            {"x": 12, "y": 22.68},
+            {"x": 13, "y": 22.78},
+            {"x": 14, "y": 22.86},
+            {"x": 15, "y": 22.91},
+            {"x": 16, "y": 22.94},
+            {"x": 17, "y": 22.95},
+            {"x": 18, "y": 22.92}
+        ],
+        "fill": false,
+        "borderColor": "rgb(0, 0, 0)",
+        "borderDash": [5, 5]
+    },
+    {
+        "label": "Percentile 5",
+        "data": [
+            {"x": 4, "y": 21.41},
+            {"x": 5, "y": 21.64},
+            {"x": 6, "y": 21.86},
+            {"x": 7, "y": 22.07},
+            {"x": 8, "y": 22.26},
+            {"x": 9, "y": 22.44},
+            {"x": 10, "y": 22.6},
+            {"x": 11, "y": 22.75},
+            {"x": 12, "y": 22.88},
+            {"x": 13, "y": 22.99},
+            {"x": 14, "y": 23.08},
+            {"x": 15, "y": 23.15},
+            {"x": 16, "y": 23.2},
+            {"x": 17, "y": 23.23},
+            {"x": 18, "y": 23.22}
+        ],
+        "fill": false,
+        "borderColor": "rgb(31, 0, 224)",
+        "borderDash": [5, 5]
+    },
+    {
+        "label": "Percentile 10",
+        "data": [
+            {"x": 4, "y": 21.63},
+            {"x": 5, "y": 21.87},
+            {"x": 6, "y": 22.1},
+            {"x": 7, "y": 22.32},
+            {"x": 8, "y": 22.53},
+            {"x": 9, "y": 22.72},
+            {"x": 10, "y": 22.89},
+            {"x": 11, "y": 23.05},
+            {"x": 12, "y": 23.2},
+            {"x": 13, "y": 23.33},
+            {"x": 14, "y": 23.44},
+            {"x": 15, "y": 23.53},
+            {"x": 16, "y": 23.6},
+            {"x": 17, "y": 23.66},
+            {"x": 18, "y": 23.69}
+        ],
+        "fill": false,
+        "borderColor": "rgb(0, 0, 0)",
+        "borderDash": [5, 5]
+    },
+    {
+        "label": "Percentile 25",
+        "data": [
+            {"x": 4, "y": 21.99},
+            {"x": 5, "y": 22.26},
+            {"x": 6, "y": 22.51},
+            {"x": 7, "y": 22.75},
+            {"x": 8, "y": 22.98},
+            {"x": 9, "y": 23.19},
+            {"x": 10, "y": 23.4},
+            {"x": 11, "y": 23.58},
+            {"x": 12, "y": 23.76},
+            {"x": 13, "y": 23.92},
+            {"x": 14, "y": 24.06},
+            {"x": 15, "y": 24.19},
+            {"x": 16, "y": 24.31},
+            {"x": 17, "y": 24.41},
+            {"x": 18, "y": 24.5}
+        ],
+        "fill": false,
+        "borderColor": "rgb(0, 0, 0)",
+        "borderDash": [5, 5]
+    },
+    {
+        "label": "Percentile 50",
+        "data": [
+            {"x": 4, "y": 22.39},
+            {"x": 5, "y": 22.69},
+            {"x": 6, "y": 22.97},
+            {"x": 7, "y": 23.25},
+            {"x": 8, "y": 23.51},
+            {"x": 9, "y": 23.76},
+            {"x": 10, "y": 23.99},
+            {"x": 11, "y": 24.22},
+            {"x": 12, "y": 24.43},
+            {"x": 13, "y": 24.62},
+            {"x": 14, "y": 24.81},
+            {"x": 15, "y": 24.98},
+            {"x": 16, "y": 25.13},
+            {"x": 17, "y": 25.28},
+            {"x": 18, "y": 25.41}
+        ],
+        "fill": false,
+        "borderColor": "rgb(0, 0, 0)",
+        "borderDash": [5, 5]
+    },
+    {
+        "label": "Percentile 75",
+        "data": [
+            {"x": 4, "y": 22.78},
+            {"x": 5, "y": 23.12},
+            {"x": 6, "y": 23.45},
+            {"x": 7, "y": 23.76},
+            {"x": 8, "y": 24.07},
+            {"x": 9, "y": 24.36},
+            {"x": 10, "y": 24.64},
+            {"x": 11, "y": 24.9},
+            {"x": 12, "y": 25.15},
+            {"x": 13, "y": 25.39},
+            {"x": 14, "y": 25.61},
+            {"x": 15, "y": 25.82},
+            {"x": 16, "y": 26.01},
+            {"x": 17, "y": 26.18},
+            {"x": 18, "y": 26.35}
+        ],
+        "fill": false,
+        "borderColor": "rgb(0, 0, 0)",
+        "borderDash": [5, 5]
+    },
+    {
+        "label": "Percentile 90",
+        "data": [
+            {"x": 4, "y": 23.13},
+            {"x": 5, "y": 23.51},
+            {"x": 6, "y": 23.88},
+            {"x": 7, "y": 24.24},
+            {"x": 8, "y": 24.6},
+            {"x": 9, "y": 24.93},
+            {"x": 10, "y": 25.26},
+            {"x": 11, "y": 25.57},
+            {"x": 12, "y": 25.86},
+            {"x": 13, "y": 26.14},
+            {"x": 14, "y": 26.39},
+            {"x": 15, "y": 26.63},
+            {"x": 16, "y": 26.84},
+            {"x": 17, "y": 27.04},
+            {"x": 18, "y": 27.21}
+        ],
+        "fill": false,
+        "borderColor": "rgb(0, 0, 0)",
+        "borderDash": [5, 5]
+    },
+    {
+        "label": "Percentile 95",
+        "data": [
+            {"x": 4, "y": 23.33},
+            {"x": 5, "y": 23.74},
+            {"x": 6, "y": 24.15},
+            {"x": 7, "y": 24.54},
+            {"x": 8, "y": 24.92},
+            {"x": 9, "y": 25.3},
+            {"x": 10, "y": 25.65},
+            {"x": 11, "y": 25.99},
+            {"x": 12, "y": 26.31},
+            {"x": 13, "y": 26.61},
+            {"x": 14, "y": 26.89},
+            {"x": 15, "y": 27.14},
+            {"x": 16, "y": 27.36},
+            {"x": 17, "y": 27.56},
+            {"x": 18, "y": 27.74}
+        ],
+        "fill": false,
+        "borderColor": "rgb(0, 0, 0)",
+        "borderDash": [5, 5]
+    }];
+
+let datasets = normativeData;
+
+console.log("datasets",datasets);
+
+var blueShades = [
+    'rgb(0, 0, 255)', // Strong blue
+    'rgb(70, 130, 180)', // Lighter blue
+    'rgb(135, 206, 235)', // Even lighter blue
+    'rgb(240, 248, 255)', // Lightest blue
 ];
 
-// Get unique percentiles
-const percentiles = [...new Set(normativeData.map(item => item.Percentile))];
+var redShades = [
+    'rgb(255, 99, 71)', // Light red
+    'rgb(255, 0, 0)', // Strong red
+    'rgb(139, 0, 0)', // Even stronger red
+];
 
-// Create dataset for each percentile
-const datasets = percentiles.map((percentile, index) => {
-    const dataForPercentile = normativeData.filter(item => item.Percentile === percentile);
-    const data = dataForPercentile.map(item => ({x: item['Age (years)'], y: item['Axial length (mm)']}));
-    
-    // Calculate the shade of blue to red
-    const redValue = Math.floor((255 / (percentiles.length - 1)) * index);
-    const blueValue = 255 - redValue;
-    const borderColor = `rgb(${redValue}, 0, ${blueValue})`;
-    
-    return {
-        label: `Percentile ${percentile}`,
-        data: data,
-        fill: false,
-        borderColor: borderColor,
-        borderDash: [5, 5], // Array with two values, here [5, 5] represents the dash pattern (5 units on, 5 units off)
-    };
-});
+// Set the colors for percentiles 3 to 25
+for (var i = 0; i < 4; i++) {
+    datasets[i].borderColor = blueShades[i];
+}
+
+// Set the color for percentile 50
+datasets[4].borderColor = 'rgb(0, 0, 0)'; // Black
+datasets[4].borderDash = []; // Solid line
+
+// Set the colors for percentiles 75 to 95
+for (var i = 0; i < 3; i++) {
+    datasets[i + 5].borderColor = redShades[i];
+}
 
 
 fetch(url)
@@ -119,29 +275,36 @@ fetch(url)
             axial_lengths.push(exam.axial_length);
         }
 
+        let combined = ages.map((age, index) => {
+            return { x: parseFloat(age), y: axial_lengths[index] };
+        });
+
         datasets.push({
                     label: 'Axial Length',
-                    data: axial_lengths,
+                    data: combined,
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(0,0,0,0)'
                 });
+
+        console.log("datasets",datasets);
 
         let ctx = document.getElementById('myChart').getContext('2d');
         let myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ages,
                 datasets: datasets
             },
             options: {
                 scales: {
                     x: {
+                        type: 'linear',
                         title: {
                             display: true,
                             text: 'Age (years)'
                         }
                     },
                     y: {
+                        type: 'linear',
                         title: {
                             display: true,
                             text: 'Axial Length (mm)'
