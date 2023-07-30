@@ -4,7 +4,7 @@
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
 <style>
     /* overide when topnavbar is not fixed-top */
-    section#main { margin-top: 0px; }
+    section#main { margin-top: 50px; }
 </style>
 [[ end ]]
 
@@ -13,20 +13,32 @@
 
 [[ include 'partials/patient-bar.html' ]]
 
-<div id="wldetails">
-    <p>Worklist id: [[= wlId ]]</p>
+<div class="container-fluid mb-3"> <!-- controller title-->
+    <div class="row big-title bg-neutral">
+        <div class="col">
+            <h1><a role="button" data-bs-toggle="collapse" href=".md">Medical examination</a></h1>
+        </div>
+    </div>
 </div>
 
-<div>
-    <canvas id="myChart"></canvas>
+<div class="container-fluid mt-2">
+    <div class="row">
+        <div class="col-9">
+            <canvas id="myChart"></canvas>
+        </div>
+        <div class="col-3">
+            <button id="btnGetFromEyesuite" class="btn btn-primary btn-sm" type="button">GET</button>
+        </div>
+    </div>
 </div>
+
 
 [[ block js_scripts]]
 <script type="text/javascript">
 // Global variables
 const HOSTURL = "[[ = hosturl ]]";
 
-let url = HOSTURL + "/myapp/rest/lenstar?lastname=MAHO%20TOMALA&firstname=Anaelle";
+let url = HOSTURL + "/myapp/rest/lenstar?lastname="+patientObj['last_name']+"&firstname="+patientObj['first_name'].replace(' ','_');
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.1/dist/chart.umd.min.js"></script>
@@ -39,6 +51,10 @@ let url = HOSTURL + "/myapp/rest/lenstar?lastname=MAHO%20TOMALA&firstname=Anaell
 <script src="js/lenstar.js"></script>
 
 <script type="text/javascript">
+
+let dob;
+
+patientObj['dob'] != null ? dob = patientObj['dob'] : dob= '';
 
 const normativeData = [
     {
@@ -264,21 +280,22 @@ fetch(url)
         let ages = [];
         let axial_lengths = [];
 
-        let dob = new Date("2006-06-29");  // Replace with the actual date of birth
-
+        dob = new Date(dob);  // Replace with the actual date of birth
         for(let filePath in data.data) {
             let exam = data.data[filePath];
+            console.log(exam);
             let examDate = new Date(exam.date.replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
+            console.log(exam.date.replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
             let ageInMilliseconds = examDate - dob;
             let ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);  // Convert from milliseconds to years
             ages.push(ageInYears.toFixed(2));
             axial_lengths.push(exam.axial_length);
         }
-
+        console.log("ages",ages);
         let combined = ages.map((age, index) => {
             return { x: parseFloat(age), y: axial_lengths[index] };
         });
-
+        console.log("combined",combined);
         datasets.push({
                     label: 'Axial Length',
                     data: combined,
