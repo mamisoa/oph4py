@@ -44,6 +44,7 @@ let url = HOSTURL + "/myapp/rest/lenstar?lastname="+patientObj['last_name']+"&fi
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
@@ -249,16 +250,16 @@ let datasets = normativeData;
 console.log("datasets",datasets);
 
 var blueShades = [
-    'rgb(0, 0, 255)', // Strong blue
-    'rgb(70, 130, 180)', // Lighter blue
-    'rgb(135, 206, 235)', // Even lighter blue
-    'rgb(240, 248, 255)', // Lightest blue
+    'rgb(0, 0, 255,0.5)', // Strong blue
+    'rgb(70, 130, 180,0.5)', // Lighter blue
+    'rgb(135, 206, 235,0.5)', // Even lighter blue
+    'rgb(240, 248, 255,0.5)', // Lightest blue
 ];
 
 var redShades = [
-    'rgb(255, 99, 71)', // Light red
-    'rgb(255, 0, 0)', // Strong red
-    'rgb(139, 0, 0)', // Even stronger red
+    'rgb(255, 99, 71,0.5)', // Light red
+    'rgb(255, 0, 0,0.5)', // Strong red
+    'rgb(139, 0, 0,0.5)', // Even stronger red
 ];
 
 // Set the colors for percentiles 3 to 25
@@ -267,7 +268,7 @@ for (var i = 0; i < 4; i++) {
 }
 
 // Set the color for percentile 50
-datasets[4].borderColor = 'rgb(0, 0, 0)'; // Black
+datasets[4].borderColor = 'rgb(0, 0, 0, 0.5)'; // Black
 datasets[4].borderDash = []; // Solid line
 
 // Set the colors for percentiles 75 to 95
@@ -279,38 +280,74 @@ for (var i = 0; i < 3; i++) {
 fetch(url)
     .then(response => response.json())
     .then(data => {
-        let ages_od = [];
-        let axial_lengths_od = [];
-        console.log("response",data);
+        let ages = { 'od' : [] , 'os' : [] };
+        let axial_lengths = { 'od' : [] , 'os' : [] };
+        // console.log("response",data);
         dob = new Date(dob);
         for(filePath in data.data.exams) {
-            console.log('in filepath',filePath);
             let eyes = data.data['exams'][filePath];
-            console.log('eyes',eyes);
+            // console.log('eyes',eyes);
             for (let eye in eyes) {
-                console.log("eye:",eyes[eye]['EXAMINATION']['DATE']);
-                console.log("date",eyes[eye]);
                 let examDate = new Date(eyes[eye]['EXAMINATION']['DATE'].replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
-                console.log(eyes[eye]['EXAMINATION']['DATE'].replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
                 let ageInMilliseconds = examDate - dob;
                 let ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);  // Convert from milliseconds to years
-                ages.push(ageInYears.toFixed(2));
-                axial_lengths.push(eyes[eye]['A-SCAN']['AXIAL_LENGTH']);
+                ages[eye].push(ageInYears.toFixed(2));
+                axial_lengths[eye].push(eyes[eye]['A-SCAN']['AXIAL_LENGTH']);
             };
         }
         console.log("ages",ages);
-        let combined = ages.map((age, index) => {
-            return { x: parseFloat(age), y: axial_lengths[index] };
-        });
+        console.log("al",axial_lengths);
+
+        const combineDatasets = (ages, axial_lengths) => {
+            const odDS = {
+                label: "od",
+                data: ages.od.map((x, index) => ({ x: parseFloat(x), y: parseFloat(axial_lengths.od[index]) }))
+            };
+
+            const osDS = {
+                label: "os",
+                data: ages.os.map((x, index) => ({ x: parseFloat(x), y: parseFloat(axial_lengths.os[index]) }))
+            };
+
+            return [odDS, osDS];
+        };
+
+        const combined = combineDatasets(ages, axial_lengths);
         console.log("combined",combined);
+
         datasets.push({
-                    label: 'Axial Length',
-                    data: combined,
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    label: 'OD',
+                    data: combined[0].data,
+                    borderColor: 'rgba(0, 204, 255, 0.7)',
+                    backgroundColor: 'rgba(0,0,0,0)'
+                });
+        
+        datasets.push({
+                    label: 'OS',
+                    data: combined[1].data,
+                    borderColor: 'rgba(255, 87, 51, 0.7)',
                     backgroundColor: 'rgba(0,0,0,0)'
                 });
 
         console.log("datasets",datasets);
+        // Trouver les valeurs maximales et minimales pour 'od' et 'os'
+        let xMax = Number.MIN_VALUE;
+        let xMin = Number.MAX_VALUE;
+        let yMax = Number.MIN_VALUE;
+        let yMin = Number.MAX_VALUE;
+
+        datasets.forEach((dataset) => {
+        if (dataset.label === 'OD' || dataset.label === 'OG') {
+                dataset.data.forEach((point) => {
+                xMax = Math.max(xMax, point.x);
+                xMin = Math.min(xMin, point.x);
+                yMax = Math.max(yMax, point.y);
+                yMin = Math.min(yMin, point.y);
+                });
+            }
+        });
+
+        console.log('xMin:', xMin, 'yMin:', yMin, 'xMax:', xMax, 'yMax:', yMax);
 
         let ctx = document.getElementById('myChart').getContext('2d');
         let myChart = new Chart(ctx, {
@@ -325,17 +362,33 @@ fetch(url)
                         title: {
                             display: true,
                             text: 'Age (years)'
-                        }
+                        },
+                        suggestedMin: xMin,
+                        suggestedMax: xMax,
                     },
                     y: {
                         type: 'linear',
                         title: {
                             display: true,
                             text: 'Axial Length (mm)'
-                        }
+                        },
+                        suggestedMin: yMin,
+                        suggestedMax: yMax,
                     }
                 }
-            }
+            },
+            plugins: {
+            zoom: {
+                pan: {
+                enabled: true,
+                mode: 'xy', // Vous pouvez spécifier 'x', 'y' ou 'xy' pour autoriser le zoom sur les axes x, y ou les deux.
+                },
+                zoom: {
+                enabled: true,
+                mode: 'xy', // Vous pouvez spécifier 'x', 'y' ou 'xy' pour autoriser le zoom sur les axes x, y ou les deux.
+                },
+            },
+            },
         });
     })
     .catch(error => console.error('Error:', error));
