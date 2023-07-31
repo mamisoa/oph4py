@@ -202,7 +202,7 @@ def upload_lenstar(id='',lastname='_',firstname='_'):
     The data is then converted to the format expected by the database and inserted into the 'examination' table.
     """
     import datetime
-    path = EYESUITE_FOLDER + 'lenstar/exports'
+    path = EYESUITE_FOLDER + 'lenstar/export'
     now = datetime.date.today().strftime('%Y-%m-%d')
     import xml.etree.ElementTree as ET, json, datetime
     if 'lastname' in request.query:
