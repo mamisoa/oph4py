@@ -279,19 +279,24 @@ for (var i = 0; i < 3; i++) {
 fetch(url)
     .then(response => response.json())
     .then(data => {
-        let ages = [];
-        let axial_lengths = [];
-        console.log(data);
+        let ages_od = [];
+        let axial_lengths_od = [];
+        console.log("response",data);
         dob = new Date(dob);
-        for(let filePath in data.data) {
-            let exam = data.data[filePath];
-            console.log("exam",exam);
-            let examDate = new Date(exam.date.replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
-            console.log(exam.date.replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
-            let ageInMilliseconds = examDate - dob;
-            let ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);  // Convert from milliseconds to years
-            ages.push(ageInYears.toFixed(2));
-            axial_lengths.push(exam.axial_length);
+        for(filePath in data.data.exams) {
+            console.log('in filepath',filePath);
+            let eyes = data.data['exams'][filePath];
+            console.log('eyes',eyes);
+            for (let eye in eyes) {
+                console.log("eye:",eyes[eye]['EXAMINATION']['DATE']);
+                console.log("date",eyes[eye]);
+                let examDate = new Date(eyes[eye]['EXAMINATION']['DATE'].replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
+                console.log(eyes[eye]['EXAMINATION']['DATE'].replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
+                let ageInMilliseconds = examDate - dob;
+                let ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);  // Convert from milliseconds to years
+                ages.push(ageInYears.toFixed(2));
+                axial_lengths.push(eyes[eye]['A-SCAN']['AXIAL_LENGTH']);
+            };
         }
         console.log("ages",ages);
         let combined = ages.map((age, index) => {
