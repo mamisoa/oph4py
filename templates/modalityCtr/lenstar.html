@@ -281,11 +281,11 @@ fetch(url)
     .then(data => {
         let ages = [];
         let axial_lengths = [];
-
-        dob = new Date(dob);  // Replace with the actual date of birth
+        console.log(data);
+        dob = new Date(dob);
         for(let filePath in data.data) {
             let exam = data.data[filePath];
-            console.log(exam);
+            console.log("exam",exam);
             let examDate = new Date(exam.date.replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
             console.log(exam.date.replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
             let ageInMilliseconds = examDate - dob;

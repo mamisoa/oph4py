@@ -182,13 +182,13 @@ def normalize_data(data):
         date_obj = datetime.strptime(date_str, '%Y-%m-%d')
     data['EXAMINATION']['DATE'] = date_obj.strftime('%Y-%m-%d')
     
-    # Normalize birthday
-    birthday_str = data['PATIENT']['BIRTHDAY']
-    try:
-        birthday_obj = datetime.strptime(birthday_str, '%d/%m/%Y')
-    except ValueError:
-        birthday_obj = datetime.strptime(birthday_str, '%Y-%m-%d')
-    data['PATIENT']['BIRTHDAY'] = birthday_obj.strftime('%Y-%m-%d')
+    # # Normalize birthday
+    # birthday_str = data['PATIENT']['BIRTHDAY']
+    # try:
+    #     birthday_obj = datetime.strptime(birthday_str, '%d/%m/%Y')
+    # except ValueError:
+    #     birthday_obj = datetime.strptime(birthday_str, '%Y-%m-%d')
+    # data['PATIENT']['BIRTHDAY'] = birthday_obj.strftime('%Y-%m-%d')
     
     # Normalize floats
     for measurement_type in ['A-SCAN', 'KERATOMETRY', 'WHITE-WHITE', 'PUPILLOMETRY']:
@@ -204,12 +204,12 @@ def normalize_data(data):
             data['A-SCAN']['CENTRAL_CORNEA_THICKNESS'] = int(float(value))
 
 
-def extract_eye_data(eye_node, patient_info, examination_info):
+def extract_eye_data(eye_node, examination_info):
     """
     Extracts data from an EYE node and includes patient and examination information.
     Returns a dictionary where keys are measurement types and values are dictionaries of measurements and their values.
     """
-    data = {"PATIENT": patient_info, "EXAMINATION": examination_info}
+    data = {"EXAMINATION": examination_info}
     
     # Loop through the measurement nodes (e.g., A-SCAN, KERATOMETRY, etc.)
     for measurement_node in eye_node:
@@ -235,8 +235,9 @@ def upload_lenstar(id='',lastname='_',firstname='_'):
     The XML file is parsed, and the data is extracted using the `extract_nested_elements` function.
     The data is then converted to the format expected by the database and inserted into the 'examination' table.
     """
+    from datetime import datetime as dt
     import datetime
-    import xml.etree.ElementTree as ET, datetime
+    import xml.etree.ElementTree as ET
 
     path = EYESUITE_FOLDER + 'lenstar/export'
     now = datetime.date.today().strftime('%Y-%m-%d')
@@ -251,27 +252,34 @@ def upload_lenstar(id='',lastname='_',firstname='_'):
     if len(filenames) == 0:
         return {'status': 'error', 'message': 'no xml found', 'params': [id,lastname,firstname,path,now, reg], 'filenames': filenames}
     
-    lenstar_data = {}
+    lenstar_data = {    "exams" : {},
+                    }    
 
     for filename in filenames:
         # Parse the XML file
         tree = ET.parse(filename)
         root = tree.getroot()
-        try:
-            patient_node = root.find('EXAMINATION/PATIENT')
-            patient_info = {child.tag: child.text for child in patient_node}
-        except:
-            return { 'status': 'error', 'data': filename }
+        patient_node = root.find('EXAMINATION/PATIENT')
+        patient_info = {child.tag: child.text for child in patient_node}
+        if 'patient' not in lenstar_data:
+            lenstar_data['patient'] = patient_info
+            # Normalize birthday
+            birthday_str = patient_info['BIRTHDAY']
+            try:
+                birthday_obj = dt.strptime(birthday_str, '%d/%m/%Y')
+            except ValueError:
+                birthday_obj = dt.strptime(birthday_str, '%Y-%m-%d')
+            patient_info['BIRTHDAY'] = birthday_obj.strftime('%Y-%m-%d')
 
         examination_node = root.find('EXAMINATION')
         examination_info = {child.tag: child.text for child in examination_node if child.tag == 'DATE'}
 
         od_node = root.find("EXAMINATION/EYE[@side='OD']")
-        od_data = extract_eye_data(od_node, patient_info, examination_info)
+        od_data = extract_eye_data(od_node, examination_info)
 
         os_node = root.find("EXAMINATION/EYE[@side='OS']")
-        os_data = extract_eye_data(os_node, patient_info, examination_info)
-        
-        lenstar_data[filename]=[{'od' : od_data },{'os' : os_data }]
+        os_data = extract_eye_data(os_node, examination_info)
+
+        lenstar_data['exams'][filename] = {'od': od_data , 'os': os_data }
 
     return { 'status': 'success', 'data': lenstar_data }
