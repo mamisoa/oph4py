@@ -276,7 +276,7 @@ def add_biometry_to_db(patientId,wlId,data):
             # Loop over each eye ('od' and 'os')
             for laterality, measures in exams.items():
                 examList.append({'exam date': exam_date, "filename" : filename , "laterality": laterality})
-                # Check if an exam with the same date and patient_id already exists
+                # Check if an exam with the same date and patient_id and laterality already exists
                 existing_exam = db((db.biometry.exam_date == exam_date) & (db.biometry.id_auth_user == patient_id) & (db.biometry.laterality == laterality)).select().first()
                 if existing_exam is not None:
                     continue  # Skip this exam
