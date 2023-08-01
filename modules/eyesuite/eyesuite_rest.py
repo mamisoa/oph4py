@@ -232,7 +232,7 @@ def extract_eye_data(eye_node, examination_info):
     normalize_data(data)
     return data
 
-def add_biometry_to_db(wlId,data):
+def add_biometry_to_db(patientId,wlId,data):
     """
     Controller action to add eye exam data to the 'biometry' table.
 
@@ -250,6 +250,8 @@ def add_biometry_to_db(wlId,data):
         }
     }
     Parameters:
+        patientId: integer, patient unique id
+        wlId: integer, worklist unique id
         data : JSON dictionary containing biometry data from one or many xml files
     Returns:
         A dictionary with key "result" and value "success" if the data was added successfully.
@@ -259,24 +261,29 @@ def add_biometry_to_db(wlId,data):
     try:
         
         # Get the patient id
-        patient_id = data['patient']['id']  # adjust as needed
+        patient_id = patientId  # adjust as needed
         
+        # commit list
+        commitList = []
+        examList = []
+
         # Loop over each exam
         for filename, exams in data['exams'].items():
             # Extract the exam date from the filename
             date_str = filename.split('/')[-1].split('_')[0:6]
             exam_date = datetime.strptime('_'.join(date_str), '%Y_%m_%d_%H_%M_%S')
             
-            # Check if an exam with the same date and patient_id already exists
-            existing_exam = db(db.biometry.exam_date == exam_date, db.biometry.patient_id == patient_id).select().first()
-            if existing_exam is not None:
-                continue  # Skip this exam
-            
             # Loop over each eye ('od' and 'os')
             for laterality, measures in exams.items():
+                examList.append({'exam date': exam_date, "filename" : filename , "laterality": laterality})
+                # Check if an exam with the same date and patient_id already exists
+                existing_exam = db((db.biometry.exam_date == exam_date) & (db.biometry.id_auth_user == patient_id) & (db.biometry.laterality == laterality)).select().first()
+                if existing_exam is not None:
+                    continue  # Skip this exam
+
                 # Add a new record to the 'biometry' table
                 db.biometry.insert(
-                    patient_id=patient_id,
+                    id_auth_user=patient_id,
                     id_worklist=wlId,
                     exam_date=exam_date,
                     laterality=laterality,
@@ -299,11 +306,12 @@ def add_biometry_to_db(wlId,data):
                     white_white_barycenter_y=measures['WHITE-WHITE']['BARYCENTER_Y'],
                     white_white_diameter=measures['WHITE-WHITE']['DIAMETER'],
                 )
+                commitList.append({'exam date': exam_date, "filename" : filename, "laterality" : laterality })
         
         # Commit the changes
         db.commit()
 
-        return {"result": "success"}
+        return {"result": "success", "exams" : examList ,"commit" : commitList}
     except Exception as e:
         return {"result": "failure", "error": str(e)}
 
@@ -329,7 +337,9 @@ def upload_lenstar(wlId=None, id='',lastname='_',firstname='_'):
         firstname = request.query.get('firstname').encode('latin-1').decode('utf-8')
     if 'id' in request.query:
         id = request.query.get('id')
-    filenames, params = find_matching_xml(directory=path, date=now, lastname=lastname, firstname=firstname, ID=id)
+    if 'wlId' in request.query:
+        wlId = request.query.get('wlId')
+    filenames, params = find_matching_xml(directory=path, date=now, lastname=remove_accents(lastname), firstname=remove_accents(firstname), ID=id)
     if len(filenames) == 0:
         return {'status': 'error', 'message': 'no xml found', 'params': params , 'filenames': filenames, 'firstname': firstname, 'lastname': lastname} 
     
@@ -363,7 +373,7 @@ def upload_lenstar(wlId=None, id='',lastname='_',firstname='_'):
 
         lenstar_data['exams'][filename] = {'od': od_data , 'os': os_data }
 
-    # database_commit = add_biometry_to_db(wlId, lenstar_data)
+    database_commit = add_biometry_to_db(patientId = id, wlId = wlId, data= lenstar_data)
     # TODO: delete files already in database
 
     return { 'status': 'success', 'data': lenstar_data, 'database' :  database_commit }

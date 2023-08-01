@@ -708,6 +708,7 @@ db.define_table(
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist'),
     Field("laterality", "string"),
+    Field("exam_date", "datetime"),
     # A-SCAN measures
     Field("a_scan_aqueous_depth", "double"),
     Field("a_scan_axial_length", "double"),
