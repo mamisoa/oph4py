@@ -41,6 +41,7 @@ const btnArr = [];
 
 
 let url = HOSTURL + "/myapp/rest/lenstar?lastname="+patientObj['last_name']+"&firstname="+patientObj['first_name'].replace(' ','_')+"&wlId="+wlObj['worklist']['id']+"&id="+patientObj['id'];
+let biometryUrl = HOSTURL + "/myapp/rest/biometry/"+patientObj['id'];
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.1/dist/chart.umd.min.js"></script>
@@ -280,9 +281,18 @@ for (var i = 0; i < 3; i++) {
 fetch(url)
     .then(response => response.json())
     .then(data => {
+        console.log(data);
+    })
+    .catch(error => console.error('Error:', error));
+
+
+fetch(biometryUrl)
+    .then(response => response.json())
+    .then(data => {
         let ages = { 'od' : [] , 'os' : [] };
         let axial_lengths = { 'od' : [] , 'os' : [] };
-        console.log("database", data.database);
+        console.log(data);
+        // console.log("database", data.database);
         dob = new Date(dob);
         for(filePath in data.data.exams) {
             let eyes = data.data['exams'][filePath];
@@ -392,5 +402,7 @@ fetch(url)
         });
     })
     .catch(error => console.error('Error:', error));
+
+
 
 </script>

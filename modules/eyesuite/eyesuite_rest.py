@@ -2,7 +2,7 @@
 
 from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
 
-from ...common import db, session, T, cache, auth, logger, authenticated, unauthenticated
+from ...common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
 from ...settings import MACHINES_FOLDER, EYESUITE_FOLDER, EYESUITE_RESULTS_FOLDER
 
@@ -400,7 +400,6 @@ def biometry(id_auth_user):
     """
     # Get all biometry data for the user
     from datetime import datetime
-    import json
     biometry_data = db(db.biometry.id_auth_user == id_auth_user).select().as_list()
 
     # Prepare exams data
