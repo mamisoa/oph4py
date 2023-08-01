@@ -16,20 +16,23 @@
 <div class="container-fluid mb-3"> <!-- controller title-->
     <div class="row big-title bg-neutral">
         <div class="col">
-            <h1><a role="button" data-bs-toggle="collapse" href=".md">Medical examination</a></h1>
+            <h1><a role="button" data-bs-toggle="collapse" href=".md">Biometry</a></h1>
+        </div>
+        <div class="row">
+            <div class="col">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col" id="rawBiometry">
+                
+            </div>
         </div>
     </div>
 </div>
 
 <div class="container-fluid mt-2">
-    <div class="row">
-        <div class="col-9">
-            <canvas id="myChart"></canvas>
-        </div>
-        <div class="col-3">
-            <button id="btnGetFromEyesuite" class="btn btn-primary btn-sm" type="button">GET</button>
-        </div>
-    </div>
+    <
 </div>
 
 
@@ -42,6 +45,7 @@ const btnArr = [];
 
 let url = HOSTURL + "/myapp/rest/lenstar?lastname="+patientObj['last_name']+"&firstname="+patientObj['first_name'].replace(' ','_')+"&wlId="+wlObj['worklist']['id']+"&id="+patientObj['id'];
 let biometryUrl = HOSTURL + "/myapp/rest/biometry/"+patientObj['id'];
+let rawBiometryUrl = HOSTURL + "/myapp/rest/biometry/raw/"+patientObj['id'];
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.1/dist/chart.umd.min.js"></script>
@@ -400,6 +404,129 @@ fetch(url)
                 .catch(error => console.error('Error:', error));
             })
     .catch(error => console.error('Error:', error))
+
+fetch(rawBiometryUrl)
+    .then(response => response.json())
+    .then(data => {
+        // Create a row for the columns
+        const row = document.createElement('div');
+        row.className = 'row';
+
+        // We will create two columns, one for 'od' and one for 'os'
+        ['od', 'os'].forEach((side, index) => {
+            const column = document.createElement('div');
+            column.className = 'col';
+
+            // Create a header for the column
+            const columnHeader = document.createElement('h1');
+            columnHeader.innerText = side.toUpperCase();  // 'od' becomes 'OD', 'os' becomes 'OS'
+            column.appendChild(columnHeader);
+
+            // Create an accordion
+            const accordion = document.createElement('div');
+            accordion.className = 'accordion';
+            accordion.id = `${side}-accordion`;
+
+            // Sort the dates in descending order
+            const sortedDates = Object.keys(data[side]).sort((a, b) => new Date(b) - new Date(a));
+
+            // For each date under each side
+            sortedDates.forEach((date, dateIndex) => {
+                // Create an accordion item
+                const item = document.createElement('div');
+                item.className = 'accordion-item';
+
+                // Create a header for the accordion item
+                const header = document.createElement('h2');
+                header.className = 'accordion-header';
+                header.id = `${side}-heading-${dateIndex}`;
+
+                const button = document.createElement('button');
+                button.className = 'accordion-button';
+                button.type = 'button';
+                button.dataset.bsToggle = 'collapse';
+                button.dataset.bsTarget = `#${side}-collapse-${dateIndex}`;
+                button.setAttribute('aria-expanded', 'false');
+                button.setAttribute('aria-controls', `${side}-collapse-${dateIndex}`);
+                button.innerText = date;
+
+                // Open the first panel by default
+                if (dateIndex === 0) {
+                    button.classList.remove('collapsed');
+                    button.setAttribute('aria-expanded', 'true');
+                }
+
+                header.appendChild(button);
+
+                // Create a collapse for the accordion item
+                const collapse = document.createElement('div');
+                collapse.className = 'accordion-collapse collapse';
+                collapse.id = `${side}-collapse-${dateIndex}`;
+                collapse.setAttribute('aria-labelledby', `${side}-heading-${dateIndex}`);
+                collapse.dataset.bsParent = `#${side}-accordion`;
+
+                // Open the first panel by default
+                if (dateIndex === 0) {
+                    collapse.classList.add('show');
+                }
+
+                const body = document.createElement('div');
+                body.className = 'accordion-body';
+
+                // Create a table for the measurements
+                const table = document.createElement('table');
+                table.className = 'table';
+
+                const thead = document.createElement('thead');
+                const trHead = document.createElement('tr');
+                const thMeasurement = document.createElement('th');
+                thMeasurement.innerText = 'Measurement';
+                const thValue = document.createElement('th');
+                thValue.innerText = 'Value';
+                trHead.appendChild(thMeasurement);
+                trHead.appendChild(thValue);
+                thead.appendChild(trHead);
+                table.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+
+                // For each exam under this date
+                data[side][date].forEach(exam => {
+                    // Create a row for each measure
+                    Object.keys(exam).forEach(key => {
+                        // We will ignore these specific keys and 'laterality'
+                        if (['created_by', 'created_on', 'exam_date', 'id', 'id_auth_user', 'id_modality', 'id_worklist', 'is_active', 'modified_by', 'modified_on', 'laterality'].includes(key)) {
+                            return;
+                        }
+
+                        const trBody = document.createElement('tr');
+                        const tdMeasurement = document.createElement('td');
+                        tdMeasurement.innerText = key;
+                        const tdValue = document.createElement('td');
+                        tdValue.innerText = exam[key];
+                        trBody.appendChild(tdMeasurement);
+                        trBody.appendChild(tdValue);
+                        tbody.appendChild(trBody);
+                    });
+                });
+
+                table.appendChild(tbody);
+                body.appendChild(table);
+
+                collapse.appendChild(body);
+                item.appendChild(header);
+                item.appendChild(collapse);
+                accordion.appendChild(item);
+            });
+
+            column.appendChild(accordion);
+            row.appendChild(column);
+        });
+
+        // Add the row to your document
+        // Assume you have an element with the ID 'rawBiometry' in your HTML
+        document.getElementById('rawBiometry').appendChild(row);
+    });
 
 
 
