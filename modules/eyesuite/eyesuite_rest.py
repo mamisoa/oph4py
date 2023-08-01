@@ -2,7 +2,7 @@
 
 from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
 
-from ...common import session, T, cache, auth, logger, authenticated, unauthenticated
+from ...common import db, session, T, cache, auth, logger, authenticated, unauthenticated
 
 from ...settings import MACHINES_FOLDER, EYESUITE_FOLDER, EYESUITE_RESULTS_FOLDER
 
@@ -129,6 +129,11 @@ def convert_to_int(data):
     except ValueError:
         return None
 
+
+def remove_accents(input_string):
+    from unidecode import unidecode
+    return unidecode(input_string)
+
 # find xml file
 def find_matching_xml(date: str, lastname: str, firstname: str, ID: str = '', directory: str = '.'):
     """
@@ -152,6 +157,7 @@ def find_matching_xml(date: str, lastname: str, firstname: str, ID: str = '', di
 
     # Create the regular expression 
     # \d{4}_\d{2}_\d{2}_\d{2}_\d{2}_LEFEVRE_CARLO(_10139)?(_.{6})?_biometry.xml$
+    # \\d{4}_\\d{2}_\\d{2}_\\d{2}_\\d{2}(_\\d{2})?_Magnin_Camille_SolA\"ne(_)?(_.*)?_biometry.xml$"
     reg = rf"\d{{4}}_\d{{2}}_\d{{2}}_\d{{2}}_\d{{2}}(_\d{{2}})?_{lastname}_{firstname}(_{ID})?(_.*)?_biometry.xml$"
     pattern = re.compile(reg)
     
@@ -162,7 +168,7 @@ def find_matching_xml(date: str, lastname: str, firstname: str, ID: str = '', di
     matching_files = [file for file in all_files if pattern.match(os.path.basename(file))]
     # matching_files = [file for file in all_files]
     
-    return matching_files,reg
+    return matching_files,{ 'regex': reg, 'lastname': lastname, 'firstname' : firstname, 'date': date}
 
 def normalize_data(data):
     """
@@ -226,8 +232,83 @@ def extract_eye_data(eye_node, examination_info):
     normalize_data(data)
     return data
 
+def add_biometry_to_db(wlId,data):
+    """
+    Controller action to add eye exam data to the 'biometry' table.
+
+    Loads data from a JSON file, extracts the eye exam data and adds it to the 'biometry' table in the database.
+
+    The JSON file should have the following structure:
+    {
+        "patient": { ... },
+        "exams": {
+            "filename": {
+                "od": { ... },
+                "os": { ... }
+            },
+            ...
+        }
+    }
+    Parameters:
+        data : JSON dictionary containing biometry data from one or many xml files
+    Returns:
+        A dictionary with key "result" and value "success" if the data was added successfully.
+        A dictionary with keys "result" and "error" if there was an error.
+    """
+    from datetime import datetime
+    try:
+        
+        # Get the patient id
+        patient_id = data['patient']['id']  # adjust as needed
+        
+        # Loop over each exam
+        for filename, exams in data['exams'].items():
+            # Extract the exam date from the filename
+            date_str = filename.split('/')[-1].split('_')[0:6]
+            exam_date = datetime.strptime('_'.join(date_str), '%Y_%m_%d_%H_%M_%S')
+            
+            # Check if an exam with the same date and patient_id already exists
+            existing_exam = db(db.biometry.exam_date == exam_date, db.biometry.patient_id == patient_id).select().first()
+            if existing_exam is not None:
+                continue  # Skip this exam
+            
+            # Loop over each eye ('od' and 'os')
+            for laterality, measures in exams.items():
+                # Add a new record to the 'biometry' table
+                db.biometry.insert(
+                    patient_id=patient_id,
+                    id_worklist=wlId,
+                    exam_date=exam_date,
+                    laterality=laterality,
+                    # A-SCAN measures
+                    a_scan_aqueous_depth=measures['A-SCAN']['AQUEOUS_DEPTH'],
+                    a_scan_axial_length=measures['A-SCAN']['AXIAL_LENGTH'],
+                    a_scan_central_cornea_thickness=measures['A-SCAN']['CENTRAL_CORNEA_THICKNESS'],
+                    a_scan_lense_thickness=measures['A-SCAN']['LENSE_THICKNESS'],
+                    a_scan_mode=measures['A-SCAN']['MODE'],
+                    # KERATOMETRY measures
+                    keratometry_flat_meridian=measures['KERATOMETRY']['FLAT_MERIDIAN'],
+                    keratometry_flat_meridian_axis=measures['KERATOMETRY']['FLAT_MERIDIAN_AXIS'],
+                    keratometry_steep_meridian=measures['KERATOMETRY']['STEEP_MERIDIAN'],
+                    # PUPILLOMETRY measures
+                    pupillometry_barycenter_x=measures['PUPILLOMETRY']['BARYCENTER_X'],
+                    pupillometry_barycenter_y=measures['PUPILLOMETRY']['BARYCENTER_Y'],
+                    pupillometry_diameter=measures['PUPILLOMETRY']['DIAMETER'],
+                    # WHITE-WHITE measures
+                    white_white_barycenter_x=measures['WHITE-WHITE']['BARYCENTER_X'],
+                    white_white_barycenter_y=measures['WHITE-WHITE']['BARYCENTER_Y'],
+                    white_white_diameter=measures['WHITE-WHITE']['DIAMETER'],
+                )
+        
+        # Commit the changes
+        db.commit()
+
+        return {"result": "success"}
+    except Exception as e:
+        return {"result": "failure", "error": str(e)}
+
 @action('rest/lenstar/', method=['GET']) 
-def upload_lenstar(id='',lastname='_',firstname='_'):
+def upload_lenstar(wlId=None, id='',lastname='_',firstname='_'):
     """
     Load data from an XML file and insert it into the database.
     
@@ -238,19 +319,19 @@ def upload_lenstar(id='',lastname='_',firstname='_'):
     from datetime import datetime as dt
     import datetime
     import xml.etree.ElementTree as ET
-
+    database_commit = 'no record added'
     path = EYESUITE_FOLDER + 'lenstar/export'
     now = datetime.date.today().strftime('%Y-%m-%d')
-
+    # force accent decoding
     if 'lastname' in request.query:
-        lastname = request.query.get('lastname')
+        lastname = request.query.get('lastname').encode('latin-1').decode('utf-8')
     if 'firstname' in request.query:
-        firstname = request.query.get('firstname')
+        firstname = request.query.get('firstname').encode('latin-1').decode('utf-8')
     if 'id' in request.query:
         id = request.query.get('id')
-    filenames, reg = find_matching_xml(directory=path, date=now, lastname=lastname, firstname=firstname, ID=id)
+    filenames, params = find_matching_xml(directory=path, date=now, lastname=lastname, firstname=firstname, ID=id)
     if len(filenames) == 0:
-        return {'status': 'error', 'message': 'no xml found', 'params': [id,lastname,firstname,path,now, reg], 'filenames': filenames}
+        return {'status': 'error', 'message': 'no xml found', 'params': params , 'filenames': filenames, 'firstname': firstname, 'lastname': lastname} 
     
     lenstar_data = {    "exams" : {},
                     }    
@@ -282,4 +363,7 @@ def upload_lenstar(id='',lastname='_',firstname='_'):
 
         lenstar_data['exams'][filename] = {'od': od_data , 'os': os_data }
 
-    return { 'status': 'success', 'data': lenstar_data }
+    # database_commit = add_biometry_to_db(wlId, lenstar_data)
+    # TODO: delete files already in database
+
+    return { 'status': 'success', 'data': lenstar_data, 'database' :  database_commit }
