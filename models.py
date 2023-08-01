@@ -727,5 +727,5 @@ db.define_table(
     Field("white_white_barycenter_x", "double"),
     Field("white_white_barycenter_y", "double"),
     Field("white_white_diameter", "double"),
-    # auth.signature
+    auth.signature
 )
