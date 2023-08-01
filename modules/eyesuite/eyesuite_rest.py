@@ -7,6 +7,14 @@ from ...common import db, session, T, cache, auth, logger, authenticated, unauth
 from ...settings import MACHINES_FOLDER, EYESUITE_FOLDER, EYESUITE_RESULTS_FOLDER
 
 
+# get Lenstar modality id
+row = db(db.modality.modality_name == "Lenstar").select(db.modality.id).first()
+if row:
+    id_modality_lenstar = row.id
+else:
+    id_modality_lenstar = None
+
+
 def createWlFile(device, id='', lastname='', firstname='', dob='', sex=''):
     """
     Creates a UTF-8 encoded patient.txt for eyesuite with the provided information 
@@ -285,6 +293,7 @@ def add_biometry_to_db(patientId,wlId,data):
                 db.biometry.insert(
                     id_auth_user=patient_id,
                     id_worklist=wlId,
+                    id_modality = id_modality_lenstar,
                     exam_date=exam_date,
                     laterality=laterality,
                     # A-SCAN measures
@@ -377,3 +386,76 @@ def upload_lenstar(wlId=None, id='',lastname='_',firstname='_'):
     # TODO: delete files already in database
 
     return { 'status': 'success', 'data': lenstar_data, 'database' :  database_commit }
+
+@action('rest/biometry/<id_auth_user>', method=['GET'])
+@action.uses(db, auth.user)
+def biometry(id_auth_user):
+    """
+    This controller retrieves biometry data for a given user identified by id_auth_user.
+    The data is returned in a JSON format that includes measurements for both eyes (od and os),
+    and each measurement includes details for A-SCAN, EXAMINATION, KERATOMETRY, PUPILLOMETRY, and WHITE-WHITE.
+
+    :param id_auth_user: The ID of the user to retrieve biometry data for.
+    :return: A JSON object containing the biometry data for the user.
+    """
+    # Get all biometry data for the user
+    from datetime import datetime
+    import json
+    biometry_data = db(db.biometry.id_auth_user == id_auth_user).select().as_list()
+
+    # Prepare exams data
+    exams_data = {}
+    for record in biometry_data:
+        exam_date = record['exam_date']
+        datetimeKey = exam_date.strftime("%Y%m%d%H%M%S")
+        laterality = record['laterality']
+        
+        # Create the exam entry if not already present
+        if datetimeKey not in exams_data:
+            exams_data[datetimeKey] = {'od': None, 'os': None}
+
+        # Insert the record data into the correct laterality
+        # Check for None values before inserting
+        exams_data[datetimeKey][laterality] = {
+            'A-SCAN': {
+                'AQUEOUS_DEPTH': record['a_scan_aqueous_depth'] if record['a_scan_aqueous_depth'] else "N/A",
+                'AXIAL_LENGTH': record['a_scan_axial_length'] if record['a_scan_axial_length'] else "N/A",
+                'CENTRAL_CORNEA_THICKNESS': record['a_scan_central_cornea_thickness'] if record['a_scan_central_cornea_thickness'] else "N/A",
+                'LENSE_THICKNESS': record['a_scan_lense_thickness'] if record['a_scan_lense_thickness'] else "N/A",
+                'MODE': record['a_scan_mode'] if record['a_scan_mode'] else "N/A",
+            },
+            'EXAMINATION': {
+                'DATE': str(record['exam_date']) if record['exam_date'] else "N/A",
+            },
+            'KERATOMETRY': {
+                'FLAT_MERIDIAN': record['keratometry_flat_meridian'] if record['keratometry_flat_meridian'] else "N/A",
+                'FLAT_MERIDIAN_AXIS': str(record['keratometry_flat_meridian_axis']) if record['keratometry_flat_meridian_axis'] else "N/A",
+                'STEEP_MERIDIAN': record['keratometry_steep_meridian'] if record['keratometry_steep_meridian'] else "N/A",
+            },
+            'PUPILLOMETRY': {
+                'BARYCENTER_X': record['pupillometry_barycenter_x'] if record['pupillometry_barycenter_x'] else "N/A",
+                'BARYCENTER_Y': record['pupillometry_barycenter_y'] if record['pupillometry_barycenter_y'] else "N/A",
+                'DIAMETER': record['pupillometry_diameter'] if record['pupillometry_diameter'] else "N/A",
+            },
+            'WHITE-WHITE': {
+                'BARYCENTER_X': record['white_white_barycenter_x'] if record['white_white_barycenter_x'] else "N/A",
+                'BARYCENTER_Y': record['white_white_barycenter_y'] if record['white_white_barycenter_y'] else "N/A",
+                'DIAMETER': record['white_white_diameter'] if record['white_white_diameter'] else "N/A",
+            }
+        }
+
+    # Prepare patient data
+    patient_data = {
+        'ID': id_auth_user
+    }
+
+    # Prepare final JSON response
+    response_data = {
+        'data': {
+            'exams': exams_data,
+            'patient': patient_data,
+        },
+        'status': 'success'
+    }
+
+    return response_data
