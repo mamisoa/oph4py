@@ -40,7 +40,7 @@ const HOSTURL = "[[ = hosturl ]]";
 const btnArr = [];
 
 
-let url = HOSTURL + "/myapp/rest/lenstar?lastname="+patientObj['last_name']+"&firstname="+patientObj['first_name'].replace(' ','_');
+let url = HOSTURL + "/myapp/rest/lenstar?lastname="+patientObj['last_name']+"&firstname="+patientObj['first_name'].replace(' ','_')+"&wlId="+wlObj['worklist']['id'];
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.1/dist/chart.umd.min.js"></script>
