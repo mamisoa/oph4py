@@ -196,20 +196,14 @@ def normalize_data(data):
         date_obj = datetime.strptime(date_str, '%Y-%m-%d')
     data['EXAMINATION']['DATE'] = date_obj.strftime('%Y-%m-%d')
     
-    # # Normalize birthday
-    # birthday_str = data['PATIENT']['BIRTHDAY']
-    # try:
-    #     birthday_obj = datetime.strptime(birthday_str, '%d/%m/%Y')
-    # except ValueError:
-    #     birthday_obj = datetime.strptime(birthday_str, '%Y-%m-%d')
-    # data['PATIENT']['BIRTHDAY'] = birthday_obj.strftime('%Y-%m-%d')
-    
     # Normalize floats
     for measurement_type in ['A-SCAN', 'KERATOMETRY', 'WHITE-WHITE', 'PUPILLOMETRY']:
         if measurement_type in data:
             for measurement, value in data[measurement_type].items():
                 if value is not None and ',' in value:
                     data[measurement_type][measurement] = float(value.replace(',', '.'))
+                else:
+                    data[measurement_type][measurement] = None
                     
     # Convert CENTRAL_CORNEA_THICKNESS to an integer
     if 'A-SCAN' in data and 'CENTRAL_CORNEA_THICKNESS' in data['A-SCAN']:
@@ -266,6 +260,7 @@ def add_biometry_to_db(patientId,wlId,data):
         A dictionary with keys "result" and "error" if there was an error.
     """
     from datetime import datetime
+    import os
     try:
         
         # Get the patient id
@@ -273,6 +268,7 @@ def add_biometry_to_db(patientId,wlId,data):
         
         # commit list
         commitList = []
+        deletedList = []
         examList = []
 
         # Loop over each exam
@@ -316,11 +312,13 @@ def add_biometry_to_db(patientId,wlId,data):
                     white_white_diameter=measures['WHITE-WHITE']['DIAMETER'],
                 )
                 commitList.append({'exam date': exam_date, "filename" : filename, "laterality" : laterality })
-        
+                # Delete commited files
+            os.remove(filename)
+            deletedList.append(filename)
         # Commit the changes
         db.commit()
 
-        return {"result": "success", "exams" : examList ,"commit" : commitList}
+        return {"result": "success", "exams" : examList ,"commit" : commitList, "deleted" : deletedList}
     except Exception as e:
         return {"result": "failure", "error": str(e)}
 

@@ -281,127 +281,125 @@ for (var i = 0; i < 3; i++) {
 fetch(url)
     .then(response => response.json())
     .then(data => {
-        console.log(data);
-    })
-    .catch(error => console.error('Error:', error));
-
-
-fetch(biometryUrl)
-    .then(response => response.json())
-    .then(data => {
-        let ages = { 'od' : [] , 'os' : [] };
-        let axial_lengths = { 'od' : [] , 'os' : [] };
-        console.log(data);
-        // console.log("database", data.database);
-        dob = new Date(dob);
-        for(filePath in data.data.exams) {
-            let eyes = data.data['exams'][filePath];
-            // console.log('eyes',eyes);
-            for (let eye in eyes) {
-                let examDate = new Date(eyes[eye]['EXAMINATION']['DATE'].replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
-                let ageInMilliseconds = examDate - dob;
-                let ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);  // Convert from milliseconds to years
-                ages[eye].push(ageInYears.toFixed(2));
-                axial_lengths[eye].push(eyes[eye]['A-SCAN']['AXIAL_LENGTH']);
-            };
-        }
-        console.log("ages",ages);
-        console.log("al",axial_lengths);
-
-        const combineDatasets = (ages, axial_lengths) => {
-            const odDS = {
-                label: "od",
-                data: ages.od.map((x, index) => ({ x: parseFloat(x), y: parseFloat(axial_lengths.od[index]) }))
-            };
-
-            const osDS = {
-                label: "os",
-                data: ages.os.map((x, index) => ({ x: parseFloat(x), y: parseFloat(axial_lengths.os[index]) }))
-            };
-
-            return [odDS, osDS];
-        };
-
-        const combined = combineDatasets(ages, axial_lengths);
-        console.log("combined",combined);
-
-        datasets.push({
-                    label: 'OD',
-                    data: combined[0].data,
-                    borderColor: 'rgba(0, 204, 255, 0.7)',
-                    backgroundColor: 'rgba(0,0,0,0)'
-                });
-        
-        datasets.push({
-                    label: 'OS',
-                    data: combined[1].data,
-                    borderColor: 'rgba(255, 87, 51, 0.7)',
-                    backgroundColor: 'rgba(0,0,0,0)'
-                });
-
-        console.log("datasets",datasets);
-        // Trouver les valeurs maximales et minimales pour 'od' et 'os'
-        let xMax = Number.MIN_VALUE;
-        let xMin = Number.MAX_VALUE;
-        let yMax = Number.MIN_VALUE;
-        let yMin = Number.MAX_VALUE;
-
-        datasets.forEach((dataset) => {
-        if (dataset.label === 'OD' || dataset.label === 'OG') {
-                dataset.data.forEach((point) => {
-                xMax = Math.max(xMax, point.x);
-                xMin = Math.min(xMin, point.x);
-                yMax = Math.max(yMax, point.y);
-                yMin = Math.min(yMin, point.y);
-                });
-            }
-        });
-
-        console.log('xMin:', xMin, 'yMin:', yMin, 'xMax:', xMax, 'yMax:', yMax);
-
-        let ctx = document.getElementById('myChart').getContext('2d');
-        let myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                datasets: datasets
-            },
-            options: {
-                scales: {
-                    x: {
-                        type: 'linear',
-                        title: {
-                            display: true,
-                            text: 'Age (years)'
-                        },
-                        suggestedMin: xMin,
-                        suggestedMax: xMax,
-                    },
-                    y: {
-                        type: 'linear',
-                        title: {
-                            display: true,
-                            text: 'Axial Length (mm)'
-                        },
-                        suggestedMin: yMin,
-                        suggestedMax: yMax,
+            console.log(data);
+            fetch(biometryUrl)
+                .then(response => response.json())
+                .then(data => {
+                    let ages = { 'od' : [] , 'os' : [] };
+                    let axial_lengths = { 'od' : [] , 'os' : [] };
+                    console.log(data);
+                    // console.log("database", data.database);
+                    dob = new Date(dob);
+                    for(filePath in data.data.exams) {
+                        let eyes = data.data['exams'][filePath];
+                        // console.log('eyes',eyes);
+                        for (let eye in eyes) {
+                            let examDate = new Date(eyes[eye]['EXAMINATION']['DATE'].replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
+                            let ageInMilliseconds = examDate - dob;
+                            let ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);  // Convert from milliseconds to years
+                            ages[eye].push(ageInYears.toFixed(2));
+                            axial_lengths[eye].push(eyes[eye]['A-SCAN']['AXIAL_LENGTH']);
+                        };
                     }
-                }
-            },
-            plugins: {
-            zoom: {
-                pan: {
-                enabled: true,
-                mode: 'xy', // Vous pouvez spécifier 'x', 'y' ou 'xy' pour autoriser le zoom sur les axes x, y ou les deux.
-                },
-                zoom: {
-                enabled: true,
-                mode: 'xy', // Vous pouvez spécifier 'x', 'y' ou 'xy' pour autoriser le zoom sur les axes x, y ou les deux.
-                },
-            },
-            },
-        });
-    })
-    .catch(error => console.error('Error:', error));
+                    console.log("ages",ages);
+                    console.log("al",axial_lengths);
+
+                    const combineDatasets = (ages, axial_lengths) => {
+                        const odDS = {
+                            label: "od",
+                            data: ages.od.map((x, index) => ({ x: parseFloat(x), y: parseFloat(axial_lengths.od[index]) }))
+                        };
+
+                        const osDS = {
+                            label: "os",
+                            data: ages.os.map((x, index) => ({ x: parseFloat(x), y: parseFloat(axial_lengths.os[index]) }))
+                        };
+
+                        return [odDS, osDS];
+                    };
+
+                    const combined = combineDatasets(ages, axial_lengths);
+                    console.log("combined",combined);
+
+                    datasets.push({
+                                label: 'OD',
+                                data: combined[0].data,
+                                borderColor: 'rgba(0, 204, 255, 0.7)',
+                                backgroundColor: 'rgba(0,0,0,0)'
+                            });
+                    
+                    datasets.push({
+                                label: 'OS',
+                                data: combined[1].data,
+                                borderColor: 'rgba(255, 87, 51, 0.7)',
+                                backgroundColor: 'rgba(0,0,0,0)'
+                            });
+
+                    console.log("datasets",datasets);
+                    // Trouver les valeurs maximales et minimales pour 'od' et 'os'
+                    let xMax = Number.MIN_VALUE;
+                    let xMin = Number.MAX_VALUE;
+                    let yMax = Number.MIN_VALUE;
+                    let yMin = Number.MAX_VALUE;
+
+                    datasets.forEach((dataset) => {
+                    if (dataset.label === 'OD' || dataset.label === 'OG') {
+                            dataset.data.forEach((point) => {
+                            xMax = Math.max(xMax, point.x);
+                            xMin = Math.min(xMin, point.x);
+                            yMax = Math.max(yMax, point.y);
+                            yMin = Math.min(yMin, point.y);
+                            });
+                        }
+                    });
+
+                    console.log('xMin:', xMin, 'yMin:', yMin, 'xMax:', xMax, 'yMax:', yMax);
+
+                    let ctx = document.getElementById('myChart').getContext('2d');
+                    let myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            datasets: datasets
+                        },
+                        options: {
+                            scales: {
+                                x: {
+                                    type: 'linear',
+                                    title: {
+                                        display: true,
+                                        text: 'Age (years)'
+                                    },
+                                    suggestedMin: xMin,
+                                    suggestedMax: xMax,
+                                },
+                                y: {
+                                    type: 'linear',
+                                    title: {
+                                        display: true,
+                                        text: 'Axial Length (mm)'
+                                    },
+                                    suggestedMin: yMin,
+                                    suggestedMax: yMax,
+                                }
+                            }
+                        },
+                        plugins: {
+                        zoom: {
+                            pan: {
+                            enabled: true,
+                            mode: 'xy', // Vous pouvez spécifier 'x', 'y' ou 'xy' pour autoriser le zoom sur les axes x, y ou les deux.
+                            },
+                            zoom: {
+                            enabled: true,
+                            mode: 'xy', // Vous pouvez spécifier 'x', 'y' ou 'xy' pour autoriser le zoom sur les axes x, y ou les deux.
+                            },
+                        },
+                        },
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            })
+    .catch(error => console.error('Error:', error))
 
 
 
