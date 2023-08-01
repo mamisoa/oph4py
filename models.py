@@ -707,6 +707,7 @@ db.define_table(
     "biometry",
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist'),
+    Field('id_modality', 'reference modality'),
     Field("laterality", "string"),
     Field("exam_date", "datetime"),
     # A-SCAN measures
