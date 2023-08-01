@@ -456,3 +456,23 @@ def biometry(id_auth_user):
     }
 
     return response_data
+
+@action('rest/biometry/raw/<user_id>', method=['GET'])
+@action.uses(db, auth.user)
+def get_biometry_data(user_id=None):
+    if not user_id:
+        return dict(error='User ID required')
+
+    biometry_data = db(db.biometry.id_auth_user == user_id).select().as_list()
+
+    result = {}
+    for row in biometry_data:
+        laterality = row["laterality"]
+        exam_date = row["exam_date"].strftime('%Y-%m-%d')
+        if laterality not in result:
+            result[laterality] = {}
+        if exam_date not in result[laterality]:
+            result[laterality][exam_date] = []
+        result[laterality][exam_date].append(row)
+
+    return result
