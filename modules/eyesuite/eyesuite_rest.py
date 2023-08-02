@@ -200,16 +200,19 @@ def normalize_data(data):
     for measurement_type in ['A-SCAN', 'KERATOMETRY', 'WHITE-WHITE', 'PUPILLOMETRY']:
         if measurement_type in data:
             for measurement, value in data[measurement_type].items():
-                if value is not None and ',' in value:
-                    data[measurement_type][measurement] = float(value.replace(',', '.'))
-                else:
-                    data[measurement_type][measurement] = None
+                if value is not None:
+                    if measurement != "MODE":
+                        if ',' in value:
+                            data[measurement_type][measurement] = float(value.replace(',', '.'))
+                        else:
+                            try:
+                                data[measurement_type][measurement] = int(value)
+                            except:
+                                data[measurement_type][measurement] = None
+                    else:
+                        data[measurement_type][measurement] = value
                     
-    # Convert CENTRAL_CORNEA_THICKNESS to an integer
-    if 'A-SCAN' in data and 'CENTRAL_CORNEA_THICKNESS' in data['A-SCAN']:
-        value = data['A-SCAN']['CENTRAL_CORNEA_THICKNESS']
-        if value is not None:
-            data['A-SCAN']['CENTRAL_CORNEA_THICKNESS'] = int(float(value))
+    return data
 
 
 def extract_eye_data(eye_node, examination_info):
@@ -231,8 +234,8 @@ def extract_eye_data(eye_node, examination_info):
             data[measurement_type][measurement] = value
     
     # Normalize the data
-    normalize_data(data)
-    return data
+    norm_data = normalize_data(data)
+    return norm_data
 
 def add_biometry_to_db(patientId,wlId,data):
     """
@@ -312,9 +315,9 @@ def add_biometry_to_db(patientId,wlId,data):
                     white_white_diameter=measures['WHITE-WHITE']['DIAMETER'],
                 )
                 commitList.append({'exam date': exam_date, "filename" : filename, "laterality" : laterality })
-                # Delete commited files
-            os.remove(filename)
-            deletedList.append(filename)
+            # Delete commited files
+            # os.remove(filename)
+            # deletedList.append(filename)
         # Commit the changes
         db.commit()
 
@@ -381,7 +384,6 @@ def upload_lenstar(wlId=None, id='',lastname='_',firstname='_'):
         lenstar_data['exams'][filename] = {'od': od_data , 'os': os_data }
 
     database_commit = add_biometry_to_db(patientId = id, wlId = wlId, data= lenstar_data)
-    # TODO: delete files already in database
 
     return { 'status': 'success', 'data': lenstar_data, 'database' :  database_commit }
 
