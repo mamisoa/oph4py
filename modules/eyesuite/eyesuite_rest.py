@@ -142,6 +142,11 @@ def remove_accents(input_string):
     from unidecode import unidecode
     return unidecode(input_string)
 
+def remove_diacritics(input_string):
+    import unicodedata
+    nfkd_form = unicodedata.normalize('NFKD', input_string)
+    return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+
 # find xml file
 def find_matching_xml(date: str, lastname: str, firstname: str, ID: str = '', directory: str = '.'):
     """
@@ -316,8 +321,8 @@ def add_biometry_to_db(patientId,wlId,data):
                 )
                 commitList.append({'exam date': exam_date, "filename" : filename, "laterality" : laterality })
             # Delete commited files
-            # os.remove(filename)
-            # deletedList.append(filename)
+            os.remove(filename)
+            deletedList.append(filename)
         # Commit the changes
         db.commit()
 
@@ -334,6 +339,9 @@ def upload_lenstar(wlId=None, id='',lastname='_',firstname='_'):
     The XML file is parsed, and the data is extracted using the `extract_nested_elements` function.
     The data is then converted to the format expected by the database and inserted into the 'examination' table.
     """
+    from urllib.parse import unquote, unquote_to_bytes
+    from unidecode import unidecode
+
     from datetime import datetime as dt
     import datetime
     import xml.etree.ElementTree as ET
@@ -343,13 +351,15 @@ def upload_lenstar(wlId=None, id='',lastname='_',firstname='_'):
     # force accent decoding
     if 'lastname' in request.query:
         lastname = request.query.get('lastname').encode('latin-1').decode('utf-8')
+        # lastname = unquote(request.query.get('lastname'))
     if 'firstname' in request.query:
         firstname = request.query.get('firstname').encode('latin-1').decode('utf-8')
+        # firstname = unquote(request.query.get('firstname'))
     if 'id' in request.query:
         id = request.query.get('id')
     if 'wlId' in request.query:
         wlId = request.query.get('wlId')
-    filenames, params = find_matching_xml(directory=path, date=now, lastname=remove_accents(lastname), firstname=remove_accents(firstname), ID=id)
+    filenames, params = find_matching_xml(directory=path, date=now, lastname=remove_diacritics(lastname), firstname=remove_diacritics(firstname), ID=id)
     if len(filenames) == 0:
         return {'status': 'error', 'message': 'no xml found', 'params': params , 'filenames': filenames, 'firstname': firstname, 'lastname': lastname} 
     
@@ -358,8 +368,19 @@ def upload_lenstar(wlId=None, id='',lastname='_',firstname='_'):
 
     for filename in filenames:
         # Parse the XML file
-        tree = ET.parse(filename)
+        # tree = ET.parse(filename)
+        # root = tree.getroot()
+        from lxml import etree
+        parser = etree.XMLParser(recover=True)
+
+        encoding = "Windows-1252"
+
+        # Analyse du fichier XML en spécifiant l'encodage
+        parser = etree.XMLParser(recover=True, encoding=encoding)
+        tree = etree.parse(filename, parser=parser)
         root = tree.getroot()
+
+
         patient_node = root.find('EXAMINATION/PATIENT')
         patient_info = {child.tag: child.text for child in patient_node}
         if 'patient' not in lenstar_data:
