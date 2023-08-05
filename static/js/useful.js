@@ -243,7 +243,7 @@ const crudp = function(table,id='0',req='POST',data) {
                             errors += data.errors[i]+'</br>';
                         };
                         text = errors;
-                        displayToast('error',data.message,errors,'3000');
+                        displayToast('error',data.message,errors,'6000');
                         };
                     if (data.status == "success") {
                         text='User id: '+(req == 'DELETE'? id : data.id)+mode;
@@ -298,7 +298,8 @@ function addPatientVisionix(machine,id='',lastname='', firstname='',dob='',sex='
             if (data.result == 'success') {
                 displayToast('success', 'add L80/VX100', data.result, '3000');
             } else {
-                displayToast('error', 'add L80/VX100', data.result, '3000');
+                displayToast('error', 'add L80/VX100', data.result, '6000');
+                console.log('error message: ', data.result);
             }
         }
     });
@@ -319,6 +320,7 @@ async function addPatientEyesuite(machine,id='',lastname='', firstname='',dob=''
                 displayToast('success', 'add wl to Eyesuite', data.result, '6000');
             } else {
                 displayToast('error', 'add wl to Eyesuite', data.result, '6000');
+                console.log('error message: ', data.result);
             };
             console.log(data.result);
         }
