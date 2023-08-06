@@ -5,7 +5,7 @@ from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash # ,dbo
 
 from pydal.restapi import RestAPI, Policy
-from .settings import UPLOAD_FOLDER
+from .settings import UPLOAD_FOLDER, SMTP_SERVER, SMTP_SENDER, SMTP_LOGIN, COMPANY_LOGO
 
 policy = Policy()
 policy.set('*','GET', authorize=True, limit=1000, allowed_patterns=['*'])
@@ -217,3 +217,91 @@ def do_upload():
         re_dict.update({ 'status' : 'error', 'error' : e.args[0] })
     re = json.dumps(re_dict)
     return re
+
+@action('api/email/send', method=['POST'])
+def send_email():
+    """
+    Send an email using SMTP server.
+
+    Parameters:
+    - recipient: The email address of the recipient.
+    - title: The subject of the email.
+    - content: The main content/body of the email.
+    - company_logo: URL or path to the company logo.
+    - sender_name: The name of the sender.
+    - sender_quality: The title or position of the sender.
+    
+    Returns:
+    - JSON-formatted response indicating the result of the email sending operation.
+    """
+    import smtplib
+    import json
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    payload = request.json
+    sender_name , sender_quality  = 'John Doe', 'CEO'
+    title, content = 'Informations | Centre Médical Bruxelles-Schuman', 'content'
+    username, password = SMTP_LOGIN.split(':')
+    smtp_server , port = SMTP_SERVER.split(':')
+    company_logo = COMPANY_LOGO
+
+    if 'recipient' not in payload:
+        return json.dumps('{ "status": "error", "message": "No recipient"}')
+
+    for key in request.json:
+        if key == 'recipient':
+            recipient = payload['recipient']
+        if key == 'title':
+            title = payload['title']
+        if key == 'content':
+            content = payload['content']
+        if key == 'sender_name':
+            sender_name = payload['sender_name']
+    
+    # HTML template
+    html_template = f"""
+    <html>
+        <body>
+            <p>{content}</p>
+            <br>
+            <p>Best regards,</p>
+            <table>
+                <tr>
+                    <td><img src="{company_logo}" alt="Company Logo" style="max-width: 100px;"></td>
+                    <td>
+                        <p>{sender_name}<br>{sender_quality}</p>
+                    </td>
+                </tr>
+            </table>
+        </body>
+    </html>
+    """
+    # Create the MIMEText object
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = title
+    msg["From"] = username
+    msg["To"] = recipient
+
+    # Attach the HTML content to the email
+    msg.attach(MIMEText(html_template, "html"))
+
+    try:
+        # Send the email
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.starttls()  # Secure the connection using TLS
+            server.login(username, password)
+            server.sendmail(username, recipient, msg.as_string())
+        
+        # If the email is sent successfully, return a success response
+        response = {
+            "status": "success",
+            "message": "Email sent successfully."
+        }
+    except Exception as e:
+        # If there's an error, return an error response
+        response = {
+            "status": "error",
+            "message": str(e)
+        }
+
+    return json.dumps(response)
