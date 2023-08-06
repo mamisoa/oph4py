@@ -487,7 +487,7 @@ function getWlItemData(table,wlId,lat='',options='') {
         filters[1].split('&')[1] != undefined ? options = filters[0]+ filters[1].split('&')[1] : options = filters[0];
     }
     console.log('lookup',lookup);
-    console.log('lookup',options);
+    console.log('options',options);
     // check if laterality
     if (lat == '') {
         WURL = HOSTURL+"/myapp/api/"+table+"?@lookup="+lookup+"&id_worklist.eq="+wlId+"&"+options;
