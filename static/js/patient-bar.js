@@ -7,6 +7,7 @@ patientObj['dob'] != null ? $('#wlItemDetails .patientDob').html(patientObj['dob
 $('#wlItemDetails .patientGender').html('Gender: '+ genderIdObj[patientObj['gender']]);
 $('#wlItemDetails .patientSsn').html('NISS #'+checkIfDataIsNull(patientObj['ssn']));
 $('#wlItemDetails .patientCard').html('Card #'+checkIfDataIsNull(patientObj['idc_num']));
+$('#wlItemDetails .patientEmail').html('Email: '+checkIfDataIsNull(patientObj['email']));
 $('#wlItemDetails .patientId').html('ID #'+patientObj['id']);
 $('#wlItemDetails .timeslot').html(datetime2eu(wlObj['worklist']['requested_time']));
 patientObj['user_notes'] != null? $('#wlItemDetails .user_notes').html(patientObj['user_notes']) : $('#wlItemDetails .user_notes').removeClass('whitebg');
