@@ -559,3 +559,57 @@ $('#certificateFormModal').submit(function(e) {
             $('#certificateModal').modal('hide');
         });
 });
+
+let emailInfoModal = document.getElementById('emailInfoModal')
+emailInfoModal.addEventListener('show.bs.modal', function(event){
+    let btn = event.relatedTarget;
+    let emaildefault = ['<div style="text-align:left">'];
+    emaildefault.push('<p>Cher Patient,</p>');
+    emaildefault.push('<p>Voici un lien qui contient des informations en complément de votre dernière consultation.</p>');
+    emaildefault.push('<a href="https://ophtalmologiste.be/chirurgie/chirurgie-refractive/">https://ophtalmologiste.be/chirurgie/chirurgie-refractive/</a>');
+    emaildefault.push('<p>Si vous avez des questions complémentaires, vous pouvez répondre à cet email.</p>');
+    $('#emailInfoFormModal input[name=category]').val($(btn).data('certFlag'));
+    // set default text
+    emaildefault.push('</div>');
+    let emailhtml= emaildefault.join('');
+    console.log('emailhtml: ', emailhtml);
+    tinymce.get('emailContent').setContent(emailhtml);
+});
+
+$('#emailInfoFormModal').submit(function(e) {
+    let formStr = $(this).serializeJSON();
+    let formObj = JSON.parse(formStr);
+    e.preventDefault();
+    let emailContent = tinyMCE.get('emailContent').getContent();
+    fetch(
+        HOSTURL+"/myapp/api/email/send",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                'recipient' : patientObj['email'],
+                'content' : emailContent
+            })
+        }
+    ).then(response => {
+        let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
+        $('#emailInfoModal').modal('hide');
+        let finalDbObj = {};
+        let responseBlob = new Blob([response], {
+            type: 'application/json'
+        });
+        finalDbObj['id_auth_user']=patientId;
+        finalDbObj['id_worklist']=wlId;
+        finalDbObj['datestamp']=today;
+        finalDbObj['category']=formObj['category'];
+        finalDbObj['pdf_report'] = JSON.stringify(response);
+        let finalDbStr = JSON.stringify(finalDbObj);
+        console.log('finalDbObj:',finalDbObj);
+        crudp('certificates','0','POST',finalDbStr).then( data => $cert_tbl.bootstrapTable('refresh'));
+        return response.json()
+    }).catch(error => {
+        console.log("There was a problem with the fetch operation:", error.message);
+    });
+});

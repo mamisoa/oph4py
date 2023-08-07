@@ -239,9 +239,9 @@ def send_email():
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
     payload = request.json
-    sender_name , sender_quality  = 'John Doe', 'CEO'
+    sender_name , sender_quality  = 'Mamisoa Andriantafika', 'MD, FEBO'
     title, content = 'Informations | Centre Médical Bruxelles-Schuman', 'content'
-    username, password = SMTP_LOGIN.split(':')
+    username, password = SMTP_LOGIN.split('::')
     smtp_server , port = SMTP_SERVER.split(':')
     company_logo = COMPANY_LOGO
 
@@ -260,22 +260,27 @@ def send_email():
     
     # HTML template
     html_template = f"""
-    <html>
-        <body>
-            <p>{content}</p>
-            <br>
-            <p>Best regards,</p>
-            <table>
-                <tr>
-                    <td><img src="{company_logo}" alt="Company Logo" style="max-width: 100px;"></td>
-                    <td>
-                        <p>{sender_name}<br>{sender_quality}</p>
-                    </td>
-                </tr>
-            </table>
-        </body>
-    </html>
-    """
+        <html>
+            <body>
+                <div>{content}</div>
+                <br>
+                <p>Cordialement,<br>Vriendelijke groeten,<br>Best regards,</p>
+                <table>
+                    <tr>
+                        <td><img src="{company_logo}" alt="Company Logo" style="max-width: 100px;"></td>
+                        <td>
+                            <p>{sender_name}<br>{sender_quality}</p>
+                        </td>
+                    </tr>
+                </table>
+                <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
+                <p style="font-size: 0.8em; color: #666;">
+                    The contents of this e-mail are intended for the named addressee only. It contains information which may be confidential and which may also be privileged. Any non-conform use, dissemination or disclosure of this message is prohibited. If you received it in error, please notify us immediately and then destroy it.
+                </p>
+            </body>
+        </html>
+        """
+
     # Create the MIMEText object
     msg = MIMEMultipart("alternative")
     msg["Subject"] = title
@@ -295,7 +300,10 @@ def send_email():
         # If the email is sent successfully, return a success response
         response = {
             "status": "success",
-            "message": "Email sent successfully."
+            "message": "Email sent successfully.",
+            "title" : title,
+            "content" : content,
+            "recipient" : recipient
         }
     except Exception as e:
         # If there's an error, return an error response
