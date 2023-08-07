@@ -564,10 +564,23 @@ let emailInfoModal = document.getElementById('emailInfoModal')
 emailInfoModal.addEventListener('show.bs.modal', function(event){
     let btn = event.relatedTarget;
     let emaildefault = ['<div style="text-align:left">'];
-    emaildefault.push('<p>Cher Patient,</p>');
+    emaildefault.push('<p>Chère Patiente, Cher Patient,</p>');
     emaildefault.push('<p>Voici un lien qui contient des informations en complément de votre dernière consultation.</p>');
     emaildefault.push('<a href="https://ophtalmologiste.be/chirurgie/chirurgie-refractive/">https://ophtalmologiste.be/chirurgie/chirurgie-refractive/</a>');
     emaildefault.push('<p>Si vous avez des questions complémentaires, vous pouvez répondre à cet email.</p>');
+    emaildefault.push('<p></p>');
+    emaildefault.push('<p>Chère Patiente, Cher Patient,</p>');
+    emaildefault.push('<p>Vous avez récemment été examiné dans notre Centre Médical Bruxelles-Schuman lors d\'une visite ophtalmologique.</p>');
+    emaildefault.push('<p>Si vous l\'avez appréciée, vous pouvez laisser votre avis sur le lien suivant:</p>');
+    emaildefault.push('<a href="https://g.page/r/CacxcDCleFcoEAg/review">https://g.page/r/CacxcDCleFcoEAg/review</a>');
+    emaildefault.push('<p>Nous vous remercions d\'avance pour le temps que vous nous avez consacré.</p>');
+    emaildefault.push('<p>----------------------------------------------------</p>');
+    emaildefault.push('<p>Dear Patient,</p>');
+    emaildefault.push('<p>You\'ve done a recent visit at the Brussels-Schuman Medical Center for a medical eye check.</p>');
+    emaildefault.push('<p>If you did appreciate it, please leave your review on the following link:</p>');
+    emaildefault.push('<a href="https://g.page/r/CacxcDCleFcoEAg/review">https://g.page/r/CacxcDCleFcoEAg/review</a>');
+    emaildefault.push('<p>We thank you already for the time you spent on this evaluation.</p>');
+    emaildefault.push('</div>');
     $('#emailInfoFormModal input[name=category]').val($(btn).data('certFlag'));
     // set default text
     emaildefault.push('</div>');
