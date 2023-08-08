@@ -45,9 +45,9 @@ function crudUser(id='0',req='POST',data) {
         });
 }
 
-function delUser (id) {
+function delUser (id,name) {
     bootbox.confirm({
-        message: "Are you sure you want to delete this user?",
+        message: "Are you sure you want to delete this user: <strong>"+name+"</strong> ?",
         closeButton: false ,
         buttons: {
             confirm: {

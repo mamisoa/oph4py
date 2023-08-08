@@ -63,9 +63,9 @@ window.operateEvents = {
       window.location.href = HOSTURL+"/myapp/user/"+row.id;
 
     },
-    // 'click .remove': function (e, value, row, index) {
-    //     delUser(row.id);
-    // },
+    'click .remove': function (e, value, row, index) {
+        delUser(row.id,row.last_name+' '+row.first_name);
+    },
     'click .worklist': function (e, value, row, index) {
         addToWorklist(row.id);
     },
