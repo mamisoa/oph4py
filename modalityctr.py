@@ -291,9 +291,9 @@ def lenstar(wlId):
 
 # helloworld controller
 @action('hello')
-@action('modalityCtr/hello/<wlId>')
+@action('modalityCtr/hello')
 @action.uses(session, auth, db,'modalityCtr/hello.html')
-def hello(wlId):
+def hello():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     import base64
