@@ -233,3 +233,37 @@ document.getElementById('btnGetUserId').addEventListener('click', async function
         console.error('Error:', error);
       }
 });
+
+document.getElementById('btnCheckUser').addEventListener('click', async function(e) {
+    try {
+        let response = await fetch(LOCAL_BEID);
+        let item = await response.json();
+        displayToast('success', item.success , 'Retrieving data from EID' ,'6000');
+        if (item['success'] == true) {
+            // Supprimer les espaces et les tirets, et prendre le premier prénom et nom
+            let sanitizedFirstName = item.firstnames.replace(/[\s-].*$/, '');
+            let sanitizedLastName = item.surname.replace(/[\s-].*$/, '');
+
+            let search = sanitizedLastName + ',' + sanitizedFirstName;
+            
+            console.log("search",search);
+            // Mettre la valeur de "search" dans l'input
+            let searchInput = document.querySelector('#userTable .search-input');
+            searchInput.value = search;
+
+            // Donner le focus à l'élément input
+            searchInput.focus();
+
+            // Simuler la saisie d'une lettre pour déclencher la recherche
+            let keyPressEvent = new KeyboardEvent('keyup', { key: 'a' });
+            searchInput.dispatchEvent(keyPressEvent);
+            
+            
+        } else {
+            displayToast('error','Error: ','format ?','6000');
+        }
+      } catch (error) {
+        displayToast('error','Error: ',error,'6000');
+        console.error('Error:', error);
+      }
+});
