@@ -65,7 +65,7 @@ window.operateEvents = {
 
     },
     'click .remove': function (e, value, row, index) {
-        delUser(row.id);
+        delUser(row.id,row.last_name+' '+row.first_name);
     }
   };
 
