@@ -326,3 +326,30 @@ async function addPatientEyesuite(machine,id='',lastname='', firstname='',dob=''
         }
     });
 };
+
+// mapping month with beid
+// example transformDate("08   JAN    1975"));  // Output: 1975-01-08
+function transformDateBeid(inputDate) {
+    var monthMap = {
+        // French
+        "JAN": "01", "FEV": "02", "MARS": "03", "AVR": "04", "MAI": "05", "JUIN": "06", "JUIL": "07",
+        "AOUT": "08", "SEPT": "09", "OCT": "10", "NOV": "11", "DEC": "12",
+        // Dutch
+        "JAN": "01", "FEB": "02","MAAR": "03", "APR": "04", "MEI": "05", "JUN": "06",
+        "JUL": "07", "AUG": "08", "SEP": "09", "OKT": "10", "NOV": "11", "DEC": "12",
+        // German
+        "JAN": "01", "FEB": "02", "MÄR": "03", "APR": "04", "MAI": "05", "JUN": "06",
+        "JUL": "07", "AUG": "08", "SEP": "09", "OKT": "10", "NOV": "11", "DEZ": "12"
+    };
+
+    // Split inputDate by spaces and remove empty elements
+    var dateParts = inputDate.split(" ").filter(function(e) { return e.trim().length > 0; });
+    var day = dateParts[0];
+    var month = monthMap[dateParts[1].trim().toUpperCase()];
+    var year = dateParts[2];
+
+    return year + "-" + month + "-" + day;
+}
+
+
+

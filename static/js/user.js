@@ -223,36 +223,73 @@ $('#btnEditUser').click(function() {
 });
 
 // get id from b-eid
-$('#btnGetUserId').click(function(e) {
-    $.ajax({
-        url: LOCAL_BEID,
-        dataType: 'json',
-        type: 'GET',
-        success: function (item) {
-            console.log(item);
-            document.getElementById("firstName").value= item.prenoms;
-            document.getElementById("lastName").value= item.nom;
-            let sex = item.sexe == 'M'? '1':'2';
-            document.getElementById("genderSelect").value= checkIfDataIsNull(sex,'Male');
-            let dob = item.date_naissance.split('/').reverse().join('-');
-            document.getElementById("dob").value= checkIfDataIsNull(dob,'');
-            document.getElementById("nationality").value= checkIfDataIsNull(item.nationalite,'');
-            document.getElementById("birthTown").value= checkIfDataIsNull(item.lieu_naissance,'');
-            document.getElementById("idcNum").value= checkIfDataIsNull(item.num_carte,'');
-            document.getElementById("ssn").value= checkIfDataIsNull(item.num_nat,'');
-            document.getElementById("photo").setAttribute("src", "data:image/jpg;base64,"+item.photo);
-            document.getElementById("photob64").value=checkIfDataIsNull("data:image/jpg;base64,"+item.photo,'');
-            document.getElementById("zipcode").value= item.code_postal;
-            document.getElementById("town").value= item.localite;
-            let addressStr = item.adresse;
-            const regex = /[-]?\d*\.\d+|[-]?\d+/gm;
-            addressArr = addressStr.match(regex);
-            document.getElementById("home_num").value = addressArr[0];
-            document.getElementById("box_num").value = addressArr[1] == undefined ? '' : addressArr[1];
-            document.getElementById("address1").value = addressStr.split(addressArr[0])[0];
-            $("#userDetailsModal .photoDiv").removeClass( "visually-hidden" );
+// $('#btnGetUserId').click(function(e) {
+//     $.ajax({
+//         url: LOCAL_BEID,
+//         dataType: 'json',
+//         type: 'GET',
+//         success: function (item) {
+//             console.log(item);
+//             document.getElementById("firstName").value= item.prenoms;
+//             document.getElementById("lastName").value= item.nom;
+//             let sex = item.sexe == 'M'? '1':'2';
+//             document.getElementById("genderSelect").value= checkIfDataIsNull(sex,'Male');
+//             let dob = item.date_naissance.split('/').reverse().join('-');
+//             document.getElementById("dob").value= checkIfDataIsNull(dob,'');
+//             document.getElementById("nationality").value= checkIfDataIsNull(item.nationalite,'');
+//             document.getElementById("birthTown").value= checkIfDataIsNull(item.lieu_naissance,'');
+//             document.getElementById("idcNum").value= checkIfDataIsNull(item.num_carte,'');
+//             document.getElementById("ssn").value= checkIfDataIsNull(item.num_nat,'');
+//             document.getElementById("photo").setAttribute("src", "data:image/jpg;base64,"+item.photo);
+//             document.getElementById("photob64").value=checkIfDataIsNull("data:image/jpg;base64,"+item.photo,'');
+//             document.getElementById("zipcode").value= item.code_postal;
+//             document.getElementById("town").value= item.localite;
+//             let addressStr = item.adresse;
+//             const regex = /[-]?\d*\.\d+|[-]?\d+/gm;
+//             addressArr = addressStr.match(regex);
+//             document.getElementById("home_num").value = addressArr[0];
+//             document.getElementById("box_num").value = addressArr[1] == undefined ? '' : addressArr[1];
+//             document.getElementById("address1").value = addressStr.split(addressArr[0])[0];
+//             $("#userDetailsModal .photoDiv").removeClass( "visually-hidden" );
+//         }
+//     })
+// });
+
+document.getElementById('btnGetUserId').addEventListener('click', async function(e) {
+    try {
+        let response = await fetch(LOCAL_BEID);
+        let item = await response.json();
+        if (item['success'] == true) {
+                displayToast('success', item.success , 'Retrieving data from EID' ,'6000');
+                console.log('item', item);
+                document.getElementById("firstName").value= item.firstnames;
+                document.getElementById("lastName").value= item.surname;
+                let sex = item.gender == 'M'? '1':'2';
+                document.getElementById("genderSelect").value= checkIfDataIsNull(sex,'Male');
+                let dob = transformDateBeid(item.date_of_birth);
+                document.getElementById("dob").value= checkIfDataIsNull(dob,'');
+                document.getElementById("nationality").value= checkIfDataIsNull(item.nationality,'');
+                document.getElementById("birthTown").value= checkIfDataIsNull(item.location_of_birth,'');
+                document.getElementById("idcNum").value= checkIfDataIsNull(item.card_number,'');
+                document.getElementById("ssn").value= checkIfDataIsNull(item.national_number,'');
+                document.getElementById("photo").setAttribute("src", "data:image/jpg;base64,"+item.PHOTO_FILE);
+                document.getElementById("photob64").value=checkIfDataIsNull("data:image/jpg;base64,"+item.PHOTO_FILE,'');
+                document.getElementById("zipcode").value= item.address_zip;
+                document.getElementById("town").value= item.address_municipality;
+                let addressStr = item.address_street_and_number;
+                const regex = /[-]?\d*\.\d+|[-]?\d+/gm;
+                addressArr = addressStr.match(regex);
+                document.getElementById("home_num").value = addressArr[0];
+                document.getElementById("box_num").value = addressArr[1] == undefined ? '' : addressArr[1];
+                document.getElementById("address1").value = addressStr.split(addressArr[0])[0];
+                $("#userDetailsModal .photoDiv").removeClass( "visually-hidden" );
+        } else {
+            displayToast('error','Error: ','format ?','6000');
         }
-    })
+      } catch (error) {
+        displayToast('error','Error: ',error,'6000');
+        console.error('Error:', error);
+      }
 });
 
 
