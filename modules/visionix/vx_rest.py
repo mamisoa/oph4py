@@ -314,7 +314,7 @@ def create_visionix(machine,lastname='_',firstname='_',dob='', id='', sex=''):
         addpatient_l80: add patient to l80 folder
         createpatient_vx100: add patient to vx100 waiting list
     """
-    import os,json
+    import json
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
     res = { 'result': 'error'}
     if 'lastname' in request.query:
