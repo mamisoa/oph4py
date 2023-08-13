@@ -263,9 +263,11 @@ def addpatient_l80(firstname,lastname):
     # create file
     filename = lastname + '#' + firstname
     try:
-        os.mkdir(folder+'/'+filename)
-    except:
-        return {'result':'error creating folder: '+folder+'/'+filename}
+        os.mkdir(os.path.join(folder, filename))
+    except FileExistsError: # if patient already exists
+        return {'result': 'folder already exists: ' + os.path.join(folder, filename)}
+    except Exception as e:
+        return {'result': 'error creating folder: ' + os.path.join(folder, filename) + ', ' + str(e)}
     # add to index and sort
     list = []
     count = 0
