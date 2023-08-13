@@ -82,7 +82,6 @@ def importCV5000(machine):
 def getCV5000():
     import json
     response.headers['Content-Type'] = 'application/json;charset=UTF-8'
-    machinedict = TOPCON_DICT
     if 'machine' in request.query:
         machine = request.query.get('machine')
     else:
