@@ -105,9 +105,9 @@ def create_patient():
     if response.status_code == 400:
         return '[{{ "status": "error" , "code": "{response.status_code}", "message": "Missing patient identifier with trusted assigning authority in specified patient identifiers"}}]'
     if response.status_code == 403:
-        return f'[{{ "status": "success" , "code": "{response.status_code}", "message": "Creation of already merged patient forbidden"}}]'
+        return f'[{{ "status": "error" , "code": "{response.status_code}", "message": "Creation of already merged patient forbidden"}}]'
     if response.status_code == 409:
-        return f'[{{ "status": "success" , "code": "{response.status_code}", "message": "Non Unique Patients found for patient identifiers in request payload"}}]'
+        return f'[{{ "status": "error" , "code": "{response.status_code}", "message": "Non Unique Patients found for patient identifiers in request payload"}}]'
     else:
         return f'[{{ "status": "error", "code": "{response.status_code}", "message": "Request error"}}]'
 
