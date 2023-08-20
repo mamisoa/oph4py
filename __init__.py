@@ -16,6 +16,7 @@ from . import useful
 from .modules.visionix import vx_rest
 from .modules.topcon import cv5000_rest, cv5000xml
 from .modules.eyesuite import eyesuite_rest
+from .modules.dicom import dcm4chee
 
 # optional parameters
 __version__ = "0.0.9"
