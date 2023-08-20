@@ -352,4 +352,23 @@ function transformDateBeid(inputDate) {
 }
 
 
-
+// use to add or update patient to dcm4chee
+async function addPatientPacs(machine,id='',lastname='', firstname='',dob='',sex='') {
+    let API_URL = HOSTURL + '/myapp/rest/patient/create'
+    fetch(API_URL, {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+        })
+        .then(response => {
+                if (response.status == "success" ) {
+                    displayToast('success', 'add patient to PACS', response.message, '3000');
+                } else {
+                    displayToast('error', 'add patient to PACS', response.message, '6000');
+                }
+            })
+        .then(json => console.log(json))
+        .catch(error => console.error('An error occurred:', error));
+};
