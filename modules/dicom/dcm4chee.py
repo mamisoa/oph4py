@@ -71,19 +71,19 @@ def get_modality_id(modality : str):
     else:
         return None
 
-@action('rest/dcm4chee/patient', method=['POST'])
-def create_patient_ds():
+@action('rest/dcm4chee/patient/create', method=['POST'])
+def create_patient():
     """
     Create or update patient in PACS
     Parameters:
-        patient_data (dict)
+        patient_data (json)
 
     """
     patient_data = request.json
 
     ds = Dataset()
     ds.add_new(0x00100010, 'PN', patient_data['PatientName']) 
-    ds.add_new(0x00100020, 'LO', patient_data['PatientID']) 
+    ds.add_new(0x00100020, 'LO', patient_data['PatientID']+"_oph4py") 
     ds.add_new(0x00100030, 'DA', patient_data['PatientBirthDate']) 
     ds.add_new(0x00100040, 'CS', patient_data['PatientSex']) #M/F/O oph4py returns 'Male'/'Female'/'Other'
 
@@ -100,7 +100,6 @@ def create_patient_ds():
     
     response = requests.post(url, json=payload, headers=headers)
     response.encoding = 'utf-8'
-    print(response.status_code)
     if response.status_code == 200:
         return f'[{{ "status": "success" , "code": "{response.status_code}", "message": "{response.text}"}}]'
     if response.status_code == 400:
@@ -109,5 +108,54 @@ def create_patient_ds():
         return f'[{{ "status": "success" , "code": "{response.status_code}", "message": "Creation of already merged patient forbidden"}}]'
     if response.status_code == 409:
         return f'[{{ "status": "success" , "code": "{response.status_code}", "message": "Non Unique Patients found for patient identifiers in request payload"}}]'
+    else:
+        return f'[{{ "status": "error", "code": "{response.status_code}", "message": "Request error"}}]'
+
+@action('rest/dcm4chee/mwl/create', method=['POST'])
+def add_mwl():
+    """
+    Create a new MWL item. Patient must exist beforehands.
+    Parameters:
+        patient_data (dict)
+
+    """
+    study_data = request.json
+
+    ds = Dataset()
+    ds.add_new(0x00100020, 'LO', study_data['PatientID']+"_oph4py") 
+    ds.add_new(0x00800090, 'PN', study_data['ReferringPhysicianName'])
+
+    sps = Dataset()
+    sps.add_new(0x00400002, 'DA', study_data['ScheduledProcedureStepStartDate'])
+    sps.add_new(0x00400003, 'TM', study_data['ScheduledProcedureStepStartTime'])
+    sps.add_new(0x00401001, 'SH', study_data['RequestedProcedureID'])
+    sps.add_new(0x00321060, 'LO', study_data['RequestedProcedureDescription'])
+    sps.add_new(0x00400001, 'AE', study_data['ScheduledStationAETitle']) 
+    sps.add_new(0x00400006, 'SH', study_data['ScheduledPerformingPhysicianName'])
+    sps.add_new(0x00400011, 'SH', study_data['ScheduledProcedureStepLocation'])
+    sps.add_new(0x00400020, 'CS', 'SCHEDULED')
+    ds.add_new(0x00400100, 'SQ', Sequence([sps]))
+    # You'll need to modify this line based on the specific SOP Class UID for the MWL item
+    ds.SOPClassUID = '1.2.840.10008.5.1.4.31'
+
+    json_token = check_token()
+    token = json_token['access_token']
+    url = f"{PACS_URL}/aets/{AET['MWL']}/rs/mwlitems"
+
+    payload = ds.to_json_dict()
+    # print('Payload:',payload)
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    response = requests.post(url, json=payload, headers=headers)
+    response.encoding = 'utf-8'
+    if response.status_code == 200:
+        return f'[{{ "status": "success" , "code": "{response.status_code}", "message": "{response.text}"}}]'
+    if response.status_code == 400:
+        return '[{{ "status": "error" , "code": "{response.status_code}", "message": "Missing Patient ID or Scheduled Procedure Step Sequence in request body or Patient found using patient identifiers sent in request payload does not match with patient of MWL"}}]'
+    if response.status_code == 403:
+        return f'[{{ "status": "success" , "code": "{response.status_code}", "message": "Create/Update MWL forbidden for already merged patients"}}]'
+    if response.status_code == 404:
+        return f'[{{ "status": "success" , "code": "{response.status_code}", "message": "There is no Archive AE with the specified Title or Patient does not exist."}}]'
+    if response.status_code == 409:
+        return f'[{{ "status": "success" , "code": "{response.status_code}", "message": "Non Unique Patient or Patient is already merged exception."}}]'
     else:
         return f'[{{ "status": "error", "code": "{response.status_code}", "message": "Request error"}}]'
