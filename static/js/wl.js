@@ -267,10 +267,12 @@ function putWlModal(wlId){
 $('#newWlItemForm').submit(function(e) {
     e.preventDefault();
     let req = $('#methodWlItemSubmit').val();
+    // TODO: create patient for pacs at this level instead of for each modality
     if (req =='POST') {
         // FIXME: wlItemsCounter will be lower if an item is deleted???
         for (let i = 0; i<=wlItemsCounter+1; i++) {
             let el = "#wlItem"+parseInt(i);
+            let wlId;
             if ($(el).length != 0) {
                 let itemDataObj = JSON.parse($(el).data().json);
                 delete itemDataObj['methodWlItemSubmit'];
@@ -279,12 +281,47 @@ $('#newWlItemForm').submit(function(e) {
                         console.log('WlItemObj:',itemDataObj);                   
                         itemDataObj["message_unique_id"] = uuid.unique_id;
                         let itemDataStr = JSON.stringify(itemDataObj);
-                        crudp('worklist','0', req, itemDataStr).then( data => $(el).remove()); // remove wl item element node when posted
+                        console.log('itemDataStr:',itemDataStr);
+                        crudp('worklist','0', req, itemDataStr)
+                        .then( data => {
+                            $(el).remove(); // remove wl item DOM element node when posted
+                            wlId = data.id;
+                        }); 
                     })
                     .then(function() {
                         getTableInfo('modality',itemDataObj['modality_dest'])
                             .then(function(modality){
-                                let modalityLowCase = modality['items'][0]['modality_name'].toLowerCase() ;
+                                // construct the study object
+                                let study_data = {};
+                                let modalityLowCase = modality['items'][0]['modality_name'].toLowerCase();
+                                let patientInfo = getUserInfo(itemDataObj['id_auth_user']) // get patient info
+                                patientInfo.then(function(patient){
+                                        console.log('wlId:',wlId);
+                                        console.log('patient',patient);
+                                        console.log('modality',modality);
+                                        study_data.PatientID = patient['items'][0].id;
+                                        study_data.PatientName = patient['items'][0]['last_name']+'^'+ patient['items'][0]['first_name'];
+                                        study_data.PatientBirthDate = patient['items'][0]['last_name'].replace(/-/g, "");
+                                        study_data.PatientSex = patient['items'][0]['gender.sex'].charAt(0).toUpperCase();
+                                        study_data.ScheduledProcedureStepStartDate = itemDataObj['requested_time'].substring(0, 4) + itemDataObj['requested_time'].substring(5, 7) + itemDataObj['requested_time'].substring(8, 10);
+                                        study_data.ScheduledProcedureStepStartTime = itemDataObj['requested_time'].substring(11, 13) + itemDataObj['requested_time'].substring(14, 16);
+                                        study_data.StudyDescription = "Eye examination";
+                                        study_data.RequestedProcedureDescription = "Opthalmology Procedure";
+                                        study_data.ScheduledStationAETitle = modalityLowCase.toUpperCase()
+                                        // TODO: study_data.ScheduledProcedureStepLocation" = "Room 1"
+                                    })
+                                    .then(function(){
+                                        let provider = getUserInfo(itemDataObj['provider'])
+                                        provider.then(function(provider){
+                                            study_data.ScheduledPerformingPhysicianName= provider['items'][0]['last_name']+'^'+ provider['items'][0]['first_name'];
+                                            let senior = getUserInfo(itemDataObj['senior']);
+                                            senior.then(function(senior){
+                                                study_data.ReferringPhysicianName= senior['items'][0]['last_name']+'^'+ senior['items'][0]['first_name'];
+                                                console.log('study_data:',study_data);
+                                            });
+                                        });
+
+                                    });
                                 if ( modalityLowCase == 'l80') {
                                     // console.log('L80 detected');
                                     getUserInfo(itemDataObj['id_auth_user'])
