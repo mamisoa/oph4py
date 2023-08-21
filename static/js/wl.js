@@ -276,6 +276,8 @@ $('#newWlItemForm').submit(function(e) {
             if ($(el).length != 0) {
                 let itemDataObj = JSON.parse($(el).data().json);
                 delete itemDataObj['methodWlItemSubmit'];
+                let study_data = {};
+                let modalityLowCase;
                 getUuid()
                     .then(function(uuid) {
                         console.log('WlItemObj:',itemDataObj);                   
@@ -292,14 +294,13 @@ $('#newWlItemForm').submit(function(e) {
                         getTableInfo('modality',itemDataObj['modality_dest'])
                             .then(function(modality){
                                 // construct the study object
-                                let study_data = {};
-                                let modalityLowCase = modality['items'][0]['modality_name'].toLowerCase();
+                                modalityLowCase = modality['items'][0]['modality_name'].toLowerCase();
                                 let patientInfo = getUserInfo(itemDataObj['id_auth_user']) // get patient info
                                 patientInfo.then(function(patient){
                                         console.log('wlId:',wlId);
                                         console.log('patient',patient);
                                         console.log('modality',modality);
-                                        study_data.PatientID = patient['items'][0].id;
+                                        study_data.PatientID = patient['items'][0]['id'];
                                         study_data.PatientName = patient['items'][0]['last_name']+'^'+ patient['items'][0]['first_name'];
                                         study_data.PatientBirthDate = patient['items'][0]['last_name'].replace(/-/g, "");
                                         study_data.PatientSex = patient['items'][0]['gender.sex'].charAt(0).toUpperCase();
@@ -307,7 +308,6 @@ $('#newWlItemForm').submit(function(e) {
                                         study_data.ScheduledProcedureStepStartTime = itemDataObj['requested_time'].substring(11, 13) + itemDataObj['requested_time'].substring(14, 16);
                                         study_data.StudyDescription = "Eye examination";
                                         study_data.RequestedProcedureDescription = "Opthalmology Procedure";
-                                        study_data.ScheduledStationAETitle = modalityLowCase.toUpperCase()
                                         // TODO: study_data.ScheduledProcedureStepLocation" = "Room 1"
                                     })
                                     .then(function(){
@@ -318,53 +318,96 @@ $('#newWlItemForm').submit(function(e) {
                                             senior.then(function(senior){
                                                 study_data.ReferringPhysicianName= senior['items'][0]['last_name']+'^'+ senior['items'][0]['first_name'];
                                                 console.log('study_data:',study_data);
+                                                let patient_data = {};
+                                                patient_data.PatientID = study_data.PatientID;
+                                                patient_data.PatientName = study_data.PatientName;
+                                                patient_data.PatientBirthDate = study_data.PatientBirthDate;
+                                                patient_data.PatientSex = study_data.PatientSex;
+                                                console.log('patient_data:',patient_data);
+                                                let createpatient = addPatientPacs(patient_data);
                                             });
                                         });
-
                                     });
-                                if ( modalityLowCase == 'l80') {
-                                    // console.log('L80 detected');
-                                    getUserInfo(itemDataObj['id_auth_user'])
-                                        .then(function(user){
-                                            let firstname = removeAccent(user['items'][0]['first_name']);
-                                            let lastname = removeAccent(user['items'][0]['last_name']);
-                                            let dob = user['items'][0]['dob'];
-                                            let id = user['items'][0]['id'];
-                                            let sex = user['items'][0]['gender.sex'];
-                                            // console.log('useritem: ', user['items'][0]);
-                                            addPatientVisionix('vx100', id, lastname, firstname, dob, sex);
-                                            addPatientVisionix('l80', id, lastname, firstname, dob, sex);
-                                        })
-                                        .then(function () {
+                                })
+                                .then(function(){
+                                    if ( modalityLowCase == 'l80') {
+                                        // console.log('L80 detected');
+                                        getUserInfo(itemDataObj['id_auth_user'])
+                                            .then(function(user){
+                                                let firstname = removeAccent(user['items'][0]['first_name']);
+                                                let lastname = removeAccent(user['items'][0]['last_name']);
+                                                let dob = user['items'][0]['dob'];
+                                                let id = user['items'][0]['id'];
+                                                let sex = user['items'][0]['gender.sex'];
+                                                // console.log('useritem: ', user['items'][0]);
+                                                addPatientVisionix('vx100', id, lastname, firstname, dob, sex);
+                                                addPatientVisionix('l80', id, lastname, firstname, dob, sex);
+                                            })
+                                            .then(function () {
+                                                $table_wl.bootstrapTable('refresh');
+                                            });
+                                    } else {
+                                        // console.log('not L80');
+                                    };
+                                    if (modalityLowCase == 'octopus 900' || modalityLowCase == 'lenstar') {
+                                        console.log(modalityLowCase,' detected');
+                                        getUserInfo(itemDataObj['id_auth_user'])
+                                            .then(function(user){
+                                                let firstname = removeAccent(user['items'][0]['first_name']);
+                                                let lastname = removeAccent(user['items'][0]['last_name']);
+                                                let dob = user['items'][0]['dob'];
+                                                let id = user['items'][0]['id'];
+                                                let sex = user['items'][0]['gender.sex'];
+                                                console.log('useritem: ', user['items'][0]);
+                                                let machineType;
+                                                if (modalityLowCase === 'octopus 900') {
+                                                    machineType = 'PERIMETRY_STATIC';
+                                                } else if (modalityLowCase === 'lenstar') {
+                                                    machineType = 'BIOM_MEASUREMENT';};
+                                                addPatientEyesuite(machineType, id, lastname, firstname, dob, sex);
+                                            })
+                                            .then(function () {
+                                                $table_wl.bootstrapTable('refresh');
+                                            });
+                                    } else {
+                                        console.log('not octopus 900 nor lenstar');
+                                    };
+                                    if (modalityLowCase == 'anterion') {
+                                            console.log('modality is', modalityLowCase);
+                                            study_data.ScheduledStationAETitle = "ANTERION";
+                                            console.log("study_data PENTACAM",study_data)
+                                            let updateMwl = addStudyMwl(study_data);
+                                            updateMwl.then(function () {
+                                                $table_wl.bootstrapTable('refresh');
+                                            });
+                                    } else {
+                                        console.log('not Anterion');
+                                    };
+                                    if (modalityLowCase == 'pentacam') {
+                                        console.log('modality is', modalityLowCase);
+                                        let study_data_copy = JSON.parse(JSON.stringify(study_data));
+                                        study_data_copy.ScheduledStationAETitle = "PENTACAM";
+                                        console.log("study_data PENTACAM",study_data_copy)
+                                        let updateMwl = addStudyMwl(study_data_copy);
+                                        updateMwl.then(function () {
                                             $table_wl.bootstrapTable('refresh');
                                         });
-                                } else {
-                                    // console.log('not L80');
-                                };
-                                if (modalityLowCase == 'octopus 900' || modalityLowCase == 'lenstar') {
-                                    console.log(modalityLowCase,' detected');
-                                    getUserInfo(itemDataObj['id_auth_user'])
-                                        .then(function(user){
-                                            let firstname = removeAccent(user['items'][0]['first_name']);
-                                            let lastname = removeAccent(user['items'][0]['last_name']);
-                                            let dob = user['items'][0]['dob'];
-                                            let id = user['items'][0]['id'];
-                                            let sex = user['items'][0]['gender.sex'];
-                                            console.log('useritem: ', user['items'][0]);
-                                            let machineType;
-                                            if (modalityLowCase === 'octopus 900') {
-                                                machineType = 'PERIMETRY_STATIC';
-                                            } else if (modalityLowCase === 'lenstar') {
-                                                machineType = 'BIOM_MEASUREMENT';};
-                                            addPatientEyesuite(machineType, id, lastname, firstname, dob, sex);
-                                        })
-                                        .then(function () {
+                                    } else {
+                                        console.log('not Pentacam');
+                                    };
+                                    if (modalityLowCase == 'md') {
+                                        console.log('modality is', modalityLowCase);
+                                        study_data.ScheduledStationAETitle = "CR1";
+                                        console.log("study_data CR1",study_data)
+                                        let updateMwl = addStudyMwl(study_data);
+                                        updateMwl.then(function () {
                                             $table_wl.bootstrapTable('refresh');
                                         });
-                                } else {
-                                    console.log('not octopus 900 nor lenstar');
-                                };
-                            })
+                                    } else {
+                                        console.log('not MD');
+                                    };
+                                })
+                            
                     })
                     .then(function(){
                         $table_wl.bootstrapTable('refresh');
