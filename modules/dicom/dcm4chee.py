@@ -83,7 +83,7 @@ def create_patient():
 
     ds = Dataset()
     ds.add_new(0x00100010, 'PN', patient_data['PatientName']) 
-    ds.add_new(0x00100020, 'LO', patient_data['PatientID']+"_oph4py") 
+    ds.add_new(0x00100020, 'LO', str(patient_data['PatientID'])+"_oph4py") 
     ds.add_new(0x00100030, 'DA', patient_data['PatientBirthDate']) 
     ds.add_new(0x00100040, 'CS', patient_data['PatientSex']) #M/F/O oph4py returns 'Male'/'Female'/'Other'
 
