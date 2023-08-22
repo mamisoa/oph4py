@@ -269,7 +269,7 @@ function setWlItemStatus (dataStr) {
 };
 
 //  use as promise
-function getVisionixData(machine="l80",lastname="",firstname="") {
+async function getVisionixData(machine="l80",lastname="",firstname="") {
     let API_URL = HOSTURL+'/myapp/rest/machines/'+machine+'?lastname='+lastname+'&firstname='+firstname;
     return Promise.resolve(
         $.ajax({
@@ -285,7 +285,7 @@ function getVisionixData(machine="l80",lastname="",firstname="") {
 };
 
 // use to populate patient in L80 or VX100
-function addPatientVisionix(machine,id='',lastname='', firstname='',dob='',sex='') {
+async function addPatientVisionix(machine,id='',lastname='', firstname='',dob='',sex='') {
     sex == 'Female'? sex = 'f': (sex == 'Male'? sex = 'm': sex ='');
     let API_URL = HOSTURL + '/myapp/rest/create_visionix/' + machine + '?lastname=' + lastname + '&firstname=' + firstname
         + '&id=' + id + '&sex=' + sex + '&dob=' + dob;
@@ -366,7 +366,7 @@ async function addPatientPacs(data) {
                 if (response.status == "success" ) {
                     displayToast('success', 'add patient to PACS', response.message, '3000');
                 } else {
-                    displayToast('error', 'add patient to PACS', response.message, '6000');
+                    displayToast('error', 'error posting patient to PACS', response.message, '6000');
                 }
             })
         .then(json => console.log("Patient added"))

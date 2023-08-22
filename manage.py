@@ -113,9 +113,9 @@ def worklist():
     providerOptions=""
     for provider in db((db.auth_user.membership>=getMembershipId('Doctor'))&(db.auth_user.membership<=getMembershipId('Medical assistant'))).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
         if provider.last_name == DEFAULT_PROVIDER: # make "House" as default option
-            providerOptions = CAT(providerOptions, OPTION(provider.last_name + ' '+ provider.first_name,_selected="selected",_value=str(provider.id)))
+            providerOptions = CAT(providerOptions, OPTION(provider.last_name + ','+ provider.first_name,_selected="selected",_value=str(provider.id)))
         else:
-            providerOptions = CAT(providerOptions, OPTION(provider.last_name + ' '+ provider.first_name,_value=str(provider.id)))
+            providerOptions = CAT(providerOptions, OPTION(provider.last_name + ','+ provider.first_name,_value=str(provider.id)))
     providerOptions = XML(providerOptions) 
     seniorOptions = ""
     # medicalmembership = db((db.membership.hierarchy==1)|(db.membership.hierarchy==2)).select(
@@ -124,10 +124,10 @@ def worklist():
     for senior in db(db.auth_user.membership == idMembershipDoctor).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
         if senior.last_name == DEFAULT_SENIOR :  # make "House" as default option
             seniorOptions = CAT(seniorOptions, OPTION(
-                senior.last_name + ' ' + senior.first_name, _selected="selected", _value=str(senior.id)))
+                senior.last_name + ',' + senior.first_name, _selected="selected", _value=str(senior.id)))
         else:
             seniorOptions = CAT(seniorOptions, OPTION(
-                senior.last_name + ' ' + senior.first_name, _value=str(senior.id)))
+                senior.last_name + ',' + senior.first_name, _value=str(senior.id)))
     seniorOptions = XML(seniorOptions)
     everyModalityOptions = dropdownSelect(db.modality,db.modality.fields[1],1)
     modalityRows = db(db.modality).select(db.modality.modality_name,db.modality.id_modality_controller)
