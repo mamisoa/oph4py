@@ -82,6 +82,7 @@ def create_patient():
     patient_data = request.json
 
     ds = Dataset()
+    ds.add_new(0x00080005, 'CS', 'ISO_IR 192')
     ds.add_new(0x00100010, 'PN', patient_data['PatientName']) 
     ds.add_new(0x00100020, 'LO', str(patient_data['PatientID'])+"_oph4py") 
     ds.add_new(0x00100030, 'DA', patient_data['PatientBirthDate']) 
@@ -122,17 +123,18 @@ def add_mwl():
     study_data = request.json
 
     ds = Dataset()
-    ds.add_new(0x00100020, 'LO', study_data['PatientID']+"_oph4py") 
+    ds.add_new(0x00080005, 'CS', 'ISO_IR 192')
+    ds.add_new(0x00100020, 'LO', str(study_data['PatientID'])+"_oph4py") 
     ds.add_new(0x00800090, 'PN', study_data['ReferringPhysicianName'])
 
     sps = Dataset()
     sps.add_new(0x00400002, 'DA', study_data['ScheduledProcedureStepStartDate'])
     sps.add_new(0x00400003, 'TM', study_data['ScheduledProcedureStepStartTime'])
-    sps.add_new(0x00401001, 'SH', study_data['RequestedProcedureID'])
+    # sps.add_new(0x00401001, 'SH', study_data['RequestedProcedureID'])
     sps.add_new(0x00321060, 'LO', study_data['RequestedProcedureDescription'])
     sps.add_new(0x00400001, 'AE', study_data['ScheduledStationAETitle']) 
     sps.add_new(0x00400006, 'SH', study_data['ScheduledPerformingPhysicianName'])
-    sps.add_new(0x00400011, 'SH', study_data['ScheduledProcedureStepLocation'])
+    # sps.add_new(0x00400011, 'SH', study_data['ScheduledProcedureStepLocation'])
     sps.add_new(0x00400020, 'CS', 'SCHEDULED')
     ds.add_new(0x00400100, 'SQ', Sequence([sps]))
     # You'll need to modify this line based on the specific SOP Class UID for the MWL item

@@ -267,157 +267,151 @@ function putWlModal(wlId){
 $('#newWlItemForm').submit(function(e) {
     e.preventDefault();
     let req = $('#methodWlItemSubmit').val();
-    let providerSelect = document.getElementById('providerSelect').options[document.getElementById('providerSelect').selectedIndex].text;
     let seniorSelect = document.getElementById('seniorSelect').options[document.getElementById('seniorSelect').selectedIndex].text;
+    let providerSelect = document.getElementById('providerSelect').options[document.getElementById('providerSelect').selectedIndex].text;
+    let patientId = document.getElementById('idPatientWl').value;
+    // not to use ? let wlIdEl = document.getElementById('idWl').value;
+    // constructing studyData
+    let studyData = {};
+    studyData.ReferringPhysicianName = seniorSelect.replace(/,/g, '^');
+    studyData.ScheduledPerformingPhysicianName = providerSelect.replace(/,/g, '^');
+
     // TODO: create patient for pacs at this level instead of for each modality
     if (req =='POST') {
-        // FIXME: wlItemsCounter will be lower if an item is deleted???
-        for (let i = 0; i<=wlItemsCounter+1; i++) {
-            let el = "#wlItem"+parseInt(i);
-            let wlId;
-            if ($(el).length != 0) {
-                let itemDataObj = JSON.parse($(el).data().json);
-                delete itemDataObj['methodWlItemSubmit'];
-                let study_data = {};
-                let modalityLowCase;
-                getUuid()
-                    .then(function(uuid) {
-                        console.log('WlItemObj:',itemDataObj);                   
-                        itemDataObj["message_unique_id"] = uuid.unique_id;
-                        let itemDataStr = JSON.stringify(itemDataObj);
-                        console.log('itemDataStr:',itemDataStr);
-                        crudp('worklist','0', req, itemDataStr)
-                        .then( data => {
-                            $(el).remove(); // remove wl item DOM element node when posted
-                            wlId = data.id;
-                        }); 
-                    })
-                    .then(function() {
-                        getTableInfo('modality',itemDataObj['modality_dest'])
-                            .then(function(modality){
-                                // construct the study object ScheduledPerformingPhysicianName
-                                modalityLowCase = modality['items'][0]['modality_name'].toLowerCase();
-                                let patientInfo = getUserInfo(itemDataObj['id_auth_user']) // get patient info
-                                patientInfo.then(function(patient){
-                                        console.log('wlId:',wlId);
-                                        console.log('patient',patient);
-                                        console.log('modality',modality);
-                                        study_data.PatientID = patient['items'][0]['id'];
-                                        study_data.PatientName = patient['items'][0]['last_name']+'^'+ patient['items'][0]['first_name'];
-                                        study_data.PatientBirthDate = patient['items'][0]['dob'].replace(/-/g, "");
-                                        study_data.PatientSex = patient['items'][0]['gender.sex'].charAt(0).toUpperCase();
-                                        study_data.ScheduledProcedureStepStartDate = itemDataObj['requested_time'].substring(0, 4) + itemDataObj['requested_time'].substring(5, 7) + itemDataObj['requested_time'].substring(8, 10);
-                                        study_data.ScheduledProcedureStepStartTime = itemDataObj['requested_time'].substring(11, 13) + itemDataObj['requested_time'].substring(14, 16);
-                                        study_data.StudyDescription = "Eye examination";
-                                        study_data.RequestedProcedureDescription = "Opthalmology Procedure";
-                                        study_data.ReferringPhysicianName = 'Andriantafika^Raberahona Mamisoa';
-                                        // TODO: study_data.ScheduledProcedureStepLocation" = "Room 1" ReferringPhysicianName
-                                    })
-                                    .then(function(){
-                                        let provider = getUserInfo(itemDataObj['provider'])
-                                        provider.then(function(provider){
-                                            study_data.ScheduledPerformingPhysicianName= provider['items'][0]['last_name']+'^'+ provider['items'][0]['first_name'];
-                                            let senior = getUserInfo(itemDataObj['senior']);
-                                            senior.then(function(senior){
-                                                console.log('senior', senior)
-                                                study_data.ReferringPhysicianName = senior['items'][0]['last_name']+'^'+ senior['items'][0]['first_name'];
-                                                let patient_data = {};
-                                                patient_data.PatientID = study_data.PatientID;
-                                                patient_data.PatientName = study_data.PatientName;
-                                                patient_data.PatientBirthDate = study_data.PatientBirthDate;
-                                                patient_data.PatientSex = study_data.PatientSex;
-                                                console.log('patient_data:',patient_data);
-                                                let createpatient = addPatientPacs(patient_data);
-                                            });
-                                        });
-                                    })
-                                    .then(function(){
-                                        if ( modalityLowCase == 'l80') {
-                                            // console.log('L80 detected');
-                                            getUserInfo(itemDataObj['id_auth_user'])
-                                                .then(function(user){
-                                                    let firstname = removeAccent(user['items'][0]['first_name']);
-                                                    let lastname = removeAccent(user['items'][0]['last_name']);
-                                                    let dob = user['items'][0]['dob'];
-                                                    let id = user['items'][0]['id'];
-                                                    let sex = user['items'][0]['gender.sex'];
-                                                    // console.log('useritem: ', user['items'][0]);
-                                                    addPatientVisionix('vx100', id, lastname, firstname, dob, sex);
-                                                    addPatientVisionix('l80', id, lastname, firstname, dob, sex);
-                                                })
-                                                .then(function () {
-                                                    $table_wl.bootstrapTable('refresh');
-                                                });
-                                        } else {
-                                            // console.log('not L80');
-                                        };
-                                        if (modalityLowCase == 'octopus 900' || modalityLowCase == 'lenstar') {
-                                            console.log(modalityLowCase,' detected');
-                                            getUserInfo(itemDataObj['id_auth_user'])
-                                                .then(function(user){
-                                                    let firstname = removeAccent(user['items'][0]['first_name']);
-                                                    let lastname = removeAccent(user['items'][0]['last_name']);
-                                                    let dob = user['items'][0]['dob'];
-                                                    let id = user['items'][0]['id'];
-                                                    let sex = user['items'][0]['gender.sex'];
-                                                    console.log('useritem: ', user['items'][0]);
-                                                    let machineType;
-                                                    if (modalityLowCase === 'octopus 900') {
-                                                        machineType = 'PERIMETRY_STATIC';
-                                                    } else if (modalityLowCase === 'lenstar') {
-                                                        machineType = 'BIOM_MEASUREMENT';};
-                                                    addPatientEyesuite(machineType, id, lastname, firstname, dob, sex);
-                                                })
-                                                .then(function () {
-                                                    $table_wl.bootstrapTable('refresh');
-                                                });
-                                        } else {
-                                            console.log('not octopus 900 nor lenstar');
-                                        };
-                                        if (modalityLowCase == 'anterion') {
-                                                console.log('modality is', modalityLowCase);
-                                                study_data.ScheduledStationAETitle = "ANTERION";
-                                                console.log("study_data PENTACAM",study_data)
-                                                let updateMwl = addStudyMwl(study_data);
-                                                updateMwl.then(function () {
-                                                    $table_wl.bootstrapTable('refresh');
-                                                });
-                                        } else {
-                                            console.log('not Anterion');
-                                        };
-                                        if (modalityLowCase == 'pentacam') {
-                                            console.log('modality is', modalityLowCase);
-                                            let study_data_copy = JSON.parse(JSON.stringify(study_data));
-                                            study_data_copy.ScheduledStationAETitle = "PENTACAM";
-                                            console.log("study_data PENTACAM",study_data_copy)
-                                            let updateMwl = addStudyMwl(study_data_copy);
-                                            updateMwl.then(function () {
-                                                $table_wl.bootstrapTable('refresh');
-                                            });
-                                        } else {
-                                            console.log('not Pentacam');
-                                        };
-                                        if (modalityLowCase == 'md') {
-                                            console.log('modality is', modalityLowCase);
-                                            study_data.ScheduledStationAETitle = "CR1";
-                                            console.log("study_data CR1",study_data)
-                                            let updateMwl = addStudyMwl(study_data);
-                                            updateMwl.then(function () {
-                                                $table_wl.bootstrapTable('refresh');
-                                            });
-                                        } else {
-                                            console.log('not MD');
-                                        };
-                                    })
+        // create patient in dicom
+        let patientInfo = getUserInfo(patientId);
+        patientInfo
+            .then( (patient) => {
+                    let patientData = {}; 
+                    patientData.PatientID = patient['items'][0]['id'];
+                    patientData.PatientName = patient['items'][0]['last_name']+'^'+ patient['items'][0]['first_name'];
+                    patientData.PatientBirthDate = patient['items'][0]['dob'].replace(/-/g, "");
+                    patientData.PatientSex = patient['items'][0]['gender.sex'].charAt(0).toUpperCase();
+                    studyData.PatientID = patient['items'][0]['id'];
+                    let postPatientPacs = addPatientPacs(patientData) // promise
+                    postPatientPacs
+                    .then( () => { // patient is added to PACS, now loop the workinglist items
+                            // FIXME: wlItemsCounter will be lower if an item is deleted???
+                            for (let i = 0; i<=wlItemsCounter+1; i++) {
+                                let el = "#wlItem"+parseInt(i);
+                                let wlId;
+                                if ($(el).length != 0) {
+                                    let itemDataObj = JSON.parse($(el).data().json);
+                                    delete itemDataObj['methodWlItemSubmit'];
+                                    let modalityLowCase;
+                                    getUuid() // promise
+                                        .then(function(uuid) {
+                                            console.log('WlItemObj:',itemDataObj);                   
+                                            itemDataObj["message_unique_id"] = uuid.unique_id;
+                                            let itemDataStr = JSON.stringify(itemDataObj);
+                                            console.log('itemDataStr:',itemDataStr);
+                                            crudp('worklist','0', req, itemDataStr)
+                                            .then( data => {
+                                                $(el).remove(); // remove wl item DOM element node when posted
+                                                wlId = data.id;
+                                            }); 
+                                        })
+                                        .catch(error => console.error('An error occurred generating uuid:', error))
+                                        .then(function() {
+                                            getTableInfo('modality',itemDataObj['modality_dest'])
+                                                .then(function(modality){
+                                                    modalityLowCase = modality['items'][0]['modality_name'].toLowerCase();
+                                                    studyData.ScheduledProcedureStepStartDate = itemDataObj['requested_time'].substring(0, 4) + itemDataObj['requested_time'].substring(5, 7) + itemDataObj['requested_time'].substring(8, 10);
+                                                    studyData.ScheduledProcedureStepStartTime = itemDataObj['requested_time'].substring(11, 13) + itemDataObj['requested_time'].substring(14, 16);
+                                                    studyData.RequestedProcedureDescription = "Opthalmology Procedure";
+                                                    // TODO: construct Dicom Sequences
+                                                    if ( modalityLowCase == 'l80') {
+                                                        console.log('L80 detected');
+                                                        let firstname = removeAccent(patient['items'][0]['first_name']);
+                                                        let lastname = removeAccent(patient['items'][0]['last_name']);
+                                                        let dob = patient['items'][0]['dob'];
+                                                        let id = patient['items'][0]['id'];
+                                                        let sex = patient['items'][0]['gender.sex'];
+                                                        // console.log('useritem: ', user['items'][0]);
+                                                        addPatientVisionix('vx100', id, lastname, firstname, dob, sex)
+                                                        .then( () => {
+                                                                    addPatientVisionix('l80', id, lastname, firstname, dob, sex)
+                                                                    // .then( () => {$table_wl.bootstrapTable('refresh');})
+                                                                    .catch(error => console.error('An error occurred adding patient to l80:', error))
+                                                                }
+                                                            )
+                                                        .catch(error => console.error('An error occurred adding patient to visionix:', error));
+                                                    } else {
+                                                        // console.log('not L80');
+                                                    };
 
-                                });
-                            
-                    })
-                    .then(function(){
-                        $table_wl.bootstrapTable('refresh');
-                    });
-            };
-        }; // end for loop
+                                                    if (modalityLowCase == 'octopus 900' || modalityLowCase == 'lenstar') {
+                                                        console.log(modalityLowCase,' detected');
+                                                        let firstname = removeAccent(patient['items'][0]['first_name']);
+                                                        let lastname = removeAccent(patient['items'][0]['last_name']);
+                                                        let dob = patient['items'][0]['dob'];
+                                                        let id = patient['items'][0]['id'];
+                                                        let sex = patient['items'][0]['gender.sex'];
+                                                        let machineType;
+                                                        if (modalityLowCase === 'octopus 900') {
+                                                            machineType = 'PERIMETRY_STATIC';
+                                                        } else if (modalityLowCase === 'lenstar') {
+                                                            machineType = 'BIOM_MEASUREMENT';};
+                                                        addPatientEyesuite(machineType, id, lastname, firstname, dob, sex)
+                                                        // .then( () => {$table_wl.bootstrapTable('refresh')})
+                                                        .catch(error => console.error('An error occurred adding patient to Eyesuite:', error));
+                                                    } else {
+                                                        console.log('not octopus 900 nor lenstar');
+                                                    };
+
+                                                    if (modalityLowCase == 'anterion') {
+                                                        console.log('modality is', modalityLowCase);
+                                                        studyData.StudyDescription = "Anterior OCT";
+                                                        studyData.ScheduledStationAETitle = "ANTERION";
+                                                        console.log("studyData PENTACAM",studyData)
+                                                        let updateMwl = addStudyMwl(studyData);
+                                                        updateMwl
+                                                        // .then(() => {$table_wl.bootstrapTable('refresh');})
+                                                        .catch(error => console.error('An error occurred adding Pentacam to MWL:', error));
+                                                    } else {
+                                                        console.log('not Anterion');
+                                                    };
+
+                                                    if (modalityLowCase == 'pentacam') {
+                                                        console.log('modality is', modalityLowCase);
+                                                        studyData.StudyDescription = "Scheimpflug topography";
+                                                        studyData.ScheduledStationAETitle = "PENTACAM";
+                                                        console.log("studyData PENTACAM",studyData_copy)
+                                                        let updateMwl = addStudyMwl(studyData_copy);
+                                                        updateMwl
+                                                        // .then(() => {$table_wl.bootstrapTable('refresh');})
+                                                        .catch(error => console.error('An error occurred adding Pentacam to MWL:', error));
+                                                    } else {
+                                                        console.log('not Pentacam');
+                                                    };
+
+                                                    if (modalityLowCase == 'md') {
+                                                        console.log('modality is', modalityLowCase);
+                                                        studyData.StudyDescription = "Non mydriatic retinography";
+                                                        studyData.ScheduledStationAETitle = "CR1";
+                                                        console.log("studyData CR1",studyData)
+                                                        let updateMwl = addStudyMwl(studyData);
+                                                        updateMwl
+                                                        // .then(() => {$table_wl.bootstrapTable('refresh');})
+                                                        .catch(error => console.error('An error occurred adding CR1 to MWL:', error));
+                                                    } else {
+                                                        console.log('not MD');
+                                                    };
+
+                                                }) // end getTableInfo
+                                                .catch(error => console.error('An error occurred getting modality informations:', error));
+                                        })
+                                        .then(function(){
+                                            $table_wl.bootstrapTable('refresh');
+                                        });
+                                };
+                            }; // end for loop
+                        } // .then patient added to PCS
+
+                    )
+                    .catch(error => console.error('An error occurred adding patient to PACS:', error));
+                })
+            .catch(error => console.error('An error occurred getting patient informations:', error));
     } else if (req=='PUT') {
         let itemDataPutStr = $('#newWlItemForm').serializeJSON();
         let itemDataPutObj = JSON.parse(itemDataPutStr);
