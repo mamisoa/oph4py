@@ -10,7 +10,7 @@ from py4web.utils.grid import Grid
 # from py4web.utils.factories import Inject
 
 # import settings
-from .settings import ENV_STATUS, LOCAL_URL, LOCAL_BEID, DEFAULT_PROVIDER, DEFAULT_SENIOR, TIMEOFFSET, NEW_INSTALLATION
+from .settings import ENV_STATUS, APP_NAME, LOCAL_URL, LOCAL_BEID, DEFAULT_PROVIDER, DEFAULT_SENIOR, TIMEOFFSET, NEW_INSTALLATION
 
 # import useful
 from .useful import dropdownSelect, getMembershipId
@@ -22,6 +22,7 @@ from .useful import dropdownSelect, getMembershipId
 def user(rec_id="1"):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     localbeid = LOCAL_BEID
     user = auth.get_user()
@@ -51,6 +52,7 @@ def user(rec_id="1"):
 def users(membership='Patient'):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
     test="Test OK"
@@ -90,6 +92,7 @@ def users(membership='Patient'):
 def worklist():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     localbeid = LOCAL_BEID
     user = auth.get_user()
@@ -156,6 +159,7 @@ def worklist():
 def medications(rec_id="1"):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
@@ -168,6 +172,7 @@ def medications(rec_id="1"):
 def allergy(rec_id="1"):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
@@ -180,6 +185,7 @@ def allergy(rec_id="1"):
 def diseases(rec_id="1"):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
@@ -192,6 +198,7 @@ def diseases(rec_id="1"):
 def medications(rec_id="1"):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
@@ -201,6 +208,7 @@ def medications(rec_id="1"):
 def files():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
     if 'membership' in user:
@@ -231,6 +239,7 @@ def files():
 @action.uses(T, db,'generic.html')
 def import_users():
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     # hosturl = LOCAL_URL
     import os
     # rows = db(db.auth_user).select()
@@ -432,6 +441,7 @@ def restore():
 def combo():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     procedureOptions=dropdownSelect(db.procedure,db.procedure.fields[2],1) # table to show is procedure, field to show=name, selected value is id=1, value is index
     modalityOptions=dropdownSelect(db.modality,db.modality.fields[1],1)
@@ -445,6 +455,7 @@ def combo():
 def summary(rec_id):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
     row = db(db.auth_user.id == rec_id).select().first()

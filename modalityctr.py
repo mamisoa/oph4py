@@ -9,7 +9,7 @@ from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added 
 from py4web.utils.grid import Grid
 
 # import settings
-from .settings import LOCAL_URL, ASSETS_FOLDER, MACHINES_FOLDER, NEW_INSTALLATION, TIMEOFFSET, ENV_STATUS
+from .settings import LOCAL_URL, APP_NAME, ASSETS_FOLDER, MACHINES_FOLDER, NEW_INSTALLATION, TIMEOFFSET, ENV_STATUS
 
 # import userful
 from .useful import dropdownSelect, rows2json, getMembershipId
@@ -62,6 +62,7 @@ def tono(wlId):
     """
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
     genderObj = genderId # used in patient-bar
@@ -85,6 +86,8 @@ def tono(wlId):
 def autorx(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
     genderObj = genderId # used in patient-bar
@@ -148,6 +151,7 @@ def initFields(wlId,table,lat=""):
 def md(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     modalityController = 'md'
     import base64
     from datetime import datetime
@@ -210,6 +214,7 @@ def md(wlId):
 def gp(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     modalityController = 'gp'
     import base64
     from datetime import datetime
@@ -271,6 +276,7 @@ def gp(wlId):
 def lenstar(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
     genderObj = genderId # used in patient-bar
@@ -296,6 +302,7 @@ def lenstar(wlId):
 def hello():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     import base64
     hosturl = LOCAL_URL
     database = db._tables

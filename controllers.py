@@ -35,7 +35,7 @@ from pydal.tools.tags import Tags
 from pydal.validators import CRYPT # to encrypt passwords
 
 # import settings
-from .settings import ENV_STATUS, LOCAL_URL, TIMEOFFSET, NEW_INSTALLATION # DB_OCTOPUS
+from .settings import ENV_STATUS, LOCAL_URL, APP_NAME, TIMEOFFSET, NEW_INSTALLATION # DB_OCTOPUS
 
 # grid
 from functools import reduce
@@ -51,6 +51,7 @@ from .useful import getMembershipId, dropdownSelect, check_duplicate
 def index():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     user = auth.get_user()
     userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
     if "NEW_INSTALLATION" in globals():
@@ -73,6 +74,7 @@ def index():
 def isNew():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     userMembership = None
     return locals()
 
@@ -82,6 +84,7 @@ def isNew():
 def test(membership=6):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
     userId=user['username']
@@ -157,6 +160,7 @@ def testtable():
 @action.uses(session, db, auth, 'grid.html')
 def companies(path=None):
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     grid = Grid(path,
                 query=reduce(lambda a, b: (a & b), [db.auth_user.id > 0]),
                 orderby=[db.auth_user.username],
@@ -167,6 +171,7 @@ def companies(path=None):
 @action.uses(session, auth.user, db, flash,'listdir.html')
 def listdir():
     timeOffset = TIMEOFFSET
+    app_name = APP_NAME
     user = auth.get_user()
     hosturl = LOCAL_URL
     test = 5
