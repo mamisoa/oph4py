@@ -138,11 +138,11 @@ window.operateEvents_wl = {
             setWlItemStatus(dataStr).then(function () {$table_wl.bootstrapTable('refresh')});
         }
         let controller = modalityDict[row.modality];
-        let link = HOSTURL+'/myapp/modalityCtr/'+controller+'/'+row.id
+        let link = HOSTURL+'/'+APP_NAME+'/modalityCtr/'+controller+'/'+row.id
         window.location.href = link;
     },
     'click .summary': function (e, value, row, index) {
-        let link = HOSTURL+'/myapp/billing/summary/'+row.id_auth_user;
+        let link = HOSTURL+'/'+APP_NAME+'/billing/summary/'+row.id_auth_user;
         window.location.href = link;
     },
     'click .unlock': function (e, value, row, index) {

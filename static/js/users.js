@@ -52,7 +52,7 @@ $('#userForm').submit(function(e) {
     formStr = JSON.stringify(formObj); // change to string
     console.log('userdata:',formObj);
     $.ajax({
-        url: HOSTURL+'/myapp/api/auth_user',
+        url: HOSTURL+'/'+APP_NAME+'/api/auth_user',
         data: formStr,
         contentType: 'application/json',
         dataType: 'json',

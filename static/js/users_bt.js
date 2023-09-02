@@ -60,7 +60,7 @@ function operateFormatter(value, row, index) {
 window.operateEvents = {
     'click .edit': function (e, value, row, index) {
     //   console.log('You click like action, row: ' + JSON.stringify(row));
-      window.location.href = HOSTURL+"/myapp/user/"+row.id;
+      window.location.href = HOSTURL+"/"+APP_NAME+"/user/"+row.id;
 
     },
     'click .remove': function (e, value, row, index) {
@@ -70,7 +70,7 @@ window.operateEvents = {
         addToWorklist(row.id);
     },
     'click .summary': function (e, value, row, index) {
-        let link = HOSTURL+'/myapp/billing/summary/'+row.id;
+        let link = HOSTURL+'/'+APP_NAME+'/billing/summary/'+row.id;
         window.location.href = link;
     }
 };

@@ -212,7 +212,7 @@ const HOSTURL = "[[ = hosturl ]]";
 <script type="text/javascript">
 
 // init tables
-const API_LENS = HOSTURL + "/myapp/api/cl?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_LENS = HOSTURL + "/"+APP_NAME+"/api/cl?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 var $lens_tbl = $('#lens_tbl').bootstrapTable({
     url: API_LENS

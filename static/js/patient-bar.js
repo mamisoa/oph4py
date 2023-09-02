@@ -26,7 +26,7 @@ wlObj['worklist']['warning'] != null? $('#wlItemDetails .warning').html('<i clas
 if (patientObj['photob64'] == null) {
     document.getElementById("photoId").setAttribute("height", 200);
     document.getElementById("photoId").setAttribute("width", 150);
-    genderIdObj[patientObj['gender']] == "Male" ? document.getElementById("photoId").setAttribute("src", HOSTURL+"/myapp/static/images/assets/avatar/mini-man.svg") : document.getElementById("photoId").setAttribute("src", HOSTURL+"/myapp/static/images/assets/avatar/mini-woman.svg");
+    genderIdObj[patientObj['gender']] == "Male" ? document.getElementById("photoId").setAttribute("src", HOSTURL+"/"+APP_NAME+"/static/images/assets/avatar/mini-man.svg") : document.getElementById("photoId").setAttribute("src", HOSTURL+"/"+APP_NAME+"/static/images/assets/avatar/mini-woman.svg");
     // $('#photoDiv').addClass('visually-hidden');
     // $('#patientIdDiv').removeClass('text-end').addClass('text-center');
 } else {
@@ -38,7 +38,7 @@ function getWlDetails(wlId){
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: HOSTURL+"/myapp/api/worklist/"+wlId+"?@lookup=patient!:id_auth_user[id,last_name,first_name,dob,photob64],modality!:modality_dest[id,modality_name],provider!:provider[id,last_name,first_name,dob],senior!:senior[id,last_name,first_name,dob]",
+            url: HOSTURL+"/"+APP_NAME+"/api/worklist/"+wlId+"?@lookup=patient!:id_auth_user[id,last_name,first_name,dob,photob64],modality!:modality_dest[id,modality_name],provider!:provider[id,last_name,first_name,dob],senior!:senior[id,last_name,first_name,dob]",
             success: function(data) {
                 if (data.status != 'error' && data.count) {
                     displayToast('success', 'GET combo exams', 'GET'+data.items[0]['patient.first_name']+' '+data.items[0]['patient.last_name'],3000);
@@ -87,7 +87,7 @@ $('#btnTaskDone').click(function() {
                                         $('#wlItemDetails .status').html(wlObj['status_flag']);
                                         disableBtn(btnArr);
                                     };
-                                    window.location.href = '/myapp/worklist';
+                                    window.location.href = '/'+APP_NAME+'/worklist';
                                 });
                         });
                 }
@@ -122,5 +122,5 @@ mdHistory.forEach(function (arrayItem) {
 
 $('.btnmdHistory').click(function(){
     // console.log("btn id is:",this.dataset.mdid);
-    window.location.href = '/myapp/modalityCtr/'+modalityController+'/'+this.dataset.mdid+'/#cHxDiv';
+    window.location.href = '/'+APP_NAME+'/modalityCtr/'+modalityController+'/'+this.dataset.mdid+'/#cHxDiv';
 });

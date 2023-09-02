@@ -153,8 +153,8 @@ def api(tablename, rec_id=None):
     Raises:
         ValueError: 400 values are not valid
     Exemples:
-        http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=phone:id_auth_user -> get phone from auth_user_id
-        http://localhost:8000/myapp/api/phone?id_auth_user=2&@lookup=identity!:id_auth_user[first_name,last_name] -> denormalised (flat)
+        http://localhost:8000/'+APP_NAME+'/api/phone?id_auth_user=2&@lookup=phone:id_auth_user -> get phone from auth_user_id
+        http://localhost:8000/'+APP_NAME+'/api/phone?id_auth_user=2&@lookup=identity!:id_auth_user[first_name,last_name] -> denormalised (flat)
     """
     db.phone.id_auth_user.writable= db.address.id_auth_user.writable = True
     db.phone.id_auth_user.readable = db.address.id_auth_user.readable = True

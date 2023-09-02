@@ -4,7 +4,7 @@ function getWlItemDetails(wl_id) {
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: HOSTURL+"/myapp/api/worklist/"+wl_id+"?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name]",
+            url: HOSTURL+"/"+APP_NAME+"/api/worklist/"+wl_id+"?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name]",
             success: function(data) {
                 if (data.status != 'error') {
                     displayToast('success', 'GET wl details', 'GET wl details from id :'+wl_id,6000);

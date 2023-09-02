@@ -477,7 +477,7 @@ $('#btnExport2cv5000').click(function(){
   let machine = this.getAttribute('data-machine');
   // console.log('export launch:', JSON.stringify(exportDict));
     $.ajax({
-      url: HOSTURL+`/myapp/rest/exportCV5000xml?${machine}`,
+      url: HOSTURL+'/'+APP_NAME+'/rest/exportCV5000xml?${machine}',
       contentType: 'application/json',
       dataType: 'json',
       type: 'POST',

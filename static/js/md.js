@@ -490,9 +490,9 @@ function getWlItemData(table,wlId,lat='',options='') {
     console.log('options',options);
     // check if laterality
     if (lat == '') {
-        WURL = HOSTURL+"/myapp/api/"+table+"?@lookup="+lookup+"&id_worklist.eq="+wlId+"&"+options;
+        WURL = HOSTURL+"/"+APP_NAME+"/api/"+table+"?@lookup="+lookup+"&id_worklist.eq="+wlId+"&"+options;
     } else {
-        WURL = HOSTURL+"/myapp/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId+'&laterality.eq='+lat+"&"+options;
+        WURL = HOSTURL+"/"+APP_NAME+"/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId+'&laterality.eq='+lat+"&"+options;
     }
     return Promise.resolve(
         $.ajax({
@@ -728,13 +728,13 @@ function testpdf(){
     // pdf.getBuffer((blob) => {
     //     console.log('blob uploading...');
     //     form.append('upload', blob, 'test.pdf');
-    //     fetch(HOSTURL+"/myapp/upload", {method:"POST", body:form})
+    //     fetch(HOSTURL+"/"+APP_NAME+"/upload", {method:"POST", body:form})
     //     .then(response => console.log(response));
     // });
     pdf.getBlob((blob) => {
         // console.log('blob uploading...');
         form.append('upload', blob, 'test.pdf');
-        fetch(HOSTURL+"/myapp/upload", {method:"POST", body:blob})
+        fetch(HOSTURL+"/"+APP_NAME+"/upload", {method:"POST", body:blob})
         .then(response => response.text())
         .then(data => console.log(data));
     });
@@ -744,7 +744,7 @@ function testpdf(){
 function printRx(table,id) {
     $.ajax({
         type: "GET",
-        url: HOSTURL+"/myapp/api/"+table+"?id.eq="+id,
+        url: HOSTURL+"/"+APP_NAME+"/api/"+table+"?id.eq="+id,
         dataType: "json",
         success: function (data) {
             // console.log(data); 
@@ -767,7 +767,7 @@ function printRx(table,id) {
 function printGxRx(table,id) {
     $.ajax({
         type: "GET",
-        url: HOSTURL+"/myapp/api/"+table+"?id.eq="+id,
+        url: HOSTURL+"/"+APP_NAME+"/api/"+table+"?id.eq="+id,
         dataType: "json",
         success: function (data) {
             // console.log(data); 

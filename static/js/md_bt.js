@@ -452,7 +452,7 @@ window.operateEvents_wl = {
             setWlItemStatus(dataStr);
         };
         let controller = modalityDict[row.modality];
-        link = HOSTURL+'/myapp/modalityCtr/'+controller+'/'+row.id
+        link = HOSTURL+'/'+APP_NAME+'/modalityCtr/'+controller+'/'+row.id
         window.location.href = link;
     }
 };
@@ -607,7 +607,7 @@ function operateFormatter_rx(value, row, index) {
 window.operateEvents_rx = {
     'click .edit': function (e, value, row, index) {
         // console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        window.location.href = '/myapp/modalityCtr/autorx/'+row.id_worklist;
+        window.location.href = '/'+APP_NAME+'/modalityCtr/autorx/'+row.id_worklist;
     },
     'click .cache': function (e, value, row, index) {
         // console.log('You click action EDIT on row: ' + JSON.stringify(row));
@@ -722,7 +722,7 @@ function operateFormatter_km(value, row, index) {
 window.operateEvents_km = {
     'click .edit': function (e, value, row, index) {
         // console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        window.location.href = '/myapp/modalityCtr/autorx/'+row.id_worklist;
+        window.location.href = '/'+APP_NAME+'/modalityCtr/autorx/'+row.id_worklist;
     },
     'click .cache': function (e, value, row, index) {
         // todo: to implement
@@ -835,7 +835,7 @@ function operateFormatter_tono(value, row, index) {
 window.operateEvents_tono = {
     'click .edit': function (e, value, row, index) {
         // console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        window.location.href = '/myapp/modalityCtr/tono/'+row.id_worklist;
+        window.location.href = '/'+APP_NAME+'/modalityCtr/tono/'+row.id_worklist;
     },
     'click .cache': function (e, value, row, index) {
         // console.log('You click action EDIT on row: ' + JSON.stringify(row));

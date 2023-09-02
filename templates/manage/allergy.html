@@ -117,7 +117,7 @@ const HOSTURL = "[[ = hosturl ]]";
 <script type="text/javascript">
 
 // init tables
-const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_AGENTS = HOSTURL + "/"+APP_NAME+"/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 var $agents_tbl = $('#agents_tbl').bootstrapTable({
     url: API_AGENTS

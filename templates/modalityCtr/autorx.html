@@ -1330,10 +1330,10 @@ const btnArr = ['#btnAddKmRight','#btnAddKmLeft', '#btnAddRxRight', '#btnAddRxLe
 <script type="text/javascript">
 
 // init tables
-const API_RXRIGHT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-const API_RXLEFT = HOSTURL + "/myapp/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-const API_KMRIGHT = HOSTURL + "/myapp/api/km?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-const API_KMLEFT = HOSTURL + "/myapp/api/km?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_RXRIGHT = HOSTURL + "/"+APP_NAME+"/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_RXLEFT = HOSTURL + "/"+APP_NAME+"/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_KMRIGHT = HOSTURL + "/"+APP_NAME+"/api/km?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_KMLEFT = HOSTURL + "/"+APP_NAME+"/api/km?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 
 var $rxRight = $('#rxRight_tbl').bootstrapTable({
     url: API_RXRIGHT
@@ -1360,10 +1360,10 @@ $('#rxRight_tbl').on('post-body.bs.table', function () {
 });
 
 // table listing right and left measurements for patient from visionix l80/vx100
-const API_L80_R = HOSTURL + '/myapp/rest/machines/l80?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=right'
-const API_L80_L = HOSTURL + '/myapp/rest/machines/l80?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=left'
-const API_VX100_R = HOSTURL + '/myapp/rest/machines/vx100?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=right'
-const API_VX100_L = HOSTURL + '/myapp/rest/machines/vx100?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=left'
+const API_L80_R = HOSTURL + '/'+APP_NAME+'/rest/machines/l80?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=right'
+const API_L80_L = HOSTURL + '/'+APP_NAME+'/rest/machines/l80?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=left'
+const API_VX100_R = HOSTURL + '/'+APP_NAME+'/rest/machines/vx100?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=right'
+const API_VX100_L = HOSTURL + '/'+APP_NAME+'/rest/machines/vx100?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=left'
 var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
     url: API_L80_R
 });
@@ -1373,7 +1373,7 @@ var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
 
 // table listing right measurement for patient from topcon cv5000
 const CV5000lst = ['cv-iris', 'cv-cornea', 'cv-crist']
-const API_CV5000 = HOSTURL + '/myapp/rest/getCV5000'
+const API_CV5000 = HOSTURL + '/'+APP_NAME+'/rest/getCV5000'
 var $cvRx_tbl = $('#cvRx_tbl').bootstrapTable({
     url: API_CV5000
 });
