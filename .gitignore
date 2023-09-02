@@ -5,7 +5,7 @@ databases/
 !init_db.csv
 !init_db_129.csv
 settings.py
-.vscode
+.vscode/
 machines/
 patients/
 upload/
