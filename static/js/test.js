@@ -16,7 +16,7 @@ $('#userForm').submit(function(e) {
 // crudUser(id,req): req = 'POST' without id,  'PUT' 'DELETE' with id
 function crudUser(id='0',req='POST',data) {
     console.log(data);
-    var API_URL = (req == 'POST'? HOSTURL+"/myapp/api/auth_user" : HOSTURL+"/myapp/api/auth_user/"+ id );
+    var API_URL = (req == 'POST'? HOSTURL+"/"+APP_NAME+"/api/auth_user" : HOSTURL+"/"+APP_NAME+"/api/auth_user/"+ id );
     var mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
     $.ajax({
         url: API_URL,

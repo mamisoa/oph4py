@@ -89,15 +89,15 @@ def getCV5000():
     res = importCV5000(machine)
     return json.dumps(res)
     # res = {
-    #   "RMpath": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris",
+    #   "RMpath": "/home/mamisoa16/code/py4web/apps/"+APP_NAME+"/machines/cv5000/rm/cv-iris",
     #   "machine": "cv-iris",
     #   "rx": {
-    #       "filename": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
+    #       "filename": "/home/mamisoa16/code/py4web/apps/"+APP_NAME+"/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
     #       "count": 0,
     #       "measures": []
     #   },
     #   "km": {
-    #       "filename": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
+    #       "filename": "/home/mamisoa16/code/py4web/apps/"+APP_NAME+"/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
     #       "count": 2,
     #       "measures": [
     #           {

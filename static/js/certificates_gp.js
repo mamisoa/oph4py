@@ -146,7 +146,7 @@ $('#certificateFormModal').submit(function(e) {
     console.log('content:', certContent);
     let fromTinyMce=htmlToPdfmake(certContent);
     console.log('from tinyMCE:', fromTinyMce);
-    fetch(HOSTURL+"/myapp/api/uuid", {method:"GET"})
+    fetch(HOSTURL+"/"+APP_NAME+"/api/uuid", {method:"GET"})
         .then(response => response.json())
         .then(data =>
             {

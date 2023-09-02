@@ -232,7 +232,7 @@ $('#GxRxFormModal').submit(function(e) {
     let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
     GxRxGlobalObj['datestamp']=today;
     let finalDbObj = Object.assign({}, GxRxGlobalObj);
-    fetch(HOSTURL+"/myapp/api/uuid", {method:"GET"})
+    fetch(HOSTURL+"/"+APP_NAME+"/api/uuid", {method:"GET"})
         .then(response => response.json())
         .then(data =>
             {

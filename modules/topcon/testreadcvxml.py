@@ -1,6 +1,6 @@
 lmfile = './lxml/xml/lm/M-Serial4010_20211023_121330187_TOPCON_CL-300_00.xml'
 exportfile = './lxml/xml/rm/cv-iris/0013_20211002_204149125_TOPCON_CV-5000_19216810164.xml'
-exportfile2 = '/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-crist/4138_20211023_155951421_TOPCON_CV-5000_19216810155.xml'
+exportfile2 = '/home/mamisoa16/code/py4web/apps/'+APP_NAME+'/machines/cv5000/rm/cv-crist/4138_20211023_155951421_TOPCON_CV-5000_19216810155.xml'
 exportfile3 = './lxml/xml/rm/cv-cornea/1244_20211002_220225000_TOPCON_CV-5000_19216810167.xml'
 xmlfile = exportfile2
 ns = {

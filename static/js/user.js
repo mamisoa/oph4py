@@ -189,7 +189,7 @@ function refreshList(listName){
 // userDetailsForm //
 $('#btnEditUser').click(function() {
     $.ajax({
-        url: HOSTURL+"/myapp/api/auth_user/"+id+"?@lookup=gender!:gender,marital!:marital,ethny!:ethny,membership!:membership",
+        url: HOSTURL+"/"+APP_NAME+"/api/auth_user/"+id+"?@lookup=gender!:gender,marital!:marital,ethny!:ethny,membership!:membership",
         dataType: 'json',
         type: 'GET',
         success: function(data) {
@@ -392,7 +392,7 @@ function confirmDel(id='0', table) {
 function confirmEdit(recid, table) {
     console.log(recid);
     $.ajax({
-        url: HOSTURL+"/myapp/api/"+table+"/"+recid+"?@lookup=name!:id_auth_user[first_name,last_name]",
+        url: HOSTURL+"/"+APP_NAME+"/api/"+table+"/"+recid+"?@lookup=name!:id_auth_user[first_name,last_name]",
         dataType: 'json',
         type: 'GET',
         success: function (data) {

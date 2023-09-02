@@ -359,9 +359,9 @@ function getWlItemData(table,wlId,lat='',options='') {
     console.log('lookup',lookup);
     console.log('lookup',options);
     if (lat == '') {
-        WURL = HOSTURL+"/myapp/api/"+table+"?@lookup="+lookup+"&id_worklist.eq="+wlId+"&"+options;
+        WURL = HOSTURL+"/"+APP_NAME+"/api/"+table+"?@lookup="+lookup+"&id_worklist.eq="+wlId+"&"+options;
     } else {
-        WURL = HOSTURL+"/myapp/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId+'&laterality.eq='+lat+"&"+options;
+        WURL = HOSTURL+"/"+APP_NAME+"/api/"+table+"?@lookup=mod!:modified_by[id,first_name,last_name]&id_worklist.eq="+wlId+'&laterality.eq='+lat+"&"+options;
     }
     return Promise.resolve(
         $.ajax({

@@ -118,7 +118,7 @@ function getUuid() {
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: HOSTURL+"/myapp/api/uuid",
+            url: HOSTURL+"/"+APP_NAME+"/api/uuid",
             success: function(data) {
                 if (data.unique_id != undefined) {
                     console.log('uuid generated');
@@ -135,7 +135,7 @@ function getUuid() {
 };
 
 function getTableInfo(table,id) {
-    let API_URL = HOSTURL+'/myapp/api/'+table+'/'+id;
+    let API_URL = HOSTURL+'/'+APP_NAME+'/api/'+table+'/'+id;
     return Promise.resolve(
         $.ajax({
             url: API_URL,
@@ -164,7 +164,7 @@ function getTableInfo(table,id) {
  * const uniqueId = getUserInfo(1);
  */
 function getUserInfo(id) {
-    let API_URL = HOSTURL + '/myapp/api/auth_user/' + id +'?@lookup=gender!:gender[sex]';
+    let API_URL = HOSTURL + '/'+APP_NAME+'/api/auth_user/' + id +'?@lookup=gender!:gender[sex]';
     return Promise.resolve(
         $.ajax({
             url: API_URL,
@@ -225,7 +225,7 @@ function disableBtn(buttonsArr) {
 const crudp = function(table,id='0',req='POST',data) {
     return new Promise((resolve, reject) => {
         // console.log(data);
-        let API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/myapp/api/"+table : HOSTURL+"/myapp/api/"+table+"/"+ id );
+        let API_URL = ((req == 'POST') || (req == 'PUT')? HOSTURL+"/"+APP_NAME+"/api/"+table : HOSTURL+"/"+APP_NAME+"/api/"+table+"/"+ id );
         let mode = ( req == 'POST' ? ' added' : (req == 'PUT' ? ' edited': ' deleted'));
         $.ajax({
             url: API_URL,
@@ -270,7 +270,7 @@ function setWlItemStatus (dataStr) {
 
 //  use as promise
 async function getVisionixData(machine="l80",lastname="",firstname="") {
-    let API_URL = HOSTURL+'/myapp/rest/machines/'+machine+'?lastname='+lastname+'&firstname='+firstname;
+    let API_URL = HOSTURL+'/'+APP_NAME+'/rest/machines/'+machine+'?lastname='+lastname+'&firstname='+firstname;
     return Promise.resolve(
         $.ajax({
             url: API_URL,
@@ -287,7 +287,7 @@ async function getVisionixData(machine="l80",lastname="",firstname="") {
 // use to populate patient in L80 or VX100
 async function addPatientVisionix(machine,id='',lastname='', firstname='',dob='',sex='') {
     sex == 'Female'? sex = 'f': (sex == 'Male'? sex = 'm': sex ='');
-    let API_URL = HOSTURL + '/myapp/rest/create_visionix/' + machine + '?lastname=' + lastname + '&firstname=' + firstname
+    let API_URL = HOSTURL + '/'+APP_NAME+'/rest/create_visionix/' + machine + '?lastname=' + lastname + '&firstname=' + firstname
         + '&id=' + id + '&sex=' + sex + '&dob=' + dob;
     $.ajax({
         url: API_URL,
@@ -307,7 +307,7 @@ async function addPatientVisionix(machine,id='',lastname='', firstname='',dob=''
 
 // use to add item to Eyesuite machines
 async function addPatientEyesuite(machine,id='',lastname='', firstname='',dob='',sex='') {
-    let API_URL = HOSTURL + '/myapp/rest/create_eyesuite_wl/' + machine +'?id=' + id + '&lastname=' + lastname + '&firstname=' + firstname
+    let API_URL = HOSTURL + '/'+APP_NAME+'/rest/create_eyesuite_wl/' + machine +'?id=' + id + '&lastname=' + lastname + '&firstname=' + firstname
         + '&sex=' + sex + '&dob=' + dob;
     console.log(API_URL);
     $.ajax({
@@ -354,7 +354,7 @@ function transformDateBeid(inputDate) {
 
 // use to add or update patient to dcm4chee
 async function addPatientPacs(data) {
-    let API_URL = HOSTURL + '/myapp/rest/dcm4chee/patient/create'
+    let API_URL = HOSTURL + '/'+APP_NAME+'/rest/dcm4chee/patient/create'
     fetch(API_URL, {
         method: 'POST', 
         headers: {
@@ -375,7 +375,7 @@ async function addPatientPacs(data) {
 
 // use to add or update patient to dcm4chee
 async function addStudyMwl(data) {
-    let API_URL = HOSTURL + '/myapp/rest/dcm4chee/mwl/create'
+    let API_URL = HOSTURL + '/'+APP_NAME+'/rest/dcm4chee/mwl/create'
     fetch(API_URL, {
         method: 'POST', 
         headers: {

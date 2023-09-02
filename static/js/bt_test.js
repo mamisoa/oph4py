@@ -61,7 +61,7 @@ function operateFormatter(value, row, index) {
 window.operateEvents = {
     'click .edit': function (e, value, row, index) {
     //   console.log('You click like action, row: ' + JSON.stringify(row));
-      window.location.href = HOSTURL+"/myapp/user/"+row.id;
+      window.location.href = HOSTURL+"/"+APP_NAME+"/user/"+row.id;
 
     },
     'click .remove': function (e, value, row, index) {

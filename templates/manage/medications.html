@@ -164,7 +164,7 @@ const HOSTURL = "[[ = hosturl ]]";
 <script type="text/javascript">
 
 // init tables
-const API_MEDICATIONS = HOSTURL + "/myapp/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_MEDICATIONS = HOSTURL + "/"+APP_NAME+"/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 var $medic_tbl = $('#medic_tbl').bootstrapTable({
     url: API_MEDICATIONS

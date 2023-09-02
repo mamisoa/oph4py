@@ -41,7 +41,7 @@ function getModalityOptions(procedureId) {
     return Promise.resolve(
         $.ajax({
             type: "GET",
-            url: HOSTURL+"/myapp/api/modality?id_modality.procedure_family.id_procedure.eq="+procedureId,
+            url: HOSTURL+"/"+APP_NAME+"/api/modality?id_modality.procedure_family.id_procedure.eq="+procedureId,
             dataType: "json",
             success: function (data) {
                 // console.log(data); 
@@ -128,7 +128,7 @@ function getCombo(id_procedure) {
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: HOSTURL+"/myapp/api/combo?@lookup=id_procedure!:id_procedure[exam_name],id_modality!:id_modality&@count=true&id_procedure="+id_procedure,
+            url: HOSTURL+"/"+APP_NAME+"/api/combo?@lookup=id_procedure!:id_procedure[exam_name],id_modality!:id_modality&@count=true&id_procedure="+id_procedure,
             success: function(data) {
                 if (data.status != 'error' || data.count) {
                     displayToast('success', 'GET combo exams', 'GET '+data.items[0]['id_procedure.exam_name']);
@@ -212,7 +212,7 @@ function getWlItemDetails(wl_id) {
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: HOSTURL+"/myapp/api/worklist/"+wl_id+"?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name]",
+            url: HOSTURL+"/"+APP_NAME+"/api/worklist/"+wl_id+"?@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name]",
             success: function(data) {
                 if (data.status != 'error') {
                     displayToast('success', 'GET wl details', 'GET wl details from id :'+wl_id,6000);

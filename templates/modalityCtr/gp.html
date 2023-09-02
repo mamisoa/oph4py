@@ -1479,47 +1479,47 @@ const btnArr = ['#btnTaskDone','#btnNewMx', '#btnNewAx','#btnNewmHx', '#btnNewsH
 <script type="text/javascript">
 
 // 
-// const API_GP = HOSTURL + "/myapp/api/gp?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+// const API_GP = HOSTURL + "/"+APP_NAME+"/api/gp?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 
 var logo64 ='data:image/jpg;base64,'+'[[=XML(logo64)]]';
 
 // todo: to implement
 // add keywd parameter & keyoptions eg 'frequency&keyoptions.contains=...' for autocomplete
-const API_AUTODICT = HOSTURL + "/myapp/api/auto_dict?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&keywd.eq=";
+const API_AUTODICT = HOSTURL + "/"+APP_NAME+"/api/auto_dict?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&keywd.eq=";
 
 // API_MEDICATION lists medications for autocomplete
-const API_MEDICATIONS = HOSTURL + "/myapp/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_MEDICATIONS = HOSTURL + "/"+APP_NAME+"/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 // API_AGENT lists agents for autocomplete
-const API_AGENTS = HOSTURL + "/myapp/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_AGENTS = HOSTURL + "/"+APP_NAME+"/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 // API_DISEASES lists diseases for autocomplete
-const API_DISEASES = HOSTURL + "/myapp/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+const API_DISEASES = HOSTURL + "/"+APP_NAME+"/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
 // table listing ALL medications taken by user
-const API_MXUSER = HOSTURL + "/myapp/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+const API_MXUSER = HOSTURL + "/"+APP_NAME+"/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 var $mx_tbl = $('#mx_tbl').bootstrapTable({
     url: API_MXUSER
 });
 
 // table listing ALL allergy to agents by user
-const API_AXUSER = HOSTURL + "/myapp/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+const API_AXUSER = HOSTURL + "/"+APP_NAME+"/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 var $ax_tbl = $('#ax_tbl').bootstrapTable({
     url: API_AXUSER
 });
 
 // table listing medical history by user
-const API_MHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+const API_MHXUSER = HOSTURL + "/"+APP_NAME+"/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 var $mHx_tbl = $('#mHx_tbl').bootstrapTable({
     url: API_MHXUSER
 });
 
 // table listing surgical history by user
-const API_SHXUSER = HOSTURL + "/myapp/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+const API_SHXUSER = HOSTURL + "/"+APP_NAME+"/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
     url: API_SHXUSER
 });
 
 // table listing ocular history by user
-const API_OHXUSER = HOSTURL + "/myapp/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+const API_OHXUSER = HOSTURL + "/"+APP_NAME+"/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
     url: API_OHXUSER
 });
@@ -1534,29 +1534,29 @@ $table_wl = $('#table-wl').bootstrapTable({
 });
 
 // API url to get soap
-const API_SOAP = HOSTURL + "/myapp/api/soap?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
+const API_SOAP = HOSTURL + "/"+APP_NAME+"/api/soap?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
 
 
 // table listing code encoded for worklist to user
-const API_CODING = HOSTURL + "/myapp/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq="+ patientId;
+const API_CODING = HOSTURL + "/"+APP_NAME+"/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq="+ patientId;
 var $coding = $('#coding_tbl').bootstrapTable({
     url: API_CODING
 });
 
 // table listing medication encoded for current worklist 
-const API_MXWLUSER = HOSTURL + "/myapp/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq="+patientId;
+const API_MXWLUSER = HOSTURL + "/"+APP_NAME+"/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq="+patientId;
 var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
     url: API_MXWLUSER
 });
 
 // table listing medication encoded for current worklist 
-const API_MXRX = HOSTURL + "/myapp/api/medical_rx_list?id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_MXRX = HOSTURL + "/"+APP_NAME+"/api/medical_rx_list?id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
     url: API_MXRX
 });
 
 // table listing certificates for user
-const API_CERT = HOSTURL + "/myapp/api/certificates?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_CERT = HOSTURL + "/"+APP_NAME+"/api/certificates?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 var $cert_tbl = $('#cert_tbl').bootstrapTable({
     url: API_CERT
 });

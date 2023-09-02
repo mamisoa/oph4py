@@ -99,19 +99,19 @@ def exportCV5000xml():
         machine = importDict['machine']
     # use this for unittest
     # importDict = {
-    #     "RMpath": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris",
+    #     "RMpath": "/home/mamisoa16/code/py4web/apps/"+APP_NAME+"/machines/cv5000/rm/cv-iris",
     #     'patient' : {
     #         'firstname': 'Steve', 'lastname': 'Jobs', 'patientid': '2600', 'gender': 'Male', 'age': '66', 'dob': '2000-01-01',
     #             'date': now.strftime("%Y-%m-%d"), 'time': now.strftime("%H:%M:%S")
     #             },
     #     "machine": "cv-iris",
     #     "rx": {
-    #         "filename": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
+    #         "filename": "/home/mamisoa16/code/py4web/apps/"+APP_NAME+"/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
     #         "count": 0,
     #         "measures": []
     #         },
     #     "km": {
-    #         "filename": "/home/mamisoa16/code/py4web/apps/myapp/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
+    #         "filename": "/home/mamisoa16/code/py4web/apps/"+APP_NAME+"/machines/cv5000/rm/cv-iris/M-Serial0031_20211011_164311343_TOPCON_KR-8800_01.xml",
     #         "count": 2,
     #         "measures": [
     #             {

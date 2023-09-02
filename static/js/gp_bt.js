@@ -455,7 +455,7 @@ window.operateEvents_wl = {
             setWlItemStatus(dataStr);
         };
         let controller = modalityDict[row.modality];
-        link = HOSTURL+'/myapp/modalityCtr/'+controller+'/'+row.id
+        link = HOSTURL+'/'+APP_NAME+'/modalityCtr/'+controller+'/'+row.id
         window.location.href = link;
     }
 };

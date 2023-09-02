@@ -43,9 +43,9 @@ const HOSTURL = "[[ = hosturl ]]";
 const btnArr = [];
 
 
-let url = HOSTURL + "/myapp/rest/lenstar?lastname="+patientObj['last_name']+"&firstname="+patientObj['first_name'].replace(' ','_')+"&wlId="+wlObj['worklist']['id']+"&id="+patientObj['id'];
-let biometryUrl = HOSTURL + "/myapp/rest/biometry/"+patientObj['id'];
-let rawBiometryUrl = HOSTURL + "/myapp/rest/biometry/raw/"+patientObj['id'];
+let url = HOSTURL + "/"+APP_NAME+"/rest/lenstar?lastname="+patientObj['last_name']+"&firstname="+patientObj['first_name'].replace(' ','_')+"&wlId="+wlObj['worklist']['id']+"&id="+patientObj['id'];
+let biometryUrl = HOSTURL + "/"+APP_NAME+"/rest/biometry/"+patientObj['id'];
+let rawBiometryUrl = HOSTURL + "/"+APP_NAME+"/rest/biometry/raw/"+patientObj['id'];
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.1/dist/chart.umd.min.js"></script>

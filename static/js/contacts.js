@@ -278,7 +278,7 @@ $('#CxRxFormModal').submit(function(e) {
         delete finalDbObj[key];
     };
     // get uuid
-    fetch(HOSTURL+"/myapp/api/uuid", {method:"GET"})
+    fetch(HOSTURL+"/"+APP_NAME+"/api/uuid", {method:"GET"})
         .then(response => response.json())
         .then(data =>
             {
