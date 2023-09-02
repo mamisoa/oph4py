@@ -4,7 +4,7 @@ from py4web import action, request, abort, redirect, URL, Field, response # add 
 
 from ...common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 
-from ...settings import PACS_URL, AET, REALMS_URL, KEYCLOAK_SECRET
+from ...settings import PACS, PACS_URL, AET, REALMS_URL, KEYCLOAK_SECRET
 
 import json, requests # maybe check to use from ombott
 import os
@@ -81,6 +81,9 @@ def create_patient():
     """
     patient_data = request.json
 
+    if PACS != True:
+        return f'[{{ "status": "error", "code": "503", "message": "PACS module disabled"}}]'
+    
     ds = Dataset()
     ds.add_new(0x00080005, 'CS', 'ISO_IR 192')
     ds.add_new(0x00100010, 'PN', patient_data['PatientName']) 
@@ -120,6 +123,10 @@ def add_mwl():
         patient_data (dict)
 
     """
+
+    if PACS != True:
+        return f'[{{ "status": "error", "code": "503", "message": "PACS module disabled"}}]'
+
     study_data = request.json
 
     ds = Dataset()
