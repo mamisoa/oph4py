@@ -566,7 +566,10 @@ emailInfoModal.addEventListener('show.bs.modal', function(event){
     let emaildefault = ['<div style="text-align:left">'];
     emaildefault.push('<p>Chère Patiente, Cher Patient,</p>');
     emaildefault.push('<p>Voici un lien qui contient des informations en complément de votre dernière consultation.</p>');
-    emaildefault.push('<a href="https://ophtalmologiste.be/chirurgie/chirurgie-refractive/">https://ophtalmologiste.be/chirurgie/chirurgie-refractive/</a>');
+    emaildefault.push('<p><a href="https://ophtalmologiste.be/chirurgie/chirurgie-refractive/">https://ophtalmologiste.be/chirurgie/chirurgie-refractive/</a></p>');
+    emaildefault.push('<p><a href="https://ophtalmologiste.be/medical/glaucome/">https://ophtalmologiste.be/medical/glaucome/</a></p>');
+    emaildefault.push('<p><a href="https://ophtalmologiste.be/tech/laser_yag/#iridotomy">https://ophtalmologiste.be/tech/laser_yag/#iridotomy</a></p>');
+    emaildefault.push('<p><a href="https://ophtalmologiste.be/tech/laser_yag/#slt">https://ophtalmologiste.be/tech/laser_yag/#slt</a></p>');
     emaildefault.push('<p>Si vous avez des questions complémentaires, vous pouvez répondre à cet email.</p>');
     emaildefault.push('<p></p>');
     emaildefault.push('<p>Chère Patiente, Cher Patient,</p>');
