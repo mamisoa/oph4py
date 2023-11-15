@@ -642,7 +642,7 @@ $('#CxRxFormModal').submit(function(e) {
                                             {text: finalRxObj['sphL'] }, 
                                             {text: finalRxObj['cylL'] },
                                             {text: finalRxObj['axisL']},
-                                            {text: finalRxObj['basecurveR']},
+                                            {text: finalRxObj['basecurveL']},
                                             {text: finalRxObj['diameterL']},
                                         ],
                                         [   {text: 'ADD'},
