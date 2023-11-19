@@ -16,7 +16,7 @@
   <body>
     <header>
       <!-- Navigation bar -->
-      <nav id="topNavbar" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <nav id="topNavbar" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" style="z-index: 10000;">
         <div class="container-fluid">
             <a href="[[=URL('index')]]" class="navbar-brand">Oph4py [[=env_status]]</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,7 +30,7 @@
                     [[ include 'partials/nav.html' ]]
                     [[block left_nav]]<!-- li a nav-item -->[[end]]
                 </ul>
-                <ul class="navbar ms-auto mb-2 mb-md-0">
+                <ul class="navbar ms-auto mb-2 mb-md-0 text-white">
                     [[if globals().get('user'):]]
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="loginBtn" role="button" data-bs-toggle="dropdown" aria-expanded="false">[[=globals().get('user',{}).get('email')]]</a>
