@@ -353,43 +353,47 @@ function transformDateBeid(inputDate) {
 
 
 // use to add or update patient to dcm4chee
-async function addPatientPacs(data) {
+async function addPatientPacs(data, dicom = false) {
     let API_URL = HOSTURL + '/'+APP_NAME+'/rest/dcm4chee/patient/create'
-    fetch(API_URL, {
-        method: 'POST', 
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-        })
-        .then(response => {
-                if (response.status == "success" ) {
-                    displayToast('success', 'add patient to PACS', response.message, '3000');
-                } else {
-                    displayToast('error', 'error posting patient to PACS', response.message, '6000');
-                }
+    if (dicom == true) {
+        fetch(API_URL, {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
             })
-        .then(json => console.log("Patient added"))
-        .catch(error => console.error('An error occurred:', error));
+            .then(response => {
+                    if (response.status == "success" ) {
+                        displayToast('success', 'add patient to PACS', response.message, '3000');
+                    } else {
+                        displayToast('error', 'error posting patient to PACS', response.message, '6000');
+                    }
+                })
+            .then(json => console.log("Patient added"))
+            .catch(error => console.error('An error occurred:', error));
+    }
 };
 
 // use to add or update patient to dcm4chee
-async function addStudyMwl(data) {
+async function addStudyMwl(data, dicom = false) {
     let API_URL = HOSTURL + '/'+APP_NAME+'/rest/dcm4chee/mwl/create'
-    fetch(API_URL, {
-        method: 'POST', 
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-        })
-        .then(response => {
-                if (response.status == "success" ) {
-                    displayToast('success', 'add patient to MWL', response.message, '3000');
-                } else {
-                    displayToast('error', 'add patient to MWL', response.message, '6000');
-                }
+    if (dicom == true) {
+        fetch(API_URL, {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
             })
-        .then(json => console.log("Added to MWL"))
-        .catch(error => console.error('An error occurred:', error));
+            .then(response => {
+                    if (response.status == "success" ) {
+                        displayToast('success', 'add patient to MWL', response.message, '3000');
+                    } else {
+                        displayToast('error', 'add patient to MWL', response.message, '6000');
+                    }
+                })
+            .then(json => console.log("Added to MWL"))
+            .catch(error => console.error('An error occurred:', error));
+    }
 };
