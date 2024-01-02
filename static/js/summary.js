@@ -36,6 +36,10 @@ function refreshList(listName){
             };
             $('#patientTitle .patientName').html(checkIfDataIsNull(item.first_name,'n/a?')+' '+checkIfDataIsNull(item.last_name,'n/a?'));
             $('#patientTitle .patientDob').html(checkIfDataIsNull(item.dob,'n/a?')+' ('+getAge(checkIfDataIsNull(item.dob,''))+' yo)');
+            $('#patientTitle .patientId').html('#'+checkIfDataIsNull(item.id,'n/a?'));
+            $('#patientTitle .patientSsn').html('NISS #'+checkIfDataIsNull(item.ssn));
+            $('#patientTitle .patientCard').html('Card #'+checkIfDataIsNull(item.idc_num));
+            $('#patientTitle .patientEmail').html('Email: '+checkIfDataIsNull(item.email));
         });
     } else {};
 };
