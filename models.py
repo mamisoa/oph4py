@@ -475,13 +475,6 @@ db.define_table('followup',
     Field('description','string'),
     auth.signature)
 
-#temporary
-db.define_table('billing',
-    Field('id_auth_user', 'reference auth_user', required=True),
-    Field('id_worklist','reference worklist', required=True),
-    Field('description','string'),
-    auth.signature)
-
 # contactlenses
 db.define_table('cl',
     Field('name', 'string', required=True),
@@ -698,7 +691,7 @@ dbo.define_table('tbl_basic_patient',
     Field('comment','string'),
     Field('picture','blob'),
     Field('lastcall','datetime'),
-    Field('deleteflag','string', defaut='0'),
+    Field('deleteflag','string', default='0'),
     Field('lastmodified','datetime'),
     Field('last_exam','integer')
     ) """
@@ -730,3 +723,63 @@ db.define_table(
     Field("white_white_diameter", "double"),
     auth.signature
 )
+
+## BILLING
+
+db.define_table('billing',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('price', 'double'),
+    Field('cash_payement', 'double'),
+    Field('card_payement', 'double'),
+    Field('card_type', 'string'),
+    Field('invoice_payement', 'double'),
+    Field('invoice_type', 'string'),
+    Field('status', 'integer', default=0),
+    Field('note', 'string'),
+    auth.signature)
+
+db.billing.status.requires = IS_IN_SET((2,1,0)) # ('paid','partial','not paid')
+db.billing.card_type.requires = IS_IN_SET(('BC','VISA', 'MC', 'CONTACT'))
+db.billing.invoice_type.requires = IS_IN_SET(('CO','EDA', 'other')) # print invoice if needed
+
+## price is calculated from the combo price
+## plus eventually an extracode 
+
+# codes used for one worklist billing 
+db.define_table('wl_codes',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('nomenclature_id', 'reference nomenclature_id', required=True),
+    auth.signature   
+    )
+
+# combo_code is a helper to add several nomenclature codes at once
+db.define_table('combo_codes',
+    Field('combo_desc', 'string'),
+    Field('nomenclature_id', 'reference combo_proxy_nomenclature'),
+    Field('note', 'string'),
+    auth.signature
+    )
+
+# many to many relations between combo_code and nomenclature codes
+db.define_table('combo_proxy_nomenclature',
+    Field('combo_id', 'reference combo_code', required=True),
+    Field('nomenclature_id', 'reference nomenclature', required=True),
+    Field('combo_price', 'double', default = 0),
+    auth.signature
+    )
+
+# nomenclature codes
+db.define_table('nomenclature',
+    Field('code','string'),
+    Field('code_desc','string'),
+    Field('combo_id', 'reference combo_proxy_nomenclature'),
+    Field('note', 'string'),
+    Field('price_list', 'string'), # list of prices, in belgium [0,1300,1600 ...]
+    Field('not_compatible', 'string'), # list of incompatible codes
+    Field('min_reccurency', 'string', default = '6m'), # 1y 6m 15d , checks if this code has been used before this delay
+    Field('add_documents', 'string', default = '6m'), # list of documents needed to be covered 
+    auth.signature
+    )
+
