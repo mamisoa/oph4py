@@ -17,3 +17,6 @@ static/images/assets/avatar/woman_avatar_200x200.svg
 .DS_store
 data/
 token.txt
+package-lock.json
+package.json
+node_modules/
