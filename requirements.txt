@@ -1,2 +1,7 @@
 pydicom
 lxml
+swig
+PyKCS11
+bottle
+pytz
+mysqlclient
