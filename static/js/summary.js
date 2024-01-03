@@ -1,4 +1,3 @@
-
 function getUser(id) {
     return Promise.resolve(
         $.ajax({
