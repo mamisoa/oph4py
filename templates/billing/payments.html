@@ -1,0 +1,144 @@
+[[extend 'baseof.html']]
+
+[[ block left_nav ]]
+[[ end]]
+
+<div class="container-fluid my-3 py-2 patient-id" id="patientTitle">
+    <div class="row mb-3 d-flex justify-content-center align-items-center">
+        <div id="patientIdDiv" class="col-4 text-end">
+            <h3 class="patientName"></h3>
+            <h5 class="patientDob text-muted"></h5>
+            <h5 class="patientGender fst-italic"></h5>
+        </div>
+        <div class="col-2 photoDiv visually-hidden text-center">
+            <img class="photoId" src="" alt="Photo from EID">
+        </div>
+        <div class="col-4 text-start">
+            <h5 class="patientId fst-italic"></h5>
+            <h5 class="patientSsn fst-italic"></h5>
+            <h6 class="patientCard fst-italic"></h6>
+            <h6 class="patientEmail fst-italic"></h6>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h2>Full History</h2>
+            <table class="table table-striped" id="combinedRecordsTable">
+                <thead>
+                    <tr>
+                        <!-- Headers will be added dynamically here -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data rows will be added dynamically here -->
+                </tbody>
+            </table>    
+        </div>
+    </div>
+</div>
+
+[[ block js_scripts ]]
+<script type="text/javascript">
+// globals
+const id = [[ =rec_id ]]
+const membership = [[=membership]];
+const HOSTURL = "[[ = hosturl ]]";
+
+const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender,marital,membership,ethny&@count=true'; 
+const API_CHXUSER = HOSTURL + '[[=URL('api','current_hx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
+const API_CCXUSER = HOSTURL + '[[=URL('api','ccx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
+const API_FOLUSER = HOSTURL + '[[=URL('api','followup')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
+const API_BILUSER = HOSTURL + '[[=URL('api','billing')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
+
+</script>
+<script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
+<script src="js/payments-bt.js"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/useful.js"></script>
+
+<script type="text/javascript">
+
+{{/*  var $chx = $('#chx_tbl').bootstrapTable({
+    url: API_CHXUSER
+});
+
+var $ccx = $('#ccx_tbl').bootstrapTable({
+    url: API_CCXUSER
+});
+
+var $fol = $('#fol_tbl').bootstrapTable({
+    url: API_FOLUSER
+});
+
+var $bil = $('#bil_tbl').bootstrapTable({
+    url: API_BILUSER
+});  */}}
+    
+
+const endpoints = [
+        { 'name': 'History', 'api': API_CHXUSER },
+        { 'name': 'Conclusion', 'api': API_CCXUSER },
+        { 'name': 'Follow-up', 'api': API_FOLUSER },
+        { 'name': 'Billing', 'api': API_BILUSER }
+        // ... add more endpoints as needed
+    ];
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const combinedTable = document.getElementById('combinedRecordsTable');
+    const combinedTableHead = combinedTable.querySelector('thead tr');
+    const combinedTableBody = combinedTable.querySelector('tbody');
+
+    // Dynamically create headers
+    endpoints.forEach(endpoint => {
+        combinedTableHead.innerHTML += `<th scope="col">Timestamp</th>`;
+        combinedTableHead.innerHTML += `<th scope="col">${endpoint.name}</th>`;
+    });
+
+    // Create a promise for each API endpoint
+    const promises = endpoints.map(endpoint => 
+        fetch(endpoint.api).then(response => response.json())
+    );
+
+    Promise.all(promises)
+        .then(allData => {
+            // Initialize an array for combined rows
+            let combinedRows = [];
+
+            // Combine data from all endpoints, aligning by index
+            const maxLength = Math.max(...allData.map(data => data.items.length));
+            for (let i = 0; i < maxLength; i++) {
+                combinedRows[i] = allData.map(data => data.items[i] || {});
+            }
+
+            // Sort combined rows by the first timestamp in descending order
+            combinedRows.sort((a, b) => {
+                const dateA = new Date(a[0].created_on);
+                const dateB = new Date(b[0].created_on);
+                return dateB - dateA;
+            });
+
+            // Populate the table rows
+            combinedRows.forEach(rowItems => {
+                const row = document.createElement('tr');
+                rowItems.forEach((item, index) => {
+                    const isFirstColumn = index === 0;
+                    const isLastColumn = index === rowItems.length - 1;
+                    row.innerHTML += `
+                        <td class="${isFirstColumn ? 'fw-bold' : ''}">${item.created_on || ''}</td>
+                        <td class="${isLastColumn ? 'fw-bold' : ''}">${item.description || ''}</td>
+                    `;
+                });
+                combinedTableBody.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+});
+    
+</script>
+<script src="js/summary.js"></script>
+[[ end ]]
