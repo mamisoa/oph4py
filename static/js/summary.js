@@ -1,6 +1,3 @@
-// refresh tables
-const tablesArr = ['#chx_tbl','#ccx_tbl','#fol_tbl','#bil_tbl'];
-refreshTables(tablesArr);
 
 function getUser(id) {
     return Promise.resolve(
