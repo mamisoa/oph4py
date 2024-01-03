@@ -25,7 +25,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
-            <h2>Combined Records Table</h2>
+            <h2>Full History</h2>
             <table class="table table-striped" id="combinedRecordsTable">
                 <thead>
                     <tr>
@@ -67,41 +67,58 @@ const endpoints = [
     ];
 
 
-document.addEventListener('DOMContentLoaded', function() {
-
-    const combinedTable = document.getElementById('combinedRecordsTable');
-    const combinedTableHead = combinedTable.querySelector('thead tr');
-    const combinedTableBody = combinedTable.querySelector('tbody');
-
-    // Dynamically create headers
-    endpoints.forEach(endpoint => {
-        combinedTableHead.innerHTML += `<th scope="col">Timestamp</th>`;
-        combinedTableHead.innerHTML += `<th scope="col">${endpoint.name}</th>`;
-    });
-
-    // Create a promise for each API endpoint
-    const promises = endpoints.map(endpoint => fetch(endpoint.api).then(response => response.json()));
-
-    Promise.all(promises)
-        .then(allData => {
-            const maxLength = Math.max(...allData.map(data => data.items.length));
-
-            for (let i = 0; i < maxLength; i++) {
-                const row = document.createElement('tr');
-                allData.forEach((data, index) => {
-                    const item = data.items[i] || {};
-                    const isFirstColumn = index === 0;
-                    const isLastColumn = index === allData.length - 1;
-                    row.innerHTML += `
-                        <td class="${isFirstColumn ? 'fw-bold' : ''}">${item.created_on || ''}</td>
-                        <td class="${isLastColumn ? 'fw-bold' : ''}">${item.description || ''}</td>
-                    `;
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        const combinedTable = document.getElementById('combinedRecordsTable');
+        const combinedTableHead = combinedTable.querySelector('thead tr');
+        const combinedTableBody = combinedTable.querySelector('tbody');
+    
+        // Dynamically create headers
+        endpoints.forEach(endpoint => {
+            combinedTableHead.innerHTML += `<th scope="col">Timestamp</th>`;
+            combinedTableHead.innerHTML += `<th scope="col">${endpoint.name}</th>`;
+        });
+    
+        // Create a promise for each API endpoint
+        const promises = endpoints.map(endpoint => 
+            fetch(endpoint.api).then(response => response.json())
+        );
+    
+        Promise.all(promises)
+            .then(allData => {
+                // Initialize an array for combined rows
+                let combinedRows = [];
+    
+                // Combine data from all endpoints, aligning by index
+                const maxLength = Math.max(...allData.map(data => data.items.length));
+                for (let i = 0; i < maxLength; i++) {
+                    combinedRows[i] = allData.map(data => data.items[i] || {});
+                }
+    
+                // Sort combined rows by the first timestamp in descending order
+                combinedRows.sort((a, b) => {
+                    const dateA = new Date(a[0].created_on);
+                    const dateB = new Date(b[0].created_on);
+                    return dateB - dateA;
                 });
-                combinedTableBody.appendChild(row);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-});  
+    
+                // Populate the table rows
+                combinedRows.forEach(rowItems => {
+                    const row = document.createElement('tr');
+                    rowItems.forEach((item, index) => {
+                        const isFirstColumn = index === 0;
+                        const isLastColumn = index === rowItems.length - 1;
+                        row.innerHTML += `
+                            <td class="${isFirstColumn ? 'fw-bold' : ''}">${item.created_on || ''}</td>
+                            <td class="${isLastColumn ? 'fw-bold' : ''}">${item.description || ''}</td>
+                        `;
+                    });
+                    combinedTableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+    
 </script>
 <script src="js/summary.js"></script>
 [[ end ]]
