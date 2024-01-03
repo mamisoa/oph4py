@@ -1,9 +1,5 @@
 [[extend 'baseof.html']]
 
-[[ block page_head]]
-<link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
-[[ end ]]
-
 [[ block left_nav ]]
 [[ end]]
 
@@ -29,124 +25,17 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
-            <div class="row">
-                <div class="col">
-                    <h3 class="big-title">Current history</h3>
-                </div>
-            </div>
-            <div class="row bg-right">
-                <table
-                    id="chx_tbl"
-                    data-side-pagination="server"
-                    data-toggle="table"
-                    data-pagination="true"
-                    data-page-size="10"
-                    data-search="false"
-                    data-query-params="queryParams"
-                    data-response-handler="responseHandler"
-                    data-detail-formatter="detailFormatter"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    >
-                    <thead>
-                        <tr>
-                            <th data-field="created_on" data-sortable="true">Timestamp</th>
-                            <th data-field="description" data-sortable="false">Description</th>
-                            </th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-        <div class="col">
-            <div class="row">
-                <div class="col">
-                    <h3 class="big-title">Ccx</h3>
-                </div>
-            </div>
-            <div class="row bg-left">
-                <table
-                    id="ccx_tbl"
-                    data-side-pagination="server"
-                    data-toggle="table"
-                    data-pagination="true"
-                    data-page-size="10"
-                    data-search="false"
-                    data-query-params="queryParams"
-                    data-response-handler="responseHandler"
-                    data-detail-formatter="detailFormatter"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    >
-                    <thead>
-                        <tr>
-                            <th data-field="created_on" data-sortable="true">Timestamp</th>
-                            <th data-field="description" data-sortable="false">Description</th>
-                            </th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-        <div class="col">
-            <div class="row">
-                <div class="col">
-                    <h3 class="big-title">Followup</h3>
-                </div>
-            </div>
-            <div class="row bg-right">
-                <table
-                    id="fol_tbl"
-                    data-side-pagination="server"
-                    data-toggle="table"
-                    data-pagination="true"
-                    data-page-size="10"
-                    data-search="false"
-                    data-query-params="queryParams"
-                    data-response-handler="responseHandler"
-                    data-detail-formatter="detailFormatter"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    >
-                    <thead>
-                        <tr>
-                            <th data-field="created_on" data-sortable="true">Timestamp</th>
-                            <th data-field="description" data-sortable="false">Description</th>
-                            </th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-        <div class="col">
-            <div class="row">
-                <div class="col">
-                    <h3 class="big-title">Billing</h3>
-                </div>
-            </div>
-            <div class="row bg-left">
-                <table
-                    id="bil_tbl"
-                    data-side-pagination="server"
-                    data-toggle="table"
-                    data-pagination="true"
-                    data-page-size="10"
-                    data-search="false"
-                    data-query-params="queryParams"
-                    data-response-handler="responseHandler"
-                    data-detail-formatter="detailFormatter"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    >
-                    <thead>
-                        <tr>
-                            <th data-field="created_on" data-sortable="true">Timestamp</th>
-                            <th data-field="description" data-sortable="false">Description</th>
-                            </th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
+            <h2>Combined Records Table</h2>
+            <table class="table table-striped" id="combinedRecordsTable">
+                <thead>
+                    <tr>
+                        <!-- Headers will be added dynamically here -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data rows will be added dynamically here -->
+                </tbody>
+            </table>    
         </div>
     </div>
 </div>
@@ -165,30 +54,54 @@ const API_FOLUSER = HOSTURL + '[[=URL('api','followup')]]' + '?@count=true&@look
 const API_BILUSER = HOSTURL + '[[=URL('api','billing')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
 
 </script>
-<script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
-<script src="js/jquery.serialize-object.min.js"></script>
 <script src="js/useful.js"></script>
-<script src="js/summary-bt.js"></script>
-<!-- <script src="js/user_validation.js"></script> -->
 <script type="text/javascript">
 
-var $chx = $('#chx_tbl').bootstrapTable({
-    url: API_CHXUSER
-});
+const endpoints = [
+        { 'name': 'History', 'api': API_CHXUSER },
+        { 'name': 'Conclusion', 'api': API_CCXUSER },
+        { 'name': 'Follow-up', 'api': API_FOLUSER },
+        { 'name': 'Billing', 'api': API_BILUSER }
+        // ... add more endpoints as needed
+    ];
 
-var $ccx = $('#ccx_tbl').bootstrapTable({
-    url: API_CCXUSER
-});
 
-var $fol = $('#fol_tbl').bootstrapTable({
-    url: API_FOLUSER
-});
+document.addEventListener('DOMContentLoaded', function() {
 
-var $bil = $('#bil_tbl').bootstrapTable({
-    url: API_BILUSER
-});
+    const combinedTable = document.getElementById('combinedRecordsTable');
+    const combinedTableHead = combinedTable.querySelector('thead tr');
+    const combinedTableBody = combinedTable.querySelector('tbody');
 
+    // Dynamically create headers
+    endpoints.forEach(endpoint => {
+        combinedTableHead.innerHTML += `<th scope="col">Timestamp</th>`;
+        combinedTableHead.innerHTML += `<th scope="col">${endpoint.name}</th>`;
+    });
+
+    // Create a promise for each API endpoint
+    const promises = endpoints.map(endpoint => fetch(endpoint.api).then(response => response.json()));
+
+    Promise.all(promises)
+        .then(allData => {
+            const maxLength = Math.max(...allData.map(data => data.items.length));
+
+            for (let i = 0; i < maxLength; i++) {
+                const row = document.createElement('tr');
+                allData.forEach((data, index) => {
+                    const item = data.items[i] || {};
+                    const isFirstColumn = index === 0;
+                    const isLastColumn = index === allData.length - 1;
+                    row.innerHTML += `
+                        <td class="${isFirstColumn ? 'fw-bold' : ''}">${item.created_on || ''}</td>
+                        <td class="${isLastColumn ? 'fw-bold' : ''}">${item.description || ''}</td>
+                    `;
+                });
+                combinedTableBody.appendChild(row);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+});  
 </script>
 <script src="js/summary.js"></script>
 [[ end ]]
