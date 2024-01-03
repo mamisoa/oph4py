@@ -189,11 +189,19 @@ function getUserInfo(id) {
  * // Returns xxxx TO FILL xxx
  * const uniqueId = getUserInfo(1);
  */
-function refreshTables(tblArr) {
-    for (tbl of tablesArr) {
-      $(tbl).bootstrapTable('refresh');
+
+function refreshTables(tablesArr) {
+    for (let tbl of tablesArr) {
+        // Check if 'bootstrapTable' function is defined for the current element
+        if (typeof $(tbl).bootstrapTable === 'function') {
+            $(tbl).bootstrapTable('refresh');
+        } else {
+            // Handle the case where 'bootstrapTable' is not defined
+            console.error('bootstrapTable function not defined for', tbl);
+            // Continue with the next iteration if desired
+        }
     }
-};
+}
 
 /**
  * disable buttons in from an array of Document identifiers
