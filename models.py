@@ -726,7 +726,14 @@ db.define_table(
 
 ## BILLING
 
+#temporary
 db.define_table('billing',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('description','string'),
+    auth.signature)
+
+db.define_table('billing_history',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
     Field('price', 'double'),
@@ -737,11 +744,13 @@ db.define_table('billing',
     Field('invoice_type', 'string'),
     Field('status', 'integer', default=0),
     Field('note', 'string'),
-    auth.signature)
+    Field('description', 'string'),
+    auth.signature, 
+    )
 
-db.billing.status.requires = IS_IN_SET((2,1,0)) # ('paid','partial','not paid')
-db.billing.card_type.requires = IS_IN_SET(('BC','VISA', 'MC', 'CONTACT'))
-db.billing.invoice_type.requires = IS_IN_SET(('CO','EDA', 'other')) # print invoice if needed
+db.billing_history.status.requires = IS_IN_SET((2,1,0)) # ('paid','partial','not paid')
+db.billing_history.card_type.requires = IS_IN_SET(('BC','VISA', 'MC', 'CONTACT'))
+db.billing_history.invoice_type.requires = IS_IN_SET(('CO','EDA', 'other')) # print invoice if needed
 
 ## price is calculated from the combo price
 ## plus eventually an extracode 
