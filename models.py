@@ -746,40 +746,39 @@ db.billing.invoice_type.requires = IS_IN_SET(('CO','EDA', 'other')) # print invo
 ## price is calculated from the combo price
 ## plus eventually an extracode 
 
+# combo_code is a helper to add several nomenclature codes at once
+db.define_table('combo_codes',
+    Field('combo_desc', 'string'),
+    Field('note', 'string'),
+    auth.signature
+)
+
+# nomenclature codes
+db.define_table('nomenclature',
+    Field('code', 'string'),
+    Field('code_desc', 'string'),
+    Field('note', 'string'),
+    Field('price_list', 'string'), # list of prices
+    Field('not_compatible', 'string'), # list of incompatible codes
+    Field('min_reccurency', 'string', default='6m'), # min reccurency
+    Field('add_documents', 'string'), # list of documents
+    Field('min_age', 'double'), # min age
+    Field('max_age', 'double'), # max age
+    auth.signature
+)
+
+# many to many relations between combo_code and nomenclature codes
+db.define_table('combo_proxy_nomenclature',
+    Field('combo_id', 'reference combo_codes', required=True),
+    Field('nomenclature_id', 'reference nomenclature', required=True),
+    Field('combo_price', 'double', default=0),
+    auth.signature
+)
+
 # codes used for one worklist billing 
 db.define_table('wl_codes',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
-    Field('nomenclature_id', 'reference nomenclature_id', required=True),
+    Field('nomenclature_id', 'reference nomenclature', required=True),
     auth.signature   
     )
-
-# combo_code is a helper to add several nomenclature codes at once
-db.define_table('combo_codes',
-    Field('combo_desc', 'string'),
-    Field('nomenclature_id', 'reference combo_proxy_nomenclature'),
-    Field('note', 'string'),
-    auth.signature
-    )
-
-# many to many relations between combo_code and nomenclature codes
-db.define_table('combo_proxy_nomenclature',
-    Field('combo_id', 'reference combo_code', required=True),
-    Field('nomenclature_id', 'reference nomenclature', required=True),
-    Field('combo_price', 'double', default = 0),
-    auth.signature
-    )
-
-# nomenclature codes
-db.define_table('nomenclature',
-    Field('code','string'),
-    Field('code_desc','string'),
-    Field('combo_id', 'reference combo_proxy_nomenclature'),
-    Field('note', 'string'),
-    Field('price_list', 'string'), # list of prices, in belgium [0,1300,1600 ...]
-    Field('not_compatible', 'string'), # list of incompatible codes
-    Field('min_reccurency', 'string', default = '6m'), # 1y 6m 15d , checks if this code has been used before this delay
-    Field('add_documents', 'string', default = '6m'), # list of documents needed to be covered 
-    auth.signature
-    )
-
