@@ -737,11 +737,12 @@ db.define_table('billing_history',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
     Field('price', 'double'),
-    Field('cash_payement', 'double'),
-    Field('card_payement', 'double'),
+    Field('cash_payment', 'double'),
+    Field('card_payment', 'double'),
     Field('card_type', 'string'),
-    Field('invoice_payement', 'double'),
+    Field('invoice_payment', 'double'),
     Field('invoice_type', 'string'),
+    Field('paid', 'double'),
     Field('status', 'integer', default=0),
     Field('note', 'string'),
     Field('description', 'string'),
@@ -749,8 +750,8 @@ db.define_table('billing_history',
     )
 
 db.billing_history.status.requires = IS_IN_SET((2,1,0)) # ('paid','partial','not paid')
-db.billing_history.card_type.requires = IS_IN_SET(('BC','VISA', 'MC', 'CONTACT'))
-db.billing_history.invoice_type.requires = IS_IN_SET(('CO','EDA', 'other')) # print invoice if needed
+db.billing_history.card_type.requires = IS_IN_SET(('bc','visa', 'mc', 'contactless'))
+db.billing_history.invoice_type.requires = IS_IN_SET(('council', 'bank' ,'other')) # print invoice if needed
 
 ## price is calculated from the combo price
 ## plus eventually an extracode 
@@ -773,6 +774,7 @@ db.define_table('nomenclature',
     Field('add_documents', 'string'), # list of documents
     Field('min_age', 'double'), # min age
     Field('max_age', 'double'), # max age
+    Field('covered', 'boolean', default = 1), # 0 not covered, no attestation but bill 1 covered no bill but attestation 
     auth.signature
 )
 

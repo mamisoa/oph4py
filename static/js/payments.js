@@ -1,3 +1,6 @@
+// take the value of wlId to get the codes
+
+
 // refresh tables
 const tablesArr = ['#chx_tbl','#ccx_tbl','#fol_tbl','#bil_tbl'];
 refreshTables(tablesArr);
@@ -44,3 +47,26 @@ function refreshList(listName){
     } else {};
 };
 refreshList('userauth_user');
+
+// Function to calculate the sum
+function updatePaymentSum() {
+    // Retrieve the values from the input fields
+    let cardPayment = parseFloat(document.getElementById('cardPayment').value);
+    let cashPayment = parseFloat(document.getElementById('cashPayment').value);
+    let invoicePayment = parseFloat(document.getElementById('invoicePayment').value);
+
+    // Calculate the sum
+    let sum = cardPayment + cashPayment + invoicePayment;
+
+    // Update the button text
+    let paymentButton = document.getElementById('recordPayment');
+    paymentButton.textContent = 'Record Payment [ ' + sum.toFixed(2) + ' € ]';
+}
+
+// Add event listeners to input fields
+document.getElementById('cardPayment').addEventListener('input', updatePaymentSum);
+document.getElementById('cashPayment').addEventListener('input', updatePaymentSum);
+document.getElementById('invoicePayment').addEventListener('input', updatePaymentSum);
+
+// Initialize the button text on page load
+updatePaymentSum();

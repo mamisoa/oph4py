@@ -3,9 +3,10 @@
 [[ block left_nav ]]
 [[ end]]
 
-<div class="container-fluid my-3 py-2 patient-id" id="patientTitle">
+<div class="container-fluid py-1 patient-id" id="patientTitle">
     <div class="row mb-3 d-flex justify-content-center align-items-center">
         <div id="patientIdDiv" class="col-4 text-end">
+            <h3 class="wlID">01/01/2024 - Worklist #1545</h3>
             <h3 class="patientName"></h3>
             <h5 class="patientDob text-muted"></h5>
             <h5 class="patientGender fst-italic"></h5>
@@ -22,7 +23,7 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<div class="container-fluid d-none">
     <div class="row">
         <div class="col">
             <h2>Full History</h2>
@@ -39,6 +40,178 @@
         </div>
     </div>
 </div>
+
+<div class="container-fluid py-2">
+    <div class="row">
+        <div class="col">
+            <h2>Codes</h2>
+            <table class="table table-striped">
+                <tr>
+                    <th>Date</th>
+                    <th>Code</th>
+                    <th>Cost</th>
+                    <th>INAMI</th>
+                </tr>
+                <tr>
+                    <th>01/01/2024</th>
+                    <td>105755</td>
+                    <td>30</td>
+                    <th>yes</th>
+                </tr>
+                <tr>
+                    <th>01/01/2024</th>
+                    <td>249233</td>
+                    <td>7</td>
+                    <td>yes</td>
+                </tr>
+                <tr>
+                    <th>01/01/2024</th>
+                    <td>IPL</td>
+                    <td>70</td>
+                    <td>no</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col">
+            <h2>Breakdown</h2>
+            <table class="table table-striped">
+                <tr>
+                    <th>Date</th>
+                    <td>01/01/2024</td>
+                    <td>Action</td>
+                </tr>
+                <tr>
+                    <th>INAMI</th>
+                    <td>30</td>
+                    <td><button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .20rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;">Print Attestation</button></td>
+                </tr>
+                <tr>
+                    <th>Supplements</th>
+                    <td>47</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Not covered</th>
+                    <td>70</td>
+                    <td><button type="button" class="btn btn-secondary" style="--bs-btn-padding-y: .20rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;">Print bill</button></td>
+                </tr>    
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid my-2">
+    <div class="row">
+        <div class="col">
+            <h2>Transactions</h2>
+            <table class="table table-striped">
+                <tr>
+                    <th>Date</th>
+                    <th>Price</th>
+                    <th>Paid</th>
+                    <th>Card</th>
+                    <th>Cash</th>
+                    <th>Invoice</th>
+                </tr>
+                <tr>
+                    <th>01/01/2024</th>
+                    <td>147.00€</td>
+                    <td>140.00€</td>
+                    <td>0.00€</td>
+                    <td>0.00€</td>
+                    <td>0.00€</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col">
+            <h2>Remaining to pay:</h2>
+            <button type="button" id="btnNewpayment" class="btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#paymentModal">Pay 147 €</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal paymentModal -->
+<div class="modal fade mt-5" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Encode payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form id="paymentFormModal">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-4">
+                                    <span for="cardPayment" class="form-label">💳 Card:</span>
+                                    <div class="input-group">
+                                        <span class="input-group-text">€</span>
+                                        <input id="cardPayment" type="number" class="form-control text-end" name="card_payment" min="0" step="0.01" value="0" aria-label="Amount (to the nearest euro)">
+                                        <span class="input-group-text">.00</span>
+                                    </div> 
+                                </div>
+                                <div class="col-4">
+                                    <span for="cashPayment" class="form-label">💵 Cash:</span>
+                                    <div class="input-group">
+                                        <span class="input-group-text">€</span>
+                                        <input id="cashPayment" type="number" class="form-control text-end" name="cash_payment" min="0" step="0.01" value="0" aria-label="Amount (to the nearest euro)">
+                                        <span class="input-group-text">.00</span>
+                                    </div> 
+                                </div>
+                                <div class="col-4">
+                                    <span for="invoicePayment" class="form-label">🏦 Invoice:</span>
+                                    <div class="input-group">
+                                        <span class="input-group-text">€</span>
+                                        <input id="invoicePayment" type="number" class="form-control text-end" name="invoice_payment" min="0" step="0.01" value="0" aria-label="Amount (to the nearest euro)">
+                                        <span class="input-group-text">.00</span>
+                                    </div> 
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-4">
+                                    <select id="cardType" class="form-select" name="card_type" aria-label="Select card type">
+                                        <option value="bc" selected>Bancontact</option>
+                                        <option value="contactless">Contactless</option>
+                                        <option value="visa">Visa</option>
+                                        <option value="mc">Mastercard</option>
+                                    </select>
+                                </div>
+                                <div class="col-4"></div>
+                                <div class="col-4">
+                                    <select id="invoiceType" class="form-select" name="invoice_type" aria-label="Select invoice type">
+                                        <option value="council" selected>Council</option>
+                                        <option value="transfer">Bank transfer</option>
+                                        <option value="visa">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="text-center">
+                                        <span class="fs-3 py-2">Amount to pay: <span id="remainPayment">147</span> €</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="recordPayment" class="btn btn-danger" data-bs-dismiss="modal" data-cert-flag="pay">Record Payment (sum)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 [[ block js_scripts ]]
 <script type="text/javascript">
@@ -140,5 +313,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
     
 </script>
-<script src="js/summary.js"></script>
+<script src="js/payments.js"></script>
 [[ end ]]
