@@ -1,5 +1,9 @@
 // take the value of wlId to get the codes
-
+// amount to pay is calculated
+// when payment is recorded, the pay button is dynamically adjusting
+// depending on the amount remaining to pay 
+// if attestation is canceled, print button is renabled, otherwise it is the duplicate button that is enabled
+// use htmx to use confirmation modal 
 
 // refresh tables
 const tablesArr = ['#chx_tbl','#ccx_tbl','#fol_tbl','#bil_tbl'];

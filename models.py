@@ -765,7 +765,8 @@ db.define_table('combo_codes',
 
 # nomenclature codes
 db.define_table('nomenclature',
-    Field('code', 'string'),
+    Field('date', 'datetime', required=True),
+    Field('code', 'string', required=True),
     Field('code_desc', 'string'),
     Field('note', 'string'),
     Field('price_list', 'string'), # list of prices
@@ -792,4 +793,24 @@ db.define_table('wl_codes',
     Field('id_worklist','reference worklist', required=True),
     Field('nomenclature_id', 'reference nomenclature', required=True),
     auth.signature   
+    )
+
+db.define_table('social_sec_documents',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('date', 'datetime', required=True),
+    Field('price', 'double'),
+    Field('pdfReportBlob', 'blob', required=True),
+    Field('note', 'string'),
+    Field('status', 'boolean', default = 1), # 1 confirmed 0 cancelled
+    auth.signature
+    )
+
+db.define_table('invoices',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist','reference worklist', required=True),
+    Field('date', 'datetime', required=True),
+    Field('pdfReportBlob', 'blob'),
+    Field('note', 'string'),
+    auth.signature
     )
