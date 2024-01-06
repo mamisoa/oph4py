@@ -1303,6 +1303,7 @@ function detailFormatter_wlCodes(index, row) {
 
 function setCancelled (id,table,desc) {
     bootbox.confirm({
+        centerVertical: true,
         message: "Are you sure you want cancel this "+desc+" ?",
         closeButton: false ,
         buttons: {
@@ -1331,7 +1332,8 @@ function setCancelled (id,table,desc) {
 // add operational buttons to rows in certificates table
 function operateFormatter_wlCodes(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
-    html.push('<a class="cancel ms-1" href="javascript:void(0)" title="Cancel code"><i class="fas fa-text-slash"></i></a>');
+    let disable_class = row.status == 'OK' ? '' : 'd-none';
+    html.push('<a class="cancel ' +disable_class+' ms-1" href="javascript:void(0)" title="Cancel code"><i class="fas fa-text-slash"></i></a>');
     html.push('</div>');
     return html.join('');
   };
@@ -1343,3 +1345,18 @@ window.operateEvents_wlCodes = {
         setCancelled(row.id,'wl_codes', row.code);
     }
 };
+
+function titleFormatter() {
+    return 'Total price:'
+}
+
+console.log('successfully');
+
+function priceFormatter(data) {
+    var field = this.field
+    return '$' + data.map(function (row) {
+      return +row[field].substring(1)
+    }).reduce(function (sum, i) {
+      return sum + i
+    }, 0)
+  }

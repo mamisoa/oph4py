@@ -253,6 +253,7 @@
                     data-pagination="true"
                     data-page-size="5"
                     data-show-columns="true"
+                    data-show-refresh="true"
                     data-search="true"
                     data-search-accent-neutralise="true"
                     data-visible-search="false"
@@ -1297,18 +1298,27 @@
                     <h2><a role="button" data-bs-toggle="collapse" href=".working">Working</a></h2>
                     <div class="row working">
                         <div class="col bg-left">
+                            <div id="toolbar-wlCodes">
+                            </div>
                             <table
                                 id="wlCodes_tbl"
+                                data-toolbar-align="right"
+                                data-toolbar="#toolbar-wlCodes"
                                 data-side-pagination="server"
-                                
+                                data-toggle="table"
                                 data-pagination="true"
                                 data-page-size="10"
+                                data-show-columns="true"
                                 data-search="false"
+                                data-search-accent-neutralise="true"
+                                data-visible-search="false"
                                 data-query-params="queryParams"
                                 data-response-handler="responseHandler_wlCodes"
                                 data-detail-formatter="detailFormatter_wlCodes"
                                 data-detail-view="true"
                                 data-detail-view-icon="true"
+                                data-show-refresh="true"
+                                data-show-footer="false"
                                 >
                                 <thead>
                                     <tr>
@@ -2569,7 +2579,7 @@ const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#tabl
     '#rxRight_tbl','#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl',
     '#kmRight_tbl', '#kmLeft_tbl',
     '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl', '#cert_tbl',
-    'wlCodes_tbl'
+    '#wlCodes_tbl'
     ];
 
 // init tinymce
