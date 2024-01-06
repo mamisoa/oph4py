@@ -789,6 +789,10 @@ function printGxRx(table,id) {
     });
 };
 
+// BILLING
+
+let codesToBillObj = []; // list of codes to bill
+
 // billing autocomplete
 $('#codeSelection input[name=code]').autoComplete({
     bootstrapVersion: '4',
@@ -840,15 +844,73 @@ $('#codeSelection input[name=code]').autoComplete({
         codeDescriptionDiv.innerHTML = '';
         codeDescriptionDiv.appendChild(table);
         return {
-            text: item.code+' ('+item.code_desc+')'
-        };
+            text: item.code
+        };  
     }
 });
+
+$('#codeTextSelection input[name=codeText]').autoComplete({
+    bootstrapVersion: '4',
+    minLength: '1',
+    resolverSettings: {
+        url: API_NOMENCLATURE,
+        queryKey: 'code_desc.contains'
+    },
+    events: {
+        searchPost: function(res) {
+            if (res.count == 0) {
+            }
+            return res.items;
+        }   
+    },
+    formatResult: function(item) {
+        // Get the div where the table will be placed
+        const codeDescriptionDiv = document.getElementById('listCodeDescription');
+
+        // Create a table element
+        const table = document.createElement('table');
+        table.classList.add('table'); // Add Bootstrap class for styling
+
+        // Create the header row
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        const headers = ['Code', 'Description', 'Price', 'Covered'];
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Create the body row
+        const tbody = document.createElement('tbody');
+        const bodyRow = document.createElement('tr');
+        bodyRow.innerHTML = `
+                    <td>${item.code ?? ''}</td>
+                    <td>${item.code_desc.substring(0, 30) ?? ''}</td>
+                    <td>${JSON.parse(item.price_list)[0] * item.supplement_ratio ?? ''}</td>
+                    <td>${JSON.parse(item.price_list)[1] ?? ''}</td>
+                `; // <td>${new Date().toLocaleDateString()}</td>        
+        tbody.appendChild(bodyRow);
+        table.appendChild(tbody);
+
+        // Clear any existing content and add the new table
+        codeDescriptionDiv.innerHTML = '';
+        codeDescriptionDiv.appendChild(table);
+        return {
+            text: item.code_desc
+        };  
+    }
+});
+
+
 
 // combo codes
 const combos = comboObj; // Replace with the actual JSON data
 const comboCodeSelect = document.getElementById('comboCodeSelect');
 const codeListTable = document.querySelector('#combo_listcode tbody');
+
 
 // Populate combo options
 combos.forEach(combo => {
@@ -901,3 +963,9 @@ if (combos.length > 0) {
     comboCodeSelect.value = combos[0].id;
     updateTable(combos[0].id);
 }
+
+// Add code button functionality
+addCodeBtn.addEventListener('click', function() {
+    const codeSelectId = comboCodeSelect.value;
+    
+});
