@@ -789,8 +789,11 @@ function printGxRx(table,id) {
     });
 };
 
+////////////////////////////////////////////////////////////////
 // BILLING
+////////////////////////////////////////////////////////////////
 
+let currentCodeObj = {};
 let codesToBillObj = []; // list of codes to bill
 
 // billing autocomplete
@@ -894,7 +897,6 @@ $('#codeTextSelection input[name=codeText]').autoComplete({
                 `; // <td>${new Date().toLocaleDateString()}</td>        
         tbody.appendChild(bodyRow);
         table.appendChild(tbody);
-
         // Clear any existing content and add the new table
         codeDescriptionDiv.innerHTML = '';
         codeDescriptionDiv.appendChild(table);
@@ -904,6 +906,16 @@ $('#codeTextSelection input[name=codeText]').autoComplete({
     }
 });
 
+$('#codeSelection input[name=code]').on('autocomplete.select', function (evt, item) {
+    console.log('code',item);
+    currentCodeObj=item;
+});
+
+
+$('#codeTextSelection input[name=codeText]').on('autocomplete.select', function (evt, item) {
+    console.log(item);
+    currentCodeObj=item;
+});
 
 
 // combo codes
@@ -951,10 +963,16 @@ addComboBtn.addEventListener('click', function() {
     const selectedComboData = combos.find(combo => combo.id == selectedComboId);
 
     if (selectedComboData && selectedComboData.nomenclatures) {
-        const addComboCodesObj = {
-            codes: selectedComboData.nomenclatures
-        };
+        // const addComboCodesObj = {
+        //     codes: selectedComboData.nomenclatures
+        // };
+        let addComboCodesObj = selectedComboData.nomenclatures;
+        let checkedValue = document.querySelector('#codeSideSelect input[name="site"]:checked')?.value;
+        addComboCodesObj.forEach(object => {
+            object.laterality = checkedValue;
+        });
         console.log(addComboCodesObj);
+        codesToBillObj.push(...addComboCodesObj)
     }
 });
 
@@ -966,6 +984,9 @@ if (combos.length > 0) {
 
 // Add code button functionality
 addCodeBtn.addEventListener('click', function() {
-    const codeSelectId = comboCodeSelect.value;
-    
+    if (!isEmptyObject(currentCodeObj)) {
+        let checkedValue = document.querySelector('#codeSideSelect input[name="site"]:checked')?.value;
+        currentCodeObj['laterality'] = checkedValue;
+        codesToBillObj.push(currentCodeObj);
+    }
 });

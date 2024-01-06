@@ -113,6 +113,11 @@ function checkIfDataIsNull(data, dft='n/a') {
     return (data == null || data =='' || data == 'undefined')? dft : data ; 
 };
 
+// check if an object is empty
+function isEmptyObject(obj) {
+    return Object.keys(obj).length === 0 && obj.constructor === Object;
+}
+
 function getUuid() {
     return Promise.resolve(
         $.ajax({
