@@ -230,6 +230,62 @@ $('#CxRxFormModal input[name=cleaningL]').autoComplete({
     }
 });
 
+// billing autocomplete
+$('#codeSelection input[name=code]').autoComplete({
+    bootstrapVersion: '4',
+    minLength: '1',
+    resolverSettings: {
+        url: API_NOMENCLATURE,
+        queryKey: 'code.contains'
+    },
+    events: {
+        searchPost: function(res) {
+            if (res.count == 0) {
+            }
+            return res.items;
+        }   
+    },
+    formatResult: function(item) {
+        // Get the div where the table will be placed
+        const codeDescriptionDiv = document.getElementById('listCodeDescription');
+
+        // Create a table element
+        const table = document.createElement('table');
+        table.classList.add('table'); // Add Bootstrap class for styling
+
+        // Create the header row
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        const headers = ['Code', 'Description', 'Price', 'Covered'];
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Create the body row
+        const tbody = document.createElement('tbody');
+        const bodyRow = document.createElement('tr');
+        bodyRow.innerHTML = `
+                    <td>${item.code ?? ''}</td>
+                    <td>${item.code_desc.substring(0, 30) ?? ''}</td>
+                    <td>${JSON.parse(item.price_list)[0] * item.supplement_ratio ?? ''}</td>
+                    <td>${JSON.parse(item.price_list)[1] ?? ''}</td>
+                `; // <td>${new Date().toLocaleDateString()}</td>        
+        tbody.appendChild(bodyRow);
+        table.appendChild(tbody);
+
+        // Clear any existing content and add the new table
+        codeDescriptionDiv.innerHTML = '';
+        codeDescriptionDiv.appendChild(table);
+        return {
+            text: item.code+' ('+item.code_desc+')'
+        };
+    }
+});
+
 // init modal according to the button that called it, before it is shown
 // set mHxModal parameters by default: category
 // diagnosis associated to a worklist item have a WlId, NOT the others
