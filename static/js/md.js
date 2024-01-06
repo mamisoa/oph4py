@@ -230,62 +230,6 @@ $('#CxRxFormModal input[name=cleaningL]').autoComplete({
     }
 });
 
-// billing autocomplete
-$('#codeSelection input[name=code]').autoComplete({
-    bootstrapVersion: '4',
-    minLength: '1',
-    resolverSettings: {
-        url: API_NOMENCLATURE,
-        queryKey: 'code.contains'
-    },
-    events: {
-        searchPost: function(res) {
-            if (res.count == 0) {
-            }
-            return res.items;
-        }   
-    },
-    formatResult: function(item) {
-        // Get the div where the table will be placed
-        const codeDescriptionDiv = document.getElementById('listCodeDescription');
-
-        // Create a table element
-        const table = document.createElement('table');
-        table.classList.add('table'); // Add Bootstrap class for styling
-
-        // Create the header row
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        const headers = ['Code', 'Description', 'Price', 'Covered'];
-        headers.forEach(header => {
-            const th = document.createElement('th');
-            th.textContent = header;
-            headerRow.appendChild(th);
-        });
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
-
-        // Create the body row
-        const tbody = document.createElement('tbody');
-        const bodyRow = document.createElement('tr');
-        bodyRow.innerHTML = `
-                    <td>${item.code ?? ''}</td>
-                    <td>${item.code_desc.substring(0, 30) ?? ''}</td>
-                    <td>${JSON.parse(item.price_list)[0] * item.supplement_ratio ?? ''}</td>
-                    <td>${JSON.parse(item.price_list)[1] ?? ''}</td>
-                `; // <td>${new Date().toLocaleDateString()}</td>        
-        tbody.appendChild(bodyRow);
-        table.appendChild(tbody);
-
-        // Clear any existing content and add the new table
-        codeDescriptionDiv.innerHTML = '';
-        codeDescriptionDiv.appendChild(table);
-        return {
-            text: item.code+' ('+item.code_desc+')'
-        };
-    }
-});
-
 // init modal according to the button that called it, before it is shown
 // set mHxModal parameters by default: category
 // diagnosis associated to a worklist item have a WlId, NOT the others
@@ -844,3 +788,116 @@ function printGxRx(table,id) {
         }
     });
 };
+
+// billing autocomplete
+$('#codeSelection input[name=code]').autoComplete({
+    bootstrapVersion: '4',
+    minLength: '1',
+    resolverSettings: {
+        url: API_NOMENCLATURE,
+        queryKey: 'code.contains'
+    },
+    events: {
+        searchPost: function(res) {
+            if (res.count == 0) {
+            }
+            return res.items;
+        }   
+    },
+    formatResult: function(item) {
+        // Get the div where the table will be placed
+        const codeDescriptionDiv = document.getElementById('listCodeDescription');
+
+        // Create a table element
+        const table = document.createElement('table');
+        table.classList.add('table'); // Add Bootstrap class for styling
+
+        // Create the header row
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        const headers = ['Code', 'Description', 'Price', 'Covered'];
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Create the body row
+        const tbody = document.createElement('tbody');
+        const bodyRow = document.createElement('tr');
+        bodyRow.innerHTML = `
+                    <td>${item.code ?? ''}</td>
+                    <td>${item.code_desc.substring(0, 30) ?? ''}</td>
+                    <td>${JSON.parse(item.price_list)[0] * item.supplement_ratio ?? ''}</td>
+                    <td>${JSON.parse(item.price_list)[1] ?? ''}</td>
+                `; // <td>${new Date().toLocaleDateString()}</td>        
+        tbody.appendChild(bodyRow);
+        table.appendChild(tbody);
+
+        // Clear any existing content and add the new table
+        codeDescriptionDiv.innerHTML = '';
+        codeDescriptionDiv.appendChild(table);
+        return {
+            text: item.code+' ('+item.code_desc+')'
+        };
+    }
+});
+
+// combo codes
+const combos = comboObj; // Replace with the actual JSON data
+const comboCodeSelect = document.getElementById('comboCodeSelect');
+const codeListTable = document.querySelector('#combo_listcode tbody');
+
+// Populate combo options
+combos.forEach(combo => {
+    const option = document.createElement('option');
+    option.value = combo.id;
+    option.textContent = combo.combo;
+    comboCodeSelect.appendChild(option);
+});
+
+// Function to update the table based on the selected combo
+function updateTable(selectedComboId) {
+    const selectedComboData = combos.find(combo => combo.id == selectedComboId);
+
+    // Update the table with the selected combo's details
+    codeListTable.innerHTML = '';
+    if (selectedComboData && selectedComboData.nomenclatures) {
+        selectedComboData.nomenclatures.forEach(nomenclature => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${nomenclature.code ?? ''}</td>
+                <td>${nomenclature.code_desc.substring(0, 30) ?? ''}</td>
+                <td>${JSON.parse(nomenclature.price_list)[0] * nomenclature.supplement_ratio ?? ''}</td>
+                <td>${JSON.parse(nomenclature.price_list)[1] ?? ''}</td>
+            `; // <td>${new Date().toLocaleDateString()}</td>
+            codeListTable.appendChild(row);
+        });
+    }
+}
+
+// Update table when the selection changes
+comboCodeSelect.addEventListener('change', function() {
+    updateTable(this.value);
+});
+
+// Add combo button functionality
+addComboBtn.addEventListener('click', function() {
+    const selectedComboId = comboCodeSelect.value;
+    const selectedComboData = combos.find(combo => combo.id == selectedComboId);
+
+    if (selectedComboData && selectedComboData.nomenclatures) {
+        const addComboCodesObj = {
+            codes: selectedComboData.nomenclatures
+        };
+        console.log(addComboCodesObj);
+    }
+});
+
+// Automatically select the first option and update the table
+if (combos.length > 0) {
+    comboCodeSelect.value = combos[0].id;
+    updateTable(combos[0].id);
+}
