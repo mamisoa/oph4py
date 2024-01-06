@@ -155,6 +155,9 @@ LOCAL_BEID = 'https://yourdomain.com/beid/api/eid2'
 DEFAULT_PROVIDER = ""
 DEFAULT_SENIOR = ""
 
+# supplement ratio for billing
+SUPPLEMENT_RATIO = 1.75
+
 # external db
 DB_OCTOPUS= "dbconnexion"
 DBO_FOLDER= required_folder(APP_FOLDER, "databases/octopus")

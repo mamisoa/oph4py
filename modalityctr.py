@@ -9,7 +9,7 @@ from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added 
 from py4web.utils.grid import Grid
 
 # import settings
-from .settings import LOCAL_URL, APP_NAME, ASSETS_FOLDER, MACHINES_FOLDER, NEW_INSTALLATION, TIMEOFFSET, ENV_STATUS
+from .settings import LOCAL_URL, APP_NAME, ASSETS_FOLDER, MACHINES_FOLDER, NEW_INSTALLATION, TIMEOFFSET, ENV_STATUS, SUPPLEMENT_RATIO
 
 # import userful
 from .useful import dropdownSelect, rows2json, getMembershipId
@@ -153,6 +153,7 @@ def md(wlId):
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
     modalityController = 'md'
+    supplement_ratio = SUPPLEMENT_RATIO
     import base64
     from datetime import datetime
     response.headers['Cross-Origin-Embedder-Policy']='require-corp'
@@ -216,6 +217,7 @@ def gp(wlId):
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
     modalityController = 'gp'
+    supplement_ratio = SUPPLEMENT_RATIO
     import base64
     from datetime import datetime
     response.headers['Cross-Origin-Embedder-Policy']='require-corp'

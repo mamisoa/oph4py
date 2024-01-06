@@ -6,6 +6,9 @@ from .common import db, Field, auth, groups # ,dbo # add auth for auto.signature
 from pydal.validators import *
 from pydal.tools.tags import Tags
 
+# import settings
+from .settings import SUPPLEMENT_RATIO
+
 import uuid
 import random
 
@@ -758,7 +761,9 @@ db.billing_history.invoice_type.requires = IS_IN_SET(('council', 'bank' ,'other'
 
 # combo_code is a helper to add several nomenclature codes at once
 db.define_table('combo_codes',
+    Field('combo', 'string'),
     Field('combo_desc', 'string'),
+    Field('combo_price', 'double', default=0),
     Field('note', 'string'),
     auth.signature
 )
@@ -769,13 +774,14 @@ db.define_table('nomenclature',
     Field('code', 'string', required=True),
     Field('code_desc', 'string'),
     Field('note', 'string'),
-    Field('price_list', 'string'), # list of prices
+    Field('price_list', 'string'), # list of social security prices
+    Field('supplement_ratio', default = SUPPLEMENT_RATIO),
     Field('not_compatible', 'string'), # list of incompatible codes
-    Field('min_reccurency', 'string', default='6m'), # min reccurency
+    Field('min_reccurency', 'string'), # min reccurency
     Field('add_documents', 'string'), # list of documents
     Field('min_age', 'double'), # min age
     Field('max_age', 'double'), # max age
-    Field('covered', 'boolean', default = 1), # 0 not covered, no attestation but bill 1 covered no bill but attestation 
+    Field('covered', 'boolean', default = True), # 0 not covered, no attestation but bill 1 covered no bill but attestation 
     auth.signature
 )
 
@@ -783,7 +789,6 @@ db.define_table('nomenclature',
 db.define_table('combo_proxy_nomenclature',
     Field('combo_id', 'reference combo_codes', required=True),
     Field('nomenclature_id', 'reference nomenclature', required=True),
-    Field('combo_price', 'double', default=0),
     auth.signature
 )
 
@@ -791,10 +796,18 @@ db.define_table('combo_proxy_nomenclature',
 db.define_table('wl_codes',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
+    Field('date', 'datetime', required=True),
     Field('nomenclature_id', 'reference nomenclature', required=True),
+    Field('combo_code', 'reference combo_codes'),
+    Field('laterality', 'string', default ='both', required=True),
+    Field('note', 'string'),
+    Field('last_prescribed', 'datetime'), # calculated on insertion after query date in wlcodes from code&id_worklist&id_auth_user
+    Field('status', 'integer', default = True), # 1 confirmed -1 cancelled
     auth.signature   
     )
+db.wl_codes.laterality.requires = IS_IN_SET('right','left','both','local','systemic')
 
+# 'attestations de soins
 db.define_table('social_sec_documents',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
@@ -802,7 +815,7 @@ db.define_table('social_sec_documents',
     Field('price', 'double'),
     Field('pdfReportBlob', 'blob', required=True),
     Field('note', 'string'),
-    Field('status', 'boolean', default = 1), # 1 confirmed 0 cancelled
+    Field('status', 'boolean', default = True), # 1 confirmed 0 cancelled
     auth.signature
     )
 

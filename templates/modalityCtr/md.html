@@ -1292,15 +1292,44 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
-                </div>
-                <div class="col bg-left">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
-                </div>
-                <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+            <div class="row big-title bg-success">
+                <div class="col">
+                    <h2><a role="button" data-bs-toggle="collapse" href=".working">Working</a></h2>
+                    <div class="row working">
+                        <div class="col bg-left">
+                            <table
+                                id="wlCodes_tbl"
+                                data-side-pagination="server"
+                                
+                                data-pagination="true"
+                                data-page-size="10"
+                                data-search="false"
+                                data-query-params="queryParams"
+                                data-response-handler="responseHandler_wlCodes"
+                                data-detail-formatter="detailFormatter_wlCodes"
+                                data-detail-view="true"
+                                data-detail-view-icon="true"
+                                >
+                                <thead>
+                                    <tr>
+                                        <th data-field="date" data-sortable="true">Date</th>
+                                        <th data-field="code" data-sortable="true">Code</th>
+                                        <th data-field="combo" data-sortable="false">Combo</th>
+                                        <th data-field="laterality" data-sortable="false">Laterality</th>
+                                        <th data-field="lastprescribed" data-sortable="false">Last precribed</th>
+                                        <th data-field="inami" data-sortable="false">INAMI</th>
+                                        <th data-field="i1600" data-sortable="false">Std coverage</th>
+                                        <th data-field="i1300" data-sortable="false">Benef coverage</th>
+                                        <th data-field="priceTag" data-sortable="false">Price</th>
+                                        <th data-field="note" data-sortable="false">Note</th>
+                                        <th data-field="status" data-sortable="false">Status</th>
+                                        <th data-field="operate" data-formatter="operateFormatter_wlCodes" data-events="operateEvents_wlCodes">Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2363,6 +2392,7 @@
 const HOSTURL = "[[ = hosturl ]]";
 var usermdObj = [[ =XML(mdParams) ]];
 var userObj = [[ =XML(userDict)]];
+const SUPPLEMENT_RATIO = [[ = XML(supplement_ratio)]]
 // for timer
 var timer_id = [];
 // modality controllers
@@ -2525,11 +2555,22 @@ var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
     url: API_KMLEFT
 });
 
+// table listing wlcodes right eye by user
+const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],combo:combo_code[combo,combo_price],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+var $wlCodes = $('#wlCodes_tbl').bootstrapTable({
+    url: API_WLCODES,
+    undefinedText: 'N/A',
+});
+
+
+
 // tables list
 const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl',
     '#rxRight_tbl','#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl',
     '#kmRight_tbl', '#kmLeft_tbl',
-    '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl', '#cert_tbl'];
+    '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl', '#cert_tbl',
+    'wlCodes_tbl'
+    ];
 
 // init tinymce
 tinymce.init({

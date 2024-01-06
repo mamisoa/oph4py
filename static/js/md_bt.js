@@ -1,3 +1,19 @@
+// check if value is null and return a default value, else return value
+function checkIfNull(value, resultStrIfNullorUndefined) { 
+    if (value == null || value === undefined) {
+        return resultStrIfNullorUndefined;
+    } else {
+        return value;
+    }
+};
+
+function styleTimeslot(ts) {
+    let arr = ts.split(' ');
+    // arr[1] is time arr[0] is date
+    let res = '<strong>'+arr[0].split('-').reverse().join('/')+'</strong> '+arr[1];
+    return res;
+};
+
 // medications table
 function responseHandler_mx(res) { // used if data-response-handler="responseHandler_mx"
     let list = res.items;
@@ -93,7 +109,6 @@ function responseHandler_msHx(res) { // used if data-response-handler="responseH
         total: res.count,
     };
 };
-
 
 var toggle ='';
 function queryParams(params) {
@@ -221,13 +236,13 @@ window.operateEvents_ax = {
     }
 };
 
-// check if value is null and return a default value, else return value
-function checkIfNull(value, resultStrIfNull) { 
-    if (value == null) {
-        return resultStrIfNull;
-    } else {
-        return value;
-    }
+// add operational icons for medication list
+function operateFormatter_mx(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="edit" href="javascript:void(0)" title="Edit rx"><i class="fas fa-edit"></i></a>');
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete rx"><i class="fas fa-trash-alt"></i></a>');
+    html.push('</div>');
+    return html.join('');
 };
 
 // add operational icons for medical history list
@@ -395,12 +410,6 @@ function queryParams_wl(params) {
     return decodeURI(encodeURI(s_wl));
 };
 
-function styleTimeslot(ts) {
-    let arr = ts.split(' ');
-    // arr[1] is time arr[0] is date
-    let res = '<strong>'+arr[0].split('-').reverse().join('/')+'</strong> '+arr[1];
-    return res;
-};
 
 // respondhandler for worklist table
 function responseHandler_wl(res) { // used if data-response-handler="responseHandler_wl"
@@ -1224,5 +1233,113 @@ window.operateEvents_cert = {
     'click .print': function (e, value, row, index) {
         // console.log('You click action EDIT on row: ' + JSON.stringify(row));
         printGxRx('certificates', row.id);
+    }
+};
+
+// wlCodes table
+function responseHandler_wlCodes(res) { // used if data-response-handler="responseHandler_wlCodes"
+    let list = res.items;
+    let display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'id_auth_user': list[i].id_auth_user,
+            'id_worklist': list[i].id_worklist,
+            'date': list[i]['date'],
+            'combo': list[i]['combo']['combo'],
+            'comboPrice':list[i]['combo']['combo_price'],
+            'nomenclature_id': list[i]['nomenclature_id'],
+            'code': list[i]['nomenclature']['code'],
+            'laterality': list[i]['laterality'],
+            'codeDescription': checkIfNull(list[i]['code_desc'],''),
+            'addDocuments': checkIfNull(list[i]['nomenclature']['add_documents'],''),
+            'covered': checkIfNull(list[i]['nomenclature']['covered'],''),
+            'minAge': checkIfNull(list[i]['nomenclature']['min_age'],0),
+            'maxAge': checkIfNull(list[i]['nomenclature']['max_age'],999),
+            'minRecurrency': checkIfNull(list[i]['nomenclature']['min_recurrency'],''),
+            'notCompatible': checkIfNull(list[i]['nomenclature']['not_compatible'],''),
+            'priceList': checkIfNull(list[i]['nomenclature']['price_list'],[-1,-1,-1,-1]),
+            'inami': checkIfNull(JSON.parse(list[i]['nomenclature']['price_list'])[0],-1),
+            'i1600': checkIfNull(JSON.parse(list[i]['nomenclature']['price_list'])[1],-1),
+            'i1300': checkIfNull(JSON.parse(list[i]['nomenclature']['price_list'])[2],-1),
+            'priceTag': checkIfNull(((Math.round(JSON.parse(list[i]['nomenclature']['price_list'])[0]*list[i]['nomenclature']['supplement_ratio'])*100)/100),-1),
+            'supplementRatio': checkIfNull(list[i]['nomenclature']['supplement_ratio'],SUPPLEMENT_RATIO),
+            'note': checkIfNull(list[i]['nomenclature']['note'],''),
+            'lastPresbribed': list[i]['last_prescribed'],
+            'status':  list[i]['status'] === 1 ? 'OK' : 'Cancelled',
+            // don't modify under
+            'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
+            'modified_by': list[i]['mod.id'],
+            'modified_on': list[i]['modified_on'],
+            'created_by': list[i]['creator.id'],
+            'created_by_name': list[i]['creator.last_name'] + ' ' + list[i]['creator.first_name'],
+            'created_on': list[i]['created_on']
+        });
+    });
+    return {
+        rows: display,
+        total: res.count,
+    };
+};
+
+// TODO: check_if_null
+// get details from row in wlcodes table
+function detailFormatter_wlCodes(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Datestamp: </span>'+ row.date +'</p>');
+    html.push('<p class=""><span class="fw-bold">Code description: </span>'+ row.codeDescription +'</p>');
+    html.push('<p class=""><span class="fw-bold">Supplement ratio: </span>'+ row.suplementRatio +'</p>');
+    html.push('<p class=""><span class="fw-bold">Age[min,max]: </span> ['+ row.minAge+','+row.maxAge+'] </p>');
+    html.push('<p class=""><span class="fw-bold">Min recurrency: </span>'+ row.minRecurrency +'</p>');
+    html.push('<p class=""><span class="fw-bold">Add documents: </span>'+ row.addDocuments +'</p>');
+    html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by_name+'</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};
+
+function setCancelled (id,table,desc) {
+    bootbox.confirm({
+        message: "Are you sure you want cancel this "+desc+" ?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-danger'
+            }
+        },
+        callback: function (result) {
+            let dataObj = { "id" : id, "status": -1 } // set to cancel
+            dataStr = JSON.stringify(dataObj);
+            if (result == true) {
+                crudp(table,'0','PUT', dataStr).then( data => refreshTables(tablesArr));
+            } else {
+                console.log('This was logged in the callback: ' + result);
+            }
+        }
+    });
+};
+
+
+// add operational buttons to rows in certificates table
+function operateFormatter_wlCodes(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="cancel ms-1" href="javascript:void(0)" title="Cancel code"><i class="fas fa-text-slash"></i></a>');
+    html.push('</div>');
+    return html.join('');
+  };
+
+// add button link to rows in wlCodes table
+window.operateEvents_wlCodes = {
+    'click .cancel': function (e, value, row, index) {
+        console.log('You click action EDIT on row: ' + JSON.stringify(row));
+        setCancelled(row.id,'wl_codes', row.code);
     }
 };
