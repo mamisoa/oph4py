@@ -969,10 +969,12 @@ addComboBtn.addEventListener('click', function() {
         let addComboCodesObj = selectedComboData.nomenclatures;
         let checkedValue = document.querySelector('#codeSideSelect input[name="site"]:checked')?.value;
         addComboCodesObj.forEach(object => {
+            object.date = getIsoCurrentDateTime();
             object.laterality = checkedValue;
         });
         console.log(addComboCodesObj);
-        codesToBillObj.push(...addComboCodesObj)
+        codesToBillObj.push(...addComboCodesObj);
+        updateCodesTables(codesToBillObj);
     }
 });
 
@@ -987,6 +989,57 @@ addCodeBtn.addEventListener('click', function() {
     if (!isEmptyObject(currentCodeObj)) {
         let checkedValue = document.querySelector('#codeSideSelect input[name="site"]:checked')?.value;
         currentCodeObj['laterality'] = checkedValue;
+        currentCodeObj['date'] = getIsoCurrentDateTime();
         codesToBillObj.push(currentCodeObj);
+        updateCodesTables(codesToBillObj);
     }
 });
+
+function updateCodesTables(dataArray) {
+    const container = document.getElementById('codesSelected');
+    container.innerHTML = ''; // Reset the content of the div
+    // Create a table element
+    const table = document.createElement('table');
+    table.className = 'table table-striped'; // Bootstrap table classes
+
+    // Create the header
+    const thead = document.createElement('thead');
+    thead.innerHTML = `
+        <tr>
+            <th>Date</th>
+            <th>Code</th>
+            <th>Laterality</th>
+            <th>Price List</th>
+            <th>Action</th>
+        </tr>`;
+    table.appendChild(thead);
+
+    // Create the body
+    const tbody = document.createElement('tbody');
+
+    dataArray.forEach((item,index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${new Date().toLocaleDateString()}</td>
+            <td>${item.code}</td>
+            <td>${item.laterality}</td>
+            <td>${item.price_list}</td>
+            <td>
+                <button class="delCodeBtn btn btn-danger" data-code-index="${index}">
+                <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </td>`;
+            tbody.appendChild(tr);
+        });
+
+    table.appendChild(tbody);
+    container.appendChild(table);
+    // Add event listener to the table for delegation
+    table.addEventListener('click', function(event) {
+        if (event.target.closest('.delCodeBtn')) {
+            const index = event.target.closest('.delCodeBtn').getAttribute('data-code-index');
+            dataArray.splice(index, 1); // Remove the item at the clicked index
+            updateCodesTables(dataArray); // Refresh the table
+        }
+    });
+};
