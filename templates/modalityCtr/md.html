@@ -2729,63 +2729,62 @@ if (window.performance.getEntriesByType('navigation')[0].type == 'back_forward' 
 };
 
 // combo codes
-document.addEventListener('DOMContentLoaded', function() {
-    const combos = comboObj; // Replace with the actual JSON data
-    const comboCodeSelect = document.getElementById('comboCodeSelect');
-    const codeListTable = document.querySelector('#combo_listcode tbody');
+const combos = comboObj; // Replace with the actual JSON data
+const comboCodeSelect = document.getElementById('comboCodeSelect');
+const codeListTable = document.querySelector('#combo_listcode tbody');
 
-    // Populate combo options
-    combos.forEach(combo => {
-        const option = document.createElement('option');
-        option.value = combo.id;
-        option.textContent = combo.combo;
-        comboCodeSelect.appendChild(option);
-    });
+// Populate combo options
+combos.forEach(combo => {
+    const option = document.createElement('option');
+    option.value = combo.id;
+    option.textContent = combo.combo;
+    comboCodeSelect.appendChild(option);
+});
 
-    // Function to update the table based on the selected combo
-    function updateTable(selectedComboId) {
-        const selectedComboData = combos.find(combo => combo.id == selectedComboId);
+// Function to update the table based on the selected combo
+function updateTable(selectedComboId) {
+    const selectedComboData = combos.find(combo => combo.id == selectedComboId);
 
-        // Update the table with the selected combo's details
-        codeListTable.innerHTML = '';
-        if (selectedComboData && selectedComboData.nomenclatures) {
-            selectedComboData.nomenclatures.forEach(nomenclature => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${nomenclature.code ?? ''}</td>
-                    <td>${nomenclature.code_desc.substring(0, 30) ?? ''}</td>
-                    <td>${JSON.parse(nomenclature.price_list)[0] * nomenclature.supplement_ratio ?? ''}</td>
-                    <td>${JSON.parse(nomenclature.price_list)[1] ?? ''}</td>
-                `; // <td>${new Date().toLocaleDateString()}</td>
-                codeListTable.appendChild(row);
-            });
-        }
+    // Update the table with the selected combo's details
+    codeListTable.innerHTML = '';
+    if (selectedComboData && selectedComboData.nomenclatures) {
+        selectedComboData.nomenclatures.forEach(nomenclature => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${nomenclature.code ?? ''}</td>
+                <td>${nomenclature.code_desc.substring(0, 30) ?? ''}</td>
+                <td>${JSON.parse(nomenclature.price_list)[0] * nomenclature.supplement_ratio ?? ''}</td>
+                <td>${JSON.parse(nomenclature.price_list)[1] ?? ''}</td>
+            `; // <td>${new Date().toLocaleDateString()}</td>
+            codeListTable.appendChild(row);
+        });
     }
+}
 
-    // Update table when the selection changes
-    comboCodeSelect.addEventListener('change', function() {
-        updateTable(this.value);
-    });
+// Update table when the selection changes
+comboCodeSelect.addEventListener('change', function() {
+    updateTable(this.value);
+});
 
-    // Add combo button functionality
-    addComboBtn.addEventListener('click', function() {
-        const selectedComboId = comboCodeSelect.value;
-        const selectedComboData = combos.find(combo => combo.id == selectedComboId);
+// Add combo button functionality
+addComboBtn.addEventListener('click', function() {
+    const selectedComboId = comboCodeSelect.value;
+    const selectedComboData = combos.find(combo => combo.id == selectedComboId);
 
-        if (selectedComboData && selectedComboData.nomenclatures) {
-            const addComboCodesObj = {
-                codes: selectedComboData.nomenclatures
-            };
-            console.log(addComboCodesObj);
-        }
-    });
-
-    // Automatically select the first option and update the table
-    if (combos.length > 0) {
-        comboCodeSelect.value = combos[0].id;
-        updateTable(combos[0].id);
+    if (selectedComboData && selectedComboData.nomenclatures) {
+        const addComboCodesObj = {
+            codes: selectedComboData.nomenclatures
+        };
+        console.log(addComboCodesObj);
     }
 });
+
+// Automatically select the first option and update the table
+if (combos.length > 0) {
+    comboCodeSelect.value = combos[0].id;
+    updateTable(combos[0].id);
+}
+
 
 </script>
 <script src="js/md.js"></script>
