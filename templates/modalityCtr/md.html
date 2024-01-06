@@ -1293,16 +1293,18 @@
                     </div>
                 </div>
             </div>
-            <div class="row big-title bg-success">
+            <div class="row">
                 <div class="col">
-                    <h2><a role="button" data-bs-toggle="collapse" href=".working">Working</a></h2>
+                    <h2 class="big-title bg-left"><a role="button" data-bs-toggle="collapse" href=".working">Working</a></h2>
                     <div class="row working">
                         <div class="col bg-left">
+                            <h4 class="title-right">Billing</h4>
                             <div id="toolbar-wlCodes">
+                                <button type="button" id="btnNewBillCode" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#billingModal" data-category-flag="billing">Add billing code<i class="mx-2 fas fa-plus"></i>
+                                </button>
                             </div>
                             <table
                                 id="wlCodes_tbl"
-                                data-toolbar-align="right"
                                 data-toolbar="#toolbar-wlCodes"
                                 data-side-pagination="server"
                                 data-toggle="table"
@@ -2358,7 +2360,109 @@
     </div>
 </div>
 
-
+<!-- Modal billingModal -->
+<div class="modal fade" id="billingModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Billing codes entry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <div id="comboCodeSelection" class="m-3">
+                                <div class="mb-3">
+                                    <label for="comboCodeSelect" class="form-label">Select Combo code</label>
+                                    <select class="form-select" id="comboCodeSelect" required>
+                                        <!-- Options will be populated here -->
+                                    </select>
+                                </div>
+                                <button id="addComboBtn" class="btn btn-secondary">Add+</button>
+                            </div>
+                        
+                            <!-- Code List Table -->
+                            <div id="combo_listcode" class="m-3">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Code</th>
+                                            <th scope="col">Code Description</th>
+                                            <th scope="col">Price List</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Table rows will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div id="codeSelection" class="m-3">
+                                <div class="mb-3">
+                                    <label for="codeSelect" class="form-label">Check individual code</label>
+                                    <label for="codeSelect" class="form-label">Code:</label>
+                                    <input id="codeSelect" type="text" class="form-control" name="code" autocomplete="off">
+                                </div>
+                                <button id="addCodeBtn" class="btn btn-secondary">Add+</button>
+                            </div>    
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <form id="billingFormModal" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <span class="form-label">Site:</span>
+                                            <div class="input-group">
+                                                <div class="btn-group site_modal">
+                                                    <input type="radio" id="billingsite_right_modal" name="site" class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="billingsite_right_modal">Right</label>
+                                                    <input type="radio" id="billingsite_left_modal" name="site" class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="billingsite_left_modal">Left</label>
+                                                    <input type="radio" id="billingsite_both_modal" name="site" class="btn-check" value="both" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="billingsite_both_modal">Both</label>
+                                                    <input type="radio" id="billingsite_local_modal" name="site" class="btn-check" value="local" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="billingsite_local_modal">Local</label>
+                                                    <input type="radio" id="billingsite_systemic_modal" name="site" class="btn-check" value="systemic" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="billingsite_systemic_modal">Systemic</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="billingdescriptionModal" class="form-label">Description:</label>
+                                            <input id="billingdescriptionModal" type="text" class="form-control" name="description" autocomplete="off">
+                                            <div id="billingdescriptionModalHelp" class="form-text">Enter code description</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="billingcodeeModal" class="form-label">Code:</label>
+                                            <input id="billingcodeeModal" type="text" class="form-control" name="codee" autocomplete="off">
+                                            <div id="billingcodeeModalHelp" class="form-text">Code</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idBillingDate" type="date" class="visually-hidden" name="date" />
+                                <input id="idBillingWl" type="text" class="visually-hidden" name="id_worklist" />
+                                <input id="idPatientbilling" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodbillingModalSubmit" type="text" class="visually-hidden" name="methodbillingModalSubmit" value="POST" />
+                                <input id="btnbillingModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="billingModalSubmit" for="btnbillingModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- cache offcanvas -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCache" aria-labelledby="offcanvas cache">
@@ -2403,6 +2507,8 @@ const HOSTURL = "[[ = hosturl ]]";
 var usermdObj = [[ =XML(mdParams) ]];
 var userObj = [[ =XML(userDict)]];
 const SUPPLEMENT_RATIO = [[ = XML(supplement_ratio)]]
+const comboObj = [[ = XML(combos_json)]]
+
 // for timer
 var timer_id = [];
 // modality controllers
@@ -2566,10 +2672,9 @@ var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
 });
 
 // table listing wlcodes right eye by user
-const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],combo:combo_code[combo,combo_price],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],combo:combo_code[combo,combo_price],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=[~id,~status]";
 var $wlCodes = $('#wlCodes_tbl').bootstrapTable({
     url: API_WLCODES,
-    undefinedText: 'N/A',
 });
 
 
@@ -2614,6 +2719,65 @@ if (window.performance.getEntriesByType('navigation')[0].type == 'back_forward' 
         refreshTables(tablesArr);
         console.log(' all tables should be refreshed');
 };
+
+// combo codes
+document.addEventListener('DOMContentLoaded', function() {
+    const combos = comboObj; // Replace with the actual JSON data
+    const comboCodeSelect = document.getElementById('comboCodeSelect');
+    const codeListTable = document.querySelector('#combo_listcode tbody');
+
+    // Populate combo options
+    combos.forEach(combo => {
+        const option = document.createElement('option');
+        option.value = combo.id;
+        option.textContent = combo.combo;
+        comboCodeSelect.appendChild(option);
+    });
+
+    // Function to update the table based on the selected combo
+    function updateTable(selectedComboId) {
+        const selectedComboData = combos.find(combo => combo.id == selectedComboId);
+
+        // Update the table with the selected combo's details
+        codeListTable.innerHTML = '';
+        if (selectedComboData && selectedComboData.nomenclatures) {
+            selectedComboData.nomenclatures.forEach(nomenclature => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date().toLocaleDateString()}</td>
+                    <td>${nomenclature.code ?? ''}</td>
+                    <td>${nomenclature.code_desc ?? ''}</td>
+                    <td>${nomenclature.price_list ?? ''}</td>
+                `;
+                codeListTable.appendChild(row);
+            });
+        }
+    }
+
+    // Update table when the selection changes
+    comboCodeSelect.addEventListener('change', function() {
+        updateTable(this.value);
+    });
+
+    // Add combo button functionality
+    addComboBtn.addEventListener('click', function() {
+        const selectedComboId = comboCodeSelect.value;
+        const selectedComboData = combos.find(combo => combo.id == selectedComboId);
+
+        if (selectedComboData && selectedComboData.nomenclatures) {
+            const addComboCodesObj = {
+                codes: selectedComboData.nomenclatures
+            };
+            console.log(addComboCodesObj);
+        }
+    });
+
+    // Automatically select the first option and update the table
+    if (combos.length > 0) {
+        comboCodeSelect.value = combos[0].id;
+        updateTable(combos[0].id);
+    }
+});
 
 </script>
 <script src="js/md.js"></script>

@@ -183,6 +183,30 @@ def md(wlId):
     mdHistory = db((db.worklist.modality_dest == mdId) & (db.worklist.id_auth_user == patientId)).select().as_json()
     modalityDict = {}
     rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
+    comboDict = db(db.combo_codes).select().as_json()
+
+    ###
+    # Step 1: Fetch all combo_codes
+    combos = db(db.combo_codes).select()
+
+    # Step 2 & 3: Fetch related nomenclature for each combo
+    for combo in combos:
+        # Find proxy entries
+        proxy_entries = db(db.combo_proxy_nomenclature.combo_id == combo.id).select()
+        
+        # Fetch nomenclature records for each proxy entry
+        combo['nomenclatures'] = [
+            db.nomenclature(proxy_entry.nomenclature_id) for proxy_entry in proxy_entries
+        ]
+
+    # Step 4: Convert to JSON
+    combos_json = combos.as_json()
+
+    # combos_json now contains all the combo_codes with their related nomenclatures
+
+
+    ###
+
     for row in rows:
         modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
     # init all fields
