@@ -1246,8 +1246,7 @@ function responseHandler_wlCodes(res) { // used if data-response-handler="respon
             'id_auth_user': list[i].id_auth_user,
             'id_worklist': list[i].id_worklist,
             'date': list[i]['date'],
-            'combo': list[i]['combo']['combo'],
-            'comboPrice':list[i]['combo']['combo_price'],
+            'combo': list[i]['combo_id'],
             'nomenclature_id': list[i]['nomenclature_id'],
             'code': list[i]['nomenclature']['code'],
             'laterality': list[i]['laterality'],
@@ -1349,8 +1348,6 @@ window.operateEvents_wlCodes = {
 function titleFormatter() {
     return 'Total price:'
 }
-
-console.log('successfully');
 
 function priceFormatter(data) {
     var field = this.field

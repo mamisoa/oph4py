@@ -852,6 +852,7 @@ $('#codeSelection input[name=code]').autoComplete({
     }
 });
 
+// text code autocomplete
 $('#codeTextSelection input[name=codeText]').autoComplete({
     bootstrapVersion: '4',
     minLength: '1',
@@ -963,17 +964,19 @@ addComboBtn.addEventListener('click', function() {
     const selectedComboData = combos.find(combo => combo.id == selectedComboId);
 
     if (selectedComboData && selectedComboData.nomenclatures) {
-        // const addComboCodesObj = {
-        //     codes: selectedComboData.nomenclatures
-        // };
         let addComboCodesObj = selectedComboData.nomenclatures;
         let checkedValue = document.querySelector('#codeSideSelect input[name="site"]:checked')?.value;
         addComboCodesObj.forEach(object => {
             object.date = getIsoCurrentDateTime();
             object.laterality = checkedValue;
         });
-        console.log(addComboCodesObj);
-        codesToBillObj.push(...addComboCodesObj);
+
+        // Filter out objects that are already present in codesToBillObj based on their 'id'
+        const filteredComboCodes = addComboCodesObj.filter(comboCode => 
+            !codesToBillObj.some(billCode => billCode.id === comboCode.id)
+        );
+
+        codesToBillObj.push(...filteredComboCodes);
         updateCodesTables(codesToBillObj);
     }
 });
@@ -990,8 +993,17 @@ addCodeBtn.addEventListener('click', function() {
         let checkedValue = document.querySelector('#codeSideSelect input[name="site"]:checked')?.value;
         currentCodeObj['laterality'] = checkedValue;
         currentCodeObj['date'] = getIsoCurrentDateTime();
-        codesToBillObj.push(currentCodeObj);
-        updateCodesTables(codesToBillObj);
+
+        // Check if codesToBillObj already contains an object with the same id
+        const isExisting = codesToBillObj.some(obj => obj.id === currentCodeObj.id);
+
+        if (!isExisting) {
+            codesToBillObj.push(currentCodeObj);
+            updateCodesTables(codesToBillObj);
+        } else {
+            console.log('Code with this ID already exists in the billing list.');
+            // Optionally, you can add some user feedback here
+        }
     }
 });
 
@@ -1043,3 +1055,67 @@ function updateCodesTables(dataArray) {
         }
     });
 };
+
+
+function transformObject(obj) {
+    // Destructure the object to separate out keys to be removed or renamed
+    // converts to the expected format from database
+    const {
+        'creator.first_name': _creatorFirstName,  // prefixed with '_' to indicate unused variables
+        'creator.id': _creatorId,
+        'creator.last_name': _creatorLastName,
+        'mod.first_name': _modFirstName,
+        'mod.id': _modId,
+        'mod.last_name': _modLastName,
+        'add_documents': _add_documents,
+        'code': _code,
+        'code_desc': _codeDesc,
+        'covered': _covered,
+        'creator.id': _creator_Id,
+        'max_age': _max_Age,
+        'min_age': _min_Age,
+        'min_reccurency': _minReccurency,
+        'modified_on': _modifiedon,
+        'not_compatible': _notCompatible,
+        'price_list': _price_list,
+        'supplement_ratio': _supplementRatio,
+        'created_on': _createdOn,
+        ...rest
+    } = obj;
+
+    // Return the new object with some keys renamed
+    return {
+        ...rest,
+        'status': 1
+    };
+};
+
+const submitLabel = document.getElementById('billingModalSubmit');
+const idAuthUser = document.getElementById('idPatientbilling').value;
+const idWorklist = document.getElementById('idBillingWl').value;
+
+submitLabel.addEventListener('click', function(event) {
+    event.preventDefault(); // Prevents the default form submission action
+
+    let codesToPostArr = codesToBillObj.map(obj => {
+        // Rename 'id' to 'nomenclature_id' and keep the rest of the properties
+        const { id: nomenclature_id, ...rest } = obj;
+        return { ...rest, nomenclature_id, id_auth_user: idAuthUser, id_worklist: idWorklist };
+    })
+
+    console.log(codesToPostArr);
+
+    codesToPostArr.forEach((dataObj, index) => {
+        convertedObj = transformObject(dataObj);
+        console.log(convertedObj);
+        dataStr = JSON.stringify(convertedObj);
+        console.log('dataStr1: ',dataStr);
+        crudp('wl_codes','0','POST',dataStr)
+            .then( data => refreshTables(['#wlCodes_tbl']));
+        const container = document.getElementById('codesSelected');
+        container.innerHTML = ''; // Reset the content of the div
+        codesToBillObj = []; // reset codesToBill
+    });
+
+    // Here you can add code to handle codesToPostArr, e.g., send it to a server
+});

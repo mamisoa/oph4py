@@ -2453,16 +2453,15 @@
                     </div>
                     <div class="row">
                         <div class="col" id="codesSelected">
-
+                            <!-- Table rows will be populated here -->
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <form id="billingFormModal" enctype="multipart/form-data" method="POST">
+                            <form id="billingFormModal">
                                 <div class="container-fluid">
                                     <div class="row mb-3">
-                                        <div class="col">
-                                            
+                                        <div class="col">      
                                         </div>
                                     </div>
                                 </div>
@@ -2478,7 +2477,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="billingModalSubmit" for="btnbillingModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="billingModalSubmit" for="btnbillingModalSubmit" data-bs-dismiss="modal" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>
@@ -2696,7 +2695,8 @@ var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
 });
 
 // table listing wlcodes right eye by user
-const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],combo:combo_code[combo,combo_price],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=[~id,~status]";
+// const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],combo:combo_code[combo,combo_price],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=[~id,~status]";
+const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=[~id,~status]";
 var $wlCodes = $('#wlCodes_tbl').bootstrapTable({
     url: API_WLCODES,
 });

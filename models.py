@@ -798,14 +798,14 @@ db.define_table('wl_codes',
     Field('id_worklist','reference worklist', required=True),
     Field('date', 'datetime', required=True),
     Field('nomenclature_id', 'reference nomenclature', required=True),
-    Field('combo_code', 'reference combo_codes'),
+    Field('combo_id', 'integer'),
     Field('laterality', 'string', default ='both', required=True),
     Field('note', 'string'),
     Field('last_prescribed', 'datetime'), # calculated on insertion after query date in wlcodes from code&id_worklist&id_auth_user
     Field('status', 'integer', default = True), # 1 confirmed -1 cancelled
     auth.signature   
     )
-db.wl_codes.laterality.requires = IS_IN_SET('right','left','both','local','systemic')
+db.wl_codes.laterality.requires = IS_IN_SET(['right','left','both','local','systemic'])
 
 # 'attestations de soins
 db.define_table('social_sec_documents',
