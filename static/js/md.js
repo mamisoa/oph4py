@@ -374,6 +374,7 @@ $('#mHxFormModal').submit(function(e){
 
 function delItem (id,table,desc) {
     bootbox.confirm({
+        centerVertical: true,
         message: "Are you sure you want to delete this "+desc+" ?",
         closeButton: false ,
         buttons: {

@@ -295,24 +295,32 @@ $('#newWlItemForm').submit(function(e) {
                             for (let i = 0; i<=wlItemsCounter+1; i++) {
                                 let el = "#wlItem"+parseInt(i);
                                 let wlId;
+                                let transactionId='transactionId';
                                 if ($(el).length != 0) {
                                     let itemDataObj = JSON.parse($(el).data().json);
                                     delete itemDataObj['methodWlItemSubmit'];
                                     let modalityLowCase;
                                     getUuid() // promise
                                         .then(function(uuid) {
-                                            console.log('WlItemObj:',itemDataObj);                   
+                                            console.log('WlItemObj:', itemDataObj);                   
                                             itemDataObj["message_unique_id"] = uuid.unique_id;
                                             let itemDataStr = JSON.stringify(itemDataObj);
-                                            console.log('itemDataStr:',itemDataStr);
-                                            crudp('worklist','0', req, itemDataStr)
-                                            .then( data => {
-                                                $(el).remove(); // remove wl item DOM element node when posted
-                                                wlId = data.id;
-                                            }); 
+                                            console.log('itemDataStr:', itemDataStr);
+                                            
+                                            // Return the promise from crudp
+                                            return crudp('worklist', '0', req, itemDataStr)
+                                                .then(data => {
+                                                    $(el).remove(); // remove wl item DOM element node when posted
+                                                    wlId = data.id;
+                                                    console.log('dataWlcreation:', data);
+
+                                                    // Return wlId to be accessible in the next then block
+                                                    return wlId;
+                                                }); 
                                         })
                                         .catch(error => console.error('An error occurred generating uuid:', error))
-                                        .then(function() {
+                                        .then(function(data) {
+                                            
                                             getTableInfo('modality',itemDataObj['modality_dest'])
                                                 .then(function(modality){
                                                     modalityLowCase = modality['items'][0]['modality_name'].toLowerCase();
@@ -387,13 +395,25 @@ $('#newWlItemForm').submit(function(e) {
 
                                                     if (modalityLowCase == 'md') {
                                                         console.log('modality is', modalityLowCase);
+                                                        console.log('WLID----->', wlId);
+                                                        console.log('transactionID----->', transactionId);
+                                                        // create transaction with wlId
+                                                        let dataTransaction = { 
+                                                            'id_auth_user': patient['items'][0]['id'],
+                                                            'id_worklist': wlId,
+                                                            'date': getIsoCurrentDateTime()
+                                                        };
+                                                        console.log('dataTransaction:', dataTransaction);
+                                                        crudp('transactions','0','POST',JSON.stringify(dataTransaction))
+                                                            .then(response => console.log('User updated:', response))
+                                                            .catch(error => console.error('An error occurred adding a transaction:', error));
                                                         studyData.StudyDescription = "Non mydriatic retinography";
                                                         studyData.ScheduledStationAETitle = "CR1";
                                                         console.log("studyData CR1",studyData)
                                                         let updateMwl = addStudyMwl(studyData);
                                                         updateMwl
-                                                        // .then(() => {$table_wl.bootstrapTable('refresh');})
-                                                        .catch(error => console.error('An error occurred adding CR1 to MWL:', error));
+                                                            // .then(() => {$table_wl.bootstrapTable('refresh');})
+                                                            .catch(error => console.error('An error occurred adding CR1 to MWL:', error));
                                                     } else {
                                                         console.log('not MD');
                                                     };
@@ -431,6 +451,7 @@ $('#newWlItemForm').submit(function(e) {
 
 function delWlItem (id) {
     bootbox.confirm({
+        centerVertical: true,
         message: "Are you sure you want to delete this worklist item?",
         closeButton: false ,
         buttons: {

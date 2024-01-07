@@ -1243,36 +1243,8 @@
         <div class="col">
             <div class="row">
                 <div class="col">
-                    <div class="row">
-                        <div class="col">
-                            <h3 class="title-right">Right eye</h3>
-                        </div>
-                    </div>
-                    <div class="row bg-right">
-                        <div class="col">
-                            Billing right eye
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="row">
-                        <div class="col">
-                            <h3 class="title-left">Left eye</h3>
-                        </div>
-                    </div>
-                    <div class="row bg-left">
-                        <div class="col">
-                            Billing left eye
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="row">
-                        <div class="col">
-                            <h3 class="title-right">General</h3>
-                        </div>
-                    </div>
                     <div class="row bg-right py-3">
+                        <h3 class="title-right">General</h3>
                         <div class="col">
                             <form id="bilForm" enctype="multipart/form-data" method="POST"> 
                                 <div class="container-fluid">
@@ -1295,10 +1267,9 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <h2 class="big-title bg-left"><a role="button" data-bs-toggle="collapse" href=".working">Working</a></h2>
-                    <div class="row working">
+                    <h3 class="title-left"><a role="button" data-bs-toggle="collapse" href=".encoding">Encoding</a></h3>
+                    <div class="row encoding">
                         <div class="col bg-left">
-                            <h4 class="title-right">Billing</h4>
                             <div id="toolbar-wlCodes">
                                 <button type="button" id="btnNewBillCode" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#billingModal" data-category-flag="billing">Add billing code<i class="mx-2 fas fa-plus"></i>
                                 </button>
@@ -1336,6 +1307,56 @@
                                         <th data-field="note" data-sortable="false">Note</th>
                                         <th data-field="status" data-sortable="false">Status</th>
                                         <th data-field="operate" data-formatter="operateFormatter_wlCodes" data-events="operateEvents_wlCodes">Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h3 class="title-right"><a role="button" data-bs-toggle="collapse" href=".payment">Payment</a></h3>
+                    <div class="row payment">
+                        <div class="col bg-right">
+                            <div class="DisplayPayment">
+                                To Pay:
+                            </div>
+                            <div id="toolbar-transactions">
+                                <button type="button" id="btnNewTransaction" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#transactionsModal" data-category-flag="billing">New transaction<i class="mx-2 fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <table
+                                id="transactions_tbl"
+                                data-toolbar="#toolbar-transactions"
+                                data-side-pagination="server"
+                                data-toggle="table"
+                                data-pagination="true"
+                                data-page-size="10"
+                                data-show-columns="true"
+                                data-search="false"
+                                data-search-accent-neutralise="true"
+                                data-visible-search="false"
+                                data-query-params="queryParams"
+                                data-response-handler="responseHandler_transactions"
+                                data-detail-formatter="detailFormatter_transactions"
+                                data-detail-view="true"
+                                data-detail-view-icon="true"
+                                data-show-refresh="true"
+                                data-show-footer="false"
+                                >
+                                <thead>
+                                    <tr>
+                                        <th data-field="date" data-sortable="true">Date</th>
+                                        <th data-field="price" data-sortable="true">Price</th>
+                                        <th data-field="paid" data-sortable="false">Paid</th>
+                                        <th data-field="cardPayment" data-sortable="false">Card</th>
+                                        <th data-field="cashPayment" data-sortable="false">Cash</th>
+                                        <th data-field="invoicePayment" data-sortable="false">Invoice</th>
+                                        <th data-field="status" data-sortable="false">Status</th>
+                                        <th data-field="Note" data-sortable="false">Note</th>
+                                        <th data-field="operate" data-formatter="operateFormatter_transactions" data-events="operateEvents_transactions">Action
                                         </th>
                                     </tr>
                                 </thead>
@@ -2694,21 +2715,31 @@ var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
     url: API_KMLEFT
 });
 
-// table listing wlcodes right eye by user
-// const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],combo:combo_code[combo,combo_price],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=[~id,~status]";
+// table listing wlcodes 
 const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=[~id,~status]";
 var $wlCodes = $('#wlCodes_tbl').bootstrapTable({
     url: API_WLCODES,
 });
 
+// table listing transactions 
+const API_TRANSACTIONS = HOSTURL + "/"+APP_NAME+"/api/transactions?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+var $transactions = $('#transactions_tbl').bootstrapTable({
+    url: API_TRANSACTIONS,
+});
 
+
+// inserting a bootstrap table:
+// 1) create the endpoint 2) initialize the variable $(id of the table)
+// 3) add html table with appropriate atributes
+// 4) add a) responsehandler tp handla data from server response and display b) detailFormatter: to display details
+// c) function windows.operatate to display tools and windows.operateEvents to add event functions to tools
 
 // tables list
 const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl',
     '#rxRight_tbl','#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl',
     '#kmRight_tbl', '#kmLeft_tbl',
     '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl', '#cert_tbl',
-    '#wlCodes_tbl'
+    '#wlCodes_tbl', 'transactions_tbl'
     ];
 
 // init tinymce

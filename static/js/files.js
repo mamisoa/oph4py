@@ -21,6 +21,7 @@ function getWlItemDetails(wl_id) {
 
 function delWlItem (id) {
     bootbox.confirm({
+        centerVertical: true,
         message: "Are you sure you want to delete this worklist item?",
         closeButton: false ,
         buttons: {

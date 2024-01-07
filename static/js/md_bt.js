@@ -1331,17 +1331,22 @@ function setCancelled (id,table,desc) {
 // add operational buttons to rows in certificates table
 function operateFormatter_wlCodes(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
-    let disable_class = row.status == 'OK' ? '' : 'd-none';
-    html.push('<a class="cancel ' +disable_class+' ms-1" href="javascript:void(0)" title="Cancel code"><i class="fas fa-text-slash"></i></a>');
+    // let disable_class = row.status == 'OK' ? '' : 'd-none';
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete code"><i class="fas fa-trash-alt"></i></a>');
+    // html.push('<a class="cancel ' +disable_class+' ms-1" href="javascript:void(0)" title="Cancel code"><i class="fas fa-text-slash"></i></a>');
     html.push('</div>');
     return html.join('');
   };
 
 // add button link to rows in wlCodes table
 window.operateEvents_wlCodes = {
-    'click .cancel': function (e, value, row, index) {
-        console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        setCancelled(row.id,'wl_codes', row.code);
+    // 'click .cancel': function (e, value, row, index) {
+    //     console.log('You click action EDIT on row: ' + JSON.stringify(row));
+    //     setCancelled(row.id,'wl_codes', row.code);
+    // },
+    'click .remove': function (e, value, row, index) {
+        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        delItem(row.id, 'wl_codes', 'code: '+row.code+' ');
     }
 };
 
@@ -1357,3 +1362,77 @@ function priceFormatter(data) {
       return sum + i
     }, 0)
   }
+
+//////////////////////////////////////////////////////
+// transactions
+// One transaction is created when MD worklist is created
+// When a code is added, it is also added to the transactions_wlcodes with the transaction_id
+// If a transaction is deleted, wlcodes associated are also deleted
+/////////////////////////////////////////////////////
+
+// transactions table
+function responseHandler_transactions(res) { // used if data-response-handler="responseHandler_wlCodes"
+    let list = res.items;
+    let display = [];
+    $.each(list, function (i) {
+        display.push({
+            'id': list[i].id,
+            'id_auth_user': list[i].id_auth_user,
+            'id_worklist': list[i].id_worklist,
+            'description': list[i]['description'],
+            'date': list[i]['date'],
+            'price': list[i]['price'],
+            'paid': list[i]['paid'],
+            'cardPayment': list[i]['card_payment'],
+            'cardType': list[i]['card_type'],
+            'cashPayment': list[i]['cash_payment'],
+            'invoicePayment': list[i]['invoice_payment'],
+            'invoiceType': list[i]['invoice_type'],
+            'status': list[i]['status'],
+            'description': list[i]['description'],
+            // don't modify under
+            'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
+            'modified_by': list[i]['mod.id'],
+            'modified_on': list[i]['modified_on'],
+            'created_by': list[i]['creator.id'],
+            'created_by_name': list[i]['creator.last_name'] + ' ' + list[i]['creator.first_name'],
+            'created_on': list[i]['created_on']
+        });
+    });
+    return {
+        rows: display,
+        total: res.count,
+    };
+};
+
+// TODO: check_if_null
+// get details from row in transactions table
+function detailFormatter_transactions(index, row) {
+    let html = ['<div class="container-fluid"><div class="row">'];
+    html.push('<div class="text-start col">');
+    html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
+    html.push('<p class=""><span class="fw-bold">Description: </span>'+ row.description +'</p>');
+    html.push('<p class=""><span class="fw-bold">Card Type: </span>'+ row.cardType +'</p>');
+    html.push('<p class=""><span class="fw-bold">Invoice Type: </span>'+ row.invoiceType+'</p>');
+    html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
+    html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by_name+'</p>');
+    html.push('</div>');
+    html.push('</div></div>');
+    return html.join('');
+};
+
+// add operational buttons to rows in transactions table
+function operateFormatter_transactions(value, row, index) {
+    let html = ['<div class="d-flex justify-content-between">'];
+    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete transaction"><i class="fas fa-trash-alt"></i></a>');
+    html.push('</div>');
+    return html.join('');
+  };
+
+// add button link to rows in wlCodes table
+window.operateEvents_wlCodes = {
+    'click .remove': function (e, value, row, index) {
+        // console.log('You click action DELETE on row: ' + JSON.stringify(row));
+        delItem(row.id, 'transactions', 'transaction: '+row.code+' ?');
+    }
+};

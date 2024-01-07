@@ -377,7 +377,6 @@ function transformDateBeid(inputDate) {
     return year + "-" + month + "-" + day;
 }
 
-
 // use to add or update patient to dcm4chee
 async function addPatientPacs(data, dicom = false) {
     let API_URL = HOSTURL + '/'+APP_NAME+'/rest/dcm4chee/patient/create'
@@ -423,3 +422,4 @@ async function addStudyMwl(data, dicom = false) {
             .catch(error => console.error('An error occurred:', error));
     }
 };
+
