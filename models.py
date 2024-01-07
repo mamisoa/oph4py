@@ -736,9 +736,10 @@ db.define_table('billing',
     Field('description','string'),
     auth.signature)
 
-db.define_table('billing_history',
+db.define_table('transactions',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
+    Field('wlCodes_id','string', required=True), # list of wlcodes
     Field('price', 'double'),
     Field('cash_payment', 'double'),
     Field('card_payment', 'double'),
@@ -746,15 +747,15 @@ db.define_table('billing_history',
     Field('invoice_payment', 'double'),
     Field('invoice_type', 'string'),
     Field('paid', 'double'),
-    Field('status', 'integer', default=0),
+    Field('status', 'integer', default=0), # 0 to pay 1 paid -1 partially/not paid 
     Field('note', 'string'),
     Field('description', 'string'),
     auth.signature, 
     )
 
-db.billing_history.status.requires = IS_IN_SET((2,1,0)) # ('paid','partial','not paid')
-db.billing_history.card_type.requires = IS_IN_SET(('bc','visa', 'mc', 'contactless'))
-db.billing_history.invoice_type.requires = IS_IN_SET(('council', 'bank' ,'other')) # print invoice if needed
+db.transactions.status.requires = IS_IN_SET((2,1,0)) # ('paid','partial','not paid')
+db.transactions.card_type.requires = IS_IN_SET(('bc','visa', 'mc', 'contactless'))
+db.transactions.invoice_type.requires = IS_IN_SET(('council', 'bank' ,'other')) # print invoice if needed
 
 ## price is calculated from the combo price
 ## plus eventually an extracode 
@@ -805,7 +806,14 @@ db.define_table('wl_codes',
     Field('status', 'integer', default = True), # 1 confirmed -1 cancelled
     auth.signature   
     )
-db.wl_codes.laterality.requires = IS_IN_SET(['right','left','both','local','systemic'])
+# db.wl_codes.laterality.requires = IS_IN_SET(('right','left','both','local','systemic'))
+
+db.define_table('transactions_wlcodes',
+    Field('transaction_id','reference transactions', required=True),
+    Field('wl_code_id','reference wl_codes', required=True),
+    auth.signature
+    )
+
 
 # 'attestations de soins
 db.define_table('social_sec_documents',

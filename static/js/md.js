@@ -958,10 +958,10 @@ comboCodeSelect.addEventListener('change', function() {
     updateTable(this.value);
 });
 
-// Add combo button functionality
 addComboBtn.addEventListener('click', function() {
     const selectedComboId = comboCodeSelect.value;
     const selectedComboData = combos.find(combo => combo.id == selectedComboId);
+    // console.log('selectedComboId:',selectedComboId);
 
     if (selectedComboData && selectedComboData.nomenclatures) {
         let addComboCodesObj = selectedComboData.nomenclatures;
@@ -976,10 +976,21 @@ addComboBtn.addEventListener('click', function() {
             !codesToBillObj.some(billCode => billCode.id === comboCode.id)
         );
 
-        codesToBillObj.push(...filteredComboCodes);
+        // Remove the keys 'modified_by', 'created_by', 'is_active' from each object
+        const cleanedComboCodes = filteredComboCodes.map(comboCode => {
+            delete comboCode.modified_by;
+            delete comboCode.created_by;
+            delete comboCode.is_active;
+            comboCode.combo_id = selectedComboId;
+            console.log('comboCode',comboCode);
+            return comboCode;
+        });
+
+        codesToBillObj.push(...cleanedComboCodes);
         updateCodesTables(codesToBillObj);
     }
 });
+
 
 // Automatically select the first option and update the table
 if (combos.length > 0) {
@@ -1109,9 +1120,14 @@ submitLabel.addEventListener('click', function(event) {
         convertedObj = transformObject(dataObj);
         console.log(convertedObj);
         dataStr = JSON.stringify(convertedObj);
-        console.log('dataStr1: ',dataStr);
+        console.log('dataStr1: ',dataStr); 
+        // ADD OBJECT FOR TRANSACTION:
+        // 1) insert new transaction with calculated price to pay
+        // 2) insert wl_codes in a list to add
+        // 3) calculate a price to pay
+        // 4) if cancelled, recalculate price with remaining codes
         crudp('wl_codes','0','POST',dataStr)
-            .then( data => refreshTables(['#wlCodes_tbl']));
+            .then( data => refreshTables(['#wlCodes_tbl']))
         const container = document.getElementById('codesSelected');
         container.innerHTML = ''; // Reset the content of the div
         codesToBillObj = []; // reset codesToBill
