@@ -1127,10 +1127,58 @@ submitLabel.addEventListener('click', function(event) {
         // 2) insert wl_codes in a list to add
         // 3) calculate a price to pay
         // 4) if cancelled, recalculate price with remaining codes
+        let currentTransactionObj;
         crudp('wl_codes','0','POST',dataStr)
-            .then( data => refreshTables(['#wlCodes_tbl']))
+                .then( () => {
+                    // update the transaction
+                    // 
+                    console.log("dataobj:",dataObj);
+                    return fetch(API_TRANSACTIONS);
+                })
+                .then(response => {
+                    // Check if the request was successful
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json(); // Parse the response as JSON
+                })
+                .then(data => {
+                    // Now 'data' is the parsed JSON object
+                    console.log("fetch data:", data);
+                    currentTransactionObj = data.items[0]
+                    onTransactionAddUpdate(); // Callback function after the transaction is updated
+                    })
+                .catch(error => {
+                    // Handle any errors in the fetch request or the JSON parsing
+                    console.error('Error:', error);
+                });
+        
+        // callback function
+        function onTransactionAddUpdate() {
+            // Now currentTransactionObj is set and can be used here
+            console.log("currentTransactionObj:", currentTransactionObj);
+            console.log("dataObj:", dataObj);
+            // construct new transaction object
+            let newTransactionObj = currentTransactionObj;
+            let codeObj = dataObj;
+            let pricesArr = JSON.parse(codeObj['price_list']);
+            newTransactionObj['price'] += (Math.round(pricesArr[0]*codeObj['supplement_ratio'])*100)/100;
+            newTransactionObj['covered_1600'] += pricesArr[1];
+            newTransactionObj['covered_1300'] += pricesArr[2];
+            console.log("newTransactionObj:", newTransactionObj);
+            crudp('transactions',id=newTransactionObj['id'],'PUT', JSON.stringify(transformObject(newTransactionObj)))
+                .then(() => {
+                    console.log('Transaction updated successfully');
+                    refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
+                })
+                .catch(error => {
+                    console.error('Error updating transaction:', error);
+                });
+        };
+        
+        // Reset the content of the div
         const container = document.getElementById('codesSelected');
-        container.innerHTML = ''; // Reset the content of the div
+        container.innerHTML = ''; 
         codesToBillObj = []; // reset codesToBill
     });
 

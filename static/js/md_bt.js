@@ -1327,6 +1327,99 @@ function setCancelled (id,table,desc) {
     });
 };
 
+function filterTransactionObject(obj) {
+    // Destructure the object to separate out keys to be removed or renamed
+    // converts to the expected format from database
+    const {
+        'creator.first_name': _creatorFirstName,  // prefixed with '_' to indicate unused variables
+        'creator.id': _creatorId,
+        'creator.last_name': _creatorLastName,
+        'mod.first_name': _modFirstName,
+        'mod.id': _modId,
+        'mod.last_name': _modLastName,
+        'modified_on': _modifiedon,
+        'created_on': _createdOn,
+        ...rest
+    } = obj;
+
+    // Return the new object
+    return {
+        ...rest
+    };
+};
+
+
+function delWlCode(dataObj) {
+    bootbox.confirm({
+        centerVertical: true,
+        message: "Are you sure you want to delete this code: "+dataObj.code+" ?",
+        closeButton: false ,
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-danger'
+            }
+        },
+        callback: function (result) {
+            if (result == true) {
+                let currentTransactionObj;
+                crudp('wl_codes',dataObj.id,'DELETE')
+                    .then( () => {
+                        // get current transaction
+                        console.log('delWlCode: ', dataObj);
+                        return fetch(API_TRANSACTIONS);
+                    })
+                    .then(response => {
+                        // Check if the request was successful
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json(); // Parse the response as JSON
+                    })
+                    .then(data => {
+                        // Now 'data' is the parsed JSON object
+                        console.log("fetch data:", data);
+                        currentTransactionObj = data.items[0]
+                        onTransactionSubstractUpdate(); // Callback function after the transaction is updated
+                        })
+                    .catch(error => {
+                        // Handle any errors in the fetch request or the JSON parsing
+                        console.error('Error:', error);
+                    });
+                    // callback function
+                    function onTransactionSubstractUpdate() {
+                        // Now currentTransactionObj is set and can be used here
+                        console.log("currentTransactionObj--->", currentTransactionObj);
+                        console.log("dataObj/codeObj--->", dataObj);
+                        // construct new transaction object
+                        let newTransactionObj = currentTransactionObj;
+                        let codeObj = dataObj;
+                        let pricesArr = JSON.parse(codeObj['priceList']);
+                        console.log("codeObj--->", codeObj);
+                        newTransactionObj['price'] -= codeObj['priceTag'];
+                        newTransactionObj['covered_1600'] -= pricesArr[1];
+                        newTransactionObj['covered_1300'] -= pricesArr[2];
+                        console.log("newTransactionObj:", newTransactionObj);
+                        console.log("filter ---> ",filterTransactionObject(newTransactionObj))
+                        crudp('transactions',id=newTransactionObj['id'],'PUT', JSON.stringify(filterTransactionObject(newTransactionObj)))
+                            .then(() => {
+                                console.log('Transaction updated successfully');
+                                refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
+                            })
+                            .catch(error => {
+                                console.error('Error updating transaction:', error);
+                            });
+                    };
+            } else {
+                console.log('This was logged in the callback: ' + result);
+            }
+        }
+    });
+};
 
 // add operational buttons to rows in certificates table
 function operateFormatter_wlCodes(value, row, index) {
@@ -1346,7 +1439,7 @@ window.operateEvents_wlCodes = {
     // },
     'click .remove': function (e, value, row, index) {
         // console.log('You click action DELETE on row: ' + JSON.stringify(row));
-        delItem(row.id, 'wl_codes', 'code: '+row.code+' ');
+        delWlCode(row);
     }
 };
 
@@ -1383,6 +1476,8 @@ function responseHandler_transactions(res) { // used if data-response-handler="r
             'date': list[i]['date'],
             'price': list[i]['price'],
             'paid': list[i]['paid'],
+            'covered_1600': list[i]['covered_1600'],
+            'covered_1300': list[i]['covered_1300'],
             'cardPayment': list[i]['card_payment'],
             'cardType': list[i]['card_type'],
             'cashPayment': list[i]['cash_payment'],
@@ -1412,8 +1507,13 @@ function detailFormatter_transactions(index, row) {
     html.push('<div class="text-start col">');
     html.push('<p class=""><span class="fw-bold">ID: </span>'+ row.id);
     html.push('<p class=""><span class="fw-bold">Description: </span>'+ row.description +'</p>');
+    html.push('<p class=""><span class="fw-bold">1600: </span>'+ row.covered_1600 +'</p>');
+    html.push('<p class=""><span class="fw-bold">1300: </span>'+ row.covered_1300 +'</p>');
     html.push('<p class=""><span class="fw-bold">Card Type: </span>'+ row.cardType +'</p>');
     html.push('<p class=""><span class="fw-bold">Invoice Type: </span>'+ row.invoiceType+'</p>');
+    html.push('<p class=""><span class="fw-bold">id_auth_user: </span>'+ row.id_auth_user +'</p>');
+    html.push('<p class=""><span class="fw-bold">id_worklist: </span>'+ row.id_worklist +'</p>');
+    html.push('<p class=""><span class="fw-bold">Transction id: </span>'+ row.id +'</p>');
     html.push('<p class=""><span class="fw-bold">Created on: </span>'+ row.created_on+'</p>');
     html.push('<p class=""><span class="fw-bold">Created by: </span>'+ row.created_by_name+'</p>');
     html.push('</div>');
@@ -1430,7 +1530,7 @@ function operateFormatter_transactions(value, row, index) {
   };
 
 // add button link to rows in wlCodes table
-window.operateEvents_wlCodes = {
+window.operateEvents_transactions = {
     'click .remove': function (e, value, row, index) {
         // console.log('You click action DELETE on row: ' + JSON.stringify(row));
         delItem(row.id, 'transactions', 'transaction: '+row.code+' ?');

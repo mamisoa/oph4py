@@ -741,8 +741,10 @@ db.define_table('transactions',
     Field('id_worklist','reference worklist', required=True),
     Field('date', 'datetime', required=True),
     Field('price', 'decimal(10,2)', default=0),
+    Field('covered_1600', 'decimal(10,2)', default=0),
+    Field('covered_1300', 'decimal(10,2)', default=0),
     Field('cash_payment', 'decimal(10,2)', default=0),
-    Field('card_payment', 'decimal(10,2)'),
+    Field('card_payment', 'decimal(10,2)',default=0),
     Field('card_type', 'string', default='bc'),
     Field('invoice_payment', 'decimal(10,2)', default=0),
     Field('invoice_type', 'string', default='other'),
@@ -775,8 +777,8 @@ db.define_table('nomenclature',
     Field('code', 'string', required=True),
     Field('code_desc', 'string'),
     Field('note', 'string'),
-    Field('price_list', 'string'), # list of social security prices
-    Field('supplement_ratio', default = SUPPLEMENT_RATIO),
+    Field('price_list', 'string', default = '[0,0,0,0]'), # list of social security prices
+    Field('supplement_ratio', 'decimal(10,2)', default = SUPPLEMENT_RATIO),
     Field('not_compatible', 'string'), # list of incompatible codes
     Field('min_reccurency', 'string'), # min reccurency
     Field('add_documents', 'string'), # list of documents
