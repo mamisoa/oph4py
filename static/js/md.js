@@ -1482,6 +1482,7 @@ async function confirmTransaction() {
             transaction.status = 0;
             keysToRemove.forEach(key => delete transaction[key]);
             await crudp('transactions', transaction.id, 'PUT', JSON.stringify(transaction));
+        refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
         }
     } catch (error) {
         console.error('Error in confirmTransaction:', error);
