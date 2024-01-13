@@ -1320,12 +1320,8 @@
                     <h3 class="title-right"><a role="button" data-bs-toggle="collapse" href=".payment">Payment</a></h3>
                     <div class="row payment">
                         <div class="col bg-right">
-                            <div class="DisplayPayment">
-                                To Pay:
-                            </div>
                             <div id="toolbar-transactions">
-                                <button type="button" id="btnNewTransaction" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#transactionsModal" data-category-flag="billing">New transaction<i class="mx-2 fas fa-plus"></i>
-                                </button>
+
                             </div>
                             <table
                                 id="transactions_tbl"
@@ -1362,6 +1358,18 @@
                                 </thead>
                             </table>
                         </div>
+                        <div id="billingConfirmation">
+                            <button type="button" id="btnConfirmTransaction" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmTransactionModal" data-category-flag="billing">Confirm codes<i class="mx-2 fas fa-check"></i>
+                            </button>
+                            <button type="button" id="btnUnlockTransaction" class="btn btn-warning d-none" data-bs-toggle="modal" data-bs-target="#unlockTransactionModal" data-category-flag="billing">Unlock<i class="mx-2 fas fa-unlock"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div id="transactionTable">
                     </div>
                 </div>
             </div>
@@ -1371,7 +1379,6 @@
         <div class="col">
             <div class="row">
                 <div class="col">
-                    <h3 class="title-right">Recap</h3>
                 </div>
             </div>
             <div class="row">

@@ -1265,7 +1265,7 @@ function responseHandler_wlCodes(res) { // used if data-response-handler="respon
             'supplementRatio': checkIfNull(list[i]['nomenclature']['supplement_ratio'],SUPPLEMENT_RATIO),
             'note': checkIfNull(list[i]['nomenclature']['note'],''),
             'lastPresbribed': list[i]['last_prescribed'],
-            'status':  list[i]['status'] === 1 ? 'OK' : 'Cancelled',
+            'status':  list[i]['status'] === 1 ? 'Confirmed' : 'To validate',
             // don't modify under
             'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
             'modified_by': list[i]['mod.id'],
@@ -1524,7 +1524,11 @@ function detailFormatter_transactions(index, row) {
 // add operational buttons to rows in transactions table
 function operateFormatter_transactions(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
-    html.push('<a class="remove ms-1" href="javascript:void(0)" title="Delete transaction"><i class="fas fa-trash-alt"></i></a>');
+    html.push('<a class="remove ms-1 ');
+    if (row.status >0) {
+        html.push('d-none');
+    }
+    html.push('" href="javascript:void(0)" title="Delete transaction"><i class="fas fa-edit"></i></a>');
     html.push('</div>');
     return html.join('');
   };

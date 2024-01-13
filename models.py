@@ -749,13 +749,15 @@ db.define_table('transactions',
     Field('invoice_payment', 'decimal(10,2)', default=0),
     Field('invoice_type', 'string', default='other'),
     Field('paid', 'decimal(10,2)', default=0),
-    Field('status', 'integer', default=0), # 0 to pay 1 paid -1 partially/not paid 
+    # -1 to validate 0 partially/not paid 1 paid
+    Field('status', 'integer', default=-1),
     Field('note', 'string'),
     Field('description', 'string'),
     auth.signature, 
     )
 
-db.transactions.status.requires = IS_IN_SET((2,1,0)) # ('paid','partial','not paid')
+db.transactions.status.requires = IS_IN_SET(
+    (1, 0, -1))  # ('paid','partial','to validate')
 db.transactions.card_type.requires = IS_IN_SET(('bc','visa', 'mc', 'contactless'))
 db.transactions.invoice_type.requires = IS_IN_SET(('driver','council', 'bank' ,'other')) # print invoice if needed
 
@@ -806,7 +808,7 @@ db.define_table('wl_codes',
     Field('laterality', 'string', default ='both', required=True),
     Field('note', 'string'),
     Field('last_prescribed', 'datetime'), # calculated on insertion after query date in wlcodes from code&id_worklist&id_auth_user
-    Field('status', 'integer', default = True), # 1 confirmed -1 cancelled
+    Field('status', 'integer', default=0),  # 0 to confirm 1 confirmed
     auth.signature   
     )
 # db.wl_codes.laterality.requires = IS_IN_SET(('right','left','both','local','systemic'))

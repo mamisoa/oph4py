@@ -1289,26 +1289,26 @@ function transformObject(obj) {
 		"mod.first_name": _modFirstName,
 		"mod.id": _modId,
 		"mod.last_name": _modLastName,
-		add_documents: _add_documents,
-		code: _code,
-		code_desc: _codeDesc,
-		covered: _covered,
+		"add_documents": _add_documents,
+		"code": _code,
+		"code_desc": _codeDesc,
+		"covered": _covered,
 		"creator.id": _creator_Id,
-		max_age: _max_Age,
-		min_age: _min_Age,
-		min_reccurency: _minReccurency,
-		modified_on: _modifiedon,
-		not_compatible: _notCompatible,
-		price_list: _price_list,
-		supplement_ratio: _supplementRatio,
-		created_on: _createdOn,
+		"max_age": _max_Age,
+		"min_age": _min_Age,
+		"min_reccurency": _minReccurency,
+		"modified_on": _modifiedon,
+		"not_compatible": _notCompatible,
+		"price_list": _price_list,
+		"supplement_ratio": _supplementRatio,
+		"created_on": _createdOn,
 		...rest
 	} = obj;
 
 	// Return the new object with some keys renamed
 	return {
 		...rest,
-		status: 1,
+		status: -1, // initial "status to validate"
 	};
 }
 
@@ -1376,6 +1376,7 @@ async function onTransactionAddUpdate(currentTransactionObj, dataObj) {
 		(Math.round(pricesArr[0] * codeObj["supplement_ratio"]) * 100) / 100;
 	newTransactionObj["covered_1600"] += pricesArr[1];
 	newTransactionObj["covered_1300"] += pricesArr[2];
+    // newTransactionObj["status"] = -1;
 	console.log("newTransactionObj:", newTransactionObj);
 
 	try {
@@ -1390,4 +1391,62 @@ async function onTransactionAddUpdate(currentTransactionObj, dataObj) {
 	} catch (error) {
 		console.error("Error updating transaction:", error);
 	}
+}
+
+// Generate transaction table
+async function updateTransactionTable(headers = ['date', 'price', 'covered_1300', 'covered_1600', 'status']) {
+    const container = document.getElementById('transactionTable');
+    const btnConfirm = document.getElementById('btnConfirmTransaction');
+    const btnUnlock = document.getElementById('btnUnlockTransaction');
+    if (!container) {
+        console.error('Transaction table container not found');
+        return;
+    }
+
+    try {
+        const response = await fetch(API_TRANSACTIONS);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const transactionData = await response.json();
+
+        if (transactionData.items.length === 0) {
+            container.innerHTML = '<p>No transaction data available.</p>';
+            return;
+        }
+
+        // Clear existing content
+        container.innerHTML = '';
+
+        // Create a table element with Bootstrap classes
+        const table = document.createElement('table');
+        table.classList.add('table', 'table-striped', 'table-hover', 'table-responsive');
+
+        // Create the body of the table
+        const tbody = document.createElement('tbody');
+        const item = transactionData.items[0]; // Get the first (and only) item
+        console.log("transaction item: ",item);
+        headers.forEach(header => {
+            const row = document.createElement('tr');
+            const tdKey = document.createElement('td');
+            tdKey.innerHTML = `<strong>${header}</strong>`; // Key in bold
+            row.appendChild(tdKey);
+            const tdValue = document.createElement('td');
+             // Explicitly check for null or undefined
+            tdValue.textContent = item[header] !== null && item[header] !== undefined ? item[header] : '';
+            row.appendChild(tdValue);
+            tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+
+        // Append the table to the container
+        container.appendChild(table);
+        if (item.status >= 0) {
+            btnConfirm.classList.toggle('d-none');
+            btnUnlock.classList.toggle('d-none');
+        }
+    } catch (error) {
+        console.error('Error fetching transaction data:', error);
+        container.innerHTML = '<p>Error loading transaction data.</p>';
+    }
 }
