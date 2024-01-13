@@ -946,7 +946,7 @@ function updateTable(selectedComboId) {
             row.innerHTML = `
                 <td>${nomenclature.code ?? ''}</td>
                 <td>${nomenclature.code_desc.substring(0, 30) ?? ''}</td>
-                <td>${JSON.parse(nomenclature.price_list)[0] * nomenclature.supplement_ratio ?? ''}</td>
+                <td>${round2supint(JSON.parse(nomenclature.price_list)[0] * nomenclature.supplement_ratio) ?? ''}</td>
                 <td>${JSON.parse(nomenclature.price_list)[1] ?? ''}</td>
             `; // <td>${new Date().toLocaleDateString()}</td>
             codeListTable.appendChild(row);
