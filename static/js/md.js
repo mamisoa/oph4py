@@ -838,7 +838,7 @@ $('#codeSelection input[name=code]').autoComplete({
         bodyRow.innerHTML = `
                     <td>${item.code ?? ''}</td>
                     <td>${item.code_desc.substring(0, 30) ?? ''}</td>
-                    <td>${JSON.parse(item.price_list)[0] * item.supplement_ratio ?? ''}</td>
+                    <td>${round2supint(JSON.parse(item.price_list)[0] * item.supplement_ratio) ?? ''}</td>
                     <td>${JSON.parse(item.price_list)[1] ?? ''}</td>
                 `; // <td>${new Date().toLocaleDateString()}</td>        
         tbody.appendChild(bodyRow);
@@ -894,7 +894,7 @@ $('#codeTextSelection input[name=codeText]').autoComplete({
         bodyRow.innerHTML = `
                     <td>${item.code ?? ''}</td>
                     <td>${item.code_desc.substring(0, 30) ?? ''}</td>
-                    <td>${JSON.parse(item.price_list)[0] * item.supplement_ratio ?? ''}</td>
+                    <td>${JSON.parse(round2supint(item.price_list)[0] * item.supplement_ratio) ?? ''}</td>
                     <td>${JSON.parse(item.price_list)[1] ?? ''}</td>
                 `; // <td>${new Date().toLocaleDateString()}</td>        
         tbody.appendChild(bodyRow);
@@ -1106,81 +1106,67 @@ const submitLabel = document.getElementById('billingModalSubmit');
 const idAuthUser = document.getElementById('idPatientbilling').value;
 const idWorklist = document.getElementById('idBillingWl').value;
 
-submitLabel.addEventListener('click', function(event) {
+submitLabel.addEventListener('click', async function(event) {
     event.preventDefault(); // Prevents the default form submission action
 
     let codesToPostArr = codesToBillObj.map(obj => {
         // Rename 'id' to 'nomenclature_id' and keep the rest of the properties
         const { id: nomenclature_id, ...rest } = obj;
         return { ...rest, nomenclature_id, id_auth_user: idAuthUser, id_worklist: idWorklist };
-    })
+    });
 
     console.log(codesToPostArr);
 
-    codesToPostArr.forEach((dataObj, index) => {
-        convertedObj = transformObject(dataObj);
-        console.log(convertedObj);
-        dataStr = JSON.stringify(convertedObj);
-        console.log('dataStr1: ',dataStr); 
-        // ADD OBJECT FOR TRANSACTION:
-        // 1) insert new transaction with calculated price to pay
-        // 2) insert wl_codes in a list to add
-        // 3) calculate a price to pay
-        // 4) if cancelled, recalculate price with remaining codes
-        let currentTransactionObj;
-        crudp('wl_codes','0','POST',dataStr)
-                .then( () => {
-                    // update the transaction
-                    // 
-                    console.log("dataobj:",dataObj);
-                    return fetch(API_TRANSACTIONS);
-                })
-                .then(response => {
-                    // Check if the request was successful
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json(); // Parse the response as JSON
-                })
-                .then(data => {
-                    // Now 'data' is the parsed JSON object
-                    console.log("fetch data:", data);
-                    currentTransactionObj = data.items[0]
-                    onTransactionAddUpdate(); // Callback function after the transaction is updated
-                    })
-                .catch(error => {
-                    // Handle any errors in the fetch request or the JSON parsing
-                    console.error('Error:', error);
-                });
-        
-        // callback function
-        function onTransactionAddUpdate() {
-            // Now currentTransactionObj is set and can be used here
-            console.log("currentTransactionObj:", currentTransactionObj);
-            console.log("dataObj:", dataObj);
-            // construct new transaction object
-            let newTransactionObj = currentTransactionObj;
-            let codeObj = dataObj;
-            let pricesArr = JSON.parse(codeObj['price_list']);
-            newTransactionObj['price'] += (Math.round(pricesArr[0]*codeObj['supplement_ratio'])*100)/100;
-            newTransactionObj['covered_1600'] += pricesArr[1];
-            newTransactionObj['covered_1300'] += pricesArr[2];
-            console.log("newTransactionObj:", newTransactionObj);
-            crudp('transactions',id=newTransactionObj['id'],'PUT', JSON.stringify(transformObject(newTransactionObj)))
-                .then(() => {
-                    console.log('Transaction updated successfully');
-                    refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
-                })
-                .catch(error => {
-                    console.error('Error updating transaction:', error);
-                });
-        };
-        
-        // Reset the content of the div
-        const container = document.getElementById('codesSelected');
-        container.innerHTML = ''; 
-        codesToBillObj = []; // reset codesToBill
-    });
+    for (const dataObj of codesToPostArr) {
+        try {
+            convertedObj = transformObject(dataObj);
+            console.log(convertedObj);
+            dataStr = JSON.stringify(convertedObj);
+            console.log('dataStr1: ', dataStr);
 
-    // Here you can add code to handle codesToPostArr, e.g., send it to a server
+            await crudp('wl_codes', '0', 'POST', dataStr);
+            console.log("dataobj:", dataObj);
+
+            const response = await fetch(API_TRANSACTIONS);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("fetch data:", data);
+            let currentTransactionObj = data.items[0];
+
+            await onTransactionAddUpdate(currentTransactionObj, dataObj);
+
+            // Reset the content of the div
+            const container = document.getElementById('codesSelected');
+            container.innerHTML = '';
+            codesToBillObj = []; // reset codesToBill
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Post-loop actions
+    // ...
 });
+
+async function onTransactionAddUpdate(currentTransactionObj, dataObj) {
+    console.log("currentTransactionObj:", currentTransactionObj);
+    console.log("dataObj:", dataObj);
+    let newTransactionObj = { ...currentTransactionObj };
+    let codeObj = dataObj;
+    let pricesArr = JSON.parse(codeObj['price_list']);
+    newTransactionObj['price'] += (Math.round(pricesArr[0] * codeObj['supplement_ratio']) * 100) / 100;
+    newTransactionObj['covered_1600'] += pricesArr[1];
+    newTransactionObj['covered_1300'] += pricesArr[2];
+    console.log("newTransactionObj:", newTransactionObj);
+
+    try {
+        await crudp('transactions', newTransactionObj['id'], 'PUT', JSON.stringify(transformObject(newTransactionObj)));
+        console.log('Transaction updated successfully');
+        refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
+    } catch (error) {
+        console.error('Error updating transaction:', error);
+    }
+}

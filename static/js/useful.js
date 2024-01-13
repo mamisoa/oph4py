@@ -54,6 +54,11 @@ function round2qter(num, sign = false) {
 	return num;
 }
 
+// round float to upper integer
+function round2supint(num) {
+    return Math.ceil(num);
+}
+
 // Capitalize first character
 function capitalize(str) {
 	let res = "";
