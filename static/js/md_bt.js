@@ -1403,6 +1403,7 @@ function delWlCode(dataObj) {
                         newTransactionObj['price'] -= codeObj['priceTag'];
                         newTransactionObj['covered_1600'] -= pricesArr[1];
                         newTransactionObj['covered_1300'] -= pricesArr[2];
+                        newTransactionObj['status'] = -1;
                         console.log("newTransactionObj:", newTransactionObj);
                         console.log("filter ---> ",filterTransactionObject(newTransactionObj))
                         crudp('transactions',id=newTransactionObj['id'],'PUT', JSON.stringify(filterTransactionObject(newTransactionObj)))

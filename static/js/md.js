@@ -1450,3 +1450,40 @@ async function updateTransactionTable(headers = ['date', 'price', 'covered_1300'
         container.innerHTML = '<p>Error loading transaction data.</p>';
     }
 }
+
+async function confirmTransaction() {
+    try {
+        const keysToRemove = ['created_on', 'modified_on', 'modified_by', 'created_by'];
+
+        // Fetch wl_codes items
+        const API_CODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId;
+        let response = await fetch(API_CODES);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        let wlCodesData = await response.json();
+        console.log("wldata: ",wlCodesData);
+
+        // Update status of each wl_codes item to 1
+        for (const item of wlCodesData.items) {
+            item.status = 1;
+            console.log("wlitem: ",item);
+            keysToRemove.forEach(key => delete item[key]);
+            await crudp('wl_codes', item.id, 'PUT', JSON.stringify(item));
+        }
+
+        // Fetch the transaction
+        const API_TRANS = HOSTURL + "/"+APP_NAME+"/api/transactions?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId;
+        response = await fetch(API_TRANS);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        let transactionData = await response.json();
+
+        // Assuming there is only one transaction, update its status to 0
+        if (transactionData.count > 0) {
+            const transaction = transactionData.items[0];
+            transaction.status = 0;
+            keysToRemove.forEach(key => delete transaction[key]);
+            await crudp('transactions', transaction.id, 'PUT', JSON.stringify(transaction));
+        }
+    } catch (error) {
+        console.error('Error in confirmTransaction:', error);
+    }
+}
