@@ -134,6 +134,7 @@ function refreshList(listName){
             $('#ulUserItems').append('<li class="list-group-item">Nationality: <span class="fw-bold">' + checkIfDataIsNull(item.nationality) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Country of birth: <span class="fw-bold">' + checkIfDataIsNull(item.birth_country) + '</span></li>');
             $('#ulUserItems').append('<li class="list-group-item">Notes: <span class="fw-bold">' + checkIfDataIsNull(item.user_notes) + '</span></li>');
+            $('#ulUserItems').append('<li class="list-group-item">CME: <span class="fw-bold">' + checkIfDataIsNull(item.cme) + '</span></li>');
         });
     } else if (listName=='userPhone') {
         let userPhone = getUserPhones(id);

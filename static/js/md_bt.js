@@ -1264,7 +1264,8 @@ function responseHandler_wlCodes(res) { // used if data-response-handler="respon
             'priceTag': checkIfNull(((Math.round(JSON.parse(list[i]['nomenclature']['price_list'])[0]*list[i]['nomenclature']['supplement_ratio'])*100)/100),-1),
             'supplementRatio': checkIfNull(list[i]['nomenclature']['supplement_ratio'],SUPPLEMENT_RATIO),
             'note': checkIfNull(list[i]['nomenclature']['note'],''),
-            'lastPresbribed': list[i]['last_prescribed'],
+            'lastPresbribed': getIsoCurrentDateTime(),
+            'needCME': list[i]['nomenclature']['need_cme'],
             'status':  list[i]['status'] === 1 ? 'Confirmed' : 'To validate',
             // don't modify under
             'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],

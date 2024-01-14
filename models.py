@@ -770,6 +770,7 @@ db.define_table('combo_codes',
     Field('combo_desc', 'string'),
     Field('combo_price', 'double', default=0),
     Field('note', 'string'),
+    Field('need_cme', 'boolean', default=False),  # need accreditation
     auth.signature
 )
 
@@ -787,6 +788,7 @@ db.define_table('nomenclature',
     Field('min_age', 'double'), # min age
     Field('max_age', 'double'), # max age
     Field('covered', 'boolean', default = True), # 0 not covered, no attestation but bill 1 covered no bill but attestation 
+    Field('need_cme', 'boolean', default=False),  # need accreditation
     auth.signature
 )
 
@@ -807,8 +809,8 @@ db.define_table('wl_codes',
     Field('combo_id', 'integer'),
     Field('laterality', 'string', default ='both', required=True),
     Field('note', 'string'),
-    Field('last_prescribed', 'datetime'), # calculated on insertion after query date in wlcodes from code&id_worklist&id_auth_user
-    Field('status', 'integer', default=0),  # 0 to confirm 1 confirmed
+    Field('status', 'integer', default=0),  # 0 to confirm 1 confirmed,
+    Field('need_cme', 'boolean', default=False),  # need accreditation,
     auth.signature   
     )
 # db.wl_codes.laterality.requires = IS_IN_SET(('right','left','both','local','systemic'))

@@ -133,6 +133,7 @@ more_auth_fields = [    Field('uid', 'string', default=str_uuid()),
                         Field('documenttype', 'integer', label ='ID doctype'),
                         Field('specialstatus', 'integer', label ='ID specialstatus'),
                         Field('photob64', 'blob', label ='photo ID'),
+                        Field('cme', 'boolean', default=True, label='CME'),
                         auth.signature]
 auth.extra_auth_user_fields = more_auth_fields
 
