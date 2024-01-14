@@ -1361,14 +1361,14 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" id="transactionRow">
                 <div class="col">
                     <div id="transactionTable">
                     </div>
                     <div id="billingConfirmation">
-                        <button type="button" id="btnConfirmTransaction" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmTransactionModal" data-category-flag="billing">Confirm codes<i class="mx-2 fas fa-check"></i>
+                        <button type="button" id="btnConfirmTransaction" class="btn btn-success" data-category-flag="billing">Confirm codes<i class="mx-2 fas fa-check"></i>
                         </button>
-                        <button type="button" id="btnUnlockTransaction" class="btn btn-warning d-none" data-bs-toggle="modal" data-bs-target="#unlockTransactionModal" data-category-flag="billing">Unlock<i class="mx-2 fas fa-unlock"></i>
+                        <button type="button" id="btnUnlockTransaction" class="btn btn-danger d-none disabled" data-category-flag="billing">Locked<i class="mx-2 fas fa-lock"></i>
                         </button>
                     </div>
                 </div>

@@ -1400,6 +1400,7 @@ async function updateTransactionTable(headers = ['date', 'price', 'covered_1300'
     const container = document.getElementById('transactionTable');
     const btnConfirm = document.getElementById('btnConfirmTransaction');
     const btnUnlock = document.getElementById('btnUnlockTransaction');
+    const transactionDiv = document.getElementById('transactionRow');
     if (!container) {
         console.error('Transaction table container not found');
         return;
@@ -1434,8 +1435,14 @@ async function updateTransactionTable(headers = ['date', 'price', 'covered_1300'
             tdKey.innerHTML = `<strong>${header}</strong>`; // Key in bold
             row.appendChild(tdKey);
             const tdValue = document.createElement('td');
-             // Explicitly check for null or undefined
-            tdValue.textContent = item[header] !== null && item[header] !== undefined ? item[header] : '';
+            let value = item[header];
+            if ((header === 'price' || header === 'covered_1600' || header === 'covered_1300') && value != null) {
+                value = `${value.toFixed(2)} €`; // Format with 2 decimals and append '€'
+            } else {
+                value = value !== null && value !== undefined ? value : '';
+            }
+
+            tdValue.textContent = value;
             row.appendChild(tdValue);
             tbody.appendChild(row);
         });
@@ -1456,6 +1463,11 @@ async function updateTransactionTable(headers = ['date', 'price', 'covered_1300'
             }
             if (!btnUnlock.classList.contains('d-none')) {
                 btnUnlock.classList.add('d-none');
+            }
+        }
+        if (item.price <=0) {
+            if (!transactionDiv.classList.contains('d-none')) {
+                transactionDiv.classList.add('d-none');
             }
         }
     } catch (error) {
@@ -1494,7 +1506,7 @@ async function confirmTransaction() {
             const transaction = transactionData.items[0];
             transaction.status = 0;
             keysToRemove.forEach(key => delete transaction[key]);
-            crudp('transactions', transaction.id, 'PUT', JSON.stringify(transaction));
+            await crudp('transactions', transaction.id, 'PUT', JSON.stringify(transaction));
             refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
             await updateTransactionTable();
 
