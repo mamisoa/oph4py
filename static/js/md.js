@@ -1362,8 +1362,6 @@ submitLabel.addEventListener("click", async function (event) {
 		}
 	}
 
-	// Post-loop actions
-	// ...
 });
 
 async function onTransactionAddUpdate(currentTransactionObj, dataObj) {
@@ -1390,8 +1388,8 @@ async function onTransactionAddUpdate(currentTransactionObj, dataObj) {
 	} catch (error) {
 		console.error("Error updating transaction:", error);
 	};
-    refreshTables(["#wlCodes_tbl", "#transactions_tbl"]);
     await updateTransactionTable();
+    refreshTables(["#wlCodes_tbl"]);
 }
 
 // Generate transaction table
@@ -1469,6 +1467,8 @@ async function updateTransactionTable(headers = ['date', 'price', 'covered_1300'
             if (!transactionDiv.classList.contains('d-none')) {
                 transactionDiv.classList.add('d-none');
             }
+        } else {
+            transactionDiv.classList.remove('d-none');
         }
     } catch (error) {
         console.error('Error fetching transaction data:', error);
