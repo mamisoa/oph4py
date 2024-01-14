@@ -1393,7 +1393,7 @@ async function onTransactionAddUpdate(currentTransactionObj, dataObj) {
 }
 
 // Generate transaction table
-async function updateTransactionTable(headers = ['date', 'price', 'covered_1300', 'covered_1600', 'status']) {
+async function updateTransactionTable(headers = ['date', 'price', 'covered_1300', 'covered_1600', 'status', 'note']) {
     console.log("updateTransactionTrable function executing...")
     const container = document.getElementById('transactionTable');
     const btnConfirm = document.getElementById('btnConfirmTransaction');
@@ -1426,6 +1426,12 @@ async function updateTransactionTable(headers = ['date', 'price', 'covered_1300'
         // Create the body of the table
         const tbody = document.createElement('tbody');
         const item = transactionData.items[0]; // Get the first (and only) item
+		// update current transactionObj and noteModal
+		// let noteTransactionsModal = document.getElementById("noteTransactionsModal");
+		$("#noteTransactionsModal input[name=id_worklist]").val(item.id_worklist);
+		$("#noteTransactionsModal input[name=id_auth_user]").val(item.id_auth_user);
+		$("#noteTransactionsModal input[name=note]").val(item.note);
+		currentTransactionObj = item;
         console.log("transaction item: ",item);
         headers.forEach(header => {
             const row = document.createElement('tr');
@@ -1538,4 +1544,30 @@ document.addEventListener('DOMContentLoaded', (event) => {
     } else {
         console.error('Button with ID #btnConfirmTransaction not found');
     }
+});
+
+// add note transaction
+document.getElementById('noteTransactionsModalSubmit').addEventListener('click', function() {
+    // Update the global object
+    currentTransactionObj.note = document.getElementById('noteTransactionsContent').value;
+
+    // Prepare data string for crudp function
+    let dataStr = JSON.stringify({
+        id: currentTransactionObj.id,
+        note: currentTransactionObj.note
+    });
+
+    // Execute the crudp promise function
+    crudp('transactions', currentTransactionObj.id, 'PUT', dataStr)
+        .then(() => {
+            // Execute updateTransactionTable
+            return updateTransactionTable();
+        })
+        .then(() => {
+            // Close the modal
+            $('#noteTransactionsModal').modal('hide');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 });

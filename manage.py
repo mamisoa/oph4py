@@ -475,6 +475,8 @@ def payments(wl_id):
     user = auth.get_user()
     wl_row = db(db.worklist.id == wl_id).select().first()
     rec_id = wl_row['id_auth_user']
+    transactions_row = db((db.transactions.id_worklist == wl_id) & (
+        db.transactions.id_auth_user == rec_id)).select().first()
     row = db(db.auth_user.id == rec_id).select().first()
     username = row.username
     membership = row.membership

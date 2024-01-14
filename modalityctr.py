@@ -203,10 +203,10 @@ def md(wlId):
     combos_json = combos.as_json()
 
     # combos_json now contains all the combo_codes with their related nomenclatures
-
-
     ###
-
+    transactions_row = db((db.transactions.id_worklist == wlId) & (
+        db.transactions.id_auth_user == patientId)).select().first()
+    transactionObj = transactions_row.as_json()
     for row in rows:
         modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
     # init all fields

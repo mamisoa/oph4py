@@ -1325,6 +1325,8 @@
                         </button>
                         <button type="button" id="btnUnlockTransaction" class="btn btn-danger d-none disabled" data-category-flag="billing">Locked<i class="mx-2 fas fa-lock"></i>
                         </button>
+                        <button type="button" id="btnNoteTransaction" class="btn btn-warning" data-bs-toggle="modal" data-mx-flag="noteTransaction" data-bs-target="#noteTransactionsModal" data-category-flag="billing">Add note<i class="mx-2 fas fa-plus"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -2453,6 +2455,34 @@
     </div>
 </div>
 
+
+<!-- Modal noteTransactionsModal -->
+<div class="modal fade" id="noteTransactionsModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add note to transaction #[[ = XML(transactions_row['id'])]]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <label for="noteTransactionsContent" class="form-label">Note:</label>
+                            <textarea id="noteTransactionsContent" class="form-control" aria-label="With textarea" name="note">[[ = XML(transactions_row['note'])]]</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="noteTransactionsModalSubmit" type="button" class="btn btn-primary">Add note</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- cache offcanvas -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCache" aria-labelledby="offcanvas cache">
     <div class="offcanvas-header">
@@ -2495,8 +2525,10 @@
 const HOSTURL = "[[ = hosturl ]]";
 var usermdObj = [[ =XML(mdParams) ]];
 var userObj = [[ =XML(userDict)]];
-const SUPPLEMENT_RATIO = [[ = XML(supplement_ratio)]]
-const comboObj = [[ = XML(combos_json)]]
+const SUPPLEMENT_RATIO = [[ = XML(supplement_ratio)]];
+const comboObj = [[ = XML(combos_json)]];
+var currentTransactionObj = [[ =XML(transactionObj) ]];
+const transactionId = currentTransactionObj.id;
 
 // for timer
 var timer_id = [];

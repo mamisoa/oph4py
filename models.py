@@ -756,10 +756,12 @@ db.define_table('transactions',
     auth.signature, 
     )
 
-db.transactions.status.requires = IS_IN_SET(
-    (1, 0, -1))  # ('paid','partial','to validate')
-db.transactions.card_type.requires = IS_IN_SET(('bc','visa', 'mc', 'contactless'))
-db.transactions.invoice_type.requires = IS_IN_SET(('driver','council', 'bank' ,'other')) # print invoice if needed
+# db.transactions.status.requires = IS_IN_SET(
+#     (1, 0, -1))  # ('paid','partial','to validate')
+# db.transactions.card_type.requires = IS_IN_SET(
+#     ['bc', 'visa', 'mc', 'contactless'])
+# db.transactions.invoice_type.requires = IS_IN_SET(
+#     ['driver', 'council', 'bank', 'other'])  # print invoice if needed
 
 ## price is calculated from the combo price
 ## plus eventually an extracode 
