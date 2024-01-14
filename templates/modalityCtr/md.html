@@ -1358,18 +1358,18 @@
                                 </thead>
                             </table>
                         </div>
-                        <div id="billingConfirmation">
-                            <button type="button" id="btnConfirmTransaction" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmTransactionModal" data-category-flag="billing">Confirm codes<i class="mx-2 fas fa-check"></i>
-                            </button>
-                            <button type="button" id="btnUnlockTransaction" class="btn btn-warning d-none" data-bs-toggle="modal" data-bs-target="#unlockTransactionModal" data-category-flag="billing">Unlock<i class="mx-2 fas fa-unlock"></i>
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
                     <div id="transactionTable">
+                    </div>
+                    <div id="billingConfirmation">
+                        <button type="button" id="btnConfirmTransaction" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmTransactionModal" data-category-flag="billing">Confirm codes<i class="mx-2 fas fa-check"></i>
+                        </button>
+                        <button type="button" id="btnUnlockTransaction" class="btn btn-warning d-none" data-bs-toggle="modal" data-bs-target="#unlockTransactionModal" data-category-flag="billing">Unlock<i class="mx-2 fas fa-unlock"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -2771,6 +2771,7 @@ $( document ).ready(function() {
         refreshTables(['#tonoRight_tbl','#tonoLeft_tbl']);
         console.log('tono tables should be refreshed');
     };
+    updateTransactionTable();
 });
 
 $('#rxRight_tbl').on('post-body.bs.table', function () {

@@ -1407,9 +1407,10 @@ function delWlCode(dataObj) {
                         console.log("newTransactionObj:", newTransactionObj);
                         console.log("filter ---> ",filterTransactionObject(newTransactionObj))
                         crudp('transactions',id=newTransactionObj['id'],'PUT', JSON.stringify(filterTransactionObject(newTransactionObj)))
-                            .then(() => {
+                            .then(async () => {
                                 console.log('Transaction updated successfully');
                                 refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
+                                await updateTransactionTable();
                             })
                             .catch(error => {
                                 console.error('Error updating transaction:', error);

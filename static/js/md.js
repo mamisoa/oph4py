@@ -1387,14 +1387,16 @@ async function onTransactionAddUpdate(currentTransactionObj, dataObj) {
 			JSON.stringify(transformObject(newTransactionObj))
 		);
 		console.log("Transaction updated successfully");
-		refreshTables(["#wlCodes_tbl", "#transactions_tbl"]);
 	} catch (error) {
 		console.error("Error updating transaction:", error);
-	}
+	};
+    refreshTables(["#wlCodes_tbl", "#transactions_tbl"]);
+    await updateTransactionTable();
 }
 
 // Generate transaction table
 async function updateTransactionTable(headers = ['date', 'price', 'covered_1300', 'covered_1600', 'status']) {
+    console.log("updateTransactionTrable function executing...")
     const container = document.getElementById('transactionTable');
     const btnConfirm = document.getElementById('btnConfirmTransaction');
     const btnUnlock = document.getElementById('btnUnlockTransaction');
@@ -1441,9 +1443,20 @@ async function updateTransactionTable(headers = ['date', 'price', 'covered_1300'
 
         // Append the table to the container
         container.appendChild(table);
-        if (item.status >= 0) {
-            btnConfirm.classList.toggle('d-none');
-            btnUnlock.classList.toggle('d-none');
+        if (item.status >= 0) { // confirmed -> show bntUnlock, hide btnConfirm
+            if (btnUnlock.classList.contains('d-none')) {
+                btnUnlock.classList.remove('d-none'); 
+            }
+            if (!btnConfirm.classList.contains('d-none')) {
+                btnConfirm.classList.add('d-none');
+            }
+        } else { // to validate -> show bntConfirm, hide btnUnlock
+            if (btnConfirm.classList.contains('d-none')) {
+                btnConfirm.classList.remove('d-none'); 
+            }
+            if (!btnUnlock.classList.contains('d-none')) {
+                btnUnlock.classList.add('d-none');
+            }
         }
     } catch (error) {
         console.error('Error fetching transaction data:', error);
@@ -1481,10 +1494,22 @@ async function confirmTransaction() {
             const transaction = transactionData.items[0];
             transaction.status = 0;
             keysToRemove.forEach(key => delete transaction[key]);
-            await crudp('transactions', transaction.id, 'PUT', JSON.stringify(transaction));
-        refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
+            crudp('transactions', transaction.id, 'PUT', JSON.stringify(transaction));
+            refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
+            await updateTransactionTable();
+
         }
     } catch (error) {
         console.error('Error in confirmTransaction:', error);
     }
 }
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const btnConfirmTransaction = document.getElementById('btnConfirmTransaction');
+
+    if (btnConfirmTransaction) {
+        btnConfirmTransaction.addEventListener('click', confirmTransaction);
+    } else {
+        console.error('Button with ID #btnConfirmTransaction not found');
+    }
+});
