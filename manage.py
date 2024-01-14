@@ -468,6 +468,7 @@ def summary(rec_id):
 @action('billing/payments/<wl_id>')
 @action.uses(session, auth, db,'billing/payments.html')
 def payments(wl_id):
+    DETAILS = False
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
@@ -477,6 +478,7 @@ def payments(wl_id):
     rec_id = wl_row['id_auth_user']
     transactions_row = db((db.transactions.id_worklist == wl_id) & (
         db.transactions.id_auth_user == rec_id)).select().first()
+    transactionObj = transactions_row.as_json()
     row = db(db.auth_user.id == rec_id).select().first()
     username = row.username
     membership = row.membership

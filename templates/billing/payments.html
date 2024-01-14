@@ -6,7 +6,7 @@
 <div class="container-fluid py-1 patient-id" id="patientTitle">
     <div class="row mb-3 d-flex justify-content-center align-items-center">
         <div id="patientIdDiv" class="col-4 text-end">
-            <h3 class="wlID">01/01/2024 - Worklist #1545</h3>
+            <h3 class="wlID">Worklist #[[ = wl_id ]]</h3>
             <h3 class="patientName"></h3>
             <h5 class="patientDob text-muted"></h5>
             <h5 class="patientGender fst-italic"></h5>
@@ -23,6 +23,7 @@
     </div>
 </div>
 
+[[ if DETAILS == True:]]
 <div class="test container-fluid">
     <div class="row">
         <div class="col">
@@ -34,6 +35,19 @@
         <div class="col">
             <h5>WL:</h5> [[ =wl_row.as_json() ]]
             <h5>wl_id</h5> [[ = wl_id ]]
+        </div>
+    </div>
+</div>
+
+[[ pass ]]
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h2>Codes</h2>
+            <div id="transactionTable">
+
+            </div>
         </div>
     </div>
 </div>
@@ -174,7 +188,7 @@
     <div class="row justify-content-center">
         <div class="col">
             <h2>Remaining to pay:</h2>
-            <button type="button" id="btnNewpayment" class="btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#paymentModal">Pay 147 €</button>
+            <button type="button" id="btnNewpayment" class="btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#paymentModal">Pay <span id="sum">147</span> €</button>
         </div>
     </div>
 </div>
@@ -260,15 +274,24 @@
 [[ block js_scripts ]]
 <script type="text/javascript">
 // globals
-const id = [[ =rec_id ]]
+const patientId = [[ =rec_id ]];
 const membership = [[=membership]];
 const HOSTURL = "[[ = hosturl ]]";
+const wlId = [[ = wl_id ]];
+var currentTransactionObj = [[ =XML(transactionObj) ]];
+const transactionId = currentTransactionObj.id;
 
-const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender,marital,membership,ethny&@count=true'; 
-const API_CHXUSER = HOSTURL + '[[=URL('api','current_hx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
-const API_CCXUSER = HOSTURL + '[[=URL('api','ccx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
-const API_FOLUSER = HOSTURL + '[[=URL('api','followup')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
-const API_BILUSER = HOSTURL + '[[=URL('api','billing')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
+const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+patientId+'&@lookup=gender,marital,membership,ethny&@count=true'; 
+const API_CHXUSER = HOSTURL + '[[=URL('api','current_hx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + patientId
+const API_CCXUSER = HOSTURL + '[[=URL('api','ccx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + patientId
+const API_FOLUSER = HOSTURL + '[[=URL('api','followup')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + patientId
+const API_BILUSER = HOSTURL + '[[=URL('api','billing')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + patientId
+
+// table listing wlcodes 
+const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=[~id,~status]";
+
+// table listing transactions 
+const API_TRANSACTIONS = HOSTURL + "/"+APP_NAME+"/api/transactions?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 
 </script>
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
