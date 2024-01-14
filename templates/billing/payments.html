@@ -23,6 +23,21 @@
     </div>
 </div>
 
+<div class="test container-fluid">
+    <div class="row">
+        <div class="col">
+            <h5>User</h5> [[ = globals().get('user')]]
+            <h5>rec_id</h5> [[ = rec_id ]]
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h5>WL:</h5> [[ =wl_row.as_json() ]]
+            <h5>wl_id</h5> [[ = wl_id ]]
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid d-none">
     <div class="row">
         <div class="col">

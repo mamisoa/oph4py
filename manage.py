@@ -463,16 +463,18 @@ def summary(rec_id):
     membership = row.membership
     return locals()
 
-# manage billing summary
+# manage payment
 @action('billing/payments')
-@action('billing/payments/<rec_id>')
+@action('billing/payments/<wl_id>')
 @action.uses(session, auth, db,'billing/payments.html')
-def payments(rec_id):
+def payments(wl_id):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
+    wl_row = db(db.worklist.id == wl_id).select().first()
+    rec_id = wl_row['id_auth_user']
     row = db(db.auth_user.id == rec_id).select().first()
     username = row.username
     membership = row.membership

@@ -114,6 +114,7 @@ function operateFormatter_wl(value, row, index) {
     }
     if (mainModalityArr.includes(row.modality)  && row.status_flag =='done') {
         html.push('<a class="summary ms-1" href="javascript:void(0)" title="Read summary"><i class="fas fa-th-list"></i></a>');
+        html.push('<a class="payments ms-1" href="javascript:void(0)" title="Proceed to payment"><i class="fas fa-euro-sign"></i></a>');
     } else {};
     html.push('</div>');
     return html.join('');
@@ -167,6 +168,10 @@ window.operateEvents_wl = {
     },
     'click .summary': function (e, value, row, index) {
         let link = HOSTURL+'/'+APP_NAME+'/billing/summary/'+row.id_auth_user;
+        window.location.href = link;
+    },
+    'click .payments': function (e, value, row, index) {
+        let link = HOSTURL+'/'+APP_NAME+'/billing/payments/'+row.id;
         window.location.href = link;
     },
     'click .unlock': function (e, value, row, index) {
