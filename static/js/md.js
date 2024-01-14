@@ -1434,13 +1434,27 @@ async function updateTransactionTable(headers = ['date', 'price', 'covered_1300'
             row.appendChild(tdKey);
             const tdValue = document.createElement('td');
             let value = item[header];
+            let valueElement = document.createTextNode(value); // Default text node
+
             if ((header === 'price' || header === 'covered_1600' || header === 'covered_1300') && value != null) {
                 value = `${value.toFixed(2)} €`; // Format with 2 decimals and append '€'
+                if (header === 'price') {
+                    // Create a span for price and style it
+                    valueElement = document.createElement('span');
+                    valueElement.textContent = value;
+                    valueElement.style.fontWeight = 'bold';
+                    valueElement.style.border = '1px solid black'; // Add border
+                    valueElement.style.padding = '2px'; // Add some padding
+                }
             } else {
                 value = value !== null && value !== undefined ? value : '';
             }
 
-            tdValue.textContent = value;
+            if (header !== 'price') {
+                tdValue.textContent = value;
+            } else {
+                tdValue.appendChild(valueElement); // Append the styled span for price
+            }
             row.appendChild(tdValue);
             tbody.appendChild(row);
         });
