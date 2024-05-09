@@ -295,9 +295,6 @@ $('#mxFormModal').submit(function(e){
     let dataObj = JSON.parse(dataStr);
     let req = dataObj['methodMxModalSubmit'];
     let id = dataObj.id;
-    // if (req == 'POST') {
-    //     delete dataObj['id'];
-    // } else {};
     delete dataObj.id;
     dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
     dataObj['medication']=capitalize(dataObj['medication']);
@@ -324,21 +321,20 @@ $('#axFormModal').submit(function(e){
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let req = dataObj['methodAxModalSubmit'];
-    if (req == 'POST') {
-        delete dataObj['id'];
-    } else {};
+    let id = dataObj.id;
+    delete dataObj.id;
     dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
     dataObj['agent']=capitalize(dataObj['agent']);
     delete dataObj['methodAxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     // console.log("dataForm",dataObj);
-    if (dataObj['id_agent'] == "") {
+    if (dataObj['id_agent'] == "") { // if no agent ref, add new agent to the agent db
         let newMedicObj = {};
         newMedicObj['name']=dataObj['agent'];
         newMedicStr = JSON.stringify(newMedicObj);
         crudp('agent','0','POST',newMedicStr);
     };    
-    crudp('allergy','0',req,dataStr).then( data => $ax_tbl.bootstrapTable('refresh'));
+    crudp('allergy',id,req,dataStr).then( data => $ax_tbl.bootstrapTable('refresh'));
     document.getElementById('axFormModal').reset();
     $('#axModal').modal('hide'); 
 });
