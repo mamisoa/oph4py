@@ -413,7 +413,7 @@ function setCounter (id_count, count_class,step, min, max) {
 setCounter('#mxFormModal', 'intake', 0.25,0.25,100);
 
 // set wlItem status: done processing and counter adjustment
-// id is in the dataStr
+// id is removed from the dataStr
 function setWlItemStatus (dataStr) {
     let dataJson = JSON.parse(dataStr);
     let id = dataJson.id;

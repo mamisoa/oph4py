@@ -164,22 +164,21 @@ $('#mxFormModal').submit(function(e){
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let req = dataObj['methodMxModalSubmit'];
-    if (req == 'POST') {
-        delete dataObj['id'];
-    } else {};
+    let id = dataObj.id;
+    delete dataObj.id;
     dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
     dataObj['medication']=capitalize(dataObj['medication']);
     delete dataObj['methodMxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     // console.log("dataForm",dataObj);
-    if (dataObj['id_medic_ref'] == "") {
+    if (dataObj['id_medic_ref'] == "") { // if no med ref, add new medication to the medication db
         let newMedicObj = {};
         newMedicObj['name']=dataObj['medication'];
         newMedicObj['delivery']=dataObj['delivery'];
         newMedicStr = JSON.stringify(newMedicObj);
         crudp('medic_ref','0','POST',newMedicStr);
     };
-    crudp('mx','0',req,dataStr).then(function () {
+    crudp('mx',id,req,dataStr).then(function () {
         $mx_tbl.bootstrapTable('refresh');
         $mxWl_tbl.bootstrapTable('refresh');
     });
@@ -192,21 +191,20 @@ $('#axFormModal').submit(function(e){
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let req = dataObj['methodAxModalSubmit'];
-    if (req == 'POST') {
-        delete dataObj['id'];
-    } else {};
+    let id = dataObj.id;
+    delete dataObj.id;
     dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
     dataObj['agent']=capitalize(dataObj['agent']);
     delete dataObj['methodAxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     // console.log("dataForm",dataObj);
-    if (dataObj['id_agent'] == "") {
+    if (dataObj['id_agent'] == "") { // if no agent ref, add new agent to the agent db
         let newMedicObj = {};
         newMedicObj['name']=dataObj['agent'];
         newMedicStr = JSON.stringify(newMedicObj);
         crudp('agent','0','POST',newMedicStr);
     };    
-    crudp('allergy','0',req,dataStr).then( data => $ax_tbl.bootstrapTable('refresh'));
+    crudp('allergy',id,req,dataStr).then( data => $ax_tbl.bootstrapTable('refresh'));
     document.getElementById('axFormModal').reset();
     $('#axModal').modal('hide'); 
 });
@@ -216,15 +214,14 @@ $('#mHxFormModal').submit(function(e){
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let req = dataObj['methodmHxModalSubmit'];
-    if (req == 'POST') {
-        delete dataObj['id'];
-    } else {};
+    let id = dataObj.id;
+    delete dataObj.id;
     dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
     dataObj['title']=capitalize(dataObj['title']);
     delete dataObj['methodmHxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     // console.log("dataForm",dataObj);
-    if (dataObj['id_disease_ref'] == "") {
+    if (dataObj['id_disease_ref'] == "") { // if no disease ref, add new disease to the disease db
         let newMedicObj = {};
         newMedicObj['title']=dataObj['title'];
         newMedicObj['category']=dataObj['category'];
@@ -232,7 +229,7 @@ $('#mHxFormModal').submit(function(e){
         // console.log("newMedicObj",newMedicObj);
         crudp('disease_ref','0','POST',newMedicStr);
     };    
-    crudp('phistory','0',req,dataStr).then( function() {
+    crudp('phistory',id,req,dataStr).then( function() {
         $mHx_tbl.bootstrapTable('refresh'); 
         $sHx_tbl.bootstrapTable('refresh');
         $oHx_tbl.bootstrapTable('refresh');
@@ -286,10 +283,14 @@ function setCounter (id_count, count_class,step, min, max) {
 setCounter('#mxFormModal', 'intake', 0.25,0.25,100);
 
 // set wlItem status: done processing and counter adjustment
-// id is in the dataStr
+// id is removed from the dataStr
 function setWlItemStatus (dataStr) {
-    // console.log('dataStrPut:',dataStr);
-    crudp('worklist','0','PUT', dataStr).then( data => $table_wl.bootstrapTable('refresh'));    
+    let dataJson = JSON.parse(dataStr);
+    let id = dataJson.id;
+    delete dataJson.id;
+    console.log('dataStr: ', dataJson,' Type:', typeof dataJson);
+    crudp('worklist', id ,'PUT', JSON.stringify(dataJson))
+        .then( data => $table_wl.bootstrapTable('refresh'));    
 };
 
 // set timers 
@@ -398,7 +399,6 @@ let inspectionFieldsArr = ['skin','head','hands',
         'sensorial','reflexes','others'];
 
 function setSubmit(domId,table, fieldsArr,lat) {
-    // set multiple fields submit forms
     $(domId).submit(function(e){
         e.preventDefault();
         let dataStr = $(this).serializeJSON();
@@ -406,26 +406,27 @@ function setSubmit(domId,table, fieldsArr,lat) {
         let req ;
         getWlItemData(table,wlId,lat)
             .then(function(data){
+                let id = dataObj['id'];
+                delete dataObj['id'];
                 if (data.count != 0) {
                     req = 'PUT';
                 } else {
                     req = 'POST';
-                    delete dataObj['id'];
                 };
-                console.log('setSubmit request:',req, 'data.count:',data.count);
+                // console.log('setSubmit request:',req, 'data.count:',data.count);
                 dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
                 dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
                 // capitalize fields
                 for (field of fieldsArr) {
                     if (dataObj[field] != "") {
-                        console.log('capitalize:', field ,dataObj[field]);
+                        // console.log('capitalize:', field ,dataObj[field]);
                         dataObj[field]=capitalize(dataObj[field]); // capitalize text objects
-                        $(domId+' textarea[name='+field+']').val(dataObj[field]); // update fields
+                        $(domId+' input[name='+field+']').val(dataObj[field]); // update fields
                     } else {};
                 };
                 dataStr= JSON.stringify(dataObj);
                 // console.log("dataForm from setSubmit",dataObj);
-                crudp(table,'0',req,dataStr);
+                crudp(table,id,req,dataStr);
                 $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');
                 getWlItemData(table,wlId,lat)
                     .then(function(data) {
