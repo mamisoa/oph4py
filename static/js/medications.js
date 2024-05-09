@@ -31,13 +31,12 @@ $('#medicFormModal').submit(function(e){
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let req = dataObj['methodMedicModalSubmit'];
-    if (req == 'POST') {
-        delete dataObj['id'];
-    } else {};
+    let id = dataObj.id;
+    delete dataObj.id;
     delete dataObj['methodMedicModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     console.log("dataForm",dataObj);
-    crudp('medic_ref','0',req,dataStr).then (data => $medic_tbl.bootstrapTable('refresh'));
+    crudp('medic_ref',id,req,dataStr).then (data => $medic_tbl.bootstrapTable('refresh'));
     $('#medicModal').modal('hide');
     $('#medicModal .modal-title').html('New medication');
     document.getElementById("medicFormModal").reset(); 
