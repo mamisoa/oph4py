@@ -303,9 +303,11 @@ $('#newWlItemForm').submit(function(e) {
                                         .then(function(uuid) {
                                             console.log('WlItemObj:',itemDataObj);                   
                                             itemDataObj["message_unique_id"] = uuid.unique_id;
+                                            let id = itemDataObj.id;
+                                            delete itemDataObj.id;
                                             let itemDataStr = JSON.stringify(itemDataObj);
                                             console.log('itemDataStr:',itemDataStr);
-                                            crudp('worklist','0', req, itemDataStr)
+                                            crudp('worklist',id, req, itemDataStr)
                                             .then( data => {
                                                 $(el).remove(); // remove wl item DOM element node when posted
                                                 wlId = data.id;
@@ -419,9 +421,11 @@ $('#newWlItemForm').submit(function(e) {
         delete itemDataPutObj['modality_dest'];
         itemDataPutObj['modality_dest']=itemDataPutObj['modality_destPut'];
         delete itemDataPutObj['modality_destPut'];
+        let id = itemDataPutObj.id;
+        delete itemDataPutObj.id;
         itemDataPutStr = JSON.stringify(itemDataPutObj);
         // console.log('PUT data:',itemDataPutObj);
-        crudp('worklist','0','PUT',itemDataPutStr);
+        crudp('worklist',id,'PUT',itemDataPutStr);
         hideDiv('#modality_destPutDiv', 'visually-hidden','add');
         hideDiv('#modality_destDiv', 'visually-hidden','remove');
     };
