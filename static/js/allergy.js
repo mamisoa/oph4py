@@ -31,14 +31,13 @@ $('#agentsFormModal').submit(function(e){
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let req = dataObj['methodAgentsModalSubmit'];
-    if (req == 'POST') {
-        delete dataObj['id'];
-    } else {};
+    let id = dataObj.id;
+    delete dataObj.id;
     dataObj['name']=capitalize(dataObj['name']);
     delete dataObj['methodAgentsModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     console.log("dataForm",dataObj);
-    crudp('agent','0',req,dataStr).then(data => $agents_tbl.bootstrapTable('refresh'));
+    crudp('agent',id,req,dataStr).then(data => $agents_tbl.bootstrapTable('refresh'));
     $('#agentsModal').modal('hide'); 
     $('#agentsModal .modal-title').html('New agent');
     document.getElementById("agentsFormModal").reset();
