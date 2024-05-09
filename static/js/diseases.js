@@ -31,14 +31,13 @@ $('#diseaseFormModal').submit(function(e){
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let req = dataObj['methodDiseaseModalSubmit'];
-    if (req == 'POST') {
-        delete dataObj['id'];
-    } else {};
+    let id = dataObj.id;
+    delete dataObj.id;
     dataObj['title']=capitalize(dataObj['title']);
     delete dataObj['methodDiseaseModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     console.log("dataForm",dataObj);
-    crudp('disease_ref','0',req,dataStr).then( data => $diseases_tbl.bootstrapTable('refresh'));
+    crudp('disease_ref',id,req,dataStr).then( data => $diseases_tbl.bootstrapTable('refresh'));
     $('#diseaseModal').modal('hide'); 
     $('#diseaseModal .modal-title').html('New disease');
     document.getElementById("diseaseFormModal").reset();
