@@ -418,8 +418,12 @@ setCounter('#mxFormModal', 'intake', 0.25,0.25,100);
 // set wlItem status: done processing and counter adjustment
 // id is in the dataStr
 function setWlItemStatus (dataStr) {
-    // console.log('dataStrPut:',dataStr);
-    crudp('worklist','0','PUT', dataStr).then( data => $table_wl.bootstrapTable('refresh'));    
+    let dataJson = JSON.parse(dataStr);
+    let id = dataJson.id;
+    delete dataJson.id;
+    console.log('dataStr: ', dataJson,' Type:', typeof dataJson);
+    crudp('worklist', id ,'PUT', JSON.stringify(dataJson))
+        .then( data => $table_wl.bootstrapTable('refresh'));    
 };
 
 // set timers 
