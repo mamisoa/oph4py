@@ -528,11 +528,12 @@ function setSubmit(domId,table, fieldsArr,lat) {
         let req ;
         getWlItemData(table,wlId,lat)
             .then(function(data){
+                let id = dataObj['id'];
+                delete dataObj['id'];
                 if (data.count != 0) {
                     req = 'PUT';
                 } else {
                     req = 'POST';
-                    delete dataObj['id'];
                 };
                 // console.log('setSubmit request:',req, 'data.count:',data.count);
                 dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
@@ -547,7 +548,7 @@ function setSubmit(domId,table, fieldsArr,lat) {
                 };
                 dataStr= JSON.stringify(dataObj);
                 // console.log("dataForm from setSubmit",dataObj);
-                crudp(table,'0',req,dataStr);
+                crudp(table,id,req,dataStr);
                 $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');
                 getWlItemData(table,wlId,lat)
                     .then(function(data) {
