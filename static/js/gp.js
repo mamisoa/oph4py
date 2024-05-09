@@ -519,23 +519,24 @@ function setOneSubmit(domId,table,lat) {
         let req ;
         getWlItemData(table,wlId,lat)
             .then(function(data){
+                let id = dataObj.id;
                 if (data.count !=0) {
                     req = 'PUT';
                 } else {
                     req = 'POST';
-                    delete dataObj['id'];
                 };
+                delete dataObj['id'];
                 dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
                 dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
                 dataObj['description']=capitalize(dataObj['description']);
                 dataStr= JSON.stringify(dataObj);
                 // console.log("dataForm",dataObj);
-                crudp(table,'0',req,dataStr);
+                crudp(table,id,req,dataStr);
                 $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');            
             })
     });    
 };
-
+        
 // parameter: #formId , tableName, laterality
 setOneSubmit('#cHxForm','current_hx');
 setOneSubmit('#soapForm','soap');

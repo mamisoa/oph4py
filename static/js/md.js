@@ -294,22 +294,24 @@ $('#mxFormModal').submit(function(e){
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let req = dataObj['methodMxModalSubmit'];
-    if (req == 'POST') {
-        delete dataObj['id'];
-    } else {};
+    let id = dataObj.id;
+    // if (req == 'POST') {
+    //     delete dataObj['id'];
+    // } else {};
+    delete dataObj.id;
     dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
     dataObj['medication']=capitalize(dataObj['medication']);
     delete dataObj['methodMxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     // console.log("dataForm",dataObj);
-    if (dataObj['id_medic_ref'] == "") {
+    if (dataObj['id_medic_ref'] == "") { // if no med ref, add new medication to the medication db
         let newMedicObj = {};
         newMedicObj['name']=dataObj['medication'];
         newMedicObj['delivery']=dataObj['delivery'];
         newMedicStr = JSON.stringify(newMedicObj);
         crudp('medic_ref','0','POST',newMedicStr);
     };
-    crudp('mx','0',req,dataStr).then(function () {
+    crudp('mx',id,req,dataStr).then(function () {
         $mx_tbl.bootstrapTable('refresh');
         $mxWl_tbl.bootstrapTable('refresh');
     });
@@ -631,18 +633,19 @@ function setOneSubmit(domId,table,lat) {
         let req ;
         getWlItemData(table,wlId,lat)
             .then(function(data){
+                let id = dataObj.id;
                 if (data.count !=0) {
                     req = 'PUT';
                 } else {
                     req = 'POST';
-                    delete dataObj['id'];
                 };
+                delete dataObj['id'];
                 dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
                 dataObj['id_worklist'] == "" ? dataObj['id_worklist']=wlId:{};
                 dataObj['description']=capitalize(dataObj['description']);
                 dataStr= JSON.stringify(dataObj);
                 // console.log("dataForm",dataObj);
-                crudp(table,'0',req,dataStr);
+                crudp(table,id,req,dataStr);
                 $(domId+'Submit').removeClass('btn-danger').addClass('btn-secondary');            
             })
     });    
