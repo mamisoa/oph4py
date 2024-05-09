@@ -344,15 +344,14 @@ $('#mHxFormModal').submit(function(e){
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let req = dataObj['methodmHxModalSubmit'];
-    if (req == 'POST') {
-        delete dataObj['id'];
-    } else {};
+    let id = dataObj.id;
+    delete dataObj.id;
     dataObj['id_auth_user'] == "" ? dataObj['id_auth_user']=patientObj['id']:{};
     dataObj['title']=capitalize(dataObj['title']);
     delete dataObj['methodmHxModalSubmit'];
     dataStr= JSON.stringify(dataObj);
     // console.log("dataForm",dataObj);
-    if (dataObj['id_disease_ref'] == "") {
+    if (dataObj['id_disease_ref'] == "") { // if no disease ref, add new disease to the disease db
         let newMedicObj = {};
         newMedicObj['title']=dataObj['title'];
         newMedicObj['category']=dataObj['category'];
@@ -360,7 +359,7 @@ $('#mHxFormModal').submit(function(e){
         // console.log("newMedicObj",newMedicObj);
         crudp('disease_ref','0','POST',newMedicStr);
     };    
-    crudp('phistory','0',req,dataStr).then( function() {
+    crudp('phistory',id,req,dataStr).then( function() {
         $mHx_tbl.bootstrapTable('refresh'); 
         $sHx_tbl.bootstrapTable('refresh');
         $oHx_tbl.bootstrapTable('refresh');
