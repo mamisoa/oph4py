@@ -94,8 +94,10 @@ $('#mxRxModalPrint').click(function(){
                     delete item['created_by'];
                     delete item['created_on'];
                     console.log('item:',item);
+                    let id = item.id;
+                    delete item.id;
                     let dataStr = JSON.stringify(item);
-                    crudp('mx','0','PUT',dataStr);
+                    crudp('mx',id,'PUT',dataStr);
                 }; // end for loop
                 console.log('prescObj:',prescObj);
                 var presc = {
