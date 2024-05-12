@@ -1448,9 +1448,14 @@ async function updateTransactionTable(headers = ['date', 'price', 'covered_1300'
         const item = transactionData.items[0]; // Get the first (and only) item
 		// update current transactionObj and noteModal
 		// let noteTransactionsModal = document.getElementById("noteTransactionsModal");
-		$("#noteTransactionsModal input[name=id_worklist]").val(item.id_worklist);
-		$("#noteTransactionsModal input[name=id_auth_user]").val(item.id_auth_user);
-		$("#noteTransactionsModal input[name=note]").val(item.note);
+		document.getElementById("transactionId").textContent = item.id;
+		document.addEventListener("DOMContentLoaded", function() {
+			document.getElementById("transactionId").textContent = item.id;
+			document.querySelector("#noteTransactionsModal input[name=id_worklist]").value = item.id_worklist;
+			document.querySelector("#noteTransactionsModal input[name=id_auth_user]").value = item.id_auth_user;
+			document.querySelector("#noteTransactionsModal input[name=note]").value = item.note;
+		});
+		
 		currentTransactionObj = item;
         console.log("transaction item: ",item);
         headers.forEach(header => {
@@ -1570,6 +1575,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
 document.getElementById('noteTransactionsModalSubmit').addEventListener('click', function() {
     // Update the global object
     currentTransactionObj.note = document.getElementById('noteTransactionsContent').value;
+
+	let transactionIdSpan =  document.getElementById("transactionId");
+	transactionIdSpan.textContent = 1;
 
     // Prepare data string for crudp function
     let dataStr = JSON.stringify({
