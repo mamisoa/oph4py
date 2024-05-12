@@ -279,43 +279,46 @@ function disableBtn(buttonsArr) {
  * crudp(table,id,req);
  * table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
  */
-const crudp = function (table, id = "0", req = "POST", data) {
-	return new Promise((resolve, reject) => {
-		// console.log(data);
-		let API_URL =
-			req == "POST" || req == "PUT"
-				? HOSTURL + "/" + APP_NAME + "/api/" + table
-				: HOSTURL + "/" + APP_NAME + "/api/" + table + "/" + id;
-		let mode = req == "POST" ? " added" : req == "PUT" ? " edited" : " deleted";
-		$.ajax({
-			url: API_URL,
-			data: data,
-			contentType: "application/json",
-			dataType: "json",
-			method: req,
-			success: function (data) {
-				console.log(data);
-				// status = data.status;
-				// message = data.message;
-				errors = "";
-				if (data.status == "error") {
-					for (i in data.errors) {
-						errors += data.errors[i] + "</br>";
-					}
-					text = errors;
-					displayToast("error", data.message, errors, "6000");
-				}
-				if (data.status == "success") {
-					text = "User id: " + (req == "DELETE" ? id : data.id) + mode;
-					displayToast("success", table + " " + mode, text, "3000");
-				}
-				resolve(data); // sent when resolved
-			},
-			error: function (error) {
-				reject(error);
-			},
-		});
-	});
+const crudp = function(table, id='0', req='POST', data) {
+    return new Promise((resolve, reject) => {
+        // Construire API_URL pour inclure l'id dans les cas PUT et DELETE
+        let API_URL = ((req == 'POST') ? HOSTURL + "/" + APP_NAME + "/api/" + table : HOSTURL + "/" + APP_NAME + "/api/" + table + "/" + id);
+
+        // Supprimer l'id du payload data si req est PUT et si id existe dans data
+        if (req === 'PUT' && data && data.id) {
+            delete data.id;
+        }
+
+        console.log("API URL:", API_URL); // Log l'URL pour vérifier
+
+        let mode = (req == 'POST' ? ' added' : (req == 'PUT' ? ' edited' : ' deleted'));
+        $.ajax({
+            url: API_URL,
+            data: data,
+            contentType: 'application/json',
+            dataType: 'json',
+            method: req,
+            success: function (data) {
+                console.log(data);
+                let errors = "";
+                if (data.status == "error") {
+                    for (let i in data.errors) {
+                        errors += data.errors[i] + '</br>';
+                    };
+                    let text = errors;
+                    displayToast('error', data.message, errors, '6000');
+                };
+                if (data.status == "success") {
+                    let text = 'User id: ' + (req == 'DELETE' ? id : data.id) + mode;
+                    displayToast('success', table + ' ' + mode, text, '3000');
+                };
+                resolve(data); // Sent when resolved
+            },
+            error: function(error) {
+                reject(error);
+            }
+        });
+    })
 };
 
 /**
@@ -323,9 +326,13 @@ const crudp = function (table, id = "0", req = "POST", data) {
  * @param {string} : dataStr - contains all the data including id
  * @module crudp
  */
-function setWlItemStatus(dataStr) {
-	return crudp("worklist", "0", "PUT", dataStr);
-}
+function setWlItemStatus (dataStr) {
+    let dataJson = JSON.parse(dataStr);
+    let id = dataJson.id;
+    delete dataJson.id;
+    console.log('dataStr: ', dataJson,' Type:', typeof dataJson);
+    return crudp('worklist', id ,'PUT', JSON.stringify(dataJson));
+};
 
 //  use as promise
 async function getVisionixData(machine = "l80", lastname = "", firstname = "") {

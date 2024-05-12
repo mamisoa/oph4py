@@ -117,8 +117,10 @@ $('#tonoPachyForm').submit(function (e){
     console.log(dataObj);
     let req = dataObj['methodTonoPachySubmit'];
     delete dataObj['methodTonoPachySubmit'];
+    let id = dataObj.id;
+    delete dataObj.id;
     dataStr = JSON.stringify(dataObj);
-    crudp('tono','0',req,dataStr).then(data => refreshTables());
+    crudp('tono',id,req,dataStr).then(data => refreshTables());
     $('#tonoPachyModal').modal('hide');
 });
 

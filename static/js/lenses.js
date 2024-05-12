@@ -31,14 +31,13 @@ $('#lensFormModal').submit(function(e){
     let dataStr = $(this).serializeJSON();
     let dataObj = JSON.parse(dataStr);
     let req = dataObj['methodlensModalSubmit'];
-    if (req == 'POST') {
-        delete dataObj['id'];
-    } else {};
+    let id = dataObj.id;
+    delete dataObj.id;
     delete dataObj['methodlensModalSubmit'];
     dataObj['toricity']=$('#lensFormModal input[name=toricity]').prop('checked');
     dataStr= JSON.stringify(dataObj);
     console.log("dataForm",dataObj);
-    crudp('cl','0',req,dataStr).then( data => $lens_tbl.bootstrapTable('refresh'));
+    crudp('cl',id,req,dataStr).then( data => $lens_tbl.bootstrapTable('refresh'));
     $('#lensModal').modal('hide');
     $('#lensModal .modal-title').html('New lens');
     document.getElementById("lensFormModal").reset(); 

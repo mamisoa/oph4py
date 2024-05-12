@@ -76,8 +76,10 @@ $('#btnTaskDone').click(function() {
                 if (wlObj['status_flag'] != 'done') {
                     dataObj['status_flag'] = 'done';
                     dataObj['counter'] = 0;
+                    let id = dataObj.id;
+                    delete dataObj.id;
                     dataStr = JSON.stringify(dataObj);
-                    crudp('worklist','0','PUT', dataStr)
+                    crudp('worklist',id,'PUT', dataStr)
                         .then( function(data){
                             console.log("update result:",data);
                             getWlDetails(wlId) // check if set to done successful and disable forms
@@ -102,8 +104,11 @@ $('#btnUnlockTask').click(function(){
     if (wlObj['worklist']['status_flag'] == 'done') {
         dataObj['status_flag'] = 'processing';
         dataObj['counter'] = 1;
+        let id = dataObj.id;
+        delete dataObj.id;
         dataStr = JSON.stringify(dataObj);
-        crudp('worklist','0','PUT', dataStr).then(function(){document.location.reload()});
+        crudp('worklist',id,'PUT', dataStr)
+            .then(function(){document.location.reload()});
     } else {};
 });
 

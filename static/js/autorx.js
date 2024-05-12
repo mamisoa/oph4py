@@ -339,8 +339,10 @@ $('#rxFormModal').submit(function (e) {
   delete dataObj['add_close'];
   let req = dataObj['methodRxModalSubmit'];
   delete dataObj['methodRxModalSubmit'];
+  let id = dataObj.id;
+  delete dataObj.id;
   dataStr = JSON.stringify(dataObj);
-  crudp('rx','0', req, dataStr).then(data => refreshTables());
+  crudp('rx',id, req, dataStr).then(data => refreshTables());
   $('#rxModal').modal('hide');
 });
 
@@ -351,8 +353,10 @@ $('#kmFormModal').submit(function(e) {
   let req = dataObj['methodKmModalSubmit'];
   delete dataObj['methodKmModalSubmit'];
   // console.log("dataForm",dataObj);
+  let id = dataObj.id;
+  delete dataObj.id;
   dataStr = JSON.stringify(dataObj);
-  crudp('km','0', req, dataStr).then(data => refreshTables());
+  crudp('km',id, req, dataStr).then(data => refreshTables());
   $('#kmModal').modal('hide');
 });
 
@@ -402,8 +406,10 @@ function rxInsert(domId,laterality,id_pair, status=1) {
   delete dataObj['add_int'];
   delete dataObj['add_close'];
   console.log('dataObj',dataObj);
+  let id = dataObj.id;
+  delete dataObj.id;
   dataStr = JSON.stringify(dataObj);
-  crudp('rx','0','POST', dataStr).then( data => $('#rx'+capitalize(laterality)+'_tbl').bootstrapTable('refresh'));
+  crudp('rx',id,'POST', dataStr).then( data => $('#rx'+capitalize(laterality)+'_tbl').bootstrapTable('refresh'));
 };
 
 // domId eg #idRightRx , laterality eg 'right', default status = measure
@@ -414,8 +420,10 @@ function kmInsert(domId,laterality) {
   dataObj['laterality'] = laterality;
   dataObj['timestamp']= new Date().addHours(timeOffsetInHours).toJSON().slice(0,16);
   console.log('dataObj',dataObj);
+  let id = dataObj.id;
+  delete dataObj.id;
   dataStr = JSON.stringify(dataObj);
-  crudp('km','0','POST', dataStr).then( data => $('#km'+capitalize(laterality)+'_tbl').bootstrapTable('refresh'));
+  crudp('km',id,'POST', dataStr).then( data => $('#km'+capitalize(laterality)+'_tbl').bootstrapTable('refresh'));
 };
 
 function delItem (id,table) {
