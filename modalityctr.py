@@ -1,18 +1,49 @@
 # Modality controllers
 
-from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
-from yatl.helpers import A, XML, OPTION, CAT
-from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
-from pydal.validators import CRYPT # to encrypt passwords
-
-from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
+from py4web import (  # add response to throw http error 400
+    URL,
+    Field,
+    abort,
+    action,
+    redirect,
+    request,
+    response,
+)
+from py4web.utils.form import (  # added import Field Form and FormStyleBulma to get form working
+    Form,
+    FormStyleBootstrap4,
+    FormStyleBulma,
+)
 from py4web.utils.grid import Grid
+from pydal.validators import CRYPT  # to encrypt passwords
+from yatl.helpers import CAT, OPTION, XML, A
+
+from .common import (
+    T,
+    auth,
+    authenticated,
+    cache,
+    db,
+    flash,
+    logger,
+    session,
+    unauthenticated,
+)
 
 # import settings
-from .settings import LOCAL_URL, APP_NAME, ASSETS_FOLDER, MACHINES_FOLDER, NEW_INSTALLATION, TIMEOFFSET, ENV_STATUS, SUPPLEMENT_RATIO
+from .settings import (
+    APP_NAME,
+    ASSETS_FOLDER,
+    ENV_STATUS,
+    LOCAL_URL,
+    MACHINES_FOLDER,
+    NEW_INSTALLATION,
+    SUPPLEMENT_RATIO,
+    TIMEOFFSET,
+)
 
 # import userful
-from .useful import dropdownSelect, rows2json, getMembershipId
+from .useful import dropdownSelect, getMembershipId, rows2json
 
 # get standard index in db for patient/user profile
 # TODO remove try and check if new installation
@@ -174,10 +205,55 @@ def md(wlId):
             db.modality.on(db.modality.id == wldb.modality_dest),
             ]
         ).as_json()
-    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
-    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
+    # Define the fields you need from auth_user
+    auth_user_fields = [
+        db.auth_user.id,
+        db.auth_user.username,
+        db.auth_user.email,
+        db.auth_user.first_name,
+        db.auth_user.last_name,
+        db.auth_user.sso_id,
+        db.auth_user.action_token,
+        db.auth_user.uid,
+        db.auth_user.membership,
+        db.auth_user.maiden_name,
+        db.auth_user.dob,
+        db.auth_user.birth_town,
+        db.auth_user.birth_country,
+        db.auth_user.gender,
+        db.auth_user.marital,
+        db.auth_user.ethny,
+        db.auth_user.idc_num,
+        db.auth_user.ssn,
+        db.auth_user.user_notes,
+        db.auth_user.chipnumber,
+        db.auth_user.validfrom,
+        db.auth_user.validtill,
+        db.auth_user.initials,
+        db.auth_user.nationality,
+        db.auth_user.noblecondition,
+        db.auth_user.documenttype,
+        db.auth_user.specialstatus,
+        db.auth_user.photob64,
+        db.auth_user.cme,
+        db.auth_user.created_on,
+        db.auth_user.created_by,
+        db.auth_user.modified_on,
+        db.auth_user.modified_by,
+        db.auth_user.is_active,
+    ]
+    providerDict = (
+        db(wldb.id == wlId)
+        .select(
+            *auth_user_fields, left=db.auth_user.on(db.auth_user.id == wldb.provider)
+        )
+        .as_json()
+    )
+    seniorDict = (
+        db(wldb.id == wlId)
+        .select(*auth_user_fields, left=db.auth_user.on(db.auth_user.id == wldb.senior))
+        .as_json()
+    )
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     userdb = db.auth_user
     mdHistory = db((db.worklist.modality_dest == mdId) & (db.worklist.id_auth_user == patientId)).select().as_json()
@@ -193,7 +269,7 @@ def md(wlId):
     for combo in combos:
         # Find proxy entries
         proxy_entries = db(db.combo_proxy_nomenclature.combo_id == combo.id).select()
-        
+
         # Fetch nomenclature records for each proxy entry
         combo['nomenclatures'] = [
             db.nomenclature(proxy_entry.nomenclature_id) for proxy_entry in proxy_entries
@@ -210,7 +286,8 @@ def md(wlId):
     if transactions_row is not None:
         transactionObj = transactions_row.as_json()
     else:
-        transactionObj = None  # Or some other default value, depending on your needs
+        transactions_row = {"id": 0, "note": ""}
+        transactionObj = ""  # Or some other default value, depending on your needs
 
     for row in rows:
         modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
