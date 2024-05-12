@@ -1305,7 +1305,7 @@ submitLabel.addEventListener("click", async function (event) {
 		};
 	});
 
-	console.log(codesToPostArr);
+	console.log("Code to post (received after submit codes modal): ",codesToPostArr); // OK = list
 
 	for (const dataObj of codesToPostArr) {
 		try {
@@ -1314,6 +1314,7 @@ submitLabel.addEventListener("click", async function (event) {
 			dataStr = JSON.stringify(convertedObj);
 			console.log("dataStr1: ", dataStr);
 
+			// add wl_codes list to wl
 			await crudp("wl_codes", "0", "POST", dataStr);
 			console.log("dataobj:", dataObj);
 
@@ -1325,6 +1326,7 @@ submitLabel.addEventListener("click", async function (event) {
 			const data = await response.json();
 			console.log("fetch data:", data);
 			let currentTransactionObj = data.items[0];
+			console.log("response data -->", data.items[0]);
 
 			await onTransactionAddUpdate(currentTransactionObj, dataObj);
 
@@ -1339,24 +1341,67 @@ submitLabel.addEventListener("click", async function (event) {
 
 });
 
-async function onTransactionAddUpdate(currentTransactionObj, dataObj) {
-	console.log("currentTransactionObj:", currentTransactionObj);
-	console.log("currentTransactionObj:", dataObj);
+/*
+This function updates the worklist transaction prices
+*/
+async function onTransactionAddUpdate(currentTransactionObj, newDataObj) {
+	let req = "POST";
+	let id = "0";
+	if (currentTransactionObj === undefined ) {
+		// create an initial transaction -> req = "POST"
+		console.log("CurrentTransactionObj is {}");
+
+		// Create a new Date object
+		let currentDate = new Date();
+
+		// Get the current date and time components
+		let year = currentDate.getFullYear();
+		let month = ('0' + (currentDate.getMonth() + 1)).slice(-2); // Adding 1 because getMonth() returns zero-based month index
+		let day = ('0' + currentDate.getDate()).slice(-2);
+		let hours = ('0' + currentDate.getHours()).slice(-2);
+		let minutes = ('0' + currentDate.getMinutes()).slice(-2);
+		let seconds = ('0' + currentDate.getSeconds()).slice(-2);
+		// Format the date and time
+		var currentDateTime = year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+
+		currentTransactionObj = {
+			"id_auth_user": newDataObj.id_auth_user, 
+			"id_worklist": newDataObj.id_worklist,
+			"date": currentDateTime,
+			"price": 0,
+			"covered_1600": 0,
+			"covered_1300": 0,
+			"cash_payment": 0,
+			"card_payment": 0,
+			"card_type": "bc",
+			"invoice_payment": 0,
+			"invoice_type": 'other',
+			"paid": 0,
+			"status": -1,
+			"note": "",
+			"description":""};
+	} else {
+		console.log("Existing transaction:", currentTransactionObj)
+		// existing transaction is available
+		req = "PUT";
+		id = currentTransactionObj.id;
+		delete currentTransactionObj.id;
+	}
 	let newTransactionObj = { ...currentTransactionObj };
-	let codeObj = dataObj;
+	console.log("newTransactionObj to add before update: ", newTransactionObj);
+	let codeObj = newDataObj;
 	let pricesArr = JSON.parse(codeObj["price_list"]);
-	newTransactionObj["price"] +=
-		(Math.round(pricesArr[0] * codeObj["supplement_ratio"]) * 100) / 100;
-	newTransactionObj["covered_1600"] += pricesArr[1];
-	newTransactionObj["covered_1300"] += pricesArr[2];
+	newTransactionObj["price"] = currentTransactionObj.price + (Math.round(pricesArr[0] * codeObj["supplement_ratio"]) * 100) / 100;
+	newTransactionObj["covered_1600"] = currentTransactionObj.covered_1600 + pricesArr[1];
+	newTransactionObj["covered_1300"] = currentTransactionObj.covered_1300 + pricesArr[2];
     // newTransactionObj["status"] = -1;
-	console.log("newTransactionObj:", newTransactionObj);
+	console.log("newTransactionObj before posting:", newTransactionObj);
 
 	try {
 		await crudp(
 			"transactions",
-			newTransactionObj["id"],
-			"PUT",
+			id,
+			req,
 			JSON.stringify(transformObject(newTransactionObj))
 		);
 		console.log("Transaction updated successfully");
