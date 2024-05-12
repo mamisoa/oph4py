@@ -121,24 +121,23 @@
     </div>
 </div>
 
-
-
-<div class="container-fluid my-2">
-    <div class="row">
-        <div class="col">
-            <h2>Transactions</h2>
-            <div id = "transactionsTable">
-                
-            </div>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col border border-4 border-danger p-2">
+            <h2>Remaining to pay:</h2>
+            <button type="button" id="btnNewpayment" class="btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#paymentModal">Pay <span id="sum">147</span> €</button>
         </div>
     </div>
 </div>
 
-<div class="container-fluid">
-    <div class="row justify-content-center">
+
+<div class="container-fluid my-3">
+    <div class="row">
         <div class="col">
-            <h2>Remaining to pay:</h2>
-            <button type="button" id="btnNewpayment" class="btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#paymentModal">Pay <span id="sum">147</span> €</button>
+            <h2>Transactions history</h2>
+            <div id = "transactionsTable">
+                
+            </div>
         </div>
     </div>
 </div>
@@ -241,7 +240,8 @@ const API_BILUSER = HOSTURL + '[[=URL('api','billing')]]' + '?@count=true&@looku
 const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&status.gt=-1&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=[~id,~status]";
 
 // table listing transactions 
-const API_TRANSACTIONS = HOSTURL + "/"+APP_NAME+"/api/transactions?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_TRANSACTIONS = HOSTURL + "/"+APP_NAME+"/api/transactions?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_WL_TRANSACTION = HOSTURL + "/"+APP_NAME+"/api/transactions?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 
 </script>
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>

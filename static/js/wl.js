@@ -391,18 +391,6 @@ $('#newWlItemForm').submit(function(e) {
 
                                                     if (modalityLowCase == 'md') {
                                                         console.log('modality is', modalityLowCase);
-                                                        console.log('WLID----->', wlId);
-                                                        console.log('transactionID----->', transactionId);
-                                                        // create transaction with wlId
-                                                        let dataTransaction = { 
-                                                            'id_auth_user': patient['items'][0]['id'],
-                                                            'id_worklist': wlId,
-                                                            'date': getIsoCurrentDateTime()
-                                                        };
-                                                        console.log('dataTransaction:', dataTransaction);
-                                                        crudp('transactions','0','POST',JSON.stringify(dataTransaction))
-                                                            .then(response => console.log('User updated:', response))
-                                                            .catch(error => console.error('An error occurred adding a transaction:', error));
                                                         studyData.StudyDescription = "Non mydriatic retinography";
                                                         studyData.ScheduledStationAETitle = "CR1";
                                                         console.log("studyData CR1",studyData)

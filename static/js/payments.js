@@ -152,7 +152,7 @@ function createTransactionsTableFromData(items) {
                     <td>${item.card_payment} €</td>
                     <td>${item.cash_payment} €</td>
                     <td>${item.invoice_payment} €</td>
-                    <td>${item.note}</td>
+                    <td>${item.note || ""}</td>
                   </tr>`;
     });
 
