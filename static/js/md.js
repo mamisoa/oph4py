@@ -1573,7 +1573,7 @@ document.getElementById('noteTransactionsModalSubmit').addEventListener('click',
 
     // Prepare data string for crudp function
     let dataStr = JSON.stringify({
-        id: currentTransactionObj.id,
+        // id: currentTransactionObj.id, not need for PUT
         note: currentTransactionObj.note
     });
 
