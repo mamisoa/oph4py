@@ -40,18 +40,6 @@
 </div>
 
 [[ pass ]]
-
-<div class="container-fluid">
-    <div class="row">
-        <div class="col">
-            <h2>Codes</h2>
-            <div id="transactionTable">
-
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="container-fluid">
     <div class="row">
         <div class="col">
@@ -70,36 +58,13 @@
     </div>
 </div>
 
-<div class="container-fluid py-2">
+<div class="container-fluid py-2"> <!-- table template -->
     <div class="row">
         <div class="col">
             <h2>Codes</h2>
-            <table class="table table-striped">
-                <tr>
-                    <th>Date</th>
-                    <th>Code</th>
-                    <th>Cost</th>
-                    <th>INAMI</th>
-                </tr>
-                <tr>
-                    <th>01/01/2024</th>
-                    <td>105755</td>
-                    <td>30</td>
-                    <th>yes</th>
-                </tr>
-                <tr>
-                    <th>01/01/2024</th>
-                    <td>249233</td>
-                    <td>7</td>
-                    <td>yes</td>
-                </tr>
-                <tr>
-                    <th>01/01/2024</th>
-                    <td>IPL</td>
-                    <td>70</td>
-                    <td>no</td>
-                </tr>
-            </table>
+            <div id="transactionTable">
+
+            </div>
         </div>
         <div class="col">
             <h2>Breakdown</h2>
@@ -288,7 +253,7 @@ const API_FOLUSER = HOSTURL + '[[=URL('api','followup')]]' + '?@count=true&@look
 const API_BILUSER = HOSTURL + '[[=URL('api','billing')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + patientId
 
 // table listing wlcodes 
-const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=[~id,~status]";
+const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&status.gt=-1&id_worklist.eq="+wlId+"&@lookup=nomenclature:nomenclature_id[code,code_desc,price_list,supplement_ratio,not_compatible,min_reccurency,add_documents,min_age,max_age,covered],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=[~id,~status]";
 
 // table listing transactions 
 const API_TRANSACTIONS = HOSTURL + "/"+APP_NAME+"/api/transactions?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";

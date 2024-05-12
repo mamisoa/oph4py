@@ -1412,6 +1412,25 @@ function delWlCode(dataObj) {
                         delete newTransactionObj.id;
                         console.log("filter ---> ",filterTransactionObject(newTransactionObj))
                         crudp('transactions',id,'PUT', JSON.stringify(filterTransactionObject(newTransactionObj)))
+                            .then(async()=> {
+                                const keysToRemove = ['created_on', 'modified_on', 'modified_by', 'created_by'];
+                                // Fetch wl_codes items
+                                const API_CODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId;
+                                let response = await fetch(API_CODES);
+                                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                                let wlCodesData = await response.json();
+                                console.log("wldata: ",wlCodesData);
+
+                                // Update status of each wl_codes item to 1
+                                for (const item of wlCodesData.items) {
+                                    item.status = -1;
+                                    let id = item.id;
+                                    console.log("wlitem: ",item);
+                                    keysToRemove.forEach(key => delete item[key]);
+                                    delete item.id;
+                                    await crudp('wl_codes', id, 'PUT', JSON.stringify(item));
+                                }   
+                            })
                             .then(async () => {
                                 console.log('Transaction updated successfully');
                                 refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
