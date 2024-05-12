@@ -162,3 +162,58 @@ function createTransactionsTableFromData(items) {
 
 // Call the function to update the table
 updateTransactionsTable();
+
+// breakdown table
+
+async function updateBreakdownTable() {
+    try {
+        // Fetch data from the API endpoint
+        const response = await fetch(API_WL_TRANSACTION);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+
+        // Create and insert the table into the #codeTable div
+        const table = createBreakdownTableFromData(data.items);
+        document.getElementById('breakdownTable').innerHTML = table;
+
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
+}
+
+function createBreakdownTableFromData(items) {
+    console.log('WL transaction: ', items[0]);
+    let item = items[0];
+    let supplements = {"1600": item.price - item.covered_1600, "1300": item.price - item.covered_1300};
+    let table = `
+    <table class="table table-striped">
+        <tr>
+            <th>Date</th>
+            <td>${item.date}</td>
+            <td>Action</td>
+        </tr>
+        <tr>
+            <th>INAMI</th>
+            <td>${item.covered_1600} € / ${item.covered_1300} €</td>
+            <td><button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .20rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;">Print Attestation</button></td>
+        </tr>
+        <tr>
+            <th>Supplements</th>
+            <td>${supplements[1600]} € / ${supplements[1300]} €</td>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Not covered</th>
+            <td>70</td>
+            <td><button type="button" class="btn btn-secondary" style="--bs-btn-padding-y: .20rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;">Print bill</button></td>
+        </tr>    
+    </table>
+    `;
+
+    return table;
+}
+
+// Call the function to update the table
+updateBreakdownTable();
