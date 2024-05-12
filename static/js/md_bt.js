@@ -1261,7 +1261,7 @@ function responseHandler_wlCodes(res) { // used if data-response-handler="respon
             'inami': checkIfNull(JSON.parse(list[i]['nomenclature']['price_list'])[0],-1),
             'i1600': checkIfNull(JSON.parse(list[i]['nomenclature']['price_list'])[1],-1),
             'i1300': checkIfNull(JSON.parse(list[i]['nomenclature']['price_list'])[2],-1),
-            'priceTag': checkIfNull(((Math.round(JSON.parse(list[i]['nomenclature']['price_list'])[0]*list[i]['nomenclature']['supplement_ratio'])*100)/100),-1),
+            'priceTag': checkIfNull(((Math.round(JSON.parse(list[i]['nomenclature']['price_list'])[0]*list[i]['nomenclature']['supplement_ratio'])*100)/100+(JSON.parse(list[i]['nomenclature']['price_list'])[3]) || 0),-1),
             'supplementRatio': checkIfNull(list[i]['nomenclature']['supplement_ratio'],SUPPLEMENT_RATIO),
             'note': checkIfNull(list[i]['nomenclature']['note'],''),
             'lastPresbribed': getIsoCurrentDateTime(),

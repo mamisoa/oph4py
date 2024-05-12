@@ -101,7 +101,7 @@ function createCodesTableFromData(items) {
     items.forEach(item => {
         const nomenclature = item.nomenclature;
         const priceList = JSON.parse(nomenclature.price_list);
-        const price = priceList[0] * nomenclature.supplement_ratio;
+        const price = priceList[0] * nomenclature.supplement_ratio + priceList[3];
 
         table += `<tr>
                     <td>${item.date}</td>
@@ -183,34 +183,37 @@ async function updateBreakdownTable() {
     }
 }
 
+// FIXME: error 500 when no transaction on payments view
 function createBreakdownTableFromData(items) {
     console.log('WL transaction: ', items[0]);
     let item = items[0];
-    let supplements = {"1600": item.price - item.covered_1600, "1300": item.price - item.covered_1300};
+    let supplements = {"1600": item.price - item.uncovered - item.covered_1600, "1300": item.price - item.uncovered - item.covered_1300};
     let table = `
-    <table class="table table-striped">
-        <tr>
-            <th>Date</th>
-            <td>${item.date}</td>
-            <td>Action</td>
-        </tr>
-        <tr>
-            <th>INAMI</th>
-            <td>${item.covered_1600} € / ${item.covered_1300} €</td>
-            <td><button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .20rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;">Print Attestation</button></td>
-        </tr>
-        <tr>
-            <th>Supplements</th>
-            <td>${supplements[1600]} € / ${supplements[1300]} €</td>
-            <td></td>
-        </tr>
-        <tr>
-            <th>Not covered</th>
-            <td>70</td>
-            <td><button type="button" class="btn btn-secondary" style="--bs-btn-padding-y: .20rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;">Print bill</button></td>
-        </tr>    
-    </table>
-    `;
+        <table class="table table-striped">
+            <tr>
+                <th>Date</th>
+                <td>${item.date}</td>
+                <td>Action</td>
+            </tr>
+            <tr>
+                <th>INAMI</th>
+                <td>${item.covered_1600} € / ${item.covered_1300} €</td>
+                <td><button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .20rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;">Print Attestation</button></td>
+            </tr>
+            <tr>
+                <th>Supplements</th>
+                <td>${supplements[1600]} € / ${supplements[1300]} €</td>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Not covered</th>
+                <td>${item.uncovered}  €</td>
+                <td><button type="button" class="btn btn-secondary" style="--bs-btn-padding-y: .20rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;">Print bill</button></td>
+            </tr>    
+        </table>
+        `;
+    document.getElementById('sum').textContent = item.price;
+    document.getElementById('remainPayment').textContent = item.price;
 
     return table;
 }

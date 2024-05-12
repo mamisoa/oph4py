@@ -1369,8 +1369,10 @@ async function onTransactionAddUpdate(currentTransactionObj, newDataObj) {
 			"id_worklist": newDataObj.id_worklist,
 			"date": currentDateTime,
 			"price": 0,
+			"price_covered": 0,
 			"covered_1600": 0,
 			"covered_1300": 0,
+			"uncovered": 0,
 			"cash_payment": 0,
 			"card_payment": 0,
 			"card_type": "bc",
@@ -1391,9 +1393,12 @@ async function onTransactionAddUpdate(currentTransactionObj, newDataObj) {
 	console.log("newTransactionObj to add before update: ", newTransactionObj);
 	let codeObj = newDataObj;
 	let pricesArr = JSON.parse(codeObj["price_list"]);
-	newTransactionObj["price"] = currentTransactionObj.price + (Math.round(pricesArr[0] * codeObj["supplement_ratio"]) * 100) / 100;
+	console.log("priceArr:", pricesArr)
+	newTransactionObj["price"] = currentTransactionObj.price + (Math.round(pricesArr[0] * codeObj["supplement_ratio"]) * 100) / 100  + pricesArr[3];
 	newTransactionObj["covered_1600"] = currentTransactionObj.covered_1600 + pricesArr[1];
 	newTransactionObj["covered_1300"] = currentTransactionObj.covered_1300 + pricesArr[2];
+	newTransactionObj["uncovered"] = pricesArr[3];
+	newTransactionObj["price_covered"] = pricesArr[0];
     // newTransactionObj["status"] = -1;
 	console.log("newTransactionObj before posting:", newTransactionObj);
 

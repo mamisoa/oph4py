@@ -2,15 +2,16 @@
 This file defines the database models
 """
 
-from .common import db, Field, auth, groups # ,dbo # add auth for auto.signature
-from pydal.validators import *
+import random
+import uuid
+
 from pydal.tools.tags import Tags
+from pydal.validators import *
+
+from .common import Field, auth, db, groups  # ,dbo # add auth for auto.signature
 
 # import settings
 from .settings import SUPPLEMENT_RATIO
-
-import uuid
-import random
 
 rd = random.Random()
 rd.seed(0)
@@ -379,7 +380,7 @@ db.define_table('agent',
     auth.signature)
 # todo: reference to substance id -> get warning with interactions
 
-#db.agent.truncate('RESTART IDENTITY CASCADE')
+# db.agent.truncate('RESTART IDENTITY CASCADE')
 
 db.define_table('allergy',
     Field('id_auth_user', 'reference auth_user', required=True),
@@ -651,7 +652,7 @@ db.define_table('neuro',
     Field('others','string'),
     auth.signature)
 
-#vitals
+# vitals
 db.define_table('vitals',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
@@ -674,7 +675,6 @@ db.define_table('vitals',
     Field('o2inhaled','decimal(4,2)'),
     Field('o2flow','decimal(4,2)'),
     auth.signature)
-
 
 
 """ ## OCTOPUS
@@ -729,32 +729,35 @@ db.define_table(
 
 ## BILLING
 
-#temporary
+# temporary
 db.define_table('billing',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
     Field('description','string'),
     auth.signature)
 
-db.define_table('transactions',
-    Field('id_auth_user', 'reference auth_user', required=True),
-    Field('id_worklist','reference worklist', required=True),
-    Field('date', 'datetime', required=True),
-    Field('price', 'decimal(10,2)', default=0),
-    Field('covered_1600', 'decimal(10,2)', default=0),
-    Field('covered_1300', 'decimal(10,2)', default=0),
-    Field('cash_payment', 'decimal(10,2)', default=0),
-    Field('card_payment', 'decimal(10,2)',default=0),
-    Field('card_type', 'string', default='bc'),
-    Field('invoice_payment', 'decimal(10,2)', default=0),
-    Field('invoice_type', 'string', default='other'),
-    Field('paid', 'decimal(10,2)', default=0),
+db.define_table(
+    "transactions",
+    Field("id_auth_user", "reference auth_user", required=True),
+    Field("id_worklist", "reference worklist", required=True),
+    Field("date", "datetime", required=True),
+    Field("price", "decimal(10,2)", default=0),
+    Field("price_covered", "decimal(10,2)", default=0),
+    Field("covered_1600", "decimal(10,2)", default=0),
+    Field("covered_1300", "decimal(10,2)", default=0),
+    Field("uncovered", "decimal(10,2)", default=0),
+    Field("cash_payment", "decimal(10,2)", default=0),
+    Field("card_payment", "decimal(10,2)", default=0),
+    Field("card_type", "string", default="bc"),
+    Field("invoice_payment", "decimal(10,2)", default=0),
+    Field("invoice_type", "string", default="other"),
+    Field("paid", "decimal(10,2)", default=0),
     # -1 to validate 0 partially/not paid 1 paid
-    Field('status', 'integer', default=-1),
-    Field('note', 'string'),
-    Field('description', 'string'),
-    auth.signature, 
-    )
+    Field("status", "integer", default=-1),
+    Field("note", "string"),
+    Field("description", "string"),
+    auth.signature,
+)
 
 # db.transactions.status.requires = IS_IN_SET(
 #     (1, 0, -1))  # ('paid','partial','to validate')
@@ -764,7 +767,7 @@ db.define_table('transactions',
 #     ['driver', 'council', 'bank', 'other'])  # print invoice if needed
 
 ## price is calculated from the combo price
-## plus eventually an extracode 
+## plus eventually an extracode
 
 # combo_code is a helper to add several nomenclature codes at once
 db.define_table('combo_codes',
@@ -777,21 +780,26 @@ db.define_table('combo_codes',
 )
 
 # nomenclature codes
-db.define_table('nomenclature',
-    Field('date', 'datetime', required=True),
-    Field('code', 'string', required=True),
-    Field('code_desc', 'string'),
-    Field('note', 'string'),
-    Field('price_list', 'string', default = '[0,0,0,0]'), # list of social security prices
-    Field('supplement_ratio', 'decimal(10,2)', default = SUPPLEMENT_RATIO),
-    Field('not_compatible', 'string'), # list of incompatible codes
-    Field('min_reccurency', 'string'), # min reccurency
-    Field('add_documents', 'string'), # list of documents
-    Field('min_age', 'double'), # min age
-    Field('max_age', 'double'), # max age
-    Field('covered', 'boolean', default = True), # 0 not covered, no attestation but bill 1 covered no bill but attestation 
-    Field('need_cme', 'boolean', default=False),  # need accreditation
-    auth.signature
+db.define_table(
+    "nomenclature",
+    Field("date", "datetime", required=True),
+    Field("code", "string", required=True),
+    Field("code_desc", "string"),
+    Field("note", "string"),
+    Field(
+        "price_list", "string", default="[0,0,0,0]"
+    ),  # list of social security prices inami/1300/1600/uncovered
+    Field("supplement_ratio", "decimal(10,2)", default=SUPPLEMENT_RATIO),
+    Field("not_compatible", "string"),  # list of incompatible codes
+    Field("min_reccurency", "string"),  # min reccurency
+    Field("add_documents", "string"),  # list of documents
+    Field("min_age", "double"),  # min age
+    Field("max_age", "double"),  # max age
+    Field(
+        "covered", "boolean", default=True
+    ),  # 0 not covered, no attestation but bill 1 covered no bill but attestation
+    Field("need_cme", "boolean", default=False),  # need accreditation
+    auth.signature,
 )
 
 # many to many relations between combo_code and nomenclature codes
@@ -801,7 +809,7 @@ db.define_table('combo_proxy_nomenclature',
     auth.signature
 )
 
-# codes used for one worklist billing 
+# codes used for one worklist billing
 db.define_table('wl_codes',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
