@@ -52,7 +52,7 @@
     </div>
 </div>
 
-<div class="container-fluid d-none">
+<div class="container-fluid">
     <div class="row">
         <div class="col">
             <h2>Full History</h2>
@@ -283,7 +283,7 @@ const transactionId = currentTransactionObj.id;
 
 const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+patientId+'&@lookup=gender,marital,membership,ethny&@count=true'; 
 const API_CHXUSER = HOSTURL + '[[=URL('api','current_hx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + patientId
-const API_CCXUSER = HOSTURL + '[[=URL('api','ccx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + patientId
+const API_CCXUSER = HOSTURL + '[[=URL('api','ccx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&laterality.eq=na&id_auth_user.eq=' + patientId
 const API_FOLUSER = HOSTURL + '[[=URL('api','followup')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + patientId
 const API_BILUSER = HOSTURL + '[[=URL('api','billing')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + patientId
 
