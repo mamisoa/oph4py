@@ -104,10 +104,55 @@ def tono(wlId):
             db.modality.on(db.modality.id == wldb.modality_dest),
             ]
         ).as_json()
-    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
-    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
+    # Define the fields you need from auth_user
+    auth_user_fields = [
+        db.auth_user.id,
+        db.auth_user.username,
+        db.auth_user.email,
+        db.auth_user.first_name,
+        db.auth_user.last_name,
+        db.auth_user.sso_id,
+        db.auth_user.action_token,
+        db.auth_user.uid,
+        db.auth_user.membership,
+        db.auth_user.maiden_name,
+        db.auth_user.dob,
+        db.auth_user.birth_town,
+        db.auth_user.birth_country,
+        db.auth_user.gender,
+        db.auth_user.marital,
+        db.auth_user.ethny,
+        db.auth_user.idc_num,
+        db.auth_user.ssn,
+        db.auth_user.user_notes,
+        db.auth_user.chipnumber,
+        db.auth_user.validfrom,
+        db.auth_user.validtill,
+        db.auth_user.initials,
+        db.auth_user.nationality,
+        db.auth_user.noblecondition,
+        db.auth_user.documenttype,
+        db.auth_user.specialstatus,
+        db.auth_user.photob64,
+        db.auth_user.cme,
+        db.auth_user.created_on,
+        db.auth_user.created_by,
+        db.auth_user.modified_on,
+        db.auth_user.modified_by,
+        db.auth_user.is_active,
+    ]
+    providerDict = (
+        db(wldb.id == wlId)
+        .select(
+            *auth_user_fields, left=db.auth_user.on(db.auth_user.id == wldb.provider)
+        )
+        .as_json()
+    )
+    seniorDict = (
+        db(wldb.id == wlId)
+        .select(*auth_user_fields, left=db.auth_user.on(db.auth_user.id == wldb.senior))
+        .as_json()
+    )
     return locals()
 
 # autorx controller
@@ -130,10 +175,55 @@ def autorx(wlId):
             db.modality.on(db.modality.id == wldb.modality_dest),
             ]
         ).as_json()
-    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
-    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
+    # Define the fields you need from auth_user
+    auth_user_fields = [
+        db.auth_user.id,
+        db.auth_user.username,
+        db.auth_user.email,
+        db.auth_user.first_name,
+        db.auth_user.last_name,
+        db.auth_user.sso_id,
+        db.auth_user.action_token,
+        db.auth_user.uid,
+        db.auth_user.membership,
+        db.auth_user.maiden_name,
+        db.auth_user.dob,
+        db.auth_user.birth_town,
+        db.auth_user.birth_country,
+        db.auth_user.gender,
+        db.auth_user.marital,
+        db.auth_user.ethny,
+        db.auth_user.idc_num,
+        db.auth_user.ssn,
+        db.auth_user.user_notes,
+        db.auth_user.chipnumber,
+        db.auth_user.validfrom,
+        db.auth_user.validtill,
+        db.auth_user.initials,
+        db.auth_user.nationality,
+        db.auth_user.noblecondition,
+        db.auth_user.documenttype,
+        db.auth_user.specialstatus,
+        db.auth_user.photob64,
+        db.auth_user.cme,
+        db.auth_user.created_on,
+        db.auth_user.created_by,
+        db.auth_user.modified_on,
+        db.auth_user.modified_by,
+        db.auth_user.is_active,
+    ]
+    providerDict = (
+        db(wldb.id == wlId)
+        .select(
+            *auth_user_fields, left=db.auth_user.on(db.auth_user.id == wldb.provider)
+        )
+        .as_json()
+    )
+    seniorDict = (
+        db(wldb.id == wlId)
+        .select(*auth_user_fields, left=db.auth_user.on(db.auth_user.id == wldb.senior))
+        .as_json()
+    )
     qFar = db.optotype.distance == 'far'
     qClose = db.optotype.distance == 'close'
     optoFarOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'index', qFar)
@@ -344,10 +434,55 @@ def gp(wlId):
             db.modality.on(db.modality.id == wldb.modality_dest),
             ]
         ).as_json()
-    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
-    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
+    # Define the fields you need from auth_user
+    auth_user_fields = [
+        db.auth_user.id,
+        db.auth_user.username,
+        db.auth_user.email,
+        db.auth_user.first_name,
+        db.auth_user.last_name,
+        db.auth_user.sso_id,
+        db.auth_user.action_token,
+        db.auth_user.uid,
+        db.auth_user.membership,
+        db.auth_user.maiden_name,
+        db.auth_user.dob,
+        db.auth_user.birth_town,
+        db.auth_user.birth_country,
+        db.auth_user.gender,
+        db.auth_user.marital,
+        db.auth_user.ethny,
+        db.auth_user.idc_num,
+        db.auth_user.ssn,
+        db.auth_user.user_notes,
+        db.auth_user.chipnumber,
+        db.auth_user.validfrom,
+        db.auth_user.validtill,
+        db.auth_user.initials,
+        db.auth_user.nationality,
+        db.auth_user.noblecondition,
+        db.auth_user.documenttype,
+        db.auth_user.specialstatus,
+        db.auth_user.photob64,
+        db.auth_user.cme,
+        db.auth_user.created_on,
+        db.auth_user.created_by,
+        db.auth_user.modified_on,
+        db.auth_user.modified_by,
+        db.auth_user.is_active,
+    ]
+    providerDict = (
+        db(wldb.id == wlId)
+        .select(
+            *auth_user_fields, left=db.auth_user.on(db.auth_user.id == wldb.provider)
+        )
+        .as_json()
+    )
+    seniorDict = (
+        db(wldb.id == wlId)
+        .select(*auth_user_fields, left=db.auth_user.on(db.auth_user.id == wldb.senior))
+        .as_json()
+    )
     patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
     userdb = db.auth_user
     # get history from previous main consultations for GP
@@ -396,10 +531,55 @@ def lenstar(wlId):
             db.modality.on(db.modality.id == wldb.modality_dest),
             ]
         ).as_json()
-    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
-    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
+    # Define the fields you need from auth_user
+    auth_user_fields = [
+        db.auth_user.id,
+        db.auth_user.username,
+        db.auth_user.email,
+        db.auth_user.first_name,
+        db.auth_user.last_name,
+        db.auth_user.sso_id,
+        db.auth_user.action_token,
+        db.auth_user.uid,
+        db.auth_user.membership,
+        db.auth_user.maiden_name,
+        db.auth_user.dob,
+        db.auth_user.birth_town,
+        db.auth_user.birth_country,
+        db.auth_user.gender,
+        db.auth_user.marital,
+        db.auth_user.ethny,
+        db.auth_user.idc_num,
+        db.auth_user.ssn,
+        db.auth_user.user_notes,
+        db.auth_user.chipnumber,
+        db.auth_user.validfrom,
+        db.auth_user.validtill,
+        db.auth_user.initials,
+        db.auth_user.nationality,
+        db.auth_user.noblecondition,
+        db.auth_user.documenttype,
+        db.auth_user.specialstatus,
+        db.auth_user.photob64,
+        db.auth_user.cme,
+        db.auth_user.created_on,
+        db.auth_user.created_by,
+        db.auth_user.modified_on,
+        db.auth_user.modified_by,
+        db.auth_user.is_active,
+    ]
+    providerDict = (
+        db(wldb.id == wlId)
+        .select(
+            *auth_user_fields, left=db.auth_user.on(db.auth_user.id == wldb.provider)
+        )
+        .as_json()
+    )
+    seniorDict = (
+        db(wldb.id == wlId)
+        .select(*auth_user_fields, left=db.auth_user.on(db.auth_user.id == wldb.senior))
+        .as_json()
+    )
     return locals()
 
 
