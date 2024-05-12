@@ -87,7 +87,7 @@ async function updateCodeTable() {
         const data = await response.json();
 
         // Create and insert the table into the #codeTable div
-        const table = createTableFromData(data.items);
+        const table = createCodesTableFromData(data.items);
         document.getElementById('codesTable').innerHTML = table;
 
     } catch (error) {
@@ -95,7 +95,7 @@ async function updateCodeTable() {
     }
 }
 
-function createTableFromData(items) {
+function createCodesTableFromData(items) {
     let table = '<table class="table table-striped"><thead><tr><th>Date</th><th>Code</th><th>Price</th><th>Covered 1600</th><th>Covered 1300</th></tr></thead><tbody>';
 
     items.forEach(item => {
@@ -118,3 +118,47 @@ function createTableFromData(items) {
 
 // Call the function to update the table
 updateCodeTable();
+
+// transactions table
+
+async function updateTransactionsTable() {
+    try {
+        // Fetch data from the API endpoint
+        const response = await fetch(API_TRANSACTIONS);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+
+        // Create and insert the table into the #codeTable div
+        const table = createTransactionsTableFromData(data.items);
+        document.getElementById('transactionsTable').innerHTML = table;
+
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
+}
+
+function createTransactionsTableFromData(items) {
+    let table = '<table class="table table-striped"><thead><tr><th>Date</th><th>Price</th><th>Paid</th><th>Card</th><th>Cash</th><th>Invoice</th><th>Note</th></tr></thead><tbody>';
+
+    items.forEach(item => {
+        console.log("transactions", item);
+        let paid = item.card_payment + item.cash_payment + item.invoice_payment ;
+        table += `<tr>
+                    <td>${item.date}</td>
+                    <td>${item.price} €</td>
+                    <td>${paid} €</td>
+                    <td>${item.card_payment} €</td>
+                    <td>${item.cash_payment} €</td>
+                    <td>${item.invoice_payment} €</td>
+                    <td>${item.note}</td>
+                  </tr>`;
+    });
+
+    table += '</tbody></table>';
+    return table;
+}
+
+// Call the function to update the table
+updateTransactionsTable();
