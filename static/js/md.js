@@ -1535,9 +1535,11 @@ async function confirmTransaction() {
         // Update status of each wl_codes item to 1
         for (const item of wlCodesData.items) {
             item.status = 1;
+			let id = item.id;
             console.log("wlitem: ",item);
             keysToRemove.forEach(key => delete item[key]);
-            await crudp('wl_codes', item.id, 'PUT', JSON.stringify(item));
+			delete item.id;
+            await crudp('wl_codes', id, 'PUT', JSON.stringify(item));
         }
 
         // Fetch the transaction
@@ -1549,9 +1551,11 @@ async function confirmTransaction() {
         // Assuming there is only one transaction, update its status to 0
         if (transactionData.count > 0) {
             const transaction = transactionData.items[0];
+			let id = transaction.id;
             transaction.status = 0;
             keysToRemove.forEach(key => delete transaction[key]);
-            await crudp('transactions', transaction.id, 'PUT', JSON.stringify(transaction));
+			delete transaction.id;
+            await crudp('transactions', id, 'PUT', JSON.stringify(transaction));
             refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
             await updateTransactionTable();
 

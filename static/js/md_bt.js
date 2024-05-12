@@ -1408,8 +1408,10 @@ function delWlCode(dataObj) {
                         newTransactionObj['covered_1300'] -= pricesArr[2];
                         newTransactionObj['status'] = -1;
                         console.log("newTransactionObj:", newTransactionObj);
+                        let id = newTransactionObj['id'];
+                        delete newTransactionObj.id;
                         console.log("filter ---> ",filterTransactionObject(newTransactionObj))
-                        crudp('transactions',id=newTransactionObj['id'],'PUT', JSON.stringify(filterTransactionObject(newTransactionObj)))
+                        crudp('transactions',id,'PUT', JSON.stringify(filterTransactionObject(newTransactionObj)))
                             .then(async () => {
                                 console.log('Transaction updated successfully');
                                 refreshTables(['#wlCodes_tbl', '#transactions_tbl']);
