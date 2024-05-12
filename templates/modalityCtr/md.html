@@ -2461,7 +2461,7 @@
     <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add note to transaction #[[ = XML(transactions_row['id'])]]</h5>
+                <h5 class="modal-title">Add note to transaction #<span id="transactionId"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -2527,8 +2527,8 @@ var usermdObj = [[ =XML(mdParams) ]];
 var userObj = [[ =XML(userDict)]];
 const SUPPLEMENT_RATIO = [[ = XML(supplement_ratio)]];
 const comboObj = [[ = XML(combos_json)]];
-var currentTransactionObj = [[ =XML(transactionObj) ]];
-const transactionId = currentTransactionObj.id;
+// var currentTransactionObj = [[ =XML(transactionObj) ]];
+// const transactionId = currentTransactionObj.id;
 
 // for timer
 var timer_id = [];

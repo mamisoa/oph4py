@@ -1318,9 +1318,11 @@ function setCancelled (id,table,desc) {
         },
         callback: function (result) {
             let dataObj = { "id" : id, "status": -1 } // set to cancel
+            let id = dataObj.id;
+            delete dataObj.id;
             dataStr = JSON.stringify(dataObj);
             if (result == true) {
-                crudp(table,'0','PUT', dataStr).then( data => refreshTables(tablesArr));
+                crudp(table,id,'PUT', dataStr).then( data => refreshTables(tablesArr));
             } else {
                 console.log('This was logged in the callback: ' + result);
             }

@@ -1341,7 +1341,7 @@ submitLabel.addEventListener("click", async function (event) {
 
 async function onTransactionAddUpdate(currentTransactionObj, dataObj) {
 	console.log("currentTransactionObj:", currentTransactionObj);
-	console.log("dataObj:", dataObj);
+	console.log("currentTransactionObj:", dataObj);
 	let newTransactionObj = { ...currentTransactionObj };
 	let codeObj = dataObj;
 	let pricesArr = JSON.parse(codeObj["price_list"]);
@@ -1369,7 +1369,7 @@ async function onTransactionAddUpdate(currentTransactionObj, dataObj) {
 
 // Generate transaction table
 async function updateTransactionTable(headers = ['date', 'price', 'covered_1300', 'covered_1600', 'status', 'note']) {
-    console.log("updateTransactionTrable function executing...")
+    console.log("updateTransactionTable function executing...")
     const container = document.getElementById('transactionTable');
     const btnConfirm = document.getElementById('btnConfirmTransaction');
     const btnUnlock = document.getElementById('btnUnlockTransaction');

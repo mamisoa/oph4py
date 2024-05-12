@@ -370,13 +370,15 @@ def md(wlId):
 
     # combos_json now contains all the combo_codes with their related nomenclatures
     ###
+
+    # list current pending transactions if exist
     transactions_row = db((db.transactions.id_worklist == wlId) &
                           (db.transactions.id_auth_user == patientId)).select().first()
 
     if transactions_row is not None:
         transactionObj = transactions_row.as_json()
     else:
-        transactions_row = {"id": 0, "note": ""}
+
         transactionObj = ""  # Or some other default value, depending on your needs
 
     for row in rows:
