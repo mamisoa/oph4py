@@ -78,6 +78,42 @@
 <div class="container-fluid my-2">
     <div class="row">
         <div class="col">
+            <h2>Payments</h2>
+            <div id="paymentsTable">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Date</th>
+                        <th>Paid</th>
+                        <th>Card</th>
+                        <th>Card type</th>
+                        <th>Cash</th>
+                        <th>Invoice</th>
+                        <th>Invoice type</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr>
+                        <th>01/01/2024</th>
+                        <td>56.00€</td>
+                        <td>36.00€</td>
+                        <td>Bancontact</td>
+                        <td>20.00€</td>
+                        <td>00.00€</td>
+                        <td></td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" ><i class="bi bi-pencil-square"></i></button>
+                            <button class="btn btn-danger btn-sm" ><i class="bi bi-x-square"></i></button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid my-2">
+    <div class="row">
+        <div class="col">
             <h2>Attestations</h2>
             <table class="table table-striped">
                 <tr>
@@ -182,7 +218,7 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="text-center">
-                                        <span class="fs-3 py-2">Amount to pay: <span id="remainPayment">147</span> €</span>
+                                        <span class="fs-3 py-2">Amount to pay: <span id="remainPayment">0</span> €</span>
                                     </div>
                                 </div>
                             </div>
@@ -223,6 +259,7 @@ const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+pati
 // table listing transactions 
 const API_TRANSACTIONS = HOSTURL + "/"+APP_NAME+"/api/transactions?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 const API_WL_TRANSACTION = HOSTURL + "/"+APP_NAME+"/api/transactions?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+const API_WL_PAYMENTS = HOSTURL + "/"+APP_NAME+"/api/wl_payments?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 
 </script>
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>

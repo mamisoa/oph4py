@@ -159,12 +159,10 @@ function createTransactionsTableFromData(items) {
     table += '</tbody></table>';
     return table;
 }
-
 // Call the function to update the table
 updateTransactionsTable();
 
 // breakdown table
-
 async function updateBreakdownTable() {
     try {
         // Fetch data from the API endpoint
@@ -185,7 +183,7 @@ async function updateBreakdownTable() {
 
 // FIXME: error 500 when no transaction on payments view
 function createBreakdownTableFromData(items) {
-    console.log('WL transaction: ', items[0]);
+    console.log('WL transaction: ', items);
     let item = items[0];
     let supplements = {"1600": item.price - item.uncovered - item.covered_1600, "1300": item.price - item.uncovered - item.covered_1300};
     let table = `
@@ -220,3 +218,73 @@ function createBreakdownTableFromData(items) {
 
 // Call the function to update the table
 updateBreakdownTable();
+
+// wlPayments table
+async function updatePaymentsTable() {
+    try {
+        // Fetch data from the API endpoint
+        const response = await fetch(API_WL_PAYMENTS);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+
+        // Create and insert the table into the #codeTable div
+        const table = createPaymentsTableFromData(data.items);
+        document.getElementById('paymentsTable').innerHTML = table;
+
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
+}
+
+function createPaymentsTableFromData(items) {
+    let table;
+    console.log("Payments:",items)
+    if (items.length >0) {
+        table = `
+        <table class="table table-striped">
+        <tr>
+            <th>Date</th>
+            <th>Paid</th>
+            <th>Card</th>
+            <th>Card type</th>
+            <th>Cash</th>
+            <th>Invoice</th>
+            <th>Invoice type</th>
+            <th>Note</th>
+            <th>Action</th>
+        </tr>
+        `;
+
+        items.forEach(item => {
+            console.log("payments", item);
+            let paid = item.card_payment + item.cash_payment + item.invoice_payment ;
+            table += `
+                <tr>
+                    <td>${item.date}</td>
+                    <td>${paid || ''} €</td>
+                    <td>${item.card_payment || '0'} €</td>
+                    <td>${item.card_type  || ''}</td>
+                    <td>${item.cash_payment || '0'} €</td>
+                    <td>${item.invoice_payment  || '0'} €</td>
+                    <td>${item.invoice_type  || ''}</td>
+                    <td>${item.note || ''}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" data-wlPaymentsId="${item.id}"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-danger btn-sm" data-wlPaymentsId="${item.id}"><i class="bi bi-x-square"></i></button>
+                    </td>
+                </tr>
+                `;
+        });
+
+        table += '</tbody></table>';
+    } else {
+        table = "No record found."
+    }
+    
+    return table;
+}
+// Call the function to update the table
+updatePaymentsTable();
+

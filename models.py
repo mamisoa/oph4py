@@ -839,7 +839,7 @@ db.define_table(
     Field("id_auth_user", "reference auth_user", required=True),
     Field("id_worklist", "reference worklist", required=True),
     Field("date", "datetime", required=True),
-    Field("price", "decimal(10,2)", default=0),
+    # Field("price", "decimal(10,2)", default=0), # useless
     Field("cash_payment", "decimal(10,2)", default=0),
     Field("card_payment", "decimal(10,2)", default=0),
     Field("card_type", "string", default="bc"),
@@ -850,7 +850,7 @@ db.define_table(
 )
 
 
-# 'attestations de soins
+# attestations de soins
 db.define_table('social_sec_documents',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
