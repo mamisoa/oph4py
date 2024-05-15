@@ -748,10 +748,10 @@ db.define_table(
     Field("uncovered", "decimal(10,2)", default=0),
     Field("cash_payment", "decimal(10,2)", default=0),
     Field("card_payment", "decimal(10,2)", default=0),
-    Field("card_type", "string", default="bc"),
+    # Field("card_type", "string", default="bc"),
     Field("invoice_payment", "decimal(10,2)", default=0),
-    Field("invoice_type", "string", default="other"),
-    Field("paid", "decimal(10,2)", default=0),
+    # Field("invoice_type", "string", default="other"),
+    Field("paid", "integer", default=0),
     # -1 to validate 0 partially/not paid 1 paid
     Field("status", "integer", default=-1),
     Field("note", "string"),
@@ -831,6 +831,23 @@ db.define_table('wl_codes',
 #     Field('wl_code_id','reference wl_codes', required=True),
 #     auth.signature
 #     )
+
+# payments to list all payments related to transaction from wl
+# transactions should match the sum of all payments
+db.define_table(
+    "wl_payments",
+    Field("id_auth_user", "reference auth_user", required=True),
+    Field("id_worklist", "reference worklist", required=True),
+    Field("date", "datetime", required=True),
+    Field("price", "decimal(10,2)", default=0),
+    Field("cash_payment", "decimal(10,2)", default=0),
+    Field("card_payment", "decimal(10,2)", default=0),
+    Field("card_type", "string", default="bc"),
+    Field("invoice_payment", "decimal(10,2)", default=0),
+    Field("invoice_type", "string", default="other"),
+    Field("note", "string"),
+    auth.signature,
+)
 
 
 # 'attestations de soins
