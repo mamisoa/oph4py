@@ -288,3 +288,59 @@ function createPaymentsTableFromData(items) {
 // Call the function to update the table
 updatePaymentsTable();
 
+document.getElementById('recordPayment').addEventListener('click', function() {
+    // Get the form element
+    let form = document.getElementById('paymentFormModal');
+
+    // Create a function to format the date
+    function formatDate(date) {
+        let year = date.getFullYear();
+        let month = String(date.getMonth() + 1).padStart(2, '0');
+        let day = String(date.getDate()).padStart(2, '0');
+        let hours = String(date.getHours()).padStart(2, '0');
+        let minutes = String(date.getMinutes()).padStart(2, '0');
+        let seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+    
+    // Create an object to hold the form data
+    let formData = {
+        date: formatDate(new Date()),
+        id_auth_user: parseInt(form.querySelector('#authUserId').value),
+        id_worklist: parseInt(form.querySelector('#wlId').value),
+        card_payment: parseFloat(form.querySelector('#cardPayment').value),
+        cash_payment: parseFloat(form.querySelector('#cashPayment').value),
+        invoice_payment: parseFloat(form.querySelector('#invoicePayment').value),
+        card_type: form.querySelector('#cardType').value,
+        invoice_type: form.querySelector('#invoiceType').value
+    };
+
+    // Log the object to the console
+    console.log(formData);
+
+    // Send the formData to the endpoint 'API_WL_PAYMENTS'
+    fetch(HOSTURL + "/" + APP_NAME + "/api/wl_payments", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+        
+        // Reset the form values to their default state
+        form.querySelector('#cardPayment').value = 0;
+        form.querySelector('#cashPayment').value = 0;
+        form.querySelector('#invoicePayment').value = 0;
+        form.querySelector('#cardType').value = 'bc';
+        form.querySelector('#invoiceType').value = 'council';
+    })
+    .then(() => {
+        updatePaymentsTable(); // Ensure this function exists and does what you intend
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+});
