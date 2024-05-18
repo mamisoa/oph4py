@@ -223,6 +223,11 @@ document.getElementById('recordPayment').addEventListener('click', function() {
     // Get the form element
     let form = document.getElementById('paymentFormModal');
 
+    // request type
+    let req = form.querySelector('#reqPayment').value;
+    let id = form.querySelector('#idPayment').value;
+    console.log('req:', req, 'id:', id);
+
     // Create a function to format the date
     function formatDate(date) {
         let year = date.getFullYear();
@@ -248,10 +253,11 @@ document.getElementById('recordPayment').addEventListener('click', function() {
 
     // Log the object to the console
     console.log(formData);
-
+    let url_req = req == 'POST' ? HOSTURL + "/" + APP_NAME + "/api/wl_payments" : HOSTURL + "/" + APP_NAME + "/api/wl_payments/" + id ;
+    console.log(url_req);
     // Send the formData to the endpoint 'API_WL_PAYMENTS'
-    fetch(HOSTURL + "/" + APP_NAME + "/api/wl_payments", {
-        method: 'POST',
+    fetch(url_req , {
+        method: req,
         headers: {
             'Content-Type': 'application/json'
         },
@@ -260,13 +266,8 @@ document.getElementById('recordPayment').addEventListener('click', function() {
     .then(response => response.json())
     .then(data => {
         console.log('Success:', data);
+        document.getElementById("paymentFormModal").reset();
         
-        // Reset the form values to their default state
-        form.querySelector('#cardPayment').value = 0;
-        form.querySelector('#cashPayment').value = 0;
-        form.querySelector('#invoicePayment').value = 0;
-        form.querySelector('#cardType').value = 'bc';
-        form.querySelector('#invoiceType').value = 'council';
     })
     .then(() => {
         refreshTables(tablesArr); 

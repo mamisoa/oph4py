@@ -26,9 +26,14 @@ function responseHandler_wlPayments(res) { // used if data-response-handler="res
             'id_worklist': list[i].id_worklist,
             'date': list[i].date,
             'paid': Math.round((list[i].cash_payment + list[i].card_payment + list[i].invoice_payment)*100)/100 + ' €' ,
-            'card_payment': list[i].card_payment + ' € ('+ list[i].card_type +')',
-            'cash_payment': list[i].cash_payment + ' €',
-            'invoice_payment': list[i].invoice_payment + ' € ('+ checkIfNull(list[i].invoice_type,'-') + ')',
+            'card': list[i].card_payment + ' € ('+ list[i].card_type +')',
+            'card_payment': list[i].card_payment,
+            'card_type': list[i].card_type,
+            'cash_payment': list[i].cash_payment,
+            'cash': list[i].cash_payment + ' €',
+            'invoice': list[i].invoice_payment + ' € ('+ checkIfNull(list[i].invoice_type,'other') + ')',
+            'invoice_payment': list[i].invoice_payment,
+            'invoice_type': list[i].invoice_type,
             'note': list[i].note,
             'modified_by_name': list[i]['mod.last_name'] + ' ' + list[i]['mod.first_name'],
             'modified_by': list[i]['mod.id'],
@@ -105,7 +110,24 @@ function operateFormatter_wlPayments(value, row, index) {
 window.operateEvents_wlPayments = {
     'click .edit': function (e, value, row, index) {
         console.log('You click action EDIT on row: ' + JSON.stringify(row));
-        // window.location.href = '/'+APP_NAME+'/modalityCtr/autorx/'+row.id_worklist;
+        document.getElementById("paymentFormModal").reset();
+        //
+        document.getElementById('reqPayment').value = 'PUT';
+        document.getElementById('idPayment').value = row.id;
+
+        document.getElementById('authUserId').value = row.id_auth_user;
+        document.getElementById('wlId').value = row.id_worklist;
+
+        document.getElementById('cardPayment').value = row.card_payment;
+        document.getElementById('cashPayment').value = row.cash_payment;
+        document.getElementById('invoicePayment').value = row.invoice_payment;
+
+        document.getElementById('cardType').value = row.card_type;
+        document.getElementById('invoiceType').value = row.invoice_type;
+
+        updatePaymentSum();
+
+        new bootstrap.Modal(document.getElementById('paymentModal')).show();
     },
     'click .delete': function (e, value, row, index) {
         // console.log('You click action REMOVE on row: ' + JSON.stringify(row));

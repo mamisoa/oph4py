@@ -105,9 +105,9 @@
                     <tr>
                         <th data-field="date" data-sortable="true">Date</th>
                         <th data-field="paid" data-sortable="true">Paid</th>
-                        <th data-field="card_payment" data-sortable="false">Card</th>
-                        <th data-field="cash_payment" data-sortable="false">Cash</th>
-                        <th data-field="invoice_payment" data-sortable="false">Invoice</th>
+                        <th data-field="card" data-sortable="false">Card</th>
+                        <th data-field="cash" data-sortable="false">Cash</th>
+                        <th data-field="invoice" data-sortable="false">Invoice</th>
                         <th data-field="operate" data-formatter="operateFormatter_wlPayments" data-events="operateEvents_wlPayments">Action</th>
                     </tr>
                 </thead>
@@ -180,6 +180,8 @@
                             <div class="row">
                                 <input type="text" id="authUserId" class="d-none" value="[[= XML(rec_id) ]]">
                                 <input type="text" id="wlId" class="d-none" value="[[= XML(wl_id) ]]">
+                                <input type="text" id="idPayment" class="d-none" value="0">
+                                <input type="text" id="reqPayment" class="d-none" value="POST">
                                 <div class="col-4">
                                     <span for="cardPayment" class="form-label">💳 Card:</span>
                                     <div class="input-group">
@@ -208,7 +210,7 @@
                             <div class="row my-1">
                                 <div class="col-4">
                                     <select id="cardType" class="form-select" name="card_type" aria-label="Select card type">
-                                        <option value="bc" selected>Bancontact</option>
+                                        <option value="bancontact" selected>Bancontact</option>
                                         <option value="contactless">Contactless</option>
                                         <option value="visa">Visa</option>
                                         <option value="mc">Mastercard</option>
