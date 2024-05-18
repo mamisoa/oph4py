@@ -240,6 +240,7 @@ function getUserInfo(id) {
  */
 
 function refreshTables(tablesArr) {
+	console.log('tablesArr: ', tablesArr);
 	for (let tbl of tablesArr) {
 		// Check if 'bootstrapTable' function is defined for the current element
 		if (typeof $(tbl).bootstrapTable === "function") {

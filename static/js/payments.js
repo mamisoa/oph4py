@@ -6,7 +6,7 @@
 // use htmx to use confirmation modal 
 
 // refresh tables
-const tablesArr = ['#chx_tbl','#ccx_tbl','#fol_tbl','#bil_tbl'];
+const tablesArr = ['#paymentsBsTable'];
 refreshTables(tablesArr);
 
 function getUser(id) {
@@ -219,75 +219,6 @@ function createBreakdownTableFromData(items) {
 // Call the function to update the table
 updateBreakdownTable();
 
-// wlPayments table
-async function updatePaymentsTable() {
-    try {
-        // Fetch data from the API endpoint
-        const response = await fetch(API_WL_PAYMENTS);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-
-        // Create and insert the table into the #codeTable div
-        const table = createPaymentsTableFromData(data.items);
-        document.getElementById('paymentsTable').innerHTML = table;
-
-    } catch (error) {
-        console.error('There has been a problem with your fetch operation:', error);
-    }
-}
-
-function createPaymentsTableFromData(items) {
-    let table;
-    console.log("Payments:",items)
-    if (items.length >0) {
-        table = `
-        <table class="table table-striped">
-        <tr>
-            <th>Date</th>
-            <th>Paid</th>
-            <th>Card</th>
-            <th>Card type</th>
-            <th>Cash</th>
-            <th>Invoice</th>
-            <th>Invoice type</th>
-            <th>Note</th>
-            <th>Action</th>
-        </tr>
-        `;
-
-        items.forEach(item => {
-            console.log("payments", item);
-            let paid = item.card_payment + item.cash_payment + item.invoice_payment ;
-            table += `
-                <tr>
-                    <td>${item.date}</td>
-                    <td>${paid || ''} €</td>
-                    <td>${item.card_payment || '0'} €</td>
-                    <td>${item.card_type  || ''}</td>
-                    <td>${item.cash_payment || '0'} €</td>
-                    <td>${item.invoice_payment  || '0'} €</td>
-                    <td>${item.invoice_type  || ''}</td>
-                    <td>${item.note || ''}</td>
-                    <td>
-                        <button class="btn btn-primary btn-sm" data-wlPaymentsId="${item.id}"><i class="bi bi-pencil-square"></i></button>
-                        <button class="btn btn-danger btn-sm" data-wlPaymentsId="${item.id}"><i class="bi bi-x-square"></i></button>
-                    </td>
-                </tr>
-                `;
-        });
-
-        table += '</tbody></table>';
-    } else {
-        table = "No record found."
-    }
-    
-    return table;
-}
-// Call the function to update the table
-updatePaymentsTable();
-
 document.getElementById('recordPayment').addEventListener('click', function() {
     // Get the form element
     let form = document.getElementById('paymentFormModal');
@@ -338,7 +269,7 @@ document.getElementById('recordPayment').addEventListener('click', function() {
         form.querySelector('#invoiceType').value = 'council';
     })
     .then(() => {
-        updatePaymentsTable(); // Ensure this function exists and does what you intend
+        refreshTables(tablesArr); 
     })
     .catch((error) => {
         console.error('Error:', error);

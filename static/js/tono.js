@@ -86,29 +86,6 @@ function refreshTables() {
     $table_aplaLeft.bootstrapTable('refresh');
 };
 
-function delTonoPachy (id) {
-    bootbox.confirm({
-        message: "Are you sure you want to delete this tono/pachy?",
-        closeButton: false ,
-        buttons: {
-            confirm: {
-                label: 'Yes',
-                className: 'btn-success'
-            },
-            cancel: {
-                label: 'No',
-                className: 'btn-danger'
-            }
-        },
-        callback: function (result) {
-            if (result == true) {
-                crudp('tono',id,'DELETE').then(data => refreshTables());
-            } else {
-                console.log('This was logged in the callback: ' + result);
-            }
-        }
-    });
-};
 
 $('#tonoPachyForm').submit(function (e){
     e.preventDefault();

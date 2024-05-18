@@ -1,5 +1,11 @@
 [[extend 'baseof.html']]
 
+[[ block page_head]]
+<link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
+
+[[ end ]]
+
+
 [[ block left_nav ]]
 [[ end]]
 
@@ -79,33 +85,33 @@
     <div class="row">
         <div class="col">
             <h2>Payments</h2>
-            <div id="paymentsTable">
-                <table class="table table-striped">
+            <div id="paymentsTable"></div>
+            <table
+                id="paymentsBsTable"
+                data-toggle="table"
+                data-side-pagination="server"
+                data-page-size="10"
+                data-show-columns="true"
+                data-search-accent-neutralise="true"
+                data-visible-search="false"
+                data-response-handler="responseHandler_wlPayments"
+                data-detail-formatter="detailFormatter_wlPayments"
+                data-detail-view="true"
+                data-detail-view-icon="true"
+                data-show-refresh="true"
+                data-show-footer="false"
+                >
+                <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Paid</th>
-                        <th>Card</th>
-                        <th>Card type</th>
-                        <th>Cash</th>
-                        <th>Invoice</th>
-                        <th>Invoice type</th>
-                        <th>Action</th>
+                        <th data-field="date" data-sortable="true">Date</th>
+                        <th data-field="paid" data-sortable="true">Paid</th>
+                        <th data-field="card_payment" data-sortable="false">Card</th>
+                        <th data-field="cash_payment" data-sortable="false">Cash</th>
+                        <th data-field="invoice_payment" data-sortable="false">Invoice</th>
+                        <th data-field="operate" data-formatter="operateFormatter_wlPayments" data-events="operateEvents_wlPayments">Action</th>
                     </tr>
-                    <tr>
-                        <th>01/01/2024</th>
-                        <td>56.00€</td>
-                        <td>36.00€</td>
-                        <td>Bancontact</td>
-                        <td>20.00€</td>
-                        <td>00.00€</td>
-                        <td></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" ><i class="bi bi-pencil-square"></i></button>
-                            <button class="btn btn-danger btn-sm" ><i class="bi bi-x-square"></i></button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+                </thead>
+            </table>
         </div>
     </div>
 </div>
@@ -261,13 +267,16 @@ const API_WLCODES = HOSTURL + "/"+APP_NAME+"/api/wl_codes?id_auth_user.eq="+pati
 // table listing transactions 
 const API_TRANSACTIONS = HOSTURL + "/"+APP_NAME+"/api/transactions?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 const API_WL_TRANSACTION = HOSTURL + "/"+APP_NAME+"/api/transactions?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+
+// table listing WL payments from user
 const API_WL_PAYMENTS = HOSTURL + "/"+APP_NAME+"/api/wl_payments?id_auth_user.eq="+patientId+"&id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 
 </script>
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
+<script src="js/useful.js"></script>
+<script src="js/payments.js"></script>
 <script src="js/payments-bt.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
-<script src="js/useful.js"></script>
 
 <script type="text/javascript">
 
@@ -331,7 +340,11 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error:', error));
 });
-    
+
+var $paymentsBsTable = $('#paymentsBsTable').bootstrapTable({
+    url: API_WL_PAYMENTS
+});
+
+
 </script>
-<script src="js/payments.js"></script>
 [[ end ]]
