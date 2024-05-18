@@ -255,8 +255,6 @@ const patientId = [[ =rec_id ]];
 const membership = [[=membership]];
 const HOSTURL = "[[ = hosturl ]]";
 const wlId = [[ = wl_id ]];
-var currentTransactionObj = [[ =XML(transactionObj) ]];
-const transactionId = currentTransactionObj.id;
 
 const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+patientId+'&@lookup=gender,marital,membership,ethny&@count=true'; 
 const API_CHXUSER = HOSTURL + '[[=URL('api','current_hx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + patientId

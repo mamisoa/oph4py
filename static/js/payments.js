@@ -61,7 +61,8 @@ async function listCurrentWlTransaction() {
             throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        let remainingToPay = data.items[0].price - data.items[0].paid;
+        console.log("data items -->",data.items);
+        let remainingToPay = data.items.length > 0? data.items[0].price - data.items[0].paid : "- No existing transactions - ";
 
         // Update text content for remainingToPay
         document.getElementById('remainingToPay').textContent = remainingToPay;
@@ -275,10 +276,9 @@ async function updateBreakdownTable() {
     }
 }
 
-// FIXME: error 500 when no transaction on payments view
 function createBreakdownTableFromData(items) {
     // console.log('WL transaction: ', items);
-    let item = items[0];
+    let item = items.length > 0 ? items[0] : { "date": "01/01/2000", "price": 0, "paid": 0, "covered_1600": 0, "covered_1300": 0, "uncovered":0 } ;
     let supplements = {"1600": item.price - item.uncovered - item.covered_1600, "1300": item.price - item.uncovered - item.covered_1300};
     let table = `
         <table class="table table-striped">

@@ -1,19 +1,52 @@
 # Management controllers
 
-from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
-from yatl.helpers import A, XML, OPTION, CAT
-from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
-from pydal.validators import CRYPT # to encrypt passwords
-
-from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
+from py4web import (  # add response to throw http error 400
+    URL,
+    Field,
+    abort,
+    action,
+    redirect,
+    request,
+    response,
+)
+from py4web.utils.form import (  # added import Field Form and FormStyleBulma to get form working
+    Form,
+    FormStyleBootstrap4,
+    FormStyleBulma,
+)
 from py4web.utils.grid import Grid
-# from py4web.utils.factories import Inject
+from pydal.validators import CRYPT  # to encrypt passwords
+from yatl.helpers import CAT, OPTION, XML, A
+
+from .common import (
+    T,
+    auth,
+    authenticated,
+    cache,
+    db,
+    flash,
+    logger,
+    session,
+    unauthenticated,
+)
 
 # import settings
-from .settings import ENV_STATUS, APP_NAME, LOCAL_URL, LOCAL_BEID, DEFAULT_PROVIDER, DEFAULT_SENIOR, TIMEOFFSET, NEW_INSTALLATION
+from .settings import (
+    APP_NAME,
+    DEFAULT_PROVIDER,
+    DEFAULT_SENIOR,
+    ENV_STATUS,
+    LOCAL_BEID,
+    LOCAL_URL,
+    NEW_INSTALLATION,
+    TIMEOFFSET,
+)
 
 # import useful
 from .useful import dropdownSelect, getMembershipId
+
+# from py4web.utils.factories import Inject
+
 
 ## edit user/id from auth_user
 @action('user')
@@ -86,7 +119,7 @@ def users(membership='Patient'):
     genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
     return locals()
 
-# patients worklist 
+# patients worklist
 @action('worklist', method=['POST','GET']) # route
 @action.uses(session, T, auth.user, db, 'worklist.html')
 def worklist():
@@ -234,7 +267,7 @@ def files():
 
 ## manage_db
 
-## import users 
+## import users
 @action('import_users')
 @action.uses(T, db,'generic.html')
 def import_users():
@@ -242,6 +275,7 @@ def import_users():
     app_name = APP_NAME
     # hosturl = LOCAL_URL
     import os
+
     # rows = db(db.auth_user).select()
     with open(os.path.join(os.path.dirname(__file__),'uploads/csv/')+'1.csv', 'r', encoding='utf-8', newline='') as dumpfile:
         db.auth_user.import_from_csv_file(dumpfile)
@@ -291,8 +325,9 @@ def del_csv():
 @action("save_table")
 @action('save_table/<tablename>')
 def save_table(tablename):
-    from datetime import datetime
     import os
+    from datetime import datetime
+
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
@@ -311,8 +346,9 @@ def save_table(tablename):
 
 @action("save_all_tables")
 def save_all_tables():
-    from datetime import datetime
     import os
+    from datetime import datetime
+
     now = datetime.now()
     dblist = db._tables
     for table in dblist:
@@ -330,8 +366,9 @@ def save_all_tables():
 
 @action("save_db")
 def save_db():
-    from datetime import datetime
     import os
+    from datetime import datetime
+
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
     backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
@@ -382,7 +419,7 @@ def restore_db():
         evalArr = (file2restore+" False").split(' ')
         evalArr.append(print(e))
         return '#'.join(evalArr)
-    
+
 
 @action("restore", method=['GET'])
 def restore():
@@ -463,7 +500,7 @@ def summary(rec_id):
     membership = row.membership
     return locals()
 
-# manage payment
+# manage payments
 @action('billing/payments')
 @action('billing/payments/<wl_id>')
 @action.uses(session, auth, db,'billing/payments.html')
@@ -478,7 +515,7 @@ def payments(wl_id):
     rec_id = wl_row['id_auth_user']
     transactions_row = db((db.transactions.id_worklist == wl_id) & (
         db.transactions.id_auth_user == rec_id)).select().first()
-    transactionObj = transactions_row.as_json()
+
     row = db(db.auth_user.id == rec_id).select().first()
     username = row.username
     membership = row.membership
