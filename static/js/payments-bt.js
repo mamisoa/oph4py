@@ -141,7 +141,8 @@ function sumPaymentTypes(payments) {
     const sumPayments = {
         sumCard_payments: 0,
         sumCash_payments: 0,
-        sumInvoice_payments: 0
+        sumInvoice_payments: 0,
+        sumPaid: 0
     };
 
     // Iterate through each payment item and accumulate the totals
@@ -150,6 +151,8 @@ function sumPaymentTypes(payments) {
         sumPayments.sumCash_payments += payment.cash_payment;
         sumPayments.sumInvoice_payments += payment.invoice_payment;
     });
+
+    sumPayments.sumPaid = sumPayments.sumCard_payments + sumPayments.sumCash_payments + sumPayments.sumInvoice_payments;
 
     return sumPayments;
 };
@@ -186,10 +189,22 @@ function delPayment (id) {
                         if (currentTransaction != {}) {
                             let id = currentTransaction.id;
                             delete updateTransaction.id;
-                            updateTransaction.card_payment -= paymentsSum.sumCard_payments;
-                            updateTransaction.cash_payment -= paymentsSum.sumCash_payments;
-                            updateTransaction.invoice_payment -= paymentsSum.sumInvoice_payments;
+                            updateTransaction.card_payment = paymentsSum.sumCard_payments;
+                            updateTransaction.cash_payment = paymentsSum.sumCash_payments;
+                            updateTransaction.invoice_payment = paymentsSum.sumInvoice_payments;
+                            updateTransaction.paid = paymentsSum.sumPaid;
+                            remainToPay = updateTransaction.price - updateTransaction.paid;
+                            let removeKeys =  ['creator.id', 'creator.last_name', 'modified_on', 'mod.id', 'creator.first_name', 'mod.last_name', 'mod.first_name', 'created_on'];
+                            removeKeys.forEach( removeKey => {
+                                delete updateTransaction[removeKey];
+                            });
                             console.log('Modified transaction:', updateTransaction);
+                            crudp('transactions',id,'PUT', JSON.stringify(updateTransaction))
+                                .then(() => {
+                                    refreshTables(tablesArr);
+                                    updateTransactionsTable();
+                                    document.getElementById('remainingToPay').textContent = remainToPay;
+                                })
                         } else {
                             console.log('No existing transaction!');
                         }

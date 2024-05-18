@@ -190,7 +190,12 @@ async function listCurrentWlPayments() {
         }
         const data = await response.json();
 
-        document.getElementById('remainingToPay').textContent = data.items[0].price;
+        if (data.items.length >0) {
+            document.getElementById('remainingToPay').textContent = data.items[0].price;
+        } else {
+            document.getElementById('remainingToPay').textContent = 0;
+        }
+
         return data;
 
     } catch (error) {
