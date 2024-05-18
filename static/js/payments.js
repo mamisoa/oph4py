@@ -62,8 +62,33 @@ async function listCurrentWlTransaction() {
         }
         const data = await response.json();
         let remainingToPay = data.items[0].price - data.items[0].paid;
+
+        // Update text content for remainingToPay
         document.getElementById('remainingToPay').textContent = remainingToPay;
         document.getElementById('remainingToPayModal').textContent = remainingToPay;
+
+        // Disable all buttons within the 'paymentContainer' if remainingToPay is 0
+        // Get the container element
+        const container = document.getElementById('paymentContainer');
+        // Find all button elements within the container
+        const buttons = container.getElementsByTagName('button');
+        if (remainingToPay === 0) {
+            // Disable each button
+            for (let button of buttons) {
+                button.disabled = true;
+            }
+             // Change border class from 'border-danger' to 'border-success'
+            paymentContainer.classList.remove('border-danger');
+            paymentContainer.classList.add('border-success');
+        } else {
+            // Enable each button
+            for (let button of buttons) {
+                button.disabled = false;
+            }
+             // Change border class from 'border-success' to 'border-danger'
+            paymentContainer.classList.remove('border-success');
+            paymentContainer.classList.add('border-danger');
+        }
         return data;
 
     } catch (error) {
@@ -360,8 +385,34 @@ document.getElementById('recordPayment').addEventListener('click', function() {
                         .then(() => {
                             refreshTables(tablesArr);
                             updateTransactionsTable();
+
+                            // Update text content for remainingToPay
                             document.getElementById('remainingToPay').textContent = remainToPay;
                             document.getElementById('remainingToPayModal').textContent = remainToPay;
+
+                            // Disable all buttons within the 'paymentContainer' if remainingToPay is 0
+                            // Get the container element
+                            const container = document.getElementById('paymentContainer');
+                            // Find all button elements within the container
+                            const buttons = container.getElementsByTagName('button');
+                            if (remainToPay === 0) {
+                                // Disable each button
+                                for (let button of buttons) {
+                                    button.disabled = true;
+                                }
+                                // Change border class from 'border-danger' to 'border-success'
+                                paymentContainer.classList.remove('border-danger');
+                                paymentContainer.classList.add('border-success');
+                            } else {
+                                // Enable each button
+                                for (let button of buttons) {
+                                    button.disabled = false;
+                                }
+                                // Change border class from 'border-success' to 'border-danger'
+                                paymentContainer.classList.remove('border-success');
+                                paymentContainer.classList.add('border-danger');
+                            }
+
                             document.getElementById("paymentFormModal").reset();
                         })
                 } else {

@@ -195,8 +195,32 @@ function delPayment (id) {
                         await crudp('transactions', id, 'PUT', JSON.stringify(updateTransaction));
                         refreshTables(tablesArr);
                         updateTransactionsTable();
+                        // Update text content for remainingToPay
                         document.getElementById('remainingToPay').textContent = remainToPay;
                         document.getElementById('remainingToPayModal').textContent = remainToPay;
+
+                        // Disable all buttons within the 'paymentContainer' if remainingToPay is 0
+                        // Get the container element
+                        const container = document.getElementById('paymentContainer');
+                        // Find all button elements within the container
+                        const buttons = container.getElementsByTagName('button');
+                        if (remainToPay === 0) {
+                            // Disable each button
+                            for (let button of buttons) {
+                                button.disabled = true;
+                            }
+                            // Change border class from 'border-danger' to 'border-success'
+                            paymentContainer.classList.remove('border-danger');
+                            paymentContainer.classList.add('border-success');
+                        } else {
+                            // Enable each button
+                            for (let button of buttons) {
+                                button.disabled = false;
+                            }
+                            // Change border class from 'border-success' to 'border-danger'
+                            paymentContainer.classList.remove('border-success');
+                            paymentContainer.classList.add('border-danger');
+                        }
                     } else {
                         console.log('No existing transaction!');
                     }
