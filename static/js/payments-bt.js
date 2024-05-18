@@ -17,7 +17,7 @@ function styleTimeslot(ts) {
 
 function responseHandler_wlPayments(res) { // used if data-response-handler="responseHandler_wl"
     let list = res.items;
-    console.log('bt list:',list);
+    // console.log('bt list:',list);
     let display = [];
     $.each(list, function (i) {
         display.push({
@@ -135,6 +135,25 @@ window.operateEvents_wlPayments = {
     }
 };
 
+// sum all payments (array) made for a wl transaction
+function sumPaymentTypes(payments) {
+    // Initialize the sums for each payment type
+    const sumPayments = {
+        sumCard_payments: 0,
+        sumCash_payments: 0,
+        sumInvoice_payments: 0
+    };
+
+    // Iterate through each payment item and accumulate the totals
+    payments.forEach(payment => {
+        sumPayments.sumCard_payments += payment.card_payment;
+        sumPayments.sumCash_payments += payment.cash_payment;
+        sumPayments.sumInvoice_payments += payment.invoice_payment;
+    });
+
+    return sumPayments;
+};
+
 // delete wl payment
 function delPayment (id) {
     bootbox.confirm({
@@ -152,7 +171,33 @@ function delPayment (id) {
         },
         callback: function (result) {
             if (result == true) {
-                crudp('wl_payments',id,'DELETE').then(data => refreshTables(tablesArr));
+                crudp('wl_payments', id, 'DELETE')
+                    .then(data => {
+                        refreshTables(tablesArr); 
+                        return Promise.all([listCurrentWlTransaction(), listCurrentWlPayments()]);
+                    })
+                    .then(([transactionData, paymentsData]) => {
+                        let currentTransaction = transactionData.items.length > 0 ? transactionData.items[0] : {}, paymentsArr = paymentsData.items;
+                        let paymentsSum = sumPaymentTypes(paymentsArr);
+                        console.log('Current transactions:', currentTransaction);
+                        console.log('Payments list:', paymentsArr);
+                        console.log('Sum:', paymentsSum);
+                        let updateTransaction = currentTransaction;
+                        if (currentTransaction != {}) {
+                            let id = currentTransaction.id;
+                            delete updateTransaction.id;
+                            updateTransaction.card_payment -= paymentsSum.sumCard_payments;
+                            updateTransaction.cash_payment -= paymentsSum.sumCash_payments;
+                            updateTransaction.invoice_payment -= paymentsSum.sumInvoice_payments;
+                            console.log('Modified transaction:', updateTransaction);
+                        } else {
+                            console.log('No existing transaction!');
+                        }
+
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
             } else {
                 console.log('This was logged in the callback: ' + result);
             }

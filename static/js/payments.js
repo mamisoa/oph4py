@@ -35,7 +35,7 @@ function refreshList(listName){
         let userData = getUser(patientId);
         userData.then(function(userData){
             let item = userData.items[0];
-            console.log('item:', item);
+            // console.log('item:', item);
             // fills title
             if (item.photob64 != null) {
                 $('.photoId').attr("src",checkIfDataIsNull(item.photob64,''));
@@ -143,7 +143,7 @@ function createTransactionsTableFromData(items) {
     let table = '<table class="table table-striped"><thead><tr><th>Date</th><th>Price</th><th>Paid</th><th>Card</th><th>Cash</th><th>Invoice</th><th>Note</th></tr></thead><tbody>';
 
     items.forEach(item => {
-        console.log("transactions", item);
+        // console.log("transactions", item);
         let paid = item.card_payment + item.cash_payment + item.invoice_payment ;
         table += `<tr>
                     <td>${item.date}</td>
@@ -161,6 +161,43 @@ function createTransactionsTableFromData(items) {
 }
 // Call the function to update the table
 updateTransactionsTable();
+
+// list current wl transactions
+async function listCurrentWlTransaction() {
+    try {
+        // Fetch data from the API endpoint
+        const response = await fetch(API_WL_TRANSACTION);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+
+        document.getElementById('remainingToPay').textContent = data.items[0].price;
+        return data;
+
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
+};
+
+// list current wl transactions
+async function listCurrentWlPayments() {
+    try {
+        // Fetch data from the API endpoint
+        const response = await fetch(API_WL_PAYMENTS);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+
+        document.getElementById('remainingToPay').textContent = data.items[0].price;
+        return data;
+
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
+};
+
 
 // breakdown table
 async function updateBreakdownTable() {
@@ -183,7 +220,7 @@ async function updateBreakdownTable() {
 
 // FIXME: error 500 when no transaction on payments view
 function createBreakdownTableFromData(items) {
-    console.log('WL transaction: ', items);
+    // console.log('WL transaction: ', items);
     let item = items[0];
     let supplements = {"1600": item.price - item.uncovered - item.covered_1600, "1300": item.price - item.uncovered - item.covered_1300};
     let table = `
@@ -210,7 +247,7 @@ function createBreakdownTableFromData(items) {
             </tr>    
         </table>
         `;
-    document.getElementById('sum').textContent = item.price;
+    document.getElementById('remainingToPay').textContent = item.price;
     document.getElementById('remainPayment').textContent = item.price;
 
     return table;
@@ -226,7 +263,7 @@ document.getElementById('recordPayment').addEventListener('click', function() {
     // request type
     let req = form.querySelector('#reqPayment').value;
     let id = form.querySelector('#idPayment').value;
-    console.log('req:', req, 'id:', id);
+    // console.log('req:', req, 'id:', id);
 
     // Create a function to format the date
     function formatDate(date) {
@@ -252,9 +289,9 @@ document.getElementById('recordPayment').addEventListener('click', function() {
     };
 
     // Log the object to the console
-    console.log(formData);
+    // console.log(formData);
     let url_req = req == 'POST' ? HOSTURL + "/" + APP_NAME + "/api/wl_payments" : HOSTURL + "/" + APP_NAME + "/api/wl_payments/" + id ;
-    console.log(url_req);
+    // console.log(url_req);
     // Send the formData to the endpoint 'API_WL_PAYMENTS'
     fetch(url_req , {
         method: req,
