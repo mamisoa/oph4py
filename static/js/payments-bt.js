@@ -135,28 +135,6 @@ window.operateEvents_wlPayments = {
     }
 };
 
-// sum all payments (array) made for a wl transaction
-function sumPaymentTypes(payments) {
-    // Initialize the sums for each payment type
-    const sumPayments = {
-        sumCard_payments: 0,
-        sumCash_payments: 0,
-        sumInvoice_payments: 0,
-        sumPaid: 0
-    };
-
-    // Iterate through each payment item and accumulate the totals
-    payments.forEach(payment => {
-        sumPayments.sumCard_payments += payment.card_payment;
-        sumPayments.sumCash_payments += payment.cash_payment;
-        sumPayments.sumInvoice_payments += payment.invoice_payment;
-    });
-
-    sumPayments.sumPaid = sumPayments.sumCard_payments + sumPayments.sumCash_payments + sumPayments.sumInvoice_payments;
-
-    return sumPayments;
-};
-
 // delete wl payment
 function delPayment (id) {
     bootbox.confirm({

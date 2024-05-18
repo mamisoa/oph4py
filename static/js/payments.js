@@ -52,6 +52,81 @@ function refreshList(listName){
 };
 refreshList('userauth_user');
 
+// list current wl transactions
+async function listCurrentWlTransaction() {
+    try {
+        // Fetch data from the API endpoint
+        const response = await fetch(API_WL_TRANSACTION);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+
+        document.getElementById('remainingToPay').textContent = data.items[0].price - data.items[0].paid;
+        return data;
+
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
+};
+
+async function handleTransaction() {
+    try {
+      let remainingToPay = await listCurrentWlTransaction();
+      console.log('Remaining to pay:', remainingToPay);
+    } catch (error) {
+      console.error('Error handling transaction:', error);
+    }
+  }
+  
+  handleTransaction();
+  
+// list current wl transactions
+async function listCurrentWlPayments() {
+    try {
+        // Fetch data from the API endpoint
+        const response = await fetch(API_WL_PAYMENTS);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+
+        if (data.items.length >0) {
+            document.getElementById('remainingToPay').textContent = data.items[0].price;
+        } else {
+            document.getElementById('remainingToPay').textContent = 0;
+        }
+
+        return data;
+
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
+};
+
+// sum all payments (array) made for a wl transaction
+function sumPaymentTypes(payments) {
+    // Initialize the sums for each payment type
+    const sumPayments = {
+        sumCard_payments: 0,
+        sumCash_payments: 0,
+        sumInvoice_payments: 0,
+        sumPaid: 0
+    };
+
+    // Iterate through each payment item and accumulate the totals
+    payments.forEach(payment => {
+        sumPayments.sumCard_payments += payment.card_payment;
+        sumPayments.sumCash_payments += payment.cash_payment;
+        sumPayments.sumInvoice_payments += payment.invoice_payment;
+    });
+
+    sumPayments.sumPaid = sumPayments.sumCard_payments + sumPayments.sumCash_payments + sumPayments.sumInvoice_payments;
+
+    return sumPayments;
+};
+
+
 // Function to calculate the sum
 function updatePaymentSum() {
     // Retrieve the values from the input fields
@@ -162,48 +237,6 @@ function createTransactionsTableFromData(items) {
 // Call the function to update the table
 updateTransactionsTable();
 
-// list current wl transactions
-async function listCurrentWlTransaction() {
-    try {
-        // Fetch data from the API endpoint
-        const response = await fetch(API_WL_TRANSACTION);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-
-        document.getElementById('remainingToPay').textContent = data.items[0].price;
-        return data;
-
-    } catch (error) {
-        console.error('There has been a problem with your fetch operation:', error);
-    }
-};
-
-// list current wl transactions
-async function listCurrentWlPayments() {
-    try {
-        // Fetch data from the API endpoint
-        const response = await fetch(API_WL_PAYMENTS);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-
-        if (data.items.length >0) {
-            document.getElementById('remainingToPay').textContent = data.items[0].price;
-        } else {
-            document.getElementById('remainingToPay').textContent = 0;
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error('There has been a problem with your fetch operation:', error);
-    }
-};
-
-
 // breakdown table
 async function updateBreakdownTable() {
     try {
@@ -252,7 +285,7 @@ function createBreakdownTableFromData(items) {
             </tr>    
         </table>
         `;
-    document.getElementById('remainingToPay').textContent = item.price;
+    // document.getElementById('remainingToPay').textContent = item.price;
     document.getElementById('remainPayment').textContent = item.price;
 
     return table;
@@ -261,6 +294,7 @@ function createBreakdownTableFromData(items) {
 // Call the function to update the table
 updateBreakdownTable();
 
+// add a wl payment
 document.getElementById('recordPayment').addEventListener('click', function() {
     // Get the form element
     let form = document.getElementById('paymentFormModal');
@@ -293,8 +327,7 @@ document.getElementById('recordPayment').addEventListener('click', function() {
         invoice_type: form.querySelector('#invoiceType').value
     };
 
-    // Log the object to the console
-    // console.log(formData);
+
     let url_req = req == 'POST' ? HOSTURL + "/" + APP_NAME + "/api/wl_payments" : HOSTURL + "/" + APP_NAME + "/api/wl_payments/" + id ;
     // console.log(url_req);
     // Send the formData to the endpoint 'API_WL_PAYMENTS'
@@ -304,17 +337,45 @@ document.getElementById('recordPayment').addEventListener('click', function() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-        document.getElementById("paymentFormModal").reset();
-        
-    })
-    .then(() => {
-        refreshTables(tablesArr); 
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                return Promise.all([listCurrentWlTransaction(), listCurrentWlPayments()]);
+            })
+            .then(([transactionData, paymentsData]) => {
+                let currentTransaction = transactionData.items.length > 0 ? transactionData.items[0] : {}, paymentsArr = paymentsData.items;
+                let paymentsSum = sumPaymentTypes(paymentsArr);
+                console.log('Current transactions:', currentTransaction);
+                console.log('Payments list:', paymentsArr);
+                console.log('Sum:', paymentsSum);
+                let updateTransaction = currentTransaction;
+                if (currentTransaction != {}) {
+                    let id = currentTransaction.id;
+                    delete updateTransaction.id;
+                    updateTransaction.card_payment = paymentsSum.sumCard_payments;
+                    updateTransaction.cash_payment = paymentsSum.sumCash_payments;
+                    updateTransaction.invoice_payment = paymentsSum.sumInvoice_payments;
+                    updateTransaction.paid = paymentsSum.sumPaid;
+                    remainToPay = updateTransaction.price - updateTransaction.paid;
+                    let removeKeys =  ['creator.id', 'creator.last_name', 'modified_on', 'mod.id', 'creator.first_name', 'mod.last_name', 'mod.first_name', 'created_on'];
+                    removeKeys.forEach( removeKey => {
+                        delete updateTransaction[removeKey];
+                    });
+                    console.log('Modified transaction:', updateTransaction);
+                    crudp('transactions',id,'PUT', JSON.stringify(updateTransaction))
+                        .then(() => {
+                            refreshTables(tablesArr);
+                            updateTransactionsTable();
+                            document.getElementById('remainingToPay').textContent = remainToPay;
+                            document.getElementById("paymentFormModal").reset();
+                        })
+                } else {
+                    console.log('No existing transaction!');
+                }
+
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
 });
