@@ -168,9 +168,9 @@ function delPayment (id) {
         
                     // Calculate sums of payments
                     let paymentsSum = sumPaymentTypes(paymentsArr);
-                    console.log('Current transactions:', currentTransaction);
-                    console.log('Payments list:', paymentsArr);
-                    console.log('Sum:', paymentsSum);
+                    // console.log('Current transactions:', currentTransaction);
+                    // console.log('Payments list:', paymentsArr);
+                    // console.log('Sum:', paymentsSum);
         
                     let updateTransaction = currentTransaction;
         
@@ -189,7 +189,7 @@ function delPayment (id) {
                             delete updateTransaction[removeKey];
                         });
         
-                        console.log('Modified transaction:', updateTransaction);
+                        //console.log('Modified transaction:', updateTransaction);
         
                         // Update the transaction data
                         await crudp('transactions', id, 'PUT', JSON.stringify(updateTransaction));

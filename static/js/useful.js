@@ -240,7 +240,7 @@ function getUserInfo(id) {
  */
 
 function refreshTables(tablesArr) {
-	console.log('tablesArr: ', tablesArr);
+	// console.log('tablesArr: ', tablesArr);
 	for (let tbl of tablesArr) {
 		// Check if 'bootstrapTable' function is defined for the current element
 		if (typeof $(tbl).bootstrapTable === "function") {
@@ -290,7 +290,7 @@ const crudp = function(table, id='0', req='POST', data) {
             delete data.id;
         }
 
-        console.log("API URL:", API_URL); // Log l'URL pour vérifier
+        // console.log("API URL:", API_URL); 
 
         let mode = (req == 'POST' ? ' added' : (req == 'PUT' ? ' edited' : ' deleted'));
         $.ajax({
@@ -300,7 +300,7 @@ const crudp = function(table, id='0', req='POST', data) {
             dataType: 'json',
             method: req,
             success: function (data) {
-                console.log(data);
+                // console.log(data);
                 let errors = "";
                 if (data.status == "error") {
                     for (let i in data.errors) {

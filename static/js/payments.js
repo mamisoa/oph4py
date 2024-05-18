@@ -61,7 +61,7 @@ async function listCurrentWlTransaction() {
             throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        console.log("data items -->",data.items);
+        // console.log("data items -->",data.items);
         let remainingToPay = data.items.length > 0? data.items[0].price - data.items[0].paid : "- No existing transactions - ";
 
         // Update text content for remainingToPay
@@ -100,7 +100,7 @@ async function listCurrentWlTransaction() {
 async function handleTransaction() {
     try {
       let remainingToPay = await listCurrentWlTransaction();
-      console.log('Remaining to pay:', remainingToPay);
+      // console.log('Remaining to pay:', remainingToPay);
     } catch (error) {
       console.error('Error handling transaction:', error);
     }
@@ -358,15 +358,15 @@ document.getElementById('recordPayment').addEventListener('click', function() {
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Success:', data);
+                // console.log('Success:', data);
                 return Promise.all([listCurrentWlTransaction(), listCurrentWlPayments()]);
             })
             .then(([transactionData, paymentsData]) => {
                 let currentTransaction = transactionData.items.length > 0 ? transactionData.items[0] : {}, paymentsArr = paymentsData.items;
                 let paymentsSum = sumPaymentTypes(paymentsArr);
-                console.log('Current transactions:', currentTransaction);
-                console.log('Payments list:', paymentsArr);
-                console.log('Sum:', paymentsSum);
+                // console.log('Current transactions:', currentTransaction);
+                // console.log('Payments list:', paymentsArr);
+                // console.log('Sum:', paymentsSum);
                 let updateTransaction = currentTransaction;
                 if (currentTransaction != {}) {
                     let id = currentTransaction.id;
@@ -380,7 +380,7 @@ document.getElementById('recordPayment').addEventListener('click', function() {
                     removeKeys.forEach( removeKey => {
                         delete updateTransaction[removeKey];
                     });
-                    console.log('Modified transaction:', updateTransaction);
+                    // console.log('Modified transaction:', updateTransaction);
                     crudp('transactions',id,'PUT', JSON.stringify(updateTransaction))
                         .then(() => {
                             refreshTables(tablesArr);
