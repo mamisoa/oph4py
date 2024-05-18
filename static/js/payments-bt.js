@@ -150,50 +150,61 @@ function delPayment (id) {
                 className: 'btn-danger'
             }
         },
-        callback: function (result) {
+        callback: async function (result) {
             if (result == true) {
-                crudp('wl_payments', id, 'DELETE')
-                    .then(data => {
-                        refreshTables(tablesArr); 
-                        return Promise.all([listCurrentWlTransaction(), listCurrentWlPayments()]);
-                    })
-                    .then(([transactionData, paymentsData]) => {
-                        let currentTransaction = transactionData.items.length > 0 ? transactionData.items[0] : {}, paymentsArr = paymentsData.items;
-                        let paymentsSum = sumPaymentTypes(paymentsArr);
-                        console.log('Current transactions:', currentTransaction);
-                        console.log('Payments list:', paymentsArr);
-                        console.log('Sum:', paymentsSum);
-                        let updateTransaction = currentTransaction;
-                        if (currentTransaction != {}) {
-                            let id = currentTransaction.id;
-                            delete updateTransaction.id;
-                            updateTransaction.card_payment = paymentsSum.sumCard_payments;
-                            updateTransaction.cash_payment = paymentsSum.sumCash_payments;
-                            updateTransaction.invoice_payment = paymentsSum.sumInvoice_payments;
-                            updateTransaction.paid = paymentsSum.sumPaid;
-                            remainToPay = updateTransaction.price - updateTransaction.paid;
-                            let removeKeys =  ['creator.id', 'creator.last_name', 'modified_on', 'mod.id', 'creator.first_name', 'mod.last_name', 'mod.first_name', 'created_on'];
-                            removeKeys.forEach( removeKey => {
-                                delete updateTransaction[removeKey];
-                            });
-                            console.log('Modified transaction:', updateTransaction);
-                            crudp('transactions',id,'PUT', JSON.stringify(updateTransaction))
-                                .then(() => {
-                                    refreshTables(tablesArr);
-                                    updateTransactionsTable();
-                                    document.getElementById('remainingToPay').textContent = remainToPay;
-                                })
-                        } else {
-                            console.log('No existing transaction!');
-                        }
-
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+                try {
+                    // Perform the DELETE operation
+                    await crudp('wl_payments', id, 'DELETE');
+                    refreshTables(tablesArr);
+        
+                    // Fetch transactions and payments simultaneously
+                    const [transactionData, paymentsData] = await Promise.all([
+                        listCurrentWlTransaction(), 
+                        listWlPayments()
+                    ]);
+        
+                    let currentTransaction = transactionData.items.length > 0 ? transactionData.items[0] : {},
+                        paymentsArr = paymentsData.items;
+        
+                    // Calculate sums of payments
+                    let paymentsSum = sumPaymentTypes(paymentsArr);
+                    console.log('Current transactions:', currentTransaction);
+                    console.log('Payments list:', paymentsArr);
+                    console.log('Sum:', paymentsSum);
+        
+                    let updateTransaction = currentTransaction;
+        
+                    if (Object.keys(currentTransaction).length > 0) {
+                        let id = currentTransaction.id;
+                        delete updateTransaction.id;
+                        updateTransaction.card_payment = paymentsSum.sumCard_payments;
+                        updateTransaction.cash_payment = paymentsSum.sumCash_payments;
+                        updateTransaction.invoice_payment = paymentsSum.sumInvoice_payments;
+                        updateTransaction.paid = paymentsSum.sumPaid;
+                        let remainToPay = updateTransaction.price - updateTransaction.paid;
+                        
+                        // Remove specified keys from the transaction
+                        let removeKeys = ['creator.id', 'creator.last_name', 'modified_on', 'mod.id', 'creator.first_name', 'mod.last_name', 'mod.first_name', 'created_on'];
+                        removeKeys.forEach(removeKey => {
+                            delete updateTransaction[removeKey];
+                        });
+        
+                        console.log('Modified transaction:', updateTransaction);
+        
+                        // Update the transaction data
+                        await crudp('transactions', id, 'PUT', JSON.stringify(updateTransaction));
+                        refreshTables(tablesArr);
+                        updateTransactionsTable();
+                        document.getElementById('remainingToPay').textContent = remainToPay;
+                    } else {
+                        console.log('No existing transaction!');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
             } else {
                 console.log('This was logged in the callback: ' + result);
             }
-        }
+        }        
     });
 };
