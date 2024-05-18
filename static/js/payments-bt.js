@@ -160,7 +160,7 @@ function delPayment (id) {
                     // Fetch transactions and payments simultaneously
                     const [transactionData, paymentsData] = await Promise.all([
                         listCurrentWlTransaction(), 
-                        listWlPayments()
+                        listCurrentWlPayments()
                     ]);
         
                     let currentTransaction = transactionData.items.length > 0 ? transactionData.items[0] : {},
@@ -196,6 +196,7 @@ function delPayment (id) {
                         refreshTables(tablesArr);
                         updateTransactionsTable();
                         document.getElementById('remainingToPay').textContent = remainToPay;
+                        document.getElementById('remainingToPayModal').textContent = remainToPay;
                     } else {
                         console.log('No existing transaction!');
                     }

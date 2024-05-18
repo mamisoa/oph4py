@@ -61,8 +61,9 @@ async function listCurrentWlTransaction() {
             throw new Error('Network response was not ok');
         }
         const data = await response.json();
-
-        document.getElementById('remainingToPay').textContent = data.items[0].price - data.items[0].paid;
+        let remainingToPay = data.items[0].price - data.items[0].paid;
+        document.getElementById('remainingToPay').textContent = remainingToPay;
+        document.getElementById('remainingToPayModal').textContent = remainingToPay;
         return data;
 
     } catch (error) {
@@ -90,13 +91,6 @@ async function listCurrentWlPayments() {
             throw new Error('Network response was not ok');
         }
         const data = await response.json();
-
-        if (data.items.length >0) {
-            document.getElementById('remainingToPay').textContent = data.items[0].price;
-        } else {
-            document.getElementById('remainingToPay').textContent = 0;
-        }
-
         return data;
 
     } catch (error) {
@@ -285,7 +279,6 @@ function createBreakdownTableFromData(items) {
             </tr>    
         </table>
         `;
-    // document.getElementById('remainingToPay').textContent = item.price;
     document.getElementById('remainPayment').textContent = item.price;
 
     return table;
@@ -368,6 +361,7 @@ document.getElementById('recordPayment').addEventListener('click', function() {
                             refreshTables(tablesArr);
                             updateTransactionsTable();
                             document.getElementById('remainingToPay').textContent = remainToPay;
+                            document.getElementById('remainingToPayModal').textContent = remainToPay;
                             document.getElementById("paymentFormModal").reset();
                         })
                 } else {
