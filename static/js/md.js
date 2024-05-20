@@ -998,17 +998,12 @@ $("#codeSelection input[name=code]").autoComplete({
 		const bodyRow = document.createElement("tr");
 		bodyRow.innerHTML = `
                     <td>${item.code ?? ""}</td>
-                    <td>${item.code_desc.substring(0, 30) ?? ""}</td>
-                    <td>${
-											round2supint(
-												JSON.parse(item.price_list)[0] * item.supplement_ratio
-											) ?? ""
-										}</td>
+                    <td>${item.code_desc ?? ""}</td>
+                    <td>${round2supint(JSON.parse(item.price_list)[0] * item.supplement_ratio) ?? ""}</td>
                     <td>${JSON.parse(item.price_list)[1] ?? ""}</td>
                 `; // <td>${new Date().toLocaleDateString()}</td>
 		tbody.appendChild(bodyRow);
 		table.appendChild(tbody);
-
 		// Clear any existing content and add the new table
 		codeDescriptionDiv.innerHTML = "";
 		codeDescriptionDiv.appendChild(table);
@@ -1021,7 +1016,7 @@ $("#codeSelection input[name=code]").autoComplete({
 // text code autocomplete
 $("#codeTextSelection input[name=codeText]").autoComplete({
 	bootstrapVersion: "4",
-	minLength: "1",
+	minLength: "4",
 	resolverSettings: {
 		url: API_NOMENCLATURE,
 		queryKey: "code_desc.contains",
@@ -1034,6 +1029,7 @@ $("#codeTextSelection input[name=codeText]").autoComplete({
 		},
 	},
 	formatResult: function (item) {
+		// console.log('item autocomplete:',item)
 		// Get the div where the table will be placed
 		const codeDescriptionDiv = document.getElementById("listCodeDescription");
 
@@ -1056,14 +1052,11 @@ $("#codeTextSelection input[name=codeText]").autoComplete({
 		// Create the body row
 		const tbody = document.createElement("tbody");
 		const bodyRow = document.createElement("tr");
+		// console.log("item price_list:", JSON.parse(item.price_list)[0] * item.supplement_ratio);
 		bodyRow.innerHTML = `
                     <td>${item.code ?? ""}</td>
-                    <td>${item.code_desc.substring(0, 30) ?? ""}</td>
-                    <td>${
-											JSON.parse(
-												round2supint(item.price_list)[0] * item.supplement_ratio
-											) ?? ""
-										}</td>
+                    <td>${item.code_desc ?? ""}</td>
+                    <td>${round2supint(JSON.parse(item.price_list)[0] * item.supplement_ratio) ?? ""}</td>
                     <td>${JSON.parse(item.price_list)[1] ?? ""}</td>
                 `; // <td>${new Date().toLocaleDateString()}</td>
 		tbody.appendChild(bodyRow);
@@ -1088,7 +1081,7 @@ $("#codeSelection input[name=code]").on(
 $("#codeTextSelection input[name=codeText]").on(
 	"autocomplete.select",
 	function (evt, item) {
-		console.log(item);
+		console.log("desc item", item);
 		currentCodeObj = item;
 	}
 );
@@ -1118,12 +1111,7 @@ function updateTable(selectedComboId) {
 			row.innerHTML = `
                 <td>${nomenclature.code ?? ""}</td>
                 <td>${nomenclature.code_desc.substring(0, 30) ?? ""}</td>
-                <td>${
-									round2supint(
-										JSON.parse(nomenclature.price_list)[0] *
-											nomenclature.supplement_ratio
-									) ?? ""
-								}</td>
+                <td>${round2supint(JSON.parse(nomenclature.price_list)[0] *	nomenclature.supplement_ratio) ?? ""}</td>
                 <td>${JSON.parse(nomenclature.price_list)[1] ?? ""}</td>
             `; // <td>${new Date().toLocaleDateString()}</td>
 			codeListTable.appendChild(row);
