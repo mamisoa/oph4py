@@ -783,7 +783,7 @@ db.define_table('combo_codes',
 db.define_table(
     "nomenclature",
     Field("date", "datetime", required=True),
-    Field("code", "string", required=True),
+    Field("code", "string", unique=True, required=True),
     Field("code_desc", "string"),
     Field("note", "string"),
     Field(
@@ -870,3 +870,6 @@ db.define_table('invoices',
     Field('note', 'string'),
     auth.signature
     )
+
+# upload files
+db.define_table("upload", Field("file", "upload"), format="%(file)s")
