@@ -784,7 +784,7 @@ db.define_table(
     "nomenclature",
     Field("date", "datetime", required=True),
     Field("code", "string", unique=True, required=True),
-    Field("code_desc", "string"),
+    Field("code_desc", "text"),
     Field("note", "string"),
     Field(
         "price_list", "string", default="[0,0,0,0]"

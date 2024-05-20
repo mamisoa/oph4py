@@ -173,7 +173,7 @@ function delPayment (id) {
                     // console.log('Sum:', paymentsSum);
         
                     let updateTransaction = currentTransaction;
-        
+                    // FIXME: if price is changed in database, calculus get wrong -> should take values from database and not current table
                     if (Object.keys(currentTransaction).length > 0) {
                         let id = currentTransaction.id;
                         delete updateTransaction.id;
