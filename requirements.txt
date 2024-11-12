@@ -4,4 +4,4 @@ swig
 PyKCS11
 bottle
 pytz
-mysqlclient
+PyMySQL
