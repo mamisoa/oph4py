@@ -22,3 +22,4 @@ package.json
 node_modules/
 *.save
 .env
+.cursorrules

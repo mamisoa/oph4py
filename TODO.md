@@ -4,19 +4,17 @@ In DICOM, the Value Representation (VR) defines the data type and format of an a
 
 Certainly! Here's the information formatted in a table:
 
-| Tag       | Attribute             | VR   | Description                               |
-|-----------|-----------------------|------|-------------------------------------------|
-| 0x00100020 | Patient ID            | LO   | A unique identifier assigned to the patient. |
-| 0x00100010 | Patient's Name        | PN   | The name of the patient.                     |
-| 0x00100030 | Patient's Birth Date  | DA   | The birth date of the patient.               |
-| 0x00100040 | Patient's Sex         | CS   | The sex of the patient (e.g., M, F).         |
-| 0x00101010 | Patient's Age         | AS   | Age of the patient at the time the study was performed. |
+| Tag        | Attribute            | VR  | Description                                             |
+| ---------- | -------------------- | --- | ------------------------------------------------------- |
+| 0x00100020 | Patient ID           | LO  | A unique identifier assigned to the patient.            |
+| 0x00100010 | Patient's Name       | PN  | The name of the patient.                                |
+| 0x00100030 | Patient's Birth Date | DA  | The birth date of the patient.                          |
+| 0x00100040 | Patient's Sex        | CS  | The sex of the patient (e.g., M, F).                    |
+| 0x00101010 | Patient's Age        | AS  | Age of the patient at the time the study was performed. |
 
 The hexadecimal format of the tags is a commonly used representation in the DICOM standard and is often seen in the DICOM file headers and documentation.
 
 The VRs define how the information is stored and facilitate consistent interpretation and handling of these values by different DICOM-compliant systems. Different VRs accommodate different types of data, such as strings, numbers, dates, and more specialized types like Person Name, to reflect the nature and structure of the information.
-
-
 
 Doctor order a STUDY for a patient
 A STUDY contains SERIES, which are exams ordered by the doctor.
@@ -24,11 +22,11 @@ Each SERIE comes from one MODALITY, and contains several IMAGES.
 
 Certainly! Here's the information for the unique identifiers at the study, series, and image levels, formatted in a table with tags in hexadecimal format:
 
-| Tag       | Attribute             | VR   | Description                                         |
-|-----------|-----------------------|------|-----------------------------------------------------|
-| 0x0020000D | Study Instance UID    | UI   | Unique identifier for the study.                    |
-| 0x0020000E | Series Instance UID   | UI   | Unique identifier for a series within a study.      |
-| 0x00080018 | SOP Instance UID      | UI   | Unique identifier for an individual image or SOP instance. |
+| Tag        | Attribute           | VR  | Description                                                |
+| ---------- | ------------------- | --- | ---------------------------------------------------------- |
+| 0x0020000D | Study Instance UID  | UI  | Unique identifier for the study.                           |
+| 0x0020000E | Series Instance UID | UI  | Unique identifier for a series within a study.             |
+| 0x00080018 | SOP Instance UID    | UI  | Unique identifier for an individual image or SOP instance. |
 
 - **Study Level**
   - Tag: (0020,000D)
