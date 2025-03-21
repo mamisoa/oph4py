@@ -5,11 +5,12 @@
     .table td {
         text-align: center;
     }
+
     .table th {
         text-align: center;
     }
 </style>
-<link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
+<link href="[[=URL('static', 'js/bootstrap-table_1.22/bootstrap-table.min.css')]]" rel="stylesheet">
 [[ end ]]
 
 [[ block left_nav ]]
@@ -34,41 +35,35 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <table id="table-wl"
-                    data-toolbar="#toolbar-wl"
-                    data-id-field="id"
-                    data-toggle="table"
-                    data-side-pagination="server"
-                    data-show-refresh="true"
-                    data-pagination="true"
-                    data-page-size="25"
-                    data-show-columns="true"
-                    data-search="true"
-                    data-search-accent-neutralise="true"
-                    data-visible-search="false"
-                    data-query-params="queryParams_wl"
-                    data-response-handler="responseHandler_wl"
-                    data-row-style="rowStyle_wl"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    data-detail-formatter="detailFormatter_wl"
-                    data-detail-view-by-click="false"
-                    >
-                    <thead class="thead-dark">
-                        <th data-field="id" data-sortable="true">ID</th>
-                        <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
-                        <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">Receving facility:</th>
-                        <th data-field="procedure" data-searchable= "true" data-sortable="true">Procedure:</th>
-                        <th data-field="patient" data-searchable= "true" data-sortable="true">Patient:</th>
-                        <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
-                        <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
-                        <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
-                        <th data-field="laterality" data-sortable="false" data-searchable= "false">Laterality:</th>
-                        <th data-field="requested_time" data-sortable="true" data-searchable= "true">Timeslot:</th>
-                        <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
-                        <th data-field="operate" data-formatter="operateFormatter_wl" data-events="operateEvents_wl">Action</th>
-                    </thead>
-                </table>
+                    <table id="table-wl" data-toolbar="#toolbar-wl" data-id-field="id" data-toggle="table"
+                        data-side-pagination="server" data-show-refresh="true" data-pagination="true"
+                        data-page-size="25" data-show-columns="true" data-search="true"
+                        data-search-accent-neutralise="true" data-visible-search="false"
+                        data-query-params="queryParams_wl" data-response-handler="responseHandler_wl"
+                        data-row-style="rowStyle_wl" data-detail-view="true" data-detail-view-icon="true"
+                        data-detail-formatter="detailFormatter_wl" data-detail-view-by-click="false">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th data-field="id" data-sortable="true">ID</th>
+                                <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
+                                <th data-field="receiving_facility" data-title="Receiving facility"
+                                    data-sortable="true">
+                                    Receving facility:</th>
+                                <th data-field="procedure" data-searchable="true" data-sortable="true">Procedure:</th>
+                                <th data-field="patient" data-searchable="true" data-sortable="true">Patient:</th>
+                                <th data-field="provider" data-searchable="true" data-sortable="true">Provider:</th>
+                                <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
+                                <th data-field="modality" data-searchable="true" data-sortable="true">Modality:</th>
+                                <th data-field="laterality" data-sortable="false" data-searchable="false">Laterality:
+                                </th>
+                                <th data-field="requested_time" data-sortable="true" data-searchable="true">Timeslot:
+                                </th>
+                                <th data-field="status_flag" data-searchable="true" data-sortable="true">Status:</th>
+                                <th data-field="operate" data-formatter="operateFormatter_wl"
+                                    data-events="operateEvents_wl">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
@@ -81,67 +76,89 @@
 </div>
 
 [[ block js_scripts]]
-<script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
-<script src="js/bootbox/bootbox.all.min.js"></script>
-<script src="js/jquery.serialize-object.min.js"></script>
-<script src="js/useful.js"></script>
-<script src="js/files_bt.js"></script>
-<script type="text/javascript">
+<script src="[[=URL('static', 'js/bootstrap-table_1.22/bootstrap-table.min.js')]]"></script>
+<script src="[[=URL('static', 'js/bootbox/bootbox.all.min.js')]]"></script>
+<script src="[[=URL('static', 'js/jquery.serialize-object.min.js')]]"></script>
+<script src="[[=URL('static', 'js/useful.js')]]"></script>
+<script type="module">
+    // Import the module
+    import { init } from "[[=URL('static', 'js/files_bt.js')]]";
 
-// modality controllers
-var modalityDict = [[ = XML(modalityDict) ]];
+    // Global variables needed by our module
+    window.modalityDict = [[ = XML(modalityDict)]];
+    window.membership = [[=membership]];
+    window.HOSTURL = "[[=hosturl]]";
+    window.APP_NAME = "[[=app_name]]";
+    window.timeOffsetInHours = [[=timeOffset]];
 
-// init bootstrat-tables
-const membership = [[=membership]];
-const HOSTURL = "[[ = hosturl ]]";
+    // URLs for API access
+    const TODAY_DATE = new Date().addHours(window.timeOffsetInHours).toJSON().slice(0, 10);
+    const API_PROCEDURE_LIST = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
+    const API_PROCEDURE_LIST_MD = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id&modality_dest.modality_name.eq=MD';
+    const API_PROCEDURE_LIST_GP = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id&modality_dest.modality_name.eq=GP';
 
-// set tables
-const TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
-const API_PROCEDURE_LIST_MD = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id&modality_dest.modality_name.eq=MD';
-const API_PROCEDURE_LIST_GP = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id&modality_dest.modality_name.eq=GP';
-var $table_wl = $('#table-wl').bootstrapTable({
-    url: API_PROCEDURE_LIST_MD,
-    formatSearch: function () {
-        return 'Last name,first name,procedure,modality';
-    }
-});
+    // Initialize window variables used by functions in module
+    window.timer_id = [];
+    window.API_PROCEDURE_LIST = API_PROCEDURE_LIST;
+    window.API_PROCEDURE_LIST_MD = API_PROCEDURE_LIST_MD;
+    window.API_PROCEDURE_LIST_GP = API_PROCEDURE_LIST_GP;
 
-// hide columns in wl table: id, sending_facility, receiving_facility
-$table_wl.bootstrapTable('hideColumn','id');
-$table_wl.bootstrapTable('hideColumn','sending_facility');
-$table_wl.bootstrapTable('hideColumn','receiving_facility');
+    // Wait for document to be ready and module functions to be registered in global scope
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("DOM loaded, initializing files_bt");
 
-// Fires after the table body is rendered and available in the DOM, the parameters contain data
-$('#table-wl').on('post-body.bs.table', function () {
+        // Initialize the module
+        try {
+            init();
+            console.log("Module initialized successfully");
 
-});
+            // Initialize the table after the module has initialized its global functions
+            window.$table_wl = $('#table-wl').bootstrapTable({
+                url: API_PROCEDURE_LIST_MD,
+                formatSearch: function () {
+                    return 'Last name,first name,procedure,modality';
+                }
+            });
 
-$( document ).ready(function() {
-    if (window.performance.getEntriesByType('navigation')[0].type == 'back-forward') {
-        $('#table-wl').bootstrapTable('refresh');
-    };
-});
+            // hide columns in wl table: id, sending_facility, receiving_facility
+            window.$table_wl.bootstrapTable('hideColumn', 'id');
+            window.$table_wl.bootstrapTable('hideColumn', 'sending_facility');
+            window.$table_wl.bootstrapTable('hideColumn', 'receiving_facility');
 
-$('#btnFullList').click(function () {
-    $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST
+            // Fires after the table body is rendered and available in the DOM
+            $('#table-wl').on('post-body.bs.table', function () {
+                console.log("Table body rendered");
+            });
+
+            // Check if we're coming back via browser back button
+            if (window.performance.getEntriesByType('navigation')[0].type == 'back-forward') {
+                $('#table-wl').bootstrapTable('refresh');
+            }
+
+            // Set up button handlers
+            $('#btnFullList').click(function () {
+                $('#table-wl').bootstrapTable('refreshOptions', {
+                    url: API_PROCEDURE_LIST
+                });
+            });
+
+            $('#btnMdList').click(function () {
+                $('#table-wl').bootstrapTable('refreshOptions', {
+                    url: API_PROCEDURE_LIST_MD
+                });
+            });
+
+            $('#btnGpList').click(function () {
+                $('#table-wl').bootstrapTable('refreshOptions', {
+                    url: API_PROCEDURE_LIST_GP
+                });
+            });
+
+            console.log("Table initialization complete");
+        } catch (error) {
+            console.error("Error initializing bootstrap-table:", error);
+        }
     });
-});
-
-$('#btnMdList').click(function () {
-    $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST_MD
-    });
-});
-
-$('#btnGpList').click(function () {
-    $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST_GP
-    });
-});
-
-
 </script>
-<script src="js/files.js"></script>
+<script src="[[=URL('static', 'js/files.js')]]"></script>
 [[ end ]]
