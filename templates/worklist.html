@@ -46,7 +46,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <table id="table-wl" data-toolbar="#toolbar-wl" data-id-field="id" data-toggle="table"
+                    <table id="table-wl" data-toolbar="#toolbar-wl" data-id-field="id"
                         data-side-pagination="server" data-show-refresh="true" data-pagination="true"
                         data-page-size="25" data-show-columns="true" data-search="true"
                         data-search-accent-neutralise="true" data-visible-search="false"
@@ -434,152 +434,120 @@
 <script src="js/jquery.serialize-object.min.js"></script>
 <script src="js/timer.jquery.min.js"></script>
 <script src="js/useful.js"></script>
-<script type="module" src="js/users_bt.js"></script>
-<script src="js/users.js"></script>
-<script type="module" src="js/wl_bt.js"></script>
-<script type="module" src="js/wl.js"></script>
 <script type="text/javascript">
-
-    // modality controllers
-    let modalityDict = [[ = XML(modalityDict)]];
-    let multiplemod = [[ = multiplemod]];
-
-    // Fill the select options
-    let practitionerDict = [[ = XML(practitionerDict)]]
-    let providerDict = [[ = XML(providerDict)]]
-    function fillSelect() {
-        let select = document.getElementById("selectPractitioner");
-        for (let value in practitionerDict) {
-            let option = document.createElement("option");
-            option.value = practitionerDict[value];
-            option.text = value;
-            select.add(option);
-        }
-        select = document.getElementById("selectProvider");
-        for (let value in providerDict) {
-            let option = document.createElement("option");
-            option.value = providerDict[value];
-            option.text = value;
-            select.add(option);
-        }
-    }
-
-    // Load when DOM is loaded
-    document.addEventListener("DOMContentLoaded", function (event) {
-        // Lancer la fonction fillSelect
-        fillSelect();
-    });
-
-    // for timer
-    let timer_id = [];
-
-    // init bootstrat-tables
-    const membership = [[=membership]];
-    const HOSTURL = "[[ = hosturl ]]";
-    const LOCAL_BEID = "[[ = localbeid ]]";
-
-    // set tables
-    const TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0, 10);
-    const API_USER_LIST = HOSTURL + '[[=URL('api','auth_user')]]' + '?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
-    const API_PROCEDURE_LIST = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
-    const API_PROCEDURE_LIST_TODAY = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&created_on.gt=' + TODAY_DATE + '&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
-
-
-    var $table = $('#table').bootstrapTable({
-        url: API_USER_LIST,
-        formatSearch: function () {
-            return 'Last name,first name, gender';
-        }
-    });
-
-    var $table_wl = $('#table-wl').bootstrapTable({
-        url: API_PROCEDURE_LIST_TODAY,
-        formatSearch: function () {
-            return 'Last name,first name,procedure,modality';
-        }
-    });
-
-    // hide columns in wl table: id, sending_facility, receiving_facility
-    $table_wl.bootstrapTable('hideColumn', 'id');
-    $table_wl.bootstrapTable('hideColumn', 'sending_facility');
-    $table_wl.bootstrapTable('hideColumn', 'receiving_facility');
-
-    // Fires after the table body is rendered and available in the DOM, the parameters contain data
-    $('#table-wl').on('post-body.bs.table', function () {
-        set_timers(timer_id);
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-    });
-
-    var timeoutID = window.setInterval(function () {
-        // console.log("Refreshing wl table!");
-        $('#table-wl').bootstrapTable('refresh');
-    }, 40000);
-
-    $(document).ready(function () {
-        if (window.performance.getEntriesByType('navigation')[0].type == 'back-forward') {
-            $('#table-wl').bootstrapTable('refresh');
-        };
-    });
-
-    function getFilterStatus() {
-        let key = "";
-        if (document.getElementById("selectPractitioner").value != "") {
-            if (document.getElementById("selectProvider").value != "") {
-                // provider AND senior selected
-                key = "&senior.id=" + document.getElementById("selectPractitioner").value + "&provider.id=" + document.getElementById("selectProvider").value
-            } else {
-                // ONLY senior selected
-                key = "&senior.id=" + document.getElementById("selectPractitioner").value
+    // Initialize global variables
+    window.modalityDict = [[=XML(modalityDict)]];
+    window.multiplemod = [[=multiplemod]];
+    window.practitionerDict = [[=XML(practitionerDict)]];
+    window.providerDict = [[=XML(providerDict)]];
+    window.membership = [[=membership]];
+    window.HOSTURL = "[[=hosturl]]";
+    window.LOCAL_BEID = "[[=localbeid]]";
+    window.timer_id = [];
+    window.timeOffset = 0;
+    window.TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0, 10);
+    window.API_USER_LIST = window.HOSTURL + "[[=URL('api','auth_user')]]" + "?@lookup=gender:gender[id,sex]&@order=~id&@count=true";
+    window.API_PROCEDURE_LIST = window.HOSTURL + "[[=URL('api','worklist')]]" + "?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id";
+    window.API_PROCEDURE_LIST_TODAY = window.HOSTURL + "[[=URL('api','worklist')]]" + "?@count=true&created_on.gt=" + window.TODAY_DATE + "&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id";
+</script>
+<script type="module">
+    // Import and initialize modules
+    import { init as initWlBt } from "./js/wl_bt.js";
+    import { init as initUsersBt } from "./js/users_bt.js";
+    
+    // Initialize modules and tables in sequence
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            console.log("Initializing modules...");
+            
+            // Wait for global variables to be set
+            if (!window.modalityDict || !window.providerDict || !window.practitionerDict) {
+                throw new Error("Required global variables not initialized");
             }
-        } else {
-            // no senior selected
-            if (document.getElementById("selectProvider").value != "") {
-                // ONLY provider selected
-                key = "&provider.id=" + document.getElementById("selectProvider").value
-            } else {
-                // NO selection
+            
+            // Initialize modules first
+            await Promise.all([
+                initWlBt(),
+                initUsersBt()
+            ]);
+            
+            console.log("Modules initialized successfully");
+            
+            // Verify that required functions are exposed
+            const requiredFunctions = [
+                'queryParams_wl',
+                'responseHandler_wl',
+                'operateFormatter_wl',
+                'operateEvents_wl',
+                'rowStyle_wl',
+                'detailFormatter_wl',
+                'counterFormatter_wl',
+                'rowAttributes_wl',
+                'cellStyle_timeslot',
+                'set_timers',
+                'getFilterStatus'
+            ];
+
+            // Check each function individually with detailed logging
+            for (const funcName of requiredFunctions) {
+                const funcType = typeof window[funcName];
+                console.log(`Checking ${funcName}: ${funcType}`);
+                
+                if (funcType !== 'function' && funcType !== 'object') {
+                    throw new Error(`Missing or invalid function: ${funcName} (type: ${funcType})`);
+                }
             }
+            
+            // Initialize users table
+            const $table = $('#table').bootstrapTable({
+                url: window.API_USER_LIST,
+                formatSearch: function () {
+                    return 'Last name,first name, gender';
+                }
+            });
+
+            // Initialize worklist table
+            const $table_wl = $('#table-wl').bootstrapTable({
+                url: window.API_PROCEDURE_LIST_TODAY,
+                formatSearch: function () {
+                    return 'Last name,first name,procedure,modality';
+                }
+            });
+
+            // Store table reference globally for event handlers
+            window.$table_wl = $table_wl;
+
+            // Hide columns in wl table
+            $table_wl.bootstrapTable('hideColumn', 'id');
+            $table_wl.bootstrapTable('hideColumn', 'sending_facility');
+            $table_wl.bootstrapTable('hideColumn', 'receiving_facility');
+
+            // Set up post-body event handler
+            $('#table-wl').on('post-body.bs.table', function () {
+                if (typeof window.set_timers === 'function' && Array.isArray(window.timer_id)) {
+                    window.set_timers(window.timer_id);
+                }
+                
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            });
+
+            // Auto refresh table
+            var timeoutID = window.setInterval(function () {
+                $('#table-wl').bootstrapTable('refresh');
+            }, 40000);
+
+            // Refresh on back/forward navigation
+            if (window.performance.getEntriesByType('navigation')[0].type === 'back_forward') {
+                $('#table-wl').bootstrapTable('refresh');
+            }
+            
+            console.log("Tables initialized successfully");
+        } catch (error) {
+            console.error("Error during initialization:", error);
         }
-        return key;
-    }
-
-    $('#btnFullList').click(function () {
-        let key = getFilterStatus();
-        console.log("key: ", key)
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST + key
-        })
     });
-
-    $('#btnTodaysList').click(function () {
-        let key = getFilterStatus();
-        console.log("key: ", key)
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST_TODAY + key
-        })
-    });
-
-    $('#selectPractitioner').change(function () {
-        console.log('select senior change:', $(this).val());
-        let key = getFilterStatus();
-        console.log("key: ", key);
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST_TODAY + key
-        })
-    });
-
-    $('#selectProvider').change(function () {
-        console.log('select provider change:', $(this).val());
-        let key = getFilterStatus();
-        console.log("key: ", key);
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST_TODAY + key
-        })
-    });
-
-
 </script>
 [[ end ]]

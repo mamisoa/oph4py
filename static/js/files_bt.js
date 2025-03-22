@@ -350,10 +350,9 @@ function rowAttributes_wl(row, index) {
 	};
 }
 
-// Initialize and export functions
 function init() {
 	console.log("Initializing files_bt.js");
-
+	
 	// Expose functions to global scope for bootstrap-table
 	window.queryParams_wl = queryParams_wl;
 	window.responseHandler_wl = responseHandler_wl;
@@ -366,10 +365,7 @@ function init() {
 	window.rowAttributes_wl = rowAttributes_wl;
 }
 
-// Remove automatic initialization - let the HTML template do it
-// document.addEventListener("DOMContentLoaded", init);
-
-// Export functions for use in other modules
+// Export all functions
 export {
 	init,
 	queryParams_wl,

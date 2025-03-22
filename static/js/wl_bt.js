@@ -2,11 +2,20 @@
 import { UiService } from "./services/UiService.js";
 import { ApiService } from "./services/ApiService.js";
 
-// set parameters for ajax request from bootstrap-table
-var s_wl = "";
-var toggle_wl = "";
-// add visibility to main modalities
+// Initialize variables
+let s_wl = "";
+let toggle_wl = "";
 let mainModalityArr = ["MD", "GP"];
+
+/**
+ * Capitalize the first letter of a string
+ * @param {string} string - The string to capitalize
+ * @returns {string} The capitalized string
+ */
+function capitalize(string) {
+	if (!string) return '';
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 function queryParams_wl(params) {
 	let search = params.search ? params.search.split(",") : [""];
@@ -152,6 +161,35 @@ function operateFormatter_wl(value, row, index) {
 	return html.join("");
 }
 
+/**
+ * Set worklist item status
+ * @param {string} dataStr - JSON string containing the data to update
+ * @returns {Promise} Promise resolving with the API response
+ */
+async function setWlItemStatus(dataStr) {
+	try {
+		const response = await fetch(window.HOSTURL + "/oph4py/api/worklist/" + JSON.parse(dataStr).id, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: dataStr
+		});
+		
+		if (!response.ok) {
+			throw new Error(`HTTP error ${response.status}`);
+		}
+		
+		return await response.json();
+	} catch (error) {
+		console.error("Error updating worklist item status:", error);
+		throw error;
+	}
+}
+
+/**
+ * Event handlers for worklist operations
+ */
 const operateEvents_wl = {
 	"click .edit": function (e, value, row, index) {
 		console.log("You click action EDIT on row: " + JSON.stringify(row));
@@ -182,7 +220,7 @@ const operateEvents_wl = {
 			}
 			dataStr = JSON.stringify(dataObj);
 			setWlItemStatus(dataStr).then(function () {
-				$table_wl.bootstrapTable("refresh");
+				window.$table_wl.bootstrapTable("refresh");
 			});
 		}
 	},
@@ -194,7 +232,7 @@ const operateEvents_wl = {
 			dataObj["counter"] = 0;
 			dataStr = JSON.stringify(dataObj);
 			setWlItemStatus(dataStr).then(function () {
-				$table_wl.bootstrapTable("refresh");
+				window.$table_wl.bootstrapTable("refresh");
 			});
 		}
 	},
@@ -206,21 +244,22 @@ const operateEvents_wl = {
 			dataObj["counter"] = row.counter;
 			dataStr = JSON.stringify(dataObj);
 			setWlItemStatus(dataStr).then(function () {
-				$table_wl.bootstrapTable("refresh");
+				window.$table_wl.bootstrapTable("refresh");
 			});
 		}
-		let controller = modalityDict[row.modality];
-		let link =
-			HOSTURL + "/" + APP_NAME + "/modalityCtr/" + controller + "/" + row.id;
+		const APP_NAME = "oph4py"; // Set app name constant
+		const controller = window.modalityDict[row.modality];
+		const link = window.HOSTURL + "/" + APP_NAME + "/modalityCtr/" + controller + "/" + row.id;
 		window.location.href = link;
 	},
 	"click .summary": function (e, value, row, index) {
-		let link =
-			HOSTURL + "/" + APP_NAME + "/billing/summary/" + row.id_auth_user;
+		const APP_NAME = "oph4py"; // Set app name constant
+		const link = window.HOSTURL + "/" + APP_NAME + "/billing/summary/" + row.id_auth_user;
 		window.location.href = link;
 	},
 	"click .payments": function (e, value, row, index) {
-		let link = HOSTURL + "/" + APP_NAME + "/billing/payments/" + row.id;
+		const APP_NAME = "oph4py"; // Set app name constant
+		const link = window.HOSTURL + "/" + APP_NAME + "/billing/payments/" + row.id;
 		window.location.href = link;
 	},
 	"click .unlock": function (e, value, row, index) {
@@ -231,11 +270,10 @@ const operateEvents_wl = {
 			dataObj["counter"] = 1;
 			dataStr = JSON.stringify(dataObj);
 			setWlItemStatus(dataStr).then(function () {
-				$table_wl.bootstrapTable("refresh");
+				window.$table_wl.bootstrapTable("refresh");
 			});
-		} else {
 		}
-	},
+	}
 };
 
 function rowStyle_wl(row, value) {
@@ -260,7 +298,7 @@ function rowStyle_wl(row, value) {
 function detailFormatter_wl(index, row) {
 	let lastmodif = Date.parse(row.created_on);
 	var rightnow = new Date();
-	let elapse = Math.round((rightnow - lastmodif) / 1000) - timeOffset;
+	let elapse = Math.round((rightnow - lastmodif) / 1000) - (window.timeOffset || 0);
 	let waiting = secondsToHMS(elapse);
 	timer_id.push("#waiting_" + row.id);
 	let html = ['<div class="container-fluid"><div class="row">'];
@@ -342,7 +380,7 @@ function counterFormatter_wl(value, row) {
 	var rightnow = new Date();
 	// console.log('Rightnow:'+row.id,rightnow);
 	// console.log('Lastmodif:'+row.id,lastmodif);
-	let elapse = Math.round((rightnow - lastmodif) / 1000) - timeOffset;
+	let elapse = Math.round((rightnow - lastmodif) / 1000) - (window.timeOffset || 0);
 	// console.log('elapse:'+row.id,elapse);
 	let elapsestyle = "bg-light text-dark";
 	if (elapse >= 30 * 60 && elapse <= 45 * 60) {
@@ -398,7 +436,99 @@ function rowAttributes_wl(row, index) {
 	};
 }
 
-// Initialize and export functions
+/**
+ * Set timers for worklist items
+ * @param {Array} timerIds - Array of timer IDs to initialize
+ */
+function set_timers(timerIds) {
+	if (!timerIds || !Array.isArray(timerIds)) {
+		console.warn('No timer IDs provided or invalid format');
+		return;
+	}
+
+	timerIds.forEach(timerId => {
+		const element = document.querySelector(timerId);
+		if (element) {
+			const currentValue = parseInt(element.textContent);
+			if (!isNaN(currentValue)) {
+				element.textContent = secondsToHMS(currentValue);
+			}
+		}
+	});
+}
+
+/**
+ * Convert seconds to HH:MM:SS format
+ * @param {number} secs - Number of seconds to convert
+ * @returns {string} Time in HH:MM:SS format
+ */
+function secondsToHMS(secs) {
+	const hours = Math.floor(secs / 3600);
+	const minutes = Math.floor((secs % 3600) / 60);
+	const seconds = Math.floor(secs % 60);
+	return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Style the timeslot cell
+ * @param {string} value - The cell value
+ * @param {Object} row - The row data
+ * @param {number} index - The row index
+ * @returns {Object} CSS styles for the cell
+ */
+function cellStyle_timeslot(value, row, index) {
+	return {
+		css: {
+			'white-space': 'nowrap',
+			'font-weight': 'bold'
+		}
+	};
+}
+
+/**
+ * Fill select elements with options from dictionaries
+ */
+function fillSelect() {
+	// Fill practitioner select
+	const practitionerSelect = $('#selectPractitioner');
+	if (practitionerSelect.length && window.practitionerDict) {
+		practitionerSelect.empty();
+		practitionerSelect.append('<option value="">No filter</option>');
+		Object.entries(window.practitionerDict).forEach(([id, name]) => {
+			practitionerSelect.append(`<option value="${id}">${name}</option>`);
+		});
+	}
+
+	// Fill provider select
+	const providerSelect = $('#selectProvider');
+	if (providerSelect.length && window.providerDict) {
+		providerSelect.empty();
+		providerSelect.append('<option value="">No filter</option>');
+		Object.entries(window.providerDict).forEach(([id, name]) => {
+			providerSelect.append(`<option value="${id}">${name}</option>`);
+		});
+	}
+}
+
+/**
+ * Get filter status from select elements
+ * @returns {string} Query string with filter parameters
+ */
+function getFilterStatus() {
+	let key = '';
+	const practitioner = $('#selectPractitioner').val();
+	const provider = $('#selectProvider').val();
+	
+	if (practitioner) {
+		key += `&senior.id.eq=${practitioner}`;
+	}
+	if (provider) {
+		key += `&provider.id.eq=${provider}`;
+	}
+	return key;
+}
+
+// Initialize and expose functions to global scope
 function init() {
 	console.log("Initializing wl_bt.js");
 
@@ -406,14 +536,70 @@ function init() {
 	window.queryParams_wl = queryParams_wl;
 	window.responseHandler_wl = responseHandler_wl;
 	window.operateFormatter_wl = operateFormatter_wl;
-	window.operateEvents_wl = operateEvents_wl;
+	window.operateEvents_wl = operateEvents_wl;  // Direct assignment, not calling a function
 	window.rowStyle_wl = rowStyle_wl;
 	window.detailFormatter_wl = detailFormatter_wl;
 	window.counterFormatter_wl = counterFormatter_wl;
 	window.rowAttributes_wl = rowAttributes_wl;
+	window.cellStyle_timeslot = cellStyle_timeslot;
+	window.set_timers = set_timers;
+	window.secondsToHMS = secondsToHMS;
+	window.getFilterStatus = getFilterStatus;
+	window.setWlItemStatus = setWlItemStatus;
+
+	// Add debug logging
+	console.log("Function exports check:");
+	console.log("operateEvents_wl:", typeof window.operateEvents_wl, window.operateEvents_wl);
+	console.log("All functions exposed successfully");
+
+	// Initialize event handlers after exposing functions
+	$('#btnFullList').click(function () {
+		let key = getFilterStatus();
+		console.log("key: ", key)
+		$('#table-wl').bootstrapTable('refreshOptions', {
+			url: window.API_PROCEDURE_LIST + key
+		})
+	});
+
+	$('#btnTodaysList').click(function () {
+		let key = getFilterStatus();
+		console.log("key: ", key)
+		$('#table-wl').bootstrapTable('refreshOptions', {
+			url: window.API_PROCEDURE_LIST_TODAY + key
+		})
+	});
+
+	$('#selectPractitioner').change(function () {
+		console.log('select senior change:', $(this).val());
+		let key = getFilterStatus();
+		console.log("key: ", key);
+		$('#table-wl').bootstrapTable('refreshOptions', {
+			url: window.API_PROCEDURE_LIST_TODAY + key
+		})
+	});
+
+	$('#selectProvider').change(function () {
+		console.log('select provider change:', $(this).val());
+		let key = getFilterStatus();
+		console.log("key: ", key);
+		$('#table-wl').bootstrapTable('refreshOptions', {
+			url: window.API_PROCEDURE_LIST_TODAY + key
+		})
+	});
+
+	// Initialize modality controllers
+	window.modalityDict = window.modalityDict || {};
+	window.multiplemod = window.multiplemod || [];
+
+	// Initialize practitioner and provider dictionaries
+	window.practitionerDict = window.practitionerDict || {};
+	window.providerDict = window.providerDict || {};
+
+	// Initialize select options
+	fillSelect();
 }
 
-// Export functions for use in other modules
+// Export functions
 export {
 	init,
 	queryParams_wl,
@@ -424,4 +610,8 @@ export {
 	detailFormatter_wl,
 	counterFormatter_wl,
 	rowAttributes_wl,
+	cellStyle_timeslot,
+	fillSelect,
+	getFilterStatus,
+	setWlItemStatus
 };

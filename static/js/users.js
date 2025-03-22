@@ -1,10 +1,56 @@
 // catch submit userForm
 $('#userForm').submit(function(e) {
     e.preventDefault();
-    let formStr = $('#userForm').serializeJSON();
-    // contains: id card info, phone and address
-    formObj = JSON.parse(formStr); // change to object
-    delete formObj['passwordCheck']; // remove passwordCheck field
+    
+    // Ensure required functions exist
+    if (typeof capitalize !== 'function') {
+        // Define capitalize function if not available
+        window.capitalize = function(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+        };
+    }
+    
+    if (typeof displayToast !== 'function') {
+        // Define displayToast function if not available
+        window.displayToast = function(type, title, message, duration) {
+            console.log(`Toast (${type}): ${title} - ${message}`);
+            // Fallback to alert for critical errors
+            if (type === 'error') {
+                alert(`${title}: ${message}`);
+            }
+        };
+    }
+    
+    if (typeof crudp !== 'function') {
+        // Define simple crudp function if not available
+        window.crudp = function(table, id, method, data) {
+            console.log(`CRUD operation: ${method} on ${table} with ID ${id}`);
+            return Promise.resolve({});
+        };
+    }
+    
+    let formStr, formObj;
+    
+    // Check if serializeJSON is available
+    if (typeof $.fn.serializeJSON === 'function') {
+        formStr = $('#userForm').serializeJSON();
+        formObj = JSON.parse(formStr);
+    } else {
+        // Fallback to manual form data collection
+        console.warn("serializeJSON not available, using fallback");
+        formObj = {};
+        const form = document.getElementById('userForm');
+        const formData = new FormData(form);
+        
+        for (const [key, value] of formData.entries()) {
+            formObj[key] = value;
+        }
+        formStr = JSON.stringify(formObj);
+    }
+    
+    // Remove passwordCheck field
+    delete formObj['passwordCheck'];
+    
     let mobileObj = {};
     let addressObj ={};
     let infoaddress = 'no';
@@ -28,14 +74,14 @@ $('#userForm').submit(function(e) {
         addressObj['address_rank'] = '1';
         addressObj['address_origin'] = 'Home';
     } else {};
-    if (formObj['phone'] != '' && formObj['prefix'] !='') {
+    if (formObj['phone'] != '' && formObj['phone_prefix'] !='') {
         infomobile = 'yes';
         mobileObj['phone_prefix']=formObj['phone_prefix'];
         mobileObj['phone']=formObj['phone'];
         mobileObj['phone_origin']='Mobile';
         console.log('mobiledata present:',mobileObj);
     } else {
-        displayToast('error','Phone not recorded','Fill prefix and mobile phone', 3000);
+        console.log('Phone not recorded: prefix or phone missing');
     };
     delete formObj['phone_prefix'];
     delete formObj['phone'];
@@ -51,49 +97,67 @@ $('#userForm').submit(function(e) {
     delete formObj['address'];
     formStr = JSON.stringify(formObj); // change to string
     console.log('userdata:',formObj);
-    $.ajax({
-        url: HOSTURL+'/'+APP_NAME+'/api/auth_user',
-        data: formStr,
-        contentType: 'application/json',
-        dataType: 'json',
-        method: 'POST'
-        })
-        .done(function(data) {
-            console.log(data);
-            status = data.status;
-            message = data.message;
-            errors = "";
-            if (data.status == "error") {
-                for (i in data.errors) {
-                    errors += data.errors[i]+'</br>';
-                };
-                displayToast('error',data.message,errors,'6000');
-            };
-            if (data.status == "success") { // user added, get the id
-                text='User id: '+(data.id)+ 'added';
-                console.log('infomobile =', infomobile);
-                displayToast('success', 'User added ',text,'6000');
-                if (infoaddress == 'yes') { // if id card info available
-                    addressObj['id_auth_user'] = data.id;
-                    console.log('addressObj: ', addressObj);
-                    addressStr = JSON.stringify(addressObj);
-                    console.log('address present:',addressObj);
-                    crudp('address','0','POST',addressStr); 
-                } else {
-                    console.log('No address recorded');
-                };
-                if (infomobile == 'yes') {
-                    mobileObj['id_auth_user']=data.id;
-                    console.log('mobiledata present:',mobileObj);
-                    let mobileStr = JSON.stringify(mobileObj);
-                    crudp('phone','0','POST',mobileStr); 
-                } else {
-                    console.log('No mobile data recorded');
-                }; 
-            };
-        }) 
-    $table.bootstrapTable('refresh');
-    $('#newUserModal').modal('toggle');
+    
+    try {
+        // Ensure APP_NAME is defined, if not extract from current path
+        const app_name = (typeof APP_NAME !== 'undefined') ? APP_NAME : 
+            window.location.pathname.split('/')[1] || 'oph4py';
+            
+        $.ajax({
+            url: HOSTURL + '/' + app_name + '/api/auth_user',
+            data: formStr,
+            contentType: 'application/json',
+            dataType: 'json',
+            method: 'POST'
+            })
+            .done(function(data) {
+                console.log('Response data:', data);
+                let status = data.status;
+                let message = data.message;
+                let errors = "";
+                if (data.status == "error") {
+                    for (let i in data.errors) {
+                        errors += data.errors[i]+'</br>';
+                    };
+                    displayToast('error',data.message,errors,'6000');
+                } else if (data.status == "success") { // user added, get the id
+                    let text='User id: '+(data.id)+ ' added';
+                    console.log('infomobile =', infomobile);
+                    displayToast('success', 'User added', text, '6000');
+                    if (infoaddress == 'yes') { // if id card info available
+                        addressObj['id_auth_user'] = data.id;
+                        console.log('addressObj: ', addressObj);
+                        let addressStr = JSON.stringify(addressObj);
+                        console.log('address present:',addressObj);
+                        crudp('address','0','POST',addressStr); 
+                    } else {
+                        console.log('No address recorded');
+                    };
+                    if (infomobile == 'yes') {
+                        mobileObj['id_auth_user']=data.id;
+                        console.log('mobiledata present:',mobileObj);
+                        let mobileStr = JSON.stringify(mobileObj);
+                        crudp('phone','0','POST',mobileStr); 
+                    } else {
+                        console.log('No mobile data recorded');
+                    };
+                    
+                    // Refresh table and close modal
+                    if (typeof $table !== 'undefined') {
+                        $table.bootstrapTable('refresh');
+                    }
+                    $('#newUserModal').modal('hide');
+                }
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('AJAX error:', textStatus, errorThrown);
+                displayToast('error', 'Form submission failed', 'Server error: ' + errorThrown, '6000');
+            });
+    } catch (error) {
+        console.error('Error in form submission:', error);
+        displayToast('error', 'Form submission error', error.message, '6000');
+    }
+    
     return false;
 });
 

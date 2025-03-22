@@ -3,6 +3,9 @@ import { UiService } from "./services/UiService.js";
 
 // Initialize worklist form
 document.addEventListener("DOMContentLoaded", () => {
+	// Set default time offset if not defined
+	window.timeOffsetInHours = window.timeOffsetInHours || 0;
+	
 	// Initialize form
 	initializeForm();
 
@@ -68,16 +71,39 @@ function addEventListeners() {
  * Reset the worklist form to default values
  */
 function resetWlForm() {
-	const now = new Date();
-	now.setHours(now.getHours() + window.timeOffsetInHours);
+	try {
+		const now = new Date();
+		// Use a default offset of 0 if timeOffsetInHours is not defined
+		const offset = window.timeOffsetInHours || 0;
+		now.setHours(now.getHours() + offset);
 
-	document.getElementById("requested_time").value = now.toJSON().slice(0, 16);
-	document.querySelector("[name=laterality][value=both]").checked = true;
-	document.querySelector("[name=status_flag][value=requested]").checked = true;
-	document.querySelector("[name=warning]").value = "";
+		const requestedTimeInput = document.getElementById("requested_time");
+		if (requestedTimeInput) {
+			requestedTimeInput.value = now.toJSON().slice(0, 16);
+		}
 
-	const procedureSelect = document.getElementById("procedureSelect");
-	setModalityOptions(procedureSelect.value);
+		const lateralityInput = document.querySelector("[name=laterality][value=both]");
+		if (lateralityInput) {
+			lateralityInput.checked = true;
+		}
+
+		const statusInput = document.querySelector("[name=status_flag][value=requested]");
+		if (statusInput) {
+			statusInput.checked = true;
+		}
+
+		const warningInput = document.querySelector("[name=warning]");
+		if (warningInput) {
+			warningInput.value = "";
+		}
+
+		const procedureSelect = document.getElementById("procedureSelect");
+		if (procedureSelect) {
+			setModalityOptions(procedureSelect.value);
+		}
+	} catch (error) {
+		console.error("Error resetting form:", error);
+	}
 }
 
 /**
