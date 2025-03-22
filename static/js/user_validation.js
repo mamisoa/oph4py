@@ -17,6 +17,11 @@ var checkPassword = function(str) {
     };
 
 var checkForm = function(e) {
+    console.log("Running validation checkForm");
+    
+    // Initialize validation status
+    window.formValidationPassed = false;
+    
     if(this.username.value == "") {
         alert("Error: Username cannot be blank!");
         this.username.focus();
@@ -32,22 +37,64 @@ var checkForm = function(e) {
     }
     if(this.password.value != "" && this.password.value == this.passwordCheck.value) {
         if(!checkPassword(this.password.value)) {
-        alert("The password you have entered is not valid!");
+            alert("The password you have entered is not valid!");
+            this.password.focus();
+            e.preventDefault();
+            return;
+        }
+    } else {
+        alert("Error: Please check that you've entered and confirmed your password!");
         this.password.focus();
         e.preventDefault();
         return;
     }
-    } else {
-    alert("Error: Please check that you've entered and confirmed your password!");
-    this.password.focus();
-    e.preventDefault();
-    return;
-    };
-    // alert("Both username and password are VALID!");
+    
+    // Important: allow form to continue by not calling preventDefault if it passes validation
+    console.log("Form validation passed!");
+    
+    // Set a flag to indicate that validation passed
+    window.formValidationPassed = true;
 };
 
+// Wait for document to be fully loaded
+console.log("DOM loaded in user_validation.js");
 var userForm = document.getElementById("userForm");
-userForm.addEventListener("submit", checkForm, true);
+
+if (userForm) {
+    console.log("userForm found in user_validation.js");
+    
+    // Use a non-capturing listener that runs first but doesn't block other handlers
+    userForm.addEventListener("submit", function(e) {
+        console.log("Validation event listener triggered");
+        
+        // Initialize validation status
+        window.formValidationPassed = false;
+        
+        // Run validation but don't prevent other handlers from running
+        // by storing the result in a global variable instead of always preventing default
+        try {
+            checkForm.call(this, e);
+        } catch (error) {
+            console.error("Error during form validation:", error);
+            // Don't block submission on validation errors
+            window.formValidationPassed = true;
+        }
+        
+        // Log validation status
+        console.log("Form validation status:", window.formValidationPassed);
+        
+        // If validation passed, let the event continue to other handlers
+        // This is important - only prevent default if validation failed
+        if (!window.formValidationPassed) {
+            console.log("Validation failed, preventing form submission");
+            e.preventDefault();
+        } else {
+            console.log("Validation passed, allowing form submission to continue to other handlers");
+        }
+    }, false); // Use non-capturing phase
+} else {
+    console.warn("userForm not found in user_validation.js");
+}
 
 ////////////////////////////////////////
 // HTML5 form validation

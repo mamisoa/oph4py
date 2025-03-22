@@ -1,9 +1,64 @@
 // catch submit userForm
 $('#userForm').submit(function(e) {
+    console.log('Form submission started - users.js handler');
     e.preventDefault();
+    
+    // Check if validation.js has run and validated the form
+    if (typeof window.formValidationPassed === 'boolean' && !window.formValidationPassed) {
+        console.warn('Form validation failed in validation.js');
+        return false;
+    }
+    
+    // Check basic form validity
+    const form = this;
+    console.log('Form validity check:', form.checkValidity());
+    
+    // If the form doesn't pass HTML5 validation, show invalid fields
+    if (!form.checkValidity()) {
+        console.error('Form validation failed');
+        
+        // Find all invalid fields
+        const invalidFields = [];
+        Array.from(form.elements).forEach(input => {
+            if (!input.checkValidity()) {
+                invalidFields.push({
+                    name: input.name,
+                    id: input.id,
+                    validationMessage: input.validationMessage
+                });
+            }
+        });
+        
+        console.error('Invalid fields:', invalidFields);
+        
+        // Add explicit error message to the form
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'alert alert-danger';
+        errorMsg.textContent = 'Please fix the form errors before submitting';
+        
+        if (!document.querySelector('#userForm .alert.alert-danger')) {
+            form.prepend(errorMsg);
+            
+            // Remove the error after 3 seconds
+            setTimeout(() => {
+                if (errorMsg.parentNode) {
+                    errorMsg.parentNode.removeChild(errorMsg);
+                }
+            }, 3000);
+        }
+        
+        // Force the browser to show validation messages
+        form.reportValidity();
+        return false;
+    }
+    
+    // Check if jQuery is loaded
+    console.log('jQuery version:', $.fn.jquery);
+    console.log('Bootstrap version:', (typeof bootstrap !== 'undefined' ? 'loaded' : 'not loaded'));
     
     // Ensure required functions exist
     if (typeof capitalize !== 'function') {
+        console.log('capitalize function not found, creating fallback');
         // Define capitalize function if not available
         window.capitalize = function(string) {
             return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -11,6 +66,7 @@ $('#userForm').submit(function(e) {
     }
     
     if (typeof displayToast !== 'function') {
+        console.log('displayToast function not found, creating fallback');
         // Define displayToast function if not available
         window.displayToast = function(type, title, message, duration) {
             console.log(`Toast (${type}): ${title} - ${message}`);
@@ -22,6 +78,7 @@ $('#userForm').submit(function(e) {
     }
     
     if (typeof crudp !== 'function') {
+        console.log('crudp function not found, creating fallback');
         // Define simple crudp function if not available
         window.crudp = function(table, id, method, data) {
             console.log(`CRUD operation: ${method} on ${table} with ID ${id}`);
@@ -33,17 +90,20 @@ $('#userForm').submit(function(e) {
     
     // Check if serializeJSON is available
     if (typeof $.fn.serializeJSON === 'function') {
+        console.log('serializeJSON is available');
         formStr = $('#userForm').serializeJSON();
+        console.log('Raw serialized form:', formStr);
         formObj = JSON.parse(formStr);
     } else {
-        // Fallback to manual form data collection
         console.warn("serializeJSON not available, using fallback");
         formObj = {};
         const form = document.getElementById('userForm');
+        console.log('Form element found:', !!form);
         const formData = new FormData(form);
         
         for (const [key, value] of formData.entries()) {
             formObj[key] = value;
+            console.log(`Form field: ${key} = ${value}`);
         }
         formStr = JSON.stringify(formObj);
     }
@@ -51,38 +111,73 @@ $('#userForm').submit(function(e) {
     // Remove passwordCheck field
     delete formObj['passwordCheck'];
     
+    // Remove empty fields to prevent API validation errors
+    for (const key in formObj) {
+        if (formObj[key] === null || formObj[key] === undefined || 
+            (typeof formObj[key] === 'string' && formObj[key].trim() === '')) {
+            console.log(`Removing empty field: ${key}`);
+            delete formObj[key];
+        }
+    }
+    
     let mobileObj = {};
-    let addressObj ={};
+    let addressObj = {};
     let infoaddress = 'no';
     let infomobile = 'no';
     formObj['first_name'] = capitalize(formObj['first_name']);
     formObj['last_name'] = capitalize(formObj['last_name']);
+    
+    console.log('Form data after capitalization:', {
+        first_name: formObj['first_name'],
+        last_name: formObj['last_name']
+    });
+    
     // address only set if btnGetUserId pushed
     // only missing the id_auth_user after post
     if (formObj['ssn'] != '') {
+        console.log('SSN present, processing address');
         infoaddress = 'yes';
         let addressStr = formObj['address'];
-        console.log(addressStr);
+        console.log('Address string:', addressStr);
         const regex = /[-]?\d*\.\d+|[-]?\d+/gm;
-        addressArr = addressStr.match(regex);
-        addressObj['home_num'] = addressArr[0];
-        addressObj['box_num'] = addressArr[1] == undefined ? '' : addressArr[1];
-        addressObj['address1'] = addressArr == null ? addressStr : addressStr.split(addressArr[0])[0];
+        let addressArr = addressStr.match(regex);
+        console.log('Address regex matches:', addressArr);
+        
+        if (addressArr && addressArr.length > 0) {
+            addressObj['home_num'] = addressArr[0];
+            addressObj['box_num'] = addressArr[1] == undefined ? '' : addressArr[1];
+            addressObj['address1'] = addressStr.split(addressArr[0])[0];
+        } else {
+            console.log('No regex matches, using full address string');
+            addressObj['home_num'] = '';
+            addressObj['box_num'] = '';
+            addressObj['address1'] = addressStr;
+        }
+        
         addressObj['zipcode'] = formObj['zipcode'];
         addressObj['town'] = formObj['town'];
         addressObj['country'] = 'Belgique';
         addressObj['address_rank'] = '1';
         addressObj['address_origin'] = 'Home';
-    } else {};
+        console.log('Processed address object:', addressObj);
+    } else {
+        console.log('No SSN present, skipping address processing');
+    }
+    
     if (formObj['phone'] != '' && formObj['phone_prefix'] !='') {
+        console.log('Phone data present');
         infomobile = 'yes';
-        mobileObj['phone_prefix']=formObj['phone_prefix'];
-        mobileObj['phone']=formObj['phone'];
-        mobileObj['phone_origin']='Mobile';
-        console.log('mobiledata present:',mobileObj);
+        mobileObj['phone_prefix'] = formObj['phone_prefix'];
+        mobileObj['phone'] = formObj['phone'];
+        mobileObj['phone_origin'] = 'Mobile';
+        console.log('Mobile data:', mobileObj);
     } else {
         console.log('Phone not recorded: prefix or phone missing');
-    };
+        console.log('Phone:', formObj['phone']);
+        console.log('Phone prefix:', formObj['phone_prefix']);
+    }
+    
+    // Clean up form object - remove fields we've already processed
     delete formObj['phone_prefix'];
     delete formObj['phone'];
     delete formObj['home_num'];
@@ -95,69 +190,163 @@ $('#userForm').submit(function(e) {
     delete formObj['address_origin'];
     delete formObj['id_auth_user'];
     delete formObj['address'];
-    formStr = JSON.stringify(formObj); // change to string
-    console.log('userdata:',formObj);
+    
+    // Reserialize after cleanup
+    formStr = JSON.stringify(formObj);
+    console.log('Final form data to submit:', formObj);
     
     try {
-        // Ensure APP_NAME is defined, if not extract from current path
+        // Get app name and host URL
+        console.log('Checking app name and host URL');
         const app_name = (typeof APP_NAME !== 'undefined') ? APP_NAME : 
             window.location.pathname.split('/')[1] || 'oph4py';
-            
+        console.log('Using app_name:', app_name);
+        
+        if (typeof HOSTURL === 'undefined') {
+            console.warn('HOSTURL is undefined, using window.location.origin');
+            window.HOSTURL = window.location.origin;
+        }
+        console.log('Using HOSTURL:', HOSTURL);
+        
+        const apiUrl = HOSTURL + '/' + app_name + '/api/auth_user';
+        console.log('API URL for submission:', apiUrl);
+        
+        // Prevent modal from closing prematurely
+        $('#newUserModal').data('bs.modal')._config.backdrop = 'static';
+        $('#newUserModal').data('bs.modal')._config.keyboard = false;
+        
+        console.log('Starting AJAX request...');
         $.ajax({
-            url: HOSTURL + '/' + app_name + '/api/auth_user',
+            url: apiUrl,
             data: formStr,
             contentType: 'application/json',
             dataType: 'json',
-            method: 'POST'
-            })
-            .done(function(data) {
-                console.log('Response data:', data);
-                let status = data.status;
-                let message = data.message;
-                let errors = "";
-                if (data.status == "error") {
-                    for (let i in data.errors) {
-                        errors += data.errors[i]+'</br>';
-                    };
-                    displayToast('error',data.message,errors,'6000');
-                } else if (data.status == "success") { // user added, get the id
-                    let text='User id: '+(data.id)+ ' added';
-                    console.log('infomobile =', infomobile);
-                    displayToast('success', 'User added', text, '6000');
-                    if (infoaddress == 'yes') { // if id card info available
-                        addressObj['id_auth_user'] = data.id;
-                        console.log('addressObj: ', addressObj);
-                        let addressStr = JSON.stringify(addressObj);
-                        console.log('address present:',addressObj);
-                        crudp('address','0','POST',addressStr); 
-                    } else {
-                        console.log('No address recorded');
-                    };
-                    if (infomobile == 'yes') {
-                        mobileObj['id_auth_user']=data.id;
-                        console.log('mobiledata present:',mobileObj);
-                        let mobileStr = JSON.stringify(mobileObj);
-                        crudp('phone','0','POST',mobileStr); 
-                    } else {
-                        console.log('No mobile data recorded');
-                    };
-                    
-                    // Refresh table and close modal
-                    if (typeof $table !== 'undefined') {
-                        $table.bootstrapTable('refresh');
-                    }
-                    $('#newUserModal').modal('hide');
+            method: 'POST',
+            beforeSend: function(xhr) {
+                console.log('AJAX request starting, adding loading message');
+                $('#newUserModal .modal-content').append('<div class="alert alert-info">Processing, please wait...</div>');
+            }
+        })
+        .done(function(data) {
+            console.log('AJAX request completed successfully');
+            console.log('Response data:', data);
+            
+            let status = data.status;
+            let message = data.message;
+            let errors = "";
+            
+            console.log('Response status:', status);
+            
+            if (data.status == "error") {
+                console.log('Error response received');
+                console.log('Error details:', data.errors);
+                
+                for (let i in data.errors) {
+                    errors += data.errors[i]+'</br>';
                 }
-            })
-            .fail(function(jqXHR, textStatus, errorThrown) {
-                console.error('AJAX error:', textStatus, errorThrown);
-                displayToast('error', 'Form submission failed', 'Server error: ' + errorThrown, '6000');
-            });
+                
+                displayToast('error', data.message, errors, '6000');
+                console.log('Error toast displayed');
+                
+                // Remove static backdrop to allow closing
+                $('#newUserModal').data('bs.modal')._config.backdrop = true;
+                $('#newUserModal').data('bs.modal')._config.keyboard = true;
+                
+                // Remove processing message
+                $('#newUserModal .alert').remove();
+            } else if (data.status == "success") {
+                console.log('Success response with ID:', data.id);
+                
+                let text = 'User id: ' + (data.id) + ' added';
+                console.log('Success message:', text);
+                console.log('infomobile =', infomobile);
+                displayToast('success', 'User added', text, '6000');
+                
+                if (infoaddress == 'yes') {
+                    console.log('Adding address data for user ID:', data.id);
+                    addressObj['id_auth_user'] = data.id;
+                    let addressStr = JSON.stringify(addressObj);
+                    console.log('Address object to submit:', addressObj);
+                    crudp('address', '0', 'POST', addressStr)
+                        .then(function(result) {
+                            console.log('Address created result:', result);
+                        })
+                        .catch(function(err) {
+                            console.error('Address creation error:', err);
+                        });
+                } else {
+                    console.log('No address recorded');
+                }
+                
+                if (infomobile == 'yes') {
+                    console.log('Adding mobile data for user ID:', data.id);
+                    mobileObj['id_auth_user'] = data.id;
+                    let mobileStr = JSON.stringify(mobileObj);
+                    console.log('Mobile object to submit:', mobileObj);
+                    crudp('phone', '0', 'POST', mobileStr)
+                        .then(function(result) {
+                            console.log('Phone created result:', result);
+                        })
+                        .catch(function(err) {
+                            console.error('Phone creation error:', err);
+                        });
+                } else {
+                    console.log('No mobile data recorded');
+                }
+                
+                // Refresh table if it exists
+                if (typeof $table !== 'undefined' && $table && $table.bootstrapTable) {
+                    console.log('Refreshing table');
+                    $table.bootstrapTable('refresh');
+                } else {
+                    console.warn('$table not available or not a bootstrap table');
+                }
+                
+                // Remove processing message
+                $('#newUserModal .alert').remove();
+                
+                // Reset static backdrop setting
+                $('#newUserModal').data('bs.modal')._config.backdrop = true;
+                $('#newUserModal').data('bs.modal')._config.keyboard = true;
+                
+                console.log('Closing modal');
+                $('#newUserModal').modal('hide');
+            }
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('AJAX request failed');
+            console.error('Status:', textStatus);
+            console.error('Error:', errorThrown);
+            console.error('Response:', jqXHR.responseText);
+            
+            // Try to parse error response for more information
+            let errorMessage = errorThrown;
+            try {
+                const errorData = JSON.parse(jqXHR.responseText);
+                if (errorData.message) {
+                    errorMessage = errorData.message;
+                    console.error('Error message from server:', errorMessage);
+                }
+            } catch (e) {
+                console.error('Could not parse error response as JSON');
+            }
+            
+            // Remove processing message
+            $('#newUserModal .alert').remove();
+            
+            // Reset static backdrop setting
+            $('#newUserModal').data('bs.modal')._config.backdrop = true;
+            $('#newUserModal').data('bs.modal')._config.keyboard = true;
+            
+            displayToast('error', 'Form submission failed', 'Server error: ' + errorMessage, '6000');
+        });
     } catch (error) {
-        console.error('Error in form submission:', error);
+        console.error('Error in form submission process:', error);
+        console.error('Error stack:', error.stack);
         displayToast('error', 'Form submission error', error.message, '6000');
     }
     
+    console.log('Form handler completed, preventing default form submission');
     return false;
 });
 
@@ -331,3 +520,170 @@ document.getElementById('btnCheckUser').addEventListener('click', async function
         console.error('Error:', error);
       }
 });
+
+// Add direct handler for the submit button
+$(document).ready(function() {
+    console.log('Document ready, setting up handlers');
+    
+    // Test serializeJSON functionality
+    console.log('Testing serializeJSON plugin availability');
+    if (typeof $.fn.serializeJSON === 'function') {
+        console.log('serializeJSON plugin found');
+        
+        // Create a test form with a simple field
+        const testForm = $('<form><input name="test" value="value"></form>');
+        
+        try {
+            const serialized = testForm.serializeJSON();
+            console.log('serializeJSON test result:', serialized);
+            
+            // Parse the result to see if it's valid JSON
+            try {
+                const parsed = JSON.parse(serialized);
+                console.log('JSON parse successful:', parsed);
+                if (parsed.test === 'value') {
+                    console.log('serializeJSON working correctly');
+                } else {
+                    console.warn('serializeJSON output has unexpected structure');
+                }
+            } catch (parseError) {
+                console.error('Failed to parse serializeJSON output:', parseError);
+                console.log('Raw output:', serialized);
+                
+                // Patch jQuery.fn.serializeJSON with a simple implementation
+                $.fn.serializeJSON = function() {
+                    console.log('Using fallback serializeJSON implementation');
+                    const formData = {};
+                    const formArray = this.serializeArray();
+                    
+                    $.each(formArray, function() {
+                        formData[this.name] = this.value;
+                    });
+                    
+                    return JSON.stringify(formData);
+                };
+            }
+        } catch (serializeError) {
+            console.error('serializeJSON call failed:', serializeError);
+            
+            // Implement a fallback
+            $.fn.serializeJSON = function() {
+                console.log('Using fallback serializeJSON after error');
+                const formData = {};
+                const formArray = this.serializeArray();
+                
+                $.each(formArray, function() {
+                    formData[this.name] = this.value;
+                });
+                
+                return JSON.stringify(formData);
+            };
+        }
+    } else {
+        console.warn('serializeJSON plugin not found, implementing fallback');
+        
+        // Implement a simple version
+        $.fn.serializeJSON = function() {
+            console.log('Using fallback serializeJSON implementation');
+            const formData = {};
+            const formArray = this.serializeArray();
+            
+            $.each(formArray, function() {
+                formData[this.name] = this.value;
+            });
+            
+            return JSON.stringify(formData);
+        };
+        
+        // Test the fallback
+        const testForm = $('<form><input name="test" value="value"></form>');
+        const serialized = testForm.serializeJSON();
+        console.log('Fallback serializeJSON test result:', serialized);
+    }
+    
+    // Check if the label and form submit button exist
+    const submitLabel = document.getElementById('labelSubmit');
+    const submitButton = document.getElementById('btnNewUserSubmit');
+    
+    console.log('Submit label exists:', !!submitLabel);
+    console.log('Submit button exists:', !!submitButton);
+    
+    if (submitLabel) {
+        console.log('Adding click handler to submit label');
+        $(submitLabel).on('click', function(e) {
+            console.log('Submit label clicked');
+            // Trigger the actual form submission
+            if (submitButton) {
+                console.log('Triggering form submission');
+                $(submitButton).trigger('click');
+            } else {
+                console.error('Submit button not found');
+                $('#userForm').trigger('submit');
+            }
+        });
+    }
+    
+    // Check the modal events to see if they're working
+    $('#newUserModal').on('show.bs.modal', function () {
+        console.log('Modal show event triggered');
+    });
+    
+    $('#newUserModal').on('shown.bs.modal', function () {
+        console.log('Modal shown event triggered');
+    });
+    
+    $('#newUserModal').on('hide.bs.modal', function (e) {
+        console.log('Modal hide event triggered');
+        // If form is currently submitting, prevent hiding
+        if ($('#newUserModal .alert.alert-info').length > 0) {
+            console.log('Submission in progress, preventing hide');
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    $('#newUserModal').on('hidden.bs.modal', function () {
+        console.log('Modal hidden event triggered');
+    });
+    
+    // Add direct submit event to the form
+    $('#userForm').on('submit', function() {
+        console.log('Direct form submit handler triggered');
+    });
+});
+
+// Debug function to verify form data
+window.debugFormData = function() {
+    console.log('Debugging form data:');
+    const form = document.getElementById('userForm');
+    if (!form) {
+        console.error('Form not found');
+        return;
+    }
+    
+    const formData = new FormData(form);
+    for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+    
+    // Check required fields
+    const requiredFields = ['first_name', 'last_name', 'username', 'password', 'dob', 'gender', 'membership'];
+    let missingFields = [];
+    
+    for (const field of requiredFields) {
+        if (!formData.get(field) || formData.get(field).trim() === '') {
+            missingFields.push(field);
+        }
+    }
+    
+    if (missingFields.length > 0) {
+        console.error('Missing required fields:', missingFields);
+    } else {
+        console.log('All required fields present');
+    }
+    
+    return {
+        valid: missingFields.length === 0,
+        missingFields: missingFields
+    };
+};

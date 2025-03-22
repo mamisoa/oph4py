@@ -9,6 +9,65 @@
     .table th {
         text-align: center;
     }
+    
+    /* Form notification styles */
+    .form-notification {
+        border-radius: 4px;
+        margin-top: 15px;
+        padding: 12px 16px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    .form-notification.alert-success {
+        border-left: 4px solid #28a745;
+    }
+    
+    .form-notification.alert-danger {
+        border-left: 4px solid #dc3545;
+    }
+    
+    .form-notification.alert-info {
+        border-left: 4px solid #17a2b8;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Improve modal styling */
+    .modal-content {
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .modal-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+    
+    .modal-footer {
+        background-color: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+    
+    /* Improve form styling */
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+    
+    /* Loading spinner styles */
+    .spinner-border {
+        width: 1rem;
+        height: 1rem;
+        vertical-align: text-bottom;
+    }
 </style>
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
 [[ end ]]
@@ -235,7 +294,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="labelSubmit" for="btnNewUserSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <button type="button" id="btnSubmitUser" class="btn btn-primary" onclick="submitUserForm()">Submit</button>
             </div>
         </div>
     </div>
@@ -418,7 +477,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="labelSubmit" for="btnNewWlItemSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <button type="button" id="btnSubmitWlItem" class="btn btn-primary" onclick="submitWlItemForm()">Submit</button>
             </div>
         </div>
     </div>
@@ -449,6 +508,13 @@
     window.API_USER_LIST = window.HOSTURL + "[[=URL('api','auth_user')]]" + "?@lookup=gender:gender[id,sex]&@order=~id&@count=true";
     window.API_PROCEDURE_LIST = window.HOSTURL + "[[=URL('api','worklist')]]" + "?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id";
     window.API_PROCEDURE_LIST_TODAY = window.HOSTURL + "[[=URL('api','worklist')]]" + "?@count=true&created_on.gt=" + window.TODAY_DATE + "&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id";
+    
+    // Add direct submit handler for the original form submission
+    $(document).ready(function() {
+        // Store table reference globally for event handlers
+        window.$table_wl = $('#table-wl');
+        window.$table = $('#table');
+    });
 </script>
 <script type="module">
     // Import and initialize modules
@@ -549,5 +615,292 @@
             console.error("Error during initialization:", error);
         }
     });
+</script>
+<script type="text/javascript">
+    // Simple form submission function that bypasses all the complex handlers
+    function submitUserForm() {
+        console.log('User form submission started');
+        
+        // Get form data
+        const form = document.getElementById('userForm');
+        if (!form) {
+            showNotification('error', 'Form not found');
+            return;
+        }
+        
+        // Show loading indicator
+        showNotification('loading', 'Processing request...');
+        
+        // Collect form data
+        const formData = new FormData(form);
+        const formObj = {};
+        
+        // Convert FormData to object, only including non-empty values
+        for (const [key, value] of formData.entries()) {
+            if (value !== null && value !== undefined && value.toString().trim() !== '') {
+                formObj[key] = value;
+            }
+        }
+        
+        // Log raw form data before processing
+        console.log('Raw form data:', formObj);
+        
+        // Remove password check
+        delete formObj.passwordCheck;
+        
+        // Basic capitalization
+        if (formObj.first_name) {
+            formObj.first_name = formObj.first_name.charAt(0).toUpperCase() + formObj.first_name.slice(1).toLowerCase();
+        }
+        if (formObj.last_name) {
+            formObj.last_name = formObj.last_name.charAt(0).toUpperCase() + formObj.last_name.slice(1).toLowerCase();
+        }
+        
+        // Check required fields
+        const requiredFields = ['first_name', 'last_name', 'username', 'password', 'dob', 'gender', 'membership'];
+        const missingFields = requiredFields.filter(field => !formObj[field]);
+        
+        if (missingFields.length > 0) {
+            console.error('Missing required fields:', missingFields);
+            showNotification('error', 'Missing required fields: ' + missingFields.join(', '));
+            return;
+        }
+        
+        // Log final data to be submitted
+        console.log('Final form data to submit:', formObj);
+        
+        // Convert to JSON string
+        const jsonData = JSON.stringify(formObj);
+        
+        // Get app name
+        const pathParts = window.location.pathname.split('/');
+        const app_name = pathParts.length > 1 ? pathParts[1] : 'oph4py';
+        
+        // Build API URL
+        const apiUrl = window.location.origin + '/' + app_name + '/api/auth_user';
+        console.log('API endpoint URL:', apiUrl);
+        console.log('Request payload (JSON):', jsonData);
+        
+        // Perform fetch
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: jsonData
+        })
+        .then(response => {
+            // Log the raw response
+            console.log('Response status:', response.status);
+            console.log('Response headers:', [...response.headers].reduce((obj, [key, val]) => ({ ...obj, [key]: val }), {}));
+            
+            // Get the response text first to properly debug any errors
+            return response.text().then(text => {
+                console.log('Raw response text:', text);
+                const data = text.length ? JSON.parse(text) : {};
+                console.log('Parsed response data:', data);
+                
+                if (!response.ok) {
+                    throw new Error(data.message || `Server returned ${response.status}`);
+                }
+                return data;
+            });
+        })
+        .then(data => {
+            // Show success message
+            console.log('Form submission successful, response data:', data);
+            showNotification('success', 'User created successfully!');
+            
+            // Reset form
+            form.reset();
+            
+            // Close modal after delay
+            setTimeout(() => {
+                $('#newUserModal').modal('hide');
+                
+                // Refresh table if available
+                if (typeof $table !== 'undefined' && $table && $table.bootstrapTable) {
+                    $table.bootstrapTable('refresh');
+                }
+            }, 1500);
+        })
+        .catch(error => {
+            // Show error message
+            console.error('Form submission failed:', error);
+            showNotification('error', error.message);
+        });
+    }
+    
+    function submitWlItemForm() {
+        console.log('Worklist item form submission started');
+        
+        // Get form data
+        const form = document.getElementById('newWlItemForm');
+        if (!form) {
+            showNotification('error', 'Form not found', 'newWlItemForm');
+            return;
+        }
+        
+        // Show loading indicator
+        showNotification('loading', 'Processing request...', 'newWlItemForm');
+        
+        // Collect form data
+        const formData = new FormData(form);
+        const formObj = {};
+        
+        // Convert FormData to object, only including non-empty values
+        for (const [key, value] of formData.entries()) {
+            if (value !== null && value !== undefined && value.toString().trim() !== '') {
+                formObj[key] = value;
+            }
+        }
+        
+        // Log raw form data before processing
+        console.log('Raw worklist form data:', formObj);
+        
+        // Check required fields
+        const requiredFields = ['sending_facility', 'receiving_facility', 'procedure', 'provider', 'senior', 'requested_time', 'modality_dest', 'status_flag'];
+        const missingFields = requiredFields.filter(field => !formObj[field]);
+        
+        if (missingFields.length > 0) {
+            console.error('Missing required fields for worklist item:', missingFields);
+            showNotification('error', 'Missing required fields: ' + missingFields.join(', '), 'newWlItemForm');
+            return;
+        }
+        
+        // Set default laterality if not specified
+        if (!formObj.laterality) {
+            formObj.laterality = 'none';
+            console.log('Setting default laterality: none');
+        }
+        
+        // Log final data to be submitted
+        console.log('Final worklist data to submit:', formObj);
+        
+        // Convert to JSON string
+        const jsonData = JSON.stringify(formObj);
+        
+        // Get app name
+        const pathParts = window.location.pathname.split('/');
+        const app_name = pathParts.length > 1 ? pathParts[1] : 'oph4py';
+        
+        // Build API URL
+        const apiUrl = window.location.origin + '/' + app_name + '/api/worklist';
+        console.log('API endpoint URL for worklist:', apiUrl);
+        console.log('Worklist request payload (JSON):', jsonData);
+        
+        // Perform fetch
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: jsonData
+        })
+        .then(response => {
+            // Log the raw response
+            console.log('Worklist response status:', response.status);
+            console.log('Worklist response headers:', [...response.headers].reduce((obj, [key, val]) => ({ ...obj, [key]: val }), {}));
+            
+            // Get the response text first to properly debug any errors
+            return response.text().then(text => {
+                console.log('Raw worklist response text:', text);
+                const data = text.length ? JSON.parse(text) : {};
+                console.log('Parsed worklist response data:', data);
+                
+                if (!response.ok) {
+                    throw new Error(data.message || `Server returned ${response.status}`);
+                }
+                return data;
+            });
+        })
+        .then(data => {
+            // Show success message
+            console.log('Worklist form submission successful, response data:', data);
+            showNotification('success', 'Worklist item created successfully!', 'newWlItemForm');
+            
+            // Reset form
+            form.reset();
+            
+            // Close modal after delay
+            setTimeout(() => {
+                $('#newWlItemModal').modal('hide');
+                
+                // Refresh table if available
+                if (typeof $table_wl !== 'undefined' && $table_wl && $table_wl.bootstrapTable) {
+                    $table_wl.bootstrapTable('refresh');
+                }
+            }, 1500);
+        })
+        .catch(error => {
+            // Show error message
+            console.error('Worklist form submission failed:', error);
+            showNotification('error', error.message, 'newWlItemForm');
+        });
+    }
+    
+    // Function to show notifications
+    function showNotification(type, message, formId = 'userForm') {
+        // Remove any existing notifications
+        const existingNotifications = document.querySelectorAll('.form-notification');
+        existingNotifications.forEach(notification => notification.remove());
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'form-notification alert mt-3';
+        
+        // Set appropriate classes and content based on type
+        switch(type) {
+            case 'success':
+                notification.className += ' alert-success';
+                notification.innerHTML = `<i class="fas fa-check-circle me-2"></i>${message}`;
+                break;
+            case 'error':
+                notification.className += ' alert-danger';
+                notification.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i>${message}`;
+                break;
+            case 'loading':
+                notification.className += ' alert-info';
+                notification.innerHTML = `<div class="spinner-border spinner-border-sm me-2" role="status"></div>${message}`;
+                break;
+            default:
+                notification.className += ' alert-info';
+                notification.textContent = message;
+        }
+        
+        // Get the target form
+        const form = document.getElementById(formId);
+        if (!form) {
+            // If form not found, try the alternative
+            const alternativeFormId = formId === 'userForm' ? 'newWlItemForm' : 'userForm';
+            const alternativeForm = document.getElementById(alternativeFormId);
+            
+            if (alternativeForm) {
+                alternativeForm.parentNode.appendChild(notification);
+            } else {
+                // If neither form is found, append to body
+                document.body.appendChild(notification);
+            }
+        } else {
+            // Append to form's parent
+            form.parentNode.appendChild(notification);
+        }
+        
+        // Auto-remove success and error notifications after 5 seconds
+        if (type !== 'loading') {
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 5000);
+        }
+        
+        return notification;
+    }
+    
+    // Make functions globally available
+    window.submitUserForm = submitUserForm;
+    window.submitWlItemForm = submitWlItemForm;
+    window.showNotification = showNotification;
 </script>
 [[ end ]]
