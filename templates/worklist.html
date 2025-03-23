@@ -10,7 +10,34 @@
         text-align: center;
     }
 </style>
-<link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
+<link href="[[=URL('static', 'js/bootstrap-table_1.22/bootstrap-table.min.css')]]" rel="stylesheet">
+<script>
+    // Define Date.prototype.addHours extension method
+    Date.prototype.addHours = function (h) {
+        this.setTime(this.getTime() + (h * 60 * 60 * 1000));
+        return this;
+    }
+
+    // Define global variables from controller
+    window.modalityDict = [[=XML(modalityDict)]];
+    window.multiplemod = [[=multiplemod]];
+    window.practitionerDict = [[=XML(practitionerDict)]];
+    window.providerDict = [[=XML(providerDict)]];
+    window.membership = [[=membership]];
+    window.HOSTURL = "[[=hosturl]]";
+    window.LOCAL_BEID = "[[=localbeid]]";
+    window.timeOffsetInHours = 0; // Set your timezone offset here
+    window.timer_id = [];
+
+    // Define URLs for API access
+    window.TODAY_DATE = new Date().addHours(window.timeOffsetInHours).toJSON().slice(0, 10);
+    window.API_USER_LIST = window.HOSTURL + '[[=URL("api","auth_user")]]' + '?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
+    window.API_PROCEDURE_LIST = window.HOSTURL + '[[=URL("api","worklist")]]' + '?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
+    window.API_PROCEDURE_LIST_TODAY = window.HOSTURL + '[[=URL("api","worklist")]]' + '?@count=true&created_on.gt=' + window.TODAY_DATE + '&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
+
+    // Flag to track table initialization
+    window.tablesInitialized = false;
+</script>
 [[ end ]]
 
 [[ block left_nav ]]
@@ -54,23 +81,28 @@
                         data-row-style="rowStyle_wl" data-detail-view="true" data-detail-view-icon="true"
                         data-detail-formatter="detailFormatter_wl" data-detail-view-by-click="false">
                         <thead class="thead-dark">
-                            <th data-field="id" data-sortable="true">ID</th>
-                            <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
-                            <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">
-                                Receving facility:</th>
-                            <th data-field="procedure" data-searchable="true" data-sortable="true">Procedure:</th>
-                            <th data-field="patient" data-searchable="true" data-sortable="true">Patient:</th>
-                            <th data-field="provider" data-searchable="true" data-sortable="true">Provider:</th>
-                            <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
-                            <th data-field="modality" data-searchable="true" data-sortable="true">Modality:</th>
-                            <th data-field="laterality" data-sortable="false" data-searchable="false">Laterality:</th>
-                            <th data-field="requested_time" data-sortable="true" data-searchable="true">Timeslot:</th>
-                            <th data-field="status_flag" data-searchable="true" data-sortable="true">Status:</th>
-                            <th data-field="counter" data-searchable="true" data-sortable="false"
-                                data-formatter="counterFormatter_wl">Counter:</th>
-                            <th data-field="warning" data-searchable="true" data-sortable="false">Warning:</th>
-                            <th data-field="operate" data-formatter="operateFormatter_wl"
-                                data-events="operateEvents_wl">Action</th>
+                            <tr>
+                                <th data-field="id" data-sortable="true">ID</th>
+                                <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
+                                <th data-field="receiving_facility" data-title="Receiving facility"
+                                    data-sortable="true">
+                                    Receving facility:</th>
+                                <th data-field="procedure" data-searchable="true" data-sortable="true">Procedure:</th>
+                                <th data-field="patient" data-searchable="true" data-sortable="true">Patient:</th>
+                                <th data-field="provider" data-searchable="true" data-sortable="true">Provider:</th>
+                                <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
+                                <th data-field="modality" data-searchable="true" data-sortable="true">Modality:</th>
+                                <th data-field="laterality" data-sortable="false" data-searchable="false">Laterality:
+                                </th>
+                                <th data-field="requested_time" data-sortable="true" data-searchable="true">Timeslot:
+                                </th>
+                                <th data-field="status_flag" data-searchable="true" data-sortable="true">Status:</th>
+                                <th data-field="counter" data-searchable="true" data-sortable="false"
+                                    data-formatter="counterFormatter_wl">Counter:</th>
+                                <th data-field="warning" data-searchable="true" data-sortable="false">Warning:</th>
+                                <th data-field="operate" data-formatter="operateFormatter_wl"
+                                    data-events="operateEvents_wl">Action</th>
+                            </tr>
                         </thead>
                     </table>
                 </div>
@@ -101,12 +133,15 @@
                 data-visible-search="false" data-data-field="items" data-query-params="queryParams"
                 data-total-field="count">
                 <thead class="thead-dark">
-                    <th data-field="last_name" data-sortable="true">Last name:</th>
-                    <th data-field="first_name" data-title="First name" data-sortable="true">First name:</th>
-                    <th data-field="gender.sex" data-searchable="true" data-sortable="true">Gender:</th>
-                    <th data-field="dob" data-sortable="true">Date of birth:</th>
-                    <th data-field="age" data-formatter="ageFormatter" data-sortable="false">Age:</th>
-                    <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                    <tr>
+                        <th data-field="last_name" data-sortable="true">Last name:</th>
+                        <th data-field="first_name" data-title="First name" data-sortable="true">First name:</th>
+                        <th data-field="gender.sex" data-searchable="true" data-sortable="true">Gender:</th>
+                        <th data-field="dob" data-sortable="true">Date of birth:</th>
+                        <th data-field="age" data-formatter="ageFormatter" data-sortable="false">Age:</th>
+                        <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action
+                        </th>
+                    </tr>
                 </thead>
             </table>
         </div>
@@ -429,101 +464,64 @@
 </div>
 
 [[ block js_scripts]]
-<script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
-<script src="js/bootbox/bootbox.all.min.js"></script>
-<script src="js/jquery.serialize-object.min.js"></script>
-<script src="js/timer.jquery.min.js"></script>
-<script src="js/useful.js"></script>
-<script type="module" src="js/users_bt.js"></script>
-<script src="js/users.js"></script>
-<script type="module" src="js/wl_bt.js"></script>
-<script type="module" src="js/wl.js"></script>
-<script type="text/javascript">
+<!-- Required JS libraries -->
+<script src="[[=URL('static', 'js/bootstrap-table_1.22/bootstrap-table.min.js')]]"></script>
+<script src="[[=URL('static', 'js/bootbox/bootbox.all.min.js')]]"></script>
+<script src="[[=URL('static', 'js/jquery.serialize-object.min.js')]]"></script>
+<script src="[[=URL('static', 'js/timer.jquery.min.js')]]"></script>
+<script src="[[=URL('static', 'js/useful.js')]]"></script>
 
-    // modality controllers
-    let modalityDict = [[ = XML(modalityDict)]];
-    let multiplemod = [[ = multiplemod]];
+<!-- Load the ES modules -->
+<script type="module">
+    // Import the module initialization functions
+    import { init as initUsers } from "[[=URL('static', 'js/users_bt.js')]]";
+    import { init as initWorklist } from "[[=URL('static', 'js/wl_bt.js')]]";
 
-    // Fill the select options
-    let practitionerDict = [[ = XML(practitionerDict)]]
-    let providerDict = [[ = XML(providerDict)]]
+    // Global utility helper functions
+    function set_timers(timer_id) {
+        if (timer_id && timer_id.length > 0) {
+            for (var i = 0; i < timer_id.length; i++) {
+                clearInterval(timer_id[i]);
+            }
+            timer_id = [];
+        }
+
+        // Find all elements with timer class
+        $('.timer').each(function () {
+            var timerEl = $(this);
+            var timestamp = timerEl.data('timestamp');
+            var status = timerEl.data('status');
+
+            if (status === 'processing') {
+                var timer_instance = timerEl.timer({
+                    seconds: timestamp
+                });
+                timer_id.push(timer_instance);
+            }
+        });
+
+        return timer_id;
+    }
+
+    // Function to fill practitioner and provider selects
     function fillSelect() {
         let select = document.getElementById("selectPractitioner");
-        for (let value in practitionerDict) {
+        for (let value in window.practitionerDict) {
             let option = document.createElement("option");
-            option.value = practitionerDict[value];
+            option.value = window.practitionerDict[value];
             option.text = value;
             select.add(option);
         }
         select = document.getElementById("selectProvider");
-        for (let value in providerDict) {
+        for (let value in window.providerDict) {
             let option = document.createElement("option");
-            option.value = providerDict[value];
+            option.value = window.providerDict[value];
             option.text = value;
             select.add(option);
         }
     }
 
-    // Load when DOM is loaded
-    document.addEventListener("DOMContentLoaded", function (event) {
-        // Lancer la fonction fillSelect
-        fillSelect();
-    });
-
-    // for timer
-    let timer_id = [];
-
-    // init bootstrat-tables
-    const membership = [[=membership]];
-    const HOSTURL = "[[ = hosturl ]]";
-    const LOCAL_BEID = "[[ = localbeid ]]";
-
-    // set tables
-    const TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0, 10);
-    const API_USER_LIST = HOSTURL + '[[=URL('api','auth_user')]]' + '?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
-    const API_PROCEDURE_LIST = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
-    const API_PROCEDURE_LIST_TODAY = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&created_on.gt=' + TODAY_DATE + '&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
-
-
-    var $table = $('#table').bootstrapTable({
-        url: API_USER_LIST,
-        formatSearch: function () {
-            return 'Last name,first name, gender';
-        }
-    });
-
-    var $table_wl = $('#table-wl').bootstrapTable({
-        url: API_PROCEDURE_LIST_TODAY,
-        formatSearch: function () {
-            return 'Last name,first name,procedure,modality';
-        }
-    });
-
-    // hide columns in wl table: id, sending_facility, receiving_facility
-    $table_wl.bootstrapTable('hideColumn', 'id');
-    $table_wl.bootstrapTable('hideColumn', 'sending_facility');
-    $table_wl.bootstrapTable('hideColumn', 'receiving_facility');
-
-    // Fires after the table body is rendered and available in the DOM, the parameters contain data
-    $('#table-wl').on('post-body.bs.table', function () {
-        set_timers(timer_id);
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-    });
-
-    var timeoutID = window.setInterval(function () {
-        // console.log("Refreshing wl table!");
-        $('#table-wl').bootstrapTable('refresh');
-    }, 40000);
-
-    $(document).ready(function () {
-        if (window.performance.getEntriesByType('navigation')[0].type == 'back-forward') {
-            $('#table-wl').bootstrapTable('refresh');
-        };
-    });
-
+    // Function to get filter status for the worklist
     function getFilterStatus() {
         let key = "";
         if (document.getElementById("selectPractitioner").value != "") {
@@ -546,40 +544,111 @@
         return key;
     }
 
-    $('#btnFullList').click(function () {
-        let key = getFilterStatus();
-        console.log("key: ", key)
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST + key
-        })
+    // Make these functions globally available
+    window.set_timers = set_timers;
+    window.fillSelect = fillSelect;
+    window.getFilterStatus = getFilterStatus;
+
+    // Wait for document to be ready then initialize
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOM loaded, initializing modules");
+
+        try {
+            // Initialize the modules
+            initUsers();
+            initWorklist();
+            console.log("Modules initialized successfully");
+
+            // Fill select dropdowns
+            fillSelect();
+
+            // Check if tables have already been initialized
+            if (window.tablesInitialized) {
+                console.log("Tables already initialized, skipping initialization");
+                return;
+            }
+
+            // Initialize the tables after modules have initialized their global functions
+            window.$table = $('#table').bootstrapTable({
+                url: window.API_USER_LIST,
+                formatSearch: function () {
+                    return 'Last name,first name, gender';
+                }
+            });
+
+            window.$table_wl = $('#table-wl').bootstrapTable({
+                url: window.API_PROCEDURE_LIST_TODAY,
+                formatSearch: function () {
+                    return 'Last name,first name,procedure,modality';
+                }
+            });
+
+            // hide columns in wl table: id, sending_facility, receiving_facility
+            window.$table_wl.bootstrapTable('hideColumn', 'id');
+            window.$table_wl.bootstrapTable('hideColumn', 'sending_facility');
+            window.$table_wl.bootstrapTable('hideColumn', 'receiving_facility');
+
+            // Fires after the table body is rendered and available in the DOM
+            $('#table-wl').on('post-body.bs.table', function () {
+                window.set_timers(window.timer_id);
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl)
+                });
+            });
+
+            // Set up auto-refresh
+            var timeoutID = window.setInterval(function () {
+                $('#table-wl').bootstrapTable('refresh');
+            }, 40000);
+
+            // Check if we're coming back via browser back button
+            if (window.performance.getEntriesByType('navigation')[0].type == 'back-forward') {
+                $('#table-wl').bootstrapTable('refresh');
+            }
+
+            // Set up button handlers
+            $('#btnFullList').click(function () {
+                let key = getFilterStatus();
+                console.log("key: ", key);
+                $('#table-wl').bootstrapTable('refreshOptions', {
+                    url: window.API_PROCEDURE_LIST + key
+                });
+            });
+
+            $('#btnTodaysList').click(function () {
+                let key = getFilterStatus();
+                console.log("key: ", key);
+                $('#table-wl').bootstrapTable('refreshOptions', {
+                    url: window.API_PROCEDURE_LIST_TODAY + key
+                });
+            });
+
+            $('#selectPractitioner').change(function () {
+                console.log('select senior change:', $(this).val());
+                let key = getFilterStatus();
+                console.log("key: ", key);
+                $('#table-wl').bootstrapTable('refreshOptions', {
+                    url: window.API_PROCEDURE_LIST_TODAY + key
+                });
+            });
+
+            $('#selectProvider').change(function () {
+                console.log('select provider change:', $(this).val());
+                let key = getFilterStatus();
+                console.log("key: ", key);
+                $('#table-wl').bootstrapTable('refreshOptions', {
+                    url: window.API_PROCEDURE_LIST_TODAY + key
+                });
+            });
+
+            // Mark tables as initialized
+            window.tablesInitialized = true;
+
+            console.log("Initialization complete");
+        } catch (error) {
+            console.error("Error initializing:", error);
+        }
     });
-
-    $('#btnTodaysList').click(function () {
-        let key = getFilterStatus();
-        console.log("key: ", key)
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST_TODAY + key
-        })
-    });
-
-    $('#selectPractitioner').change(function () {
-        console.log('select senior change:', $(this).val());
-        let key = getFilterStatus();
-        console.log("key: ", key);
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST_TODAY + key
-        })
-    });
-
-    $('#selectProvider').change(function () {
-        console.log('select provider change:', $(this).val());
-        let key = getFilterStatus();
-        console.log("key: ", key);
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST_TODAY + key
-        })
-    });
-
-
 </script>
 [[ end ]]
