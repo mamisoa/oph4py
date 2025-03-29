@@ -50,3 +50,15 @@
   - Lists API endpoints and data structures
   - Includes security considerations and maintenance guidelines
   - Added comprehensive docstring to user() function in manage.py
+
+- 2025-03-29T18:16:08: Added comprehensive documentation for the Users Module in docs/users.md
+  - Documents complete MVC architecture and components
+  - Details user management and role-based access control
+  - Describes eID card integration system
+  - Explains user profile management
+  - Documents form handling and validation
+  - Details Bootstrap Table implementation
+  - Provides technical implementation details
+  - Lists API endpoints and data structures
+  - Includes security considerations and maintenance guidelines
+  - Added comprehensive docstring to users() function in manage.py

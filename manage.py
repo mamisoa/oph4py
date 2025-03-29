@@ -142,6 +142,38 @@ def user(rec_id="1"):
 # @action.uses(session, T, auth, db,'manage/users.html')
 @action.uses(session, T, db, auth.user, "manage/users.html")
 def users(membership="Patient"):
+    """
+    Manages user listing and creation interface based on membership roles.
+
+    This function serves as the controller for the user management interface, providing:
+    - Filtered user lists by membership role (Patient, Doctor, Nurse, etc.)
+    - User creation functionality with role-specific forms
+    - Integration with eID card reader for automated data entry
+    - User profile management capabilities
+
+    Args:
+        membership (str, optional): The membership role to filter users by. Defaults to "Patient".
+
+    Returns:
+        dict: A dictionary containing:
+            - env_status: Current environment status
+            - timeOffset: System time offset
+            - app_name: Application name
+            - hosturl: Host URL
+            - user: Current authenticated user object
+            - test: Test status message
+            - userMembership: Current user's membership level
+            - class_icon: Font Awesome icon class for the membership role
+            - group: Current membership group being displayed
+            - roleOptions: HTML options for role selection dropdown
+            - genderOptions: HTML options for gender selection dropdown
+
+    Requires:
+        - Authentication
+        - Session management
+        - Database access
+        - Users template
+    """
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
