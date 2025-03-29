@@ -1,0 +1,88 @@
+---
+description: Python Documentation Rule
+globs: *.py
+alwaysApply: false
+---
+# Python Script Documentation Guidelines (Using Poetry & Comprehensive Docstrings)
+
+1. **Overview & Purpose:**  
+   - Describe the script’s title, its overall functionality, and its main objectives.  
+   - Clearly state the intended purpose and context for using the script.
+
+2. **Table of Contents:**  
+   - Provide an organized list of sections for the documentation, such as:  
+     - Overview & Purpose  
+     - Table of Contents  
+     - Installation & Dependencies  
+     - Usage Instructions  
+     - Code Documentation & Docstrings  
+     - Architecture & Design  
+     - Testing & Troubleshooting  
+     - Versioning, Changelog & Licensing  
+     - Additional Resources
+
+3. **Installation & Dependencies (Using Poetry):**  
+   - **Python Version:** Specify the required Python version (e.g., Python 3.8+).  
+   - **Dependency Management:**  
+     - Indicate that dependencies are managed via Poetry and are listed in the `pyproject.toml` file.  
+     - Instruct users to run `poetry install` to set up the environment.  
+     - Explain how to add new dependencies (e.g., `poetry add package_name`) or development dependencies (e.g., `poetry add --dev package_name`).
+
+4. **Usage Instructions:**  
+   - Provide clear instructions on how to run the script, including command-line examples.  
+   - Include sample inputs and expected outputs to help users understand its usage.
+
+5. **Code Documentation & Comprehensive Docstrings:**  
+   - **Exhaustive Docstrings (Mandatory for Classes, Methods, and Functions):**  
+     - **Purpose Description:** Explain what the class, method, or function does.  
+     - **Arguments:** List all parameters, specifying names, types, and brief descriptions.  
+     - **Return Value:** Describe the return type and its significance.  
+     - **Error Handling:** Document how errors are handled, including exceptions raised and under what conditions.  
+     - **Usage Example:** Provide a short example demonstrating how to use the documented element.
+   - **Modification Enforcement:**  
+     - Ensure that any changes in the code trigger a review and update of the associated docstrings.  
+     - During code reviews, verify that all new or modified Python files include accurate and updated docstrings.
+   - **Implementation Guidelines:**  
+     - Always include a comprehensive docstring when creating a new class, method, or function.  
+     - Integrate linters or CI tools to enforce these documentation standards automatically.
+   - **Example Docstring:**
+     ```python
+     def add(a: int, b: int) -> int:
+         """
+         Adds two integers and returns the result.
+     
+         Args:
+             a (int): The first integer.
+             b (int): The second integer.
+     
+         Returns:
+             int: The sum of the two integers.
+     
+         Raises:
+             TypeError: If either a or b is not an integer.
+     
+         Example:
+             >>> add(3, 4)
+             7
+         """
+         if not isinstance(a, int) or not isinstance(b, int):
+             raise TypeError("Both a and b must be integers")
+         return a + b
+     ```
+
+6. **Architecture & Design:**  
+   - Provide an overview of the code structure and responsibilities of each module or component.  
+   - Optionally include flow diagrams or sketches to illustrate how data and logic flow through the script.
+
+7. **Testing & Troubleshooting:**  
+   - Explain how to run tests (mention any Poetry-specific commands if applicable).  
+   - Provide information on common issues, error messages, and troubleshooting tips.
+
+8. **Versioning, Changelog & Licensing:**  
+   - **Version Information:** Specify the current version of the script.  
+   - **Changelog:** Maintain a log of updates, improvements, and bug fixes.  
+   - **Licensing:** State the license under which the script is distributed.  
+   - **Contribution Guidelines:** (If applicable) Include instructions for contributing to the project.
+
+9. **Additional Resources:**  
+   - Provide links or references to external documentation, related projects, or detailed user guides as needed.

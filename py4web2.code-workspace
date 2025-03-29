@@ -5,6 +5,12 @@
 		}
 	],
 	"settings": {
-		"editor.fontFamily": "Fira Code"
+		"files.exclude": {
+			"**/__pycache__": true,
+			"**/.venv": true
+		},
+		"editor.fontFamily": "Fira Code",
+		"editor.fontSize": 14,
+		"window.zoomLevel": 1
 	}
 }
