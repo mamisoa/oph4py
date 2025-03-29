@@ -1,0 +1,49 @@
+---
+description: 
+globs: *.py,*.html,*.js
+alwaysApply: false
+---
+# Py4web Optimized Guide
+
+## Templates
+Py4web uses two template languages:
+- **yatl**: Original reference implementation
+- **Renoir**: Newer, faster implementation with enhanced features
+
+Code embedding: Uses `[[ ... ]]` for Python code in HTML templates (keeps HTML editors compatible).
+
+⚠️ Syntax note: Always add space after list closing brackets:
+```python
+[[items = ['a', 'b', 'c'] ]] # correct
+[[items = ['a', 'b', 'c']]] # error
+```
+
+## Helpers
+HTML generation helpers create elements programmatically:
+
+```python
+[[=DIV('this', 'is', 'a', 'test', _id='123', _class='myclass')]]
+```
+Renders as: `<div id="123" class="myclass">thisisatest</div>`
+
+Helper arguments:
+- Positional arguments: Content between tags
+- Named with underscore (`_class`): HTML attributes
+- Named without underscore: Tag-specific settings
+
+Alternative syntax using * and **:
+```python
+[[
+contents = ['this', 'is', 'a', 'test']
+attributes = {'_id':'123', '_class':'myclass'}
+=DIV(*contents, **attributes)
+]]
+```
+
+Available helpers: A, BEAUTIFY, BODY, CAT, CODE, DIV, EM, FORM, H1-H6, HEAD, HTML, IMG, INPUT, LABEL, LI, METATAG, OL, OPTION, P, PRE, SELECT, SPAN, STRONG, TABLE, TAG, TAGGER, THEAD, TBODY, TD, TEXTAREA, TH, TT, TR, UL, XML, xmlescape, I, META, LINK, TITLE, STYLE, SCRIPT
+
+Nested example:
+```python
+[[=DIV(STRONG(I("hello ", "<world>")), _class="myclass")]]
+```
+Renders as: `<div class="myclass"><strong><i>hello &lt;world&gt;</i></strong></div>`

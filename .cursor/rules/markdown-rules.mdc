@@ -1,0 +1,64 @@
+---
+description: Markdown rules
+globs: *.md
+alwaysApply: false
+---
+# Markdown Formatting Rule
+
+## Overview
+This rule ensures that all generated markdown files by Cursor adhere to proper markdown formatting guidelines. In particular, Cursor must comply with the following markdownlint rules:
+
+- **MD032: Blanks Around Lists**  
+  Lists must be preceded and followed by blank lines.
+
+- **MD031: Blanks Around Fences**  
+  Fenced code blocks must be preceded and followed by blank lines.
+
+- **MD034: No Bare URLs**  
+  Bare URLs should not be used in the markdown. For instance, email addresses or other URLs must be wrapped in angle brackets or formatted using markdown link syntax.
+
+## Implementation Guidelines
+
+1. **Lists (MD032):**
+   - Every list (ordered or unordered) should have at least one blank line above and below it.
+   - **Example:**
+     ```markdown
+     Introduction text.
+     
+     - List item 1
+     - List item 2
+     
+     Concluding text.
+     ```
+
+2. **Fenced Code Blocks (MD031):**
+   - Ensure that there is a blank line before and after any fenced code block.
+   - **Example:**
+     ```markdown
+     Some introductory text.
+     
+     ```python
+     def sample_function():
+         return "Hello, World!"
+     ```
+     
+     Some following text.
+     ```
+
+3. **Bare URLs (MD034):**
+   - Avoid using bare URLs in the markdown. Instead, wrap them in angle brackets or use markdown link formatting.
+   - **Incorrect Example:**
+     ```markdown
+     For more details, contact: john.doe@example.com
+     ```
+   - **Correct Examples:**
+     ```markdown
+     For more details, contact: <john.doe@example.com>
+     ```
+     or
+     ```markdown
+     For more details, contact: [john.doe@example.com](mdc:mailto:john.doe@example.com)
+     ```
+
+## Conclusion
+By enforcing these markdown formatting rules, Cursor will generate markdown files that are consistent, readable, and compliant with established best practices. These guidelines help maintain high-quality documentation and content standards across all projects.

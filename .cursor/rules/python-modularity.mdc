@@ -1,0 +1,43 @@
+---
+description: Modular Code Generation Rule for python
+globs: *.py
+---
+# Modular Code Generation Rule for Cursor
+
+## Overview
+This rule mandates that every general-purpose function that can be used across multiple scripts must be modularized. Centralizing such functions improves code maintainability, reduces redundancy, and promotes reuse.
+
+## Guidelines
+
+- **Function Modularity:**
+  - Identify functions that are generic and reusable.
+  - Do not embed these functions directly in specific scripts if they are applicable elsewhere.
+
+- **File Organization:**
+  - **Generic Functions:** Move them to `tools/utils.py`.
+  - **Feature-Specific Functions:** For functions tied to a specific domain (e.g., ICS parsing), place them in a dedicated file with a characteristic name (e.g., `ics.py`) within the same folder.
+
+- **Maintenance:**
+  - When modifying a function, ensure that the corresponding modularized version is updated.
+  - Code reviews should check that new or updated functions follow this modular structure.
+
+## Example
+
+Below is an example of a utility function that should be placed in the appropriate module:
+
+```python
+def truncate_text(text: str, max_length: int = 50) -> str:
+    """
+    Truncates text to a specified length and appends an ellipsis if the text exceeds that length.
+
+    Args:
+        text (str): Text to truncate.
+        max_length (int): Maximum allowed length of the returned string.
+
+    Returns:
+        str: Truncated text with an ellipsis appended if needed.
+    """
+    if not text:
+        return ""
+    return (text[:max_length] + "...") if len(text) > max_length else text
+```
