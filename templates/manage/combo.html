@@ -24,17 +24,19 @@
                         </div>
                         <div class="col">
                             <label for="combo" class="form-label">Modalities:</label>
-                            <select class="form-select" multiple size="10" aria-label="select the modalities related to procedure" name="id_modality">
+                            <select class="form-select" multiple size="10"
+                                aria-label="select the modalities related to procedure" name="id_modality">
                                 [[=modalityOptions]]
                             </select>
-                            <div id="modalityHelp" class="form-text">Select the procedure</div>
+                            <div id="modalityHelp" class="form-text">Select the Modalities</div>
                         </div>
-                    <div id="wlItemAddDiv"class="row my-3">
-                        <div class="col">
-                            <button type="submit" id="btnComboAdd" class="btn btn-primary" type="button">Add combo procedure <i class="fas fa-plus"></i></button>
-                        </div>                                        
-                    </div>
-                </div>    <!--end container form  -->                            
+                        <div id="wlItemAddDiv" class="row my-3">
+                            <div class="col">
+                                <button type="submit" id="btnComboAdd" class="btn btn-primary" type="button">Add combo
+                                    procedure <i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div> <!--end container form  -->
             </form>
         </div>
     </div>
@@ -52,9 +54,9 @@
 <script src="js/combo.js"></script>
 <script src="js/combo-bt.js"></script>
 <script type="text/javascript">
-// global variables
-const HOSTURL = "[[ = hosturl ]]";
-const API_PROCEDURE = HOSTURL + '[[=URL('api','combo')]]';
+    // global variables
+    const HOSTURL = "[[ = hosturl ]]";
+    const API_PROCEDURE = HOSTURL + '[[=URL('api','combo')]]';
 </script>
 
 [[ end ]]

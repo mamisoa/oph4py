@@ -420,6 +420,32 @@ def worklist():
 @action("manage/medications/<rec_id>")
 @action.uses(session, auth, db, "manage/medications.html")
 def medications(rec_id="1"):
+    """
+    Manages medication catalog and prescription tracking in the ophthalmology system.
+
+    This function serves as the controller for the medication management interface. It handles:
+    - Medication catalog maintenance
+    - Drug interaction monitoring
+    - Prescription tracking
+    - Safety alerts
+
+    Args:
+        rec_id (str, optional): The medication record ID to display/edit. Defaults to "1".
+
+    Returns:
+        dict: A dictionary containing:
+            - env_status: Current environment status
+            - timeOffset: System time offset
+            - app_name: Application name
+            - hosturl: Host URL
+            - user: Current authenticated user object
+
+    Requires:
+        - Authentication
+        - Session management
+        - Database access
+        - Medications template
+    """
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
@@ -435,6 +461,32 @@ def medications(rec_id="1"):
 @action("manage/allergy/<rec_id>")
 @action.uses(session, auth, db, "manage/allergy.html")
 def allergy(rec_id="1"):
+    """
+    Manages allergic agent references and patient allergy records.
+
+    This function serves as the controller for the allergy management interface. It handles:
+    - Allergic agent catalog maintenance
+    - Patient allergy records
+    - Cross-sensitivity monitoring
+    - Alert system integration
+
+    Args:
+        rec_id (str, optional): The allergy record ID to display/edit. Defaults to "1".
+
+    Returns:
+        dict: A dictionary containing:
+            - env_status: Current environment status
+            - timeOffset: System time offset
+            - app_name: Application name
+            - hosturl: Host URL
+            - user: Current authenticated user object
+
+    Requires:
+        - Authentication
+        - Session management
+        - Database access
+        - Allergy template
+    """
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
@@ -450,6 +502,32 @@ def allergy(rec_id="1"):
 @action("manage/diseases/<rec_id>")
 @action.uses(session, auth, db, "manage/diseases.html")
 def diseases(rec_id="1"):
+    """
+    Manages disease references and clinical pathways in the ophthalmology system.
+
+    This function serves as the controller for the disease management interface. It handles:
+    - Disease catalog maintenance
+    - ICD-10 coding
+    - Clinical pathway tracking
+    - Treatment protocol management
+
+    Args:
+        rec_id (str, optional): The disease record ID to display/edit. Defaults to "1".
+
+    Returns:
+        dict: A dictionary containing:
+            - env_status: Current environment status
+            - timeOffset: System time offset
+            - app_name: Application name
+            - hosturl: Host URL
+            - user: Current authenticated user object
+
+    Requires:
+        - Authentication
+        - Session management
+        - Database access
+        - Diseases template
+    """
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
@@ -465,6 +543,32 @@ def diseases(rec_id="1"):
 @action("manage/lenses/<rec_id>")
 @action.uses(session, auth, db, "manage/lenses.html")
 def lenses(rec_id="1"):
+    """
+    Manages lens catalog and inventory in the ophthalmology system.
+
+    This function serves as the controller for the lens management interface. It handles:
+    - Lens catalog maintenance
+    - Inventory management
+    - Order tracking
+    - Prescription management
+
+    Args:
+        rec_id (str, optional): The lens record ID to display/edit. Defaults to "1".
+
+    Returns:
+        dict: A dictionary containing:
+            - env_status: Current environment status
+            - timeOffset: System time offset
+            - app_name: Application name
+            - hosturl: Host URL
+            - user: Current authenticated user object
+
+    Requires:
+        - Authentication
+        - Session management
+        - Database access
+        - Lenses template
+    """
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
@@ -754,6 +858,29 @@ def restore():
 @action("manage/combo")
 @action.uses(session, db, "manage/combo.html")
 def combo():
+    """
+    Manages procedure-modality combinations in the ophthalmology system.
+
+    This function serves as the controller for the combo management interface. It handles:
+    - Procedure and modality relationship management
+    - Multiple modality selection for procedures
+    - Integration with worklist system
+    - Dynamic form handling
+
+    Returns:
+        dict: A dictionary containing:
+            - env_status: Current environment status
+            - timeOffset: System time offset
+            - app_name: Application name
+            - hosturl: Host URL
+            - procedureOptions: HTML options for procedure selection
+            - modalityOptions: HTML options for modality selection
+
+    Requires:
+        - Session management
+        - Database access
+        - Combo template
+    """
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
