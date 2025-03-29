@@ -2,6 +2,26 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- 2025-03-29T22:58:00: Fixed worklist status update functionality
+  - Modified `static/js/useful.js`: Updated `setWlItemStatus` function to remove ID from request payload
+    - ID is now correctly passed in the URL instead of the payload
+    - Ensures proper validation in py4web's RestAPI
+  - Modified `static/js/patient-bar.js`: Fixed status update in patient bar
+    - Updated `btnUnlockTask` click handler to use correct API endpoint format
+    - Updated `btnTaskDone` click handler to match the same pattern
+    - Both buttons now correctly update task status without validation errors
+  - Root cause: py4web's RestAPI validation was failing because:
+    - ID was being sent both in URL and payload causing validation conflicts
+    - Fixed by sending ID only in URL path and removing it from payload
+    - Matches py4web's RESTful API expectations for PUT requests
+  - Cross-system behavior explanation:
+    - The issue worked on another computer likely due to different py4web versions
+    - Older versions of py4web (pre-3.0) were more lenient with validation
+    - Newer versions enforce stricter RESTful API conventions
+    - The fix ensures compatibility with all py4web versions by following best practices
+
 ### Added
 
 - 2025-03-29: Added comprehensive documentation for the GP (General Practitioner) Module in docs/gp.md
