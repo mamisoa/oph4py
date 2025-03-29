@@ -4,6 +4,17 @@
 
 ### Added
 
+- 2025-03-29: Added comprehensive documentation for the GP (General Practitioner) Module in docs/gp.md
+  - Documents complete MVC architecture and components
+  - Details general physical examination workflow
+  - Describes SOAP documentation system
+  - Explains clinical examination components (inspection, auscultation, palpation, percussion, neurological)
+  - Documents prescription and certificate generation
+  - Details billing management
+  - Provides technical implementation details
+  - Lists API endpoints and data structures
+  - Includes security considerations and maintenance guidelines
+
 - 2025-03-29: Added comprehensive documentation for the MD (Medical Doctor) Module in docs/md.md
   - Documents complete MVC architecture and components
   - Details patient history management
