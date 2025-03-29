@@ -53,6 +53,43 @@ from .useful import dropdownSelect, getMembershipId
 @action("user/<rec_id>")
 @action.uses(session, auth, db, "manage/user.html")
 def user(rec_id="1"):
+    """
+    Manages user profile details, including personal information, addresses, phone numbers, and medical registration details.
+
+    This function serves as the main controller for the user profile management interface. It handles:
+    - Basic user information display and editing
+    - Address management (multiple addresses with ranking)
+    - Phone number management (multiple numbers with international support)
+    - Medical registration details for healthcare providers
+    - eID card integration for automatic data population
+
+    Args:
+        rec_id (str, optional): The user ID to display/edit. Defaults to "1".
+
+    Returns:
+        dict: A dictionary containing:
+            - env_status: Current environment status
+            - timeOffset: System time offset
+            - app_name: Application name
+            - hosturl: Host URL
+            - localbeid: Local BeID reader URL
+            - user: Current authenticated user object
+            - userMembership: Current user's membership level
+            - username: Username of the profile being viewed
+            - membership: Membership level of the profile being viewed
+            - hierarchy: Hierarchy level of the membership
+            - roleOptions: HTML options for role selection
+            - genderOptions: HTML options for gender selection
+            - originOptions: HTML options for data origin selection
+            - ethnyOptions: HTML options for ethnicity selection
+            - maritalOptions: HTML options for marital status selection
+
+    Requires:
+        - Authentication
+        - Session management
+        - Database access
+        - User template
+    """
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
