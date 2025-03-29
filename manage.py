@@ -897,6 +897,34 @@ def combo():
 @action("billing/summary/<rec_id>")
 @action.uses(session, auth, db, "billing/summary.html")
 def summary(rec_id):
+    """
+    Manages billing summaries and financial records for users in the ophthalmology system.
+
+    This function serves as the controller for the billing summary interface. It handles:
+    - User-specific billing record retrieval and display
+    - Transaction history management
+    - Financial reporting and analytics
+    - Role-based access control for billing data
+
+    Args:
+        rec_id (str): The user ID for which to display billing information.
+
+    Returns:
+        dict: A dictionary containing:
+            - env_status: Current environment status
+            - timeOffset: System time offset
+            - app_name: Application name
+            - hosturl: Host URL
+            - user: Current authenticated user object
+            - username: Username of the billing record owner
+            - membership: Membership level of the billing record owner
+
+    Requires:
+        - Authentication
+        - Session management
+        - Database access
+        - Billing summary template
+    """
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
