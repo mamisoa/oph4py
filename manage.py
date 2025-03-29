@@ -1,24 +1,57 @@
 # Management controllers
 
-from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
-from yatl.helpers import A, XML, OPTION, CAT
-from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
-from pydal.validators import CRYPT # to encrypt passwords
-
-from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
+from py4web import (  # add response to throw http error 400
+    URL,
+    Field,
+    abort,
+    action,
+    redirect,
+    request,
+    response,
+)
+from py4web.utils.form import (  # added import Field Form and FormStyleBulma to get form working
+    Form,
+    FormStyleBootstrap4,
+    FormStyleBulma,
+)
 from py4web.utils.grid import Grid
-# from py4web.utils.factories import Inject
+from pydal.validators import CRYPT  # to encrypt passwords
+from yatl.helpers import CAT, OPTION, XML, A
+
+from .common import (
+    T,
+    auth,
+    authenticated,
+    cache,
+    db,
+    flash,
+    logger,
+    session,
+    unauthenticated,
+)
 
 # import settings
-from .settings import ENV_STATUS, APP_NAME, LOCAL_URL, LOCAL_BEID, DEFAULT_PROVIDER, DEFAULT_SENIOR, TIMEOFFSET, NEW_INSTALLATION
+from .settings import (
+    APP_NAME,
+    DEFAULT_PROVIDER,
+    DEFAULT_SENIOR,
+    ENV_STATUS,
+    LOCAL_BEID,
+    LOCAL_URL,
+    NEW_INSTALLATION,
+    TIMEOFFSET,
+)
 
 # import useful
 from .useful import dropdownSelect, getMembershipId
 
+# from py4web.utils.factories import Inject
+
+
 ## edit user/id from auth_user
-@action('user')
-@action('user/<rec_id>')
-@action.uses(session, auth, db,'manage/user.html')
+@action("user")
+@action("user/<rec_id>")
+@action.uses(session, auth, db, "manage/user.html")
 def user(rec_id="1"):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
@@ -26,69 +59,111 @@ def user(rec_id="1"):
     hosturl = LOCAL_URL
     localbeid = LOCAL_BEID
     user = auth.get_user()
-    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
+    userMembership = (
+        db(db.membership.id == user["membership"])
+        .select(db.membership.membership)
+        .first()["membership"]
+    )
     row = db(db.auth_user.id == rec_id).select().first()
     username = row.username
     membership = row.membership
-    hierarchy = db(db.membership.id == membership).select(db.membership.hierarchy).first()['hierarchy']
-    roleOptions=""
-    for role in db(db.membership.id>0).select(db.membership.ALL):
-        if role.membership == "Patient": # make "Patient" as default option
-            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_selected="selected",_value=str(role.id)))
+    hierarchy = (
+        db(db.membership.id == membership)
+        .select(db.membership.hierarchy)
+        .first()["hierarchy"]
+    )
+    roleOptions = ""
+    for role in db(db.membership.id > 0).select(db.membership.ALL):
+        if role.membership == "Patient":  # make "Patient" as default option
+            roleOptions = CAT(
+                roleOptions,
+                OPTION(
+                    role.membership + " (level " + str(role.hierarchy) + ")",
+                    _selected="selected",
+                    _value=str(role.id),
+                ),
+            )
         else:
-            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
+            roleOptions = CAT(
+                roleOptions,
+                OPTION(
+                    role.membership + " (level " + str(role.hierarchy) + ")",
+                    _value=str(role.id),
+                ),
+            )
     roleOptions = XML(roleOptions)
-    genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
-    originOptions = dropdownSelect(db.data_origin,db.data_origin.fields[1],1,"value")
-    ethnyOptions = dropdownSelect(db.ethny,db.ethny.fields[1],1,"index")
-    maritalOptions = dropdownSelect(db.marital,db.marital.fields[1],1,"index")
+    genderOptions = dropdownSelect(db.gender, db.gender.fields[1], 1)
+    originOptions = dropdownSelect(db.data_origin, db.data_origin.fields[1], 1, "value")
+    ethnyOptions = dropdownSelect(db.ethny, db.ethny.fields[1], 1, "index")
+    maritalOptions = dropdownSelect(db.marital, db.marital.fields[1], 1, "index")
     return locals()
 
+
 # list users from membership
-@action('manage/users', method=['POST','GET']) # route
-@action('manage/users/<membership>')
+@action("manage/users", method=["POST", "GET"])  # route
+@action("manage/users/<membership>")
 # @action.uses(session, T, auth, db,'manage/users.html')
-@action.uses(session, T, db, auth.user, 'manage/users.html')
-def users(membership='Patient'):
+@action.uses(session, T, db, auth.user, "manage/users.html")
+def users(membership="Patient"):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
-    test="Test OK"
-    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
-    try: # check if membership exists
-        check_group= db(db.membership.membership == membership).isempty()
+    test = "Test OK"
+    userMembership = (
+        db(db.membership.id == user["membership"])
+        .select(db.membership.membership)
+        .first()["membership"]
+    )
+    try:  # check if membership exists
+        check_group = db(db.membership.membership == membership).isempty()
     except ValueError:
-        membership = 'Patient'
+        membership = "Patient"
     else:
-        if check_group is True: # if does not exist
-            membership = 'Patient'
+        if check_group is True:  # if does not exist
+            membership = "Patient"
+
     def group_icon(membership):
         dict_icon = {
-            'Admin':'fa-users-cog',
-            'Doctor':'fa-user-md',
-            'Nurse':'fa-user-nurse',
-            'Medical assistant':'fa-user-nurse',
-            'Administrative':'fa-user-edit',
-            'Patient':'fa-user'
+            "Admin": "fa-users-cog",
+            "Doctor": "fa-user-md",
+            "Nurse": "fa-user-nurse",
+            "Medical assistant": "fa-user-nurse",
+            "Administrative": "fa-user-edit",
+            "Patient": "fa-user",
         }
         return dict_icon[membership]
+
     class_icon = group_icon(membership)
-    group = membership #name of membership
-    roleOptions=""
-    for role in db(db.membership.id>0).select(db.membership.ALL):
-        if role.membership == group: # make "Patient" as default option
-            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_selected="selected",_value=str(role.id)))
+    group = membership  # name of membership
+    roleOptions = ""
+    for role in db(db.membership.id > 0).select(db.membership.ALL):
+        if role.membership == group:  # make "Patient" as default option
+            roleOptions = CAT(
+                roleOptions,
+                OPTION(
+                    role.membership + " (level " + str(role.hierarchy) + ")",
+                    _selected="selected",
+                    _value=str(role.id),
+                ),
+            )
         else:
-            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
+            roleOptions = CAT(
+                roleOptions,
+                OPTION(
+                    role.membership + " (level " + str(role.hierarchy) + ")",
+                    _value=str(role.id),
+                ),
+            )
     roleOptions = XML(roleOptions)
-    genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1) 
+    genderOptions = dropdownSelect(db.gender, db.gender.fields[1], 1)
     return locals()
 
-# patients worklist 
-@action('worklist', method=['POST','GET']) # route
-@action.uses(session, T, auth.user, db, 'worklist.html')
+
+# patients worklist
+@action("worklist", method=["POST", "GET"])  # route
+@action.uses(session, T, auth.user, db, "worklist.html")
 def worklist():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
@@ -96,66 +171,142 @@ def worklist():
     hosturl = LOCAL_URL
     localbeid = LOCAL_BEID
     user = auth.get_user()
-    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
-    test="Test OK"
+    userMembership = (
+        db(db.membership.id == user["membership"])
+        .select(db.membership.membership)
+        .first()["membership"]
+    )
+    test = "Test OK"
     membership = 6
-    class_icon = 'fa-user'
+    class_icon = "fa-user"
     group = "Patient"
-    roleOptions=""
-    for role in db(db.membership.id>0).select(db.membership.ALL):
-        if role.membership == group: # make "Patient" as default option
-            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_selected="selected",_value=str(role.id)))
+    roleOptions = ""
+    for role in db(db.membership.id > 0).select(db.membership.ALL):
+        if role.membership == group:  # make "Patient" as default option
+            roleOptions = CAT(
+                roleOptions,
+                OPTION(
+                    role.membership + " (level " + str(role.hierarchy) + ")",
+                    _selected="selected",
+                    _value=str(role.id),
+                ),
+            )
         else:
-            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
+            roleOptions = CAT(
+                roleOptions,
+                OPTION(
+                    role.membership + " (level " + str(role.hierarchy) + ")",
+                    _value=str(role.id),
+                ),
+            )
     roleOptions = XML(roleOptions)
-    genderOptions = dropdownSelect(db.gender,db.gender.fields[1],1)
-    sendingFacilityOptions = dropdownSelect(db.facility,db.facility.fields[1],1) # defaultId = 1 (desk1)
-    receivingFacilityOptions = dropdownSelect(db.facility,db.facility.fields[1],3) # defaultId = 3 (iris)
-    routineid = db(db.procedure.exam_name.startswith("Routine")).select().first()['id'] # id
-    procedureOptions = dropdownSelect(db.procedure,db.procedure.fields[2],routineid) # field exam_name defaultId = 4 (routine consultation)
-    providerOptions=""
-    for provider in db((db.auth_user.membership>=getMembershipId('Doctor'))&(db.auth_user.membership<=getMembershipId('Medical assistant'))).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
-        if provider.last_name == DEFAULT_PROVIDER: # make "House" as default option
-            providerOptions = CAT(providerOptions, OPTION(provider.last_name + ','+ provider.first_name,_selected="selected",_value=str(provider.id)))
+    genderOptions = dropdownSelect(db.gender, db.gender.fields[1], 1)
+    sendingFacilityOptions = dropdownSelect(
+        db.facility, db.facility.fields[1], 1
+    )  # defaultId = 1 (desk1)
+    receivingFacilityOptions = dropdownSelect(
+        db.facility, db.facility.fields[1], 3
+    )  # defaultId = 3 (iris)
+    routineid = (
+        db(db.procedure.exam_name.startswith("Routine")).select().first()["id"]
+    )  # id
+    procedureOptions = dropdownSelect(
+        db.procedure, db.procedure.fields[2], routineid
+    )  # field exam_name defaultId = 4 (routine consultation)
+    providerOptions = ""
+    for provider in db(
+        (db.auth_user.membership >= getMembershipId("Doctor"))
+        & (db.auth_user.membership <= getMembershipId("Medical assistant"))
+    ).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
+        if provider.last_name == DEFAULT_PROVIDER:  # make "House" as default option
+            providerOptions = CAT(
+                providerOptions,
+                OPTION(
+                    provider.last_name + "," + provider.first_name,
+                    _selected="selected",
+                    _value=str(provider.id),
+                ),
+            )
         else:
-            providerOptions = CAT(providerOptions, OPTION(provider.last_name + ','+ provider.first_name,_value=str(provider.id)))
-    providerOptions = XML(providerOptions) 
+            providerOptions = CAT(
+                providerOptions,
+                OPTION(
+                    provider.last_name + "," + provider.first_name,
+                    _value=str(provider.id),
+                ),
+            )
+    providerOptions = XML(providerOptions)
     seniorOptions = ""
     # medicalmembership = db((db.membership.hierarchy==1)|(db.membership.hierarchy==2)).select(
     #     db.membership.ALL, db.auth_user.last_name,left=db.auth_user.on(db.auth_user.membership == db.auth_user.id)).as_dict()
-    idMembershipDoctor = db(db.membership.membership == 'Doctor').select(db.membership.id).first()['id']
-    for senior in db(db.auth_user.membership == idMembershipDoctor).select(db.auth_user.ALL, orderby=db.auth_user.last_name):
-        if senior.last_name == DEFAULT_SENIOR :  # make "House" as default option
-            seniorOptions = CAT(seniorOptions, OPTION(
-                senior.last_name + ',' + senior.first_name, _selected="selected", _value=str(senior.id)))
+    idMembershipDoctor = (
+        db(db.membership.membership == "Doctor").select(db.membership.id).first()["id"]
+    )
+    for senior in db(db.auth_user.membership == idMembershipDoctor).select(
+        db.auth_user.ALL, orderby=db.auth_user.last_name
+    ):
+        if senior.last_name == DEFAULT_SENIOR:  # make "House" as default option
+            seniorOptions = CAT(
+                seniorOptions,
+                OPTION(
+                    senior.last_name + "," + senior.first_name,
+                    _selected="selected",
+                    _value=str(senior.id),
+                ),
+            )
         else:
-            seniorOptions = CAT(seniorOptions, OPTION(
-                senior.last_name + ',' + senior.first_name, _value=str(senior.id)))
+            seniorOptions = CAT(
+                seniorOptions,
+                OPTION(
+                    senior.last_name + "," + senior.first_name, _value=str(senior.id)
+                ),
+            )
     seniorOptions = XML(seniorOptions)
-    everyModalityOptions = dropdownSelect(db.modality,db.modality.fields[1],1)
-    modalityRows = db(db.modality).select(db.modality.modality_name,db.modality.id_modality_controller)
+    everyModalityOptions = dropdownSelect(db.modality, db.modality.fields[1], 1)
+    modalityRows = db(db.modality).select(
+        db.modality.modality_name, db.modality.id_modality_controller
+    )
     modalityDict = {}
-    rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
+    rows = db(db.modality.id_modality_controller == db.modality_controller.id).select()
     for row in rows:
-        modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
-    multiplemod = db((db.modality.modality_name == 'multiple') | (db.modality.modality_name == 'Multiple')).select().first()['id']
+        modalityDict[row.modality.modality_name] = (
+            row.modality_controller.modality_controller_name
+        )
+    multiplemod = (
+        db(
+            (db.modality.modality_name == "multiple")
+            | (db.modality.modality_name == "Multiple")
+        )
+        .select()
+        .first()["id"]
+    )
     practitionerDict = {}
-    practitionerSelect = ['Doctor']
-    rows = db(db.membership.membership.contains(practitionerSelect,all=False)).select(join=db.auth_user.on(db.auth_user.membership == db.membership.id))
+    practitionerSelect = ["Doctor"]
+    rows = db(db.membership.membership.contains(practitionerSelect, all=False)).select(
+        join=db.auth_user.on(db.auth_user.membership == db.membership.id)
+    )
     for row in rows:
-        practitionerDict['Dr. '+row.auth_user.first_name+' '+row.auth_user.last_name]=row.auth_user.id
+        practitionerDict[
+            "Dr. " + row.auth_user.first_name + " " + row.auth_user.last_name
+        ] = row.auth_user.id
     providerDict = {}
-    providerSelect = ['Medical assistant','Nurse']
-    rows = db(db.membership.membership.contains(providerSelect,all=False)).select(join=db.auth_user.on(db.auth_user.membership == db.membership.id))
+    providerSelect = ["Medical assistant", "Nurse"]
+    rows = db(db.membership.membership.contains(providerSelect, all=False)).select(
+        join=db.auth_user.on(db.auth_user.membership == db.membership.id)
+    )
     for row in rows:
-        providerDict[row.auth_user.first_name+' '+row.auth_user.last_name]=row.auth_user.id
+        providerDict[row.auth_user.first_name + " " + row.auth_user.last_name] = (
+            row.auth_user.id
+        )
     return locals()
+
 
 ## manage medic_ref
 
-@action('manage/medications')
-@action('manage/medications/<rec_id>')
-@action.uses(session, auth, db, 'manage/medications.html')
+
+@action("manage/medications")
+@action("manage/medications/<rec_id>")
+@action.uses(session, auth, db, "manage/medications.html")
 def medications(rec_id="1"):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
@@ -164,11 +315,13 @@ def medications(rec_id="1"):
     user = auth.get_user()
     return locals()
 
+
 ## manage allergic agents
 
-@action('manage/allergy')
-@action('manage/allergy/<rec_id>')
-@action.uses(session, auth, db,'manage/allergy.html')
+
+@action("manage/allergy")
+@action("manage/allergy/<rec_id>")
+@action.uses(session, auth, db, "manage/allergy.html")
 def allergy(rec_id="1"):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
@@ -177,11 +330,13 @@ def allergy(rec_id="1"):
     user = auth.get_user()
     return locals()
 
+
 ## manage diseases
 
-@action('manage/diseases')
-@action('manage/diseases/<rec_id>')
-@action.uses(session, auth, db,'manage/diseases.html')
+
+@action("manage/diseases")
+@action("manage/diseases/<rec_id>")
+@action.uses(session, auth, db, "manage/diseases.html")
 def diseases(rec_id="1"):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
@@ -190,12 +345,14 @@ def diseases(rec_id="1"):
     user = auth.get_user()
     return locals()
 
+
 ## manage lenses
 
-@action('manage/lenses')
-@action('manage/lenses/<rec_id>')
-@action.uses(session, auth, db,'manage/lenses.html')
-def medications(rec_id="1"):
+
+@action("manage/lenses")
+@action("manage/lenses/<rec_id>")
+@action.uses(session, auth, db, "manage/lenses.html")
+def lenses(rec_id="1"):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
@@ -203,198 +360,243 @@ def medications(rec_id="1"):
     user = auth.get_user()
     return locals()
 
-@action('manage/files', method=['POST','GET']) # route
-@action.uses(session, T, auth, db,'manage/files.html')
+
+@action("manage/files", method=["POST", "GET"])  # route
+@action.uses(session, T, auth, db, "manage/files.html")
 def files():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
-    if 'membership' in user:
-        userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
+    if "membership" in user:
+        userMembership = (
+            db(db.membership.id == user["membership"])
+            .select(db.membership.membership)
+            .first()["membership"]
+        )
     else:
         userMembership = None
-    test="Test OK"
+    test = "Test OK"
     membership = 6
-    class_icon = 'fa-user'
+    class_icon = "fa-user"
     group = "Patient"
-    roleOptions=""
-    for role in db(db.membership.id>0).select(db.membership.ALL):
-        if role.membership == group: # make "Patient" as default option
-            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_selected="selected",_value=str(role.id)))
+    roleOptions = ""
+    for role in db(db.membership.id > 0).select(db.membership.ALL):
+        if role.membership == group:  # make "Patient" as default option
+            roleOptions = CAT(
+                roleOptions,
+                OPTION(
+                    role.membership + " (level " + str(role.hierarchy) + ")",
+                    _selected="selected",
+                    _value=str(role.id),
+                ),
+            )
         else:
-            roleOptions = CAT(roleOptions, OPTION(role.membership + " (level " + str(role.hierarchy) + ")",_value=str(role.id)))
+            roleOptions = CAT(
+                roleOptions,
+                OPTION(
+                    role.membership + " (level " + str(role.hierarchy) + ")",
+                    _value=str(role.id),
+                ),
+            )
     roleOptions = XML(roleOptions)
     modalityDict = {}
-    rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
+    rows = db(db.modality.id_modality_controller == db.modality_controller.id).select()
     for row in rows:
-        modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
+        modalityDict[row.modality.modality_name] = (
+            row.modality_controller.modality_controller_name
+        )
     return locals()
+
 
 ## manage_db
 
-## import users 
-@action('import_users')
-@action.uses(T, db,'generic.html')
+
+## import users
+@action("import_users")
+@action.uses(T, db, "generic.html")
 def import_users():
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
     # hosturl = LOCAL_URL
     import os
+
     # rows = db(db.auth_user).select()
-    with open(os.path.join(os.path.dirname(__file__),'uploads/csv/')+'1.csv', 'r', encoding='utf-8', newline='') as dumpfile:
+    with open(
+        os.path.join(os.path.dirname(__file__), "uploads/csv/") + "1.csv",
+        "r",
+        encoding="utf-8",
+        newline="",
+    ) as dumpfile:
         db.auth_user.import_from_csv_file(dumpfile)
     return dict(message="OK")
 
-@action('db_truncate')
-@action.uses(T, db, auth.user,'generic.html')
+
+@action("db_truncate")
+@action.uses(T, db, auth.user, "generic.html")
 def truncate_db():
     hosturl = LOCAL_URL
     for table_name in db.tables():
-        db[table_name].truncate('RESTART IDENTITY CASCADE')
+        db[table_name].truncate("RESTART IDENTITY CASCADE")
     return locals()
+
 
 # TODO: add action uses aut.user to all sensible pages
 @action("manage/db")
-@action.uses(T, auth.user, db, flash,'manage/manage_db.html')
+@action.uses(T, auth.user, db, flash, "manage/manage_db.html")
 def manage_db():
     tablesArr = db._tables
     hosturl = LOCAL_URL
     user = auth.get_user()
     return locals()
 
+
 @action("list_dir_csv")
 def list_dir_csv():
     import os
+
     try:
-        upload_folder = os.path.join(os.path.dirname(__file__),'uploads/csv')
-        dir_array=os.listdir(upload_folder)
-        dir_array.append('true')
-        return " ".join(dir_array) # return in string to convert in array in js
+        upload_folder = os.path.join(os.path.dirname(__file__), "uploads/csv")
+        dir_array = os.listdir(upload_folder)
+        dir_array.append("true")
+        return " ".join(dir_array)  # return in string to convert in array in js
         # return "show_csv_dir(%s,true);" % repr(dir_array)
     except:
-        folder = ['uploads/csv','false']
+        folder = ["uploads/csv", "false"]
         return "%s" % repr(folder)
 
-@action("del_csv", method=['GET'])
+
+@action("del_csv", method=["GET"])
 def del_csv():
     import os
+
     file2del = request.query.datafile
     try:
-        fullPath=os.path.join(os.path.dirname(__file__),'uploads/csv/')+file2del
+        fullPath = os.path.join(os.path.dirname(__file__), "uploads/csv/") + file2del
         os.remove(fullPath)
-        return file2del+"#True"
+        return file2del + "#True"
     except:
-        return file2del+"#False"
+        return file2del + "#False"
+
 
 @action("save_table")
-@action('save_table/<tablename>')
+@action("save_table/<tablename>")
 def save_table(tablename):
-    from datetime import datetime
     import os
+    from datetime import datetime
+
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
-    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
-    filename = date_backup+'-'+tablename+'-table-backup.csv'
-    backup_path_file = backup_path+filename
-    rows=db(db[tablename]).select()
+    backup_path = os.path.join(os.path.dirname(__file__), "uploads/csv/")
+    filename = date_backup + "-" + tablename + "-table-backup.csv"
+    backup_path_file = backup_path + filename
+    rows = db(db[tablename]).select()
     try:
-        with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
+        with open(backup_path_file, "w", encoding="utf-8", newline="") as dumpfile:
             rows.export_to_csv_file(dumpfile)
-        evalArr = (filename+" True").split(' ')
-        return '#'.join(evalArr)
+        evalArr = (filename + " True").split(" ")
+        return "#".join(evalArr)
     except Exception as e:
-        evalArr = (filename+" False").split(' ')
+        evalArr = (filename + " False").split(" ")
         evalArr.append(print(e))
-        return '#'.join(evalArr)
+        return "#".join(evalArr)
+
 
 @action("save_all_tables")
 def save_all_tables():
-    from datetime import datetime
     import os
+    from datetime import datetime
+
     now = datetime.now()
     dblist = db._tables
     for table in dblist:
-        if table != 'auth_user':
+        if table != "auth_user":
             date_backup = now.strftime("%y%m%d-%H%M%S")
-            backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/tables/')
-            filename = date_backup+'-'+table+'-table-backup.csv'
-            backup_path_file = backup_path+filename
-            rows=db(db[table]).select()
-            with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
+            backup_path = os.path.join(os.path.dirname(__file__), "uploads/csv/tables/")
+            filename = date_backup + "-" + table + "-table-backup.csv"
+            backup_path_file = backup_path + filename
+            rows = db(db[table]).select()
+            with open(backup_path_file, "w", encoding="utf-8", newline="") as dumpfile:
                 rows.export_to_csv_file(dumpfile)
-        else :
+        else:
             None
     return True
 
+
 @action("save_db")
 def save_db():
-    from datetime import datetime
     import os
+    from datetime import datetime
+
     now = datetime.now()
     date_backup = now.strftime("%y%m%d-%H%M%S")
-    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
-    filename = date_backup+'-db-full-backup.csv'
-    backup_path_file = backup_path+filename
+    backup_path = os.path.join(os.path.dirname(__file__), "uploads/csv/")
+    filename = date_backup + "-db-full-backup.csv"
+    backup_path_file = backup_path + filename
     # rows=db(db.auth_user).select()
     try:
-        with open(backup_path_file, 'w', encoding='utf-8', newline='') as dumpfile:
+        with open(backup_path_file, "w", encoding="utf-8", newline="") as dumpfile:
             db.export_to_csv_file(dumpfile)
-        evalArr = (filename+" True").split(' ')
-        return '#'.join(evalArr)
+        evalArr = (filename + " True").split(" ")
+        return "#".join(evalArr)
     except Exception as e:
-        evalArr = (filename+" False").split(' ')
+        evalArr = (filename + " False").split(" ")
         # evalArr.append(print(e))
-        return '#'.join(evalArr)
+        return "#".join(evalArr)
+
 
 @action("init_db")
 def init_db():
     import os
+
     for table_name in db.tables():
-        db[table_name].truncate('ON DELETE CASCADE')
-    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
-    backup_path_file = backup_path+'init_db.csv'
+        db[table_name].truncate("ON DELETE CASCADE")
+    backup_path = os.path.join(os.path.dirname(__file__), "uploads/csv/")
+    backup_path_file = backup_path + "init_db.csv"
     try:
-        with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+        with open(backup_path_file, "r", encoding="utf-8", newline="") as dumpfile:
             db.import_from_csv_file(dumpfile)
         # set_defaults_db()
-        return "reset"+"#"+"True"
+        return "reset" + "#" + "True"
     except:
-        return "reset"+"#"+"False"
+        return "reset" + "#" + "False"
 
-@action("restore_db", method=['GET'])
+
+@action("restore_db", method=["GET"])
 def restore_db():
     import os
+
     file2restore = request.query.datafile
     # delete all tables
     for table_name in db.tables():
-        db[table_name].truncate('RESTART IDENTITY CASCADE')
+        db[table_name].truncate("RESTART IDENTITY CASCADE")
     # import csv file
-    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
-    backup_path_file = backup_path+file2restore
+    backup_path = os.path.join(os.path.dirname(__file__), "uploads/csv/")
+    backup_path_file = backup_path + file2restore
     try:
-        with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+        with open(backup_path_file, "r", encoding="utf-8", newline="") as dumpfile:
             db.import_from_csv_file(dumpfile)
-        evalArr = (file2restore+" True").split(' ')
-        return '#'.join(evalArr)
+        evalArr = (file2restore + " True").split(" ")
+        return "#".join(evalArr)
     except Exception as e:
-        evalArr = (file2restore+" False").split(' ')
+        evalArr = (file2restore + " False").split(" ")
         evalArr.append(print(e))
-        return '#'.join(evalArr)
-    
+        return "#".join(evalArr)
 
-@action("restore", method=['GET'])
+
+@action("restore", method=["GET"])
 def restore():
     import os
+
     filename = request.query.datafile
     # filename contains date-time-(tablename or db)-(full or table)-backup.csv -> [date,time,tablename or db,full or table,backup.csv]
-    reqArr = filename.split('-')
-    backup_path = os.path.join(os.path.dirname(__file__),'uploads/csv/')
-    backup_path_file = backup_path+filename
+    reqArr = filename.split("-")
+    backup_path = os.path.join(os.path.dirname(__file__), "uploads/csv/")
+    backup_path_file = backup_path + filename
     table_name = reqArr[2]
     errorTruncate = errorImport = ""
-    if reqArr[3] == 'table':
+    if reqArr[3] == "table":
         ###### truncate can cause some id discrepancies #####
         # # truncate table
         # try:
@@ -403,17 +605,17 @@ def restore():
         #     errorTruncate = print(et)
         # import
         try:
-            with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+            with open(backup_path_file, "r", encoding="utf-8", newline="") as dumpfile:
                 db[table_name].import_from_csv_file(dumpfile)
-            evalArr = (filename+" True").split(' ')
+            evalArr = (filename + " True").split(" ")
             evalArr.append(errorTruncate)
-            return '#'.join(evalArr)
+            return "#".join(evalArr)
         except Exception as ei:
             errorImport = print(ei)
-            evalArr = (filename+" False").split(' ')
+            evalArr = (filename + " False").split(" ")
             # evalArr.append(errorTruncate+' '+errorImport)
-            return '#'.join(evalArr)
-    elif reqArr[3] == 'full':
+            return "#".join(evalArr)
+    elif reqArr[3] == "full":
         ###### truncate can cause some id discrepancies #####
         # truncate db
         # try:
@@ -422,36 +624,39 @@ def restore():
         #     errorTruncate = print(et)
         # import
         try:
-            with open(backup_path_file,'r', encoding='utf-8', newline='') as dumpfile:
+            with open(backup_path_file, "r", encoding="utf-8", newline="") as dumpfile:
                 db.import_from_csv_file(dumpfile)
-            evalArr = (filename+" True").split(' ')
+            evalArr = (filename + " True").split(" ")
             evalArr.append(errorImport)
-            return '#'.join(evalArr)
+            return "#".join(evalArr)
         except Exception as ei:
             errorImport = print(ei)
-            evalArr = (filename+" False").split(' ')
+            evalArr = (filename + " False").split(" ")
             # evalArr.append(errorTruncate+' '+errorImport)
-            return '#'.join(evalArr)
+            return "#".join(evalArr)
     else:
-        return filename+'#False'
+        return filename + "#False"
+
 
 # manage procedure combo
-@action('manage/combo')
-@action.uses(session, db, 'manage/combo.html')
+@action("manage/combo")
+@action.uses(session, db, "manage/combo.html")
 def combo():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
     hosturl = LOCAL_URL
-    procedureOptions=dropdownSelect(db.procedure,db.procedure.fields[2],1) # table to show is procedure, field to show=name, selected value is id=1, value is index
-    modalityOptions=dropdownSelect(db.modality,db.modality.fields[1],1)
+    procedureOptions = dropdownSelect(
+        db.procedure, db.procedure.fields[2], 1
+    )  # table to show is procedure, field to show=name, selected value is id=1, value is index
+    modalityOptions = dropdownSelect(db.modality, db.modality.fields[1], 1)
     return locals()
 
 
 # manage billing summary
-@action('billing/summary')
-@action('billing/summary/<rec_id>')
-@action.uses(session, auth, db,'billing/summary.html')
+@action("billing/summary")
+@action("billing/summary/<rec_id>")
+@action.uses(session, auth, db, "billing/summary.html")
 def summary(rec_id):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
