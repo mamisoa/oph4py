@@ -234,6 +234,49 @@ def users(membership="Patient"):
 @action("worklist", method=["POST", "GET"])  # route
 @action.uses(session, T, auth.user, db, "worklist.html")
 def worklist():
+    """
+    Manages the worklist interface for patient appointments and procedures.
+
+    This function serves as the main controller for the worklist management interface. It handles:
+    - Patient appointment scheduling and tracking
+    - Procedure status management
+    - Provider and practitioner assignments
+    - Real-time status updates
+    - Modality-specific workflow management
+    - Billing integration
+
+    Returns:
+        dict: A dictionary containing:
+            - env_status: Current environment status
+            - timeOffset: System time offset
+            - app_name: Application name
+            - hosturl: Host URL
+            - localbeid: Local BeID reader URL
+            - user: Current authenticated user object
+            - userMembership: Current user's membership level
+            - test: Test status message
+            - membership: Default membership level (6 for Patient)
+            - class_icon: Font Awesome icon class
+            - group: User group name
+            - roleOptions: HTML options for role selection
+            - genderOptions: HTML options for gender selection
+            - sendingFacilityOptions: HTML options for sending facility
+            - receivingFacilityOptions: HTML options for receiving facility
+            - procedureOptions: HTML options for procedures
+            - providerOptions: HTML options for providers
+            - seniorOptions: HTML options for senior doctors
+            - everyModalityOptions: HTML options for all modalities
+            - modalityDict: Dictionary mapping modalities to controllers
+            - practitionerDict: Dictionary of available practitioners
+            - providerDict: Dictionary of available providers
+            - multiplemod: ID for multiple modality option
+
+    Requires:
+        - Authentication
+        - Session management
+        - Database access
+        - Worklist template
+    """
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
