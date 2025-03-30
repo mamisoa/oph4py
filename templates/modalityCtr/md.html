@@ -2327,6 +2327,8 @@
                                 <input id="methodCxRxModalSubmit" type="text" class="visually-hidden"
                                     name="methodCxRxModalSubmit" value="POST" />
                                 <input id="btnCxRxModalSubmit" type="submit" class="visually-hidden" />
+                                <!-- Hidden field to indicate action type -->
+                                <input type="hidden" name="actionType" id="actionTypeC" value="print">
                             </form>
                         </div>
                     </div>
@@ -2334,6 +2336,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="emailCxRxBtn" class="btn btn-info">Send by email</button>
                 <label id="CxRxModalSubmit" for="btnCxRxModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
             </div>
         </div>

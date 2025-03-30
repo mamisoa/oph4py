@@ -4,6 +4,26 @@
 
 ### Fixed
 
+- 2025-03-30T19:52:59: Fixed base64 encoding error in contacts prescription email
+  - Fixed "InvalidCharacterError: Failed to execute 'btoa' on 'Window': The string to be encoded contains characters outside of the Latin1 range"
+  - Replaced direct JSON string encoding with proper PDF base64 conversion
+  - Now using pdfMake's getBase64() method to correctly handle non-Latin1 characters
+  - Aligned implementation exactly with glasses prescription email functionality
+  - Fixed modal closing behavior to match glasses.js implementation
+
+- 2025-03-30T19:50:37: Fixed missing recipient field in contacts prescription email
+  - Added missing recipient field to the email data object
+  - Added email validation check before submission
+  - Fixed error "No recipient in email request"
+  - Aligned implementation with glasses prescription email functionality
+  - Enhanced email content with proper formatting
+
+- 2025-03-30T19:47:49: Fixed API endpoint in contacts prescription email functionality
+  - Corrected API endpoint from incorrect 'api/email_report' to 'api/email/send_with_attachment'
+  - Ensured compatibility with existing email API implementation
+  - Fixed "Error accessing table: 'DAL' object has no attribute 'email_report'" error
+  - Matched implementation with glasses prescription email functionality
+
 - 2025-03-30T19:09:40: Fixed email attachment filename encoding issue
   - Fixed issue where email attachments were showing as 'noname' instead of the properly formatted filename
   - Updated Content-Disposition header implementation to properly encode filenames according to RFC2231
@@ -115,6 +135,13 @@
     - Fixed by ensuring ID is only sent in the URL for PUT requests, not in the payload
 
 ### Added
+
+- 2025-03-30T19:43:21: Added email functionality to contacts prescription module
+  - Added "Send by email" button to contact lenses prescription modal (CxRxModal)
+  - Added hidden actionType field to track whether user wants to print or email
+  - Implemented the action handling in the form submission function
+  - Added notifyUser function for consistent user notification
+  - Email feature matches existing functionality in glasses prescription module
 
 - 2025-03-30T13:30:42: Added email functionality to certificates module
   - Modified `static/js/certificates.js` to allow sending certificates as email attachments
