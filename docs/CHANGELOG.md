@@ -4,6 +4,13 @@
 
 ### Fixed
 
+- 2025-03-30T11:20:34: Fixed timeoffset calculation in settings-example.py
+  - Modified `get_timeoffset()` function to properly handle timezone conversions
+  - Added explicit check for None values before calling total_seconds() on utc_offset
+  - Implemented robust error handling with fallback to default values
+  - Added type annotations and improved docstring
+  - Fixed linter error: "total_seconds is not a known attribute of None"
+
 - 2025-03-29T22:58:00: Fixed worklist status update functionality
   - Modified `static/js/useful.js`: Updated `setWlItemStatus` function to remove ID from request payload
     - ID is now correctly passed in the URL instead of the payload

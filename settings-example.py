@@ -5,30 +5,68 @@ This is an optional file that defined app level settings such as:
 - i18n settings
 This file is provided as an example:
 """
+
 NEW_INSTALLATION = False
 # ENV_STATUS='TEST' otherwise ''
-ENV_STATUS=''
+ENV_STATUS = ""
+
 import os
-from py4web.core import required_folder
+from datetime import datetime
 
 # timeoffset
 import pytz
-from datetime import datetime
+from py4web.core import required_folder
 
-def get_timeoffset():
+
+def get_timeoffset() -> int:
     """
     Get the current time offset for Brussels in hours from UTC.
     Handles daylight saving time automatically.
 
     Returns:
-        int: The time offset in hours.
-    """
-    brussels = pytz.timezone('Europe/Brussels')
-    utc_now = datetime.now(pytz.utc)
-    brussels_now = utc_now.astimezone(brussels)
-    offset = brussels_now.utcoffset().total_seconds() // 3600
-    return offset
+        int: The time offset in hours from UTC (positive for ahead, negative for behind).
+              For example, +1 for CET (winter), +2 for CEST (summer).
 
+    Raises:
+        pytz.exceptions.UnknownTimeZoneError: If 'Europe/Brussels' timezone is not recognized.
+    """
+    try:
+        # Create timezone objects
+        brussels_tz = pytz.timezone("Europe/Brussels")
+        utc_tz = pytz.UTC
+
+        # Get current time with proper timezone info
+        now = datetime.now(utc_tz)
+
+        # Convert UTC time to Brussels time
+        brussels_time = now.astimezone(brussels_tz)
+
+        # Calculate the offset in hours - verify not None before calling total_seconds()
+        utc_offset = brussels_time.utcoffset()
+        if utc_offset is None:
+            raise ValueError("Failed to get UTC offset, result was None")
+
+        offset_seconds = utc_offset.total_seconds()
+        offset_hours = int(offset_seconds // 3600)
+
+        return offset_hours
+    except Exception as e:
+        # Fallback to default offset values if any error occurs
+        import traceback
+
+        print(f"Error calculating time offset: {str(e)}")
+        print(traceback.format_exc())
+
+        # Default to standard CET/CEST based on current month
+        current_month = datetime.now().month
+        # Summer time (CEST) from March to October
+        if 3 <= current_month <= 10:
+            return 2  # CEST
+        else:
+            return 1  # CET
+
+
+# Set the time offset for the application
 TIMEOFFSET = get_timeoffset()
 
 # TIMEOFFSET = 1 # winter
@@ -48,8 +86,8 @@ DB_MIGRATE = True
 DB_FAKE_MIGRATE = False  # maybe?
 
 # if server is moved
-#DB_MIGRATE = True
-#DB_FAKE_MIGRATE = True
+# DB_MIGRATE = True
+# DB_FAKE_MIGRATE = True
 
 # location where static files are stored:
 STATIC_FOLDER = required_folder(APP_FOLDER, "static")
@@ -57,26 +95,31 @@ STATIC_FOLDER = required_folder(APP_FOLDER, "static")
 # location where to store uploaded files:
 UPLOAD_FOLDER = required_folder(APP_FOLDER, "uploads")
 ##
-ASSETS_FOLDER = '/home/www-data/py4web/apps/'+APP_NAME+'/static/'
+ASSETS_FOLDER = "/home/www-data/py4web/apps/" + APP_NAME + "/static/"
 
 ## MACHINES
-MACHINES_FOLDER = '/oph4py/machines'
+MACHINES_FOLDER = "/oph4py/machines"
 # VISIONIX
-L80_FOLDER = '/oph4py/machines/l80/working_dir21/ClientDB'
-VX100_FOLDER = '/oph4py/machines/vx100/ClientDB'
-VX100_XML_FOLDER = '/xml'
+L80_FOLDER = "/oph4py/machines/l80/working_dir21/ClientDB"
+VX100_FOLDER = "/oph4py/machines/vx100/ClientDB"
+VX100_XML_FOLDER = "/xml"
 # CV5000
-LM_FOLDER = '/oph4py/machines/cv5000/lm'
-RM_FOLDER = '/oph4py/machines/cv5000/rm'
-TOPCON_DICT = { 'default' : '/cv-cornea', 'cv-iris' : '/cv-iris', 'cv-cornea' : '/cv-cornea', 'cv-crist' : '/cv-crist'  }
+LM_FOLDER = "/oph4py/machines/cv5000/lm"
+RM_FOLDER = "/oph4py/machines/cv5000/rm"
+TOPCON_DICT = {
+    "default": "/cv-cornea",
+    "cv-iris": "/cv-iris",
+    "cv-cornea": "/cv-cornea",
+    "cv-crist": "/cv-crist",
+}
 TOPCON_XML = required_folder(APP_FOLDER, "topcon/xml")
 
 # EYESUITE
-EYESUITE_FOLDER = '/oph4py/machines/eyesuite/'
-EYESUITE_RESULTS_FOLDER = '/oph4py/machines/eyesuite/octopus/exports/'
+EYESUITE_FOLDER = "/oph4py/machines/eyesuite/"
+EYESUITE_RESULTS_FOLDER = "/oph4py/machines/eyesuite/octopus/exports/"
 
 ## DATA
-PATIENTS_FOLDER = '/oph4py/data/patients'
+PATIENTS_FOLDER = "/oph4py/data/patients"
 
 # send email on regstration
 VERIFY_EMAIL = False
@@ -85,7 +128,7 @@ VERIFY_EMAIL = False
 REQUIRES_APPROVAL = False
 
 # ALLOWED_ACTIONS:
-# ["all"] 
+# ["all"]
 # ["login", "logout", "request_reset_password", "reset_password", "change_password", "change_email", "update_profile"]
 # if you add "login", add also "logout"
 ALLOWED_ACTIONS = ["all"]
@@ -101,7 +144,7 @@ COMPANY_LOGO = "yourlogo"
 
 # session settings
 SESSION_TYPE = "cookies"
-SESSION_SECRET_KEY = "" # replace this with a uuid
+SESSION_SECRET_KEY = ""  # replace this with a uuid
 MEMCACHE_CLIENTS = ["127.0.0.1:11211"]
 REDIS_SERVER = "localhost:6379"
 
@@ -149,22 +192,19 @@ except (ImportError, ModuleNotFoundError):
     pass
 
 LOCAL_URL = "https://yourdomain.com"
-LOCAL_BEID = 'https://yourdomain.com/beid/api/eid2'
+LOCAL_BEID = "https://yourdomain.com/beid/api/eid2"
 
 # defaults members
 DEFAULT_PROVIDER = ""
 DEFAULT_SENIOR = ""
 
 # external db
-DB_OCTOPUS= "dbconnexion"
-DBO_FOLDER= required_folder(APP_FOLDER, "databases/octopus")
+DB_OCTOPUS = "dbconnexion"
+DBO_FOLDER = required_folder(APP_FOLDER, "databases/octopus")
 
 # PACS
 PACS = True
-AET = {
-    'MWL' : "WORKLIST",
-    'PACS': "DCM4CHEE"
-}
-PACS_URL= "http://dcm4chee.org/dcm4chee-arc"
-REALMS_URL="https://dcm4chee.org:8843"
-KEYCLOAK_SECRET=""
+AET = {"MWL": "WORKLIST", "PACS": "DCM4CHEE"}
+PACS_URL = "http://dcm4chee.org/dcm4chee-arc"
+REALMS_URL = "https://dcm4chee.org:8843"
+KEYCLOAK_SECRET = ""
