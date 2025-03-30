@@ -1,18 +1,48 @@
 # Modality controllers
 
-from py4web import action, request, abort, redirect, URL, Field, response # add response to throw http error 400
-from yatl.helpers import A, XML, OPTION, CAT
-from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
-from pydal.validators import CRYPT # to encrypt passwords
-
-from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
+from py4web import (  # add response to throw http error 400
+    URL,
+    Field,
+    abort,
+    action,
+    redirect,
+    request,
+    response,
+)
+from py4web.utils.form import (  # added import Field Form and FormStyleBulma to get form working
+    Form,
+    FormStyleBootstrap4,
+    FormStyleBulma,
+)
 from py4web.utils.grid import Grid
+from pydal.validators import CRYPT  # to encrypt passwords
+from yatl.helpers import CAT, OPTION, XML, A
+
+from .common import (
+    T,
+    auth,
+    authenticated,
+    cache,
+    db,
+    flash,
+    logger,
+    session,
+    unauthenticated,
+)
 
 # import settings
-from .settings import LOCAL_URL, APP_NAME, ASSETS_FOLDER, MACHINES_FOLDER, NEW_INSTALLATION, TIMEOFFSET, ENV_STATUS
+from .settings import (
+    APP_NAME,
+    ASSETS_FOLDER,
+    ENV_STATUS,
+    LOCAL_URL,
+    MACHINES_FOLDER,
+    NEW_INSTALLATION,
+    TIMEOFFSET,
+)
 
 # import userful
-from .useful import dropdownSelect, rows2json, getMembershipId
+from .useful import dropdownSelect, getMembershipId, rows2json
 
 # get standard index in db for patient/user profile
 # TODO remove try and check if new installation
@@ -20,25 +50,28 @@ if "NEW_INSTALLATION" in globals():
     if NEW_INSTALLATION == True:
         pass
     else:
-        mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
-        gpId = db(db.modality.modality_name == 'GP').select(db.modality.id).first().id
+        mdId = db(db.modality.modality_name == "MD").select(db.modality.id).first().id
+        gpId = db(db.modality.modality_name == "GP").select(db.modality.id).first().id
         genderId = {
-            db(db.gender.sex == 'Male').select(db.gender.id).first().id : "Male",
-            db(db.gender.sex == 'Female').select(db.gender.id).first().id : "Female",
-            db(db.gender.sex == 'Other').select(db.gender.id).first().id : "Other" }
+            db(db.gender.sex == "Male").select(db.gender.id).first().id: "Male",
+            db(db.gender.sex == "Female").select(db.gender.id).first().id: "Female",
+            db(db.gender.sex == "Other").select(db.gender.id).first().id: "Other",
+        }
 else:
     # TODO: create an array for practitioners in modalities
-    mdId = db(db.modality.modality_name == 'MD').select(db.modality.id).first().id
-    gpId = db(db.modality.modality_name == 'GP').select(db.modality.id).first().id
+    mdId = db(db.modality.modality_name == "MD").select(db.modality.id).first().id
+    gpId = db(db.modality.modality_name == "GP").select(db.modality.id).first().id
     genderId = {
-        db(db.gender.sex == 'Male').select(db.gender.id).first().id : "Male",
-        db(db.gender.sex == 'Female').select(db.gender.id).first().id : "Female",
-        db(db.gender.sex == 'Other').select(db.gender.id).first().id : "Other" }
+        db(db.gender.sex == "Male").select(db.gender.id).first().id: "Male",
+        db(db.gender.sex == "Female").select(db.gender.id).first().id: "Female",
+        db(db.gender.sex == "Other").select(db.gender.id).first().id: "Other",
+    }
+
 
 # tono controller
-@action('tono')
-@action('modalityCtr/tono/<wlId>')
-@action.uses(session, auth, db,'modalityCtr/tono.html')
+@action("tono")
+@action("modalityCtr/tono/<wlId>")
+@action.uses(session, auth, db, "modalityCtr/tono.html")
 def tono(wlId):
     """
     The 'tono' function is used to retrieve necessary information for encoding tonometry.
@@ -53,10 +86,10 @@ def tono(wlId):
               - Information on the provider and senior linked to the worklist
               - Information about the authenticated user
               - Environment constants like 'env_status', 'timeOffset', and 'hosturl'
-              
+
     Note:
         Decorators
-            'tono': 
+            'tono':
             'modalityCtr/tono/<wlId>': endpoint
             'uses' decorators from py4web to specify its behavior and dependencies.
     """
@@ -65,24 +98,51 @@ def tono(wlId):
     app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
-    genderObj = genderId # used in patient-bar
+    genderObj = genderId  # used in patient-bar
     wldb = db.worklist
-    wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
-        join=[
-            db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
-            db.modality.on(db.modality.id == wldb.modality_dest),
-            ]
-        ).as_json()
-    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
-    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
+    wlDict = (
+        db(wldb.id == wlId)
+        .select(
+            wldb.ALL,
+            db.auth_user.ALL,
+            db.modality.modality_name,
+            join=[
+                db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
+                db.modality.on(db.modality.id == wldb.modality_dest),
+            ],
+        )
+        .as_json()
+    )
+    providerDict = (
+        db(wldb.id == wlId)
+        .select(
+            db.auth_user.ALL, left=db.auth_user.on(db.auth_user.id == wldb.provider)
+        )
+        .as_json()
+    )
+    seniorDict = (
+        db(wldb.id == wlId)
+        .select(db.auth_user.ALL, left=db.auth_user.on(db.auth_user.id == wldb.senior))
+        .as_json()
+    )
+    patientId = (
+        db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    )
+    # Get patient phone information
+    phoneDict = (
+        db(db.phone.id_auth_user == patientId)
+        .select(
+            db.phone.id, db.phone.phone_prefix, db.phone.phone, db.phone.phone_origin
+        )
+        .as_json()
+    )
     return locals()
 
+
 # autorx controller
-@action('autorx')
-@action('modalityCtr/autorx/<wlId>')
-@action.uses(session, auth, db,'modalityCtr/autorx.html')
+@action("autorx")
+@action("modalityCtr/autorx/<wlId>")
+@action.uses(session, auth, db, "modalityCtr/autorx.html")
 def autorx(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
@@ -90,28 +150,60 @@ def autorx(wlId):
     app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
-    genderObj = genderId # used in patient-bar
+    genderObj = genderId  # used in patient-bar
     wldb = db.worklist
-    patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
-    wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
-        join=[
-            db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
-            db.modality.on(db.modality.id == wldb.modality_dest),
-            ]
-        ).as_json()
-    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
-    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
-    qFar = db.optotype.distance == 'far'
-    qClose = db.optotype.distance == 'close'
-    optoFarOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'index', qFar)
-    optoCloseOptions = dropdownSelect(db.optotype, db.optotype.fields[2],1,'index', qClose)
-    statusRxOptions = dropdownSelect(db.status_rx, db.status_rx.fields[1],'index')
-    statusRxIndex = db(db.status_rx).select(db.status_rx.id,db.status_rx.status).as_json()
+    patientId = (
+        db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    )
+    wlDict = (
+        db(wldb.id == wlId)
+        .select(
+            wldb.ALL,
+            db.auth_user.ALL,
+            db.modality.modality_name,
+            join=[
+                db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
+                db.modality.on(db.modality.id == wldb.modality_dest),
+            ],
+        )
+        .as_json()
+    )
+    providerDict = (
+        db(wldb.id == wlId)
+        .select(
+            db.auth_user.ALL, left=db.auth_user.on(db.auth_user.id == wldb.provider)
+        )
+        .as_json()
+    )
+    seniorDict = (
+        db(wldb.id == wlId)
+        .select(db.auth_user.ALL, left=db.auth_user.on(db.auth_user.id == wldb.senior))
+        .as_json()
+    )
+    # Get patient phone information
+    phoneDict = (
+        db(db.phone.id_auth_user == patientId)
+        .select(
+            db.phone.id, db.phone.phone_prefix, db.phone.phone, db.phone.phone_origin
+        )
+        .as_json()
+    )
+    qFar = db.optotype.distance == "far"
+    qClose = db.optotype.distance == "close"
+    optoFarOptions = dropdownSelect(
+        db.optotype, db.optotype.fields[2], 1, "index", qFar
+    )
+    optoCloseOptions = dropdownSelect(
+        db.optotype, db.optotype.fields[2], 1, "index", qClose
+    )
+    statusRxOptions = dropdownSelect(db.status_rx, db.status_rx.fields[1], "index")
+    statusRxIndex = (
+        db(db.status_rx).select(db.status_rx.id, db.status_rx.status).as_json()
+    )
     return locals()
 
-def initFields(wlId,table,lat=""):
+
+def initFields(wlId, table, lat=""):
     """
     Initialize fields in view and get values or return empty string "" if None
     filter laterality if necessary
@@ -126,7 +218,7 @@ def initFields(wlId,table,lat=""):
             dictionary containing ffield content relative to laterality if applicable
             exported with [[ = XML(field['description']) ]] in view
     """
-    fieldsArr= db[table].fields
+    fieldsArr = db[table].fields
     if lat == "":
         query = db(db[table].id_worklist == wlId)
     else:
@@ -138,176 +230,350 @@ def initFields(wlId,table,lat=""):
         for item in items:
             if items[item] == None:
                 items[item] = ""
-    else :
+    else:
         for i in range(len(fieldsArr)):
-            items[fieldsArr[i]]=""
+            items[fieldsArr[i]] = ""
     return items
+
 
 ### md controller
 
-@action('md')
-@action('modalityCtr/md/<wlId>')
-@action.uses(session, auth.user, db,'modalityCtr/md.html')
+
+@action("md")
+@action("modalityCtr/md/<wlId>")
+@action.uses(session, auth.user, db, "modalityCtr/md.html")
 def md(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
-    modalityController = 'md'
+    modalityController = "md"
     import base64
     from datetime import datetime
-    response.headers['Cross-Origin-Embedder-Policy']='require-corp'
-    response.headers['Cross-Origin-Opener-Policy']='same-origin'
+
+    response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     hosturl = LOCAL_URL
     user = auth.get_user()
-    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
-    userHierarchy = db(db.membership.id == user['membership']).select(db.membership.hierarchy).first()['hierarchy']
+    userMembership = (
+        db(db.membership.id == user["membership"])
+        .select(db.membership.membership)
+        .first()["membership"]
+    )
+    userHierarchy = (
+        db(db.membership.id == user["membership"])
+        .select(db.membership.hierarchy)
+        .first()["hierarchy"]
+    )
     if userHierarchy >= 3:
-        redirect(URL('worklist'))
+        redirect(URL("worklist"))
     db.auth_user.password.readable = False
-    db.auth_user.password.writable  = False
-    genderObj = genderId # used in patient-bar
+    db.auth_user.password.writable = False
+    genderObj = genderId  # used in patient-bar
     wldb = db.worklist
-    wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
-        join=[
-            db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
-            db.modality.on(db.modality.id == wldb.modality_dest),
-            ]
-        ).as_json()
-    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
-    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
-    patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    wlDict = (
+        db(wldb.id == wlId)
+        .select(
+            wldb.ALL,
+            db.auth_user.ALL,
+            db.modality.modality_name,
+            join=[
+                db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
+                db.modality.on(db.modality.id == wldb.modality_dest),
+            ],
+        )
+        .as_json()
+    )
+    providerDict = (
+        db(wldb.id == wlId)
+        .select(
+            db.auth_user.ALL, left=db.auth_user.on(db.auth_user.id == wldb.provider)
+        )
+        .as_json()
+    )
+    seniorDict = (
+        db(wldb.id == wlId)
+        .select(db.auth_user.ALL, left=db.auth_user.on(db.auth_user.id == wldb.senior))
+        .as_json()
+    )
+    patientId = (
+        db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    )
     userdb = db.auth_user
-    mdHistory = db((db.worklist.modality_dest == mdId) & (db.worklist.id_auth_user == patientId)).select().as_json()
+    mdHistory = (
+        db(
+            (db.worklist.modality_dest == mdId)
+            & (db.worklist.id_auth_user == patientId)
+        )
+        .select()
+        .as_json()
+    )
+    # Get patient phone information
+    phoneDict = (
+        db(db.phone.id_auth_user == patientId)
+        .select(
+            db.phone.id, db.phone.phone_prefix, db.phone.phone, db.phone.phone_origin
+        )
+        .as_json()
+    )
     modalityDict = {}
-    rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
+    rows = db(db.modality.id_modality_controller == db.modality_controller.id).select()
     for row in rows:
-        modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
+        modalityDict[row.modality.modality_name] = (
+            row.modality_controller.modality_controller_name
+        )
     # init all fields
-    currentHx = initFields(wlId,'current_hx')
-    antRight = initFields(wlId,'ant_biom','right')
-    postRight = initFields(wlId,'post_biom','right')
-    antLeft = initFields(wlId,'ant_biom','left')
-    postLeft = initFields(wlId,'post_biom','left')
-    motility = initFields(wlId,'motility')
-    phoria = initFields(wlId,'phoria')
-    pupils = initFields(wlId,'pupils')
-    ccx = initFields(wlId,'ccx')
-    ccxR = initFields(wlId,'ccx','right')
-    ccxL = initFields(wlId,'ccx','left')
-    followup = initFields(wlId,'followup')
-    billing = initFields(wlId,'billing')
-    mddb=db.md_params # TODO: if details from doctor is not provided, return "Please provide provider details"
-    mdParams= db(mddb.id_auth_user == user['id']).select(mddb.id_auth_user,mddb.inami,mddb.email,mddb.officename,mddb.officeaddress,mddb.officezip,mddb.officetown,mddb.officeurl,mddb.officephone,mddb.companynum,mddb.companyname,mddb.companyiban,mddb.companyaddress).first().as_dict()
-    userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
+    currentHx = initFields(wlId, "current_hx")
+    antRight = initFields(wlId, "ant_biom", "right")
+    postRight = initFields(wlId, "post_biom", "right")
+    antLeft = initFields(wlId, "ant_biom", "left")
+    postLeft = initFields(wlId, "post_biom", "left")
+    motility = initFields(wlId, "motility")
+    phoria = initFields(wlId, "phoria")
+    pupils = initFields(wlId, "pupils")
+    ccx = initFields(wlId, "ccx")
+    ccxR = initFields(wlId, "ccx", "right")
+    ccxL = initFields(wlId, "ccx", "left")
+    followup = initFields(wlId, "followup")
+    billing = initFields(wlId, "billing")
+    mddb = (
+        db.md_params
+    )  # TODO: if details from doctor is not provided, return "Please provide provider details"
+    mdParams = (
+        db(mddb.id_auth_user == user["id"])
+        .select(
+            mddb.id_auth_user,
+            mddb.inami,
+            mddb.email,
+            mddb.officename,
+            mddb.officeaddress,
+            mddb.officezip,
+            mddb.officetown,
+            mddb.officeurl,
+            mddb.officephone,
+            mddb.companynum,
+            mddb.companyname,
+            mddb.companyiban,
+            mddb.companyaddress,
+        )
+        .first()
+        .as_dict()
+    )
+    userDict = (
+        db(db.auth_user.id == user["id"])
+        .select(db.auth_user.first_name, db.auth_user.last_name)
+        .first()
+        .as_dict()
+    )
     # glasses assets
-    axe_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/axe.jpg'
-    logo_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/logo.jpg'
+    axe_img_path = ASSETS_FOLDER + "/images/assets/glassesrx/axe.jpg"
+    logo_img_path = ASSETS_FOLDER + "/images/assets/glassesrx/logo.jpg"
     axe64 = base64.b64encode(open(axe_img_path, "rb").read())
     logo64 = base64.b64encode(open(logo_img_path, "rb").read())
     return locals()
 
-@action('gp')
-@action('modalityCtr/gp/<wlId>')
-@action.uses(session, auth.user, db,'modalityCtr/gp.html')
+
+@action("gp")
+@action("modalityCtr/gp/<wlId>")
+@action.uses(session, auth.user, db, "modalityCtr/gp.html")
 def gp(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
-    modalityController = 'gp'
+    modalityController = "gp"
     import base64
     from datetime import datetime
-    response.headers['Cross-Origin-Embedder-Policy']='require-corp'
-    response.headers['Cross-Origin-Opener-Policy']='same-origin'
+
+    response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     hosturl = LOCAL_URL
     user = auth.get_user()
-    userMembership = db(db.membership.id == user['membership']).select(db.membership.membership).first()['membership']
-    userHierarchy = db(db.membership.id == user['membership']).select(db.membership.hierarchy).first()['hierarchy']
+    userMembership = (
+        db(db.membership.id == user["membership"])
+        .select(db.membership.membership)
+        .first()["membership"]
+    )
+    userHierarchy = (
+        db(db.membership.id == user["membership"])
+        .select(db.membership.hierarchy)
+        .first()["hierarchy"]
+    )
     if userHierarchy >= 3:
-        redirect(URL('worklist'))
+        redirect(URL("worklist"))
     db.auth_user.password.readable = False
-    db.auth_user.password.writable  = False
-    genderObj = genderId # used in patient-bar
+    db.auth_user.password.writable = False
+    genderObj = genderId  # used in patient-bar
     wldb = db.worklist
-    wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
-        join=[
-            db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
-            db.modality.on(db.modality.id == wldb.modality_dest),
-            ]
-        ).as_json()
-    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
-    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
-    patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    wlDict = (
+        db(wldb.id == wlId)
+        .select(
+            wldb.ALL,
+            db.auth_user.ALL,
+            db.modality.modality_name,
+            join=[
+                db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
+                db.modality.on(db.modality.id == wldb.modality_dest),
+            ],
+        )
+        .as_json()
+    )
+    providerDict = (
+        db(wldb.id == wlId)
+        .select(
+            db.auth_user.ALL, left=db.auth_user.on(db.auth_user.id == wldb.provider)
+        )
+        .as_json()
+    )
+    seniorDict = (
+        db(wldb.id == wlId)
+        .select(db.auth_user.ALL, left=db.auth_user.on(db.auth_user.id == wldb.senior))
+        .as_json()
+    )
+    patientId = (
+        db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    )
     userdb = db.auth_user
     # get history from previous main consultations for GP
-    mdHistory = db((db.worklist.modality_dest == gpId) & (db.worklist.id_auth_user == patientId)).select().as_json()
+    mdHistory = (
+        db(
+            (db.worklist.modality_dest == gpId)
+            & (db.worklist.id_auth_user == patientId)
+        )
+        .select()
+        .as_json()
+    )
+    # Get patient phone information
+    phoneDict = (
+        db(db.phone.id_auth_user == patientId)
+        .select(
+            db.phone.id, db.phone.phone_prefix, db.phone.phone, db.phone.phone_origin
+        )
+        .as_json()
+    )
     modalityDict = {}
-    rows = db(db.modality.id_modality_controller==db.modality_controller.id).select()
+    rows = db(db.modality.id_modality_controller == db.modality_controller.id).select()
     for row in rows:
-        modalityDict[row.modality.modality_name]=row.modality_controller.modality_controller_name
+        modalityDict[row.modality.modality_name] = (
+            row.modality_controller.modality_controller_name
+        )
     # init all fields
-    currentHx = initFields(wlId,'current_hx')
-    soap = initFields(wlId,'soap')
-    inspection = initFields(wlId,'inspection')
-    auscultation = initFields(wlId,'auscultation')
-    palpation = initFields(wlId,'palpation')
-    percussion = initFields(wlId,'percussion')
-    neuro = initFields(wlId,'neuro')
-    motility = initFields(wlId,'motility')
-    phoria = initFields(wlId,'phoria')
-    pupils = initFields(wlId,'pupils')
-    ccx = initFields(wlId,'ccx')
-    followup = initFields(wlId,'followup')
-    billing = initFields(wlId,'billing')
-    mddb=db.md_params
-    mdParams= db(mddb.id_auth_user == user['id']).select(mddb.id_auth_user,mddb.inami,mddb.email,mddb.officename,mddb.officeaddress,mddb.officezip,mddb.officetown,mddb.officeurl,mddb.officephone,mddb.companynum,mddb.companyname,mddb.companyiban,mddb.companyaddress).first().as_dict()
-    userDict = db(db.auth_user.id == user['id']).select(db.auth_user.first_name,db.auth_user.last_name).first().as_dict()
-    logo_img_path = ASSETS_FOLDER+'/images/assets/glassesrx/logo.jpg'
+    currentHx = initFields(wlId, "current_hx")
+    soap = initFields(wlId, "soap")
+    inspection = initFields(wlId, "inspection")
+    auscultation = initFields(wlId, "auscultation")
+    palpation = initFields(wlId, "palpation")
+    percussion = initFields(wlId, "percussion")
+    neuro = initFields(wlId, "neuro")
+    motility = initFields(wlId, "motility")
+    phoria = initFields(wlId, "phoria")
+    pupils = initFields(wlId, "pupils")
+    ccx = initFields(wlId, "ccx")
+    followup = initFields(wlId, "followup")
+    billing = initFields(wlId, "billing")
+    mddb = db.md_params
+    mdParams = (
+        db(mddb.id_auth_user == user["id"])
+        .select(
+            mddb.id_auth_user,
+            mddb.inami,
+            mddb.email,
+            mddb.officename,
+            mddb.officeaddress,
+            mddb.officezip,
+            mddb.officetown,
+            mddb.officeurl,
+            mddb.officephone,
+            mddb.companynum,
+            mddb.companyname,
+            mddb.companyiban,
+            mddb.companyaddress,
+        )
+        .first()
+        .as_dict()
+    )
+    userDict = (
+        db(db.auth_user.id == user["id"])
+        .select(db.auth_user.first_name, db.auth_user.last_name)
+        .first()
+        .as_dict()
+    )
+    logo_img_path = ASSETS_FOLDER + "/images/assets/glassesrx/logo.jpg"
     logo64 = base64.b64encode(open(logo_img_path, "rb").read())
     return locals()
 
+
 # biometry controller
-@action('lenstar')
-@action('modalityCtr/lenstar/<wlId>')
-@action.uses(session, auth, db,'modalityCtr/lenstar.html')
+@action("lenstar")
+@action("modalityCtr/lenstar/<wlId>")
+@action.uses(session, auth, db, "modalityCtr/lenstar.html")
 def lenstar(wlId):
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
     hosturl = LOCAL_URL
     user = auth.get_user()
-    genderObj = genderId # used in patient-bar
+    genderObj = genderId  # used in patient-bar
     wldb = db.worklist
-    patientId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
-    wlDict = db(wldb.id == wlId).select(wldb.ALL,db.auth_user.ALL, db.modality.modality_name,
-        join=[
-            db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
-            db.modality.on(db.modality.id == wldb.modality_dest),
-            ]
-        ).as_json()
-    providerDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.provider)).as_json()
-    seniorDict = db(wldb.id == wlId).select(db.auth_user.ALL,
-        left = db.auth_user.on(db.auth_user.id == wldb.senior)).as_json()
+    patientId = (
+        db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
+    )
+    wlDict = (
+        db(wldb.id == wlId)
+        .select(
+            wldb.ALL,
+            db.auth_user.ALL,
+            db.modality.modality_name,
+            join=[
+                db.auth_user.on(db.auth_user.id == wldb.id_auth_user),
+                db.modality.on(db.modality.id == wldb.modality_dest),
+            ],
+        )
+        .as_json()
+    )
+    providerDict = (
+        db(wldb.id == wlId)
+        .select(
+            db.auth_user.ALL, left=db.auth_user.on(db.auth_user.id == wldb.provider)
+        )
+        .as_json()
+    )
+    seniorDict = (
+        db(wldb.id == wlId)
+        .select(db.auth_user.ALL, left=db.auth_user.on(db.auth_user.id == wldb.senior))
+        .as_json()
+    )
+    # Get patient phone information
+    phoneDict = (
+        db(db.phone.id_auth_user == patientId)
+        .select(
+            db.phone.id, db.phone.phone_prefix, db.phone.phone, db.phone.phone_origin
+        )
+        .as_json()
+    )
     return locals()
 
 
 # helloworld controller
-@action('hello')
-@action('modalityCtr/hello')
-@action.uses(session, auth, db,'modalityCtr/hello.html')
+@action("hello")
+@action("modalityCtr/hello")
+@action.uses(session, auth, db, "modalityCtr/hello.html")
 def hello():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
     import base64
+
     hosturl = LOCAL_URL
     database = db._tables
     user = auth.get_user()
     # userId = db(db.worklist.id == wlId).select(db.worklist.id_auth_user).first().id_auth_user
-    userId = "1"
+    patientId = "1"
+    # Get patient phone information
+    phoneDict = (
+        db(db.phone.id_auth_user == patientId)
+        .select(
+            db.phone.id, db.phone.phone_prefix, db.phone.phone, db.phone.phone_origin
+        )
+        .as_json()
+    )
     string = "Hello World!"
     return locals()

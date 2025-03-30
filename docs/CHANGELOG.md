@@ -134,6 +134,13 @@
     - py4web REST API validation was rejecting requests with duplicate IDs
     - Fixed by ensuring ID is only sent in the URL for PUT requests, not in the payload
 
+- 2025-03-30T20:21:46.219670: Fixed URL for Edit Patient button in patient-bar.html
+  - Corrected the URL path for the Edit Patient button to use the proper route format
+  - Changed from incorrect `URL('manage', 'user', vars=dict(id=patientId))` to correct `URL('user', patientId)`
+  - Fixed 404 error when clicking the Edit Patient button
+  - The URL now properly matches the route defined in manage.py with `@action("user/<rec_id>")`
+  - Ensures seamless navigation between patient view and user edit screens
+
 ### Added
 
 - 2025-03-30T19:43:21: Added email functionality to contacts prescription module
@@ -283,18 +290,6 @@
   - Includes security considerations and maintenance guidelines
   - Added comprehensive docstring to combo() function in manage.py
 
-- 2025-03-29T19:14:32: Added comprehensive documentation for the Billing Module in docs/billing.md
-  - Documents complete MVC architecture and components
-  - Details financial transaction management
-  - Describes billing record tracking system
-  - Explains user-specific billing views
-  - Documents role-based access control
-  - Details reporting and analytics features
-  - Provides technical implementation details
-  - Lists API endpoints and data structures
-  - Includes security considerations and maintenance guidelines
-  - Added comprehensive docstring to summary() function in manage.py
-
 - 2025-03-30T19:24:55.558996: Added email functionality to glasses prescription module
   - Modified `static/js/glasses.js` to allow sending glasses prescriptions as email attachments
   - Added "Send by email" button to GxRxModal interface
@@ -303,6 +298,27 @@
   - Implemented better error handling with user notifications
   - Uses the existing `/api/email/send_with_attachment` endpoint in `rest.py`
   - Enhanced user experience with clear success/error messages
+
+- 2025-03-30T20:10:32: Added phone number display in patient-bar template
+  - Modified modalityctr.py to fetch patient phone information in md and gp controllers
+  - Updated patient-bar.html to display phone number in patient information section
+  - Added phone data handling in patient-bar.js
+  - Phone is displayed with country prefix and number
+
+- 2025-03-30T20:13:55: Enhanced patient information display with phone number
+  - Modified all modality controllers (md, gp, tono, autorx, lenstar, hello) to fetch patient phone information
+  - Added phone field to patient-bar.html template
+  - Updated patient-bar.js to display phone number with country code (+XX XXX XXX)
+  - Ensured consistent implementation across all modality interfaces
+  - Added graceful fallback when no phone is available
+  - Maintains existing patient information layout with cohesive styling
+
+- 2025-03-30T20:19:24.056405: Added Edit Patient button to patient-bar.html
+  - Added a direct link to user.html from the patient details bar
+  - Implemented as a button with user-edit icon for quick patient data editing
+  - Passes patient ID automatically to the user edit page
+  - Positioned in the action button row for convenient access
+  - Improves workflow efficiency by allowing quick edits to patient information
 
 ## [2025-03-30] - UI and Email Improvements
 

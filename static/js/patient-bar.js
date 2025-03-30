@@ -25,6 +25,18 @@ $("#wlItemDetails .patientCard").html(
 $("#wlItemDetails .patientEmail").html(
 	"Email: " + checkIfDataIsNull(patientObj["email"])
 );
+
+// Display phone number if available
+if (phoneDict && phoneDict.length > 0) {
+	// Use the first phone number if multiple exist
+	const phone = phoneDict[0];
+	$("#wlItemDetails .patientPhone").html(
+		"Phone: +" + phone.phone_prefix + " " + phone.phone
+	);
+} else {
+	$("#wlItemDetails .patientPhone").html("Phone: n/a");
+}
+
 $("#wlItemDetails .patientId").html("ID #" + patientObj["id"]);
 $("#wlItemDetails .timeslot").html(
 	datetime2eu(wlObj["worklist"]["requested_time"])

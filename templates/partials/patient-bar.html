@@ -1,4 +1,3 @@
-
 <div class="container-fluid mb-1 patient-id sticky-top" id="wlItemDetails">
     <div class="row mb-3 d-flex justify-content-center align-items-center">
         <div class="col">
@@ -23,6 +22,7 @@
             <h5 class="patientSsn fst-italic"></h5>
             <h6 class="patientCard fst-italic"></h6>
             <h6 class="patientEmail fst-italic"></h6>
+            <h6 class="patientPhone fst-italic"></h6>
         </div>
         <div class="col">
             <p>Provider: <span class="provider whitebg"></span></p>
@@ -44,27 +44,37 @@
             <a class="btn btn-primary" href="javascript:history.back()" role="button">Back</a>
         </div>
         <div class="col d-flex justify-content-end align-items-center">
-            <button class="btn btn-warning mx-2" id="btnUnlockTask" type="button">Unlock <i class="fas fa-unlock"></i></button>
-            <button class="btn btn-primary mx-2" id="btnTaskDone" type="button">Done <i class="fas fa-check"></i></button>
+            <a class="btn btn-info mx-2" href="[[=URL('user', patientId)]]" role="button">Edit Patient <i
+                    class="fas fa-user-edit"></i></a>
+            <button class="btn btn-warning mx-2" id="btnUnlockTask" type="button">Unlock <i
+                    class="fas fa-unlock"></i></button>
+            <button class="btn btn-primary mx-2" id="btnTaskDone" type="button">Done <i
+                    class="fas fa-check"></i></button>
         </div>
     </div>
 </div>
 
 <script type="text/javascript">
-const wlId = [[= wlId ]];
-const wlDict = [[ = XML(wlDict) ]];
-const wlObj = wlDict[0];
-const providerDict = [[ = XML(providerDict) ]];
-const providerObj = providerDict[0];
-const seniorDict = [[ = XML(seniorDict) ]];
-const seniorObj = seniorDict[0];
-const patientObj = wlDict[0]['auth_user'];
-const patientId = patientObj['id'];
-const mdHistory = 
-[[ if 'mdHistory' in locals():]]
-[[ = XML(mdHistory) ]]
-[[ else:]]
-[[='[]']]
-[[ pass ]];
-const genderIdObj = [[ = XML(genderObj) ]];
+    const wlId = [[= wlId]];
+    const wlDict = [[ = XML(wlDict)]];
+    const wlObj = wlDict[0];
+    const providerDict = [[ = XML(providerDict)]];
+    const providerObj = providerDict[0];
+    const seniorDict = [[ = XML(seniorDict)]];
+    const seniorObj = seniorDict[0];
+    const patientObj = wlDict[0]['auth_user'];
+    const patientId = patientObj['id'];
+    const phoneDict =
+        [[ if 'phoneDict' in locals():]]
+    [[ = XML(phoneDict)]]
+    [[ else: ]]
+    [[='[]']]
+    [[pass]];
+    const mdHistory =
+        [[ if 'mdHistory' in locals():]]
+    [[ = XML(mdHistory)]]
+    [[ else: ]]
+    [[='[]']]
+    [[pass]];
+    const genderIdObj = [[ = XML(genderObj)]];
 </script>
