@@ -1426,13 +1426,38 @@
                         <input id="methodcertificateModalSubmit" type="text" class="visually-hidden"
                             name="methodcertificateModalSubmit" value="POST" />
                         <input id="btncertificateModalSubmit" type="submit" class="visually-hidden" />
+
+                        <!-- Action Selection: Print or Email -->
+                        <div class="container-fluid mt-3">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label"><strong>Action:</strong></label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="actionType"
+                                                id="actionPrint" value="print" checked>
+                                            <label class="form-check-label" for="actionPrint">
+                                                Imprimer le document
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="actionType"
+                                                id="actionEmail" value="email">
+                                            <label class="form-check-label" for="actionEmail">
+                                                Envoyer par email à l'adresse email du patient
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <label id="certificateModalSubmit" for="btncertificateModalSubmit" class="btn btn-primary"
-                    tabindex="0">Print</label>
+                    tabindex="0">Submit</label>
             </div>
         </div>
     </div>

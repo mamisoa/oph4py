@@ -19,7 +19,7 @@
     - Updated `btnUnlockTask` click handler to use correct API endpoint format
     - Updated `btnTaskDone` click handler to match the same pattern
     - Both buttons now correctly update task status without validation errors
-  - Root cause: py4web's RestAPI validation was failing because:
+  - Root cause: py4web's RESTful API validation was failing because:
     - ID was being sent both in URL and payload causing validation conflicts
     - Fixed by sending ID only in URL path and removing it from payload
     - Matches py4web's RESTful API expectations for PUT requests
@@ -29,7 +29,25 @@
     - Newer versions enforce stricter RESTful API conventions
     - The fix ensures compatibility with all py4web versions by following best practices
 
+- 2025-03-30T17:15:09.650400: Fixed auth_user validation issue in user management forms
+  - Modified `static/js/user.js`: Updated form submission functions to handle ID field correctly
+    - Removed ID from payload for all PUT requests in userAuth_userForm submit handler
+    - Updated userMd_paramForm submit handler to use ID only in URL
+    - Updated userFormSubmit function to prevent sending ID in payload
+  - Root cause: Same validation issue as previous fix where ID was being sent in both URL and payload
+    - py4web REST API validation was rejecting requests with duplicate IDs
+    - Fixed by ensuring ID is only sent in the URL for PUT requests, not in the payload
+
 ### Added
+
+- 2025-03-30T13:30:42: Added email functionality to certificates module
+  - Modified `static/js/certificates.js` to allow sending certificates as email attachments
+  - Added radio button UI in the certificateModal for selecting between print and email actions
+  - Created new API endpoint `api/email/send_with_attachment` in `rest.py` for handling PDF attachments
+  - Updated both GP and MD modality templates to include the new UI options
+  - Added proper error handling and success notifications for email operations
+  - Implemented PDF to base64 conversion for email transport
+  - Improved user experience by providing clear action choices for certificate delivery
 
 - 2025-03-29: Added comprehensive documentation for the GP (General Practitioner) Module in docs/gp.md
   - Documents complete MVC architecture and components

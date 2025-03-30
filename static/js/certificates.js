@@ -890,9 +890,84 @@ $("#certificateFormModal").submit(function (e) {
 			crudp("certificates", "0", "POST", finalDbStr).then((data) =>
 				$cert_tbl.bootstrapTable("refresh")
 			);
-			let pdf = pdfMake.createPdf(finalPresc);
-			pdf.print();
-			// document.getElementById('certificateFormModal').reset();
+
+			// Check if user wants to print or email the certificate
+			let actionType = formObj["actionType"] || "print"; // Default to print if not specified
+
+			if (actionType === "print") {
+				// Print the certificate (existing functionality)
+				let pdf = pdfMake.createPdf(finalPresc);
+				pdf.print();
+			} else if (actionType === "email") {
+				// Email the certificate as PDF attachment
+				let pdf = pdfMake.createPdf(finalPresc);
+
+				// Get PDF as base64 string
+				pdf.getBase64((base64Data) => {
+					// Send the email with PDF attachment
+					fetch(HOSTURL + "/" + APP_NAME + "/api/email/send_with_attachment", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							recipient: patientObj["email"],
+							subject: `${finalRxObj["title"]} - ${patientObj["last_name"]} ${patientObj["first_name"]}`,
+							content: `<p>Veuillez trouver ci-joint votre ${finalRxObj[
+								"title"
+							].toLowerCase()}.</p>
+							<p>Cordialement,</p>
+							<p>Dr. ${userObj["last_name"].toUpperCase()} ${userObj["first_name"]}</p>`,
+							attachmentName: `${finalRxObj["title"].replace(/\s+/g, "_")}_${
+								patientObj["last_name"]
+							}_${patientObj["first_name"]}.pdf`,
+							attachmentData: base64Data,
+							attachmentType: "application/pdf",
+						}),
+					})
+						.then((response) => {
+							if (!response.ok) {
+								throw new Error("Network response was not ok");
+							}
+							return response.json();
+						})
+						.then((data) => {
+							console.log("Email sent successfully:", data);
+							// Show success notification
+							$.notify(
+								{
+									message: "Email envoyé avec succès",
+								},
+								{
+									type: "success",
+									placement: {
+										from: "bottom",
+										align: "right",
+									},
+								}
+							);
+						})
+						.catch((error) => {
+							console.error("Error sending email:", error);
+							// Show error notification
+							$.notify(
+								{
+									message:
+										"Erreur lors de l'envoi de l'email: " + error.message,
+								},
+								{
+									type: "danger",
+									placement: {
+										from: "bottom",
+										align: "right",
+									},
+								}
+							);
+						});
+				});
+			}
+
+			// Close the modal
 			$("#certificateModal").modal("hide");
 		});
 });

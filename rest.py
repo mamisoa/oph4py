@@ -413,3 +413,130 @@ def send_email():
         response = {"status": "error", "message": str(e)}
 
     return json.dumps(response)
+
+
+@action("api/email/send_with_attachment", method=["POST"])
+def send_email_with_attachment():
+    """
+    Send an email with a PDF attachment using SMTP server.
+
+    Parameters:
+    - recipient: The email address of the recipient.
+    - subject: The subject of the email.
+    - content: The main content/body of the email.
+    - attachmentName: The filename for the attachment.
+    - attachmentData: The base64-encoded data of the attachment.
+    - attachmentType: The MIME type of the attachment (default: application/pdf).
+
+    Returns:
+    - JSON-formatted response indicating the result of the email sending operation.
+    """
+    import base64
+    import json
+    import smtplib
+    from email.mime.application import MIMEApplication
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
+    payload = request.json
+    sender_name, sender_quality = "Mamisoa Andriantafika", "MD, FEBO"
+    subject = "Document | Centre Médical Bruxelles-Schuman"
+    content = "Veuillez trouver ci-joint votre document."
+    username, password = SMTP_LOGIN.split("::")
+    smtp_server, port_str = SMTP_SERVER.split(":")
+    port = int(port_str)  # Convert port to integer
+    company_logo = COMPANY_LOGO
+
+    if "recipient" not in payload:
+        return json.dumps('{ "status": "error", "message": "No recipient"}')
+
+    # Extract parameters from payload
+    recipient = payload["recipient"]
+    if "subject" in payload:
+        subject = payload["subject"]
+    if "content" in payload:
+        content = payload["content"]
+    if "sender_name" in payload:
+        sender_name = payload["sender_name"]
+
+    # Check for required attachment data
+    if "attachmentData" not in payload or "attachmentName" not in payload:
+        return json.dumps(
+            '{ "status": "error", "message": "Missing attachment data or name"}'
+        )
+
+    attachment_data = payload["attachmentData"]
+    attachment_name = payload["attachmentName"]
+    attachment_type = payload.get("attachmentType", "application/pdf")
+
+    # HTML template
+    html_template = f"""
+        <html>
+            <body>
+                <div>{content}</div>
+                <br>
+                <p>Cordialement,<br>Vriendelijke groeten,<br>Best regards,</p>
+                <table>
+                    <tr>
+                        <td><img src="{company_logo}" alt="Company Logo" style="max-width: 100px;"></td>
+                        <td>
+                            <p>{sender_name}<br>{sender_quality}</p>
+                        </td>
+                    </tr>
+                </table>
+                <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
+                <p style="font-size: 0.8em; color: #666;">
+                    The contents of this e-mail are intended for the named addressee only. It contains information which may be confidential and which may also be privileged. Any non-conform use, dissemination or disclosure of this message is prohibited. If you received it in error, please notify us immediately and then destroy it.
+                </p>
+            </body>
+        </html>
+        """
+
+    # Create the MIMEMultipart object
+    msg = MIMEMultipart()
+    msg["Subject"] = subject
+    msg["From"] = username
+    msg["To"] = recipient
+
+    # Attach the HTML content to the email
+    msg.attach(MIMEText(html_template, "html"))
+
+    # Decode and attach the PDF
+    try:
+        # Remove the data:application/pdf;base64, prefix if present
+        if "," in attachment_data:
+            attachment_data = attachment_data.split(",", 1)[1]
+
+        # Decode the base64 data
+        decoded_attachment = base64.b64decode(attachment_data)
+
+        # Create the attachment part
+        attachment = MIMEApplication(decoded_attachment, _subtype="pdf")
+        attachment.add_header(
+            "Content-Disposition", f"attachment; filename={attachment_name}"
+        )
+        msg.attach(attachment)
+    except Exception as e:
+        return json.dumps(
+            {"status": "error", "message": f"Error processing attachment: {str(e)}"}
+        )
+
+    try:
+        # Send the email
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.starttls()  # Secure the connection using TLS
+            server.login(username, password)
+            server.sendmail(username, recipient, msg.as_string())
+
+        # If the email is sent successfully, return a success response
+        response = {
+            "status": "success",
+            "message": "Email with attachment sent successfully.",
+            "subject": subject,
+            "recipient": recipient,
+        }
+    except Exception as e:
+        # If there's an error, return an error response
+        response = {"status": "error", "message": str(e)}
+
+    return json.dumps(response)
