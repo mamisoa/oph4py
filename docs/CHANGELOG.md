@@ -4,6 +4,21 @@
 
 ### Fixed
 
+- 2025-03-30T19:09:40: Fixed email attachment filename encoding issue
+  - Fixed issue where email attachments were showing as 'noname' instead of the properly formatted filename
+  - Updated Content-Disposition header implementation to properly encode filenames according to RFC2231
+  - Added proper handling for non-ASCII characters and spaces in filenames
+  - Enhanced error handling with fallback method if encoding fails
+
+- 2025-03-30T18:48:15: Fixed PDF attachment filename format
+  - Updated PDF attachment filename to match the requested format: "{yymmdd}_{type of document}_{LASTNAME Firstname}_Centre_Médical_Bruxelles-Schuman.pdf"
+
+- 2025-03-30T18:38:10: Fixed PDF attachment filename and email subject formatting
+  - Fixed PDF attachment filename issue that was showing as 'noname'
+  - Reverted to simpler filename format: "{DOCUMENT_TYPE}_{LASTNAME}_{Firstname}.pdf"
+  - Updated email subject formatting to properly capitalize each word in the document type
+  - Changed content formatting for better readability
+
 - 2025-03-30T18:33:43: Fixed notification system in certificates module
   - Implemented custom `notifyUser()` function to handle cases where $.notify is not available
   - Added fallback mechanisms using Bootstrap Toast or simple alerts
@@ -252,3 +267,9 @@
   - Lists API endpoints and data structures
   - Includes security considerations and maintenance guidelines
   - Added comprehensive docstring to summary() function in manage.py
+
+## [2025-03-30] - UI and Email Improvements
+- Updated email subject line format to: "{type of document} de {LASTNAME Firstname} | Centre Médical Bruxelles-Schuman"
+- Updated PDF attachment filename format to: "{yymmdd}_{type of document}_{LASTNAME Firstname}_Centre_Médical_Bruxelles-Schuman.pdf"
+- Updated certificate modal by replacing radio buttons with a dedicated "Send by email" button for a more streamlined user experience
+- Changed form submit button label from "Submit" to "Print" for clarity

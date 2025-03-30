@@ -3,33 +3,12 @@
 import base64
 import binascii
 import json
-import smtplib
-import traceback
 
-from py4web import (  # add response to throw http error 400
-    URL,
-    Field,
-    abort,
-    action,
-    redirect,
-    request,
-    response,
-)
+from py4web import action, request, response  # add response to throw http error 400
 from pydal.restapi import Policy, RestAPI
-from yatl.helpers import A
 
-from .common import (  # ,dbo
-    T,
-    auth,
-    authenticated,
-    cache,
-    db,
-    flash,
-    logger,
-    session,
-    unauthenticated,
-)
-from .settings import COMPANY_LOGO, SMTP_LOGIN, SMTP_SENDER, SMTP_SERVER, UPLOAD_FOLDER
+from .common import T, auth, authenticated, db, logger, session, unauthenticated  # ,dbo
+from .settings import COMPANY_LOGO, SMTP_LOGIN, SMTP_SERVER, UPLOAD_FOLDER
 
 policy = Policy()
 policy.set("*", "GET", authorize=True, limit=1000, allowed_patterns=["*"])
@@ -590,9 +569,28 @@ def send_email_with_attachment():
                 # Create the attachment part
                 logger.info("Creating MIME attachment")
                 attachment = MIMEApplication(decoded_attachment, _subtype="pdf")
-                attachment.add_header(
-                    "Content-Disposition", f"attachment; filename={attachment_name}"
-                )
+
+                # Fix: Properly encode the filename for Content-Disposition header
+                try:
+                    # Better filename handling with proper encoding for non-ASCII characters
+                    from email.utils import encode_rfc2231
+
+                    encoded_filename = encode_rfc2231(attachment_name, "utf-8")
+                    attachment.add_header(
+                        "Content-Disposition",
+                        f"attachment; filename*={encoded_filename}",
+                    )
+                    logger.info(f"Set attachment filename to: {attachment_name}")
+                except Exception as fn_error:
+                    # Fallback to simple header if encoding fails
+                    logger.warning(
+                        f"Could not encode filename properly: {str(fn_error)}"
+                    )
+                    attachment.add_header(
+                        "Content-Disposition",
+                        f'attachment; filename="{attachment_name}"',
+                    )
+
                 msg.attach(attachment)
                 logger.info("Attachment added to email")
             except binascii.Error as be:

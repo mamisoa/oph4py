@@ -675,6 +675,28 @@ certificateModal.addEventListener("show.bs.modal", function (event) {
 	tinymce.get("certificateContent").setContent(certhtml);
 });
 
+// Add event listener for the email button
+$(document).on("click", "#emailCertificateBtn", function () {
+	// Set the action type to email
+	$("#actionType").val("email");
+
+	// Check if patient has a valid email before submitting
+	if (
+		!patientObj["email"] ||
+		patientObj["email"].trim() === "" ||
+		!patientObj["email"].includes("@")
+	) {
+		notifyUser(
+			"Impossible d'envoyer l'email: adresse email du patient manquante ou invalide",
+			"danger"
+		);
+		return;
+	}
+
+	// Trigger the form submission
+	$("#btncertificateModalSubmit").click();
+});
+
 $("#certificateFormModal").submit(function (e) {
 	e.preventDefault();
 	let formStr = $(this).serializeJSON();
@@ -1050,20 +1072,35 @@ $("#certificateFormModal").submit(function (e) {
 									}
 
 									// Prepare email data
+									const titleWords = finalRxObj["title"]
+										.toLowerCase()
+										.split(" ");
+									const capitalizedTitle = titleWords
+										.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+										.join(" ");
+									const content = `<p>Cher/Chère ${patientObj["first_name"]} ${
+										patientObj["last_name"]
+									},</p>
+									<p>Veuillez trouver ci-joint votre ${finalRxObj["title"].toLowerCase()}.</p>`;
+
 									const emailData = {
 										recipient: patientObj["email"],
-										subject: `${finalRxObj["title"]} - ${patientObj["last_name"]} ${patientObj["first_name"]}`,
-										content: `<p>Veuillez trouver ci-joint votre ${finalRxObj[
-											"title"
-										].toLowerCase()}.</p>
-									<p>Cordialement,</p>
-									<p>Dr. ${userObj["last_name"].toUpperCase()} ${userObj["first_name"]}</p>`,
-										attachmentName: `${finalRxObj["title"].replace(
-											/\s+/g,
-											"_"
-										)}_${patientObj["last_name"]}_${
+										subject: `${capitalizedTitle} de ${patientObj[
+											"last_name"
+										].toUpperCase()} ${
 											patientObj["first_name"]
-										}.pdf`,
+										} | Centre Médical Bruxelles-Schuman`,
+										content: content,
+										attachmentName: `${today.substring(2, 4)}${today.substring(
+											5,
+											7
+										)}${today.substring(8, 10)}_${finalRxObj["title"]
+											.toLowerCase()
+											.replace(/\s+/g, "_")}_${patientObj[
+											"last_name"
+										].toUpperCase()}_${
+											patientObj["first_name"]
+										}_Centre_Médical_Bruxelles-Schuman.pdf`,
 										attachmentData: base64Data,
 										attachmentType: "application/pdf",
 									};
