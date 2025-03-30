@@ -4,7 +4,9 @@
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
 <style>
     /* overide when topnavbar is not fixed-top */
-    section#main { margin-top: 0px; }
+    section#main {
+        margin-top: 0px;
+    }
 </style>
 [[ end ]]
 
@@ -29,7 +31,8 @@
     </div>
     <div class="row history">
         <div class="col">
-            <h3 class="big-title bg-secondary"><a role="button" data-bs-toggle="collapse" href=".gHx">General history</a></h3>
+            <h3 class="big-title bg-secondary"><a role="button" data-bs-toggle="collapse" href=".gHx">General
+                    history</a></h3>
             <div class="row gHx">
                 <div class="col">
                     <div class="row mb-3"> <!-- row medications -->
@@ -38,7 +41,9 @@
                                 <div class="col">
                                     <h4 class="title-right">Medications</h4>
                                     <div>
-                                        <button type="button" id="btnNewMx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-status-flag="historyMx" data-mx-flag="historyMx" data-bs-target="#mxModal">
+                                        <button type="button" id="btnNewMx" class="btn btn-dark btn-sm"
+                                            data-bs-toggle="modal" data-status-flag="historyMx" data-mx-flag="historyMx"
+                                            data-bs-target="#mxModal">
                                             Add medication<i class="mx-2 fas fa-plus"></i>
                                         </button>
                                     </div>
@@ -46,19 +51,11 @@
                             </div>
                             <div class="row mt-3 bg-right">
                                 <div class="col">
-                                    <table
-                                        id="mx_tbl"
-                                        data-side-pagination="server"
-                                        data-toggle="table"
-                                        data-pagination="true"
-                                        data-page-size="10"
-                                        data-search="false"
-                                        data-query-params="queryParams"
-                                        data-response-handler="responseHandler_mx"
-                                        data-detail-formatter="detailFormatter_mx"
-                                        data-detail-view="true"
-                                        data-detail-view-icon="true"
-                                        >
+                                    <table id="mx_tbl" data-side-pagination="server" data-toggle="table"
+                                        data-pagination="true" data-page-size="10" data-search="false"
+                                        data-query-params="queryParams" data-response-handler="responseHandler_mx"
+                                        data-detail-formatter="detailFormatter_mx" data-detail-view="true"
+                                        data-detail-view-icon="true">
                                         <thead>
                                             <tr>
                                                 <th data-field="onset" data-sortable="true">Onset</th>
@@ -68,7 +65,8 @@
                                                 <th data-field="frequency_h" data-sortable="false">Frequency</th>
                                                 <th data-field="note" data-sortable="false">Note</th>
                                                 <th data-field="prescribed" data-sortable="false">Prescribed</th>
-                                                <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
+                                                <th data-field="operate" data-formatter="operateFormatter_mx"
+                                                    data-events="operateEvents_mx">Action
                                                 </th>
                                             </tr>
                                         </thead>
@@ -85,34 +83,28 @@
                                 <h4 class="big-title bg-warning">Allergy</h4>
                             </div>
                             <div>
-                                <button type="button" id="btnNewAx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#axModal">
+                                <button type="button" id="btnNewAx" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#axModal">
                                     Add allergy<i class="mx-2 fas fa-plus"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="row mb-3 bg-neutral">
                             <div class="col">
-                                <table
-                                    id="ax_tbl"
-                                    data-side-pagination="server"
-                                    data-toggle="table"
-                                    data-pagination="true"
-                                    data-page-size="10"
-                                    data-search="false"
-                                    data-query-params="queryParams"
-                                    data-row-style="rowStyle_ax"
+                                <table id="ax_tbl" data-side-pagination="server" data-toggle="table"
+                                    data-pagination="true" data-page-size="10" data-search="false"
+                                    data-query-params="queryParams" data-row-style="rowStyle_ax"
                                     data-response-handler="responseHandler_ax"
-                                    data-detail-formatter="detailFormatter_ax"
-                                    data-detail-view="true"
-                                    data-detail-view-icon="true"
-                                    >
+                                    data-detail-formatter="detailFormatter_ax" data-detail-view="true"
+                                    data-detail-view-icon="true">
                                     <thead>
                                         <tr>
                                             <th data-field="onset" data-sortable="true">Onset</th>
                                             <th data-field="ended" data-sortable="false">Ended</th>
                                             <th data-field="typ" data-sortable="true">Type</th>
                                             <th data-field="agent" data-sortable="true">Agent</th>
-                                            <th data-field="operate" data-formatter="operateFormatter_ax" data-events="operateEvents_ax">Action</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_ax"
+                                                data-events="operateEvents_ax">Action</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -127,25 +119,19 @@
                         <div class="col">
                             <h4 class="title-right">Medical Hx</h4>
                             <div>
-                                <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="medical">Add past medical history<i class="mx-2 fas fa-plus"></i>
+                                <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#mHxModal" data-category-flag="medical">Add past medical history<i
+                                        class="mx-2 fas fa-plus"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="row mt-3 bg-right"> <!-- mHx_tbl-->
                             <div class="col">
-                                <table
-                                    id="mHx_tbl"
-                                    data-side-pagination="server"
-                                    data-toggle="table"
-                                    data-pagination="true"
-                                    data-page-size="10"
-                                    data-search="false"
-                                    data-query-params="queryParams"
-                                    data-response-handler="responseHandler_msHx"
-                                    data-detail-formatter="detailFormatter_msHx"
-                                    data-detail-view="true"
-                                    data-detail-view-icon="true"
-                                    >
+                                <table id="mHx_tbl" data-side-pagination="server" data-toggle="table"
+                                    data-pagination="true" data-page-size="10" data-search="false"
+                                    data-query-params="queryParams" data-response-handler="responseHandler_msHx"
+                                    data-detail-formatter="detailFormatter_msHx" data-detail-view="true"
+                                    data-detail-view-icon="true">
                                     <thead>
                                         <tr>
                                             <th data-field="onset" data-sortable="true">Onset</th>
@@ -154,7 +140,8 @@
                                             <th data-field="icd10" data-sortable="true">ICD-10</th>
                                             <th data-field="site" data-sortable="true">Site</th>
                                             <th data-field="note" data-sortable="true">Note</th>
-                                            <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_msHx"
+                                                data-events="operateEvents_msHx">Action</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -167,25 +154,19 @@
                         <div class="row mb-3">
                             <h4 class="title-left">Surgical Hx</h4>
                             <div>
-                                <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="surgical">Add past surgical history<i class="mx-2 fas fa-plus"></i>
+                                <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#mHxModal" data-category-flag="surgical">Add past surgical history<i
+                                        class="mx-2 fas fa-plus"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="row mb-3 bg-left">
                             <div class="col">
-                                <table
-                                    id="sHx_tbl"
-                                    data-side-pagination="server"
-                                    data-toggle="table"
-                                    data-pagination="true"
-                                    data-page-size="10"
-                                    data-search="false"
-                                    data-query-params="queryParams"
-                                    data-response-handler="responseHandler_msHx"
-                                    data-detail-formatter="detailFormatter_msHx"
-                                    data-detail-view="true"
-                                    data-detail-view-icon="true"
-                                    >
+                                <table id="sHx_tbl" data-side-pagination="server" data-toggle="table"
+                                    data-pagination="true" data-page-size="10" data-search="false"
+                                    data-query-params="queryParams" data-response-handler="responseHandler_msHx"
+                                    data-detail-formatter="detailFormatter_msHx" data-detail-view="true"
+                                    data-detail-view-icon="true">
                                     <thead>
                                         <tr>
                                             <th data-field="onset" data-sortable="true">Onset</th>
@@ -194,7 +175,8 @@
                                             <th data-field="icd10" data-sortable="true">ICD-10</th>
                                             <th data-field="site" data-sortable="true">Site</th>
                                             <th data-field="note" data-sortable="true">Note</th>
-                                            <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_msHx"
+                                                data-events="operateEvents_msHx">Action</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -213,41 +195,30 @@
             <div class="col">
                 <div id="toolbar-wl">
                 </div>
-                <table id="table-wl"
-                    data-toolbar-align="right"
-                    data-toolbar="#toolbar-wl"
-                    data-id-field="id"
-                    data-toggle="table"
-                    data-side-pagination="server"
-                    data-show-refresh="true"
-                    data-pagination="true"
-                    data-page-size="5"
-                    data-show-columns="true"
-                    data-search="true"
-                    data-search-accent-neutralise="true"
-                    data-visible-search="false"
-                    data-query-params="queryParams_wl"
-                    data-response-handler="responseHandler_wl"
-                    data-row-style="rowStyle_wl"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    data-detail-formatter="detailFormatter_wl"
-                    data-detail-view-by-click="false"
-                    >
+                <table id="table-wl" data-toolbar-align="right" data-toolbar="#toolbar-wl" data-id-field="id"
+                    data-toggle="table" data-side-pagination="server" data-show-refresh="true" data-pagination="true"
+                    data-page-size="5" data-show-columns="true" data-search="true" data-search-accent-neutralise="true"
+                    data-visible-search="false" data-query-params="queryParams_wl"
+                    data-response-handler="responseHandler_wl" data-row-style="rowStyle_wl" data-detail-view="true"
+                    data-detail-view-icon="true" data-detail-formatter="detailFormatter_wl"
+                    data-detail-view-by-click="false">
                     <thead class="thead-dark">
                         <th data-field="id" data-sortable="true">ID</th>
                         <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
-                        <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">Receving facility:</th>
-                        <th data-field="procedure" data-searchable= "true" data-sortable="true">Procedure:</th>
-                        <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
+                        <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">
+                            Receving facility:</th>
+                        <th data-field="procedure" data-searchable="true" data-sortable="true">Procedure:</th>
+                        <th data-field="provider" data-searchable="true" data-sortable="true">Provider:</th>
                         <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
-                        <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
-                        <th data-field="laterality" data-sortable="false" data-searchable= "false">Laterality:</th>
-                        <th data-field="requested_time" data-sortable="true" data-searchable= "true">Timeslot:</th>
-                        <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
-                        <th data-field="counter" data-searchable= "true" data-sortable="false" data-formatter="counterFormatter_wl">Counter:</th>
-                        <th data-field="warning" data-searchable= "true" data-sortable="false">Warning:</th>
-                        <th data-field="operate" data-formatter="operateFormatter_wl" data-events="operateEvents_wl">Action</th>
+                        <th data-field="modality" data-searchable="true" data-sortable="true">Modality:</th>
+                        <th data-field="laterality" data-sortable="false" data-searchable="false">Laterality:</th>
+                        <th data-field="requested_time" data-sortable="true" data-searchable="true">Timeslot:</th>
+                        <th data-field="status_flag" data-searchable="true" data-sortable="true">Status:</th>
+                        <th data-field="counter" data-searchable="true" data-sortable="false"
+                            data-formatter="counterFormatter_wl">Counter:</th>
+                        <th data-field="warning" data-searchable="true" data-sortable="false">Warning:</th>
+                        <th data-field="operate" data-formatter="operateFormatter_wl" data-events="operateEvents_wl">
+                            Action</th>
                     </thead>
                 </table>
             </div>
@@ -257,25 +228,28 @@
 <div class="container-fluid mb-3" id="cHxDiv">
     <div class="row">
         <div class="col text-center">
-            <h2 class="big-title bg-info"><a role="button" data-bs-toggle="collapse" href=".cHx">Present History</a></h2>
+            <h2 class="big-title bg-info"><a role="button" data-bs-toggle="collapse" href=".cHx">Present History</a>
+            </h2>
         </div>
     </div>
     <div class="row cHx py-2 bg-right">
         <div class="col">
-            <form id="cHxForm" enctype="multipart/form-data" method="POST"> 
+            <form id="cHxForm" enctype="multipart/form-data" method="POST">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col" id="descriptionCol">
                             <div class="input-group">
-                                <button id="cHxFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
-                                <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(currentHx['description']) ]]</textarea>
+                                <button id="cHxFormSubmit" type="submit" class="btn btn-secondary">Update<i
+                                        class="mx-2 fas fa-plus"></i></button>
+                                <textarea class="form-control" aria-label="With textarea"
+                                    name="description">[[ = XML(currentHx['description']) ]]</textarea>
                             </div>
                         </div>
                     </div>
                 </div>
-                <input id="idcHx" type="text" class="visually-hidden" name="id" value="[[ = XML(currentHx['id']) ]]"/>
-                <input id="idPatientcHx" type="text" class="visually-hidden" name="id_auth_user"/>
-                <input id="idWlcHx" type="text" class="visually-hidden" name="id_worklist"/>
+                <input id="idcHx" type="text" class="visually-hidden" name="id" value="[[ = XML(currentHx['id']) ]]" />
+                <input id="idPatientcHx" type="text" class="visually-hidden" name="id_auth_user" />
+                <input id="idWlcHx" type="text" class="visually-hidden" name="id_worklist" />
             </form>
         </div>
     </div>
@@ -290,15 +264,17 @@
     <div class="row mb-3 clinical">
         <div class="col-12"> <!-- col inspection-->
             <div class="row bg-right show"> <!-- row inspection -->
-                <h3 class="title-right"><a role="button" data-bs-toggle="collapse" href=".inspection">Inspection</a></h3>
+                <h3 class="title-right"><a role="button" data-bs-toggle="collapse" href=".inspection">Inspection</a>
+                </h3>
                 <div class="col py-3 inspection collapse"> <!-- inspection col -->
-                    <form id="inspectionForm" enctype="multipart/form-data" method="POST"> 
+                    <form id="inspectionForm" enctype="multipart/form-data" method="POST">
                         <div class="container-fluid">
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionSkin" class="form-control height-100" aria-label="skin inspection" 
-                                            name="skin" rows="3" autocomplete="on">[[ = XML(inspection['skin']) ]]</textarea>
+                                        <textarea type="text" id="inspectionSkin" class="form-control height-100"
+                                            aria-label="skin inspection" name="skin" rows="3"
+                                            autocomplete="on">[[ = XML(inspection['skin']) ]]</textarea>
                                         <label for="inspectionSkin">Skin inspection</label>
                                     </div>
                                 </div>
@@ -306,8 +282,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionHead" class="form-control height-100" aria-label="head inspection" 
-                                            name="head" rows="3" autocomplete="on">[[ = XML(inspection['head']) ]]</textarea>
+                                        <textarea type="text" id="inspectionHead" class="form-control height-100"
+                                            aria-label="head inspection" name="head" rows="3"
+                                            autocomplete="on">[[ = XML(inspection['head']) ]]</textarea>
                                         <label for="inspectionHead">Head inspection</label>
                                     </div>
                                 </div>
@@ -315,8 +292,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionHands" class="form-control height-100" aria-label="hands inspection" 
-                                            name="hands" rows="3" autocomplete="on">[[ = XML(inspection['hands']) ]]</textarea>
+                                        <textarea type="text" id="inspectionHands" class="form-control height-100"
+                                            aria-label="hands inspection" name="hands" rows="3"
+                                            autocomplete="on">[[ = XML(inspection['hands']) ]]</textarea>
                                         <label for="inspectionHands">Hands inspection</label>
                                     </div>
                                 </div>
@@ -324,8 +302,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionChest" class="form-control height-100" aria-label="chest inspection" 
-                                            name="chest" rows="3" autocomplete="on">[[ = XML(inspection['chest']) ]]</textarea>
+                                        <textarea type="text" id="inspectionChest" class="form-control height-100"
+                                            aria-label="chest inspection" name="chest" rows="3"
+                                            autocomplete="on">[[ = XML(inspection['chest']) ]]</textarea>
                                         <label for="inspectionChest">Chest inspection</label>
                                     </div>
                                 </div>
@@ -333,8 +312,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionAbdomen" class="form-control height-100" aria-label="abdomen inspection" 
-                                            name="abdomen" rows="3" autocomplete="on">[[ = XML(inspection['abdomen']) ]]</textarea>
+                                        <textarea type="text" id="inspectionAbdomen" class="form-control height-100"
+                                            aria-label="abdomen inspection" name="abdomen" rows="3"
+                                            autocomplete="on">[[ = XML(inspection['abdomen']) ]]</textarea>
                                         <label for="inspectionAbdomen">Abdomen inspection</label>
                                     </div>
                                 </div>
@@ -342,8 +322,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionLegs" class="form-control height-100" aria-label="legs inspection" 
-                                            name="legs" rows="3" autocomplete="on">[[ = XML(inspection['legs']) ]]</textarea>
+                                        <textarea type="text" id="inspectionLegs" class="form-control height-100"
+                                            aria-label="legs inspection" name="legs" rows="3"
+                                            autocomplete="on">[[ = XML(inspection['legs']) ]]</textarea>
                                         <label for="inspectionLegs">Legs inspection</label>
                                     </div>
                                 </div>
@@ -351,8 +332,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionVeins" class="form-control height-100" aria-label="veins inspection" 
-                                            name="veins" rows="3" autocomplete="on">[[ = XML(inspection['veins']) ]]</textarea>
+                                        <textarea type="text" id="inspectionVeins" class="form-control height-100"
+                                            aria-label="veins inspection" name="veins" rows="3"
+                                            autocomplete="on">[[ = XML(inspection['veins']) ]]</textarea>
                                         <label for="inspectionVeins">Veins inspection</label>
                                     </div>
                                 </div>
@@ -360,8 +342,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionGenitals" class="form-control height-100" aria-label="genitals inspection" 
-                                            name="genitals" rows="3" autocomplete="on">[[ = XML(inspection['genitals']) ]]</textarea>
+                                        <textarea type="text" id="inspectionGenitals" class="form-control height-100"
+                                            aria-label="genitals inspection" name="genitals" rows="3"
+                                            autocomplete="on">[[ = XML(inspection['genitals']) ]]</textarea>
                                         <label for="inspectionGenitals">Genitals inspection</label>
                                     </div>
                                 </div>
@@ -369,18 +352,21 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="inspectionOthers" class="form-control height-100" aria-label="others inspection" 
-                                            name="others" rows="3" autocomplete="on">[[ = XML(inspection['others']) ]]</textarea>
+                                        <textarea type="text" id="inspectionOthers" class="form-control height-100"
+                                            aria-label="others inspection" name="others" rows="3"
+                                            autocomplete="on">[[ = XML(inspection['others']) ]]</textarea>
                                         <label for="inspectionOthers">Others</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="container-fluid">
-                            <input id="idinspection" type="text" class="visually-hidden" name="id" value="[[ = XML(inspection['id']) ]]"/>
-                            <input id="idPatientinspection" type="text" class="visually-hidden" name="id_auth_user"/>
-                            <input id="idWlinspection" type="text" class="visually-hidden" name="id_worklist"/>
-                            <button id="inspectionFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                            <input id="idinspection" type="text" class="visually-hidden" name="id"
+                                value="[[ = XML(inspection['id']) ]]" />
+                            <input id="idPatientinspection" type="text" class="visually-hidden" name="id_auth_user" />
+                            <input id="idWlinspection" type="text" class="visually-hidden" name="id_worklist" />
+                            <button id="inspectionFormSubmit" type="submit" class="btn btn-secondary">Update<i
+                                    class="mx-2 fas fa-plus"></i></button>
                         </div>
                     </form>
                 </div> <!-- end inspection col -->
@@ -388,15 +374,17 @@
         </div> <!-- end col inspection OK-->
         <div class="col-12"> <!-- col auscultation-->
             <div class="row bg-left"> <!-- row auscultation -->
-                <h3 class="title-left"><a role="button" data-bs-toggle="collapse" href=".auscultation">Auscultation</a></h3>
+                <h3 class="title-left"><a role="button" data-bs-toggle="collapse" href=".auscultation">Auscultation</a>
+                </h3>
                 <div class="col py-3 auscultation collapse"> <!-- auscultation col -->
-                    <form id="auscultationForm" enctype="multipart/form-data" method="POST"> 
+                    <form id="auscultationForm" enctype="multipart/form-data" method="POST">
                         <div class="container-fluid">
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="auscultationLungs" class="form-control height-100" aria-label="lungs auscultation" 
-                                            name="lungs" rows="3" autocomplete="on">[[ = XML(auscultation['lungs']) ]]</textarea>
+                                        <textarea type="text" id="auscultationLungs" class="form-control height-100"
+                                            aria-label="lungs auscultation" name="lungs" rows="3"
+                                            autocomplete="on">[[ = XML(auscultation['lungs']) ]]</textarea>
                                         <label for="auscultationLungs">Lungs auscultation</label>
                                     </div>
                                 </div>
@@ -404,8 +392,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="auscultationHeart" class="form-control height-100" aria-label="heart auscultation" 
-                                            name="heart" rows="3" autocomplete="on">[[ = XML(auscultation['heart']) ]]</textarea>
+                                        <textarea type="text" id="auscultationHeart" class="form-control height-100"
+                                            aria-label="heart auscultation" name="heart" rows="3"
+                                            autocomplete="on">[[ = XML(auscultation['heart']) ]]</textarea>
                                         <label for="auscultationHeart">Heart auscultation</label>
                                     </div>
                                 </div>
@@ -413,8 +402,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="auscultationAbdomen" class="form-control height-100" aria-label="abdomen auscultation" 
-                                            name="abdomen" rows="3" autocomplete="on">[[ = XML(auscultation['abdomen']) ]]</textarea>
+                                        <textarea type="text" id="auscultationAbdomen" class="form-control height-100"
+                                            aria-label="abdomen auscultation" name="abdomen" rows="3"
+                                            autocomplete="on">[[ = XML(auscultation['abdomen']) ]]</textarea>
                                         <label for="auscultationAbdomen">Abdomen auscultation</label>
                                     </div>
                                 </div>
@@ -422,8 +412,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="auscultationNeck" class="form-control height-100" aria-label="neck auscultation" 
-                                            name="neck" rows="3" autocomplete="on">[[ = XML(auscultation['neck']) ]]</textarea>
+                                        <textarea type="text" id="auscultationNeck" class="form-control height-100"
+                                            aria-label="neck auscultation" name="neck" rows="3"
+                                            autocomplete="on">[[ = XML(auscultation['neck']) ]]</textarea>
                                         <label for="auscultationNeck">Neck auscultation</label>
                                     </div>
                                 </div>
@@ -431,8 +422,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="auscultationVascular" class="form-control height-100" aria-label="vascular auscultation" 
-                                            name="vascular" rows="3" autocomplete="on">[[ = XML(auscultation['vascular']) ]]</textarea>
+                                        <textarea type="text" id="auscultationVascular" class="form-control height-100"
+                                            aria-label="vascular auscultation" name="vascular" rows="3"
+                                            autocomplete="on">[[ = XML(auscultation['vascular']) ]]</textarea>
                                         <label for="auscultationVascular">Vascular auscultation</label>
                                     </div>
                                 </div>
@@ -440,18 +432,21 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="auscultationOthers" class="form-control height-100" aria-label="others auscultation" 
-                                            name="others" rows="3" autocomplete="on">[[ = XML(auscultation['others']) ]]</textarea>
+                                        <textarea type="text" id="auscultationOthers" class="form-control height-100"
+                                            aria-label="others auscultation" name="others" rows="3"
+                                            autocomplete="on">[[ = XML(auscultation['others']) ]]</textarea>
                                         <label for="auscultationOthers">Others</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="container-fluid">
-                            <input id="idauscultation" type="text" class="visually-hidden" name="id" value="[[ = XML(auscultation['id']) ]]"/>
-                            <input id="idPatientauscultation" type="text" class="visually-hidden" name="id_auth_user"/>
-                            <input id="idWlauscultation" type="text" class="visually-hidden" name="id_worklist"/>
-                            <button id="auscultationFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                            <input id="idauscultation" type="text" class="visually-hidden" name="id"
+                                value="[[ = XML(auscultation['id']) ]]" />
+                            <input id="idPatientauscultation" type="text" class="visually-hidden" name="id_auth_user" />
+                            <input id="idWlauscultation" type="text" class="visually-hidden" name="id_worklist" />
+                            <button id="auscultationFormSubmit" type="submit" class="btn btn-secondary">Update<i
+                                    class="mx-2 fas fa-plus"></i></button>
                         </div>
                     </form>
                 </div> <!-- end auscultation col -->
@@ -461,13 +456,14 @@
             <div class="row bg-right"> <!-- row palpation -->
                 <h3 class="title-right"><a role="button" data-bs-toggle="collapse" href=".palpation">Palpation</a></h3>
                 <div class="col py-3 palpation collapse"> <!-- palpation col -->
-                    <form id="palpationForm" enctype="multipart/form-data" method="POST"> 
+                    <form id="palpationForm" enctype="multipart/form-data" method="POST">
                         <div class="container-fluid">
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="palpationAbdomen" class="form-control height-100" aria-label="abdomen palpation" 
-                                            name="abdomen" rows="3" autocomplete="on">[[ = XML(palpation['abdomen']) ]]</textarea>
+                                        <textarea type="text" id="palpationAbdomen" class="form-control height-100"
+                                            aria-label="abdomen palpation" name="abdomen" rows="3"
+                                            autocomplete="on">[[ = XML(palpation['abdomen']) ]]</textarea>
                                         <label for="palpationAbdomen">Abdomen palpation</label>
                                     </div>
                                 </div>
@@ -475,8 +471,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="palpationChest" class="form-control height-100" aria-label="chest palpation" 
-                                            name="chest" rows="3" autocomplete="on">[[ = XML(palpation['chest']) ]]</textarea>
+                                        <textarea type="text" id="palpationChest" class="form-control height-100"
+                                            aria-label="chest palpation" name="chest" rows="3"
+                                            autocomplete="on">[[ = XML(palpation['chest']) ]]</textarea>
                                         <label for="palpationChest">Chest palpation</label>
                                     </div>
                                 </div>
@@ -484,8 +481,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="palpationGanglions" class="form-control height-100" aria-label="ganglions palpation" 
-                                            name="ganglions" rows="3" autocomplete="on">[[ = XML(palpation['ganglions']) ]]</textarea>
+                                        <textarea type="text" id="palpationGanglions" class="form-control height-100"
+                                            aria-label="ganglions palpation" name="ganglions" rows="3"
+                                            autocomplete="on">[[ = XML(palpation['ganglions']) ]]</textarea>
                                         <label for="palpationGanglions">Ganglions palpation</label>
                                     </div>
                                 </div>
@@ -493,8 +491,10 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="palpationArticulations" class="form-control height-100" aria-label="articulations palpation" 
-                                            name="articulations" rows="3" autocomplete="on">[[ = XML(palpation['articulations']) ]]</textarea>
+                                        <textarea type="text" id="palpationArticulations"
+                                            class="form-control height-100" aria-label="articulations palpation"
+                                            name="articulations" rows="3"
+                                            autocomplete="on">[[ = XML(palpation['articulations']) ]]</textarea>
                                         <label for="palpationArticulations">Articulations palpation</label>
                                     </div>
                                 </div>
@@ -502,18 +502,21 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="palpationOthers" class="form-control height-100" aria-label="others palpation" 
-                                            name="others" rows="3" autocomplete="on">[[ = XML(palpation['others']) ]]</textarea>
+                                        <textarea type="text" id="palpationOthers" class="form-control height-100"
+                                            aria-label="others palpation" name="others" rows="3"
+                                            autocomplete="on">[[ = XML(palpation['others']) ]]</textarea>
                                         <label for="palpationOthers">Others</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="container-fluid">
-                            <input id="idpalpation" type="text" class="visually-hidden" name="id" value="[[ = XML(palpation['id']) ]]"/>
-                            <input id="idPatientpalpation" type="text" class="visually-hidden" name="id_auth_user"/>
-                            <input id="idWlpalpation" type="text" class="visually-hidden" name="id_worklist"/>
-                            <button id="palpationFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                            <input id="idpalpation" type="text" class="visually-hidden" name="id"
+                                value="[[ = XML(palpation['id']) ]]" />
+                            <input id="idPatientpalpation" type="text" class="visually-hidden" name="id_auth_user" />
+                            <input id="idWlpalpation" type="text" class="visually-hidden" name="id_worklist" />
+                            <button id="palpationFormSubmit" type="submit" class="btn btn-secondary">Update<i
+                                    class="mx-2 fas fa-plus"></i></button>
                         </div>
                     </form>
                 </div> <!-- end palpation col -->
@@ -523,13 +526,14 @@
             <div class="row bg-left"> <!-- row percussion -->
                 <h3 class="title-left"><a role="button" data-bs-toggle="collapse" href=".percussion">Percussion</a></h3>
                 <div class="col py-3 percussion collapse"> <!-- percussion col -->
-                    <form id="percussionForm" enctype="multipart/form-data" method="POST"> 
+                    <form id="percussionForm" enctype="multipart/form-data" method="POST">
                         <div class="container-fluid">
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="percussionChest" class="form-control height-100" aria-label="chest percussion" 
-                                            name="chest" rows="3" autocomplete="on">[[ = XML(percussion['chest']) ]]</textarea>
+                                        <textarea type="text" id="percussionChest" class="form-control height-100"
+                                            aria-label="chest percussion" name="chest" rows="3"
+                                            autocomplete="on">[[ = XML(percussion['chest']) ]]</textarea>
                                         <label for="percussionChest">Chest percussion</label>
                                     </div>
                                 </div>
@@ -537,8 +541,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="percussionAbdomen" class="form-control height-100" aria-label="abdomen percussion" 
-                                            name="abdomen" rows="3" autocomplete="on">[[ = XML(percussion['abdomen']) ]]</textarea>
+                                        <textarea type="text" id="percussionAbdomen" class="form-control height-100"
+                                            aria-label="abdomen percussion" name="abdomen" rows="3"
+                                            autocomplete="on">[[ = XML(percussion['abdomen']) ]]</textarea>
                                         <label for="percussionAbdomen">Abdomen percussion</label>
                                     </div>
                                 </div>
@@ -546,18 +551,21 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="percussionOthers" class="form-control height-100" aria-label="others percussion" 
-                                            name="others" rows="3" autocomplete="on">[[ = XML(percussion['others']) ]]</textarea>
+                                        <textarea type="text" id="percussionOthers" class="form-control height-100"
+                                            aria-label="others percussion" name="others" rows="3"
+                                            autocomplete="on">[[ = XML(percussion['others']) ]]</textarea>
                                         <label for="percussionOthers">Others</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="container-fluid">
-                            <input id="idpercussion" type="text" class="visually-hidden" name="id" value="[[ = XML(percussion['id']) ]]"/>
-                            <input id="idPatientpercussion" type="text" class="visually-hidden" name="id_auth_user"/>
-                            <input id="idWlpercussion" type="text" class="visually-hidden" name="id_worklist"/>
-                            <button id="percussionFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                            <input id="idpercussion" type="text" class="visually-hidden" name="id"
+                                value="[[ = XML(percussion['id']) ]]" />
+                            <input id="idPatientpercussion" type="text" class="visually-hidden" name="id_auth_user" />
+                            <input id="idWlpercussion" type="text" class="visually-hidden" name="id_worklist" />
+                            <button id="percussionFormSubmit" type="submit" class="btn btn-secondary">Update<i
+                                    class="mx-2 fas fa-plus"></i></button>
                         </div>
                     </form>
                 </div> <!-- end percussion col -->
@@ -567,13 +575,14 @@
             <div class="row bg-right"> <!-- row neuro -->
                 <h3 class="title-right"><a role="button" data-bs-toggle="collapse" href=".neuro">Neurologic</a></h3>
                 <div class="col py-3 neuro collapse"> <!-- neuro col -->
-                    <form id="neuroForm" enctype="multipart/form-data" method="POST"> 
+                    <form id="neuroForm" enctype="multipart/form-data" method="POST">
                         <div class="container-fluid">
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="neuroHead" class="form-control height-100" aria-label="head neuro" 
-                                            name="head" rows="3" autocomplete="on">[[ = XML(neuro['head']) ]]</textarea>
+                                        <textarea type="text" id="neuroHead" class="form-control height-100"
+                                            aria-label="head neuro" name="head" rows="3"
+                                            autocomplete="on">[[ = XML(neuro['head']) ]]</textarea>
                                         <label for="neuroHead">Head neuro</label>
                                     </div>
                                 </div>
@@ -581,8 +590,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="neuroMotor" class="form-control height-100" aria-label="motor neuro" 
-                                            name="motor" rows="3" autocomplete="on">[[ = XML(neuro['motor']) ]]</textarea>
+                                        <textarea type="text" id="neuroMotor" class="form-control height-100"
+                                            aria-label="motor neuro" name="motor" rows="3"
+                                            autocomplete="on">[[ = XML(neuro['motor']) ]]</textarea>
                                         <label for="neuroMotor">Motor</label>
                                     </div>
                                 </div>
@@ -590,8 +600,9 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="neuroSensorial" class="form-control height-100" aria-label="sensorial neuro" 
-                                            name="sensorial" rows="3" autocomplete="on">[[ = XML(neuro['sensorial']) ]]</textarea>
+                                        <textarea type="text" id="neuroSensorial" class="form-control height-100"
+                                            aria-label="sensorial neuro" name="sensorial" rows="3"
+                                            autocomplete="on">[[ = XML(neuro['sensorial']) ]]</textarea>
                                         <label for="neuroSensorial">Sensorial</label>
                                     </div>
                                 </div>
@@ -599,27 +610,31 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="neuroReflexes" class="form-control height-100" aria-label="reflexes neuro" 
-                                            name="reflexes" rows="3" autocomplete="on">[[ = XML(neuro['reflexes']) ]]</textarea>
+                                        <textarea type="text" id="neuroReflexes" class="form-control height-100"
+                                            aria-label="reflexes neuro" name="reflexes" rows="3"
+                                            autocomplete="on">[[ = XML(neuro['reflexes']) ]]</textarea>
                                         <label for="neuroReflexes">Reflexes neuro</label>
                                     </div>
                                 </div>
-                            </div>                    
+                            </div>
                             <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
-                                        <textarea type="text" id="neuroOthers" class="form-control height-100" aria-label="others neuro" 
-                                            name="others" rows="3" autocomplete="on">[[ = XML(neuro['others']) ]]</textarea>
+                                        <textarea type="text" id="neuroOthers" class="form-control height-100"
+                                            aria-label="others neuro" name="others" rows="3"
+                                            autocomplete="on">[[ = XML(neuro['others']) ]]</textarea>
                                         <label for="neuroOthers">Others</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="container-fluid">
-                            <input id="idneuro" type="text" class="visually-hidden" name="id" value="[[ = XML(neuro['id']) ]]"/>
-                            <input id="idPatientneuro" type="text" class="visually-hidden" name="id_auth_user"/>
-                            <input id="idWlneuro" type="text" class="visually-hidden" name="id_worklist"/>
-                            <button id="neuroFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
+                            <input id="idneuro" type="text" class="visually-hidden" name="id"
+                                value="[[ = XML(neuro['id']) ]]" />
+                            <input id="idPatientneuro" type="text" class="visually-hidden" name="id_auth_user" />
+                            <input id="idWlneuro" type="text" class="visually-hidden" name="id_worklist" />
+                            <button id="neuroFormSubmit" type="submit" class="btn btn-secondary">Update<i
+                                    class="mx-2 fas fa-plus"></i></button>
                         </div>
                     </form>
                 </div> <!-- end neuro col -->
@@ -633,7 +648,8 @@
                 <div class="col">
                     <div class="row">
                         <div class="col">
-                            <h3 class="big-title bg-secondary"><a role="button" data-bs-toggle="collapse" href=".misc">Miscellaneous</a></h3>
+                            <h3 class="big-title bg-secondary"><a role="button" data-bs-toggle="collapse"
+                                    href=".misc">Miscellaneous</a></h3>
                         </div>
                     </div>
                     <div class="row misc collapse">
@@ -645,20 +661,25 @@
                             </div>
                             <div class="row py-2 bg-right">
                                 <div class="col">
-                                    <form id="motForm" enctype="multipart/form-data" method="POST"> 
+                                    <form id="motForm" enctype="multipart/form-data" method="POST">
                                         <div class="container-fluid">
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="input-group">
-                                                        <button id="motFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
-                                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(motility['description']) ]]</textarea>
+                                                        <button id="motFormSubmit" type="submit"
+                                                            class="btn btn-secondary">Update<i
+                                                                class="mx-2 fas fa-plus"></i></button>
+                                                        <textarea class="form-control" aria-label="With textarea"
+                                                            name="description">[[ = XML(motility['description']) ]]</textarea>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <input id="idmot" type="text" class="visually-hidden" name="id" value="[[ = XML(motility['id']) ]]"/>
-                                        <input id="idPatientmot" type="text" class="visually-hidden" name="id_auth_user"/>
-                                        <input id="idWlmot" type="text" class="visually-hidden" name="id_worklist"/>
+                                        <input id="idmot" type="text" class="visually-hidden" name="id"
+                                            value="[[ = XML(motility['id']) ]]" />
+                                        <input id="idPatientmot" type="text" class="visually-hidden"
+                                            name="id_auth_user" />
+                                        <input id="idWlmot" type="text" class="visually-hidden" name="id_worklist" />
                                     </form>
                                 </div>
                             </div>
@@ -671,20 +692,25 @@
                             </div>
                             <div class="row py-2 bg-left">
                                 <div class="col">
-                                    <form id="phoForm" enctype="multipart/form-data" method="POST"> 
+                                    <form id="phoForm" enctype="multipart/form-data" method="POST">
                                         <div class="container-fluid">
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="input-group">
-                                                        <button id="phoFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
-                                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(phoria['description']) ]]</textarea>
+                                                        <button id="phoFormSubmit" type="submit"
+                                                            class="btn btn-secondary">Update<i
+                                                                class="mx-2 fas fa-plus"></i></button>
+                                                        <textarea class="form-control" aria-label="With textarea"
+                                                            name="description">[[ = XML(phoria['description']) ]]</textarea>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <input id="idpho" type="text" class="visually-hidden" name="id" value="[[ = XML(phoria['id']) ]]"/>
-                                        <input id="idPatientpho" type="text" class="visually-hidden" name="id_auth_user"/>
-                                        <input id="idWlpho" type="text" class="visually-hidden" name="id_worklist"/>
+                                        <input id="idpho" type="text" class="visually-hidden" name="id"
+                                            value="[[ = XML(phoria['id']) ]]" />
+                                        <input id="idPatientpho" type="text" class="visually-hidden"
+                                            name="id_auth_user" />
+                                        <input id="idWlpho" type="text" class="visually-hidden" name="id_worklist" />
                                     </form>
                                 </div>
                             </div>
@@ -697,20 +723,25 @@
                             </div>
                             <div class="row py-2 bg-right">
                                 <div class="col">
-                                    <form id="pupForm" enctype="multipart/form-data" method="POST"> 
+                                    <form id="pupForm" enctype="multipart/form-data" method="POST">
                                         <div class="container-fluid">
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="input-group">
-                                                        <button id="pupFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
-                                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(pupils['description']) ]]</textarea>
+                                                        <button id="pupFormSubmit" type="submit"
+                                                            class="btn btn-secondary">Update<i
+                                                                class="mx-2 fas fa-plus"></i></button>
+                                                        <textarea class="form-control" aria-label="With textarea"
+                                                            name="description">[[ = XML(pupils['description']) ]]</textarea>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <input id="idpup" type="text" class="visually-hidden" name="id" value="[[ = XML(pupils['id']) ]]"/>
-                                        <input id="idPatientpup" type="text" class="visually-hidden" name="id_auth_user"/>
-                                        <input id="idWlpup" type="text" class="visually-hidden" name="id_worklist"/>
+                                        <input id="idpup" type="text" class="visually-hidden" name="id"
+                                            value="[[ = XML(pupils['id']) ]]" />
+                                        <input id="idPatientpup" type="text" class="visually-hidden"
+                                            name="id_auth_user" />
+                                        <input id="idWlpup" type="text" class="visually-hidden" name="id_worklist" />
                                     </form>
                                 </div>
                             </div>
@@ -731,21 +762,25 @@
             </div>
             <div class="row bg-right py-3 dx">
                 <div class="col">
-                    <form id="ccxForm" enctype="multipart/form-data" method="POST"> 
+                    <form id="ccxForm" enctype="multipart/form-data" method="POST">
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col">
                                     <div class="input-group">
-                                        <button id="ccxFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
-                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(ccx['description']) ]]</textarea>
+                                        <button id="ccxFormSubmit" type="submit" class="btn btn-secondary">Update<i
+                                                class="mx-2 fas fa-plus"></i></button>
+                                        <textarea class="form-control" aria-label="With textarea"
+                                            name="description">[[ = XML(ccx['description']) ]]</textarea>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <input id="lateralityccx" type="text" class="visually-hidden" name="laterality" value="na"/>
-                        <input id="idccx" type="text" class="visually-hidden" name="id" value="[[ = XML(ccx['id']) ]]"/>
-                        <input id="idPatientccx" type="text" class="visually-hidden" name="id_auth_user" value="[[=patientId]]"/>
-                        <input id="idWlccx" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
+                        <input id="lateralityccx" type="text" class="visually-hidden" name="laterality" value="na" />
+                        <input id="idccx" type="text" class="visually-hidden" name="id"
+                            value="[[ = XML(ccx['id']) ]]" />
+                        <input id="idPatientccx" type="text" class="visually-hidden" name="id_auth_user"
+                            value="[[=patientId]]" />
+                        <input id="idWlccx" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]" />
                     </form>
                 </div>
             </div>
@@ -760,20 +795,13 @@
             </div>
             <div class="row bg-right">
                 <div class="col ">
-                    <button type="button" id="btnNewCoding" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#mHxModal" data-category-flag="medical" data-mhx-flag="code">Add code<i class="mx-2 fas fa-plus"></i></button>
-                    <table
-                        id="coding_tbl"
-                        data-side-pagination="server"
-                        data-toggle="table"
-                        data-pagination="true"
-                        data-page-size="5"
-                        data-search="false"
-                        data-query-params="queryParams"
-                        data-response-handler="responseHandler_msHx"
-                        data-detail-formatter="detailFormatter_msHx"
-                        data-detail-view="true"
-                        data-detail-view-icon="true"
-                        >
+                    <button type="button" id="btnNewCoding" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#mHxModal" data-category-flag="medical" data-mhx-flag="code">Add code<i
+                            class="mx-2 fas fa-plus"></i></button>
+                    <table id="coding_tbl" data-side-pagination="server" data-toggle="table" data-pagination="true"
+                        data-page-size="5" data-search="false" data-query-params="queryParams"
+                        data-response-handler="responseHandler_msHx" data-detail-formatter="detailFormatter_msHx"
+                        data-detail-view="true" data-detail-view-icon="true">
                         <thead>
                             <tr>
                                 <th data-field="onset" data-sortable="true">Onset</th>
@@ -782,7 +810,8 @@
                                 <th data-field="icd10" data-sortable="true">ICD-10</th>
                                 <th data-field="site" data-sortable="true">Side</th>
                                 <th data-field="note" data-sortable="true">Note</th>
-                                <th data-field="operate" data-formatter="operateFormatter_msHx" data-events="operateEvents_msHx">Action</th>
+                                <th data-field="operate" data-formatter="operateFormatter_msHx"
+                                    data-events="operateEvents_msHx">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -809,21 +838,14 @@
             </div>
             <div class="row bg-right">
                 <div class="col">
-                    <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm " data-bs-toggle="modal" data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
-                    <button type="button" id="btnMxRx" class="btn btn-warning btn-sm float-end" >Prescribe medications<i class="mx-2 fas fa-prescription"></i></button>
-                    <table
-                        id="mxWl_tbl"
-                        data-side-pagination="server"
-                        data-toggle="table"
-                        data-pagination="true"
-                        data-page-size="5"
-                        data-search="false"
-                        data-query-params="queryParams"
-                        data-response-handler="responseHandler_mx"
-                        data-detail-formatter="detailFormatter_mx"
-                        data-detail-view="true"
-                        data-detail-view-icon="true"
-                        >
+                    <button type="button" id="btnNewMxWl" class="btn btn-dark btn-sm " data-bs-toggle="modal"
+                        data-bs-target="#mxModal" data-mx-flag="mxWl">Add medic<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnMxRx" class="btn btn-warning btn-sm float-end">Prescribe medications<i
+                            class="mx-2 fas fa-prescription"></i></button>
+                    <table id="mxWl_tbl" data-side-pagination="server" data-toggle="table" data-pagination="true"
+                        data-page-size="5" data-search="false" data-query-params="queryParams"
+                        data-response-handler="responseHandler_mx" data-detail-formatter="detailFormatter_mx"
+                        data-detail-view="true" data-detail-view-icon="true">
                         <thead>
                             <tr>
                                 <th data-field="onset" data-sortable="true">Onset</th>
@@ -833,7 +855,8 @@
                                 <th data-field="frequency_h" data-sortable="false">Frequency</th>
                                 <th data-field="note" data-sortable="false">Note</th>
                                 <th data-field="prescribed" data-sortable="false">Prescribed</th>
-                                <th data-field="operate" data-formatter="operateFormatter_mx" data-events="operateEvents_mx">Action
+                                <th data-field="operate" data-formatter="operateFormatter_mx"
+                                    data-events="operateEvents_mx">Action
                                 </th>
                             </tr>
                         </thead>
@@ -843,24 +866,16 @@
             <div class="row bg-right">
                 <div class="col">
                     <h4 class="title-right">List of printed medical prescriptions</h4>
-                    <table
-                        id="mxrx_tbl"
-                        data-side-pagination="server"
-                        data-toggle="table"
-                        data-pagination="true"
-                        data-page-size="5"
-                        data-search="false"
-                        data-query-params="queryParams"
-                        data-response-handler="responseHandler_mxrx"
-                        data-detail-formatter="detailFormatter_mxrx"
-                        data-detail-view="true"
-                        data-detail-view-icon="true"
-                        >
+                    <table id="mxrx_tbl" data-side-pagination="server" data-toggle="table" data-pagination="true"
+                        data-page-size="5" data-search="false" data-query-params="queryParams"
+                        data-response-handler="responseHandler_mxrx" data-detail-formatter="detailFormatter_mxrx"
+                        data-detail-view="true" data-detail-view-icon="true">
                         <thead>
                             <tr>
                                 <th data-field="created_on" data-sortable="true">Created:</th>
                                 <th data-field="mx_names" data-sortable="false">Medication</th>
-                                <th data-field="operate" data-formatter="operateFormatter_mxrx" data-events="operateEvents_mxrx">Action
+                                <th data-field="operate" data-formatter="operateFormatter_mxrx"
+                                    data-events="operateEvents_mxrx">Action
                                 </th>
                             </tr>
                         </thead>
@@ -878,28 +893,27 @@
             <div class="row bg-right">
                 <div class="col">
                     <h4 class="title-right">List of printed certificates</h4>
-                    <button type="button" id="btnNewcertificate" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="presence">Presence certificate<i class="mx-2 fas fa-plus"></i></button>
-                    <button type="button" id="btnNewcertsickleave" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#sickModal">Sick leave certificate<i class="mx-2 fas fa-plus"></i></button>
-                    <button type="button" id="btnNewfreecertificate" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="free">Free certificate<i class="mx-2 fas fa-plus"></i></button>
-                    <button type="button" id="btnNewdoccertificate" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="doc">MD certificate<i class="mx-2 fas fa-plus"></i></button>
-                    <table
-                    id="cert_tbl"
-                    data-side-pagination="server"
-                    data-toggle="table"
-                    data-pagination="true"
-                    data-page-size="5"
-                    data-search="false"
-                    data-query-params="queryParams"
-                    data-response-handler="responseHandler_cert"
-                    data-detail-formatter="detailFormatter_cert"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    >
+                    <button type="button" id="btnNewcertificate" class="btn btn-info btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#certificateModal" data-cert-flag="presence">Presence certificate<i
+                            class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewcertsickleave" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#sickModal">Sick leave certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewfreecertificate" class="btn btn-primary btn-sm"
+                        data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="free">Free
+                        certificate<i class="mx-2 fas fa-plus"></i></button>
+                    <button type="button" id="btnNewdoccertificate" class="btn btn-secondary btn-sm"
+                        data-bs-toggle="modal" data-bs-target="#certificateModal" data-cert-flag="doc">MD certificate<i
+                            class="mx-2 fas fa-plus"></i></button>
+                    <table id="cert_tbl" data-side-pagination="server" data-toggle="table" data-pagination="true"
+                        data-page-size="5" data-search="false" data-query-params="queryParams"
+                        data-response-handler="responseHandler_cert" data-detail-formatter="detailFormatter_cert"
+                        data-detail-view="true" data-detail-view-icon="true">
                         <thead>
                             <tr>
                                 <th data-field="datestamp" data-sortable="true">Datestamp</th>
                                 <th data-field="category" data-sortable="true">Category</th>
-                                <th data-field="operate" data-formatter="operateFormatter_cert" data-events="operateEvents_cert">Action</th>
+                                <th data-field="operate" data-formatter="operateFormatter_cert"
+                                    data-events="operateEvents_cert">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -917,20 +931,24 @@
             </div>
             <div class="row bg-right py-3">
                 <div class="col">
-                    <form id="folForm" enctype="multipart/form-data" method="POST"> 
+                    <form id="folForm" enctype="multipart/form-data" method="POST">
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col">
                                     <div class="input-group">
-                                        <button id="folFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
-                                        <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(followup['description']) ]]</textarea>
+                                        <button id="folFormSubmit" type="submit" class="btn btn-secondary">Update<i
+                                                class="mx-2 fas fa-plus"></i></button>
+                                        <textarea class="form-control" aria-label="With textarea"
+                                            name="description">[[ = XML(followup['description']) ]]</textarea>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <input id="idfol" type="text" class="visually-hidden" name="id" value="[[ = XML(followup['id']) ]]"/>
-                        <input id="idPatientfol" type="text" class="visually-hidden" name="id_auth_user" value="[[=patientId]]"/>
-                        <input id="idWlfol" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
+                        <input id="idfol" type="text" class="visually-hidden" name="id"
+                            value="[[ = XML(followup['id']) ]]" />
+                        <input id="idPatientfol" type="text" class="visually-hidden" name="id_auth_user"
+                            value="[[=patientId]]" />
+                        <input id="idWlfol" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]" />
                     </form>
                 </div>
             </div>
@@ -981,20 +999,26 @@
                     </div>
                     <div class="row bg-right py-3">
                         <div class="col">
-                            <form id="bilForm" enctype="multipart/form-data" method="POST"> 
+                            <form id="bilForm" enctype="multipart/form-data" method="POST">
                                 <div class="container-fluid">
                                     <div class="row">
                                         <div class="col">
                                             <div class="input-group">
-                                                <button id="bilFormSubmit" type="submit" class="btn btn-secondary">Update<i class="mx-2 fas fa-plus"></i></button>
-                                                <textarea class="form-control" aria-label="With textarea" name="description">[[ = XML(billing['description']) ]]</textarea>
+                                                <button id="bilFormSubmit" type="submit"
+                                                    class="btn btn-secondary">Update<i
+                                                        class="mx-2 fas fa-plus"></i></button>
+                                                <textarea class="form-control" aria-label="With textarea"
+                                                    name="description">[[ = XML(billing['description']) ]]</textarea>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <input id="idbil" type="text" class="visually-hidden" name="id" value="[[ = XML(billing['id']) ]]"/>
-                                <input id="idPatientbil" type="text" class="visually-hidden" name="id_auth_user" value="[[=patientId]]"/>
-                                <input id="idWlbil" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]"/>
+                                <input id="idbil" type="text" class="visually-hidden" name="id"
+                                    value="[[ = XML(billing['id']) ]]" />
+                                <input id="idPatientbil" type="text" class="visually-hidden" name="id_auth_user"
+                                    value="[[=patientId]]" />
+                                <input id="idWlbil" type="text" class="visually-hidden" name="id_worklist"
+                                    value="[[=wlId]]" />
                             </form>
                         </div>
                     </div>
@@ -1002,13 +1026,19 @@
             </div>
             <div class="row">
                 <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a
+                        doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro
+                        explicabo laborum? Impedit!</p>
                 </div>
                 <div class="col bg-left">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a
+                        doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro
+                        explicabo laborum? Impedit!</p>
                 </div>
                 <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a
+                        doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro
+                        explicabo laborum? Impedit!</p>
                 </div>
             </div>
         </div>
@@ -1022,7 +1052,9 @@
             </div>
             <div class="row">
                 <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro explicabo laborum? Impedit!</p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a
+                        doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro
+                        explicabo laborum? Impedit!</p>
                 </div>
             </div>
         </div>
@@ -1048,27 +1080,40 @@
                                             <span class="form-label">Side:</span>
                                             <div class="input-group">
                                                 <div class="btn-group mxdelivery_modal">
-                                                    <input type="radio" id="mxdelivery_right_modal" name="delivery" class="btn-check" value="right" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mxdelivery_right_modal">Right</label>
-                                                    <input type="radio" id="mxdelivery_left_modal" name="delivery" class="btn-check" value="left" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mxdelivery_left_modal">Left</label>
-                                                    <input type="radio" id="mxdelivery_both_modal" name="delivery" class="btn-check" value="both" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mxdelivery_both_modal">Both</label>
-                                                    <input type="radio" id="mxdelivery_po_modal" name="delivery" class="btn-check" value="PO" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mxdelivery_po_modal">PO</label>
-                                                    <input type="radio" id="mxdelivery_local_modal" name="delivery" class="btn-check" value="local" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mxdelivery_local_modal">Local</label>
-                                                    <input type="radio" id="mxdelivery_iv_modal" name="delivery" class="btn-check" value="IV" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mxdelivery_iv_modal">IV</label>
-                                                    <input type="radio" id="mxdelivery_im_modal" name="delivery" class="btn-check" value="IM" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mxdelivery_im_modal">IM</label>
+                                                    <input type="radio" id="mxdelivery_right_modal" name="delivery"
+                                                        class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_right_modal">Right</label>
+                                                    <input type="radio" id="mxdelivery_left_modal" name="delivery"
+                                                        class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_left_modal">Left</label>
+                                                    <input type="radio" id="mxdelivery_both_modal" name="delivery"
+                                                        class="btn-check" value="both" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_both_modal">Both</label>
+                                                    <input type="radio" id="mxdelivery_po_modal" name="delivery"
+                                                        class="btn-check" value="PO" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_po_modal">PO</label>
+                                                    <input type="radio" id="mxdelivery_local_modal" name="delivery"
+                                                        class="btn-check" value="local" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_local_modal">Local</label>
+                                                    <input type="radio" id="mxdelivery_iv_modal" name="delivery"
+                                                        class="btn-check" value="IV" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_iv_modal">IV</label>
+                                                    <input type="radio" id="mxdelivery_im_modal" name="delivery"
+                                                        class="btn-check" value="IM" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_im_modal">IM</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col">
                                             <label for="mxOnset" class="form-label">Onset:</label>
-                                            <input id="mxOnset" type="date" step="1" class="form-control"
-                                                name="onset">
+                                            <input id="mxOnset" type="date" step="1" class="form-control" name="onset">
                                             <div id="mxOnsetHelp" class="form-text">Adjust onset</div>
                                         </div>
                                         <div class="col">
@@ -1080,37 +1125,47 @@
                                     <div class="row mb-3">
                                         <div class="col">
                                             <label for="medicModal" class="form-label">Medication:</label>
-                                            <input id="medicModal" type="text" class="form-control" name="medication" autocomplete="off">
+                                            <input id="medicModal" type="text" class="form-control" name="medication"
+                                                autocomplete="off">
                                             <div id="medicModalHelp" class="form-text">Enter medication name</div>
                                         </div>
                                         <div class="col-2">
                                             <label for="unit_per_intake" class="form-label">Intake:</label>
                                             <div class="input-group mb-3">
-                                                <button class="btn btn-outline-secondary counter_down_intake" type="button">-</button>
-                                                <input type="text" class="form-control form-control-sm intake_modal counter_intake text-center" value="1.00" aria-label="Intake" name="unit_per_intake" id="unit_per_intake">
-                                                <button class="btn btn-outline-secondary counter_up_intake" type="button">+</button>
+                                                <button class="btn btn-outline-secondary counter_down_intake"
+                                                    type="button">-</button>
+                                                <input type="text"
+                                                    class="form-control form-control-sm intake_modal counter_intake text-center"
+                                                    value="1.00" aria-label="Intake" name="unit_per_intake"
+                                                    id="unit_per_intake">
+                                                <button class="btn btn-outline-secondary counter_up_intake"
+                                                    type="button">+</button>
                                             </div>
                                         </div>
                                         <div class="col">
                                             <label for="freqModal" class="form-label">Frequency:</label>
-                                            <input id="freqModal" type="text" class="form-control" name="frequency" autocomplete="off">
+                                            <input id="freqModal" type="text" class="form-control" name="frequency"
+                                                autocomplete="off">
                                             <div id="freqModalHelp" class="form-text">Enter frequency</div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
                                             <label for="mxNoteModal" class="form-label">Note:</label>
-                                            <input id="mxNoteModal" type="text" class="form-control" name="note" autocomplete="off">
+                                            <input id="mxNoteModal" type="text" class="form-control" name="note"
+                                                autocomplete="off">
                                             <div id="mxNoteModalHelp" class="form-text">Note</div>
                                         </div>
                                     </div>
                                 </div>
                                 <input id="idMx" type="text" class="visually-hidden" name="id_medic_ref" />
-                                <input id="idMxWl" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]" />
+                                <input id="idMxWl" type="text" class="visually-hidden" name="id_worklist"
+                                    value="[[=wlId]]" />
                                 <input id="idMxPrescribed" type="text" class="visually-hidden" name="prescribed" />
                                 <input id="idMxRow" type="text" class="visually-hidden" name="id" />
                                 <input id="idPatientRx" type="text" class="visually-hidden" name="id_auth_user" />
-                                <input id="methodMxModalSubmit" type="text" class="visually-hidden" name="methodMxModalSubmit" value="POST" />
+                                <input id="methodMxModalSubmit" type="text" class="visually-hidden"
+                                    name="methodMxModalSubmit" value="POST" />
                                 <input id="btnMxModalSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -1144,19 +1199,24 @@
                                             <span class="form-label">Type:</span>
                                             <div class="input-group">
                                                 <div class="btn-group typ_modal">
-                                                    <input type="radio" id="typ_allergy_modal" name="typ" class="btn-check" value="allergy" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="typ_allergy_modal">Allergy</label>
-                                                    <input type="radio" id="typ_atopy_modal" name="typ" class="btn-check" value="atopy" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="typ_atopy_modal">Atopy</label>
-                                                    <input type="radio" id="typ_intolerance_modal" name="typ" class="btn-check" value="intolerance" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="typ_intolerance_modal">Intolerance</label>
+                                                    <input type="radio" id="typ_allergy_modal" name="typ"
+                                                        class="btn-check" value="allergy" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="typ_allergy_modal">Allergy</label>
+                                                    <input type="radio" id="typ_atopy_modal" name="typ"
+                                                        class="btn-check" value="atopy" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="typ_atopy_modal">Atopy</label>
+                                                    <input type="radio" id="typ_intolerance_modal" name="typ"
+                                                        class="btn-check" value="intolerance" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="typ_intolerance_modal">Intolerance</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col">
                                             <label for="axOnset" class="form-label">Onset:</label>
-                                            <input id="axOnset" type="date" step="1" class="form-control"
-                                                name="onset">
+                                            <input id="axOnset" type="date" step="1" class="form-control" name="onset">
                                             <div id="axOnsetHelp" class="form-text">Adjust onset</div>
                                         </div>
                                         <div class="col">
@@ -1168,7 +1228,8 @@
                                     <div class="row mb-3">
                                         <div class="col">
                                             <label for="agentModal" class="form-label">Agent:</label>
-                                            <input id="agentModal" type="text" class="form-control" name="agent" autocomplete="off">
+                                            <input id="agentModal" type="text" class="form-control" name="agent"
+                                                autocomplete="off">
                                             <div id="medicModalHelp" class="form-text">Enter agent name</div>
                                         </div>
                                     </div>
@@ -1176,7 +1237,8 @@
                                 <input id="idAgent" type="text" class="visually-hidden" name="id_agent" />
                                 <input id="idAxRow" type="text" class="visually-hidden" name="id" />
                                 <input id="idPatientAx" type="text" class="visually-hidden" name="id_auth_user" />
-                                <input id="methodAxModalSubmit" type="text" class="visually-hidden" name="methodAxModalSubmit" value="POST" />
+                                <input id="methodAxModalSubmit" type="text" class="visually-hidden"
+                                    name="methodAxModalSubmit" value="POST" />
                                 <input id="btnAxModalSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -1210,10 +1272,14 @@
                                             <span class="form-label">Category:</span>
                                             <div class="input-group">
                                                 <div class="btn-group category_modal">
-                                                    <input type="radio" id="mHxcategory_medical_modal" name="category" class="btn-check" value="medical" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mHxcategory_medical_modal">Medical</label>
-                                                    <input type="radio" id="mHxcategory_surgical_modal" name="category" class="btn-check" value="surgical" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mHxcategory_surgical_modal">Surgical</label>
+                                                    <input type="radio" id="mHxcategory_medical_modal" name="category"
+                                                        class="btn-check" value="medical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxcategory_medical_modal">Medical</label>
+                                                    <input type="radio" id="mHxcategory_surgical_modal" name="category"
+                                                        class="btn-check" value="surgical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxcategory_surgical_modal">Surgical</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -1221,16 +1287,26 @@
                                             <span class="form-label">Site:</span>
                                             <div class="input-group">
                                                 <div class="btn-group site_modal">
-                                                    <input type="radio" id="mHxsite_right_modal" name="site" class="btn-check" value="right" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mHxsite_right_modal">Right</label>
-                                                    <input type="radio" id="mHxsite_left_modal" name="site" class="btn-check" value="left" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mHxsite_left_modal">Left</label>
-                                                    <input type="radio" id="mHxsite_both_modal" name="site" class="btn-check" value="both" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mHxsite_both_modal">Both</label>
-                                                    <input type="radio" id="mHxsite_local_modal" name="site" class="btn-check" value="local" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mHxsite_local_modal">Local</label>
-                                                    <input type="radio" id="mHxsite_systemic_modal" name="site" class="btn-check" value="systemic" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="mHxsite_systemic_modal">Systemic</label>
+                                                    <input type="radio" id="mHxsite_right_modal" name="site"
+                                                        class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxsite_right_modal">Right</label>
+                                                    <input type="radio" id="mHxsite_left_modal" name="site"
+                                                        class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxsite_left_modal">Left</label>
+                                                    <input type="radio" id="mHxsite_both_modal" name="site"
+                                                        class="btn-check" value="both" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxsite_both_modal">Both</label>
+                                                    <input type="radio" id="mHxsite_local_modal" name="site"
+                                                        class="btn-check" value="local" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxsite_local_modal">Local</label>
+                                                    <input type="radio" id="mHxsite_systemic_modal" name="site"
+                                                        class="btn-check" value="systemic" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxsite_systemic_modal">Systemic</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -1238,8 +1314,7 @@
                                     <div class="row mb-3">
                                         <div class="col">
                                             <label for="mHxOnset" class="form-label">Onset:</label>
-                                            <input id="mHxOnset" type="date" step="1" class="form-control"
-                                                name="onset">
+                                            <input id="mHxOnset" type="date" step="1" class="form-control" name="onset">
                                             <div id="mHxOnsetHelp" class="form-text">Adjust onset</div>
                                         </div>
                                         <div class="col">
@@ -1251,12 +1326,14 @@
                                     <div class="row mb-3">
                                         <div class="col">
                                             <label for="mHxtitleModal" class="form-label">Title:</label>
-                                            <input id="mHxtitleModal" type="text" class="form-control" name="title" autocomplete="off">
+                                            <input id="mHxtitleModal" type="text" class="form-control" name="title"
+                                                autocomplete="off">
                                             <div id="mHxtitleModalHelp" class="form-text">Enter disease title</div>
                                         </div>
                                         <div class="col">
                                             <label for="mHxnoteModal" class="form-label">Note:</label>
-                                            <input id="mHxnoteModal" type="text" class="form-control" name="note" autocomplete="off">
+                                            <input id="mHxnoteModal" type="text" class="form-control" name="note"
+                                                autocomplete="off">
                                             <div id="mHxnoteModalHelp" class="form-text">Note</div>
                                         </div>
                                     </div>
@@ -1265,7 +1342,8 @@
                                 <input id="idmHxRow" type="text" class="visually-hidden" name="id" />
                                 <input id="idmHxWl" type="text" class="visually-hidden" name="id_worklist" />
                                 <input id="idPatientmHx" type="text" class="visually-hidden" name="id_auth_user" />
-                                <input id="methodmHxModalSubmit" type="text" class="visually-hidden" name="methodmHxModalSubmit" value="POST" />
+                                <input id="methodmHxModalSubmit" type="text" class="visually-hidden"
+                                    name="methodmHxModalSubmit" value="POST" />
                                 <input id="btnmHxModalSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -1295,12 +1373,12 @@
                         <div class="col">
                             <table class="table">
                                 <thead>
-                                  <tr>
-                                    <th scope="col">Medication</th>
-                                    <th scope="col">Posology</th>
-                                    <th scope="col">Onset</th>
-                                    <th scope="col">End</th>
-                                  </tr>
+                                    <tr>
+                                        <th scope="col">Medication</th>
+                                        <th scope="col">Posology</th>
+                                        <th scope="col">Onset</th>
+                                        <th scope="col">End</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="mxRxTd">
                                     <!-- insert rows <td></td>-->
@@ -1319,7 +1397,8 @@
 </div>
 
 <!-- Modal certificateModal -->
-<div class="modal fade" id="certificateModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+<div class="modal fade" id="certificateModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
+    aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -1344,14 +1423,16 @@
                         <input id="certificateEnded" type="text" class="visually-hidden" name="ended" />
                         <input id="idcertificateWl" type="text" class="visually-hidden" name="id_worklist" />
                         <input id="idPatientcertificate" type="text" class="visually-hidden" name="id_auth_user" />
-                        <input id="methodcertificateModalSubmit" type="text" class="visually-hidden" name="methodcertificateModalSubmit" value="POST" />
+                        <input id="methodcertificateModalSubmit" type="text" class="visually-hidden"
+                            name="methodcertificateModalSubmit" value="POST" />
                         <input id="btncertificateModalSubmit" type="submit" class="visually-hidden" />
                     </form>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="certificateModalSubmit" for="btncertificateModalSubmit" class="btn btn-primary" tabindex="0">Print</label>
+                <label id="certificateModalSubmit" for="btncertificateModalSubmit" class="btn btn-primary"
+                    tabindex="0">Print</label>
             </div>
         </div>
     </div>
@@ -1385,10 +1466,12 @@
                                 <div class="col">
                                     <span class="form-label">Exit allowance:</span>
                                     <div class="input-group">
-                                        <div class="btn-group laterality">                                                
-                                            <input type="radio" id="exit_yes" name="exit" class="btn-check" value="yes" autocomplete="off" checked>
+                                        <div class="btn-group laterality">
+                                            <input type="radio" id="exit_yes" name="exit" class="btn-check" value="yes"
+                                                autocomplete="off" checked>
                                             <label class="btn btn-outline-success" for="exit_yes">Yes</label>
-                                            <input type="radio" id="exit_no" name="exit" class="btn-check" value="no" autocomplete="off">
+                                            <input type="radio" id="exit_no" name="exit" class="btn-check" value="no"
+                                                autocomplete="off">
                                             <label class="btn btn-outline-danger" for="exit_no">No</label>
                                         </div>
                                     </div>
@@ -1400,7 +1483,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button class="btn btn-primary" data-bs-target="#certificateModal" data-bs-toggle="modal" data-bs-dismiss="modal" data-cert-flag="sick">Edit</button>
+                <button class="btn btn-primary" data-bs-target="#certificateModal" data-bs-toggle="modal"
+                    data-bs-dismiss="modal" data-cert-flag="sick">Edit</button>
             </div>
         </div>
     </div>
@@ -1409,8 +1493,8 @@
 <!-- cache offcanvas -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCache" aria-labelledby="offcanvas cache">
     <div class="offcanvas-header">
-      <button type="button" class="btn btn-primary" id="clearCache">Clear cache</button>
-      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <button type="button" class="btn btn-primary" id="clearCache">Clear cache</button>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
         <div class="row">
@@ -1425,16 +1509,16 @@
                 <div class="row">
                     <table class="table">
                         <thead>
-                          <tr>
-                            <th scope="col">Origin</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Rx</th>
-                          </tr>
+                            <tr>
+                                <th scope="col">Origin</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Rx</th>
+                            </tr>
                         </thead>
                         <tbody class="rxTd">
                             <!-- insert rows <td></td>-->
                         </tbody>
-                      </table>
+                    </table>
                 </div>
             </div>
         </div>
@@ -1445,25 +1529,25 @@
 [[ block js_scripts]]
 
 <script type="text/javascript">
-// Global variables
-const HOSTURL = "[[ = hosturl ]]";
-let usermdObj = [[ =XML(mdParams) ]];
-let userObj = [[ =XML(userDict)]];
-// for timer
-let timer_id = [];
-// modality controllers
-let modalityDict = [[ = XML(modalityDict) ]];
-let modalityController = '[[ = XML(modalityController) ]]';
+    // Global variables
+    const HOSTURL = "[[ = hosturl ]]";
+    let usermdObj = [[ =XML(mdParams)]];
+    let userObj = [[ =XML(userDict)]];
+    // for timer
+    let timer_id = [];
+    // modality controllers
+    let modalityDict = [[ = XML(modalityDict)]];
+    let modalityController = '[[ = XML(modalityController) ]]';
 
-// submit btn to disable when done
-const btnArr = ['#btnTaskDone','#btnNewMx', '#btnNewAx','#btnNewmHx', '#btnNewsHx', 'input', 'textarea', '#btnNewCoding','#btnNewMxWl','#btnMxRx','#btnGxRx' ];
+    // submit btn to disable when done
+    const btnArr = ['#btnTaskDone', '#btnNewMx', '#btnNewAx', '#btnNewmHx', '#btnNewsHx', 'input', 'textarea', '#btnNewCoding', '#btnNewMxWl', '#btnMxRx', '#btnGxRx'];
 
 </script>
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
 <!-- https://bootstrap-autocomplete.readthedocs.io/en/latest/ -->
-<script src="js/bootstrap-autocomplete.min.js"></script> 
+<script src="js/bootstrap-autocomplete.min.js"></script>
 <script src="js/timer.jquery.min.js"></script>
 <script src="js/useful.js"></script>
 <script src="js/patient-bar.js"></script>
@@ -1478,118 +1562,118 @@ const btnArr = ['#btnTaskDone','#btnNewMx', '#btnNewAx','#btnNewmHx', '#btnNewsH
 <script src="js/tinymce/jquery.tinymce.min.js"></script>
 <script type="text/javascript">
 
-// 
-// const API_GP = HOSTURL + "/"+APP_NAME+"/api/gp?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
+    // 
+    // const API_GP = HOSTURL + "/"+APP_NAME+"/api/gp?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq="+wlId;
 
-var logo64 ='data:image/jpg;base64,'+'[[=XML(logo64)]]';
+    var logo64 = 'data:image/jpg;base64,' + '[[=XML(logo64)]]';
 
-// todo: to implement
-// add keywd parameter & keyoptions eg 'frequency&keyoptions.contains=...' for autocomplete
-const API_AUTODICT = HOSTURL + "/"+APP_NAME+"/api/auto_dict?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&keywd.eq=";
+    // todo: to implement
+    // add keywd parameter & keyoptions eg 'frequency&keyoptions.contains=...' for autocomplete
+    const API_AUTODICT = HOSTURL + "/" + APP_NAME + "/api/auto_dict?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&keywd.eq=";
 
-// API_MEDICATION lists medications for autocomplete
-const API_MEDICATIONS = HOSTURL + "/"+APP_NAME+"/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-// API_AGENT lists agents for autocomplete
-const API_AGENTS = HOSTURL + "/"+APP_NAME+"/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-// API_DISEASES lists diseases for autocomplete
-const API_DISEASES = HOSTURL + "/"+APP_NAME+"/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+    // API_MEDICATION lists medications for autocomplete
+    const API_MEDICATIONS = HOSTURL + "/" + APP_NAME + "/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+    // API_AGENT lists agents for autocomplete
+    const API_AGENTS = HOSTURL + "/" + APP_NAME + "/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+    // API_DISEASES lists diseases for autocomplete
+    const API_DISEASES = HOSTURL + "/" + APP_NAME + "/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
-// table listing ALL medications taken by user
-const API_MXUSER = HOSTURL + "/"+APP_NAME+"/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-var $mx_tbl = $('#mx_tbl').bootstrapTable({
-    url: API_MXUSER
-});
+    // table listing ALL medications taken by user
+    const API_MXUSER = HOSTURL + "/" + APP_NAME + "/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+    var $mx_tbl = $('#mx_tbl').bootstrapTable({
+        url: API_MXUSER
+    });
 
-// table listing ALL allergy to agents by user
-const API_AXUSER = HOSTURL + "/"+APP_NAME+"/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-var $ax_tbl = $('#ax_tbl').bootstrapTable({
-    url: API_AXUSER
-});
+    // table listing ALL allergy to agents by user
+    const API_AXUSER = HOSTURL + "/" + APP_NAME + "/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+    var $ax_tbl = $('#ax_tbl').bootstrapTable({
+        url: API_AXUSER
+    });
 
-// table listing medical history by user
-const API_MHXUSER = HOSTURL + "/"+APP_NAME+"/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-var $mHx_tbl = $('#mHx_tbl').bootstrapTable({
-    url: API_MHXUSER
-});
+    // table listing medical history by user
+    const API_MHXUSER = HOSTURL + "/" + APP_NAME + "/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+    var $mHx_tbl = $('#mHx_tbl').bootstrapTable({
+        url: API_MHXUSER
+    });
 
-// table listing surgical history by user
-const API_SHXUSER = HOSTURL + "/"+APP_NAME+"/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
-    url: API_SHXUSER
-});
+    // table listing surgical history by user
+    const API_SHXUSER = HOSTURL + "/" + APP_NAME + "/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+    var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
+        url: API_SHXUSER
+    });
 
-// table listing ocular history by user
-const API_OHXUSER = HOSTURL + "/"+APP_NAME+"/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
-    url: API_OHXUSER
-});
+    // table listing ocular history by user
+    const API_OHXUSER = HOSTURL + "/" + APP_NAME + "/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+    var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
+        url: API_OHXUSER
+    });
 
-// table listing procedure worklist for user
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&id_auth_user.id.eq='+patientId+'&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
-$table_wl = $('#table-wl').bootstrapTable({
-    url: API_PROCEDURE_LIST,
-    formatSearch: function () {
-    return 'Procedure, modality';
-    }
-});
+    // table listing procedure worklist for user
+    const API_PROCEDURE_LIST = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&id_auth_user.id.eq=' + patientId + '&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
+    $table_wl = $('#table-wl').bootstrapTable({
+        url: API_PROCEDURE_LIST,
+        formatSearch: function () {
+            return 'Procedure, modality';
+        }
+    });
 
-// API url to get soap
-const API_SOAP = HOSTURL + "/"+APP_NAME+"/api/soap?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
-
-
-// table listing code encoded for worklist to user
-const API_CODING = HOSTURL + "/"+APP_NAME+"/api/phistory?id_worklist.eq="+wlId+"&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq="+ patientId;
-var $coding = $('#coding_tbl').bootstrapTable({
-    url: API_CODING
-});
-
-// table listing medication encoded for current worklist 
-const API_MXWLUSER = HOSTURL + "/"+APP_NAME+"/api/mx?id_worklist.eq="+wlId+"&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq="+patientId;
-var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
-    url: API_MXWLUSER
-});
-
-// table listing medication encoded for current worklist 
-const API_MXRX = HOSTURL + "/"+APP_NAME+"/api/medical_rx_list?id_worklist.eq="+wlId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
-    url: API_MXRX
-});
-
-// table listing certificates for user
-const API_CERT = HOSTURL + "/"+APP_NAME+"/api/certificates?id_auth_user.eq="+patientId+"&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-var $cert_tbl = $('#cert_tbl').bootstrapTable({
-    url: API_CERT
-});
-
-// tables list
-const tablesArr = ['#mx_tbl','#ax_tbl','#mHx_tbl','#sHx_tbl', '#oHx_tbl', '#table-wl',
-    '#coding_tbl', '#mxWl_tbl',
-    '#mxrx_tbl', '#cert_tbl'];
-
-// init tinymce
-tinymce.init({
-    selector: '#certificateContent',
-    height: '500px',
-    plugins: 'save print code link table'
-});
-
-$( document ).ready(function() {
-    if (document.referrer.includes('modalityCtr/autorx')) {
-        refreshTables(['#rxRight_tbl','#rxLeft_tbl']);
-        console.log('rx tables should be refreshed');
-    };
-    if (document.referrer.includes('modalityCtr/tono')) {
-        refreshTables(['#tonoRight_tbl','#tonoLeft_tbl']);
-        console.log('tono tables should be refreshed');
-    };
-});
+    // API url to get soap
+    const API_SOAP = HOSTURL + "/" + APP_NAME + "/api/soap?id_auth_user.eq=" + patientId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq=" + wlId;
 
 
-if (window.performance.getEntriesByType('navigation')[0].type == 'back_forward' || window.performance.getEntriesByType('navigation')[0].type == 'prerender') {
-        console.log('tables:',tablesArr);
+    // table listing code encoded for worklist to user
+    const API_CODING = HOSTURL + "/" + APP_NAME + "/api/phistory?id_worklist.eq=" + wlId + "&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+    var $coding = $('#coding_tbl').bootstrapTable({
+        url: API_CODING
+    });
+
+    // table listing medication encoded for current worklist 
+    const API_MXWLUSER = HOSTURL + "/" + APP_NAME + "/api/mx?id_worklist.eq=" + wlId + "&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+    var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
+        url: API_MXWLUSER
+    });
+
+    // table listing medication encoded for current worklist 
+    const API_MXRX = HOSTURL + "/" + APP_NAME + "/api/medical_rx_list?id_worklist.eq=" + wlId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+    var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
+        url: API_MXRX
+    });
+
+    // table listing certificates for user
+    const API_CERT = HOSTURL + "/" + APP_NAME + "/api/certificates?id_auth_user.eq=" + patientId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+    var $cert_tbl = $('#cert_tbl').bootstrapTable({
+        url: API_CERT
+    });
+
+    // tables list
+    const tablesArr = ['#mx_tbl', '#ax_tbl', '#mHx_tbl', '#sHx_tbl', '#oHx_tbl', '#table-wl',
+        '#coding_tbl', '#mxWl_tbl',
+        '#mxrx_tbl', '#cert_tbl'];
+
+    // init tinymce
+    tinymce.init({
+        selector: '#certificateContent',
+        height: '500px',
+        plugins: 'save code link table'
+    });
+
+    $(document).ready(function () {
+        if (document.referrer.includes('modalityCtr/autorx')) {
+            refreshTables(['#rxRight_tbl', '#rxLeft_tbl']);
+            console.log('rx tables should be refreshed');
+        };
+        if (document.referrer.includes('modalityCtr/tono')) {
+            refreshTables(['#tonoRight_tbl', '#tonoLeft_tbl']);
+            console.log('tono tables should be refreshed');
+        };
+    });
+
+
+    if (window.performance.getEntriesByType('navigation')[0].type == 'back_forward' || window.performance.getEntriesByType('navigation')[0].type == 'prerender') {
+        console.log('tables:', tablesArr);
         refreshTables(tablesArr);
         console.log(' all tables should be refreshed');
-};
+    };
 
 </script>
 <script src="js/gp.js"></script>
