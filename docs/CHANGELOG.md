@@ -4,6 +4,67 @@
 
 ### Fixed
 
+- 2025-03-30T18:33:43: Fixed notification system in certificates module
+  - Implemented custom `notifyUser()` function to handle cases where $.notify is not available
+  - Added fallback mechanisms using Bootstrap Toast or simple alerts
+  - Replaced all $.notify calls with the new robust notification system
+  - Fixed "TypeError: $.notify is not a function" error by gracefully degrading to available notification methods
+  - Compatible with PDFMake v0.2.18 update
+
+- 2025-03-30T18:10:39: Implemented simplified PDF generation method for certificates
+  - Replaced complex PDF generation code with more reliable approach
+  - Used consistent variable naming with `pdfDocGenerator` instead of `pdf`
+  - Added proper error handling for printing function
+  - Fixed the stuck modal issue during PDF generation
+  - Streamlined base64 conversion process
+
+- 2025-03-30T17:59:08: Fixed client-side PDF generation stalling issue
+  - Added robust error handling around all $.notify function calls to prevent uncaught exceptions
+  - Implemented alert() fallbacks when notification system fails
+  - Ensured modal always closes even when notifications fail
+  - Fixed "Uncaught TypeError: $.notify is not a function" error that was causing the PDF generation process to stall
+
+- 2025-03-30T17:56:47: Fixed base64 import issue in certificate email functionality
+  - Added explicit import for binascii module in rest.py
+  - Fixed exception handling for base64 decoding errors
+  - Modified email attachment processing to properly catch decoding errors
+  - Ensures proper error reporting for invalid base64 data in attachments
+
+- 2025-03-30T17:48:31: Enhanced certificate email reliability and error handling
+  - Improved PDF generation process with robust error handling:
+    - Added try/catch blocks around PDF creation and base64 conversion
+    - Implemented safety timeout to prevent infinite modal waiting
+    - Added file size validation to prevent oversized attachments
+  - Enhanced API endpoint `/api/email/send_with_attachment` with:
+    - Better input validation for email addresses and attachment data
+    - Comprehensive error handling for base64 decoding
+    - Specific SMTP error reporting
+    - Detailed server-side logging with stack traces
+    - Size limits to prevent excessive memory usage
+  - Improved user feedback with specific error messages for different failure points
+
+- 2025-03-30T17:42:43: Fixed email sending in certificates module
+  - Identified and fixed the root cause of why certificate emails weren't being sent
+  - Modified `static/js/certificates.js` to fix asynchronous execution flow problems:
+    - Moved modal closing into appropriate callback locations to prevent premature closing
+    - Made certificate database save and email sending sequential
+    - Ensured modal only closes after operations are complete
+  - Added patient email validation to prevent attempts to send to invalid addresses
+  - Added more detailed client-side error handling for PDF generation and email sending
+  - Improved user feedback with more specific error notifications
+  - Fixed email data formatting and content structure
+
+- 2025-03-30T17:35:48: Added comprehensive logging for email functionality
+  - Enhanced `static/js/certificates.js` with detailed client-side logging for email operations
+  - Added logging to certificate email submission process to track form data and API responses
+  - Enhanced regular email information form with diagnostic logging
+  - Added server-side logging in `rest.py` for both email endpoints:
+    - `api/email/send` - Regular email sending
+    - `api/email/send_with_attachment` - PDF attachment email sending
+  - All logs capture key data points (recipients, content lengths, attachment details)
+  - Improved error logging to help diagnose email delivery issues
+  - These logs will help identify why certificate emails aren't sending while regular emails work
+
 - 2025-03-30T11:20:34: Fixed timeoffset calculation in settings-example.py
   - Modified `get_timeoffset()` function to properly handle timezone conversions
   - Added explicit check for None values before calling total_seconds() on utc_offset

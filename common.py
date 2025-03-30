@@ -2,25 +2,33 @@
 This file defines cache, session, and translator T object for the app
 These are fixtures that every app needs so probably you will not be editing this file
 """
+
+import logging
 import os
 import sys
-import logging
-from py4web import Session, Cache, Translator, Flash, DAL, Field, action
-from py4web.utils.mailer import Mailer
-from py4web.utils.auth import Auth
-from py4web.utils.downloader import downloader
-from pydal.tools.tags import Tags
-from py4web.utils.factories import ActionFactory
-from . import settings
-
-from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4 # added import Field Form and FormStyleBulma to get form working
 import uuid
 
+from py4web import DAL, Cache, Field, Flash, Session, Translator, action
+from py4web.utils.auth import Auth
+from py4web.utils.downloader import downloader
+from py4web.utils.factories import ActionFactory
+from py4web.utils.form import (  # added import Field Form and FormStyleBulma to get form working
+    Form,
+    FormStyleBootstrap4,
+    FormStyleBulma,
+)
+from py4web.utils.mailer import Mailer
+from pydal.tools.tags import Tags
+
+from . import settings
+
 # from py4web.utils.factories import Inject
+
 
 def str_uuid():
     unique_id = str(uuid.uuid4().hex)
     return unique_id
+
 
 # #######################################################
 # implement custom loggers form settings.LOGGERS
@@ -48,16 +56,16 @@ db = DAL(
     pool_size=settings.DB_POOL_SIZE,
     migrate=settings.DB_MIGRATE,
     fake_migrate=settings.DB_FAKE_MIGRATE,
-    ignore_field_case=False, # added for postgres
-    entity_quoting = True
+    ignore_field_case=False,  # added for postgres
+    entity_quoting=True,
 )
 
-""" dbo = DAL(
+dbo = DAL(
     settings.DB_OCTOPUS,
     folder=settings.DBO_FOLDER,
     pool_size=settings.DB_POOL_SIZE,
-    migrate_enabled=False
-) """
+    migrate_enabled=False,
+)
 
 # #######################################################
 # define global objects that may or may not be used by the actions
@@ -77,14 +85,14 @@ elif settings.SESSION_TYPE == "redis":
     host, port = settings.REDIS_SERVER.split(":")
     # for more options: https://github.com/andymccurdy/redis-py/blob/master/redis/client.py
     conn = redis.Redis(host=host, port=int(port))
-    conn.set = (
-        lambda k, v, e, cs=conn.set, ct=conn.ttl: cs(k, v, ct(k))
-        if ct(k) >= 0
-        else cs(k, v, e)
+    conn.set = lambda k, v, e, cs=conn.set, ct=conn.ttl: (
+        cs(k, v, ct(k)) if ct(k) >= 0 else cs(k, v, e)
     )
     session = Session(secret=settings.SESSION_SECRET_KEY, storage=conn)
 elif settings.SESSION_TYPE == "memcache":
-    import memcache, time
+    import time
+
+    import memcache
 
     conn = memcache.Client(settings.MEMCACHE_CLIENTS, debug=0)
     session = Session(secret=settings.SESSION_SECRET_KEY, storage=conn)
@@ -97,43 +105,44 @@ elif settings.SESSION_TYPE == "database":
 # Instantiate the object and actions that handle auth
 # #######################################################
 
-db.define_table('gender',
-    Field('sex','string'),
-    format='%(sex)s')
+db.define_table("gender", Field("sex", "string"), format="%(sex)s")
 
-db.define_table('ethny',
-    Field('ethny','string'), format='%(ethny)s')
+db.define_table("ethny", Field("ethny", "string"), format="%(ethny)s")
 
-db.define_table('marital',
-    Field('marital_status'), format='%(marital_status)s')
+db.define_table("marital", Field("marital_status"), format="%(marital_status)s")
 
-db.define_table('membership',
-    Field('membership','string'),
-    Field('hierarchy','integer'), format='%(membership)s')
+db.define_table(
+    "membership",
+    Field("membership", "string"),
+    Field("hierarchy", "integer"),
+    format="%(membership)s",
+)
 
 auth = Auth(session, db, define_tables=False)
-more_auth_fields = [    Field('uid', 'string', default=str_uuid()),
-                        Field('membership', 'reference membership'),
-                        Field('maiden_name','string', label='Maiden name'),
-                        Field('dob','date', label='Date of birth'),
-                        Field('birth_town', 'string', label='Town of birth'),
-                        Field('birth_country', 'string', label='Country of birth'),
-                        Field('gender', 'reference gender', label='Gender'),
-                        Field('marital', 'reference marital', label='Marital status'),
-                        Field('ethny', 'reference ethny', label='Ethny'),
-                        Field('idc_num', 'string', label='ID card number'),
-                        Field('ssn', 'string', label='SSN'),
-                        Field('user_notes', 'string', label ='User notes'),
-                        Field('chipnumber', 'string', label ='Chipnumber'),
-                        Field('validfrom', 'date', label ='ID valid from'),
-                        Field('validtill', 'date', label ='ID valid til'),
-                        Field('initials', 'string', label ='ID initials'),
-                        Field('nationality', 'string', label ='Nationality'),
-                        Field('noblecondition', 'string', label ='ID noble condition'),
-                        Field('documenttype', 'integer', label ='ID doctype'),
-                        Field('specialstatus', 'integer', label ='ID specialstatus'),
-                        Field('photob64', 'blob', label ='photo ID'),
-                        auth.signature]
+more_auth_fields = [
+    Field("uid", "string", default=str_uuid()),
+    Field("membership", "reference membership"),
+    Field("maiden_name", "string", label="Maiden name"),
+    Field("dob", "date", label="Date of birth"),
+    Field("birth_town", "string", label="Town of birth"),
+    Field("birth_country", "string", label="Country of birth"),
+    Field("gender", "reference gender", label="Gender"),
+    Field("marital", "reference marital", label="Marital status"),
+    Field("ethny", "reference ethny", label="Ethny"),
+    Field("idc_num", "string", label="ID card number"),
+    Field("ssn", "string", label="SSN"),
+    Field("user_notes", "string", label="User notes"),
+    Field("chipnumber", "string", label="Chipnumber"),
+    Field("validfrom", "date", label="ID valid from"),
+    Field("validtill", "date", label="ID valid til"),
+    Field("initials", "string", label="ID initials"),
+    Field("nationality", "string", label="Nationality"),
+    Field("noblecondition", "string", label="ID noble condition"),
+    Field("documenttype", "integer", label="ID doctype"),
+    Field("specialstatus", "integer", label="ID specialstatus"),
+    Field("photob64", "blob", label="photo ID"),
+    auth.signature,
+]
 auth.extra_auth_user_fields = more_auth_fields
 
 auth.use_username = True
@@ -214,10 +223,12 @@ if settings.OAUTH2OKTA_CLIENT_ID:
 # files uploaded and reference by Field(type='upload')
 # #######################################################
 if settings.UPLOAD_FOLDER:
-    @action('download/<filename>')                                                   
-    @action.uses(db)                                                                                           
+
+    @action("download/<filename>")
+    @action.uses(db)
     def download(filename):
-        return downloader(db, settings.UPLOAD_FOLDER, filename) 
+        return downloader(db, settings.UPLOAD_FOLDER, filename)
+
     # To take advantage of this in Form(s)
     # for every field of type upload you MUST specify:
     #

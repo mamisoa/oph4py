@@ -2,6 +2,66 @@
 // certificateObj contains id and options items
 // CxRxGlobalObj merges CxRxRight and left
 
+// Custom notification function as fallback when $.notify isn't available
+function notifyUser(message, type) {
+	// Check if $.notify is available
+	if (typeof $.notify === "function") {
+		try {
+			$.notify(
+				{
+					message: message,
+				},
+				{
+					type: type || "info",
+					placement: {
+						from: "bottom",
+						align: "right",
+					},
+				}
+			);
+			return;
+		} catch (e) {
+			console.error("Error using $.notify:", e);
+		}
+	}
+
+	// Fallback to a simple alert or toast if available
+	if (
+		typeof bootstrap !== "undefined" &&
+		typeof bootstrap.Toast !== "undefined"
+	) {
+		// Create a Bootstrap toast
+		const toastEl = document.createElement("div");
+		toastEl.className = `toast align-items-center text-white bg-${
+			type || "primary"
+		} border-0`;
+		toastEl.setAttribute("role", "alert");
+		toastEl.setAttribute("aria-live", "assertive");
+		toastEl.setAttribute("aria-atomic", "true");
+
+		toastEl.innerHTML = `
+			<div class="d-flex">
+				<div class="toast-body">
+					${message}
+				</div>
+				<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+			</div>
+		`;
+
+		document.body.appendChild(toastEl);
+		const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+		toast.show();
+
+		// Remove from DOM after hiding
+		toastEl.addEventListener("hidden.bs.toast", function () {
+			document.body.removeChild(toastEl);
+		});
+	} else {
+		// Last resort: alert
+		alert(message);
+	}
+}
+
 var certificateObj = {};
 
 certificateObj["doctorfirst"] = userObj["first_name"];
@@ -619,6 +679,7 @@ $("#certificateFormModal").submit(function (e) {
 	e.preventDefault();
 	let formStr = $(this).serializeJSON();
 	let formObj = JSON.parse(formStr);
+	console.log("Certificate form data:", formObj); // Log form data including actionType
 	let certContent = tinyMCE.get("certificateContent").getContent();
 	console.log("content:", certContent);
 	let fromTinyMce = htmlToPdfmake(certContent);
@@ -886,89 +947,247 @@ $("#certificateFormModal").submit(function (e) {
 			finalDbObj["category"] = formObj["category"];
 			finalDbObj["pdf_report"] = JSON.stringify(finalPresc);
 			let finalDbStr = JSON.stringify(finalDbObj);
-			// console.log('finalDbObj:',finalDbObj);
-			crudp("certificates", "0", "POST", finalDbStr).then((data) =>
-				$cert_tbl.bootstrapTable("refresh")
-			);
+			console.log("finalDbObj:", finalDbObj);
 
-			// Check if user wants to print or email the certificate
-			let actionType = formObj["actionType"] || "print"; // Default to print if not specified
+			// Save certificate to database first
+			crudp("certificates", "0", "POST", finalDbStr)
+				.then((data) => {
+					console.log("Certificate saved to database:", data);
+					$cert_tbl.bootstrapTable("refresh");
 
-			if (actionType === "print") {
-				// Print the certificate (existing functionality)
-				let pdf = pdfMake.createPdf(finalPresc);
-				pdf.print();
-			} else if (actionType === "email") {
-				// Email the certificate as PDF attachment
-				let pdf = pdfMake.createPdf(finalPresc);
+					// Check if user wants to print or email the certificate
+					let actionType = formObj["actionType"] || "print"; // Default to print if not specified
+					console.log("Selected action type:", actionType); // Log selected action
+					console.log("Patient email:", patientObj["email"]); // Log patient email
 
-				// Get PDF as base64 string
-				pdf.getBase64((base64Data) => {
-					// Send the email with PDF attachment
-					fetch(HOSTURL + "/" + APP_NAME + "/api/email/send_with_attachment", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({
-							recipient: patientObj["email"],
-							subject: `${finalRxObj["title"]} - ${patientObj["last_name"]} ${patientObj["first_name"]}`,
-							content: `<p>Veuillez trouver ci-joint votre ${finalRxObj[
-								"title"
-							].toLowerCase()}.</p>
-							<p>Cordialement,</p>
-							<p>Dr. ${userObj["last_name"].toUpperCase()} ${userObj["first_name"]}</p>`,
-							attachmentName: `${finalRxObj["title"].replace(/\s+/g, "_")}_${
-								patientObj["last_name"]
-							}_${patientObj["first_name"]}.pdf`,
-							attachmentData: base64Data,
-							attachmentType: "application/pdf",
-						}),
-					})
-						.then((response) => {
-							if (!response.ok) {
-								throw new Error("Network response was not ok");
+					if (actionType === "print") {
+						// Print the certificate (existing functionality)
+						console.log("Printing certificate...");
+						try {
+							const pdfDocGenerator = pdfMake.createPdf(finalPresc);
+							pdfDocGenerator.print();
+							// Close the modal after printing
+							$("#certificateModal").modal("hide");
+						} catch (printError) {
+							console.error("Error printing PDF:", printError);
+							try {
+								notifyUser(
+									"Erreur lors de l'impression du PDF: " + printError.message,
+									"danger"
+								);
+							} catch (notifyError) {
+								console.error("Error showing notification:", notifyError);
+								alert(
+									"Erreur lors de l'impression du PDF: " + printError.message
+								);
 							}
-							return response.json();
-						})
-						.then((data) => {
-							console.log("Email sent successfully:", data);
-							// Show success notification
-							$.notify(
-								{
-									message: "Email envoyé avec succès",
-								},
-								{
-									type: "success",
-									placement: {
-										from: "bottom",
-										align: "right",
-									},
-								}
-							);
-						})
-						.catch((error) => {
-							console.error("Error sending email:", error);
-							// Show error notification
-							$.notify(
-								{
-									message:
-										"Erreur lors de l'envoi de l'email: " + error.message,
-								},
-								{
-									type: "danger",
-									placement: {
-										from: "bottom",
-										align: "right",
-									},
-								}
-							);
-						});
-				});
-			}
+							// Close modal on error
+							$("#certificateModal").modal("hide");
+						}
+					} else if (actionType === "email") {
+						// Email the certificate as PDF attachment
+						console.log("Preparing certificate for email...");
 
-			// Close the modal
-			$("#certificateModal").modal("hide");
+						// Check if patient has a valid email
+						if (
+							!patientObj["email"] ||
+							patientObj["email"].trim() === "" ||
+							!patientObj["email"].includes("@")
+						) {
+							console.error("Invalid or missing patient email address");
+							notifyUser(
+								"Impossible d'envoyer l'email: adresse email du patient manquante ou invalide",
+								"danger"
+							);
+							// Close modal if email is invalid
+							$("#certificateModal").modal("hide");
+							return;
+						}
+
+						// Set a safety timeout to close the modal if PDF generation takes too long
+						const safetyTimeout = setTimeout(() => {
+							console.error("PDF generation timeout - taking too long");
+							try {
+								notifyUser(
+									"Le traitement du PDF prend trop de temps, veuillez réessayer",
+									"warning"
+								);
+							} catch (notifyError) {
+								console.error("Error showing notification:", notifyError);
+								alert(
+									"Le traitement du PDF prend trop de temps, veuillez réessayer"
+								);
+							}
+							$("#certificateModal").modal("hide");
+						}, 15000); // 15 second timeout
+
+						try {
+							console.log("Creating PDF...");
+							const pdfDocGenerator = pdfMake.createPdf(finalPresc);
+
+							// Get PDF as base64 string
+							console.log("Converting PDF to base64...");
+							pdfDocGenerator.getBase64((base64Data) => {
+								console.log("base64Data: " + base64Data);
+								// Clear the safety timeout since we got the data
+								clearTimeout(safetyTimeout);
+
+								try {
+									console.log(
+										"PDF converted to base64, length:",
+										base64Data ? base64Data.length : "NULL"
+									);
+
+									if (!base64Data) {
+										throw new Error("PDF conversion failed - no data returned");
+									}
+
+									// Validate base64 data isn't too large (max ~5MB)
+									if (base64Data.length > 5000000) {
+										throw new Error(
+											"PDF trop volumineux pour l'envoi par email"
+										);
+									}
+
+									// Prepare email data
+									const emailData = {
+										recipient: patientObj["email"],
+										subject: `${finalRxObj["title"]} - ${patientObj["last_name"]} ${patientObj["first_name"]}`,
+										content: `<p>Veuillez trouver ci-joint votre ${finalRxObj[
+											"title"
+										].toLowerCase()}.</p>
+									<p>Cordialement,</p>
+									<p>Dr. ${userObj["last_name"].toUpperCase()} ${userObj["first_name"]}</p>`,
+										attachmentName: `${finalRxObj["title"].replace(
+											/\s+/g,
+											"_"
+										)}_${patientObj["last_name"]}_${
+											patientObj["first_name"]
+										}.pdf`,
+										attachmentData: base64Data,
+										attachmentType: "application/pdf",
+									};
+									console.log("Email data prepared:", {
+										recipient: emailData.recipient,
+										subject: emailData.subject,
+										attachmentName: emailData.attachmentName,
+										contentLength: emailData.content.length,
+										attachmentDataLength: emailData.attachmentData.length,
+									});
+
+									// Send the email with PDF attachment
+									console.log(
+										"Sending email to API:",
+										HOSTURL + "/" + APP_NAME + "/api/email/send_with_attachment"
+									);
+
+									// Direct fetch call with full error handling
+									fetch(
+										HOSTURL +
+											"/" +
+											APP_NAME +
+											"/api/email/send_with_attachment",
+										{
+											method: "POST",
+											headers: {
+												"Content-Type": "application/json",
+											},
+											body: JSON.stringify(emailData),
+										}
+									)
+										.then((response) => {
+											console.log(
+												"Email API response status:",
+												response.status
+											);
+											if (!response.ok) {
+												throw new Error(
+													`Network response error: ${response.status} ${response.statusText}`
+												);
+											}
+											return response.json();
+										})
+										.then((data) => {
+											console.log(
+												"Email sent successfully, API response:",
+												data
+											);
+											// Show success notification
+											try {
+												notifyUser("Email envoyé avec succès", "success");
+											} catch (notifyError) {
+												console.error(
+													"Error showing notification:",
+													notifyError
+												);
+												alert("Email envoyé avec succès");
+											}
+											// Close the modal only after email is sent successfully
+											$("#certificateModal").modal("hide");
+										})
+										.catch((error) => {
+											console.error("Error sending email:", error);
+											// Show error notification
+											try {
+												notifyUser(
+													"Erreur lors de l'envoi de l'email: " + error.message,
+													"danger"
+												);
+											} catch (notifyError) {
+												console.error(
+													"Error showing notification:",
+													notifyError
+												);
+												alert(
+													"Erreur lors de l'envoi de l'email: " + error.message
+												);
+											}
+											// Still close the modal even if email fails
+											$("#certificateModal").modal("hide");
+										});
+								} catch (innerError) {
+									// Handle errors in base64 data processing
+									console.error("Error processing PDF data:", innerError);
+									try {
+										notifyUser(
+											"Erreur lors de la préparation du PDF: " +
+												innerError.message,
+											"danger"
+										);
+									} catch (notifyError) {
+										console.error("Error showing notification:", notifyError);
+										alert(
+											"Erreur lors de la préparation du PDF: " +
+												innerError.message
+										);
+									}
+									// Close modal on error
+									$("#certificateModal").modal("hide");
+								}
+							});
+						} catch (pdfError) {
+							// Handle errors in PDF creation
+							clearTimeout(safetyTimeout);
+							console.error("Error creating PDF:", pdfError);
+							try {
+								notifyUser(
+									"Erreur lors de la création du PDF: " + pdfError.message,
+									"danger"
+								);
+							} catch (notifyError) {
+								console.error("Error showing notification:", notifyError);
+								alert("Erreur lors de la création du PDF: " + pdfError.message);
+							}
+							// Close modal on error
+							$("#certificateModal").modal("hide");
+						}
+					}
+				})
+				.catch((error) => {
+					console.error("Error saving certificate:", error);
+					// Close modal on error
+					$("#certificateModal").modal("hide");
+				});
 		});
 });
 
@@ -1037,8 +1256,15 @@ emailInfoModal.addEventListener("show.bs.modal", function (event) {
 $("#emailInfoFormModal").submit(function (e) {
 	let formStr = $(this).serializeJSON();
 	let formObj = JSON.parse(formStr);
+	console.log("Email info form data:", formObj); // Log form data
 	e.preventDefault();
 	let emailContent = tinyMCE.get("emailContent").getContent();
+	console.log("Email content length:", emailContent.length); // Log content length
+
+	console.log(
+		"Sending regular email to API:",
+		HOSTURL + "/" + APP_NAME + "/api/email/send"
+	);
 	fetch(HOSTURL + "/" + APP_NAME + "/api/email/send", {
 		method: "POST",
 		headers: {
@@ -1050,6 +1276,7 @@ $("#emailInfoFormModal").submit(function (e) {
 		}),
 	})
 		.then((response) => {
+			console.log("Regular email API response status:", response.status);
 			let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0, 10);
 			$("#emailInfoModal").modal("hide");
 			let finalDbObj = {};
@@ -1062,15 +1289,19 @@ $("#emailInfoFormModal").submit(function (e) {
 			finalDbObj["category"] = formObj["category"];
 			finalDbObj["pdf_report"] = JSON.stringify(response);
 			let finalDbStr = JSON.stringify(finalDbObj);
-			console.log("finalDbObj:", finalDbObj);
-			crudp("certificates", "0", "POST", finalDbStr).then((data) =>
-				$cert_tbl.bootstrapTable("refresh")
-			);
+			console.log("finalDbObj for regular email:", finalDbObj);
+			crudp("certificates", "0", "POST", finalDbStr).then((data) => {
+				console.log("Certificate record created for regular email");
+				$cert_tbl.bootstrapTable("refresh");
+			});
 			return response.json();
 		})
+		.then((data) => {
+			console.log("Regular email API response data:", data);
+		})
 		.catch((error) => {
-			console.log(
-				"There was a problem with the fetch operation:",
+			console.error(
+				"There was a problem with the regular email fetch operation:",
 				error.message
 			);
 		});

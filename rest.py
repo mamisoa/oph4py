@@ -1,6 +1,10 @@
 # restAPI controllers
 
+import base64
+import binascii
 import json
+import smtplib
+import traceback
 
 from py4web import (  # add response to throw http error 400
     URL,
@@ -341,78 +345,105 @@ def send_email():
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
 
-    payload = request.json
-    sender_name, sender_quality = "Mamisoa Andriantafika", "MD, FEBO"
-    title, content = "Informations | Centre Médical Bruxelles-Schuman", "content"
-    username, password = SMTP_LOGIN.split("::")
-    smtp_server, port = SMTP_SERVER.split(":")
-    company_logo = COMPANY_LOGO
-
-    if "recipient" not in payload:
-        return json.dumps('{ "status": "error", "message": "No recipient"}')
-
-    for key in request.json:
-        if key == "recipient":
-            recipient = payload["recipient"]
-        if key == "title":
-            title = payload["title"]
-        if key == "content":
-            content = payload["content"]
-        if key == "sender_name":
-            sender_name = payload["sender_name"]
-
-    # HTML template
-    html_template = f"""
-        <html>
-            <body>
-                <div>{content}</div>
-                <br>
-                <p>Cordialement,<br>Vriendelijke groeten,<br>Best regards,</p>
-                <table>
-                    <tr>
-                        <td><img src="{company_logo}" alt="Company Logo" style="max-width: 100px;"></td>
-                        <td>
-                            <p>{sender_name}<br>{sender_quality}</p>
-                        </td>
-                    </tr>
-                </table>
-                <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
-                <p style="font-size: 0.8em; color: #666;">
-                    The contents of this e-mail are intended for the named addressee only. It contains information which may be confidential and which may also be privileged. Any non-conform use, dissemination or disclosure of this message is prohibited. If you received it in error, please notify us immediately and then destroy it.
-                </p>
-            </body>
-        </html>
-        """
-
-    # Create the MIMEText object
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = title
-    msg["From"] = username
-    msg["To"] = recipient
-
-    # Attach the HTML content to the email
-    msg.attach(MIMEText(html_template, "html"))
+    logger.info("Regular email API called")
 
     try:
-        # Send the email
-        with smtplib.SMTP(smtp_server, port) as server:
-            server.starttls()  # Secure the connection using TLS
-            server.login(username, password)
-            server.sendmail(username, recipient, msg.as_string())
+        payload = request.json
+        logger.info(f"Regular email request received with keys: {list(payload.keys())}")
 
-        # If the email is sent successfully, return a success response
-        response = {
-            "status": "success",
-            "message": "Email sent successfully.",
-            "title": title,
-            "content": content,
-            "recipient": recipient,
-        }
+        sender_name, sender_quality = "Mamisoa Andriantafika", "MD, FEBO"
+        title, content = "Informations | Centre Médical Bruxelles-Schuman", "content"
+        username, password = SMTP_LOGIN.split("::")
+        smtp_server, port_str = SMTP_SERVER.split(":")
+        port = int(port_str)  # Convert port to integer
+        company_logo = COMPANY_LOGO
+
+        if "recipient" not in payload:
+            logger.error("No recipient in regular email request")
+            return json.dumps('{ "status": "error", "message": "No recipient"}')
+
+        for key in request.json:
+            if key == "recipient":
+                recipient = payload["recipient"]
+                logger.info(f"Regular email recipient: {recipient}")
+            if key == "title":
+                title = payload["title"]
+            if key == "content":
+                content = payload["content"]
+                logger.info(
+                    f"Regular email content length: {len(content) if content else 0}"
+                )
+            if key == "sender_name":
+                sender_name = payload["sender_name"]
+
+        # HTML template
+        html_template = f"""
+            <html>
+                <body>
+                    <div>{content}</div>
+                    <br>
+                    <p>Cordialement,<br>Vriendelijke groeten,<br>Best regards,</p>
+                    <table>
+                        <tr>
+                            <td><img src="{company_logo}" alt="Company Logo" style="max-width: 100px;"></td>
+                            <td>
+                                <p>{sender_name}<br>{sender_quality}</p>
+                            </td>
+                        </tr>
+                    </table>
+                    <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
+                    <p style="font-size: 0.8em; color: #666;">
+                        The contents of this e-mail are intended for the named addressee only. It contains information which may be confidential and which may also be privileged. Any non-conform use, dissemination or disclosure of this message is prohibited. If you received it in error, please notify us immediately and then destroy it.
+                    </p>
+                </body>
+            </html>
+            """
+
+        # Create the MIMEText object
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = title
+        msg["From"] = username
+        msg["To"] = recipient
+        logger.info(
+            f"Regular email prepared: From={username}, To={recipient}, Subject={title}"
+        )
+
+        # Attach the HTML content to the email
+        msg.attach(MIMEText(html_template, "html"))
+        logger.info("HTML content attached to regular email")
+
+        try:
+            # Send the email
+            logger.info(
+                f"Connecting to SMTP server for regular email: {smtp_server}:{port}"
+            )
+            with smtplib.SMTP(smtp_server, port) as server:
+                logger.info("Starting TLS for regular email")
+                server.starttls()  # Secure the connection using TLS
+                logger.info("Logging in to SMTP server for regular email")
+                server.login(username, password)
+                logger.info(f"Sending regular email from {username} to {recipient}")
+                server.sendmail(username, recipient, msg.as_string())
+                logger.info("Regular email sent successfully")
+
+            # If the email is sent successfully, return a success response
+            response = {
+                "status": "success",
+                "message": "Email sent successfully.",
+                "title": title,
+                "content": content,
+                "recipient": recipient,
+            }
+        except Exception as e:
+            # If there's an error, return an error response
+            logger.error(f"Error sending regular email: {str(e)}")
+            response = {"status": "error", "message": str(e)}
+
+        return json.dumps(response)
+
     except Exception as e:
-        # If there's an error, return an error response
-        response = {"status": "error", "message": str(e)}
-
-    return json.dumps(response)
+        logger.error(f"Unexpected error in send_email: {str(e)}")
+        return json.dumps({"status": "error", "message": f"Unexpected error: {str(e)}"})
 
 
 @action("api/email/send_with_attachment", method=["POST"])
@@ -431,112 +462,183 @@ def send_email_with_attachment():
     Returns:
     - JSON-formatted response indicating the result of the email sending operation.
     """
-    import base64
     import json
     import smtplib
+    import traceback
     from email.mime.application import MIMEApplication
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
 
-    payload = request.json
-    sender_name, sender_quality = "Mamisoa Andriantafika", "MD, FEBO"
-    subject = "Document | Centre Médical Bruxelles-Schuman"
-    content = "Veuillez trouver ci-joint votre document."
-    username, password = SMTP_LOGIN.split("::")
-    smtp_server, port_str = SMTP_SERVER.split(":")
-    port = int(port_str)  # Convert port to integer
-    company_logo = COMPANY_LOGO
-
-    if "recipient" not in payload:
-        return json.dumps('{ "status": "error", "message": "No recipient"}')
-
-    # Extract parameters from payload
-    recipient = payload["recipient"]
-    if "subject" in payload:
-        subject = payload["subject"]
-    if "content" in payload:
-        content = payload["content"]
-    if "sender_name" in payload:
-        sender_name = payload["sender_name"]
-
-    # Check for required attachment data
-    if "attachmentData" not in payload or "attachmentName" not in payload:
-        return json.dumps(
-            '{ "status": "error", "message": "Missing attachment data or name"}'
-        )
-
-    attachment_data = payload["attachmentData"]
-    attachment_name = payload["attachmentName"]
-    attachment_type = payload.get("attachmentType", "application/pdf")
-
-    # HTML template
-    html_template = f"""
-        <html>
-            <body>
-                <div>{content}</div>
-                <br>
-                <p>Cordialement,<br>Vriendelijke groeten,<br>Best regards,</p>
-                <table>
-                    <tr>
-                        <td><img src="{company_logo}" alt="Company Logo" style="max-width: 100px;"></td>
-                        <td>
-                            <p>{sender_name}<br>{sender_quality}</p>
-                        </td>
-                    </tr>
-                </table>
-                <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
-                <p style="font-size: 0.8em; color: #666;">
-                    The contents of this e-mail are intended for the named addressee only. It contains information which may be confidential and which may also be privileged. Any non-conform use, dissemination or disclosure of this message is prohibited. If you received it in error, please notify us immediately and then destroy it.
-                </p>
-            </body>
-        </html>
-        """
-
-    # Create the MIMEMultipart object
-    msg = MIMEMultipart()
-    msg["Subject"] = subject
-    msg["From"] = username
-    msg["To"] = recipient
-
-    # Attach the HTML content to the email
-    msg.attach(MIMEText(html_template, "html"))
-
-    # Decode and attach the PDF
-    try:
-        # Remove the data:application/pdf;base64, prefix if present
-        if "," in attachment_data:
-            attachment_data = attachment_data.split(",", 1)[1]
-
-        # Decode the base64 data
-        decoded_attachment = base64.b64decode(attachment_data)
-
-        # Create the attachment part
-        attachment = MIMEApplication(decoded_attachment, _subtype="pdf")
-        attachment.add_header(
-            "Content-Disposition", f"attachment; filename={attachment_name}"
-        )
-        msg.attach(attachment)
-    except Exception as e:
-        return json.dumps(
-            {"status": "error", "message": f"Error processing attachment: {str(e)}"}
-        )
+    logger.info("Email with attachment API called")
 
     try:
-        # Send the email
-        with smtplib.SMTP(smtp_server, port) as server:
-            server.starttls()  # Secure the connection using TLS
-            server.login(username, password)
-            server.sendmail(username, recipient, msg.as_string())
+        # Check if request has JSON payload
+        if not request.json:
+            logger.error("No JSON payload in request")
+            return json.dumps(
+                {"status": "error", "message": "No JSON payload provided"}
+            )
 
-        # If the email is sent successfully, return a success response
-        response = {
-            "status": "success",
-            "message": "Email with attachment sent successfully.",
-            "subject": subject,
-            "recipient": recipient,
-        }
+        payload = request.json
+        logger.info(f"Email request received with keys: {list(payload.keys())}")
+
+        sender_name, sender_quality = "Mamisoa Andriantafika", "MD, FEBO"
+        subject = "Document | Centre Médical Bruxelles-Schuman"
+        content = "Veuillez trouver ci-joint votre document."
+        username, password = SMTP_LOGIN.split("::")
+        smtp_server, port_str = SMTP_SERVER.split(":")
+        port = int(port_str)  # Convert port to integer
+        company_logo = COMPANY_LOGO
+
+        # Validate required parameters
+        if "recipient" not in payload:
+            logger.error("No recipient in email request")
+            return json.dumps({"status": "error", "message": "No recipient provided"})
+
+        # Extract and validate recipient
+        recipient = payload["recipient"]
+        if not recipient or "@" not in recipient:
+            logger.error(f"Invalid email address: {recipient}")
+            return json.dumps({"status": "error", "message": "Invalid email address"})
+
+        logger.info(f"Email recipient: {recipient}")
+
+        # Get optional parameters
+        if "subject" in payload:
+            subject = payload["subject"]
+        if "content" in payload:
+            content = payload["content"]
+        if "sender_name" in payload:
+            sender_name = payload["sender_name"]
+
+        # Check for required attachment data
+        if "attachmentData" not in payload or "attachmentName" not in payload:
+            logger.error("Missing attachment data or name in email request")
+            return json.dumps(
+                {"status": "error", "message": "Missing attachment data or name"}
+            )
+
+        attachment_data = payload["attachmentData"]
+        attachment_name = payload["attachmentName"]
+        attachment_type = payload.get("attachmentType", "application/pdf")
+
+        # Validate attachment data
+        if not attachment_data:
+            logger.error("Empty attachment data")
+            return json.dumps({"status": "error", "message": "Empty attachment data"})
+
+        # Check attachment size (rough estimate)
+        if len(attachment_data) > 10000000:  # ~10MB limit
+            logger.error(f"Attachment too large: {len(attachment_data)} bytes")
+            return json.dumps(
+                {"status": "error", "message": "Attachment too large (max 10MB)"}
+            )
+
+        logger.info(f"Attachment name: {attachment_name}, type: {attachment_type}")
+        logger.info(f"Attachment data length: {len(attachment_data)}")
+
+        # HTML template
+        html_template = f"""
+            <html>
+                <body>
+                    <div>{content}</div>
+                    <br>
+                    <p>Cordialement,<br>Vriendelijke groeten,<br>Best regards,</p>
+                    <table>
+                        <tr>
+                            <td><img src="{company_logo}" alt="Company Logo" style="max-width: 100px;"></td>
+                            <td>
+                                <p>{sender_name}<br>{sender_quality}</p>
+                            </td>
+                        </tr>
+                    </table>
+                    <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
+                    <p style="font-size: 0.8em; color: #666;">
+                        The contents of this e-mail are intended for the named addressee only. It contains information which may be confidential and which may also be privileged. Any non-conform use, dissemination or disclosure of this message is prohibited. If you received it in error, please notify us immediately and then destroy it.
+                    </p>
+                </body>
+            </html>
+            """
+
+        # Create the MIMEMultipart object
+        msg = MIMEMultipart()
+        msg["Subject"] = subject
+        msg["From"] = username
+        msg["To"] = recipient
+
+        # Attach the HTML content to the email
+        msg.attach(MIMEText(html_template, "html"))
+
+        # Decode and attach the PDF
+        try:
+            logger.info("Processing attachment data")
+            # Remove the data:application/pdf;base64, prefix if present
+            if "," in attachment_data:
+                logger.info("Removing base64 prefix")
+                attachment_data = attachment_data.split(",", 1)[1]
+
+            # Decode the base64 data
+            logger.info("Decoding base64 data")
+            try:
+                decoded_attachment = base64.b64decode(attachment_data)
+                logger.info(f"Decoded attachment size: {len(decoded_attachment)} bytes")
+
+                # Validate decoded data (should be at least 100 bytes for a minimal PDF)
+                if len(decoded_attachment) < 100:
+                    raise ValueError("Decoded data too small to be a valid PDF")
+
+                # Create the attachment part
+                logger.info("Creating MIME attachment")
+                attachment = MIMEApplication(decoded_attachment, _subtype="pdf")
+                attachment.add_header(
+                    "Content-Disposition", f"attachment; filename={attachment_name}"
+                )
+                msg.attach(attachment)
+                logger.info("Attachment added to email")
+            except binascii.Error as be:
+                logger.error(f"Base64 decoding error: {str(be)}")
+                return json.dumps(
+                    {"status": "error", "message": f"Invalid base64 data: {str(be)}"}
+                )
+        except Exception as e:
+            logger.error(f"Error processing attachment: {str(e)}")
+            logger.error(traceback.format_exc())
+            return json.dumps(
+                {"status": "error", "message": f"Error processing attachment: {str(e)}"}
+            )
+
+        try:
+            # Send the email
+            logger.info(f"Connecting to SMTP server: {smtp_server}:{port}")
+            with smtplib.SMTP(smtp_server, port) as server:
+                logger.info("Starting TLS")
+                server.starttls()  # Secure the connection using TLS
+                logger.info("Logging in to SMTP server")
+                server.login(username, password)
+                logger.info(f"Sending email from {username} to {recipient}")
+                server.sendmail(username, recipient, msg.as_string())
+                logger.info("Email sent successfully")
+
+            # If the email is sent successfully, return a success response
+            response = {
+                "status": "success",
+                "message": "Email with attachment sent successfully.",
+                "subject": subject,
+                "recipient": recipient,
+            }
+            logger.info("Email with attachment sent successfully")
+        except smtplib.SMTPException as smtp_error:
+            # Handle specific SMTP errors
+            logger.error(f"SMTP error sending email: {str(smtp_error)}")
+            response = {"status": "error", "message": f"SMTP error: {str(smtp_error)}"}
+        except Exception as e:
+            # If there's an error, return an error response
+            logger.error(f"Error sending email: {str(e)}")
+            logger.error(traceback.format_exc())
+            response = {"status": "error", "message": str(e)}
+
+        return json.dumps(response)
     except Exception as e:
-        # If there's an error, return an error response
-        response = {"status": "error", "message": str(e)}
-
-    return json.dumps(response)
+        logger.error(f"Unexpected error in send_email_with_attachment: {str(e)}")
+        logger.error(traceback.format_exc())
+        return json.dumps({"status": "error", "message": f"Unexpected error: {str(e)}"})
