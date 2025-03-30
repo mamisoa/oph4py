@@ -268,6 +268,15 @@
   - Includes security considerations and maintenance guidelines
   - Added comprehensive docstring to summary() function in manage.py
 
+- 2025-03-30T19:24:55.558996: Added email functionality to glasses prescription module
+  - Modified `static/js/glasses.js` to allow sending glasses prescriptions as email attachments
+  - Added "Send by email" button to GxRxModal interface
+  - Implemented check for valid patient email before submission
+  - Added PDF to base64 conversion for email attachment
+  - Implemented better error handling with user notifications
+  - Uses the existing `/api/email/send_with_attachment` endpoint in `rest.py`
+  - Enhanced user experience with clear success/error messages
+
 ## [2025-03-30] - UI and Email Improvements
 - Updated email subject line format to: "{type of document} de {LASTNAME Firstname} | Centre Médical Bruxelles-Schuman"
 - Updated PDF attachment filename format to: "{yymmdd}_{type of document}_{LASTNAME Firstname}_Centre_Médical_Bruxelles-Schuman.pdf"
