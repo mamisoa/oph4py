@@ -305,6 +305,7 @@
   - Enhanced user experience with clear success/error messages
 
 ## [2025-03-30] - UI and Email Improvements
+
 - Updated email subject line format to: "{type of document} de {LASTNAME Firstname} | Centre Médical Bruxelles-Schuman"
 - Updated PDF attachment filename format to: "{yymmdd}_{type of document}_{LASTNAME Firstname}_Centre_Médical_Bruxelles-Schuman.pdf"
 - Updated certificate modal by replacing radio buttons with a dedicated "Send by email" button for a more streamlined user experience
