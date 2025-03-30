@@ -938,7 +938,13 @@ $("#GxRxFormModal").submit(function (e) {
 												},
 											],
 										},
-										{ qr: finalRxObj["qrcode"], fit: 50, alignment: "center" },
+										{ qr: finalRxObj["qrcode"], fit: 45, alignment: "center" },
+										{
+											margin: [0, 1, 0, 0],
+											fontSize: 6,
+											alignment: "center",
+											text: "Signature électronique avancée\nconforme au Règlement (UE) n°910/2014 (eIDAS) \n",
+										}, // TODO: add pki
 									],
 								], // right column end
 							], // end of body
