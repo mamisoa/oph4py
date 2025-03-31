@@ -82,12 +82,15 @@ DB_FOLDER = required_folder(APP_FOLDER, "databases")
 DB_URI = "your_db_connexion"
 DB_POOL_SIZE = 8
 
-DB_MIGRATE = True
-DB_FAKE_MIGRATE = False  # maybe?
-
-# if server is moved
-# DB_MIGRATE = True
-# DB_FAKE_MIGRATE = True
+# DB MIGRATION
+FAKE_MIGRATE = False
+if FAKE_MIGRATE is False:
+    DB_MIGRATE = True
+    DB_FAKE_MIGRATE = False  # maybe?
+else:
+    # if server is moved
+    DB_MIGRATE = True
+    DB_FAKE_MIGRATE = True
 
 # location where static files are stored:
 STATIC_FOLDER = required_folder(APP_FOLDER, "static")
@@ -150,8 +153,12 @@ REDIS_SERVER = "localhost:6379"
 
 # logger settings
 LOGGERS = [
-    "warning:stdout"
-]  # syntax "severity:filename" filename can be stderr or stdout
+    "debug:stdout",  # debug messages to stdout
+    "info:stdout",  # info messages to stdout
+    "warning:stdout",  # warning messages to stdout
+    "error:stderr",  # error messages to stderr
+    "debug:debug.log",  # debug messages to debug.log file
+]
 
 # single sign on Google (will be used if provided)
 OAUTH2GOOGLE_CLIENT_ID = None
@@ -205,6 +212,9 @@ DBO_FOLDER = required_folder(APP_FOLDER, "databases/octopus")
 # PACS
 PACS = True
 AET = {"MWL": "WORKLIST", "PACS": "DCM4CHEE"}
-PACS_URL = "http://dcm4chee.org/dcm4chee-arc"
-REALMS_URL = "https://dcm4chee.org:8843"
-KEYCLOAK_SECRET = ""
+PACS_URL = "http://your.pacs.server:8080/dcm4chee-arc"
+REALMS_URL = "https://your.pacs.server:8843"
+KEYCLOAK_SECRET = "your_keycloak_secret"
+
+# Supplements
+SUPPLEMENT_RATIO = 1.50
