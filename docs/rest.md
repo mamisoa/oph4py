@@ -13,6 +13,7 @@ This module provides RESTful API endpoints for the ophthalmology electronic medi
 5. [Architecture & Design](#architecture--design)
 6. [Testing & Troubleshooting](#testing--troubleshooting)
 7. [Versioning & Changelog](#versioning--changelog)
+8. [Browserless API Access](#browserless-api-access)
 
 ## Installation & Dependencies
 
@@ -520,3 +521,162 @@ The module uses Python's logging system with the following levels:
 2. Enhanced security features
 3. Batch operation support
 4. Extended file type support
+
+## Browserless API Access
+
+For automated tasks or backend integrations, you can access the REST API without a browser using Python requests. Here's a complete example script:
+
+```python
+import requests
+import json
+
+# Base configuration
+BASE_URL = "http://localhost:8000/oph4py"  # Adjust to your server URL
+SESSION = requests.Session()  # Use session to maintain cookies
+
+def login(email, password):
+    """Login to get session cookie"""
+    login_url = f"{BASE_URL}/auth/api/login"
+    login_data = {
+        "email": email,
+        "password": password
+    }
+    
+    response = SESSION.post(
+        login_url,
+        json=login_data,
+        headers={'Content-Type': 'application/json'}
+    )
+    
+    if response.status_code == 200:
+        print("Login successful")
+        return True
+    else:
+        print(f"Login failed: {response.text}")
+        return False
+
+def api_request(endpoint, method='GET', data=None):
+    """Make authenticated API request"""
+    url = f"{BASE_URL}/api/{endpoint}"
+    
+    headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+    
+    # Get CSRF token if needed for POST/PUT/DELETE
+    if method in ['POST', 'PUT', 'DELETE']:
+        # Get CSRF token from session
+        csrf_response = SESSION.get(f"{BASE_URL}/auth/api/status")
+        if csrf_response.status_code == 200:
+            csrf_token = csrf_response.json().get('csrf_token')
+            headers['X-CSRF-Token'] = csrf_token
+
+    response = SESSION.request(
+        method=method,
+        url=url,
+        headers=headers,
+        json=data
+    )
+    
+    return response
+
+def main():
+    # 1. Login first
+    if not login("your_email@example.com", "your_password"):
+        return
+
+    # 2. Example API calls
+    try:
+        # GET example - fetch users
+        response = api_request('auth_user')
+        if response.status_code == 200:
+            print("Users:", json.dumps(response.json(), indent=2))
+        
+        # POST example - create new record
+        new_data = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "john.doe@example.com"
+        }
+        response = api_request('auth_user', method='POST', data=new_data)
+        if response.status_code == 200:
+            print("Created:", response.json())
+            
+        # PUT example - update record
+        update_data = {
+            "first_name": "John Updated"
+        }
+        response = api_request('auth_user/1', method='PUT', data=update_data)
+        if response.status_code == 200:
+            print("Updated:", response.json())
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error occurred: {e}")
+
+if __name__ == "__main__":
+    main()
+```
+
+### Additional Features
+
+#### File Upload
+
+```python
+def upload_file(filepath):
+    url = f"{BASE_URL}/upload"
+    files = {'file': open(filepath, 'rb')}
+    response = SESSION.post(url, files=files)
+    return response
+```
+
+#### Email with Attachment
+
+```python
+def send_email_with_attachment(recipient, pdf_data):
+    url = f"{BASE_URL}/api/email/send_with_attachment"
+    data = {
+        "recipient": recipient,
+        "attachmentData": pdf_data,
+        "attachmentName": "document.pdf"
+    }
+    response = api_request(url, method='POST', data=data)
+    return response
+```
+
+### Best Practices for Browserless Access
+
+1. **Security**
+   - Store credentials securely (use environment variables)
+   - Use SSL/TLS in production
+   - Handle session expiration gracefully
+   - Protect CSRF tokens
+
+2. **Error Handling**
+
+   ```python
+   if response.status_code == 401:
+       print("Authentication failed - try logging in again")
+   elif response.status_code == 403:
+       print("Permission denied")
+   elif response.status_code >= 500:
+       print("Server error:", response.text)
+   ```
+
+3. **Session Management**
+   - Use `requests.Session()` for cookie persistence
+   - Handle session timeouts
+   - Implement retry logic for failed requests
+
+4. **Rate Limiting**
+   - Respect API rate limits
+   - Implement backoff strategies
+   - Monitor response headers for rate limit information
+
+### Requirements
+
+```bash
+pip install requests
+```
+
+Remember to adjust the `BASE_URL` and credentials according to your environment.
