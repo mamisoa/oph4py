@@ -5,6 +5,7 @@
     .table td {
         text-align: center;
     }
+
     .table th {
         text-align: center;
     }
@@ -19,42 +20,31 @@
 <!-- bootstrap ok for table -->
 <div class="container-fluid"> <!-- #table list -->
     <div class="row">
-      <div class="col-md-12 mt-3">
-        <div>
-            <h2><span class=""><i class="fas [[=class_icon]]"></i> [[=group]]s<span></h2>
-            <div id="toolbar">
-                <button type="button" id="btnNewUser" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#newUserModal">
-                    New [[=group]]
-                </button>
+        <div class="col-md-12 mt-3">
+            <div>
+                <h2><span class=""><i class="fas [[=class_icon]]"></i> [[=group]]s<span></h2>
+                <div id="toolbar">
+                    <button type="button" id="btnNewUser" class="btn btn-dark" data-bs-toggle="modal"
+                        data-bs-target="#newUserModal">
+                        New [[=group]]
+                    </button>
+                </div>
             </div>
+            <table id="table" data-toolbar="#toolbar" data-id-field="id" data-side-pagination="server"
+                data-show-refresh="true" data-pagination="true" data-page-size="10" data-show-columns="true"
+                data-search="true" data-search-accent-neutralise="true" data-visible-search="false"
+                data-data-field="items" data-query-params="queryParams" data-total-field="count">
+                <thead class="thead-dark">
+                    <th data-field="id" data-sortable="true">ID</th>
+                    <th data-field="last_name" data-sortable="true">Last name:</th>
+                    <th data-field="first_name" data-title="First name" data-sortable="true">First name:</th>
+                    <th data-field="gender.sex" data-searchable="true" data-sortable="true">Gender:</th>
+                    <th data-field="dob" data-sortable="true">Date of birth:</th>
+                    <th data-field="age" data-formatter="ageFormatter" data-sortable="false">Age:</th>
+                    <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                </thead>
+            </table>
         </div>
-        <table id="table"
-            data-toolbar="#toolbar"
-            data-id-field="id"
-            data-toggle="table"
-            data-side-pagination="server"
-            data-show-refresh="true"
-            data-pagination="true"
-            data-page-size="10"
-            data-show-columns="true"
-            data-search="true"
-            data-search-accent-neutralise="true"
-            data-visible-search="false"
-            data-data-field="items"
-            data-query-params="queryParams"
-            data-total-field="count"
-            >
-            <thead class="thead-dark">
-                <th data-field="id" data-sortable="true">ID</th>
-                <th data-field="last_name" data-sortable="true">Last name:</th>
-                <th data-field="first_name" data-title="First name" data-sortable="true">First name:</th>
-                <th data-field="gender.sex" data-searchable= "true" data-sortable="true">Gender:</th>
-                <th data-field="dob" data-sortable="true">Date of birth:</th>
-                <th data-field="age" data-formatter="ageFormatter" data-sortable="false">Age:</th>
-                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
-            </thead>
-        </table>
-      </div>
     </div> <!-- end row -->
 </div> <!-- end container fluid -->
 
@@ -87,24 +77,30 @@
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="username" class="form-label">Username:</label>
-                                        <input id="username" type="text" class="form-control" title="Username must not be blank and contain only letters, numbers and underscores." name="username" required pattern="\w+" autocomplete="username" />
+                                        <input id="username" type="text" class="form-control"
+                                            title="Username must not be blank and contain only letters, numbers and underscores."
+                                            name="username" required pattern="\w+" autocomplete="username" />
                                         <div id="usernameHelp" class="form-text">Enter your username</div>
                                     </div>
                                     <div class="col">
                                         <label for="email" class="form-label">Email:</label>
-                                        <input id="email" type="email" class="form-control"  name="email">
+                                        <input id="email" type="email" class="form-control" name="email">
                                         <div id="emailHelp" class="form-text">Enter your email</div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="password" class="form-label">Password:</label>
-                                        <input id="password" type="password" class="form-control" autocomplete="new-password" title="Password must contain at least 6 characters, including UPPER/lowercase and numbers." name="password" required>
+                                        <input id="password" type="password" class="form-control"
+                                            autocomplete="new-password"
+                                            title="Password must contain at least 6 characters, including UPPER/lowercase and numbers."
+                                            name="password" required>
                                         <div id="passwordHelp" class="form-text">Enter your password</div>
                                     </div>
                                     <div class="col">
                                         <label for="passwordCheck" class="form-label">Password check:</label>
-                                        <input id="passwordCheck" type="password" class="form-control" title="Please enter the same Password" name="passwordCheck">
+                                        <input id="passwordCheck" type="password" class="form-control"
+                                            title="Please enter the same Password" name="passwordCheck">
                                         <div id="passwordCheckHelp" class="form-text">Retype your password</div>
                                     </div>
                                 </div>
@@ -124,8 +120,9 @@
                                         <div id="membershipHelp" class="form-text">Choose gender</div>
                                     </div>
                                 </div>
-                                <input id="idWlItemSubmit" type="text" class="visually-hidden" name="idWlItemSubmit"/>
-                                <input id="methodWlItemSubmit" type="text" class="visually-hidden" name="methodWlItemSubmit" value="POST"/>
+                                <input id="idWlItemSubmit" type="text" class="visually-hidden" name="idWlItemSubmit" />
+                                <input id="methodWlItemSubmit" type="text" class="visually-hidden"
+                                    name="methodWlItemSubmit" value="POST" />
                                 <input id="btnNewWlItemSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -134,7 +131,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="labelWlItemSubmit"for="btnNewWlItemSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="labelWlItemSubmit" for="btnNewWlItemSubmit" class="btn btn-primary"
+                    tabindex="0">Submit</label>
             </div>
         </div>
     </div>
@@ -156,18 +154,18 @@
 <script src="js/bt_test.js"></script>
 <script src="js/test.js"></script>
 <script type="text/javascript">
-// init bootstrat-tables
-var membership = [[=membership]];
-var HOSTURL = "[[ = hosturl ]]";
+    // init bootstrat-tables
+    var membership = [[=membership]];
+    var HOSTURL = "[[ = hosturl ]]";
 
-const API_USER_LIST= HOSTURL+'[[=URL('api','auth_user')]]'+'?membership.eq='+membership+'&@lookup=gender:gender[id,sex]&@count=true'; // check users with membership -> OK
+    const API_USER_LIST = HOSTURL + '[[=URL('api','auth_user')]]' + '?membership.eq=' + membership + '&@lookup=gender:gender[id,sex]&@count=true'; // check users with membership -> OK
 
-var $table = $('#table').bootstrapTable({
-    url: decodeURI(encodeURI(API_USER_LIST)),
-    formatSearch: function () {
-    return 'Last name,first name, gender'
-    }
-});
+    var $table = $('#table').bootstrapTable({
+        url: decodeURI(encodeURI(API_USER_LIST)),
+        formatSearch: function () {
+            return 'Last name,first name, gender'
+        }
+    });
 
 
 </script>

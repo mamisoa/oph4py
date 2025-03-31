@@ -5,6 +5,7 @@
     .table td {
         text-align: center;
     }
+
     .table th {
         text-align: center;
     }
@@ -34,41 +35,29 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <table id="table-wl"
-                    data-toolbar="#toolbar-wl"
-                    data-id-field="id"
-                    data-toggle="table"
-                    data-side-pagination="server"
-                    data-show-refresh="true"
-                    data-pagination="true"
-                    data-page-size="25"
-                    data-show-columns="true"
-                    data-search="true"
-                    data-search-accent-neutralise="true"
-                    data-visible-search="false"
-                    data-query-params="queryParams_wl"
-                    data-response-handler="responseHandler_wl"
-                    data-row-style="rowStyle_wl"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    data-detail-formatter="detailFormatter_wl"
-                    data-detail-view-by-click="false"
-                    >
-                    <thead class="thead-dark">
-                        <th data-field="id" data-sortable="true">ID</th>
-                        <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
-                        <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">Receving facility:</th>
-                        <th data-field="procedure" data-searchable= "true" data-sortable="true">Procedure:</th>
-                        <th data-field="patient" data-searchable= "true" data-sortable="true">Patient:</th>
-                        <th data-field="provider" data-searchable= "true" data-sortable="true">Provider:</th>
-                        <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
-                        <th data-field="modality" data-searchable= "true" data-sortable="true">Modality:</th>
-                        <th data-field="laterality" data-sortable="false" data-searchable= "false">Laterality:</th>
-                        <th data-field="requested_time" data-sortable="true" data-searchable= "true">Timeslot:</th>
-                        <th data-field="status_flag" data-searchable= "true" data-sortable="true">Status:</th>
-                        <th data-field="operate" data-formatter="operateFormatter_wl" data-events="operateEvents_wl">Action</th>
-                    </thead>
-                </table>
+                    <table id="table-wl" data-toolbar="#toolbar-wl" data-id-field="id" data-side-pagination="server"
+                        data-show-refresh="true" data-pagination="true" data-page-size="25" data-show-columns="true"
+                        data-search="true" data-search-accent-neutralise="true" data-visible-search="false"
+                        data-query-params="queryParams_wl" data-response-handler="responseHandler_wl"
+                        data-row-style="rowStyle_wl" data-detail-view="true" data-detail-view-icon="true"
+                        data-detail-formatter="detailFormatter_wl" data-detail-view-by-click="false">
+                        <thead class="thead-dark">
+                            <th data-field="id" data-sortable="true">ID</th>
+                            <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
+                            <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">
+                                Receving facility:</th>
+                            <th data-field="procedure" data-searchable="true" data-sortable="true">Procedure:</th>
+                            <th data-field="patient" data-searchable="true" data-sortable="true">Patient:</th>
+                            <th data-field="provider" data-searchable="true" data-sortable="true">Provider:</th>
+                            <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
+                            <th data-field="modality" data-searchable="true" data-sortable="true">Modality:</th>
+                            <th data-field="laterality" data-sortable="false" data-searchable="false">Laterality:</th>
+                            <th data-field="requested_time" data-sortable="true" data-searchable="true">Timeslot:</th>
+                            <th data-field="status_flag" data-searchable="true" data-sortable="true">Status:</th>
+                            <th data-field="operate" data-formatter="operateFormatter_wl"
+                                data-events="operateEvents_wl">Action</th>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
@@ -88,58 +77,58 @@
 <script src="js/files_bt.js"></script>
 <script type="text/javascript">
 
-// modality controllers
-var modalityDict = [[ = XML(modalityDict) ]];
+    // modality controllers
+    var modalityDict = [[ = XML(modalityDict)]];
 
-// init bootstrat-tables
-const membership = [[=membership]];
-const HOSTURL = "[[ = hosturl ]]";
+    // init bootstrat-tables
+    const membership = [[=membership]];
+    const HOSTURL = "[[ = hosturl ]]";
 
-// set tables
-const TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0,10);
-const API_PROCEDURE_LIST = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
-const API_PROCEDURE_LIST_MD = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id&modality_dest.modality_name.eq=MD';
-const API_PROCEDURE_LIST_GP = HOSTURL+'[[=URL('api','worklist')]]'+'?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id&modality_dest.modality_name.eq=GP';
-var $table_wl = $('#table-wl').bootstrapTable({
-    url: API_PROCEDURE_LIST_MD,
-    formatSearch: function () {
-        return 'Last name,first name,procedure,modality';
-    }
-});
-
-// hide columns in wl table: id, sending_facility, receiving_facility
-$table_wl.bootstrapTable('hideColumn','id');
-$table_wl.bootstrapTable('hideColumn','sending_facility');
-$table_wl.bootstrapTable('hideColumn','receiving_facility');
-
-// Fires after the table body is rendered and available in the DOM, the parameters contain data
-$('#table-wl').on('post-body.bs.table', function () {
-
-});
-
-$( document ).ready(function() {
-    if (window.performance.getEntriesByType('navigation')[0].type == 'back-forward') {
-        $('#table-wl').bootstrapTable('refresh');
-    };
-});
-
-$('#btnFullList').click(function () {
-    $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST
+    // set tables
+    const TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0, 10);
+    const API_PROCEDURE_LIST = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
+    const API_PROCEDURE_LIST_MD = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id&modality_dest.modality_name.eq=MD';
+    const API_PROCEDURE_LIST_GP = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id&modality_dest.modality_name.eq=GP';
+    var $table_wl = $('#table-wl').bootstrapTable({
+        url: API_PROCEDURE_LIST_MD,
+        formatSearch: function () {
+            return 'Last name,first name,procedure,modality';
+        }
     });
-});
 
-$('#btnMdList').click(function () {
-    $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST_MD
-    });
-});
+    // hide columns in wl table: id, sending_facility, receiving_facility
+    $table_wl.bootstrapTable('hideColumn', 'id');
+    $table_wl.bootstrapTable('hideColumn', 'sending_facility');
+    $table_wl.bootstrapTable('hideColumn', 'receiving_facility');
 
-$('#btnGpList').click(function () {
-    $('#table-wl').bootstrapTable('refreshOptions', {
-        url: API_PROCEDURE_LIST_GP
+    // Fires after the table body is rendered and available in the DOM, the parameters contain data
+    $('#table-wl').on('post-body.bs.table', function () {
+
     });
-});
+
+    $(document).ready(function () {
+        if (window.performance.getEntriesByType('navigation')[0].type == 'back-forward') {
+            $('#table-wl').bootstrapTable('refresh');
+        };
+    });
+
+    $('#btnFullList').click(function () {
+        $('#table-wl').bootstrapTable('refreshOptions', {
+            url: API_PROCEDURE_LIST
+        });
+    });
+
+    $('#btnMdList').click(function () {
+        $('#table-wl').bootstrapTable('refreshOptions', {
+            url: API_PROCEDURE_LIST_MD
+        });
+    });
+
+    $('#btnGpList').click(function () {
+        $('#table-wl').bootstrapTable('refreshOptions', {
+            url: API_PROCEDURE_LIST_GP
+        });
+    });
 
 
 </script>

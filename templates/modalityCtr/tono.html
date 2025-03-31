@@ -4,7 +4,9 @@
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
 <style>
     /* overide when topnavbar is not fixed-top */
-    section#main { margin-top: 0px; }
+    section#main {
+        margin-top: 0px;
+    }
 </style>
 [[ end ]]
 
@@ -20,12 +22,16 @@
         </div>
     </div>
     <div class="row mt-3 text-center">
-            <div class="col">
-                <div class="col" style="background-color: #D5E3EE;"><h2>RIGHT EYE</h2></div>
-            </div>    
-            <div class="col">
-                <div class="col" style="background-color: #EED9D5;"><h2>LEFT EYE</h2></div>
-            </div>                
+        <div class="col">
+            <div class="col" style="background-color: #D5E3EE;">
+                <h2>RIGHT EYE</h2>
+            </div>
+        </div>
+        <div class="col">
+            <div class="col" style="background-color: #EED9D5;">
+                <h2>LEFT EYE</h2>
+            </div>
+        </div>
     </div>
     <div class="row text-center">
         <div class="col">
@@ -37,29 +43,37 @@
                                 <div class="col">
                                     <label for="airRight" class="form-label">Air tonometry (RE):</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
-                                        <input type="text" class="form-control airRight counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="airRight" id="airRight">
-                                        <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_tono"
+                                            type="button">-</button>
+                                        <input type="text" class="form-control airRight counter_tono text-center"
+                                            value="15.00" aria-label="Air tonometry" name="airRight" id="airRight">
+                                        <button class="btn btn-outline-secondary counter_up_tono"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col">
                                     <label for="pachyRight" class="form-label">Pachymetry (RE):</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_pachy" type="button">-</button>
-                                        <input type="text" class="form-control pachyRight counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachyRight" id="pachyRight">
-                                        <button class="btn btn-outline-secondary counter_up_pachy" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_pachy"
+                                            type="button">-</button>
+                                        <input type="text" class="form-control pachyRight counter_pachy text-center"
+                                            value="550" aria-label="Optical pachymetry" name="pachyRight"
+                                            id="pachyRight">
+                                        <button class="btn btn-outline-secondary counter_up_pachy"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3" id="tonoPachyRight">
                                 <div class="col">
-                                    <button id="btnAddTonoPachyRight" class="btn btn-primary" type="submit">Submit right TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
-                                </div>                                                                    
+                                    <button id="btnAddTonoPachyRight" class="btn btn-primary" type="submit">Submit right
+                                        TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
+                                </div>
                             </div>
-                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user" />
                         </div>
-                    </form>                   
-                </div>  <!-- end airRight col -->
+                    </form>
+                </div> <!-- end airRight col -->
                 <div class="col">
                     <form action="" id="airLeftForm">
                         <div class="row">
@@ -67,65 +81,59 @@
                                 <label for="airLeft" class="form-label">Air tonometry (LE):</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
-                                    <input type="text" class="form-control airLeft text-center counter_tono" value ="15" aria-label="Air tonometry" name="airLeft" id="airLeft">
+                                    <input type="text" class="form-control airLeft text-center counter_tono" value="15"
+                                        aria-label="Air tonometry" name="airLeft" id="airLeft">
                                     <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
-                                </div>                        
+                                </div>
                             </div>
                             <div class="col">
                                 <label for="pachyLeft" class="form-label">Pachymetry (LE):</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_pachy" type="button">-</button>
-                                    <input type="text" class="form-control pachyLeft counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachyLeft" id="pachyLeft">
+                                    <button class="btn btn-outline-secondary counter_down_pachy"
+                                        type="button">-</button>
+                                    <input type="text" class="form-control pachyLeft counter_pachy text-center"
+                                        value="550" aria-label="Optical pachymetry" name="pachyLeft" id="pachyLeft">
                                     <button class="btn btn-outline-secondary counter_up_pachy" type="button">+</button>
                                 </div>
                             </div>
                         </div>
                         <div class="row mb-3" id="tonoPachyLeft">
                             <div class="col">
-                                <button id="btnAddTonoPachyLeft" class="btn btn-primary" type="submit">Submit left TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
+                                <button id="btnAddTonoPachyLeft" class="btn btn-primary" type="submit">Submit left
+                                    TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
                             </div>
-                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user" />
                         </div>
                     </form>
                 </div> <!-- end airLeft col -->
-            </div>  <!-- end row airPachy form col -->
+            </div> <!-- end row airPachy form col -->
             <div class="row mb-3">
                 <div class="col">
-                    <table
-                        id="airPachyRight_tbl"
-                        data-side-pagination="server"
-                        data-pagination="true"
-                        data-page-size="10"
-                        data-search="false"
-                        data-query-params="queryParams_airPachy"
-                        data-response-handler="responseHandler_airPachy"
-                        >
+                    <table id="airPachyRight_tbl" data-side-pagination="server" data-pagination="true"
+                        data-page-size="10" data-search="false" data-query-params="queryParams_airPachy"
+                        data-response-handler="responseHandler_airPachy">
                         <thead>
                             <tr>
                                 <th data-field="timestamp" data-sortable="false">Timestamp</th>
                                 <th data-field="tonometry" data-sortable="false">Tono(air)</th>
                                 <th data-field="pachymetry" data-sortable="false">Pachy</th>
-                                <th data-field="operate" data-formatter="operateFormatter_airPachy" data-events="operateEvents_airPachy">Action</th>
+                                <th data-field="operate" data-formatter="operateFormatter_airPachy"
+                                    data-events="operateEvents_airPachy">Action</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
                 <div class="col">
-                    <table
-                        id="airPachyLeft_tbl"
-                        data-toggle="table"
-                        data-side-pagination="server"
-                        data-pagination="true"
-                        data-page-size="10"
-                        data-query-params="queryParams_airPachy"
-                        data-response-handler="responseHandler_airPachy"
-                        >
+                    <table id="airPachyLeft_tbl" data-side-pagination="server" data-pagination="true"
+                        data-page-size="10" data-query-params="queryParams_airPachy"
+                        data-response-handler="responseHandler_airPachy">
                         <thead>
                             <tr>
                                 <th data-field="timestamp" data-sortable="false">Timestamp</th>
                                 <th data-field="tonometry" data-sortable="true">Tono(air)</th>
                                 <th data-field="pachymetry" data-sortable="true">Pachy</th>
-                                <th data-field="operate" data-formatter="operateFormatter_airPachy" data-events="operateEvents_airPachy">Action</th>
+                                <th data-field="operate" data-formatter="operateFormatter_airPachy"
+                                    data-events="operateEvents_airPachy">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -142,12 +150,16 @@
         </div>
     </div>
     <div class="row mt-3 text-center">
-            <div class="col">
-                <div class="col title-right"><h2>RIGHT EYE</h2></div>
-            </div>    
-            <div class="col">
-                <div class="col title-left"><h2>LEFT EYE</h2></div>
-            </div>                
+        <div class="col">
+            <div class="col title-right">
+                <h2>RIGHT EYE</h2>
+            </div>
+        </div>
+        <div class="col">
+            <div class="col title-left">
+                <h2>LEFT EYE</h2>
+            </div>
+        </div>
     </div>
     <div class="row text-center">
         <div class="col">
@@ -159,21 +171,25 @@
                                 <div class="col">
                                     <label for="aplaRight" class="form-label">Aplanation tonometry (RE):</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
-                                        <input type="text" class="form-control aplaRight counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="aplaRight" id="aplaRight">
-                                        <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_tono"
+                                            type="button">-</button>
+                                        <input type="text" class="form-control aplaRight counter_tono text-center"
+                                            value="15.00" aria-label="Air tonometry" name="aplaRight" id="aplaRight">
+                                        <button class="btn btn-outline-secondary counter_up_tono"
+                                            type="button">+</button>
                                     </div>
-                                </div>                                
+                                </div>
                             </div>
                             <div class="row mb-3" id="AplaRight">
                                 <div class="col">
-                                    <button id="btnAddAplaRight" class="btn btn-primary" type="submit">Submit right aplanation<i class=" mx-2 fas fa-plus"></i></button>
-                                </div>                                                                    
+                                    <button id="btnAddAplaRight" class="btn btn-primary" type="submit">Submit right
+                                        aplanation<i class=" mx-2 fas fa-plus"></i></button>
+                                </div>
                             </div>
-                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user" />
                         </div>
-                    </form>                   
-                </div>  <!-- end aplaRight col -->
+                    </form>
+                </div> <!-- end aplaRight col -->
                 <div class="col">
                     <form action="" class="bg-left" id="aplaLeftForm">
                         <div class="row">
@@ -181,55 +197,46 @@
                                 <label for="aplaLeft" class="form-label">Aplanation tonometry (LE):</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
-                                    <input type="text" class="form-control aplaLeft text-center counter_tono" value ="15" aria-label="Air tonometry" name="aplaLeft" id="aplaLeft">
+                                    <input type="text" class="form-control aplaLeft text-center counter_tono" value="15"
+                                        aria-label="Air tonometry" name="aplaLeft" id="aplaLeft">
                                     <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
-                                </div>                        
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-3" id="aplaLeft">
                             <div class="col">
-                                <button id="btnAddAplaLeft" class="btn btn-primary" type="submit">Submit left TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
+                                <button id="btnAddAplaLeft" class="btn btn-primary" type="submit">Submit left
+                                    TonoPachy<i class=" mx-2 fas fa-plus"></i></button>
                             </div>
-                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user"/>
+                            <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user" />
                         </div>
                     </form>
                 </div> <!-- end aplaLeft col -->
-            </div>  <!-- end row apla form col -->
+            </div> <!-- end row apla form col -->
             <div class="row mb-3">
                 <div class="col">
-                    <table
-                        id="aplaRight_tbl"
-                        data-side-pagination="server"
-                        data-pagination="true"
-                        data-page-size="10"
-                        data-search="false"
-                        data-query-params="queryParams_airPachy"
-                        data-response-handler="responseHandler_airPachy"
-                        >
+                    <table id="aplaRight_tbl" data-side-pagination="server" data-pagination="true" data-page-size="10"
+                        data-search="false" data-query-params="queryParams_airPachy"
+                        data-response-handler="responseHandler_airPachy">
                         <thead>
                             <tr>
                                 <th data-field="timestamp" data-sortable="false">Timestamp</th>
-                                <th data-field="tonometry" data-sortable="false">Tono(apla)</th>                                
-                                <th data-field="operate" data-formatter="operateFormatter_airPachy" data-events="operateEvents_airPachy">Action</th>
+                                <th data-field="tonometry" data-sortable="false">Tono(apla)</th>
+                                <th data-field="operate" data-formatter="operateFormatter_airPachy"
+                                    data-events="operateEvents_airPachy">Action</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
                 <div class="col">
-                    <table
-                        id="aplaLeft_tbl"
-                        data-toggle="table"
-                        data-side-pagination="server"
-                        data-pagination="true"
-                        data-page-size="10"
-                        data-query-params="queryParams_airPachy"
-                        data-response-handler="responseHandler_airPachy"
-                        >
+                    <table id="aplaLeft_tbl" data-side-pagination="server" data-pagination="true" data-page-size="10"
+                        data-query-params="queryParams_airPachy" data-response-handler="responseHandler_airPachy">
                         <thead>
                             <tr>
                                 <th data-field="timestamp" data-sortable="false">Timestamp</th>
-                                <th data-field="tonometry" data-sortable="true">Tono(apla)</th>                                
-                                <th data-field="operate" data-formatter="operateFormatter_airPachy" data-events="operateEvents_airPachy">Action</th>
+                                <th data-field="tonometry" data-sortable="true">Tono(apla)</th>
+                                <th data-field="operate" data-formatter="operateFormatter_airPachy"
+                                    data-events="operateEvents_airPachy">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -240,7 +247,8 @@
 </div>
 
 <!-- Modal tonoPachyModal -->
-<div class="modal fade" id="tonoPachyModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+<div class="modal fade" id="tonoPachyModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -257,20 +265,26 @@
                                         <span class="form-label">Side:</span>
                                         <div class="input-group">
                                             <div class="btn-group laterality">
-                                                <input type="radio" id="laterality_right" name="laterality" class="btn-check" value="right" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="laterality_right">Right</label>
-                                                <input type="radio" id="laterality_left" name="laterality" class="btn-check" value="left" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="laterality_left">Left</label>
+                                                <input type="radio" id="laterality_right" name="laterality"
+                                                    class="btn-check" value="right" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="laterality_right">Right</label>
+                                                <input type="radio" id="laterality_left" name="laterality"
+                                                    class="btn-check" value="left" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="laterality_left">Left</label>
                                             </div>
                                         </div>
-                                    </div>                                    
+                                    </div>
                                     <div class="col" id="technoDiv">
                                         <span class="form-label">Method:</span>
                                         <div class="input-group">
-                                            <div class="btn-group techno">                                                
-                                                <input type="radio" id="techno_air" name="techno" class="btn-check" value="air" autocomplete="off">
+                                            <div class="btn-group techno">
+                                                <input type="radio" id="techno_air" name="techno" class="btn-check"
+                                                    value="air" autocomplete="off">
                                                 <label class="btn btn-outline-primary" for="techno_air">Air</label>
-                                                <input type="radio" id="techno_apla" name="techno" class="btn-check" value="apla" autocomplete="off">
+                                                <input type="radio" id="techno_apla" name="techno" class="btn-check"
+                                                    value="apla" autocomplete="off">
                                                 <label class="btn btn-outline-primary" for="techno_apla">Apla</label>
                                             </div>
                                         </div>
@@ -280,33 +294,43 @@
                                     <div class="col">
                                         <label for="tono_modal" class="form-label">Tonometry:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_tono" type="button">-</button>
-                                            <input type="text" class="form-control tono counter_tono text-center" value ="15.00" aria-label="Air tonometry" name="tonometry" id="tono_modal">
-                                            <button class="btn btn-outline-secondary counter_up_tono" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_tono"
+                                                type="button">-</button>
+                                            <input type="text" class="form-control tono counter_tono text-center"
+                                                value="15.00" aria-label="Air tonometry" name="tonometry"
+                                                id="tono_modal">
+                                            <button class="btn btn-outline-secondary counter_up_tono"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col">
                                         <div id="pachyDiv">
                                             <label for="pachy_modal" class="form-label">Pachymetry:</label>
                                             <div class="input-group mb-3">
-                                                <button class="btn btn-outline-secondary counter_down_pachy" type="button">-</button>
-                                                <input type="text" class="form-control pachy counter_pachy text-center" value ="550" aria-label="Optical pachymetry" name="pachymetry" id="pachy_modal">
-                                                <button class="btn btn-outline-secondary counter_up_pachy" type="button">+</button>
+                                                <button class="btn btn-outline-secondary counter_down_pachy"
+                                                    type="button">-</button>
+                                                <input type="text" class="form-control pachy counter_pachy text-center"
+                                                    value="550" aria-label="Optical pachymetry" name="pachymetry"
+                                                    id="pachy_modal">
+                                                <button class="btn btn-outline-secondary counter_up_pachy"
+                                                    type="button">+</button>
                                             </div>
-                                        </div>                                        
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="timestamp" class="form-label">Timestamp:</label>
-                                        <input id="timestamp" type="datetime-local" step="1" class="form-control" name="timestamp">
+                                        <input id="timestamp" type="datetime-local" step="1" class="form-control"
+                                            name="timestamp">
                                         <div id="requestTimeHelp" class="form-text">Adjust timestamp</div>
-                                    </div>                                
+                                    </div>
                                 </div>
-                                <input id="idTonoPachy" type="text" class="visually-hidden" name="id"/>
-                                <input id="idPatient" type="text" class="visually-hidden" name="id_auth_user"/>
-                                <input id="idWl" type="text" class="visually-hidden" name="id_worklist"/>
-                                <input id="methodTonoPachySubmit" type="text" class="visually-hidden" name="methodTonoPachySubmit" value="POST"/>
+                                <input id="idTonoPachy" type="text" class="visually-hidden" name="id" />
+                                <input id="idPatient" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="idWl" type="text" class="visually-hidden" name="id_worklist" />
+                                <input id="methodTonoPachySubmit" type="text" class="visually-hidden"
+                                    name="methodTonoPachySubmit" value="POST" />
                                 <input id="btnTonoPachySubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -315,7 +339,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="TonoPachySubmit"for="btnTonoPachySubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="TonoPachySubmit" for="btnTonoPachySubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>
@@ -330,10 +354,10 @@
 [[ block js_scripts]]
 
 <script type="text/javascript">
-// Global variables
-const HOSTURL = "[[ = hosturl ]]";
-// submit btn to disable when done
-const btnArr = ['#btnTaskDone','#btnAddTonoPachyRight','#btnAddTonoPachyLeft','#btnAddAplaRight','#btnAddAplaLeft'];
+    // Global variables
+    const HOSTURL = "[[ = hosturl ]]";
+    // submit btn to disable when done
+    const btnArr = ['#btnTaskDone', '#btnAddTonoPachyRight', '#btnAddTonoPachyLeft', '#btnAddAplaRight', '#btnAddAplaLeft'];
 </script>
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
@@ -343,34 +367,34 @@ const btnArr = ['#btnTaskDone','#btnAddTonoPachyRight','#btnAddTonoPachyLeft','#
 <script src="js/tono_bt.js"></script>
 <script type="text/javascript">
 
-// init tables
-const tablesArr = ['#airPachyRight_tbl', '#airPachyLeft_tbl','#aplaRight_tbl','#aplaLeft_tbl'];
+    // init tables
+    const tablesArr = ['#airPachyRight_tbl', '#airPachyLeft_tbl', '#aplaRight_tbl', '#aplaLeft_tbl'];
 
-const API_AIRRIGHT = HOSTURL + "/"+APP_NAME+"/api/tono?laterality.eq=right&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
-const API_AIRLEFT = HOSTURL + "/"+APP_NAME+"/api/tono?laterality.eq=left&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
-const API_APLARIGHT = HOSTURL + "/"+APP_NAME+"/api/tono?laterality.eq=right&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
-const API_APLALEFT = HOSTURL + "/"+APP_NAME+"/api/tono?laterality.eq=left&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq="+wlId;
+    const API_AIRRIGHT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=right&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq=" + wlId;
+    const API_AIRLEFT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=left&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq=" + wlId;
+    const API_APLARIGHT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=right&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq=" + wlId;
+    const API_APLALEFT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=left&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq=" + wlId;
 
-var $table_airRight = $('#airPachyRight_tbl').bootstrapTable({
-    url: API_AIRRIGHT
-});
+    var $table_airRight = $('#airPachyRight_tbl').bootstrapTable({
+        url: API_AIRRIGHT
+    });
 
-var $table_airLeft = $('#airPachyLeft_tbl').bootstrapTable({
-    url: API_AIRLEFT
-});
+    var $table_airLeft = $('#airPachyLeft_tbl').bootstrapTable({
+        url: API_AIRLEFT
+    });
 
-var $table_aplaRight = $('#aplaRight_tbl').bootstrapTable({
-    url: API_APLARIGHT
-});
+    var $table_aplaRight = $('#aplaRight_tbl').bootstrapTable({
+        url: API_APLARIGHT
+    });
 
-var $table_aplaLeft = $('#aplaLeft_tbl').bootstrapTable({
-    url: API_APLALEFT
-});
+    var $table_aplaLeft = $('#aplaLeft_tbl').bootstrapTable({
+        url: API_APLALEFT
+    });
 
-// Fires after the table body is rendered and available in the DOM, the parameters contain data
-$('#airPachyRight_tbl').on('post-body.bs.table', function () {
-    // $('.loading-wrap').addClass('visually-hidden'); // loading bug?
-});
+    // Fires after the table body is rendered and available in the DOM, the parameters contain data
+    $('#airPachyRight_tbl').on('post-body.bs.table', function () {
+        // $('.loading-wrap').addClass('visually-hidden'); // loading bug?
+    });
 
 </script>
 <script src="js/tono.js"></script>

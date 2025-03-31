@@ -5,6 +5,7 @@
     .table td {
         text-align: center;
     }
+
     .table th {
         text-align: center;
     }
@@ -19,45 +20,34 @@
 <!-- bootstrap ok for table -->
 <div class="container-fluid"> <!-- #table list -->
     <div class="row">
-      <div class="col-md-12 mt-3">
-        <div>
-            <div id="toolbar">
-                <button type="button" id="btnNewMedic" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#medicModal">
-                    New medication
-                </button>
+        <div class="col-md-12 mt-3">
+            <div>
+                <div id="toolbar">
+                    <button type="button" id="btnNewMedic" class="btn btn-dark" data-bs-toggle="modal"
+                        data-bs-target="#medicModal">
+                        New medication
+                    </button>
+                </div>
             </div>
+            <table id="medic_tbl" data-toolbar="#toolbar" data-id-field="id" data-side-pagination="server"
+                data-show-refresh="true" data-pagination="true" data-page-size="10" data-show-columns="true"
+                data-search="true" data-search-accent-neutralise="true" data-visible-search="false"
+                data-data-field="items" data-query-params="queryParams" data-total-field="count"
+                data-detail-formatter="detailFormatter_medic" data-detail-view="true" data-detail-view-icon="true">
+                <thead class="thead-dark">
+                    <th data-field="id" data-sortable="true">ID</th>
+                    <th data-field="name" data-sortable="true">Name:</th>
+                    <th data-field="brand" data-sortable="true">Brand:</th>
+                    <th data-field="active_ingredient" data-searchable="true" data-sortable="true">Active ingredient:
+                    </th>
+                    <th data-field="dosage" data-sortable="true">Dosage:</th>
+                    <th data-field="form" data-sortable="false">Form:</th>
+                    <th data-field="packaging" data-sortable="true">Packaging:</th>
+                    <th data-field="operate" data-formatter="operateFormatter_medic" data-events="operateEvents_medic">
+                        Action</th>
+                </thead>
+            </table>
         </div>
-        <table id="medic_tbl"
-            data-toolbar="#toolbar"
-            data-id-field="id"
-            data-toggle="table"
-            data-side-pagination="server"
-            data-show-refresh="true"
-            data-pagination="true"
-            data-page-size="10"
-            data-show-columns="true"
-            data-search="true"
-            data-search-accent-neutralise="true"
-            data-visible-search="false"
-            data-data-field="items"
-            data-query-params="queryParams"
-            data-total-field="count"
-            data-detail-formatter="detailFormatter_medic"
-            data-detail-view="true"
-            data-detail-view-icon="true"
-            >
-            <thead class="thead-dark">
-                <th data-field="id" data-sortable="true">ID</th>
-                <th data-field="name" data-sortable="true">Name:</th>
-                <th data-field="brand" data-sortable="true">Brand:</th>
-                <th data-field="active_ingredient" data-searchable= "true" data-sortable="true">Active ingredient:</th>
-                <th data-field="dosage" data-sortable="true">Dosage:</th>
-                <th data-field="form" data-sortable="false">Form:</th>
-                <th data-field="packaging" data-sortable="true">Packaging:</th>
-                <th data-field="operate" data-formatter="operateFormatter_medic" data-events="operateEvents_medic">Action</th>
-            </thead>
-        </table>
-      </div>
     </div> <!-- end row -->
 </div> <!-- end container fluid -->
 
@@ -80,20 +70,34 @@
                                             <label for="mxdelivery_modal" class="form-label">Delivery:</label>
                                             <div class="input-group">
                                                 <div class="btn-group mxdelivery_modal">
-                                                    <input type="radio" id="medicdelivery_right_modal" name="delivery" class="btn-check" value="right" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="medicdelivery_right_modal">Right</label>
-                                                    <input type="radio" id="medicdelivery_left_modal" name="delivery" class="btn-check" value="left" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="medicdelivery_left_modal">Left</label>
-                                                    <input type="radio" id="medicdelivery_both_modal" name="delivery" class="btn-check" value="both" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="medicdelivery_both_modal">Both</label>
-                                                    <input type="radio" id="medicdelivery_po_modal" name="delivery" class="btn-check" value="PO" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="medicdelivery_po_modal">PO</label>
-                                                    <input type="radio" id="medicdelivery_local_modal" name="delivery" class="btn-check" value="local" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="medicdelivery_local_modal">Local</label>
-                                                    <input type="radio" id="medicdelivery_iv_modal" name="delivery" class="btn-check" value="IV" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="medicdelivery_iv_modal">IV</label>
-                                                    <input type="radio" id="medicdelivery_im_modal" name="delivery" class="btn-check" value="IM" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="medicdelivery_im_modal">IM</label>
+                                                    <input type="radio" id="medicdelivery_right_modal" name="delivery"
+                                                        class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="medicdelivery_right_modal">Right</label>
+                                                    <input type="radio" id="medicdelivery_left_modal" name="delivery"
+                                                        class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="medicdelivery_left_modal">Left</label>
+                                                    <input type="radio" id="medicdelivery_both_modal" name="delivery"
+                                                        class="btn-check" value="both" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="medicdelivery_both_modal">Both</label>
+                                                    <input type="radio" id="medicdelivery_po_modal" name="delivery"
+                                                        class="btn-check" value="PO" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="medicdelivery_po_modal">PO</label>
+                                                    <input type="radio" id="medicdelivery_local_modal" name="delivery"
+                                                        class="btn-check" value="local" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="medicdelivery_local_modal">Local</label>
+                                                    <input type="radio" id="medicdelivery_iv_modal" name="delivery"
+                                                        class="btn-check" value="IV" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="medicdelivery_iv_modal">IV</label>
+                                                    <input type="radio" id="medicdelivery_im_modal" name="delivery"
+                                                        class="btn-check" value="IM" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="medicdelivery_im_modal">IM</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -101,40 +105,47 @@
                                     <div class="row mb-3">
                                         <div class="col">
                                             <label for="medicModal" class="form-label">Medication:</label>
-                                            <input id="medicModal" type="text" class="form-control" name="name" autocomplete="off">
+                                            <input id="medicModal" type="text" class="form-control" name="name"
+                                                autocomplete="off">
                                             <div id="medicModalHelp" class="form-text">Enter medication name</div>
                                         </div>
                                         <div class="col">
                                             <label for="brandModal" class="form-label">Brand:</label>
-                                            <input id="brandModal" type="text" class="form-control" name="brand" autocomplete="off">
+                                            <input id="brandModal" type="text" class="form-control" name="brand"
+                                                autocomplete="off">
                                             <div id="brandModalHelp" class="form-text">Enter company</div>
                                         </div>
                                         <div class="col">
                                             <label for="activeIngModal" class="form-label">Active ingredient:</label>
-                                            <input id="activeIngModal" type="text" class="form-control" name="active_ingredient" autocomplete="off">
+                                            <input id="activeIngModal" type="text" class="form-control"
+                                                name="active_ingredient" autocomplete="off">
                                             <div id="activeIngModalHelp" class="form-text">Enter active ingredient</div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
                                             <label for="dosageModal" class="form-label">Dosage:</label>
-                                            <input id="dosageModal" type="text" class="form-control" name="dosage" autocomplete="off">
+                                            <input id="dosageModal" type="text" class="form-control" name="dosage"
+                                                autocomplete="off">
                                             <div id="dosageModalHelp" class="form-text">Enter dosage</div>
                                         </div>
                                         <div class="col">
                                             <label for="packModal" class="form-label">Packaging:</label>
-                                            <input id="packModal" type="text" class="form-control" name="packaging" autocomplete="off">
+                                            <input id="packModal" type="text" class="form-control" name="packaging"
+                                                autocomplete="off">
                                             <div id="packModalHelp" class="form-text">Enter packaging</div>
                                         </div>
                                         <div class="col">
                                             <label for="formModal" class="form-label">Form:</label>
-                                            <input id="formModal" type="text" class="form-control" name="form" autocomplete="off">
+                                            <input id="formModal" type="text" class="form-control" name="form"
+                                                autocomplete="off">
                                             <div id="formModalHelp" class="form-text">Enter form</div>
                                         </div>
                                     </div>
                                 </div>
                                 <input id="idMedicRow" type="text" class="visually-hidden" name="id" />
-                                <input id="methodMedicModalSubmit" type="text" class="visually-hidden" name="methodMedicModalSubmit" value="POST" />
+                                <input id="methodMedicModalSubmit" type="text" class="visually-hidden"
+                                    name="methodMedicModalSubmit" value="POST" />
                                 <input id="btnMedicModalSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -143,7 +154,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="medicModalSubmit" for="btnMedicModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="medicModalSubmit" for="btnMedicModalSubmit" class="btn btn-primary"
+                    tabindex="0">Submit</label>
             </div>
         </div>
     </div>
@@ -152,8 +164,8 @@
 [[ block js_scripts]]
 
 <script type="text/javascript">
-// Global variables
-const HOSTURL = "[[ = hosturl ]]";
+    // Global variables
+    const HOSTURL = "[[ = hosturl ]]";
 </script>
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
@@ -163,17 +175,17 @@ const HOSTURL = "[[ = hosturl ]]";
 <script src="js/medications-bt.js"></script>
 <script type="text/javascript">
 
-// init tables
-const API_MEDICATIONS = HOSTURL + "/"+APP_NAME+"/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+    // init tables
+    const API_MEDICATIONS = HOSTURL + "/" + APP_NAME + "/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
 
-var $medic_tbl = $('#medic_tbl').bootstrapTable({
-    url: API_MEDICATIONS
-});
+    var $medic_tbl = $('#medic_tbl').bootstrapTable({
+        url: API_MEDICATIONS
+    });
 
-// Fires after the table body is rendered and available in the DOM, the parameters contain data
-$('#md_tbl').on('post-body.bs.table', function () {
+    // Fires after the table body is rendered and available in the DOM, the parameters contain data
+    $('#md_tbl').on('post-body.bs.table', function () {
 
-});
+    });
 
 </script>
 <script src="js/medications.js"></script>

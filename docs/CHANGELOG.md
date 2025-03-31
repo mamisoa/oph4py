@@ -191,6 +191,13 @@
   - Enhanced example settings to better match production configuration
   - Maintained security by using placeholder values for sensitive data
 
+- 2025-04-01T00:39:15.204980: Fixed Bootstrap tables double initialization
+  - Removed redundant data-toggle="table" attribute from HTML tables
+  - Prevents double initialization of Bootstrap Table plugin
+  - Improves page load performance
+  - Eliminates potential conflicts in table event handlers
+  - Ensures consistent table behavior across all modules
+
 ### Added
 
 - 2025-03-30T19:43:21: Added email functionality to contacts prescription module
