@@ -34,36 +34,36 @@ def str_uuid():
 # implement custom loggers form settings.LOGGERS
 # #######################################################
 logger = logging.getLogger("py4web:" + settings.APP_NAME)
+
+# Remove all existing handlers to prevent duplicates
+if logger.hasHandlers():
+    logger.handlers.clear()
+
 formatter = logging.Formatter(
     "%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s"
 )
-
-# Clear existing handlers to avoid duplicates
-logger.handlers.clear()
 
 # Set logger to DEBUG level
 logger.setLevel(logging.DEBUG)
 
 # Add handlers based on settings
+handlers_added = set()  # Track which handlers we've added to avoid duplicates
 for item in settings.LOGGERS:
     level, filename = item.split(":", 1)
-    if filename in ("stdout", "stderr"):
-        handler = logging.StreamHandler(getattr(sys, filename))
-    else:
-        handler = logging.FileHandler(filename)
-    handler.setLevel(logging.DEBUG)  # Set handler to DEBUG level
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    handler_key = f"{level}:{filename}"
 
-# Add an additional debug file handler
-debug_handler = logging.FileHandler("debug.log")
-debug_handler.setLevel(logging.DEBUG)
-debug_handler.setFormatter(formatter)
-logger.addHandler(debug_handler)
+    if handler_key not in handlers_added:
+        if filename in ("stdout", "stderr"):
+            handler = logging.StreamHandler(getattr(sys, filename))
+        else:
+            handler = logging.FileHandler(filename)
+        handler.setLevel(getattr(logging, level.upper(), logging.DEBUG))
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        handlers_added.add(handler_key)
 
 # Test logger
 logger.info("Logger initialized in common.py with debug level")
-logger.debug("Debug logging is enabled")
 
 # #######################################################
 # connect to db

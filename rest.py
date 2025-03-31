@@ -204,98 +204,82 @@ def api(tablename, rec_id=None):
         db.photo_id.created_on.readable
     ) = db.photo_id.modified_on.readable = db.photo_id.id_auth_user.readable = True
 
-    if tablename == "auth_user" and request.method == "PUT" and "id" in request.json:
+    if tablename == "auth_user" and request.method == "PUT":
         try:
-            # Log the validation requirements for password
-            logger.info(
-                f"Password validation requirements: {db.auth_user.password.requires}"
-            )
-            logger.info(f"Raw request.json: {request.json}")
+            logger.info(f"Processing PUT request for auth_user")
+            logger.info(f"Request data: {request.json}")
 
             # Get the existing user record
-            row = (
-                db(db.auth_user.id == request.json["id"])
-                .select(db.auth_user.ALL)
-                .first()
-            )
+            user_id = request.json.get("id") or rec_id
+            if not user_id:
+                return {
+                    "status": "error",
+                    "message": "No user ID provided",
+                    "code": 400,
+                }
+
+            row = db(db.auth_user.id == user_id).select(db.auth_user.ALL).first()
             if not row:
-                logger.error(f"User not found with ID: {request.json['id']}")
+                logger.error(f"User not found with ID: {user_id}")
                 return {"status": "error", "message": "User not found", "code": 404}
 
             # Parse the data field if it's a string
             data = request.json.get("data")
             if isinstance(data, str):
-                logger.info("Parsing data string to JSON")
                 try:
                     data = json.loads(data)
-                    logger.info(f"Parsed data: {json.dumps(data, indent=2)}")
                 except json.JSONDecodeError as e:
                     logger.error(f"JSON parsing error: {str(e)}")
                     return {
                         "status": "error",
                         "message": f"Invalid JSON data: {str(e)}",
                     }
-            elif not data:
-                data = {}
+            else:
+                data = request.json
 
-            # Log the current password state
-            logger.info(f"Password in request data: {'password' in data}")
-            logger.info(
-                f"Current password validation state: {db.auth_user.password.requires}"
-            )
-            logger.info(f"Current data keys: {list(data.keys())}")
+            logger.info(f"Processed data for update: {data}")
 
-            # Always preserve existing password unless explicitly changed
-            if "password" not in data or not data["password"]:
-                logger.info(
-                    "No password in update data or password is empty, preserving existing password"
-                )
-                data["password"] = row.password
+            # Store original password validation state
+            original_requires = db.auth_user.password.requires
 
-                # Log the validation state before disabling
-                logger.info(
-                    f"Validation state before disable: {db.auth_user.password.requires}"
-                )
-
-                # Temporarily disable password validation
-                original_requires = db.auth_user.password.requires
-                db.auth_user.password.requires = None
-                logger.info("Password validation disabled")
-
-                try:
-                    # Update user directly using DAL
-                    update_data = {
-                        k: v for k, v in data.items() if k in db.auth_user.fields
-                    }
+            try:
+                # Always preserve existing password in updates unless explicitly changed
+                if "password" not in data or not data.get("password"):
                     logger.info(
-                        f"Updating user with data: {json.dumps(update_data, indent=2)}"
+                        "No password in update data, preserving existing password"
+                    )
+                    data["password"] = row.password
+                    # Disable password validation since we're using the existing password
+                    db.auth_user.password.requires = None
+                    logger.info("Password validation disabled for this update")
+                else:
+                    logger.info(
+                        "Password field present in update, will validate new password"
                     )
 
-                    db(db.auth_user.id == request.json["id"]).update(**update_data)
-                    db.commit()
-                    logger.info("User update successful")
+                # Update user
+                logger.info(
+                    f"Updating user with data: {json.dumps({k: v for k, v in data.items() if k != 'password'}, indent=2)}"
+                )
+                db(db.auth_user.id == user_id).update(
+                    **{k: v for k, v in data.items() if k in db.auth_user.fields}
+                )
+                db.commit()
+                logger.info("User update successful")
 
-                    return {
-                        "api_version": "0.1",
-                        "code": 200,
-                        "errors": {},
-                        "status": "success",
-                        "id": request.json["id"],
-                        "updated": 1,
-                    }
-                finally:
-                    # Restore password validation
-                    logger.info("Restoring password validation")
-                    db.auth_user.password.requires = original_requires
-                    logger.info(
-                        f"Validation restored to: {db.auth_user.password.requires}"
-                    )
+                return {
+                    "api_version": "0.1",
+                    "code": 200,
+                    "errors": {},
+                    "status": "success",
+                    "id": user_id,
+                    "updated": 1,
+                }
 
-            # If we get here, it means password was included in the update and is not empty
-            logger.info(
-                "Password included in update and is not empty, using normal validation"
-            )
-            request.json = data  # Replace request.json with the parsed data
+            finally:
+                # Always restore the original password validation
+                logger.info("Restoring original password validation")
+                db.auth_user.password.requires = original_requires
 
         except Exception as e:
             logger.error(f"Error updating user: {str(e)}")
