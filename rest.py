@@ -205,11 +205,13 @@ def api(tablename, rec_id=None):
 
     if tablename == "auth_user" and request.method == "PUT" and "id" in request.json:
         row = db(db.auth_user.id == request.json["id"]).select(db.auth_user.ALL).first()
-        if "password" not in request.json:
-            # Skip password validation by preserving the existing encrypted password
+
+        # Handle password field specially
+        if "password" not in request.json or not request.json["password"]:
+            # For PUT requests without password changes, preserve the original password hash
             request.json["password"] = row.password
-            # Disable password validation for this request since we're not changing it
-            db.auth_user.password.requires = None
+
+        # Fill in missing fields with existing values
         if "email" not in request.json:
             request.json["email"] = row.email
         if "first_name" not in request.json:
@@ -218,6 +220,24 @@ def api(tablename, rec_id=None):
             request.json["last_name"] = row.last_name
         if "username" not in request.json:
             request.json["username"] = row.username
+
+        # For password preservation, update directly using DAL
+        if "password" in request.json and request.json["password"] == row.password:
+            # Update using DAL to bypass password validation
+            db(db.auth_user.id == request.json["id"]).update(
+                email=request.json["email"],
+                first_name=request.json["first_name"],
+                last_name=request.json["last_name"],
+                username=request.json["username"],
+                password=request.json["password"],
+            )
+            db.commit()
+            return {
+                "status": "success",
+                "code": 200,
+                "message": "Record updated",
+                "id": request.json["id"],
+            }
 
     try:
         # Log the state before RestAPI call
