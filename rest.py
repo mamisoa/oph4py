@@ -206,7 +206,10 @@ def api(tablename, rec_id=None):
     if tablename == "auth_user" and request.method == "PUT" and "id" in request.json:
         row = db(db.auth_user.id == request.json["id"]).select(db.auth_user.ALL).first()
         if "password" not in request.json:
+            # Skip password validation by preserving the existing encrypted password
             request.json["password"] = row.password
+            # Disable password validation for this request since we're not changing it
+            db.auth_user.password.requires = None
         if "email" not in request.json:
             request.json["email"] = row.email
         if "first_name" not in request.json:
