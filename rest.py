@@ -210,6 +210,7 @@ def api(tablename, rec_id=None):
             logger.info(
                 f"Password validation requirements: {db.auth_user.password.requires}"
             )
+            logger.info(f"Raw request.json: {request.json}")
 
             # Get the existing user record
             row = (
@@ -225,8 +226,15 @@ def api(tablename, rec_id=None):
             data = request.json.get("data")
             if isinstance(data, str):
                 logger.info("Parsing data string to JSON")
-                data = json.loads(data)
-                logger.info(f"Parsed data: {json.dumps(data, indent=2)}")
+                try:
+                    data = json.loads(data)
+                    logger.info(f"Parsed data: {json.dumps(data, indent=2)}")
+                except json.JSONDecodeError as e:
+                    logger.error(f"JSON parsing error: {str(e)}")
+                    return {
+                        "status": "error",
+                        "message": f"Invalid JSON data: {str(e)}",
+                    }
             elif not data:
                 data = {}
 
@@ -235,15 +243,20 @@ def api(tablename, rec_id=None):
             logger.info(
                 f"Current password validation state: {db.auth_user.password.requires}"
             )
+            logger.info(f"Current data keys: {list(data.keys())}")
 
-            # If password is not in the update data, preserve the existing password
-            if "password" not in data:
-                logger.info("No password in update data, preserving existing password")
+            # Always preserve existing password unless explicitly changed
+            if "password" not in data or not data["password"]:
+                logger.info(
+                    "No password in update data or password is empty, preserving existing password"
+                )
                 data["password"] = row.password
+
                 # Log the validation state before disabling
                 logger.info(
                     f"Validation state before disable: {db.auth_user.password.requires}"
                 )
+
                 # Temporarily disable password validation
                 original_requires = db.auth_user.password.requires
                 db.auth_user.password.requires = None
@@ -251,12 +264,14 @@ def api(tablename, rec_id=None):
 
                 try:
                     # Update user directly using DAL
+                    update_data = {
+                        k: v for k, v in data.items() if k in db.auth_user.fields
+                    }
                     logger.info(
-                        f"Updating user with data: {json.dumps({k: v for k, v in data.items() if k in db.auth_user.fields}, indent=2)}"
+                        f"Updating user with data: {json.dumps(update_data, indent=2)}"
                     )
-                    db(db.auth_user.id == request.json["id"]).update(
-                        **{k: v for k, v in data.items() if k in db.auth_user.fields}
-                    )
+
+                    db(db.auth_user.id == request.json["id"]).update(**update_data)
                     db.commit()
                     logger.info("User update successful")
 
@@ -276,8 +291,10 @@ def api(tablename, rec_id=None):
                         f"Validation restored to: {db.auth_user.password.requires}"
                     )
 
-            # If we get here, it means password was included in the update
-            logger.info("Password included in update, using normal validation")
+            # If we get here, it means password was included in the update and is not empty
+            logger.info(
+                "Password included in update and is not empty, using normal validation"
+            )
             request.json = data  # Replace request.json with the parsed data
 
         except Exception as e:
