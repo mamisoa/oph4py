@@ -134,12 +134,27 @@
     - py4web REST API validation was rejecting requests with duplicate IDs
     - Fixed by ensuring ID is only sent in the URL for PUT requests, not in the payload
 
+- 2025-03-30T20:21:46.219670: Fixed certificate email functionality
+  - Fixed issue where email button was triggering print instead of email
+  - Updated HTML template to use unique ID for actionType input (certificateActionType)
+  - Updated JavaScript to properly handle actionType field
+  - Ensured proper form data serialization for email vs print actions
+  - Matches working implementation from glasses prescription module
+
 - 2025-03-30T20:21:46.219670: Fixed URL for Edit Patient button in patient-bar.html
   - Corrected the URL path for the Edit Patient button to use the proper route format
   - Changed from incorrect `URL('manage', 'user', vars=dict(id=patientId))` to correct `URL('user', patientId)`
   - Fixed 404 error when clicking the Edit Patient button
   - The URL now properly matches the route defined in manage.py with `@action("user/<rec_id>")`
   - Ensures seamless navigation between patient view and user edit screens
+
+- 2025-03-30T20:35:12.219670: Fixed actionType field IDs in prescription modals
+  - Updated actionType input ID to `GxRxactionType` in glasses prescription modal (GxRxModal)
+  - Updated actionType input ID to `CxRxactionType` in contacts prescription modal (CxRxModal)
+  - Modified corresponding JavaScript handlers in glasses.js and contacts.js
+  - Ensures consistent and unique IDs across all prescription modals
+  - Prevents conflicts with other forms' actionType fields
+  - Matches pattern used in certificate modal's `certificateActionType`
 
 ### Added
 

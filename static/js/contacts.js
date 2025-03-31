@@ -324,7 +324,7 @@ $("#emailCxRxBtn").click(function () {
 		return;
 	}
 
-	$("#actionTypeC").val("email");
+	$("#CxRxactionType").val("email");
 	$("#btnCxRxModalSubmit").click();
 });
 
@@ -1215,7 +1215,7 @@ $("#CxRxFormModal").submit(function (e) {
 			}
 
 			// Reset actionType to 'print' for next use
-			$("#actionTypeC").val("print");
+			$("#CxRxactionType").val("print");
 			// document.getElementById('CxRxFormModal').reset();
 			// Only close modal here if we're not sending email (handled in the email callback)
 		});

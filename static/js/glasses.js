@@ -1048,7 +1048,7 @@ $("#GxRxFormModal").submit(function (e) {
 // Add the email button click handler
 $("#emailGxRxBtn").click(function () {
 	// Set the action type to email
-	$("#actionType").val("email");
+	$("#GxRxactionType").val("email");
 
 	// Check if patient has a valid email before submitting
 	if (

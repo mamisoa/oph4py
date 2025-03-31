@@ -1930,9 +1930,10 @@
                                 <input id="idPatientGxHx" type="text" class="visually-hidden" name="id_auth_user" />
                                 <input id="methodGxHxModalSubmit" type="text" class="visually-hidden"
                                     name="methodGxHxModalSubmit" value="POST" />
+                                <!-- TODO: is methodGxHxModalSubmit right ? -->
                                 <input id="btnGxRxModalSubmit" type="submit" class="visually-hidden" />
                                 <!-- Hidden field to indicate action type -->
-                                <input type="hidden" name="actionType" id="actionType" value="print">
+                                <input type="hidden" name="actionType" id="GxRxactionType" value="print">
                             </form>
                         </div>
                     </div>
@@ -2328,7 +2329,7 @@
                                     name="methodCxRxModalSubmit" value="POST" />
                                 <input id="btnCxRxModalSubmit" type="submit" class="visually-hidden" />
                                 <!-- Hidden field to indicate action type -->
-                                <input type="hidden" name="actionType" id="actionTypeC" value="print">
+                                <input type="hidden" name="actionType" id="CxRxactionType" value="print">
                             </form>
                         </div>
                     </div>
@@ -2344,17 +2345,18 @@
 </div>
 
 <!-- Modal certificateModal -->
-<div class="modal fade" id="certificateModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
+<div class="modal fade" id="certificateModal" tabindex="-1" aria-labelledby="certificateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Certificate module</h5>
+                <h5 class="modal-title" id="certificateModalLabel">Certificat</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div class="container">
-                    <form id="certificateFormModal">
+            <form id="certificateFormModal">
+                <div class="modal-body">
+                    <div class="container">
+                        <!-- Hidden input for actionType -->
+                        <input type="hidden" name="actionType" id="certificateActionType" value="print">
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col">
@@ -2373,17 +2375,15 @@
                         <input id="methodcertificateModalSubmit" type="text" class="visually-hidden"
                             name="methodcertificateModalSubmit" value="POST" />
                         <input id="btncertificateModalSubmit" type="submit" class="visually-hidden" />
-                        <!-- Hidden field to indicate action type -->
-                        <input type="hidden" name="actionType" id="actionType" value="print">
-                    </form>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="emailCertificateBtn" class="btn btn-info">Send by email</button>
-                <label id="certificateModalSubmit" for="btncertificateModalSubmit" class="btn btn-primary"
-                    tabindex="0">Print</label>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="emailCertificateBtn" class="btn btn-info">Send by email</button>
+                    <label id="certificateModalSubmit" for="btncertificateModalSubmit" class="btn btn-primary"
+                        tabindex="0">Print</label>
+                </div>
+            </form>
         </div>
     </div>
 </div>

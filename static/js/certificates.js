@@ -634,6 +634,8 @@ certificateModal.addEventListener("show.bs.modal", function (event) {
 	$("#certificateEnded").val(today);
 	$("#certificateDest").val("A QUI DE DROIT");
 	$("#certificateTitle").val("CERTIFICAT MEDICAL");
+	// Add hidden input for actionType with default "print"
+	$("#certificateActionType").val("print");
 	// check certificate category
 	if ($(btn).data("certFlag") == "presence") {
 		console.log("presence cert!");
@@ -678,7 +680,7 @@ certificateModal.addEventListener("show.bs.modal", function (event) {
 // Add event listener for the email button
 $(document).on("click", "#emailCertificateBtn", function () {
 	// Set the action type to email
-	$("#actionType").val("email");
+	$("#certificateActionType").val("email");
 
 	// Check if patient has a valid email before submitting
 	if (
@@ -693,6 +695,13 @@ $(document).on("click", "#emailCertificateBtn", function () {
 		return;
 	}
 
+	// Add debug logging
+	console.log(
+		"Email button clicked, actionType set to:",
+		$("#certificateActionType").val()
+	);
+	console.log("Patient email:", patientObj["email"]);
+
 	// Trigger the form submission
 	$("#btncertificateModalSubmit").click();
 });
@@ -706,6 +715,11 @@ $("#certificateFormModal").submit(function (e) {
 	console.log("content:", certContent);
 	let fromTinyMce = htmlToPdfmake(certContent);
 	console.log("from tinyMCE:", fromTinyMce);
+
+	// Get the action type - default to print if not specified
+	let actionType = formObj["actionType"] || "print";
+	console.log("Action type:", actionType);
+
 	fetch(HOSTURL + "/" + APP_NAME + "/api/uuid", { method: "GET" })
 		.then((response) => response.json())
 		.then((data) => {
@@ -977,40 +991,23 @@ $("#certificateFormModal").submit(function (e) {
 					console.log("Certificate saved to database:", data);
 					$cert_tbl.bootstrapTable("refresh");
 
-					// Check if user wants to print or email the certificate
-					let actionType = formObj["actionType"] || "print"; // Default to print if not specified
-					console.log("Selected action type:", actionType); // Log selected action
-					console.log("Patient email:", patientObj["email"]); // Log patient email
-
+					// Handle action based on type
 					if (actionType === "print") {
-						// Print the certificate (existing functionality)
 						console.log("Printing certificate...");
 						try {
 							const pdfDocGenerator = pdfMake.createPdf(finalPresc);
 							pdfDocGenerator.print();
-							// Close the modal after printing
 							$("#certificateModal").modal("hide");
 						} catch (printError) {
 							console.error("Error printing PDF:", printError);
-							try {
-								notifyUser(
-									"Erreur lors de l'impression du PDF: " + printError.message,
-									"danger"
-								);
-							} catch (notifyError) {
-								console.error("Error showing notification:", notifyError);
-								alert(
-									"Erreur lors de l'impression du PDF: " + printError.message
-								);
-							}
-							// Close modal on error
+							notifyUser(
+								"Erreur lors de l'impression du PDF: " + printError.message,
+								"danger"
+							);
 							$("#certificateModal").modal("hide");
 						}
 					} else if (actionType === "email") {
-						// Email the certificate as PDF attachment
 						console.log("Preparing certificate for email...");
-
-						// Check if patient has a valid email
 						if (
 							!patientObj["email"] ||
 							patientObj["email"].trim() === "" ||
@@ -1021,208 +1018,98 @@ $("#certificateFormModal").submit(function (e) {
 								"Impossible d'envoyer l'email: adresse email du patient manquante ou invalide",
 								"danger"
 							);
-							// Close modal if email is invalid
 							$("#certificateModal").modal("hide");
 							return;
 						}
 
-						// Set a safety timeout to close the modal if PDF generation takes too long
-						const safetyTimeout = setTimeout(() => {
-							console.error("PDF generation timeout - taking too long");
-							try {
-								notifyUser(
-									"Le traitement du PDF prend trop de temps, veuillez réessayer",
-									"warning"
-								);
-							} catch (notifyError) {
-								console.error("Error showing notification:", notifyError);
-								alert(
-									"Le traitement du PDF prend trop de temps, veuillez réessayer"
-								);
-							}
-							$("#certificateModal").modal("hide");
-						}, 15000); // 15 second timeout
-
 						try {
-							console.log("Creating PDF...");
+							console.log("Creating PDF for email...");
 							const pdfDocGenerator = pdfMake.createPdf(finalPresc);
-
-							// Get PDF as base64 string
-							console.log("Converting PDF to base64...");
 							pdfDocGenerator.getBase64((base64Data) => {
-								console.log("base64Data: " + base64Data);
-								// Clear the safety timeout since we got the data
-								clearTimeout(safetyTimeout);
+								if (!base64Data) {
+									throw new Error("PDF conversion failed - no data returned");
+								}
 
-								try {
-									console.log(
-										"PDF converted to base64, length:",
-										base64Data ? base64Data.length : "NULL"
-									);
+								// Prepare email data
+								const titleWords = finalRxObj["title"].toLowerCase().split(" ");
+								const capitalizedTitle = titleWords
+									.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+									.join(" ");
 
-									if (!base64Data) {
-										throw new Error("PDF conversion failed - no data returned");
-									}
-
-									// Validate base64 data isn't too large (max ~5MB)
-									if (base64Data.length > 5000000) {
-										throw new Error(
-											"PDF trop volumineux pour l'envoi par email"
-										);
-									}
-
-									// Prepare email data
-									const titleWords = finalRxObj["title"]
-										.toLowerCase()
-										.split(" ");
-									const capitalizedTitle = titleWords
-										.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-										.join(" ");
-									const content = `<p>Cher/Chère ${patientObj["first_name"]} ${
+								const emailData = {
+									recipient: patientObj["email"],
+									subject: `${capitalizedTitle} de ${patientObj[
+										"last_name"
+									].toUpperCase()} ${
+										patientObj["first_name"]
+									} | Centre Médical Bruxelles-Schuman`,
+									content: `<p>Cher/Chère ${patientObj["first_name"]} ${
 										patientObj["last_name"]
 									},</p>
-									<p>Veuillez trouver ci-joint votre ${finalRxObj["title"].toLowerCase()}.</p>`;
+											<p>Veuillez trouver ci-joint votre ${finalRxObj["title"].toLowerCase()}.</p>`,
+									attachmentName: `${today.substring(2, 4)}${today.substring(
+										5,
+										7
+									)}${today.substring(8, 10)}_${finalRxObj["title"]
+										.toLowerCase()
+										.replace(/\s+/g, "_")}_${patientObj[
+										"last_name"
+									].toUpperCase()}_${
+										patientObj["first_name"]
+									}_Centre_Médical_Bruxelles-Schuman.pdf`,
+									attachmentData: base64Data,
+									attachmentType: "application/pdf",
+								};
 
-									const emailData = {
-										recipient: patientObj["email"],
-										subject: `${capitalizedTitle} de ${patientObj[
-											"last_name"
-										].toUpperCase()} ${
-											patientObj["first_name"]
-										} | Centre Médical Bruxelles-Schuman`,
-										content: content,
-										attachmentName: `${today.substring(2, 4)}${today.substring(
-											5,
-											7
-										)}${today.substring(8, 10)}_${finalRxObj["title"]
-											.toLowerCase()
-											.replace(/\s+/g, "_")}_${patientObj[
-											"last_name"
-										].toUpperCase()}_${
-											patientObj["first_name"]
-										}_Centre_Médical_Bruxelles-Schuman.pdf`,
-										attachmentData: base64Data,
-										attachmentType: "application/pdf",
-									};
-									console.log("Email data prepared:", {
-										recipient: emailData.recipient,
-										subject: emailData.subject,
-										attachmentName: emailData.attachmentName,
-										contentLength: emailData.content.length,
-										attachmentDataLength: emailData.attachmentData.length,
-									});
-
-									// Send the email with PDF attachment
-									console.log(
-										"Sending email to API:",
-										HOSTURL + "/" + APP_NAME + "/api/email/send_with_attachment"
-									);
-
-									// Direct fetch call with full error handling
-									fetch(
-										HOSTURL +
-											"/" +
-											APP_NAME +
-											"/api/email/send_with_attachment",
-										{
-											method: "POST",
-											headers: {
-												"Content-Type": "application/json",
-											},
-											body: JSON.stringify(emailData),
+								// Send email
+								fetch(
+									HOSTURL + "/" + APP_NAME + "/api/email/send_with_attachment",
+									{
+										method: "POST",
+										headers: {
+											"Content-Type": "application/json",
+										},
+										body: JSON.stringify(emailData),
+									}
+								)
+									.then((response) => {
+										if (!response.ok) {
+											throw new Error(
+												`Network response error: ${response.status} ${response.statusText}`
+											);
 										}
-									)
-										.then((response) => {
-											console.log(
-												"Email API response status:",
-												response.status
-											);
-											if (!response.ok) {
-												throw new Error(
-													`Network response error: ${response.status} ${response.statusText}`
-												);
-											}
-											return response.json();
-										})
-										.then((data) => {
-											console.log(
-												"Email sent successfully, API response:",
-												data
-											);
-											// Show success notification
-											try {
-												notifyUser("Email envoyé avec succès", "success");
-											} catch (notifyError) {
-												console.error(
-													"Error showing notification:",
-													notifyError
-												);
-												alert("Email envoyé avec succès");
-											}
-											// Close the modal only after email is sent successfully
-											$("#certificateModal").modal("hide");
-										})
-										.catch((error) => {
-											console.error("Error sending email:", error);
-											// Show error notification
-											try {
-												notifyUser(
-													"Erreur lors de l'envoi de l'email: " + error.message,
-													"danger"
-												);
-											} catch (notifyError) {
-												console.error(
-													"Error showing notification:",
-													notifyError
-												);
-												alert(
-													"Erreur lors de l'envoi de l'email: " + error.message
-												);
-											}
-											// Still close the modal even if email fails
-											$("#certificateModal").modal("hide");
-										});
-								} catch (innerError) {
-									// Handle errors in base64 data processing
-									console.error("Error processing PDF data:", innerError);
-									try {
+										return response.json();
+									})
+									.then((data) => {
+										console.log("Email sent successfully");
+										notifyUser("Email envoyé avec succès", "success");
+										$("#certificateModal").modal("hide");
+									})
+									.catch((error) => {
+										console.error("Error sending email:", error);
 										notifyUser(
-											"Erreur lors de la préparation du PDF: " +
-												innerError.message,
+											"Erreur lors de l'envoi de l'email: " + error.message,
 											"danger"
 										);
-									} catch (notifyError) {
-										console.error("Error showing notification:", notifyError);
-										alert(
-											"Erreur lors de la préparation du PDF: " +
-												innerError.message
-										);
-									}
-									// Close modal on error
-									$("#certificateModal").modal("hide");
-								}
+										$("#certificateModal").modal("hide");
+									});
 							});
-						} catch (pdfError) {
-							// Handle errors in PDF creation
-							clearTimeout(safetyTimeout);
-							console.error("Error creating PDF:", pdfError);
-							try {
-								notifyUser(
-									"Erreur lors de la création du PDF: " + pdfError.message,
-									"danger"
-								);
-							} catch (notifyError) {
-								console.error("Error showing notification:", notifyError);
-								alert("Erreur lors de la création du PDF: " + pdfError.message);
-							}
-							// Close modal on error
+						} catch (error) {
+							console.error("Error preparing PDF for email:", error);
+							notifyUser(
+								"Erreur lors de la préparation du PDF: " + error.message,
+								"danger"
+							);
 							$("#certificateModal").modal("hide");
 						}
 					}
 				})
 				.catch((error) => {
 					console.error("Error saving certificate:", error);
-					// Close modal on error
+					notifyUser(
+						"Erreur lors de la sauvegarde du certificat: " + error.message,
+						"danger"
+					);
 					$("#certificateModal").modal("hide");
 				});
 		});
