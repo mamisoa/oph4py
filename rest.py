@@ -204,40 +204,56 @@ def api(tablename, rec_id=None):
     ) = db.photo_id.modified_on.readable = db.photo_id.id_auth_user.readable = True
 
     if tablename == "auth_user" and request.method == "PUT" and "id" in request.json:
-        row = db(db.auth_user.id == request.json["id"]).select(db.auth_user.ALL).first()
-
-        # Handle password field specially
-        if "password" not in request.json or not request.json["password"]:
-            # For PUT requests without password changes, preserve the original password hash
-            request.json["password"] = row.password
-
-        # Fill in missing fields with existing values
-        if "email" not in request.json:
-            request.json["email"] = row.email
-        if "first_name" not in request.json:
-            request.json["first_name"] = row.first_name
-        if "last_name" not in request.json:
-            request.json["last_name"] = row.last_name
-        if "username" not in request.json:
-            request.json["username"] = row.username
-
-        # For password preservation, update directly using DAL
-        if "password" in request.json and request.json["password"] == row.password:
-            # Update using DAL to bypass password validation
-            db(db.auth_user.id == request.json["id"]).update(
-                email=request.json["email"],
-                first_name=request.json["first_name"],
-                last_name=request.json["last_name"],
-                username=request.json["username"],
-                password=request.json["password"],
+        try:
+            # Get the existing user record
+            row = (
+                db(db.auth_user.id == request.json["id"])
+                .select(db.auth_user.ALL)
+                .first()
             )
-            db.commit()
-            return {
-                "status": "success",
-                "code": 200,
-                "message": "Record updated",
-                "id": request.json["id"],
-            }
+            if not row:
+                return {"status": "error", "message": "User not found", "code": 404}
+
+            # Parse the data field if it's a string
+            data = request.json.get("data")
+            if isinstance(data, str):
+                data = json.loads(data)
+            elif not data:
+                data = {}
+
+            # If password is not in the update data, preserve the existing password
+            if "password" not in data:
+                data["password"] = row.password
+                # Temporarily disable password validation
+                original_requires = db.auth_user.password.requires
+                db.auth_user.password.requires = None
+
+                try:
+                    # Update user directly using DAL
+                    db(db.auth_user.id == request.json["id"]).update(
+                        **{k: v for k, v in data.items() if k in db.auth_user.fields}
+                    )
+                    db.commit()
+
+                    return {
+                        "api_version": "0.1",
+                        "code": 200,
+                        "errors": {},
+                        "status": "success",
+                        "id": request.json["id"],
+                        "updated": 1,
+                    }
+                finally:
+                    # Restore password validation
+                    db.auth_user.password.requires = original_requires
+
+            # If we get here, it means password was included in the update
+            # Let normal validation occur
+            request.json = data  # Replace request.json with the parsed data
+
+        except Exception as e:
+            logger.error(f"Error updating user: {str(e)}")
+            return {"status": "error", "message": str(e)}
 
     try:
         # Log the state before RestAPI call
