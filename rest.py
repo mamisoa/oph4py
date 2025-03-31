@@ -3,6 +3,7 @@
 import base64
 import binascii
 import json
+import traceback
 
 from py4web import action, request, response  # add response to throw http error 400
 from pydal.restapi import Policy, RestAPI
@@ -205,6 +206,11 @@ def api(tablename, rec_id=None):
 
     if tablename == "auth_user" and request.method == "PUT" and "id" in request.json:
         try:
+            # Log the validation requirements for password
+            logger.info(
+                f"Password validation requirements: {db.auth_user.password.requires}"
+            )
+
             # Get the existing user record
             row = (
                 db(db.auth_user.id == request.json["id"])
@@ -212,28 +218,47 @@ def api(tablename, rec_id=None):
                 .first()
             )
             if not row:
+                logger.error(f"User not found with ID: {request.json['id']}")
                 return {"status": "error", "message": "User not found", "code": 404}
 
             # Parse the data field if it's a string
             data = request.json.get("data")
             if isinstance(data, str):
+                logger.info("Parsing data string to JSON")
                 data = json.loads(data)
+                logger.info(f"Parsed data: {json.dumps(data, indent=2)}")
             elif not data:
                 data = {}
 
+            # Log the current password state
+            logger.info(f"Password in request data: {'password' in data}")
+            logger.info(
+                f"Current password validation state: {db.auth_user.password.requires}"
+            )
+
             # If password is not in the update data, preserve the existing password
             if "password" not in data:
+                logger.info("No password in update data, preserving existing password")
                 data["password"] = row.password
+                # Log the validation state before disabling
+                logger.info(
+                    f"Validation state before disable: {db.auth_user.password.requires}"
+                )
                 # Temporarily disable password validation
                 original_requires = db.auth_user.password.requires
                 db.auth_user.password.requires = None
+                logger.info("Password validation disabled")
 
                 try:
                     # Update user directly using DAL
+                    logger.info(
+                        f"Updating user with data: {json.dumps({k: v for k, v in data.items() if k in db.auth_user.fields}, indent=2)}"
+                    )
                     db(db.auth_user.id == request.json["id"]).update(
                         **{k: v for k, v in data.items() if k in db.auth_user.fields}
                     )
                     db.commit()
+                    logger.info("User update successful")
 
                     return {
                         "api_version": "0.1",
@@ -245,14 +270,19 @@ def api(tablename, rec_id=None):
                     }
                 finally:
                     # Restore password validation
+                    logger.info("Restoring password validation")
                     db.auth_user.password.requires = original_requires
+                    logger.info(
+                        f"Validation restored to: {db.auth_user.password.requires}"
+                    )
 
             # If we get here, it means password was included in the update
-            # Let normal validation occur
+            logger.info("Password included in update, using normal validation")
             request.json = data  # Replace request.json with the parsed data
 
         except Exception as e:
             logger.error(f"Error updating user: {str(e)}")
+            logger.error(f"Full traceback: {traceback.format_exc()}")
             return {"status": "error", "message": str(e)}
 
     try:
