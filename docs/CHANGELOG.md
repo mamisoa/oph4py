@@ -341,3 +341,7 @@
 - Updated PDF attachment filename format to: "{yymmdd}_{type of document}_{LASTNAME Firstname}_Centre_Médical_Bruxelles-Schuman.pdf"
 - Updated certificate modal by replacing radio buttons with a dedicated "Send by email" button for a more streamlined user experience
 - Changed form submit button label from "Submit" to "Print" for clarity
+
+## [2025-03-31]
+### Removed
+- Removed unused `methodCxRxModalSubmit` input field from contact lenses prescription modal form
