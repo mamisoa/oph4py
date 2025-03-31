@@ -1,5 +1,7 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
 ## [Unreleased]
 
 ### Fixed
@@ -377,6 +379,17 @@
   - Positioned in the action button row for convenient access
   - Improves workflow efficiency by allowing quick edits to patient information
 
+- 2025-04-01: Added comprehensive REST API documentation in docs/rest.md
+
+- 2025-04-01T01:00:31: Enhanced REST API documentation with detailed use cases
+  - Added comprehensive documentation for `/api/<tablename>/` endpoint
+  - Detailed special handling of `auth_user` table operations
+  - Added query parameter examples and explanations
+  - Included practical use cases for common operations
+  - Added error handling and best practices sections
+  - Improved response format documentation
+  - Added authentication and security details
+
 ## [2025-03-30] - UI and Email Improvements
 
 - Updated email subject line format to: "{type of document} de {LASTNAME Firstname} | Centre Médical Bruxelles-Schuman"
@@ -385,5 +398,7 @@
 - Changed form submit button label from "Submit" to "Print" for clarity
 
 ## [2025-03-31]
+
 ### Removed
+
 - Removed unused `methodCxRxModalSubmit` input field from contact lenses prescription modal form
