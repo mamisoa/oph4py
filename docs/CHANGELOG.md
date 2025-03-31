@@ -156,6 +156,13 @@
   - Prevents conflicts with other forms' actionType fields
   - Matches pattern used in certificate modal's `certificateActionType`
 
+- 2025-03-31T23:40:20.958779: Fixed auth_user password validation issue in REST API
+  - Modified rest.py to properly handle password validation during user updates
+  - Added logic to skip password validation when password is not being changed
+  - Preserves existing encrypted password for updates that don't modify the password
+  - Fixed inconsistency between localhost and production server behavior
+  - Ensures password complexity requirements are only enforced when actually changing passwords
+
 ### Added
 
 - 2025-03-30T19:43:21: Added email functionality to contacts prescription module
