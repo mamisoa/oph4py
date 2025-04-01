@@ -586,7 +586,19 @@ function postopCert() {
 			datecreation +
 			"</strong>.</p>"
 	);
-	postopdefault.push("<p>L'examen montre:");
+	postopdefault.push("<p>L'examen préopératoire <strong>du 01/01/2025</strong> montrait:");
+	postopdefault.push("<ul>");
+	postopdefault.push("<li>la réfraction cycloplégique suivante:</li>");
+	postopdefault.push("<ul>");
+	postopdefault.push(
+		`<li> Oeil droit (OD) : ${autorxObjFill["sphR"]}(${autorxObjFill["cylR"]} x ${autorxObjFill["axisR"]}°)</li>`
+	);
+	postopdefault.push(
+		`<li> Oeil gauche (OG): ${autorxObjFill["sphL"]}(${autorxObjFill["cylL"]} x ${autorxObjFill["axisL"]} °)</li>`
+	);
+	postopdefault.push("</ul>");
+	postopdefault.push("</li>");
+	postopdefault.push("<p>L'examen de ce jour montre:");
 	postopdefault.push("<ul>");
 	postopdefault.push("<li>la réfraction objective suivante:</li>");
 	postopdefault.push("<ul>");
