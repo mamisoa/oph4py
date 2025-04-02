@@ -416,3 +416,23 @@ All notable changes to this project will be documented in this file.
 ### Removed
 
 - Removed unused `methodCxRxModalSubmit` input field from contact lenses prescription modal form
+
+## [2025-04-02]
+
+### Added
+- Created comprehensive workflow documentation in `docs/workflow.md`
+  - Detailed explanation of patient journey through the EMR system
+  - Role-based workflow descriptions for administrative assistants, medical assistants, and doctors
+  - Status tracking and monitoring information
+  - Security and access control documentation
+  - Integration points and system maintenance guidelines
+- Created comprehensive README.md with:
+  - Project overview and features
+  - Installation instructions
+  - Documentation overview
+  - Security features
+  - Contributing guidelines
+  - License information
+
+### Changed
+- Updated LICENSE file with proper project description
