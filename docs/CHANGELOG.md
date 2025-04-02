@@ -420,6 +420,7 @@ All notable changes to this project will be documented in this file.
 ## [2025-04-02]
 
 ### Added
+
 - Created comprehensive workflow documentation in `docs/workflow.md`
   - Detailed explanation of patient journey through the EMR system
   - Role-based workflow descriptions for administrative assistants, medical assistants, and doctors
@@ -435,4 +436,5 @@ All notable changes to this project will be documented in this file.
   - License information
 
 ### Changed
+
 - Updated LICENSE file with proper project description
