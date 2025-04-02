@@ -44,33 +44,6 @@ A comprehensive ophthalmology electronic medical records (EMR) system built with
 - Modern web browser with JavaScript enabled
 - Network connectivity for multi-user operation
 
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/oph4py.git
-   cd oph4py
-   ```
-
-2. Install dependencies using Poetry:
-   ```bash
-   poetry install
-   ```
-
-3. Configure the database:
-   - Copy `settings-example.py` to `settings.py`
-   - Update database credentials and other configuration options
-
-4. Initialize the database:
-   ```bash
-   poetry run python -m py4web.utils.initialize_db
-   ```
-
-5. Start the development server:
-   ```bash
-   poetry run python -m py4web run apps
-   ```
-
 ## Documentation
 
 Comprehensive documentation is available in the `docs/` directory:
@@ -109,4 +82,3 @@ Mamisoa Andriantafika
 
 - Py4web framework team
 - Bootstrap Table contributors
-- All medical professionals who provided domain expertise 
