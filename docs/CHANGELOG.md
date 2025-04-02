@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- 2025-04-02T22:35:55: Reorganized database documentation structure in models.md
+  - Restructured Administrative Tables section with logical subsections:
+    - User Management and Access Control
+    - Reference Tables
+    - Facility Management
+    - Patient Information Management
+    - Contact Classification
+  - Integrated Patient Information section into Administrative Tables
+  - Enhanced table descriptions with more detailed field information
+  - Improved documentation clarity and organization
+  - Better reflects relationships between administrative data components
+
 ### Fixed
 
 - 2025-03-30T19:52:59: Fixed base64 encoding error in contacts prescription email
