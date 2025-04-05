@@ -5,6 +5,7 @@ globs: *.py
 # Modular Code Generation Rule for Cursor
 
 ## Overview
+
 This rule mandates that every general-purpose function that can be used across multiple scripts must be modularized. Centralizing such functions improves code maintainability, reduces redundancy, and promotes reuse.
 
 ## Guidelines

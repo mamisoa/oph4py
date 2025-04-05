@@ -3,10 +3,10 @@ description: Python Documentation Rule
 globs: *.py
 alwaysApply: false
 ---
-# Python Script Documentation Guidelines (Using Poetry & Comprehensive Docstrings)
+# Python Script Documentation Guidelines (Using Poetry or uv)
 
 1. **Overview & Purpose:**  
-   - Describe the script’s title, its overall functionality, and its main objectives.  
+   - Describe the script's title, its overall functionality, and its main objectives.  
    - Clearly state the intended purpose and context for using the script.
 
 2. **Table of Contents:**  
@@ -21,16 +21,27 @@ alwaysApply: false
      - Versioning, Changelog & Licensing  
      - Additional Resources
 
-3. **Installation & Dependencies (Using Poetry):**  
+3. **Installation & Dependencies:**  
    - **Python Version:** Specify the required Python version (e.g., Python 3.8+).  
    - **Dependency Management:**  
-     - Indicate that dependencies are managed via Poetry and are listed in the `pyproject.toml` file.  
-     - Instruct users to run `poetry install` to set up the environment.  
-     - Explain how to add new dependencies (e.g., `poetry add package_name`) or development dependencies (e.g., `poetry add --dev package_name`).
+     - Indicate which package manager is used (Poetry or uv) by checking for `poetry.lock` or `uv.lock` files.
+     - **For Poetry Projects:**
+       - Dependencies are listed in the `pyproject.toml` file.
+       - Run `poetry install` to set up the environment.
+       - Add new dependencies: `poetry add package_name`
+       - Add development dependencies: `poetry add --dev package_name`
+     - **For uv Projects:**
+       - Dependencies are listed in `requirements.txt` and `requirements-dev.txt` files.
+       - Run `uv pip install -r requirements.txt` to set up the environment.
+       - Add new dependencies: Update `requirements.txt` and run `uv pip install -r requirements.txt`
+       - Add development dependencies: Update `requirements-dev.txt` and run `uv pip install -r requirements-dev.txt`
 
 4. **Usage Instructions:**  
    - Provide clear instructions on how to run the script, including command-line examples.  
    - Include sample inputs and expected outputs to help users understand its usage.
+   - Specify any environment activation steps:
+     - Poetry: `poetry shell` or `poetry run python script.py`
+     - uv: `source .venv/bin/activate` then `python script.py`
 
 5. **Code Documentation & Comprehensive Docstrings:**  
    - **Exhaustive Docstrings (Mandatory for Classes, Methods, and Functions):**  
@@ -46,6 +57,7 @@ alwaysApply: false
      - Always include a comprehensive docstring when creating a new class, method, or function.  
      - Integrate linters or CI tools to enforce these documentation standards automatically.
    - **Example Docstring:**
+
      ```python
      def add(a: int, b: int) -> int:
          """
@@ -73,10 +85,14 @@ alwaysApply: false
 6. **Architecture & Design:**  
    - Provide an overview of the code structure and responsibilities of each module or component.  
    - Optionally include flow diagrams or sketches to illustrate how data and logic flow through the script.
+   - Document any package manager specific configurations or requirements.
 
 7. **Testing & Troubleshooting:**  
-   - Explain how to run tests (mention any Poetry-specific commands if applicable).  
+   - Explain how to run tests based on the package manager:
+     - Poetry: `poetry run pytest`
+     - uv: Activate environment and run `pytest`
    - Provide information on common issues, error messages, and troubleshooting tips.
+   - Include package manager specific troubleshooting guidance.
 
 8. **Versioning, Changelog & Licensing:**  
    - **Version Information:** Specify the current version of the script.  
@@ -85,4 +101,9 @@ alwaysApply: false
    - **Contribution Guidelines:** (If applicable) Include instructions for contributing to the project.
 
 9. **Additional Resources:**  
-   - Provide links or references to external documentation, related projects, or detailed user guides as needed.
+   - Provide links or references to:
+     - External documentation
+     - Related projects
+     - Detailed user guides
+     - Package manager documentation (Poetry/uv)
+     - Python packaging best practices

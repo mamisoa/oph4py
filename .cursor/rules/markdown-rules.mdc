@@ -6,6 +6,7 @@ alwaysApply: false
 # Markdown Formatting Rule
 
 ## Overview
+
 This rule ensures that all generated markdown files by Cursor adhere to proper markdown formatting guidelines. In particular, Cursor must comply with the following markdownlint rules:
 
 - **MD032: Blanks Around Lists**  
@@ -17,11 +18,15 @@ This rule ensures that all generated markdown files by Cursor adhere to proper m
 - **MD034: No Bare URLs**  
   Bare URLs should not be used in the markdown. For instance, email addresses or other URLs must be wrapped in angle brackets or formatted using markdown link syntax.
 
+- **MD036: No Emphasis Instead of Headings**  
+  Emphasis (bold or italic) should not be used to denote sections where a heading would be more appropriate.
+
 ## Implementation Guidelines
 
 1. **Lists (MD032):**
    - Every list (ordered or unordered) should have at least one blank line above and below it.
    - **Example:**
+
      ```markdown
      Introduction text.
      
@@ -34,6 +39,7 @@ This rule ensures that all generated markdown files by Cursor adhere to proper m
 2. **Fenced Code Blocks (MD031):**
    - Ensure that there is a blank line before and after any fenced code block.
    - **Example:**
+
      ```markdown
      Some introductory text.
      
@@ -41,24 +47,49 @@ This rule ensures that all generated markdown files by Cursor adhere to proper m
      def sample_function():
          return "Hello, World!"
      ```
-     
+
      Some following text.
-     ```
+    ```
 
 3. **Bare URLs (MD034):**
    - Avoid using bare URLs in the markdown. Instead, wrap them in angle brackets or use markdown link formatting.
    - **Incorrect Example:**
+
      ```markdown
      For more details, contact: john.doe@example.com
      ```
-   - **Correct Examples:**
-     ```markdown
+
+   - **Correct Example:**
+  
+   ```markdown
      For more details, contact: <john.doe@example.com>
+
      ```
+
      or
+
      ```markdown
-     For more details, contact: [john.doe@example.com](mdc:mailto:john.doe@example.com)
+     For more details, contact: @john.doe@example.com
+     ```
+
+4. **No Emphasis Instead of Headings (MD036):**
+   - Don't use emphasized text (bold or italic) to denote sections when a heading would be more appropriate.
+   - **Incorrect Example:**
+
+     ```markdown
+     **Section Title**
+     
+     Content of the section...
+     ```
+
+   - **Correct Example:**
+
+     ```markdown
+     ## Section Title
+     
+     Content of the section...
      ```
 
 ## Conclusion
+
 By enforcing these markdown formatting rules, Cursor will generate markdown files that are consistent, readable, and compliant with established best practices. These guidelines help maintain high-quality documentation and content standards across all projects.
