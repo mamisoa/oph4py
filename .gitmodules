@@ -1,0 +1,6 @@
+[submodule "rules"]
+	path = rules
+	url = git@github.com:mamisoa/rules.git
+[submodule "fastapi_agenda"]
+	path = fastapi_agenda
+	url = git@github.com:mamisoa/fastapi_agenda.git
