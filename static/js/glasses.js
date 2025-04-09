@@ -990,6 +990,15 @@ $("#GxRxFormModal").submit(function (e) {
 
 			// Check if we're sending by email or printing
 			if (formObj.actionType === "email") {
+				// Get email from input field
+				const emailAddress = $("#GxRxemailInput").val().trim();
+				
+				// Validate email
+				if (!emailAddress || !emailAddress.includes("@")) {
+					notifyUser("Veuillez fournir une adresse email valide", "danger");
+					return;
+				}
+
 				// Generate PDF and send by email
 				const content = `<p>Cher/Chère ${patientObj["first_name"]} ${patientObj["last_name"]},</p>
                 <p>Veuillez trouver ci-joint votre prescription de lunettes.</p>`;
@@ -997,7 +1006,7 @@ $("#GxRxFormModal").submit(function (e) {
 				pdf.getBase64((base64Data) => {
 					// Prepare email data
 					const emailData = {
-						recipient: patientObj.email,
+						recipient: emailAddress,
 						subject: `Prescription de lunettes de ${patientObj.last_name.toUpperCase()} ${
 							patientObj.first_name
 						} | Centre Médical Bruxelles-Schuman`,
@@ -1020,7 +1029,7 @@ $("#GxRxFormModal").submit(function (e) {
 							console.log("Email result:", result);
 							if (result.status === "success") {
 								notifyUser(
-									"Prescription envoyée avec succès à " + patientObj.email,
+									"Prescription envoyée avec succès à " + emailAddress,
 									"success"
 								);
 							} else {
@@ -1065,6 +1074,12 @@ $("#emailGxRxBtn").click(function () {
 
 	// Trigger the form submission
 	$("#btnGxRxModalSubmit").click();
+});
+
+// Add event listener for modal show to pre-populate email
+$("#GxRxModal").on("show.bs.modal", function (e) {
+	// Pre-populate email field with patient's email
+	$("#GxRxemailInput").val(patientObj.email || "");
 });
 
 console.log("prescRxObj:", prescRxObj);

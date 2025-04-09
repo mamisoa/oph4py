@@ -49,6 +49,18 @@ All notable changes to this project will be documented in this file.
   - Added validation rules and business logic constraints
   - Ensured consistency with database schema
 
+- 2025-04-03T00:39:15.204980: Fixed Bootstrap tables double initialization
+
+- [[=mcp_server_name_get_current_datetime]]: Enhanced email functionality in prescription and certificate modals
+  - Added editable email input field to glasses prescription modal (GxRxModal)
+  - Added editable email input field to contacts prescription modal (CxRxModal)
+  - Added editable email input field to certificate modal (certificateModal)
+  - Pre-populated fields with patient's email address
+  - Added client-side email validation
+  - Updated email sending logic to use the input field value
+  - Improved user feedback messages with actual email address used
+  - Maintained existing functionality while adding email customization feature
+
 ### Fixed
 
 - 2025-03-30T19:52:59: Fixed base64 encoding error in contacts prescription email

@@ -718,6 +718,12 @@ $(document).on("click", "#emailCertificateBtn", function () {
 	$("#btncertificateModalSubmit").click();
 });
 
+// Add event listener for modal show to pre-populate email
+$("#certificateModal").on("show.bs.modal", function (e) {
+	// Pre-populate email field with patient's email
+	$("#certificateEmailInput").val(patientObj.email || "");
+});
+
 $("#certificateFormModal").submit(function (e) {
 	e.preventDefault();
 	let formStr = $(this).serializeJSON();
@@ -1020,16 +1026,14 @@ $("#certificateFormModal").submit(function (e) {
 						}
 					} else if (actionType === "email") {
 						console.log("Preparing certificate for email...");
-						if (
-							!patientObj["email"] ||
-							patientObj["email"].trim() === "" ||
-							!patientObj["email"].includes("@")
-						) {
-							console.error("Invalid or missing patient email address");
-							notifyUser(
-								"Impossible d'envoyer l'email: adresse email du patient manquante ou invalide",
-								"danger"
-							);
+						
+						// Get email from input field
+						const emailAddress = $("#certificateEmailInput").val().trim();
+						
+						// Validate email
+						if (!emailAddress || !emailAddress.includes("@")) {
+							console.error("Invalid email address provided");
+							notifyUser("Veuillez fournir une adresse email valide", "danger");
 							$("#certificateModal").modal("hide");
 							return;
 						}
@@ -1049,7 +1053,7 @@ $("#certificateFormModal").submit(function (e) {
 									.join(" ");
 
 								const emailData = {
-									recipient: patientObj["email"],
+									recipient: emailAddress,
 									subject: `${capitalizedTitle} de ${patientObj[
 										"last_name"
 									].toUpperCase()} ${
