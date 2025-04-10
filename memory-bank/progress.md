@@ -130,6 +130,69 @@
    - Large dataset handling
    - Client-side resource usage
 
+### Worklist Combo Feature
+
+#### Known Issues
+
+1. Data Corruption
+   - Items sometimes added to wrong patient's worklist
+   - Race conditions during combo creation
+   - Missing transaction support
+
+#### Required Changes
+
+1. Transaction Support: Not Started
+   - [ ] Design transaction system
+   - [ ] Implement transaction manager
+   - [ ] Add rollback capability
+   - [ ] Test transaction integrity
+
+2. State Management: Not Started
+   - [ ] Design state container
+   - [ ] Implement WlItemManager
+   - [ ] Add locking mechanism
+   - [ ] Test concurrent operations
+
+3. Validation Layer: Not Started
+   - [ ] Design validation system
+   - [ ] Implement validators
+   - [ ] Add relationship checks
+   - [ ] Test validation rules
+
+4. UI Synchronization: Not Started
+   - [ ] Add loading states
+   - [ ] Implement event system
+   - [ ] Add error handling
+   - [ ] Test UI updates
+
+#### Testing Requirements
+
+1. Unit Tests
+   - [ ] Transaction manager tests
+   - [ ] State management tests
+   - [ ] Validation tests
+   - [ ] UI synchronization tests
+
+2. Integration Tests
+   - [ ] Multi-item creation tests
+   - [ ] Concurrent operation tests
+   - [ ] Error handling tests
+   - [ ] UI update tests
+
+3. Performance Tests
+   - [ ] Transaction performance
+   - [ ] UI responsiveness
+   - [ ] Concurrent operation handling
+   - [ ] Error recovery time
+
+#### Timeline
+
+- Week 1: Design and implement transaction system
+- Week 2: Implement state management
+- Week 3: Add validation layer
+- Week 4: Improve UI synchronization
+- Week 5: Testing and refinement
+
 ## Next Milestone Goals
 
 1. **Short Term**

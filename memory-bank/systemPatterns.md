@@ -147,3 +147,98 @@ Oph4py follows the Model-View-Controller (MVC) pattern using the Py4web framewor
    - Integration tests for workflows
    - UI testing for critical paths
    - Performance benchmarking
+
+## Architecture Patterns
+
+### Worklist Management System
+
+#### Current Pattern
+
+- Asynchronous worklist item creation
+- Global state management through shared arrays
+- Direct DOM manipulation for UI updates
+- Simple AJAX-based data persistence
+
+#### Identified Issues
+
+- Race conditions in combo worklist creation
+- Lack of transaction support
+- Insufficient state management
+- Missing data validation layer
+
+#### Proposed Pattern
+
+1. Transaction-based Worklist Management
+
+```javascript
+class WorklistTransaction {
+    async execute(items) {
+        try {
+            await this.beginTransaction();
+            await this.validateAll(items);
+            await this.persistAll(items);
+            await this.commit();
+        } catch (error) {
+            await this.rollback();
+            throw error;
+        }
+    }
+}
+```
+
+2. State Management Pattern
+
+```javascript
+class WlItemManager {
+    constructor() {
+        this.pendingItems = new Map();
+        this.processingItems = new Set();
+    }
+    
+    async processCombo(patientId, items) {
+        if (this.isProcessing(patientId)) {
+            throw new Error('Patient items already processing');
+        }
+        await this.acquireLock(patientId);
+        try {
+            return await this.processItems(items);
+        } finally {
+            await this.releaseLock(patientId);
+        }
+    }
+}
+```
+
+3. Validation Layer Pattern
+
+```javascript
+class WlItemValidator {
+    validate(item) {
+        this.validatePatient(item.patientId);
+        this.validateModality(item.modality);
+        this.validateRelationships(item);
+    }
+}
+```
+
+#### Implementation Guidelines
+
+1. Transaction Support
+   - Implement atomic operations
+   - Add rollback capability
+   - Ensure data consistency
+
+2. State Management
+   - Use proper state containers
+   - Implement locking mechanisms
+   - Handle concurrent operations
+
+3. Validation
+   - Add comprehensive validation
+   - Implement relationship checks
+   - Add error reporting
+
+4. UI Synchronization
+   - Use event-based updates
+   - Implement loading states
+   - Handle error states
