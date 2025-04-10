@@ -190,3 +190,93 @@ mypy
 - Branch naming conventions
 - Commit message format
 - Code review process
+
+## Current Technical Stack
+
+### Frontend
+
+- Bootstrap Table for data display
+- jQuery for DOM manipulation and AJAX
+- Custom JavaScript modules for business logic
+
+### Backend
+
+- Py4web framework
+- RESTful API endpoints
+- SQL database for persistence
+
+## Technical Challenges
+
+### Worklist Combo Implementation
+
+#### Current Implementation
+
+The worklist combo feature currently uses:
+
+- Global state arrays (`wlItemsJson`, `wlItemsHtml`)
+- Asynchronous AJAX calls without proper transaction handling
+- Direct DOM manipulation for UI updates
+- Simple error handling
+
+#### Technical Debt
+
+1. Race Conditions
+   - Multiple async operations without proper synchronization
+   - No locking mechanism for patient-specific operations
+   - Potential data corruption during concurrent operations
+
+2. State Management
+   - Global state variables leading to side effects
+   - No proper state containment
+   - Missing state validation
+
+3. Error Handling
+   - Basic try-catch blocks
+   - No comprehensive error recovery
+   - Missing transaction rollback
+
+#### Required Technical Changes
+
+1. Transaction Support
+
+```javascript
+// Required new transaction handling system
+const transactionManager = {
+    async beginTransaction() {},
+    async commit() {},
+    async rollback() {},
+    async execute(operation) {}
+};
+```
+
+2. State Management
+
+```javascript
+// Required state management system
+const stateManager = {
+    pendingOperations: new Map(),
+    locks: new Set(),
+    async acquireLock(patientId) {},
+    async releaseLock(patientId) {}
+};
+```
+
+3. Validation System
+
+```javascript
+// Required validation system
+const validator = {
+    validatePatient(patientId) {},
+    validateModality(modalityId) {},
+    validateRelationships(item) {}
+};
+```
+
+#### Implementation Priority
+
+1. Transaction handling system
+2. State management improvements
+3. Validation layer
+4. UI synchronization
+5. Error handling
+6. Locking mechanism
