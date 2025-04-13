@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- 2025-04-18T10:45:00.000000: Eliminated duplicate notifications in worklist operations
+  - Created `crudpWithoutToast` function that performs API operations silently
+  - Created `setWlItemStatusWithoutToast` as a silent version of the status update function
+  - Modified all event handlers in `static/js/wl_bt.js` to use silent API operations
+  - Enhanced feedback messages to include worklist ID in notifications
+  - Consolidated all UI feedback through WorklistState.UI interface
+  - Improved user experience by preventing duplicate notifications
+  - Fixed notification handling for delete, status update, and counter operations
+
 - 2025-04-13T13:01:16.998036: Implemented Phase 1 of worklist combo fix
   - Created new state manager module in static/js/wl-state-manager.js:
     - Added WorklistStateManager class for tracking item states

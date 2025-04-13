@@ -108,6 +108,41 @@ function responseHandler_wl(res) { // used if data-response-handler="responseHan
                 };
 };
 
+// A custom wrapper for crudp that doesn't display toasts
+function crudpWithoutToast(table, id = "0", req = "POST", data) {
+    return new Promise((resolve, reject) => {
+        // Fix URL construction for PUT requests with ID
+        let API_URL = HOSTURL + "/" + APP_NAME + "/api/" + table;
+        if ((req === "PUT" || req === "DELETE") && id !== "0") {
+            API_URL += "/" + id;
+        }
+
+        $.ajax({
+            url: API_URL,
+            data: data,
+            contentType: "application/json",
+            dataType: "json",
+            method: req,
+            success: function (data) {
+                console.log("CRUDP Response:", data);
+                if (data.status == "error") {
+                    let errors = "";
+                    for (let i in data.errors) {
+                        errors += data.errors[i] + "</br>";
+                    }
+                    reject(errors);
+                } else {
+                    resolve(data);
+                }
+            },
+            error: function (error) {
+                console.error("CRUDP Error:", error);
+                reject(error);
+            },
+        });
+    });
+}
+
 function operateFormatter_wl(value, row, index) {
     let html = ['<div class="d-flex justify-content-between">'];
     html.push('<a class="edit" href="javascript:void(0)" title="Edit worklist item"><i class="fas fa-edit"></i></a>');
@@ -161,10 +196,13 @@ window.operateEvents_wl = {
                                 WorklistState.Manager.trackProcessingItem(row.id);
                                 
                                 // Delete through the API
-                                crudp('worklist', row.id, 'DELETE')
+                                crudpWithoutToast('worklist', row.id, 'DELETE')
                                     .then(data => {
                                         $table_wl.bootstrapTable('refresh');
-                                        resolve(data);
+                                        resolve({
+                                            message: 'Worklist item ID: ' + row.id + ' deleted successfully',
+                                            data: data
+                                        });
                                     })
                                     .catch(err => {
                                         console.error('Error deleting worklist item:', err);
@@ -181,7 +219,7 @@ window.operateEvents_wl = {
             function(result) {
                 // Success callback
                 if (!result.canceled) {
-                    WorklistState.UI.showFeedback('success', 'Item deleted successfully', 'feedbackContainer');
+                    WorklistState.UI.showFeedback('success', result.message, 'feedbackContainer');
                 }
                 WorklistState.UI.unlockUI('.remove');
             },
@@ -216,12 +254,12 @@ window.operateEvents_wl = {
                     // Track the item being processed
                     WorklistState.Manager.trackProcessingItem(row.id);
                     
-                    return setWlItemStatus(dataStr);
+                    return setWlItemStatusWithoutToast(dataStr);
                 },
-                function() {
+                function(result) {
                     // Success callback
                     $table_wl.bootstrapTable('refresh');
-                    WorklistState.UI.showFeedback('success', 'Counter updated successfully', 'feedbackContainer');
+                    WorklistState.UI.showFeedback('success', result.message, 'feedbackContainer');
                     WorklistState.UI.unlockUI('.stopwatch');
                 },
                 function(error) {
@@ -253,12 +291,12 @@ window.operateEvents_wl = {
                     // Track the item being processed
                     WorklistState.Manager.trackProcessingItem(row.id);
                     
-                    return setWlItemStatus(dataStr);
+                    return setWlItemStatusWithoutToast(dataStr);
                 },
-                function() {
+                function(result) {
                     // Success callback
                     $table_wl.bootstrapTable('refresh');
-                    WorklistState.UI.showFeedback('success', 'Status updated to done', 'feedbackContainer');
+                    WorklistState.UI.showFeedback('success', result.message, 'feedbackContainer');
                     WorklistState.UI.unlockUI('.done');
                 },
                 function(error) {
@@ -290,9 +328,9 @@ window.operateEvents_wl = {
                     // Track the item being processed
                     WorklistState.Manager.trackProcessingItem(row.id);
                     
-                    return setWlItemStatus(dataStr);
+                    return setWlItemStatusWithoutToast(dataStr);
                 },
-                function() {
+                function(result) {
                     // Success callback
                     $table_wl.bootstrapTable('refresh');
                     
@@ -337,12 +375,12 @@ window.operateEvents_wl = {
                     // Track the item being processed
                     WorklistState.Manager.trackProcessingItem(row.id);
                     
-                    return setWlItemStatus(dataStr);
+                    return setWlItemStatusWithoutToast(dataStr);
                 },
-                function() {
+                function(result) {
                     // Success callback
                     $table_wl.bootstrapTable('refresh');
-                    WorklistState.UI.showFeedback('success', 'Status updated to processing', 'feedbackContainer');
+                    WorklistState.UI.showFeedback('success', result.message, 'feedbackContainer');
                     WorklistState.UI.unlockUI('.unlock');
                 },
                 function(error) {
@@ -443,8 +481,8 @@ function rowAttributes_wl(row,index) { // set tooltip values
     };
 };
 
-// Add a helper function to properly set worklist item status
-function setWlItemStatus(dataStr) {
+// A modified version of setWlItemStatus that doesn't display toasts
+function setWlItemStatusWithoutToast(dataStr) {
     // Parse the data to extract the ID
     const data = JSON.parse(dataStr);
     const id = data.id;
@@ -456,25 +494,15 @@ function setWlItemStatus(dataStr) {
     const cleanDataStr = JSON.stringify(data);
     
     return new Promise((resolve, reject) => {
-        $.ajax({
-            type: "PUT",
-            url: HOSTURL+"/"+APP_NAME+"/api/worklist/" + id,
-            dataType: "json",
-            data: cleanDataStr,
-            contentType: "application/json",
-            success: function (data) {
-                if (data.status == 'error') {
-                    displayToast('error', 'PUT error', 'Cannot update worklist status', '6000');
-                    reject('PUT error: Cannot update worklist status');
-                } else {
-                    displayToast('info', 'PUT success', 'worklist status updated', '3000');
-                    resolve(data);
-                }
-            },
-            error: function (er) {
-                console.log(er);
-                reject(er);
-            }
-        });
+        crudpWithoutToast("worklist", id, "PUT", cleanDataStr)
+            .then(data => {
+                resolve({
+                    message: 'Worklist status updated successfully for ID: ' + id,
+                    data: data
+                });
+            })
+            .catch(error => {
+                reject(error);
+            });
     });
 }

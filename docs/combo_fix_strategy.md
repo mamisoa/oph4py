@@ -132,6 +132,14 @@ We've successfully implemented the frontend-only solution as outlined in the str
    - Added data cleansing to prevent invalid fields from being sent to server
    - Implemented proper tracking of UI elements and state
 
+5. **Improved Notification System**
+   - Created `crudpWithoutToast` and `setWlItemStatusWithoutToast` for silent API operations
+   - Eliminated duplicate notifications from multiple sources (WorklistState.UI and displayToast)
+   - Enhanced feedback messages to include worklist ID information
+   - Consolidated all user feedback through the WorklistState.UI interface
+   - Improved user experience with cleaner, non-redundant notifications
+   - Maintained detailed status information while eliminating duplicates
+
 ### Challenges Encountered
 
 1. **Server-side Validation Conflicts**
@@ -149,6 +157,11 @@ We've successfully implemented the frontend-only solution as outlined in the str
 4. **Complex Combo Processing**
    - Managing multiple related items for different modalities required careful state tracking
    - Added separate tracking for client-side properties vs. server-side data
+
+5. **Duplicate Notification Management**
+   - Multiple notification sources (WorklistState.UI and displayToast) causing duplicate messages
+   - Created silent API operation wrappers to prevent dual notifications
+   - Consolidated feedback through a single interface while preserving detailed information
 
 ### Phase 2: Next Steps (TO DO)
 
