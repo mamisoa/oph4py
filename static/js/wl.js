@@ -328,31 +328,68 @@ function delWlItemModal(itemId) {
     }
 };
 
-// show modal from wl button in patient table
+/**
+ * Adds a patient to the worklist by preparing and showing the worklist modal
+ * 
+ * @param {string|number} userId - The ID of the patient to add to worklist
+ * @description
+ * This function:
+ * 1. Resets the worklist form
+ * 2. Shows necessary UI elements
+ * 3. Clears existing items
+ * 4. Sets the patient ID in the form
+ * 5. Updates the WorklistState manager
+ * 6. Shows the modal dialog
+ */
 function addToWorklist(userId) {
-    // init form
+    // Initialize form
     resetWlForm();
-    // wlItemsCounter = 0;
-    // show all input
-    let show = ['wlItemAddDiv', 'wlItemsDiv']
-    for (i in show) {
-        hideDiv('#'+show[i],'visually-hidden','remove');
-    };
-    $('#tbodyItems').html('');
-    $('#idPatientWl').val(userId);
-    
-    // Set patient context in state manager
+
+    // Show all required input elements
+    const showElements = ['wlItemAddDiv', 'wlItemsDiv'];
+    showElements.forEach(elementId => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.classList.remove('visually-hidden');
+        }
+    });
+
+    // Clear existing items
+    const tbodyItems = document.getElementById('tbodyItems');
+    if (tbodyItems) {
+        tbodyItems.innerHTML = '';
+    }
+
+    // Set patient ID in form
+    const patientIdInput = document.getElementById('idPatientWl');
+    if (patientIdInput) {
+        patientIdInput.value = userId;
+    }
+
+    // Update state manager with patient context
     WorklistState.Manager.setPatientContext({
         id: userId
     });
-    
-    // open modal
-    $('#newWlItemModal').modal('show');
+
+    // Show modal using Bootstrap
+    const modal = document.getElementById('newWlItemModal');
+    if (modal) {
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+    }
 }
 
-// hide or remove class ; e = DOM id element c= classe req = remove or add
-function hideDiv(e,c,req) {
-    req == 'add' ? $(e).addClass(c) : $(e).removeClass(c);
+/**
+ * Toggles a CSS class on a DOM element
+ * @param {string} elementId - The ID of the DOM element without '#' prefix
+ * @param {string} className - The CSS class name to toggle
+ * @param {string} action - The action to perform: 'add' or 'remove'
+ */
+function hideDiv(elementId, className, action) {
+    const element = document.getElementById(elementId.replace('#', ''));
+    if (element) {
+        action === 'add' ? element.classList.add(className) : element.classList.remove(className);
+    }
 }
 
 // get item details for put request
@@ -376,40 +413,79 @@ function getWlItemDetails(wl_id) {
     ); // promise return data
 };
 
-// set modal for PUT request wl
-function putWlModal(wlId){
-    // init form
+/**
+ * Sets up and displays a modal for editing a worklist item
+ * @param {number} wlId - The ID of the worklist item to edit
+ * @returns {Promise<void>}
+ */
+async function putWlModal(wlId) {
+    // Initialize form
     resetWlForm();
     wlItemsCounter = 0;
-    // TODO: set inputs
-    // hide useless input
-    let hide = ['wlItemAddDiv', 'wlItemsDiv']
-    for (i in hide) {
-        hideDiv('#'+hide[i],'visually-hidden','add');
-    };
-    $('#newWlItemModal h5.modal-title').html('Edit worklist item #'+wlId);
-    hideDiv('#modality_destDiv', 'visually-hidden','add');
-    hideDiv('#modality_destPutDiv', 'visually-hidden','remove');
-    getWlItemDetails(wlId)
-        .then(function (data) {
-            let field=data.items[0];
-            document.getElementById("newWlItemForm").reset();
-            document.getElementById("sendingFacilitySelect").value= field['sending_facility.id'];
-            document.getElementById("receivingFacilitySelect").value= field['receiving_facility.id'];
-            document.getElementById("procedureSelect").value= field['procedure.id'];
-            document.getElementById("providerSelect").value= field['provider.id'];
-            document.getElementById("seniorSelect").value= field['senior.id'];
-            document.getElementById("requested_time").value= field['requested_time'].split(' ').join('T');
-            document.getElementById("modality_destSelectPut").value= field['modality.id'];
-            $("[name=laterality]").val([field.laterality]);
-            $("[name=status_flag]").val([field.status_flag]);
-            $("[name=counter]").val([field.counter]);
-            document.getElementById("warning").value= field['warning'];
-            document.getElementById("idPatientWl").value= field['id_auth_user.id'];
-            document.getElementById("idWl").value= wlId;
-            document.getElementById("methodWlItemSubmit").value= 'PUT';
+
+    // Hide unnecessary elements
+    const hideElements = ['wlItemAddDiv', 'wlItemsDiv'];
+    hideElements.forEach(id => hideDiv(id, 'visually-hidden', 'add'));
+
+    // Update modal title
+    const modalTitle = document.querySelector('#newWlItemModal h5.modal-title');
+    if (modalTitle) {
+        modalTitle.textContent = `Edit worklist item #${wlId}`;
+    }
+
+    // Toggle visibility of modality sections
+    hideDiv('modality_destDiv', 'visually-hidden', 'add');
+    hideDiv('modality_destPutDiv', 'visually-hidden', 'remove');
+
+    try {
+        const data = await getWlItemDetails(wlId);
+        const field = data.items[0];
+
+        // Reset form
+        const form = document.getElementById('newWlItemForm');
+        form.reset();
+
+        // Update form fields
+        const formUpdates = {
+            'sendingFacilitySelect': field['sending_facility.id'],
+            'receivingFacilitySelect': field['receiving_facility.id'],
+            'procedureSelect': field['procedure.id'],
+            'providerSelect': field['provider.id'],
+            'seniorSelect': field['senior.id'],
+            'requested_time': field['requested_time'].split(' ').join('T'),
+            'modality_destSelectPut': field['modality.id'],
+            'warning': field['warning'],
+            'idPatientWl': field['id_auth_user.id'],
+            'idWl': wlId,
+            'methodWlItemSubmit': 'PUT'
+        };
+
+        // Apply updates to form elements
+        Object.entries(formUpdates).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) element.value = value;
         });
-    $('#newWlItemModal').modal('show');
+
+        // Update radio buttons
+        document.querySelectorAll('[name=laterality]').forEach(radio => {
+            radio.checked = radio.value === field.laterality;
+        });
+        document.querySelectorAll('[name=status_flag]').forEach(radio => {
+            radio.checked = radio.value === field.status_flag;
+        });
+        document.querySelectorAll('[name=counter]').forEach(radio => {
+            radio.checked = radio.value === field.counter;
+        });
+
+        // Show modal
+        const modal = document.getElementById('newWlItemModal');
+        if (modal && typeof bootstrap !== 'undefined') {
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
+        }
+    } catch (error) {
+        console.error('Error fetching worklist item details:', error);
+    }
 }
 
 // submit each wl items in wlItemsJson
