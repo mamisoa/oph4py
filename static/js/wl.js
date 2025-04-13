@@ -237,76 +237,95 @@ async function getCombo(id_procedure) {
     }
 }
 
-// arr = field content, cnt = row counter, dataStr = json data string type
-// create wlItemsHtml for display
+/**
+ * Appends a worklist item to the table display and registers it with the state manager.
+ * 
+ * @param {string} dataStr - JSON string containing the worklist item data
+ * @param {number} cnt - Counter/row index used for uniquely identifying the row
+ * @param {string} [modalityName] - Optional name of the modality if different from selected
+ * @returns {void}
+ */
 function appendWlItem(dataStr, cnt, modalityName) {
-    // Create a new object for UI display instead of using global
+    // Create a new object for UI display
     const wlItemsHtml = {};
     
     // Parse the data string to an object for manipulation
     const parsedData = JSON.parse(dataStr);
     
     // Remove the uniqueId field before storing back to data-json
-    // This ensures it won't be sent to the server
     const uniqueId = parsedData.uniqueId;
     delete parsedData.uniqueId;
     
     // Convert back to string for storage
     const cleanDataStr = JSON.stringify(parsedData);
     
-    wlItemsHtml['From'] = $('#sendingFacilitySelect :selected').text();
-    wlItemsHtml['To'] = $('#receivingFacilitySelect :selected').text();
-    wlItemsHtml['Procedure'] = $('#procedureSelect :selected').text();
-    wlItemsHtml['Provider'] = $('#providerSelect :selected').text();
-    wlItemsHtml['Senior'] = $('#seniorSelect :selected').text();
-    wlItemsHtml['Timeslot'] = $('#requested_time').val();
-    if (modalityName != undefined) {
+    // Get form values using vanilla JS
+    wlItemsHtml['From'] = document.getElementById('sendingFacilitySelect').options[document.getElementById('sendingFacilitySelect').selectedIndex].text;
+    wlItemsHtml['To'] = document.getElementById('receivingFacilitySelect').options[document.getElementById('receivingFacilitySelect').selectedIndex].text;
+    wlItemsHtml['Procedure'] = document.getElementById('procedureSelect').options[document.getElementById('procedureSelect').selectedIndex].text;
+    wlItemsHtml['Provider'] = document.getElementById('providerSelect').options[document.getElementById('providerSelect').selectedIndex].text;
+    wlItemsHtml['Senior'] = document.getElementById('seniorSelect').options[document.getElementById('seniorSelect').selectedIndex].text;
+    wlItemsHtml['Timeslot'] = document.getElementById('requested_time').value;
+    
+    if (modalityName !== undefined) {
         wlItemsHtml['Modality'] = modalityName;
     } else {
-        wlItemsHtml['Modality'] = $('#modality_destSelect :selected').text();
+        wlItemsHtml['Modality'] = document.getElementById('modality_destSelect').options[document.getElementById('modality_destSelect').selectedIndex].text;
     }
-    // wlItemsHtml['side'] = $('input[name="laterality"]:checked').val();
-    wlItemsHtml['Status'] = $('input[name="status_flag"]:checked').val();
-    wlItemsHtml['Counter'] = $('input[name="counter"]').val();
-    wlItemsHtml['warning'] = $('input[name="warning"]').val();
+    
+    wlItemsHtml['Status'] = document.querySelector('input[name="status_flag"]:checked').value;
+    wlItemsHtml['Counter'] = document.querySelector('input[name="counter"]').value;
+    wlItemsHtml['warning'] = document.querySelector('input[name="warning"]').value;
+    
+    // Build HTML string for table header and row
     let head = '<tr>';
-    let html = '<tr id="wlItem'+ cnt + '">';
-    for (item in wlItemsHtml) {
-        head += '<th scope="col">'+ item + '</th>'
-        html += '<td>' + wlItemsHtml[item] + '</td>';
-    };
-    html +='<td class="list-group-item"><button type="button" class="btn btn-danger btn-sm" onclick="delWlItemModal(\''+ cnt +'\');" data-index='+cnt+'><i class="far fa-trash-alt"></i></button></td>'
+    let html = `<tr id="wlItem${cnt}">`;
+    
+    for (const item in wlItemsHtml) {
+        head += `<th scope="col">${item}</th>`;
+        html += `<td>${wlItemsHtml[item]}</td>`;
+    }
+    
+    html += `<td class="list-group-item"><button type="button" class="btn btn-danger btn-sm" onclick="delWlItemModal('${cnt}');" data-index=${cnt}><i class="far fa-trash-alt"></i></button></td>`;
     html += '</tr>';
     head += '<tr>';
-    $('#tbodyItems').append(html);
-    $('#theadItems').html(head);
-    // set data-json attribute with row formDataStr - use the cleaned version
-    $('#wlItem'+cnt).data('json', cleanDataStr);
+    
+    // Update DOM
+    const tbodyItems = document.getElementById('tbodyItems');
+    tbodyItems.insertAdjacentHTML('beforeend', html);
+    
+    document.getElementById('theadItems').innerHTML = head;
+    
+    // Set data attribute with cleaned JSON
+    const rowElement = document.getElementById(`wlItem${cnt}`);
+    rowElement.dataset.json = cleanDataStr;
     
     // Store reference to HTML element in state manager using original uniqueId
     if (uniqueId) {
-        WorklistState.Manager.htmlElements.set(uniqueId, $('#wlItem'+cnt));
+        WorklistState.Manager.htmlElements.set(uniqueId, rowElement);
         
         // Store the mapping between row index and uniqueId for later reference
-        $('#wlItem'+cnt).data('uniqueId', uniqueId);
+        rowElement.dataset.uniqueId = uniqueId;
     }
     
     wlItemsCounter += 1;
-};
+}
 
 // delete item in item worklist to append
 function delWlItemModal(itemId) {
-    const $element = $('#wlItem'+itemId);
+    const element = document.getElementById('wlItem' + itemId);
     
-    // Get the uniqueId from the element's data
-    const uniqueId = $element.data('uniqueId');
-    if (uniqueId) {
-        // Remove from state manager using the uniqueId
-        WorklistState.Manager.pendingItems.delete(uniqueId);
-        WorklistState.Manager.htmlElements.delete(uniqueId);
+    if (element) {
+        // Get the uniqueId from the element's dataset
+        const uniqueId = element.dataset.uniqueId;
+        if (uniqueId) {
+            // Remove from state manager using the uniqueId
+            WorklistState.Manager.pendingItems.delete(uniqueId);
+            WorklistState.Manager.htmlElements.delete(uniqueId);
+        }
+        
+        element.remove();
     }
-    
-    $element.remove();
 };
 
 // show modal from wl button in patient table
@@ -423,10 +442,18 @@ $('#newWlItemForm').submit(function(e) {
                     .then( () => { // patient is added to PACS, now loop the workinglist items
                             // FIXME: wlItemsCounter will be lower if an item is deleted???
                             for (let i = 0; i<=wlItemsCounter+1; i++) {
-                                let el = "#wlItem"+parseInt(i);
+                                let el = "wlItem"+parseInt(i);
                                 let wlId;
-                                if ($(el).length != 0) {
-                                    let itemDataObj = JSON.parse($(el).data().json);
+                                const element = document.getElementById(el);
+                                if (element) {
+                                    // Get data from the dataset instead of jQuery's data()
+                                    let itemDataObj;
+                                    try {
+                                        itemDataObj = JSON.parse(element.dataset.json);
+                                    } catch (e) {
+                                        console.error('Error parsing JSON from data-json attribute:', e);
+                                        continue;
+                                    }
                                     delete itemDataObj['methodWlItemSubmit'];
                                     let modalityLowCase;
                                     getUuid() // promise
@@ -437,7 +464,8 @@ $('#newWlItemForm').submit(function(e) {
                                             console.log('itemDataStr:',itemDataStr);
                                             crudp('worklist','0', req, itemDataStr)
                                             .then( data => {
-                                                $(el).remove(); // remove wl item DOM element node when posted
+                                                // Remove element using vanilla JS
+                                                element.remove();
                                                 wlId = data.id;
                                             }); 
                                         })
@@ -506,8 +534,8 @@ $('#newWlItemForm').submit(function(e) {
                                                         console.log('modality is', modalityLowCase);
                                                         studyData.StudyDescription = "Scheimpflug topography";
                                                         studyData.ScheduledStationAETitle = "PENTACAM";
-                                                        console.log("studyData PENTACAM",studyData_copy)
-                                                        let updateMwl = addStudyMwl(studyData_copy);
+                                                        console.log("studyData PENTACAM",studyData)
+                                                        let updateMwl = addStudyMwl(studyData);
                                                         updateMwl
                                                         // .then(() => {$table_wl.bootstrapTable('refresh');})
                                                         .catch(error => console.error('An error occurred adding Pentacam to MWL:', error));
