@@ -402,13 +402,13 @@ class WorklistStateManager {
     
     /**
      * Get recent transactions from localStorage
-     * @returns {Array} Array of recent transactions
+     * @returns {Array} Array of transaction objects
      */
     getRecentTransactions() {
         try {
             return JSON.parse(localStorage.getItem('worklist_transactions') || '[]');
         } catch (e) {
-            console.error('Error retrieving transactions:', e);
+            console.error('Error retrieving transaction history:', e);
             return [];
         }
     }

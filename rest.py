@@ -1006,13 +1006,21 @@ def get_transaction_status(transaction_id):
             db(db.worklist.transaction_id == transaction_id).select().as_list()
         )
 
-        # Convert datetime objects to strings
+        # Convert datetime objects to strings in worklist items
         for item in worklist_items:
             for key, value in item.items():
                 if isinstance(value, datetime.datetime):
                     item[key] = value.strftime("%Y-%m-%d %H:%M:%S")
                 elif isinstance(value, datetime.date):
                     item[key] = value.strftime("%Y-%m-%d")
+
+        # Convert datetime objects to strings in audit records
+        for record in audit_records:
+            for key, value in record.items():
+                if isinstance(value, datetime.datetime):
+                    record[key] = value.strftime("%Y-%m-%d %H:%M:%S")
+                elif isinstance(value, datetime.date):
+                    record[key] = value.strftime("%Y-%m-%d")
 
         # Determine overall transaction status
         overall_status = "complete"

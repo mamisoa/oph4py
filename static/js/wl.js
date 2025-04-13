@@ -894,11 +894,36 @@ function viewTransactionDetails(transactionId) {
     
     WorklistState.Manager.checkTransactionStatus(transactionId)
         .then(data => {
+            // Handle missing or incomplete data
+            if (!data || typeof data !== 'object') {
+                throw new Error('Invalid response data from server');
+            }
+            
+            // Log the full response for debugging
+            console.log('Transaction details response:', data);
+            
+            // Set default values for missing data
+            const transaction_id = data.transaction_id || transactionId;
+            const status = data.status || 'unknown';
+            const item_count = data.item_count || 0;
+            
             let html = `
-                <h5>Transaction ${data.transaction_id}</h5>
-                <p><strong>Status:</strong> ${data.status}</p>
-                <p><strong>Items:</strong> ${data.item_count}</p>
+                <h5>Transaction ${transaction_id}</h5>
+                <p><strong>Status:</strong> <span class="badge ${getStatusBadgeClass(status)}">${status}</span></p>
+                <p><strong>Items:</strong> ${item_count}</p>
+            `;
+            
+            // Add debug info if there's an error
+            if (status === 'error' || status === 'failed') {
+                html += `
+                    <div class="alert alert-warning">
+                        <p><strong>Debug Information:</strong></p>
+                        <pre style="max-height: 100px; overflow-y: auto; font-size: 12px;">${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            }
                 
+            html += `
                 <h6>Worklist Items</h6>
                 <div class="table-responsive">
                     <table class="table table-sm">
@@ -914,15 +939,26 @@ function viewTransactionDetails(transactionId) {
                         <tbody>
             `;
             
-            if (data.worklist_items && data.worklist_items.length > 0) {
-                data.worklist_items.forEach(item => {
+            // Look for worklist items in various possible locations in the response
+            let worklist_items = null;
+            
+            if (data.worklist_items && Array.isArray(data.worklist_items)) {
+                worklist_items = data.worklist_items;
+            } else if (data.items && Array.isArray(data.items)) {
+                worklist_items = data.items;
+            } else if (data.data && data.data.items && Array.isArray(data.data.items)) {
+                worklist_items = data.data.items;
+            }
+            
+            if (worklist_items && worklist_items.length > 0) {
+                worklist_items.forEach(item => {
                     html += `
                         <tr>
-                            <td>${item.id}</td>
-                            <td>${item.id_auth_user}</td>
-                            <td>${item.procedure}</td>
-                            <td>${item.modality_dest}</td>
-                            <td>${item.status_flag}</td>
+                            <td>${item.id || 'N/A'}</td>
+                            <td>${getPatientName(item)}</td>
+                            <td>${item.procedure || item.procedure_id || 'N/A'}</td>
+                            <td>${item.modality_dest || item.modality || 'N/A'}</td>
+                            <td><span class="badge ${getStatusBadgeClass(item.status_flag || item.status)}">${item.status_flag || item.status || 'unknown'}</span></td>
                         </tr>
                     `;
                 });
@@ -949,14 +985,25 @@ function viewTransactionDetails(transactionId) {
                         <tbody>
             `;
             
-            if (data.audit_records && data.audit_records.length > 0) {
-                data.audit_records.forEach(record => {
+            // Look for audit records in various possible locations in the response
+            let audit_records = null;
+            
+            if (data.audit_records && Array.isArray(data.audit_records)) {
+                audit_records = data.audit_records;
+            } else if (data.audits && Array.isArray(data.audits)) {
+                audit_records = data.audits;
+            } else if (data.data && data.data.audits && Array.isArray(data.data.audits)) {
+                audit_records = data.data.audits;
+            }
+            
+            if (audit_records && audit_records.length > 0) {
+                audit_records.forEach(record => {
                     html += `
                         <tr>
-                            <td>${record.operation}</td>
-                            <td><span class="badge badge-${record.status === 'complete' ? 'success' : (record.status === 'failed' ? 'danger' : 'warning')}">${record.status}</span></td>
-                            <td>${record.record_id || '-'}</td>
-                            <td>${record.error_message || '-'}</td>
+                            <td>${record.operation || 'N/A'}</td>
+                            <td><span class="badge ${getStatusBadgeClass(record.status)}">${record.status || 'unknown'}</span></td>
+                            <td>${record.record_id || record.id || '-'}</td>
+                            <td>${record.error_message || record.error || '-'}</td>
                         </tr>
                     `;
                 });
@@ -976,10 +1023,70 @@ function viewTransactionDetails(transactionId) {
             console.error('Error fetching transaction details:', error);
             detailsContent.innerHTML = `
                 <div class="alert alert-danger">
-                    Error loading transaction details: ${error.message}
+                    <h5>Transaction ${transactionId}</h5>
+                    <p><strong>Status:</strong> <span class="badge bg-danger">error</span></p>
+                    <p>Error loading transaction details: ${error.message || 'Unknown error'}</p>
+                    <p>This may indicate that the transaction record doesn't exist or the connection failed.</p>
                 </div>
             `;
         });
+}
+
+/**
+ * Extract patient name from item data in different possible formats
+ * @param {Object} item - The worklist item
+ * @returns {String} Formatted patient name or placeholder
+ */
+function getPatientName(item) {
+    // Handle different ways the patient data might be structured
+    if (item.patient_name) {
+        return item.patient_name;
+    }
+    
+    if (item.patient) {
+        return item.patient;
+    }
+    
+    if (item.id_auth_user_details && 
+        (item.id_auth_user_details.first_name || item.id_auth_user_details.last_name)) {
+        return `${item.id_auth_user_details.last_name || ''}, ${item.id_auth_user_details.first_name || ''}`;
+    }
+    
+    if (item.id_auth_user) {
+        return `ID: ${item.id_auth_user}`;
+    }
+    
+    return 'N/A';
+}
+
+/**
+ * Get appropriate Bootstrap badge class for a status
+ * @param {String} status - The status value
+ * @returns {String} The badge class to use
+ */
+function getStatusBadgeClass(status) {
+    if (!status) return 'bg-secondary';
+    
+    switch(status.toLowerCase()) {
+        case 'complete':
+        case 'completed':
+        case 'done':
+            return 'bg-success';
+        case 'failed':
+        case 'error':
+            return 'bg-danger';
+        case 'partial':
+        case 'warning':
+            return 'bg-warning';
+        case 'in_progress':
+        case 'processing':
+        case 'requested':
+            return 'bg-info';
+        case 'cancelled':
+            return 'bg-secondary';
+        default:
+            return 'bg-secondary';
+    }
 }
 
 /**
