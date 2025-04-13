@@ -653,9 +653,12 @@ $('#newWlItemForm').submit(function(e) {
         delete itemDataPutObj['modality_dest'];
         itemDataPutObj['modality_dest']=itemDataPutObj['modality_destPut'];
         delete itemDataPutObj['modality_destPut'];
+        // Extract ID before deleting it from the payload
+        const id = itemDataPutObj.id;
+        delete itemDataPutObj.id;  // Remove ID from payload
         itemDataPutStr = JSON.stringify(itemDataPutObj);
-        // console.log('PUT data:',itemDataPutObj);
-        crudp('worklist','0','PUT',itemDataPutStr);
+        // Use the ID in the URL instead of the payload
+        crudp('worklist', id, 'PUT', itemDataPutStr);
         hideDiv('#modality_destPutDiv', 'visually-hidden','add');
         hideDiv('#modality_destDiv', 'visually-hidden','remove');
     };

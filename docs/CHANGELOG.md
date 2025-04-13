@@ -160,6 +160,15 @@ All notable changes to this project will be documented in this file.
   - Added proper type hints in documentation
   - Improved function parameter naming for clarity
 
+- 2025-04-18T11:30:00.000000: Fixed worklist item validation error in PUT requests
+  - Modified `static/js/wl.js` to properly handle ID field in worklist updates
+  - Removed ID from request payload to prevent validation conflicts
+  - Ensured ID is only sent in URL path for PUT requests
+  - Follows RESTful API best practices and py4web validation requirements
+  - Matches implementation pattern from previous fixes in other modules
+  - Resolves "Validation Errors: invalid id" error in worklist updates
+  - Improves consistency with other CRUD operations
+
 ### Fixed
 
 - 2025-03-30T19:52:59: Fixed base64 encoding error in contacts prescription email

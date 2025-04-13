@@ -131,6 +131,8 @@ We've successfully implemented the frontend-only solution as outlined in the str
    - Replaced global variables with structured state
    - Added data cleansing to prevent invalid fields from being sent to server
    - Implemented proper tracking of UI elements and state
+   - Fixed validation error in PUT requests by properly handling ID field
+   - Ensured RESTful API compliance by sending ID only in URL path
 
 5. **Improved Notification System**
    - Created `crudpWithoutToast` and `setWlItemStatusWithoutToast` for silent API operations
@@ -145,6 +147,8 @@ We've successfully implemented the frontend-only solution as outlined in the str
 1. **Server-side Validation Conflicts**
    - The `uniqueId` field used for client-side tracking was initially sent to the server, causing validation errors
    - Solution: Implemented methods to strip out client-side tracking fields before server submission
+   - Fixed additional validation error where ID was being sent in both URL and payload for PUT requests
+   - Solution: Modified PUT request handling to only send ID in URL path
 
 2. **Asset Path Management**
    - Py4web expects JavaScript files to be referenced as `js/filename.js` in templates, but physically located at `static/js/filename.js`
