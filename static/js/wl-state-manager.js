@@ -116,12 +116,39 @@ class WorklistStateManager {
         // Create a deep copy
         const item = JSON.parse(JSON.stringify(this.pendingItems.get(uniqueId)));
         
-        // Remove client-side tracking properties
-        delete item.uniqueId;
-        delete item.status;
-        delete item.data;
+        // Fields that should be sent to the server
+        const serverFields = [
+            'id_auth_user',
+            'sending_app',
+            'sending_facility',
+            'receiving_app',
+            'receiving_facility',
+            'message_unique_id',
+            'procedure',
+            'provider',
+            'senior',
+            'requested_time',
+            'modality_dest',
+            'laterality',
+            'status_flag',
+            'counter',
+            'warning'
+        ];
         
-        return item;
+        // Create a new object with only the fields needed by the server
+        const cleanItem = {};
+        for (const field of serverFields) {
+            if (item[field] !== undefined) {
+                // Ensure counter is a number
+                if (field === 'counter' && typeof item[field] === 'string') {
+                    cleanItem[field] = parseInt(item[field], 10) || 0;
+                } else {
+                    cleanItem[field] = item[field];
+                }
+            }
+        }
+        
+        return cleanItem;
     }
     
     /**
@@ -208,6 +235,89 @@ class WorklistStateManager {
         const firstPatientId = items[0].id_auth_user;
         
         return items.every(item => item.id_auth_user === firstPatientId);
+    }
+
+    /**
+     * Submit all pending items as a batch operation
+     * @returns {Promise} Promise that resolves with the created items or rejects with an error
+     */
+    submitBatch() {
+        return new Promise((resolve, reject) => {
+            // Get all items but filter out any with modality_dest equal to 'multiple' (multiplemod)
+            const allItems = this.getAllCleanPendingItems();
+            const items = allItems.filter(item => item.modality_dest != multiplemod);
+            
+            console.log(`Filtered out ${allItems.length - items.length} 'multiple' modality items`);
+            
+            if (items.length === 0) {
+                reject(new Error('No items to submit'));
+                return;
+            }
+
+            // Generate a transaction ID for tracking
+            const transactionId = this.generateUniqueId();
+
+            // Prepare the batch request
+            const batchData = {
+                items: items,
+                transaction_id: transactionId
+            };
+
+            // Log the data being sent for debugging
+            console.log('Submitting batch with data:', JSON.stringify(batchData));
+
+            // Submit the batch
+            fetch(`${HOSTURL}/${APP_NAME}/api/worklist/batch`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(batchData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message || `Server error: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Server response:', data);
+                
+                if (data.status === 'success') {
+                    // Check if items array exists
+                    if (data.items && Array.isArray(data.items)) {
+                        // Update all items with their new database IDs
+                        data.items.forEach(item => {
+                            const pendingItems = Array.from(this.pendingItems.entries());
+                            const matchingItem = pendingItems.find(([_, pending]) => 
+                                pending.id_auth_user === item.id_auth_user &&
+                                pending.procedure == item.procedure &&
+                                pending.modality_dest == item.modality_dest
+                            );
+
+                            if (matchingItem) {
+                                const [uniqueId] = matchingItem;
+                                this.updateItemStatus(uniqueId, 'completed', { dbId: item.id });
+                            }
+                        });
+
+                        resolve(data.items);
+                    } else {
+                        console.warn('Server returned success but no items array:', data);
+                        // If no items array, just resolve with an empty array
+                        resolve([]);
+                    }
+                } else {
+                    reject(new Error(data.message || 'Batch submission failed'));
+                }
+            })
+            .catch(error => {
+                console.error('Error in batch submission:', error);
+                reject(error);
+            });
+        });
     }
 }
 

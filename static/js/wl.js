@@ -80,16 +80,19 @@ function resetWlForm() {
 var wlItemsCounter = 0;
 var temp;
 
-// add new item in worklist format
-// TODO: remove status_flag -> only needed when modification
+// Add new item in worklist format
 document.getElementById('btnWlItemAdd').addEventListener('click', function() {
     // Lock the button during processing
     WorklistState.UI.lockUI('#btnWlItemAdd', 'Adding...');
     
     let formDataStr = $('#newWlItemForm').serializeJSON();
     let formDataObj = JSON.parse(formDataStr);
+    
+    // Clean up form data - remove fields that shouldn't be sent to the server
     delete formDataObj['modality_destPut']; // used for PUT request
     delete formDataObj['idWl']; // no Id when new Item
+    delete formDataObj['id']; // Remove empty ID field 
+    delete formDataObj['methodWlItemSubmit']; // Remove method field
     
     // Store patient context
     WorklistState.Manager.setPatientContext({
@@ -100,13 +103,7 @@ document.getElementById('btnWlItemAdd').addEventListener('click', function() {
     
     let formDataObjMultiple = [];
     
-    // Add item to state manager instead of pushing to array
-    const itemId = WorklistState.Manager.addItem(formDataObj);
-    
-    // Remove uniqueId from the object to be submitted (keep a copy of the ID)
-    const stateUniqueId = formDataObj.uniqueId;
-    delete formDataObj.uniqueId;
-    
+    // Check if this is a multiple modality selection
     if (formDataObj['modality_dest'] == multiplemod) { // modality_dest 13 is multiple
         // Create a task function for the request queue
         const comboTask = function() {
@@ -117,14 +114,29 @@ document.getElementById('btnWlItemAdd').addEventListener('click', function() {
                         arr[data.items[i]['id_modality.modality_name']] = data.items[i]['id_modality.id'];
                     }
                     
-                    let o;
+                    // For combo selection, we don't add the original 'multiple' item
+                    // Instead, we add each specific modality item
                     for (let a in arr) {
-                        o = Object.assign({}, formDataObj); // clone formDataObj
-                        o['modality_dest'] = arr[a];
-                        o['modality_name'] = a; // only to get modality name
+                        // Create a new clean object with only the fields needed
+                        let o = {
+                            id_auth_user: formDataObj.id_auth_user,
+                            procedure: formDataObj.procedure,
+                            provider: formDataObj.provider,
+                            senior: formDataObj.senior,
+                            requested_time: formDataObj.requested_time,
+                            sending_facility: formDataObj.sending_facility || 1,
+                            receiving_facility: formDataObj.receiving_facility || 1,
+                            laterality: formDataObj.laterality,
+                            status_flag: formDataObj.status_flag,
+                            counter: formDataObj.counter ? parseInt(formDataObj.counter, 10) : 0,
+                            warning: formDataObj.warning || '',
+                            modality_dest: arr[a],
+                            modality_name: a // only used for display
+                        };
+                        
+                        // For MD modality, set counter to 1
                         if (a == 'MD') {
-                            // o['provider']=o['senior'];
-                            o['counter'] = 1;
+                            o.counter = 1;
                         }
                         
                         // Add each item to state manager
@@ -134,10 +146,9 @@ document.getElementById('btnWlItemAdd').addEventListener('click', function() {
                         const itemUniqueId = o.uniqueId;
                         delete o.uniqueId;
                         
-                        formDataObjMultiple.push(o);
-                        
-                        // Re-associate the uniqueId for client-side tracking only
+                        // Store for later reference in UI
                         o._uniqueId = itemUniqueId;
+                        formDataObjMultiple.push(o);
                     }
                     
                     // Validate patient consistency before proceeding
@@ -149,21 +160,19 @@ document.getElementById('btnWlItemAdd').addEventListener('click', function() {
                     // Process the items for UI display
                     for (let f in formDataObjMultiple) {
                         let modalityName = formDataObjMultiple[f]['modality_name'];
-                        delete formDataObjMultiple[f]['modality_name']; // only to get modality name
-                        delete formDataObjMultiple[f]['id']; // only for put request
                         
                         // Get the uniqueId we stored earlier
                         const uniqueId = formDataObjMultiple[f]._uniqueId;
                         delete formDataObjMultiple[f]._uniqueId;
                         
-                        // Re-add the uniqueId for client tracking, but ensure it's removed before stringifying
+                        // Create a UI display version with the uniqueId
                         const itemWithUniqueId = { ...formDataObjMultiple[f], uniqueId };
                         let formDataObjMultipleStr = JSON.stringify(itemWithUniqueId);
                         
                         // Update status to reflect processing
                         WorklistState.Manager.updateItemStatus(uniqueId, 'pending');
                         
-                        appendWlItem(formDataObjMultipleStr, wlItemsCounter, modalityName);
+                        appendWlItem(formDataObjMultipleStr, wlItemsCounter++, modalityName);
                     }
                     
                     return formDataObjMultiple;
@@ -186,11 +195,22 @@ document.getElementById('btnWlItemAdd').addEventListener('click', function() {
             }
         );
     } else {
-        // Single modality selection
-        delete formDataObj['modality_name']; // only to get modality name
-        delete formDataObj['id']; // only for put request
+        // Single modality selection - clean up fields
+        delete formDataObj['modality_name']; // only for display
         
-        // Re-add the uniqueId for tracking only, but it will be removed by appendWlItem
+        // Make sure counter is a number
+        if (typeof formDataObj.counter === 'string') {
+            formDataObj.counter = parseInt(formDataObj.counter, 10) || 0;
+        }
+        
+        // Add item to state manager
+        const itemId = WorklistState.Manager.addItem(formDataObj);
+        
+        // Get uniqueId for tracking in UI
+        const stateUniqueId = formDataObj.uniqueId;
+        delete formDataObj.uniqueId;
+        
+        // Add uniqueId back for UI tracking
         formDataObj.uniqueId = stateUniqueId;
         formDataStr = JSON.stringify(formDataObj);
         
@@ -201,7 +221,7 @@ document.getElementById('btnWlItemAdd').addEventListener('click', function() {
         WorklistState.Queue.enqueue(
             function() {
                 // Simple task that executes immediately
-                return Promise.resolve(appendWlItem(formDataStr, wlItemsCounter));
+                return Promise.resolve(appendWlItem(formDataStr, wlItemsCounter++));
             },
             function() {
                 // Success callback
@@ -318,13 +338,28 @@ function delWlItemModal(itemId) {
     if (element) {
         // Get the uniqueId from the element's dataset
         const uniqueId = element.dataset.uniqueId;
+        console.log(`Removing item ${itemId} with uniqueId: ${uniqueId}`);
+        
         if (uniqueId) {
             // Remove from state manager using the uniqueId
             WorklistState.Manager.pendingItems.delete(uniqueId);
             WorklistState.Manager.htmlElements.delete(uniqueId);
+            WorklistState.Manager.processedItems.delete(uniqueId);
+            
+            // Also check if there's a processing item with this uniqueId
+            const processingItems = WorklistState.Manager.getAllProcessingItems();
+            for (const item of processingItems) {
+                if (item.uniqueId === uniqueId) {
+                    WorklistState.Manager.clearProcessingItem(item.id);
+                }
+            }
         }
         
+        // Remove the element from the DOM
         element.remove();
+        
+        // Show feedback
+        WorklistState.UI.showFeedback('info', 'Item removed from list', 'feedbackContainer');
     }
 };
 
@@ -501,152 +536,8 @@ $('#newWlItemForm').submit(function(e) {
     studyData.ReferringPhysicianName = seniorSelect.replace(/,/g, '^');
     studyData.ScheduledPerformingPhysicianName = providerSelect.replace(/,/g, '^');
 
-    // TODO: create patient for pacs at this level instead of for each modality
-    if (req =='POST') {
-        // create patient in dicom
-        let patientInfo = getUserInfo(patientId);
-        patientInfo
-            .then( (patient) => {
-                    let patientData = {}; 
-                    patientData.PatientID = patient['items'][0]['id'];
-                    patientData.PatientName = patient['items'][0]['last_name']+'^'+ patient['items'][0]['first_name'];
-                    patientData.PatientBirthDate = patient['items'][0]['dob'].replace(/-/g, "");
-                    patientData.PatientSex = patient['items'][0]['gender.sex'].charAt(0).toUpperCase();
-                    studyData.PatientID = patient['items'][0]['id'];
-                    let postPatientPacs = addPatientPacs(patientData) // promise
-                    postPatientPacs
-                    .then( () => { // patient is added to PACS, now loop the workinglist items
-                            // FIXME: wlItemsCounter will be lower if an item is deleted???
-                            for (let i = 0; i<=wlItemsCounter+1; i++) {
-                                let el = "wlItem"+parseInt(i);
-                                let wlId;
-                                const element = document.getElementById(el);
-                                if (element) {
-                                    // Get data from the dataset instead of jQuery's data()
-                                    let itemDataObj;
-                                    try {
-                                        itemDataObj = JSON.parse(element.dataset.json);
-                                    } catch (e) {
-                                        console.error('Error parsing JSON from data-json attribute:', e);
-                                        continue;
-                                    }
-                                    delete itemDataObj['methodWlItemSubmit'];
-                                    let modalityLowCase;
-                                    getUuid() // promise
-                                        .then(function(uuid) {
-                                            console.log('WlItemObj:',itemDataObj);                   
-                                            itemDataObj["message_unique_id"] = uuid.unique_id;
-                                            let itemDataStr = JSON.stringify(itemDataObj);
-                                            console.log('itemDataStr:',itemDataStr);
-                                            crudp('worklist','0', req, itemDataStr)
-                                            .then( data => {
-                                                // Remove element using vanilla JS
-                                                element.remove();
-                                                wlId = data.id;
-                                            }); 
-                                        })
-                                        .catch(error => console.error('An error occurred generating uuid:', error))
-                                        .then(function() {
-                                            getTableInfo('modality',itemDataObj['modality_dest'])
-                                                .then(function(modality){
-                                                    modalityLowCase = modality['items'][0]['modality_name'].toLowerCase();
-                                                    studyData.ScheduledProcedureStepStartDate = itemDataObj['requested_time'].substring(0, 4) + itemDataObj['requested_time'].substring(5, 7) + itemDataObj['requested_time'].substring(8, 10);
-                                                    studyData.ScheduledProcedureStepStartTime = itemDataObj['requested_time'].substring(11, 13) + itemDataObj['requested_time'].substring(14, 16);
-                                                    studyData.RequestedProcedureDescription = "Opthalmology Procedure";
-                                                    // TODO: construct Dicom Sequences
-                                                    if ( modalityLowCase == 'l80') {
-                                                        console.log('L80 detected');
-                                                        let firstname = removeAccent(patient['items'][0]['first_name']);
-                                                        let lastname = removeAccent(patient['items'][0]['last_name']);
-                                                        let dob = patient['items'][0]['dob'];
-                                                        let id = patient['items'][0]['id'];
-                                                        let sex = patient['items'][0]['gender.sex'];
-                                                        // console.log('useritem: ', user['items'][0]);
-                                                        addPatientVisionix('vx100', id, lastname, firstname, dob, sex)
-                                                        .then( () => {
-                                                                    addPatientVisionix('l80', id, lastname, firstname, dob, sex)
-                                                                    // .then( () => {$table_wl.bootstrapTable('refresh');})
-                                                                    .catch(error => console.error('An error occurred adding patient to l80:', error))
-                                                                }
-                                                            )
-                                                        .catch(error => console.error('An error occurred adding patient to visionix:', error));
-                                                    } else {
-                                                        // console.log('not L80');
-                                                    };
-
-                                                    if (modalityLowCase == 'octopus 900' || modalityLowCase == 'lenstar') {
-                                                        console.log(modalityLowCase,' detected');
-                                                        let firstname = removeAccent(patient['items'][0]['first_name']);
-                                                        let lastname = removeAccent(patient['items'][0]['last_name']);
-                                                        let dob = patient['items'][0]['dob'];
-                                                        let id = patient['items'][0]['id'];
-                                                        let sex = patient['items'][0]['gender.sex'];
-                                                        let machineType;
-                                                        if (modalityLowCase === 'octopus 900') {
-                                                            machineType = 'PERIMETRY_STATIC';
-                                                        } else if (modalityLowCase === 'lenstar') {
-                                                            machineType = 'BIOM_MEASUREMENT';};
-                                                        addPatientEyesuite(machineType, id, lastname, firstname, dob, sex)
-                                                        // .then( () => {$table_wl.bootstrapTable('refresh')})
-                                                        .catch(error => console.error('An error occurred adding patient to Eyesuite:', error));
-                                                    } else {
-                                                        console.log('not octopus 900 nor lenstar');
-                                                    };
-
-                                                    if (modalityLowCase == 'anterion') {
-                                                        console.log('modality is', modalityLowCase);
-                                                        studyData.StudyDescription = "Anterior OCT";
-                                                        studyData.ScheduledStationAETitle = "ANTERION";
-                                                        console.log("studyData PENTACAM",studyData)
-                                                        let updateMwl = addStudyMwl(studyData);
-                                                        updateMwl
-                                                        // .then(() => {$table_wl.bootstrapTable('refresh');})
-                                                        .catch(error => console.error('An error occurred adding Pentacam to MWL:', error));
-                                                    } else {
-                                                        console.log('not Anterion');
-                                                    };
-
-                                                    if (modalityLowCase == 'pentacam') {
-                                                        console.log('modality is', modalityLowCase);
-                                                        studyData.StudyDescription = "Scheimpflug topography";
-                                                        studyData.ScheduledStationAETitle = "PENTACAM";
-                                                        console.log("studyData PENTACAM",studyData)
-                                                        let updateMwl = addStudyMwl(studyData);
-                                                        updateMwl
-                                                        // .then(() => {$table_wl.bootstrapTable('refresh');})
-                                                        .catch(error => console.error('An error occurred adding Pentacam to MWL:', error));
-                                                    } else {
-                                                        console.log('not Pentacam');
-                                                    };
-
-                                                    if (modalityLowCase == 'md') {
-                                                        console.log('modality is', modalityLowCase);
-                                                        studyData.StudyDescription = "Non mydriatic retinography";
-                                                        studyData.ScheduledStationAETitle = "CR1";
-                                                        console.log("studyData CR1",studyData)
-                                                        let updateMwl = addStudyMwl(studyData);
-                                                        updateMwl
-                                                        // .then(() => {$table_wl.bootstrapTable('refresh');})
-                                                        .catch(error => console.error('An error occurred adding CR1 to MWL:', error));
-                                                    } else {
-                                                        console.log('not MD');
-                                                    };
-
-                                                }) // end getTableInfo
-                                                .catch(error => console.error('An error occurred getting modality informations:', error));
-                                        })
-                                        .then(function(){
-                                            $table_wl.bootstrapTable('refresh');
-                                        });
-                                };
-                            }; // end for loop
-                        } // .then patient added to PCS
-
-                    )
-                    .catch(error => console.error('An error occurred adding patient to PACS:', error));
-                })
-            .catch(error => console.error('An error occurred getting patient informations:', error));
-    } else if (req=='PUT') {
+    // Handle PUT request (edit existing item)
+    if (req == 'PUT') {
         let itemDataPutStr = $('#newWlItemForm').serializeJSON();
         let itemDataPutObj = JSON.parse(itemDataPutStr);
         delete itemDataPutObj['methodWlItemSubmit'];
@@ -661,10 +552,171 @@ $('#newWlItemForm').submit(function(e) {
         crudp('worklist', id, 'PUT', itemDataPutStr);
         hideDiv('#modality_destPutDiv', 'visually-hidden','add');
         hideDiv('#modality_destDiv', 'visually-hidden','remove');
-    };
-    $table_wl.bootstrapTable('refresh');
-    $('#newWlItemModal').modal('hide');
-}); // end submit function
+        $table_wl.bootstrapTable('refresh');
+        $('#newWlItemModal').modal('hide');
+        return;
+    }
+    
+    // For POST requests (new items), use batch submission
+    if (req == 'POST') {
+        // Show loading indicator
+        WorklistState.UI.lockUI('#newWlItemFormSubmit', 'Submitting...');
+        
+        // Log the number of pending items
+        const pendingItems = WorklistState.Manager.getAllPendingItems();
+        console.log(`Submitting ${pendingItems.length} pending items`);
+        
+        // Check if we have any items to submit
+        if (pendingItems.length === 0) {
+            WorklistState.UI.unlockUI('#newWlItemFormSubmit');
+            WorklistState.UI.showFeedback('error', 'No items to submit. Please add items first.', 'feedbackContainer');
+            return;
+        }
+        
+        // create patient in dicom
+        let patientInfo = getUserInfo(patientId);
+        patientInfo.then((patient) => {
+            // Set up patient data for PACS
+            let patientData = {}; 
+            patientData.PatientID = patient['items'][0]['id'];
+            patientData.PatientName = patient['items'][0]['last_name']+'^'+ patient['items'][0]['first_name'];
+            patientData.PatientBirthDate = patient['items'][0]['dob'].replace(/-/g, "");
+            patientData.PatientSex = patient['items'][0]['gender.sex'].charAt(0).toUpperCase();
+            studyData.PatientID = patient['items'][0]['id'];
+            
+            // Add patient to PACS
+            let postPatientPacs = addPatientPacs(patientData);
+            postPatientPacs.then(() => {
+                // Use batch submission for all items in the worklist
+                console.log('Calling submitBatch()...');
+                WorklistState.Manager.submitBatch()
+                    .then(items => {
+                        console.log(`Batch submission successful, processing ${items.length} items`);
+                        // Process each created item for various systems (L80, eyesuite, etc.)
+                        const processingPromises = [];
+                        
+                        items.forEach(item => {
+                            // Create a processing promise for each item
+                            const processPromise = getTableInfo('modality', item.modality_dest)
+                                .then(function(modality) {
+                                    const modalityLowCase = modality['items'][0]['modality_name'].toLowerCase();
+                                    console.log(`Processing item with modality: ${modalityLowCase}`);
+                                    
+                                    studyData.ScheduledProcedureStepStartDate = item.requested_time.substring(0, 10).replace(/-/g, "");
+                                    studyData.ScheduledProcedureStepStartTime = item.requested_time.substring(11, 16).replace(/:/, "");
+                                    studyData.RequestedProcedureDescription = "Opthalmology Procedure";
+                                    
+                                    // L80/Visionix processing
+                                    if (modalityLowCase == 'l80') {
+                                        console.log('L80 detected');
+                                        let firstname = removeAccent(patient['items'][0]['first_name']);
+                                        let lastname = removeAccent(patient['items'][0]['last_name']);
+                                        let dob = patient['items'][0]['dob'];
+                                        let id = patient['items'][0]['id'];
+                                        let sex = patient['items'][0]['gender.sex'];
+                                        
+                                        return addPatientVisionix('vx100', id, lastname, firstname, dob, sex)
+                                            .then(() => addPatientVisionix('l80', id, lastname, firstname, dob, sex))
+                                            .catch(error => console.error('Error adding patient to Visionix/L80:', error));
+                                    }
+                                    
+                                    // Octopus/Lenstar processing
+                                    if (modalityLowCase == 'octopus 900' || modalityLowCase == 'lenstar') {
+                                        console.log(modalityLowCase, ' detected');
+                                        let firstname = removeAccent(patient['items'][0]['first_name']);
+                                        let lastname = removeAccent(patient['items'][0]['last_name']);
+                                        let dob = patient['items'][0]['dob'];
+                                        let id = patient['items'][0]['id'];
+                                        let sex = patient['items'][0]['gender.sex'];
+                                        let machineType = modalityLowCase === 'octopus 900' ? 'PERIMETRY_STATIC' : 'BIOM_MEASUREMENT';
+                                        
+                                        return addPatientEyesuite(machineType, id, lastname, firstname, dob, sex)
+                                            .catch(error => console.error('Error adding patient to Eyesuite:', error));
+                                    }
+                                    
+                                    // Anterion processing
+                                    if (modalityLowCase == 'anterion') {
+                                        console.log('modality is', modalityLowCase);
+                                        studyData.StudyDescription = "Anterior OCT";
+                                        studyData.ScheduledStationAETitle = "ANTERION";
+                                        
+                                        return addStudyMwl(studyData)
+                                            .catch(error => console.error('Error adding Anterion to MWL:', error));
+                                    }
+                                    
+                                    // Pentacam processing
+                                    if (modalityLowCase == 'pentacam') {
+                                        console.log('modality is', modalityLowCase);
+                                        studyData.StudyDescription = "Scheimpflug topography";
+                                        studyData.ScheduledStationAETitle = "PENTACAM";
+                                        
+                                        return addStudyMwl(studyData)
+                                            .catch(error => console.error('Error adding Pentacam to MWL:', error));
+                                    }
+                                    
+                                    // MD processing
+                                    if (modalityLowCase == 'md') {
+                                        console.log('modality is', modalityLowCase);
+                                        studyData.StudyDescription = "Non mydriatic retinography";
+                                        studyData.ScheduledStationAETitle = "CR1";
+                                        
+                                        return addStudyMwl(studyData)
+                                            .catch(error => console.error('Error adding CR1 to MWL:', error));
+                                    }
+                                    
+                                    return Promise.resolve(); // Default return for other modalities
+                                })
+                                .catch(error => {
+                                    console.error(`Error getting modality information for item ${item.id}:`, error);
+                                    return Promise.resolve(); // Continue with other items
+                                });
+                            
+                            processingPromises.push(processPromise);
+                        });
+                        
+                        // Wait for all processing to complete
+                        return Promise.all(processingPromises).then(() => items);
+                    })
+                    .then(items => {
+                        console.log('All items processed successfully');
+                        // Update UI and complete the operation
+                        WorklistState.UI.unlockUI('#newWlItemFormSubmit');
+                        WorklistState.UI.showFeedback('success', 'Items added successfully', 'feedbackContainer');
+                        
+                        // Clear all pending items
+                        WorklistState.Manager.clearPendingItems();
+                        
+                        // Clear the displayed items
+                        document.getElementById('tbodyItems').innerHTML = '';
+                        
+                        // Refresh the worklist table
+                        $table_wl.bootstrapTable('refresh');
+                        
+                        // Hide the modal
+                        $('#newWlItemModal').modal('hide');
+                    })
+                    .catch(error => {
+                        console.error('Error submitting items in batch:', error);
+                        WorklistState.UI.unlockUI('#newWlItemFormSubmit');
+                        WorklistState.UI.showFeedback('error', 'Error submitting items: ' + error, 'feedbackContainer');
+                        
+                        // Even if we encounter an error, refresh the table since some items may have been created
+                        $table_wl.bootstrapTable('refresh');
+                    });
+            })
+            .catch(error => {
+                console.error('Error adding patient to PACS:', error);
+                WorklistState.UI.unlockUI('#newWlItemFormSubmit');
+                WorklistState.UI.showFeedback('error', 'Error adding patient to PACS: ' + error, 'feedbackContainer');
+            });
+        })
+        .catch(error => {
+            console.error('Error getting patient information:', error);
+            WorklistState.UI.unlockUI('#newWlItemFormSubmit');
+            WorklistState.UI.showFeedback('error', 'Error getting patient information: ' + error, 'feedbackContainer');
+        });
+    }
+});
 
 function delWlItem (id) {
     bootbox.confirm({

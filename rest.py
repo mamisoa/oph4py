@@ -2,14 +2,33 @@
 
 import base64
 import binascii
+import datetime
 import json
 import traceback
 
-from py4web import action, request, response  # add response to throw http error 400
+from py4web import (  # add response to throw http error 400
+    URL,
+    Field,
+    abort,
+    action,
+    redirect,
+    request,
+    response,
+)
 from pydal.restapi import Policy, RestAPI
 
-from .common import T, auth, authenticated, db, logger, session, unauthenticated  # ,dbo
-from .settings import COMPANY_LOGO, SMTP_LOGIN, SMTP_SERVER, UPLOAD_FOLDER
+from .common import (  # ,dbo
+    T,
+    auth,
+    authenticated,
+    cache,
+    db,
+    logger,
+    session,
+    unauthenticated,
+)
+from .models import str_uuid
+from .settings import APP_NAME, COMPANY_LOGO, SMTP_LOGIN, SMTP_SERVER, UPLOAD_FOLDER
 
 policy = Policy()
 policy.set("*", "GET", authorize=True, limit=1000, allowed_patterns=["*"])
@@ -710,3 +729,190 @@ def send_email_with_attachment():
         logger.error(f"Unexpected error in send_email_with_attachment: {str(e)}")
         logger.error(traceback.format_exc())
         return json.dumps({"status": "error", "message": f"Unexpected error: {str(e)}"})
+
+
+@action("api/worklist/batch", method=["POST"])
+@action.uses(db, session)
+def worklist_batch():
+    """
+    Batch endpoint for atomic worklist operations.
+    Handles multiple worklist items in a single transaction.
+
+    Expected JSON format:
+    {
+        "items": [
+            {
+                "id_auth_user": int,
+                "sending_app": str,
+                "sending_facility": int,
+                "receiving_app": str,
+                "receiving_facility": int,
+                "message_unique_id": str,
+                "procedure": int,
+                "provider": int,
+                "senior": int,
+                "requested_time": datetime,
+                "modality_dest": int,
+                "laterality": str,
+                "status_flag": str
+            },
+            ...
+        ],
+        "transaction_id": str  # Optional, for tracking
+    }
+
+    Returns:
+        JSON response with status and created/updated items
+    """
+    try:
+        data = request.json
+        logger.info(f"Batch worklist request received: {json.dumps(data, indent=2)}")
+
+        if not data or not isinstance(data.get("items"), list):
+            logger.error("Invalid request format - no items array")
+            return json.dumps(
+                {
+                    "status": "error",
+                    "message": "Invalid request format. Expected 'items' array.",
+                    "code": 400,
+                }
+            )
+
+        # Start transaction
+        db.commit()  # Commit any pending transactions
+        db._adapter.connection.begin()
+
+        created_items = []
+
+        # Validate all items before processing
+        patient_id = None
+        logger.info(f"Validating {len(data['items'])} worklist items")
+
+        for idx, item in enumerate(data["items"]):
+            logger.info(f"Validating item {idx+1}: {json.dumps(item, indent=2)}")
+
+            # Ensure all items are for the same patient
+            if patient_id is None:
+                patient_id = item.get("id_auth_user")
+                logger.info(f"First item patient ID: {patient_id}")
+            elif patient_id != item.get("id_auth_user"):
+                logger.error(
+                    f"Inconsistent patient IDs: {patient_id} vs {item.get('id_auth_user')}"
+                )
+                raise ValueError("All items in batch must be for the same patient")
+
+            # Validate required fields
+            required_fields = [
+                "id_auth_user",
+                "procedure",
+                "provider",
+                "senior",
+                "requested_time",
+                "modality_dest",
+                "laterality",
+                "status_flag",
+            ]
+            missing_fields = [f for f in required_fields if f not in item]
+            if missing_fields:
+                logger.error(
+                    f"Missing required fields in item {idx+1}: {', '.join(missing_fields)}"
+                )
+                raise ValueError(
+                    f"Missing required fields: {', '.join(missing_fields)}"
+                )
+
+            # Validate field values
+            if "laterality" in item and item.get("laterality") not in [
+                "both",
+                "right",
+                "left",
+                "none",
+            ]:
+                logger.error(
+                    f"Invalid laterality value in item {idx+1}: {item.get('laterality')}"
+                )
+                raise ValueError(f"Invalid laterality value: {item.get('laterality')}")
+
+            if "status_flag" in item and item.get("status_flag") not in [
+                "requested",
+                "processing",
+                "done",
+                "cancelled",
+            ]:
+                logger.error(
+                    f"Invalid status_flag value in item {idx+1}: {item.get('status_flag')}"
+                )
+                raise ValueError(
+                    f"Invalid status_flag value: {item.get('status_flag')}"
+                )
+
+        # Process all items
+        logger.info("All items validated, now processing")
+        for idx, item in enumerate(data["items"]):
+            # Set default values if not provided
+            item.setdefault("sending_app", "Oph4Py")
+            item.setdefault("sending_facility", 1)
+            item.setdefault("receiving_app", "Receiving App")
+            item.setdefault("receiving_facility", 1)
+            item.setdefault("message_unique_id", str_uuid())
+            item.setdefault("counter", 0)
+
+            # Remove any fields that aren't in the worklist table
+            item_fields = {k: v for k, v in item.items() if k in db.worklist.fields}
+
+            # Create worklist item
+            logger.info(
+                f"Inserting item {idx+1} with fields: {json.dumps(item_fields, indent=2)}"
+            )
+            item_id = db.worklist.insert(**item_fields)
+            created_item = db(db.worklist.id == item_id).select().first()
+            logger.info(f"Item {idx+1} created with ID: {item_id}")
+            created_items.append(created_item)
+
+        # If we got here, all operations succeeded
+        logger.info(
+            f"All {len(created_items)} items created successfully, committing transaction"
+        )
+        db.commit()
+
+        # Create individual item dictionaries with proper datetime handling
+        item_dicts = []
+        for item in created_items:
+            # Convert to dict and handle datetime conversion
+            item_dict = {k: v for k, v in item.as_dict().items()}
+            # Convert any datetime objects to strings
+            for key, value in item_dict.items():
+                if isinstance(value, datetime.datetime):
+                    item_dict[key] = value.strftime("%Y-%m-%d %H:%M:%S")
+                elif isinstance(value, datetime.date):
+                    item_dict[key] = value.strftime("%Y-%m-%d")
+            item_dicts.append(item_dict)
+
+        # Create response with the expected format
+        response_data = {
+            "status": "success",
+            "message": "Batch operation completed successfully",
+            "items": item_dicts,
+            "transaction_id": data.get("transaction_id"),
+        }
+
+        logger.info(
+            f"Returning success response for batch operation with {len(item_dicts)} items"
+        )
+        return json.dumps(response_data)
+
+    except ValueError as e:
+        logger.error(f"Validation error in batch operation: {str(e)}")
+        db.rollback()
+        return json.dumps({"status": "error", "message": str(e), "code": 400})
+    except Exception as e:
+        logger.error(f"Unexpected error in batch operation: {str(e)}")
+        logger.error(traceback.format_exc())
+        db.rollback()
+        return json.dumps(
+            {
+                "status": "error",
+                "message": f"Internal server error: {str(e)}",
+                "code": 500,
+            }
+        )
