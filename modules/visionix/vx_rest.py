@@ -348,9 +348,7 @@ def addpatient_l80(firstname, lastname):
                 list.append(line)
                 count += 1
     except:
-        return {
-            "result": "error reading index:" + folder + "/" + filename + "/Index.txt"
-        }
+        return {"result": "error reading index:" + folder + "/Index.txt"}
     # add new patient
     list.append(filename + "*" + lastname + "%" + firstname + "\n")
     # remove counter
