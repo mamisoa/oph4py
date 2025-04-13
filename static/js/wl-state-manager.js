@@ -14,6 +14,7 @@ class WorklistStateManager {
         this.processedItems = new Map(); // tracking processing status
         this.htmlElements = new Map();   // references to DOM elements
         this.patientContext = null;      // current patient context
+        this.processingItems = new Map(); // tracking items by their database ID
     }
     
     /**
@@ -133,6 +134,45 @@ class WorklistStateManager {
             cleanItems.push(this.getCleanItemForSubmission(uniqueId));
         });
         return cleanItems;
+    }
+    
+    /**
+     * Track an item being processed by its database ID
+     * @param {Number|String} id - Database ID of the item
+     * @param {Object} data - Additional metadata to store
+     */
+    trackProcessingItem(id, data = {}) {
+        this.processingItems.set(id.toString(), {
+            id: id,
+            startTime: new Date(),
+            data: data
+        });
+    }
+    
+    /**
+     * Remove tracking for a processed item
+     * @param {Number|String} id - Database ID of the item
+     * @returns {Boolean} True if item was found and removed
+     */
+    clearProcessingItem(id) {
+        return this.processingItems.delete(id.toString());
+    }
+    
+    /**
+     * Check if an item is currently being processed
+     * @param {Number|String} id - Database ID of the item
+     * @returns {Boolean} True if item is being processed
+     */
+    isItemProcessing(id) {
+        return this.processingItems.has(id.toString());
+    }
+    
+    /**
+     * Get all items currently being processed
+     * @returns {Array} Array of processing items
+     */
+    getAllProcessingItems() {
+        return Array.from(this.processingItems.values());
     }
     
     /**

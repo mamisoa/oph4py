@@ -4,6 +4,15 @@ let toggle_wl="";
 // add visibility to main modalities
 let mainModalityArr = ['MD', 'GP']
 
+// Make sure this object is defined immediately to avoid bootstrap-table initialization errors
+window.operateEvents_wl = {};
+
+// Make sure we're integrated with the state management system
+// This assumes wl-state-manager.js is loaded before this file
+if (typeof WorklistState === 'undefined') {
+    console.error('WorklistState not found! Make sure wl-state-manager.js is loaded first.');
+}
+
 function queryParams_wl(params) {
     search = params.search.split(",");
     if (search == [""]) {
@@ -119,18 +128,78 @@ function operateFormatter_wl(value, row, index) {
     return html.join('');
 };
 
+// Update the window.operateEvents_wl object with all the event handlers
 window.operateEvents_wl = {
     'click .edit': function (e, value, row, index) {
       console.log('You click action EDIT on row: ' + JSON.stringify(row));
       putWlModal(row.id);
     },
     'click .remove': function (e, value, row, index) {
-        delWlItem(row.id);
+        // Use request queue for deletion to prevent race conditions
+        WorklistState.UI.lockUI('.remove', 'Deleting...');
+        
+        // Add to request queue instead of calling directly
+        WorklistState.Queue.enqueue(
+            function() {
+                return new Promise((resolve, reject) => {
+                    bootbox.confirm({
+                        message: "Are you sure you want to delete this worklist item?",
+                        closeButton: false,
+                        buttons: {
+                            confirm: {
+                                label: 'Yes',
+                                className: 'btn-success'
+                            },
+                            cancel: {
+                                label: 'No',
+                                className: 'btn-danger'
+                            }
+                        },
+                        callback: function (result) {
+                            if (result) {
+                                // Track the item being processed
+                                WorklistState.Manager.trackProcessingItem(row.id);
+                                
+                                // Delete through the API
+                                crudp('worklist', row.id, 'DELETE')
+                                    .then(data => {
+                                        $table_wl.bootstrapTable('refresh');
+                                        resolve(data);
+                                    })
+                                    .catch(err => {
+                                        console.error('Error deleting worklist item:', err);
+                                        reject(err);
+                                    });
+                            } else {
+                                // User canceled, resolve with no action
+                                resolve({canceled: true});
+                            }
+                        }
+                    });
+                });
+            },
+            function(result) {
+                // Success callback
+                if (!result.canceled) {
+                    WorklistState.UI.showFeedback('success', 'Item deleted successfully', 'feedbackContainer');
+                }
+                WorklistState.UI.unlockUI('.remove');
+            },
+            function(error) {
+                // Error callback
+                console.error('Delete operation failed:', error);
+                WorklistState.UI.showFeedback('error', 'Error deleting item: ' + error, 'feedbackContainer');
+                WorklistState.UI.unlockUI('.remove');
+            }
+        );
     },
     'click .stopwatch': function (e, value, row, index) {
+        // Lock UI during processing
+        WorklistState.UI.lockUI('.stopwatch', 'Processing...');
+        
         let dataObj = { 'laterality': row.laterality, 'id': row.id };
-        let dataStr;
-        if ( (row.counter > 0) && (row.status_flag != 'cancelled') ) {
+        
+        if ((row.counter > 0) && (row.status_flag != 'cancelled')) {
             if (row.counter == 1) {
                 dataObj['status_flag'] = 'done';
                 dataObj['counter'] = 0;
@@ -138,46 +207,154 @@ window.operateEvents_wl = {
                 dataObj['counter'] = row.counter-1;
                 dataObj['status_flag'] = 'processing';
             }
-            dataStr = JSON.stringify(dataObj);
-            setWlItemStatus(dataStr).then(function () {$table_wl.bootstrapTable('refresh')});
+            
+            const dataStr = JSON.stringify(dataObj);
+            
+            // Add to request queue instead of calling directly
+            WorklistState.Queue.enqueue(
+                function() {
+                    // Track the item being processed
+                    WorklistState.Manager.trackProcessingItem(row.id);
+                    
+                    return setWlItemStatus(dataStr);
+                },
+                function() {
+                    // Success callback
+                    $table_wl.bootstrapTable('refresh');
+                    WorklistState.UI.showFeedback('success', 'Counter updated successfully', 'feedbackContainer');
+                    WorklistState.UI.unlockUI('.stopwatch');
+                },
+                function(error) {
+                    // Error callback
+                    console.error('Counter update failed:', error);
+                    WorklistState.UI.showFeedback('error', 'Error updating counter: ' + error, 'feedbackContainer');
+                    WorklistState.UI.unlockUI('.stopwatch');
+                }
+            );
+        } else {
+            WorklistState.UI.unlockUI('.stopwatch');
         }
     },
     'click .done': function (e, value, row, index) {
+        // Lock UI during processing
+        WorklistState.UI.lockUI('.done', 'Processing...');
+        
         let dataObj = { 'laterality': row.laterality, 'id': row.id };
-        let dataStr;
+        
         if (row.status_flag != 'done') {
             dataObj['status_flag'] = 'done';
             dataObj['counter'] = 0;
-            dataStr = JSON.stringify(dataObj);
-            setWlItemStatus(dataStr).then(function () {$table_wl.bootstrapTable('refresh')});
+            
+            const dataStr = JSON.stringify(dataObj);
+            
+            // Add to request queue instead of calling directly
+            WorklistState.Queue.enqueue(
+                function() {
+                    // Track the item being processed
+                    WorklistState.Manager.trackProcessingItem(row.id);
+                    
+                    return setWlItemStatus(dataStr);
+                },
+                function() {
+                    // Success callback
+                    $table_wl.bootstrapTable('refresh');
+                    WorklistState.UI.showFeedback('success', 'Status updated to done', 'feedbackContainer');
+                    WorklistState.UI.unlockUI('.done');
+                },
+                function(error) {
+                    // Error callback
+                    console.error('Status update failed:', error);
+                    WorklistState.UI.showFeedback('error', 'Error updating status: ' + error, 'feedbackContainer');
+                    WorklistState.UI.unlockUI('.done');
+                }
+            );
+        } else {
+            WorklistState.UI.unlockUI('.done');
         }
     },
     'click .modality_ctr': function (e, value, row, index) {
+        // Lock UI during processing
+        WorklistState.UI.lockUI('.modality_ctr', 'Processing...');
+        
         let dataObj = { 'laterality': row.laterality, 'id': row.id };
-        let dataStr;
+        
         if (row.status_flag == 'requested') {
             dataObj['status_flag'] = 'processing';
             dataObj['counter'] = row.counter;
-            dataStr = JSON.stringify(dataObj);
-            setWlItemStatus(dataStr).then(function () {$table_wl.bootstrapTable('refresh')});
+            
+            const dataStr = JSON.stringify(dataObj);
+            
+            // Add to request queue instead of calling directly
+            WorklistState.Queue.enqueue(
+                function() {
+                    // Track the item being processed
+                    WorklistState.Manager.trackProcessingItem(row.id);
+                    
+                    return setWlItemStatus(dataStr);
+                },
+                function() {
+                    // Success callback
+                    $table_wl.bootstrapTable('refresh');
+                    
+                    // Navigate to the controller page after status is updated
+                    let controller = modalityDict[row.modality];
+                    let link = HOSTURL+'/'+APP_NAME+'/modalityCtr/'+controller+'/'+row.id;
+                    window.location.href = link;
+                },
+                function(error) {
+                    // Error callback
+                    console.error('Status update failed:', error);
+                    WorklistState.UI.showFeedback('error', 'Error updating status: ' + error, 'feedbackContainer');
+                    WorklistState.UI.unlockUI('.modality_ctr');
+                }
+            );
+        } else {
+            // If already processing, just navigate
+            let controller = modalityDict[row.modality];
+            let link = HOSTURL+'/'+APP_NAME+'/modalityCtr/'+controller+'/'+row.id;
+            window.location.href = link;
         }
-        let controller = modalityDict[row.modality];
-        let link = HOSTURL+'/'+APP_NAME+'/modalityCtr/'+controller+'/'+row.id
-        window.location.href = link;
     },
     'click .summary': function (e, value, row, index) {
         let link = HOSTURL+'/'+APP_NAME+'/billing/summary/'+row.id_auth_user;
         window.location.href = link;
     },
     'click .unlock': function (e, value, row, index) {
+        // Lock UI during processing
+        WorklistState.UI.lockUI('.unlock', 'Processing...');
+        
         let dataObj = { 'laterality': row.laterality, 'id': row.id };
-        let dataStr;
+        
         if (row.status_flag == 'done') {
             dataObj['status_flag'] = 'processing';
             dataObj['counter'] = 1;
-            dataStr = JSON.stringify(dataObj);
-            setWlItemStatus(dataStr).then(function () {$table_wl.bootstrapTable('refresh')});
-        } else {};
+            
+            const dataStr = JSON.stringify(dataObj);
+            
+            // Add to request queue instead of calling directly
+            WorklistState.Queue.enqueue(
+                function() {
+                    // Track the item being processed
+                    WorklistState.Manager.trackProcessingItem(row.id);
+                    
+                    return setWlItemStatus(dataStr);
+                },
+                function() {
+                    // Success callback
+                    $table_wl.bootstrapTable('refresh');
+                    WorklistState.UI.showFeedback('success', 'Status updated to processing', 'feedbackContainer');
+                    WorklistState.UI.unlockUI('.unlock');
+                },
+                function(error) {
+                    // Error callback
+                    console.error('Status update failed:', error);
+                    WorklistState.UI.showFeedback('error', 'Error updating status: ' + error, 'feedbackContainer');
+                    WorklistState.UI.unlockUI('.unlock');
+                }
+            );
+        } else {
+            WorklistState.UI.unlockUI('.unlock');
+        }
     }
 };
 
@@ -265,3 +442,39 @@ function rowAttributes_wl(row,index) { // set tooltip values
         "data-bs-toggle": "tooltip"
     };
 };
+
+// Add a helper function to properly set worklist item status
+function setWlItemStatus(dataStr) {
+    // Parse the data to extract the ID
+    const data = JSON.parse(dataStr);
+    const id = data.id;
+    
+    // Remove the ID from the data object since it will be in the URL
+    delete data.id;
+    
+    // Convert back to JSON string without the ID
+    const cleanDataStr = JSON.stringify(data);
+    
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "PUT",
+            url: HOSTURL+"/"+APP_NAME+"/api/worklist/" + id,
+            dataType: "json",
+            data: cleanDataStr,
+            contentType: "application/json",
+            success: function (data) {
+                if (data.status == 'error') {
+                    displayToast('error', 'PUT error', 'Cannot update worklist status', '6000');
+                    reject('PUT error: Cannot update worklist status');
+                } else {
+                    displayToast('info', 'PUT success', 'worklist status updated', '3000');
+                    resolve(data);
+                }
+            },
+            error: function (er) {
+                console.log(er);
+                reject(er);
+            }
+        });
+    });
+}
