@@ -1,4 +1,4 @@
-refreshTables(tablesArr);
+refreshTables();
 
 // remove class top-fixed from topnav
 document.getElementById('topNavbar').classList.remove('fixed-top');
@@ -76,14 +76,14 @@ function tonoPachyInsert(domId,laterality, techno='air') {
     // console.log('o',o);
     oStr = JSON.stringify(o);
     crudp('tono','0','POST', oStr).then(data => refreshTables());
-    techno == 'air'? $('#airPachy'+capitalize(laterality)+'_tbl').bootstrapTable('refresh') : $('#apla'+capitalize(laterality)+'_tbl').bootstrapTable('refresh');
+    // No need for separate refresh as refreshTables() will handle it
 };
 
 function refreshTables() {
-    $table_airRight.bootstrapTable('refresh');
-    $table_airLeft.bootstrapTable('refresh');
-    $table_aplaRight.bootstrapTable('refresh');
-    $table_aplaLeft.bootstrapTable('refresh');
+    // Refresh all tables - filters are handled by queryParams
+    Object.keys(TONO_TABLES_CONFIG).forEach(tableId => {
+        $(tableId).bootstrapTable('refresh');
+    });
 };
 
 function delTonoPachy (id) {

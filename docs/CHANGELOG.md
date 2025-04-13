@@ -15,6 +15,18 @@ All notable changes to this project will be documented in this file.
   - Improved user experience by preventing duplicate notifications
   - Fixed notification handling for delete, status update, and counter operations
 
+- 2025-04-13T19:41:43.494400: Enhanced tonometry module with improved API handling and table initialization
+  - Fixed duplicated `@limit` parameter issue causing API errors
+  - Improved bootstrap-table configuration with proper pagination parameters
+  - Corrected table references in tono.js to prevent JavaScript reference errors
+  - Enhanced table filtering by laterality and technology type
+  - Fixed context issue in queryParams function by correctly passing configuration
+  - Implemented better bootstrap-table initialization structure
+  - Created centralized table configuration management
+  - Updated refreshTables function to use consistent table selectors
+  - Eliminated race conditions in table updates
+  - Improved error handling for failed API requests
+
 - 2025-04-13T13:01:16.998036: Implemented Phase 1 of worklist combo fix
   - Created new state manager module in static/js/wl-state-manager.js:
     - Added WorklistStateManager class for tracking item states

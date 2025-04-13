@@ -241,8 +241,7 @@
 
 
 <!-- Modal newWlItemModal -->
-<div class="modal fade" id="newWlItemModal" tabindex="-1" role="dialog" aria-labelledby="modalWlTitleId"
-    aria-hidden="true">
+<div class="modal fade" id="newWlItemModal" tabindex="-1" role="dialog" aria-labelledby="modalWlTitleId">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -389,11 +388,12 @@
                                                 worklist <i class="fas fa-plus"></i></button>
                                         </div>
                                     </div>
-                                    <input id="idPatientWl" type="text" class="visually-hidden" name="id_auth_user" />
-                                    <input id="idWl" type="text" class="visually-hidden" name="id" />
-                                    <input id="methodWlItemSubmit" type="text" class="visually-hidden"
-                                        name="methodWlItemSubmit" value="POST" />
-                                    <input id="btnNewWlItemSubmit" type="submit" class="visually-hidden" />
+                                    <div class="visually-hidden">
+                                        <input id="idPatientWl" type="text" name="id_auth_user" />
+                                        <input id="idWl" type="text" name="id" />
+                                        <input id="methodWlItemSubmit" type="text" name="methodWlItemSubmit" value="POST" />
+                                        <input id="btnNewWlItemSubmit" type="submit" />
+                                    </div>
                                 </div> <!--end container form  -->
                             </form>
                         </div> <!--end col row  -->
@@ -416,7 +416,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="labelSubmit" for="btnNewWlItemSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="labelSubmit" for="btnNewWlItemSubmit" class="btn btn-primary" tabindex="0" role="button">Submit</label>
             </div>
         </div>
     </div>

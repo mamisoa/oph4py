@@ -582,3 +582,89 @@ async function addStudyMwl(data, dicom = false) {
 			.catch((error) => console.error("An error occurred:", error));
 	}
 }
+
+// Utility function to handle API requests with retries
+async function fetchWithRetry(url, options = {}, maxRetries = 3, delay = 1000) {
+	let lastError;
+	
+	for (let i = 0; i < maxRetries; i++) {
+		try {
+			const response = await fetch(url, {
+				...options,
+				headers: {
+					'Content-Type': 'application/json',
+					...(options.headers || {})
+				}
+			});
+			
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			
+			return await response.json();
+		} catch (error) {
+			lastError = error;
+			console.warn(`Attempt ${i + 1} failed:`, error);
+			
+			if (i < maxRetries - 1) {
+				await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+			}
+		}
+	}
+	
+	throw lastError;
+}
+
+// Debounced fetch function to prevent multiple simultaneous requests
+function debouncedFetch(key, url, options = {}) {
+	if (!window._fetchDebounceTimers) {
+		window._fetchDebounceTimers = new Map();
+	}
+	
+	if (!window._fetchPromises) {
+		window._fetchPromises = new Map();
+	}
+	
+	// Clear any existing timer for this key
+	if (window._fetchDebounceTimers.has(key)) {
+		clearTimeout(window._fetchDebounceTimers.get(key));
+	}
+	
+	// Return existing promise if one is in flight
+	if (window._fetchPromises.has(key)) {
+		return window._fetchPromises.get(key);
+	}
+	
+	const promise = new Promise((resolve, reject) => {
+		const timer = setTimeout(async () => {
+			try {
+				const result = await fetchWithRetry(url, options);
+				window._fetchPromises.delete(key);
+				resolve(result);
+			} catch (error) {
+				window._fetchPromises.delete(key);
+				reject(error);
+			}
+		}, 100); // 100ms debounce delay
+		
+		window._fetchDebounceTimers.set(key, timer);
+	});
+	
+	window._fetchPromises.set(key, promise);
+	return promise;
+}
+
+// Helper function to make API requests
+async function makeAPIRequest(endpoint, params = {}) {
+	const queryString = new URLSearchParams(params).toString();
+	const url = `${endpoint}${queryString ? '?' + queryString : ''}`;
+	const requestKey = `${endpoint}-${queryString}`;
+	
+	try {
+		const data = await debouncedFetch(requestKey, url);
+		return data;
+	} catch (error) {
+		console.error('API request failed:', error);
+		throw error;
+	}
+}

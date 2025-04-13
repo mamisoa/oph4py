@@ -82,7 +82,7 @@ var temp;
 
 // add new item in worklist format
 // TODO: remove status_flag -> only needed when modification
-$('#btnWlItemAdd').click(function() {
+document.getElementById('btnWlItemAdd').addEventListener('click', function() {
     // Lock the button during processing
     WorklistState.UI.lockUI('#btnWlItemAdd', 'Adding...');
     
@@ -218,25 +218,24 @@ $('#btnWlItemAdd').click(function() {
     }
 });
 
-function getCombo(id_procedure) {
-    return Promise.resolve(
-        $.ajax({
-            type: 'GET',
-            dataType: 'json',
-            url: HOSTURL+"/"+APP_NAME+"/api/combo?@lookup=id_procedure!:id_procedure[exam_name],id_modality!:id_modality&@count=true&id_procedure="+id_procedure,
-            success: function(data) {
-                if (data.status != 'error' || data.count) {
-                    displayToast('success', 'GET combo exams', 'GET '+data.items[0]['id_procedure.exam_name']);
-                } else {
-                    displayToast('error', 'GET error', 'Cannot retrieve combo exams');
-                }
-            }, // success
-            error: function (er) {
-                console.log(er);
-            }
-        })
-    ); // promise return data
-};
+async function getCombo(id_procedure) {
+    try {
+        const response = await fetch(`${HOSTURL}/${APP_NAME}/api/combo?@lookup=id_procedure!:id_procedure[exam_name],id_modality!:id_modality&@count=true&id_procedure=${id_procedure}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.status !== 'error' || data.count) {
+            displayToast('success', 'GET combo exams', 'GET ' + data.items[0]['id_procedure.exam_name']);
+        } else {
+            displayToast('error', 'GET error', 'Cannot retrieve combo exams');
+        }
+        return data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
 
 // arr = field content, cnt = row counter, dataStr = json data string type
 // create wlItemsHtml for display

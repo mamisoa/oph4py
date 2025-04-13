@@ -352,50 +352,139 @@
 </div>
 
 [[ block js_scripts]]
-
+<!-- Global variables and utilities first -->
 <script type="text/javascript">
-    // Global variables
-    const HOSTURL = "[[ = hosturl ]]";
-    // submit btn to disable when done
-    const btnArr = ['#btnTaskDone', '#btnAddTonoPachyRight', '#btnAddTonoPachyLeft', '#btnAddAplaRight', '#btnAddAplaLeft'];
+    // Global variables - define only once
+    window.HOSTURL = "[[ = hosturl ]]";
+    window.APP_NAME = "oph4py";
+    window.BASE_API = `${HOSTURL}/${APP_NAME}/api`;
+    window.wlId = "[[= wlId ]]";
+    
+    // Tables configuration
+    window.TONO_TABLES_CONFIG = {
+        '#airPachyRight_tbl': { laterality: 'right', techno: 'air' },
+        '#airPachyLeft_tbl': { laterality: 'left', techno: 'air' },
+        '#aplaRight_tbl': { laterality: 'right', techno: 'apla' },
+        '#aplaLeft_tbl': { laterality: 'left', techno: 'apla' }
+    };
+    
+    // API endpoints with params - note the @lookup prefix
+    window.TONO_PARAMS = {
+        '@lookup': 'mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]',
+        '@count': true,
+        '@order': '~id'
+    };
+
+    // Bootstrap table common options
+    window.BOOTSTRAP_TABLE_OPTIONS = {
+        pagination: true,
+        pageSize: 10,
+        sidePagination: 'server',
+        queryParamsType: ''  // Remove ? from URL
+    };
 </script>
+
+<!-- Load dependencies -->
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
 <script src="js/useful.js"></script>
+
+<!-- Load application specific scripts -->
 <script src="js/patient-bar.js"></script>
 <script src="js/tono_bt.js"></script>
+
+<!-- Main application logic -->
 <script type="text/javascript">
+    async function fetchTonoData(laterality, techno) {
+        try {
+            const params = {
+                ...TONO_PARAMS,
+                'laterality.eq': laterality,
+                'techno.eq': techno,
+                'id_worklist.eq': wlId,
+                '@limit': 10
+            };
+            
+            return await makeAPIRequest(`${BASE_API}/tono`, params);
+        } catch (error) {
+            console.error(`Failed to fetch ${techno} tonometry data for ${laterality} eye:`, error);
+            displayToast('error', 'Data fetch failed', `Could not load ${techno} tonometry data for ${laterality} eye. Will retry automatically.`);
+            throw error;
+        }
+    }
 
-    // init tables
-    const tablesArr = ['#airPachyRight_tbl', '#airPachyLeft_tbl', '#aplaRight_tbl', '#aplaLeft_tbl'];
+    async function refreshTonoTables() {
+        try {
+            const [airRight, airLeft, aplaRight, aplaLeft] = await Promise.allSettled([
+                fetchTonoData('right', 'air'),
+                fetchTonoData('left', 'air'),
+                fetchTonoData('right', 'apla'),
+                fetchTonoData('left', 'apla')
+            ]);
 
-    const API_AIRRIGHT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=right&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq=" + wlId;
-    const API_AIRLEFT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=left&techno.eq=air&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq=" + wlId;
-    const API_APLARIGHT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=right&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq=" + wlId;
-    const API_APLALEFT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=left&techno.eq=apla&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_worklist.eq=" + wlId;
+            // Handle results, even if some failed
+            if (airRight.status === 'fulfilled') {
+                $('#airPachyRight_tbl').bootstrapTable('load', airRight.value);
+            }
+            if (airLeft.status === 'fulfilled') {
+                $('#airPachyLeft_tbl').bootstrapTable('load', airLeft.value);
+            }
+            if (aplaRight.status === 'fulfilled') {
+                $('#aplaRight_tbl').bootstrapTable('load', aplaRight.value);
+            }
+            if (aplaLeft.status === 'fulfilled') {
+                $('#aplaLeft_tbl').bootstrapTable('load', aplaLeft.value);
+            }
+        } catch (error) {
+            console.error('Error refreshing tonometry tables:', error);
+            displayToast('error', 'Refresh failed', 'Failed to refresh some tonometry data. Will retry automatically.');
+        }
+    }
 
-    var $table_airRight = $('#airPachyRight_tbl').bootstrapTable({
-        url: API_AIRRIGHT
+    let refreshInterval;
+    function startAutoRefresh() {
+        stopAutoRefresh();
+        refreshInterval = setInterval(refreshTonoTables, 30000);
+    }
+
+    function stopAutoRefresh() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+            refreshInterval = null;
+        }
+    }
+
+    // Initialize when document is ready
+    $(document).ready(function() {
+        // Initialize bootstrap tables with correct configuration
+        Object.entries(TONO_TABLES_CONFIG).forEach(([tableId, config]) => {
+            $(tableId).bootstrapTable({
+                ...BOOTSTRAP_TABLE_OPTIONS,
+                url: `${BASE_API}/tono`,
+                queryParams: function(params) {
+                    return {
+                        ...TONO_PARAMS,
+                        '@limit': params.pageSize,
+                        '@offset': params.pageSize * (params.pageNumber - 1),
+                        'laterality.eq': config.laterality,
+                        'techno.eq': config.techno,
+                        'id_worklist.eq': wlId
+                    };
+                }
+            });
+        });
+
+        refreshTonoTables();
+        startAutoRefresh();
     });
 
-    var $table_airLeft = $('#airPachyLeft_tbl').bootstrapTable({
-        url: API_AIRLEFT
+    // Clean up on page unload
+    $(window).on('unload', function() {
+        stopAutoRefresh();
     });
-
-    var $table_aplaRight = $('#aplaRight_tbl').bootstrapTable({
-        url: API_APLARIGHT
-    });
-
-    var $table_aplaLeft = $('#aplaLeft_tbl').bootstrapTable({
-        url: API_APLALEFT
-    });
-
-    // Fires after the table body is rendered and available in the DOM, the parameters contain data
-    $('#airPachyRight_tbl').on('post-body.bs.table', function () {
-        // $('.loading-wrap').addClass('visually-hidden'); // loading bug?
-    });
-
 </script>
+
+<!-- Load page specific script last -->
 <script src="js/tono.js"></script>
 [[ end ]]
