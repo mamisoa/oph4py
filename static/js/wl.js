@@ -1,3 +1,6 @@
+// Add script reference to wl-state-manager.js
+// This needs to be added in the HTML template that includes wl.js
+
 // init worklist form
 
 // change modality options on procedure select
@@ -66,60 +69,152 @@ function resetWlForm() {
     $("[name=warning]").val([""]);
     let choice = $('select#procedureSelect option:checked').val();
     setModalityOptions(choice);
+    
+    // Clear the state manager's pending items
+    WorklistState.Manager.clearPendingItems();
 }
-//
-var wlItemsJson = [];
-var wlItemsHtml = [];
+
+// Replace the global variables with the state manager
+// var wlItemsJson = [];
+// var wlItemsHtml = [];
 var wlItemsCounter = 0;
 var temp;
 
 // add new item in worklist format
 // TODO: remove status_flag -> only needed when modification
 $('#btnWlItemAdd').click(function() {
+    // Lock the button during processing
+    WorklistState.UI.lockUI('#btnWlItemAdd', 'Adding...');
+    
     let formDataStr = $('#newWlItemForm').serializeJSON();
     let formDataObj = JSON.parse(formDataStr);
     delete formDataObj['modality_destPut']; // used for PUT request
     delete formDataObj['idWl']; // no Id when new Item
+    
+    // Store patient context
+    WorklistState.Manager.setPatientContext({
+        id: formDataObj['id_auth_user'],
+        sending_facility: $('#sendingFacilitySelect :selected').text(),
+        receiving_facility: $('#receivingFacilitySelect :selected').text()
+    });
+    
     let formDataObjMultiple = [];
-    wlItemsJson.push(formDataObj);
-    if (formDataObj['modality_dest'] == multiplemod ) { // modality_dest 13 is multiple 
-        getCombo(formDataObj['procedure'])
-            .then(function(data) {
-                let arr = [];
-                // console.log('dataitem:',data);
-                for (let i in data.items) {
-                    // console.log('multiple modality item:',data.items[i]['id_modality.id']);
-                    arr[data.items[i]['id_modality.modality_name']]=data.items[i]['id_modality.id'];
-                };
-                // console.log('arr=',arr);
-                let o;
-                for (let a in arr) {
-                    o = Object.assign({},formDataObj); // clone formDataObj
-                    // console.log('arr=',arr[a]);
-                    o['modality_dest']=arr[a];
-                    o['modality_name']= a; // only to get modality name
-                    if (a == 'MD') {
-                        // o['provider']=o['senior'];
-                        o['counter']=1;
+    
+    // Add item to state manager instead of pushing to array
+    const itemId = WorklistState.Manager.addItem(formDataObj);
+    
+    // Remove uniqueId from the object to be submitted (keep a copy of the ID)
+    const stateUniqueId = formDataObj.uniqueId;
+    delete formDataObj.uniqueId;
+    
+    if (formDataObj['modality_dest'] == multiplemod) { // modality_dest 13 is multiple
+        // Create a task function for the request queue
+        const comboTask = function() {
+            return getCombo(formDataObj['procedure'])
+                .then(function(data) {
+                    let arr = [];
+                    for (let i in data.items) {
+                        arr[data.items[i]['id_modality.modality_name']] = data.items[i]['id_modality.id'];
                     }
-                    formDataObjMultiple.push(o);
-                    // console.log('Object:',o);
-                };
-                for (let f in formDataObjMultiple) {
-                    let modalityName = formDataObjMultiple[f]['modality_name'];
-                    delete formDataObjMultiple[f]['modality_name']; // only to get modality name
-                    delete formDataObjMultiple[f]['id']; // only for put request
-                    let formDataObjMultipleStr = JSON.stringify(formDataObjMultiple[f]);
-                    // console.log('formDataObjMultiple['+f+']', formDataObjMultipleStr);
-                    appendWlItem(formDataObjMultipleStr, wlItemsCounter, modalityName);
-                };
-            }); // end getCombo
-        // console.log('formDataObjMultiple:',formDataObjMultiple);
+                    
+                    let o;
+                    for (let a in arr) {
+                        o = Object.assign({}, formDataObj); // clone formDataObj
+                        o['modality_dest'] = arr[a];
+                        o['modality_name'] = a; // only to get modality name
+                        if (a == 'MD') {
+                            // o['provider']=o['senior'];
+                            o['counter'] = 1;
+                        }
+                        
+                        // Add each item to state manager
+                        const modalityItemId = WorklistState.Manager.addItem(o);
+                        
+                        // Store uniqueId separately but don't include in the object for server submission
+                        const itemUniqueId = o.uniqueId;
+                        delete o.uniqueId;
+                        
+                        formDataObjMultiple.push(o);
+                        
+                        // Re-associate the uniqueId for client-side tracking only
+                        o._uniqueId = itemUniqueId;
+                    }
+                    
+                    // Validate patient consistency before proceeding
+                    if (!WorklistState.Manager.validatePatientConsistency()) {
+                        WorklistState.UI.showFeedback('error', 'Error: Items belong to different patients', 'feedbackContainer');
+                        return Promise.reject('Patient consistency validation failed');
+                    }
+                    
+                    // Process the items for UI display
+                    for (let f in formDataObjMultiple) {
+                        let modalityName = formDataObjMultiple[f]['modality_name'];
+                        delete formDataObjMultiple[f]['modality_name']; // only to get modality name
+                        delete formDataObjMultiple[f]['id']; // only for put request
+                        
+                        // Get the uniqueId we stored earlier
+                        const uniqueId = formDataObjMultiple[f]._uniqueId;
+                        delete formDataObjMultiple[f]._uniqueId;
+                        
+                        // Re-add the uniqueId for client tracking, but ensure it's removed before stringifying
+                        const itemWithUniqueId = { ...formDataObjMultiple[f], uniqueId };
+                        let formDataObjMultipleStr = JSON.stringify(itemWithUniqueId);
+                        
+                        // Update status to reflect processing
+                        WorklistState.Manager.updateItemStatus(uniqueId, 'pending');
+                        
+                        appendWlItem(formDataObjMultipleStr, wlItemsCounter, modalityName);
+                    }
+                    
+                    return formDataObjMultiple;
+                });
+        };
+        
+        // Add to request queue instead of immediate execution
+        WorklistState.Queue.enqueue(
+            comboTask,
+            function(result) {
+                // Success callback
+                WorklistState.UI.showFeedback('success', 'Items added to worklist queue', 'feedbackContainer');
+                WorklistState.UI.unlockUI('#btnWlItemAdd');
+            },
+            function(error) {
+                // Error callback
+                console.error('Error in combo processing:', error);
+                WorklistState.UI.showFeedback('error', 'Error adding items: ' + error, 'feedbackContainer');
+                WorklistState.UI.unlockUI('#btnWlItemAdd');
+            }
+        );
     } else {
+        // Single modality selection
         delete formDataObj['modality_name']; // only to get modality name
         delete formDataObj['id']; // only for put request
+        
+        // Re-add the uniqueId for tracking only, but it will be removed by appendWlItem
+        formDataObj.uniqueId = stateUniqueId;
         formDataStr = JSON.stringify(formDataObj);
-        appendWlItem(formDataStr, wlItemsCounter);
+        
+        // Update the item status
+        WorklistState.Manager.updateItemStatus(stateUniqueId, 'pending');
+        
+        // Use the request queue for consistent processing
+        WorklistState.Queue.enqueue(
+            function() {
+                // Simple task that executes immediately
+                return Promise.resolve(appendWlItem(formDataStr, wlItemsCounter));
+            },
+            function() {
+                // Success callback
+                WorklistState.UI.showFeedback('success', 'Item added to worklist queue', 'feedbackContainer');
+                WorklistState.UI.unlockUI('#btnWlItemAdd');
+            },
+            function(error) {
+                // Error callback
+                console.error('Error adding item:', error);
+                WorklistState.UI.showFeedback('error', 'Error adding item: ' + error, 'feedbackContainer');
+                WorklistState.UI.unlockUI('#btnWlItemAdd');
+            }
+        );
     }
 });
 
@@ -145,9 +240,21 @@ function getCombo(id_procedure) {
 
 // arr = field content, cnt = row counter, dataStr = json data string type
 // create wlItemsHtml for display
-function appendWlItem(dataStr,cnt, modalityName) {
-    // console.log('wlItems:', wlItemsJson);
-    // console.log('modality Name:', modalityName );
+function appendWlItem(dataStr, cnt, modalityName) {
+    // Create a new object for UI display instead of using global
+    const wlItemsHtml = {};
+    
+    // Parse the data string to an object for manipulation
+    const parsedData = JSON.parse(dataStr);
+    
+    // Remove the uniqueId field before storing back to data-json
+    // This ensures it won't be sent to the server
+    const uniqueId = parsedData.uniqueId;
+    delete parsedData.uniqueId;
+    
+    // Convert back to string for storage
+    const cleanDataStr = JSON.stringify(parsedData);
+    
     wlItemsHtml['From'] = $('#sendingFacilitySelect :selected').text();
     wlItemsHtml['To'] = $('#receivingFacilitySelect :selected').text();
     wlItemsHtml['Procedure'] = $('#procedureSelect :selected').text();
@@ -174,15 +281,33 @@ function appendWlItem(dataStr,cnt, modalityName) {
     head += '<tr>';
     $('#tbodyItems').append(html);
     $('#theadItems').html(head);
-    // set data-json attribute with row formDataStr
-    $('#wlItem'+cnt).data('json',dataStr);
+    // set data-json attribute with row formDataStr - use the cleaned version
+    $('#wlItem'+cnt).data('json', cleanDataStr);
+    
+    // Store reference to HTML element in state manager using original uniqueId
+    if (uniqueId) {
+        WorklistState.Manager.htmlElements.set(uniqueId, $('#wlItem'+cnt));
+        
+        // Store the mapping between row index and uniqueId for later reference
+        $('#wlItem'+cnt).data('uniqueId', uniqueId);
+    }
+    
     wlItemsCounter += 1;
-    // console.log('wlItemsCounter',wlItemsCounter);
 };
 
 // delete item in item worklist to append
-function delWlItemModal(itemId){
-    $('#wlItem'+itemId).remove();
+function delWlItemModal(itemId) {
+    const $element = $('#wlItem'+itemId);
+    
+    // Get the uniqueId from the element's data
+    const uniqueId = $element.data('uniqueId');
+    if (uniqueId) {
+        // Remove from state manager using the uniqueId
+        WorklistState.Manager.pendingItems.delete(uniqueId);
+        WorklistState.Manager.htmlElements.delete(uniqueId);
+    }
+    
+    $element.remove();
 };
 
 // show modal from wl button in patient table
@@ -197,6 +322,12 @@ function addToWorklist(userId) {
     };
     $('#tbodyItems').html('');
     $('#idPatientWl').val(userId);
+    
+    // Set patient context in state manager
+    WorklistState.Manager.setPatientContext({
+        id: userId
+    });
+    
     // open modal
     $('#newWlItemModal').modal('show');
 }
