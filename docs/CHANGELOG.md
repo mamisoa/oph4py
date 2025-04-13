@@ -194,6 +194,16 @@ All notable changes to this project will be documented in this file.
   - Enhanced error reporting for transactions with status tracking
   - Built user-friendly transaction recovery UI
 
+- 2025-04-19T14:20:00.000000: Fixed JSON serialization error in transaction details modal
+  - Added datetime object serialization in transaction_audit records
+  - Resolved "Object of type datetime is not JSON serializable" error
+  - Enhanced transaction details display with better error handling
+  - Improved transaction UI with comprehensive debugging information
+  - Added more resilient data handling in transaction viewer
+  - Enhanced patient name formatting in transaction details
+  - Implemented field validation for different JSON response structures
+  - Fixed Bootstrap 5 modal closing issue by updating data-dismiss to data-bs-dismiss
+
 ### Fixed
 
 - 2025-03-30T19:52:59: Fixed base64 encoding error in contacts prescription email
