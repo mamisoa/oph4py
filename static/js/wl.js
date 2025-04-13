@@ -751,3 +751,306 @@ function set_timers(timers) {
     });
     timer_id = [];
 };
+
+/**
+ * Transaction Recovery UI
+ */
+function initTransactionRecovery() {
+    // Add a transaction recovery button to the toolbar
+    const toolbarContainer = document.getElementById('toolbar-wl');
+    if (toolbarContainer) {
+        const recoveryButton = document.createElement('button');
+        recoveryButton.type = 'button';
+        recoveryButton.className = 'btn btn-info btn-sm ms-2';
+        recoveryButton.id = 'transactionManagerBtn';
+        recoveryButton.innerHTML = '<i class="fas fa-history"></i> Transaction Manager';
+        recoveryButton.addEventListener('click', showTransactionManager);
+        toolbarContainer.appendChild(recoveryButton);
+    }
+
+    // Set up event handlers
+    document.getElementById('refreshTransactionsBtn').addEventListener('click', loadTransactionHistory);
+}
+
+/**
+ * Show the transaction manager modal
+ */
+function showTransactionManager() {
+    loadTransactionHistory();
+    $('#transactionRecoveryModal').modal('show');
+}
+
+/**
+ * Load transaction history from local storage and fetch current status
+ */
+function loadTransactionHistory() {
+    const transactions = WorklistState.Manager.getRecentTransactions();
+    const tableBody = document.querySelector('#transactionHistoryTable tbody');
+    
+    if (!transactions || transactions.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No transactions found</td></tr>';
+        return;
+    }
+    
+    // Clear the table
+    tableBody.innerHTML = '';
+    
+    // Add loading indicator
+    transactions.forEach((transaction, index) => {
+        const row = document.createElement('tr');
+        row.id = `transaction-row-${transaction.id}`;
+        row.innerHTML = `
+            <td>${transaction.id}</td>
+            <td>${new Date(transaction.timestamp).toLocaleString()}</td>
+            <td>${transaction.itemCount}</td>
+            <td><span class="badge badge-info">Loading...</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline-info view-transaction" data-transaction-id="${transaction.id}">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-warning retry-transaction" data-transaction-id="${transaction.id}" disabled>
+                    <i class="fas fa-redo"></i>
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+        
+        // Fetch current status from server
+        fetchTransactionStatus(transaction.id);
+    });
+    
+    // Add event listeners for view and retry buttons
+    document.querySelectorAll('.view-transaction').forEach(button => {
+        button.addEventListener('click', function() {
+            const transactionId = this.getAttribute('data-transaction-id');
+            viewTransactionDetails(transactionId);
+        });
+    });
+    
+    document.querySelectorAll('.retry-transaction').forEach(button => {
+        button.addEventListener('click', function() {
+            const transactionId = this.getAttribute('data-transaction-id');
+            retryTransaction(transactionId);
+        });
+    });
+}
+
+/**
+ * Fetch transaction status from the server
+ * @param {String} transactionId - The transaction ID to check
+ */
+function fetchTransactionStatus(transactionId) {
+    const statusCell = document.querySelector(`#transaction-row-${transactionId} td:nth-child(4)`);
+    const retryButton = document.querySelector(`#transaction-row-${transactionId} .retry-transaction`);
+    
+    WorklistState.Manager.checkTransactionStatus(transactionId)
+        .then(data => {
+            let statusClass = 'badge-success';
+            let status = data.status;
+            
+            // Update the status badge
+            if (status === 'failed') {
+                statusClass = 'badge-danger';
+                if (retryButton) retryButton.disabled = false;
+            } else if (status === 'partial') {
+                statusClass = 'badge-warning';
+                if (retryButton) retryButton.disabled = false;
+            } else if (status === 'in_progress') {
+                statusClass = 'badge-info';
+            }
+            
+            if (statusCell) {
+                statusCell.innerHTML = `<span class="badge ${statusClass}">${status}</span>`;
+            }
+            
+            // Update local storage
+            const transactions = WorklistState.Manager.getRecentTransactions();
+            const updatedTransactions = transactions.map(t => {
+                if (t.id === transactionId) {
+                    t.status = status;
+                }
+                return t;
+            });
+            localStorage.setItem('worklist_transactions', JSON.stringify(updatedTransactions));
+        })
+        .catch(error => {
+            console.error('Error fetching transaction status:', error);
+            if (statusCell) {
+                statusCell.innerHTML = '<span class="badge badge-danger">Error</span>';
+            }
+        });
+}
+
+/**
+ * View transaction details
+ * @param {String} transactionId - The transaction ID to view
+ */
+function viewTransactionDetails(transactionId) {
+    const detailsContainer = document.getElementById('transactionDetailsContainer');
+    const detailsContent = document.getElementById('transactionDetails');
+    
+    detailsContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div><p>Loading transaction details...</p></div>';
+    detailsContainer.style.display = 'block';
+    
+    WorklistState.Manager.checkTransactionStatus(transactionId)
+        .then(data => {
+            let html = `
+                <h5>Transaction ${data.transaction_id}</h5>
+                <p><strong>Status:</strong> ${data.status}</p>
+                <p><strong>Items:</strong> ${data.item_count}</p>
+                
+                <h6>Worklist Items</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient</th>
+                                <th>Procedure</th>
+                                <th>Modality</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            if (data.worklist_items && data.worklist_items.length > 0) {
+                data.worklist_items.forEach(item => {
+                    html += `
+                        <tr>
+                            <td>${item.id}</td>
+                            <td>${item.id_auth_user}</td>
+                            <td>${item.procedure}</td>
+                            <td>${item.modality_dest}</td>
+                            <td>${item.status_flag}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                html += '<tr><td colspan="5" class="text-center">No items found</td></tr>';
+            }
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h6>Audit Records</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>Status</th>
+                                <th>Record ID</th>
+                                <th>Error</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            if (data.audit_records && data.audit_records.length > 0) {
+                data.audit_records.forEach(record => {
+                    html += `
+                        <tr>
+                            <td>${record.operation}</td>
+                            <td><span class="badge badge-${record.status === 'complete' ? 'success' : (record.status === 'failed' ? 'danger' : 'warning')}">${record.status}</span></td>
+                            <td>${record.record_id || '-'}</td>
+                            <td>${record.error_message || '-'}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                html += '<tr><td colspan="4" class="text-center">No audit records found</td></tr>';
+            }
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            detailsContent.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error fetching transaction details:', error);
+            detailsContent.innerHTML = `
+                <div class="alert alert-danger">
+                    Error loading transaction details: ${error.message}
+                </div>
+            `;
+        });
+}
+
+/**
+ * Retry a failed transaction
+ * @param {String} transactionId - The transaction ID to retry
+ */
+function retryTransaction(transactionId) {
+    const retryButton = document.querySelector(`#transaction-row-${transactionId} .retry-transaction`);
+    const statusCell = document.querySelector(`#transaction-row-${transactionId} td:nth-child(4)`);
+    
+    if (retryButton) {
+        retryButton.disabled = true;
+        retryButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    }
+    
+    if (statusCell) {
+        statusCell.innerHTML = '<span class="badge badge-info">Retrying...</span>';
+    }
+    
+    WorklistState.Manager.retryTransaction(transactionId)
+        .then(data => {
+            WorklistState.UI.showFeedback('success', `Transaction recovery ${data.status}: ${data.message}`, 'feedbackContainer');
+            
+            // Refresh the transaction status
+            fetchTransactionStatus(transactionId);
+            
+            // If details are open, refresh them
+            if (document.getElementById('transactionDetailsContainer').style.display !== 'none') {
+                viewTransactionDetails(transactionId);
+            }
+            
+            if (retryButton) {
+                retryButton.innerHTML = '<i class="fas fa-redo"></i>';
+            }
+        })
+        .catch(error => {
+            console.error('Error retrying transaction:', error);
+            WorklistState.UI.showFeedback('error', `Transaction recovery failed: ${error.message}`, 'feedbackContainer');
+            
+            if (statusCell) {
+                statusCell.innerHTML = '<span class="badge badge-danger">Retry Failed</span>';
+            }
+            
+            if (retryButton) {
+                retryButton.disabled = false;
+                retryButton.innerHTML = '<i class="fas fa-redo"></i>';
+            }
+        });
+}
+
+// Initialize transaction recovery when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize transaction recovery after the main worklist is initialized
+    if (typeof initWorklist === 'function') {
+        const originalInitWorklist = initWorklist;
+        initWorklist = function() {
+            originalInitWorklist();
+            initTransactionRecovery();
+        };
+    } else {
+        // If initWorklist doesn't exist yet, check again later
+        setTimeout(function() {
+            if (typeof initWorklist === 'function') {
+                const originalInitWorklist = initWorklist;
+                initWorklist = function() {
+                    originalInitWorklist();
+                    initTransactionRecovery();
+                };
+            } else {
+                console.error('initWorklist function not found, cannot initialize transaction recovery');
+            }
+        }, 1000);
+    }
+});

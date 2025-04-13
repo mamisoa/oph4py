@@ -15,6 +15,7 @@ class WorklistStateManager {
         this.htmlElements = new Map();   // references to DOM elements
         this.patientContext = null;      // current patient context
         this.processingItems = new Map(); // tracking items by their database ID
+        this.currentTransactionId = null; // stores the current transaction ID
     }
     
     /**
@@ -256,6 +257,7 @@ class WorklistStateManager {
 
             // Generate a transaction ID for tracking
             const transactionId = this.generateUniqueId();
+            this.currentTransactionId = transactionId; // Store for later use
 
             // Prepare the batch request
             const batchData = {
@@ -286,6 +288,9 @@ class WorklistStateManager {
                 console.log('Server response:', data);
                 
                 if (data.status === 'success') {
+                    // Store transaction information in localStorage for recovery
+                    this.storeTransactionInfo(data.transaction_id, data.items);
+                    
                     // Check if items array exists
                     if (data.items && Array.isArray(data.items)) {
                         // Update all items with their new database IDs
@@ -299,7 +304,10 @@ class WorklistStateManager {
 
                             if (matchingItem) {
                                 const [uniqueId] = matchingItem;
-                                this.updateItemStatus(uniqueId, 'completed', { dbId: item.id });
+                                this.updateItemStatus(uniqueId, 'completed', { 
+                                    dbId: item.id,
+                                    transactionId: data.transaction_id
+                                });
                             }
                         });
 
@@ -318,6 +326,91 @@ class WorklistStateManager {
                 reject(error);
             });
         });
+    }
+    
+    /**
+     * Store transaction information in localStorage for recovery
+     * @param {String} transactionId - The transaction ID
+     * @param {Array} items - The items in the transaction
+     */
+    storeTransactionInfo(transactionId, items) {
+        try {
+            // Get existing transactions
+            const transactions = JSON.parse(localStorage.getItem('worklist_transactions') || '[]');
+            
+            // Add the new transaction
+            transactions.push({
+                id: transactionId,
+                timestamp: new Date().toISOString(),
+                itemCount: items.length,
+                status: 'complete' // Initial status
+            });
+            
+            // Keep only the 20 most recent transactions
+            if (transactions.length > 20) {
+                transactions.splice(0, transactions.length - 20);
+            }
+            
+            // Save back to localStorage
+            localStorage.setItem('worklist_transactions', JSON.stringify(transactions));
+        } catch (e) {
+            console.error('Error storing transaction info:', e);
+        }
+    }
+    
+    /**
+     * Get the status of a transaction
+     * @param {String} transactionId - The transaction ID to check
+     * @returns {Promise} Promise that resolves with the transaction status
+     */
+    checkTransactionStatus(transactionId) {
+        return fetch(`${HOSTURL}/${APP_NAME}/api/worklist/transaction/${transactionId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+            return response.json();
+        });
+    }
+    
+    /**
+     * Retry a failed transaction
+     * @param {String} transactionId - The transaction ID to retry
+     * @returns {Promise} Promise that resolves with the retry results
+     */
+    retryTransaction(transactionId) {
+        return fetch(`${HOSTURL}/${APP_NAME}/api/worklist/transaction/${transactionId}/retry`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || `Server error: ${response.status}`);
+                });
+            }
+            return response.json();
+        });
+    }
+    
+    /**
+     * Get recent transactions from localStorage
+     * @returns {Array} Array of recent transactions
+     */
+    getRecentTransactions() {
+        try {
+            return JSON.parse(localStorage.getItem('worklist_transactions') || '[]');
+        } catch (e) {
+            console.error('Error retrieving transactions:', e);
+            return [];
+        }
     }
 }
 

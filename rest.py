@@ -778,11 +778,34 @@ def worklist_batch():
                 }
             )
 
+        # Ensure we have a transaction_id
+        transaction_id = data.get("transaction_id")
+        if not transaction_id:
+            transaction_id = str_uuid()
+            data["transaction_id"] = transaction_id
+            logger.info(f"Generated transaction_id: {transaction_id}")
+
         # Start transaction
         db.commit()  # Commit any pending transactions
         db._adapter.connection.begin()
 
         created_items = []
+        audit_entries = []
+
+        # Create initial audit entry for this transaction
+        try:
+            audit_id = db.transaction_audit.insert(
+                transaction_id=transaction_id,
+                operation="batch_create",
+                table_name="worklist",
+                status="in_progress",
+            )
+            logger.info(
+                f"Created audit entry with ID: {audit_id} for transaction: {transaction_id}"
+            )
+        except Exception as e:
+            logger.error(f"Failed to create audit entry: {str(e)}")
+            # Continue even if audit creation fails
 
         # Validate all items before processing
         patient_id = None
@@ -857,6 +880,9 @@ def worklist_batch():
             item.setdefault("message_unique_id", str_uuid())
             item.setdefault("counter", 0)
 
+            # Add transaction_id to each item
+            item["transaction_id"] = transaction_id
+
             # Remove any fields that aren't in the worklist table
             item_fields = {k: v for k, v in item.items() if k in db.worklist.fields}
 
@@ -869,11 +895,34 @@ def worklist_batch():
             logger.info(f"Item {idx+1} created with ID: {item_id}")
             created_items.append(created_item)
 
+            # Create individual audit entry for this item
+            try:
+                audit_entries.append(
+                    db.transaction_audit.insert(
+                        transaction_id=transaction_id,
+                        operation="create",
+                        table_name="worklist",
+                        record_id=item_id,
+                        status="complete",
+                    )
+                )
+            except Exception as e:
+                logger.error(f"Failed to create item audit entry: {str(e)}")
+                # Continue even if audit creation fails
+
         # If we got here, all operations succeeded
         logger.info(
             f"All {len(created_items)} items created successfully, committing transaction"
         )
         db.commit()
+
+        # Update the main audit entry to mark as complete
+        try:
+            db(db.transaction_audit.id == audit_id).update(status="complete")
+            db.commit()
+        except Exception as e:
+            logger.error(f"Failed to update audit entry status: {str(e)}")
+            # Don't fail the operation if just the audit update fails
 
         # Create individual item dictionaries with proper datetime handling
         item_dicts = []
@@ -893,7 +942,7 @@ def worklist_batch():
             "status": "success",
             "message": "Batch operation completed successfully",
             "items": item_dicts,
-            "transaction_id": data.get("transaction_id"),
+            "transaction_id": transaction_id,
         }
 
         logger.info(
@@ -903,11 +952,32 @@ def worklist_batch():
 
     except ValueError as e:
         logger.error(f"Validation error in batch operation: {str(e)}")
+        # Record failure in audit if we have a transaction_id
+        if "transaction_id" in locals() and "audit_id" in locals():
+            try:
+                db(db.transaction_audit.id == audit_id).update(
+                    status="failed", error_message=str(e)
+                )
+                db.commit()
+            except Exception as audit_err:
+                logger.error(f"Failed to update audit for error: {str(audit_err)}")
+
         db.rollback()
         return json.dumps({"status": "error", "message": str(e), "code": 400})
     except Exception as e:
         logger.error(f"Unexpected error in batch operation: {str(e)}")
         logger.error(traceback.format_exc())
+
+        # Record failure in audit if we have a transaction_id
+        if "transaction_id" in locals() and "audit_id" in locals():
+            try:
+                db(db.transaction_audit.id == audit_id).update(
+                    status="failed", error_message=str(e)
+                )
+                db.commit()
+            except Exception as audit_err:
+                logger.error(f"Failed to update audit for error: {str(audit_err)}")
+
         db.rollback()
         return json.dumps(
             {
@@ -916,3 +986,177 @@ def worklist_batch():
                 "code": 500,
             }
         )
+
+
+@action("api/worklist/transaction/<transaction_id>", method=["GET"])
+@action.uses(db, session)
+def get_transaction_status(transaction_id):
+    """
+    Get the status of a transaction by ID.
+    Returns detailed information about the transaction and related items.
+    """
+    try:
+        # Get all audit records for this transaction
+        audit_records = (
+            db(db.transaction_audit.transaction_id == transaction_id).select().as_list()
+        )
+
+        # Get all worklist items for this transaction
+        worklist_items = (
+            db(db.worklist.transaction_id == transaction_id).select().as_list()
+        )
+
+        # Convert datetime objects to strings
+        for item in worklist_items:
+            for key, value in item.items():
+                if isinstance(value, datetime.datetime):
+                    item[key] = value.strftime("%Y-%m-%d %H:%M:%S")
+                elif isinstance(value, datetime.date):
+                    item[key] = value.strftime("%Y-%m-%d")
+
+        # Determine overall transaction status
+        overall_status = "complete"
+        if any(record["status"] == "failed" for record in audit_records):
+            overall_status = "failed"
+        elif any(record["status"] == "in_progress" for record in audit_records):
+            overall_status = "in_progress"
+        elif any(record["status"] == "partial" for record in audit_records):
+            overall_status = "partial"
+
+        response_data = {
+            "transaction_id": transaction_id,
+            "status": overall_status,
+            "item_count": len(worklist_items),
+            "audit_records": audit_records,
+            "worklist_items": worklist_items,
+        }
+
+        return json.dumps(response_data)
+    except Exception as e:
+        logger.error(f"Error retrieving transaction {transaction_id}: {str(e)}")
+        logger.error(traceback.format_exc())
+        return json.dumps(
+            {"status": "error", "message": f"Error retrieving transaction: {str(e)}"}
+        )
+
+
+@action("api/worklist/transaction/<transaction_id>/retry", method=["POST"])
+@action.uses(db, session)
+def retry_failed_transaction(transaction_id):
+    """
+    Retry a failed transaction.
+    This endpoint is used to recover from partial or failed transactions.
+    """
+    try:
+        # Check if transaction exists and has failed items
+        audit_records = db(
+            (db.transaction_audit.transaction_id == transaction_id)
+            & (db.transaction_audit.status.belongs(["failed", "partial"]))
+        ).select()
+
+        if not audit_records:
+            return json.dumps(
+                {
+                    "status": "error",
+                    "message": f"No failed operations found for transaction {transaction_id}",
+                }
+            )
+
+        # Start transaction
+        db.commit()  # Commit any pending transactions
+        db._adapter.connection.begin()
+
+        # Get the main audit record
+        main_audit = (
+            db(
+                (db.transaction_audit.transaction_id == transaction_id)
+                & (db.transaction_audit.operation == "batch_create")
+            )
+            .select()
+            .first()
+        )
+
+        if main_audit:
+            # Update retry count
+            retry_count = main_audit.retry_count + 1
+            db(db.transaction_audit.id == main_audit.id).update(
+                retry_count=retry_count, status="in_progress"
+            )
+
+        # Process each failed item
+        recovered_items = []
+        failed_items = []
+
+        for audit in audit_records:
+            if (
+                audit.operation != "batch_create"
+                and audit.record_id
+                and audit.status in ["failed", "partial"]
+            ):
+                try:
+                    # Update the audit status
+                    db(db.transaction_audit.id == audit.id).update(
+                        status="in_progress", retry_count=audit.retry_count + 1
+                    )
+
+                    # Get the worklist item to retry
+                    worklist_item = (
+                        db(db.worklist.id == audit.record_id).select().first()
+                    )
+
+                    if worklist_item:
+                        # Perform recovery logic here
+                        # This may involve re-sending to external systems, updating status, etc.
+                        db(db.worklist.id == audit.record_id).update(
+                            status_flag="requested"
+                        )
+
+                        # Mark as recovered
+                        db(db.transaction_audit.id == audit.id).update(
+                            status="complete"
+                        )
+                        recovered_items.append(audit.record_id)
+                    else:
+                        # Item doesn't exist, mark as failed
+                        db(db.transaction_audit.id == audit.id).update(
+                            status="failed",
+                            error_message="Worklist item not found during recovery",
+                        )
+                        failed_items.append(audit.record_id)
+
+                except Exception as item_error:
+                    logger.error(
+                        f"Error recovering item {audit.record_id}: {str(item_error)}"
+                    )
+                    db(db.transaction_audit.id == audit.id).update(
+                        status="failed", error_message=str(item_error)
+                    )
+                    failed_items.append(audit.record_id)
+
+        # Update the main audit record based on results
+        if main_audit:
+            if failed_items:
+                new_status = "partial" if recovered_items else "failed"
+            else:
+                new_status = "complete"
+
+            db(db.transaction_audit.id == main_audit.id).update(status=new_status)
+
+        # Commit the transaction
+        db.commit()
+
+        return json.dumps(
+            {
+                "status": "success",
+                "transaction_id": transaction_id,
+                "recovered_items": recovered_items,
+                "failed_items": failed_items,
+                "message": f"Recovery complete: {len(recovered_items)} items recovered, {len(failed_items)} items failed",
+            }
+        )
+
+    except Exception as e:
+        logger.error(f"Error during transaction recovery: {str(e)}")
+        logger.error(traceback.format_exc())
+        db.rollback()
+        return json.dumps({"status": "error", "message": f"Recovery failed: {str(e)}"})

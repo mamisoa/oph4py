@@ -2,12 +2,14 @@
 This file defines the database models
 """
 
-from .common import db, Field, auth, groups # ,dbo # add auth for auto.signature
-from pydal.validators import *
-from pydal.tools.tags import Tags
-
-import uuid
+import datetime
 import random
+import uuid
+
+from pydal.tools.tags import Tags
+from pydal.validators import *
+
+from .common import Field, auth, db, groups  # ,dbo # add auth for auto.signature
 
 rd = random.Random()
 rd.seed(0)
@@ -136,23 +138,28 @@ db.define_table('combo',
 
 # db.worklist.truncate()
 
-db.define_table('worklist',
-    Field('id_auth_user', 'reference auth_user'),
-    Field('sending_app','string', default = 'Oph4Py'),
-    Field('sending_facility','reference facility', default = '1'),
-    Field('receiving_app','string', default = 'Receiving App'),
-    Field('receiving_facility','reference facility', default = '1'),
-    Field('message_unique_id','string', default=str_uuid(), required=True),
-    Field('procedure', 'reference procedure', required=True),
-    Field('provider', 'reference auth_user', required=True),
-    Field('senior', 'reference auth_user', required=True),
-    Field('requested_time', 'datetime', required=True),
-    Field('modality_dest', 'reference modality', required=True),
-    Field('laterality', 'string', default ='both', required=True),
-    Field('status_flag', 'string', required=True),
-    Field('counter', 'integer', default='0'),
-    Field('warning', 'string'),
-    auth.signature)
+db.define_table(
+    "worklist",
+    Field("id_auth_user", "reference auth_user"),
+    Field("sending_app", "string", default="Oph4Py"),
+    Field("sending_facility", "reference facility", default="1"),
+    Field("receiving_app", "string", default="Receiving App"),
+    Field("receiving_facility", "reference facility", default="1"),
+    Field("message_unique_id", "string", default=str_uuid(), required=True),
+    Field("procedure", "reference procedure", required=True),
+    Field("provider", "reference auth_user", required=True),
+    Field("senior", "reference auth_user", required=True),
+    Field("requested_time", "datetime", required=True),
+    Field("modality_dest", "reference modality", required=True),
+    Field("laterality", "string", default="both", required=True),
+    Field("status_flag", "string", required=True),
+    Field("counter", "integer", default="0"),
+    Field("warning", "string"),
+    Field(
+        "transaction_id", "string", comment="Batch transaction identifier for atomicity"
+    ),
+    auth.signature,
+)
 
 db.worklist.laterality.requires=IS_IN_SET(['both', 'right', 'left', 'none'])
 db.worklist.status_flag.requires=IS_IN_SET(('requested', 'processing', 'done', 'cancelled'))
@@ -263,6 +270,35 @@ db.define_table('current_hx',
     Field('id_worklist', 'reference worklist', required=True),
     Field('description','string'),
     auth.signature)
+
+# Transaction audit tracking
+db.define_table(
+    "transaction_audit",
+    Field(
+        "transaction_id",
+        "string",
+        required=True,
+        comment="Batch transaction identifier",
+    ),
+    Field(
+        "operation",
+        "string",
+        required=True,
+        comment="Operation type (create, update, delete)",
+    ),
+    Field("table_name", "string", required=True, comment="Target table name"),
+    Field("record_id", "integer", comment="ID of the affected record"),
+    Field(
+        "status",
+        "string",
+        required=True,
+        default="complete",
+        comment="Transaction status (complete, failed, partial)",
+    ),
+    Field("error_message", "string", comment="Error message if transaction failed"),
+    Field("retry_count", "integer", default=0, comment="Number of retry attempts"),
+    auth.signature,
+)
 
 db.define_table('ant_biom',
     Field('id_auth_user', 'reference auth_user', required=True),
@@ -376,7 +412,7 @@ db.define_table('agent',
     auth.signature)
 # todo: reference to substance id -> get warning with interactions
 
-#db.agent.truncate('RESTART IDENTITY CASCADE')
+# db.agent.truncate('RESTART IDENTITY CASCADE')
 
 db.define_table('allergy',
     Field('id_auth_user', 'reference auth_user', required=True),
@@ -475,7 +511,7 @@ db.define_table('followup',
     Field('description','string'),
     auth.signature)
 
-#temporary
+# temporary
 db.define_table('billing',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
@@ -655,7 +691,7 @@ db.define_table('neuro',
     Field('others','string'),
     auth.signature)
 
-#vitals
+# vitals
 db.define_table('vitals',
     Field('id_auth_user', 'reference auth_user', required=True),
     Field('id_worklist','reference worklist', required=True),
@@ -678,7 +714,6 @@ db.define_table('vitals',
     Field('o2inhaled','decimal(4,2)'),
     Field('o2flow','decimal(4,2)'),
     auth.signature)
-
 
 
 """ ## OCTOPUS

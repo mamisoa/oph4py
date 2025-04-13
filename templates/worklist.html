@@ -426,6 +426,60 @@
     testing
 </div>
 
+<!-- Transaction Recovery Modal -->
+<div class="modal fade" id="transactionRecoveryModal" tabindex="-1" role="dialog" aria-labelledby="transactionRecoveryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transactionRecoveryModalLabel">Transaction Management</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col">
+                        <h6>Recent Transactions</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped" id="transactionHistoryTable">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Timestamp</th>
+                                        <th>Items</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Transactions will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3" id="transactionDetailsContainer" style="display: none;">
+                    <div class="col">
+                        <h6>Transaction Details</h6>
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="transactionDetails">
+                                    <!-- Transaction details will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="refreshTransactionsBtn">Refresh</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 [[ block js_scripts]]
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
