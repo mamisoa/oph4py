@@ -149,13 +149,18 @@ def beid():
 
 # TODO: authentification
 # TODO: correct password PUT -> does not work
+
+# COMPATIBILITY NOTICE:
+# The api function has been moved to api/endpoints/auth.py
+# This function definition is commented out to avoid route conflicts
+"""
 @action("api/<tablename>/", method=["GET", "POST", "PUT"])  # PUT ok
 @action(
     "api/<tablename>/<rec_id>", method=["GET", "PUT", "DELETE"]
 )  # delete OK get OK post OK
 @action.uses(db, session)
 def api(tablename, rec_id=None):
-    """
+    \"\"\"
     API endpoint for GET, POST, PUT, DELETE a row in a table
 
     Args:
@@ -168,7 +173,7 @@ def api(tablename, rec_id=None):
     Exemples:
         http://localhost:8000/'+APP_NAME+'/api/phone?id_auth_user=2&@lookup=phone:id_auth_user -> get phone from auth_user_id
         http://localhost:8000/'+APP_NAME+'/api/phone?id_auth_user=2&@lookup=identity!:id_auth_user[first_name,last_name] -> denormalised (flat)
-    """
+    \"\"\"
     logger.info(
         f"API Request - Method: {request.method}, Table: {tablename}, ID: {rec_id}"
     )
@@ -324,8 +329,13 @@ def api(tablename, rec_id=None):
         logger.error(f"Unexpected Error: {str(e)}")
         response.status = 500
         return json.dumps({"status": "error", "message": str(e)})
+"""
 
 
+# COMPATIBILITY NOTICE:
+# The octopus function has been moved to api/endpoints/auth.py
+# This function definition is commented out to avoid route conflicts
+"""
 @action("octopus/api/<tablename>/", method=["GET", "POST", "PUT"])  # PUT ok
 @action(
     "octopus/api/<tablename>/<rec_id>", method=["GET", "PUT", "DELETE"]
@@ -341,8 +351,13 @@ def octopus(tablename, rec_id=None):
     except ValueError:
         response.status = 400
         return
+"""
 
 
+# COMPATIBILITY NOTICE:
+# The do_upload function has been moved to api/endpoints/upload.py
+# This function definition is commented out to avoid route conflicts
+"""
 @action("upload", method=["POST"])
 def do_upload():
     import json
@@ -365,6 +380,7 @@ def do_upload():
         re_dict.update({"status": "error", "error": e.args[0]})
     re = json.dumps(re_dict)
     return re
+"""
 
 
 # COMPATIBILITY NOTICE:
@@ -688,10 +704,14 @@ def send_email_with_attachment():
 """
 
 
+# COMPATIBILITY NOTICE:
+# The worklist_batch function has been moved to api/endpoints/worklist.py
+# This function definition is commented out to avoid route conflicts
+"""
 @action("api/worklist/batch", method=["POST"])
 @action.uses(db, session)
 def worklist_batch():
-    """
+    \"\"\"
     Batch endpoint for atomic worklist operations.
     Handles multiple worklist items in a single transaction.
 
@@ -720,7 +740,7 @@ def worklist_batch():
 
     Returns:
         JSON response with status and created/updated items
-    """
+    \"\"\"
     try:
         data = request.json
         logger.info(f"Batch worklist request received: {json.dumps(data, indent=2)}")
@@ -943,15 +963,19 @@ def worklist_batch():
                 "code": 500,
             }
         )
+"""
 
-
+# COMPATIBILITY NOTICE:
+# The get_transaction_status function has been moved to api/endpoints/worklist.py
+# This function definition is commented out to avoid route conflicts
+"""
 @action("api/worklist/transaction/<transaction_id>", method=["GET"])
 @action.uses(db, session)
 def get_transaction_status(transaction_id):
-    """
+    \"\"\"
     Get the status of a transaction by ID.
     Returns detailed information about the transaction and related items.
-    """
+    \"\"\"
     try:
         # Get all audit records for this transaction
         audit_records = (
@@ -1003,15 +1027,19 @@ def get_transaction_status(transaction_id):
         return json.dumps(
             {"status": "error", "message": f"Error retrieving transaction: {str(e)}"}
         )
+"""
 
-
+# COMPATIBILITY NOTICE:
+# The retry_failed_transaction function has been moved to api/endpoints/worklist.py
+# This function definition is commented out to avoid route conflicts
+"""
 @action("api/worklist/transaction/<transaction_id>/retry", method=["POST"])
 @action.uses(db, session)
 def retry_failed_transaction(transaction_id):
-    """
+    \"\"\"
     Retry a failed transaction.
     This endpoint is used to recover from partial or failed transactions.
-    """
+    \"\"\"
     try:
         # Check if transaction exists and has failed items
         audit_records = db(
@@ -1125,3 +1153,4 @@ def retry_failed_transaction(transaction_id):
         logger.error(traceback.format_exc())
         db.rollback()
         return json.dumps({"status": "error", "message": f"Recovery failed: {str(e)}"})
+"""

@@ -260,10 +260,36 @@ const crudp = function (table, id = "0", req = "POST", data) {
 	return new Promise((resolve, reject) => {
 		console.log("CRUDP Input:", { table, id, req, data });
 
+		// Try to extract ID from data if id parameter is "0"
+		try {
+			if (id === "0" && data && req === "PUT") {
+				let dataObj = typeof data === "string" ? JSON.parse(data) : data;
+				if (dataObj.id) {
+					id = dataObj.id.toString();
+					console.log("Extracted ID from data:", id);
+				}
+			}
+		} catch (error) {
+			console.error("Error extracting ID from data:", error);
+		}
+
 		// Fix URL construction for PUT requests with ID
 		let API_URL = HOSTURL + "/" + APP_NAME + "/api/" + table;
 		if ((req === "PUT" || req === "DELETE") && id !== "0") {
 			API_URL += "/" + id;
+		}
+
+		// For PUT requests, remove id from payload to prevent validation conflicts
+		if (req === "PUT" && id !== "0" && data) {
+			try {
+				let dataObj = typeof data === "string" ? JSON.parse(data) : data;
+				if (dataObj.id) {
+					delete dataObj.id;
+					data = JSON.stringify(dataObj);
+				}
+			} catch (error) {
+				console.error("Error processing data payload:", error);
+			}
 		}
 
 		console.log("API URL:", API_URL);

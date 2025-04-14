@@ -6,6 +6,35 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- 2025-04-14T23:56:01.558560: Refactored patient-bar.js with modern JavaScript best practices
+  - Implemented proper module pattern with IIFE for encapsulated scope
+  - Fixed "btnArr is not defined" reference error in tonometry module
+  - Enhanced code organization with clear section comments
+  - Improved the disableButtons function with proper type checking
+  - Created on-demand variable declarations instead of global variables
+  - Added backward compatibility layer for existing code
+  - Improved code reliability with proper error handling
+  - Enhanced maintainability with JSDoc documentation
+  - Replaced ternary operators with more readable if/else statements
+
+- 2025-04-14T23:32:28.841205: Completed full API modularization
+  - Migrated all remaining REST API endpoints to modular structure:
+    - Moved main database CRUD operations to `api/endpoints/auth.py`
+    - Moved worklist batch operations to `api/endpoints/worklist.py`
+    - Moved transaction management to `api/endpoints/worklist.py`
+    - Moved file upload functionality to `api/endpoints/upload.py`
+  - Updated original `rest.py` file with compatibility notices:
+    - Added clear documentation on where endpoints were migrated
+    - Commented out migrated code to avoid route conflicts
+    - Maintained backward compatibility during transition
+    - Ensured proper error handling and consistent API responses
+  - Enhanced modular API implementation:
+    - Implemented standardized error handling with APIResponse class
+    - Used consistent datetime serialization for all endpoints
+    - Improved documentation with comprehensive docstrings
+    - Maintained API signature compatibility for all functions
+  - Updated API package initialization to include all new modules
+
 - 2025-04-14T23:17:45.251451: Fixed API endpoint conflicts during modularization
   - Resolved route conflicts between original rest.py endpoints and modular API endpoints
   - Fixed duplicate endpoint registrations for UUID generation, BeID card reading, and email functionality
@@ -225,6 +254,18 @@ All notable changes to this project will be documented in this file.
   - Enhanced patient name formatting in transaction details
   - Implemented field validation for different JSON response structures
   - Fixed Bootstrap 5 modal closing issue by updating data-dismiss to data-bs-dismiss
+
+- 2025-04-15T00:32:44.367575: Fixed crudp function in useful.js to properly handle PUT requests
+  - Modified `static/js/useful.js` to correctly handle RESTful API validation:
+    - Fixed issue where ID was being sent in both URL and request payload
+    - Added ability to extract ID from data when id parameter is "0"
+    - Properly sets API URL with ID in the path for PUT requests
+    - Removes ID from request payload to prevent validation conflicts
+  - Resolves "Validation Errors: invalid id" error in PUT requests
+  - Addresses common pattern of code calling crudp with id="0" but ID in the data payload
+  - Follows RESTful API best practices for PUT requests
+  - Matches previous fixes for similar validation issues in other modules
+  - Maintains backward compatibility with existing code
 
 ### Fixed
 
