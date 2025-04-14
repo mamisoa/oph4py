@@ -1,4 +1,9 @@
 # restAPI controllers
+#
+# COMPATIBILITY NOTICE:
+# This file is being gradually migrated to a modular structure in the 'api/' directory.
+# New code should be added to the appropriate modules in 'api/endpoints/'.
+# This file is maintained for backward compatibility during the transition.
 
 import base64
 import binascii
@@ -6,17 +11,12 @@ import datetime
 import json
 import traceback
 
-from py4web import (  # add response to throw http error 400
-    URL,
-    Field,
-    abort,
-    action,
-    redirect,
-    request,
-    response,
-)
+from py4web import action, request, response  # add response to throw http error 400
 from pydal.restapi import Policy, RestAPI
 
+# Import the modular API endpoints
+# This ensures the endpoints are registered with py4web
+from .api import beid, email, endpoint_utils
 from .common import (  # ,dbo
     T,
     auth,
@@ -30,6 +30,7 @@ from .common import (  # ,dbo
 from .models import str_uuid
 from .settings import APP_NAME, COMPANY_LOGO, SMTP_LOGIN, SMTP_SERVER, UPLOAD_FOLDER
 
+# Legacy policy configuration - new code should use api.default_policy
 policy = Policy()
 policy.set("*", "GET", authorize=True, limit=1000, allowed_patterns=["*"])
 policy.set("*", "POST", authorize=True)
@@ -100,54 +101,27 @@ def valid_date(datestring):
         return False
 
 
+# COMPATIBILITY NOTICE:
+# The generate_unique_id function has been moved to api/endpoints/utils.py
+# This function definition is commented out to avoid route conflicts
+"""
 @action("api/uuid", method=["GET"])
 def generate_unique_id():
-    """
-    Generate a unique ID (Universally Unique Identifier - UUID) and return it as a JSON response.
-
-    This function is a route handler used in the py4web framework to handle HTTP GET requests
-    targeting the 'api/uuid' endpoint.
-
-    Dependencies:
-        - uuid: The uuid module is used to generate the unique identifier.
-        - json: The json module is used to convert the response data to a JSON string.
-
-    Returns:
-        str: A JSON string representing the response containing the generated unique ID.
-
-    Example:
-        HTTP GET Request: /api/uuid
-        Response:
-        {
-            "unique_id": "d81d4fae-7d58-4d9f-97d4-9ba66a3e77ad"
-        }
-    """
     import json
     import uuid
 
     response.headers["Content-Type"] = "application/json;charset=UTF-8"
     unique_id = str(uuid.uuid4().hex)
     return json.dumps({"unique_id": unique_id})
+"""
 
 
-# TODO: add header to allow CORS on distant card reader
-# TODO: check if triggered_decorator is necessary
-# TODO: check if sleep is necesary for allowing time to read card, or use async ?
+# COMPATIBILITY NOTICE:
+# The beid function has been moved to api/endpoints/devices/beid.py
+# This function definition is commented out to avoid route conflicts
+"""
 @action("api/beid", method=["GET"])
 def beid():
-    """
-    Get informations contained in the Belgium EID card and return them as a JSON response
-
-    This function is a route handler used in the py4web framework to handle HTTP GET requests
-    targeting the 'api/beid' endpoint.
-    Dependencies:
-        - beid: module to read eid.
-        - base64: The base64 module is used to convert the image ID in base64 for export to view
-
-    Returns:
-        str: A JSON string representing the response contained in the EID.
-
-    """
     import json
     from base64 import b64encode
     from time import sleep
@@ -170,6 +144,7 @@ def beid():
         infos = {"results": "cannot read card", "erreur": e.args}
     infos_json = json.dumps(infos)
     return infos_json
+"""
 
 
 # TODO: authentification
@@ -392,22 +367,12 @@ def do_upload():
     return re
 
 
+# COMPATIBILITY NOTICE:
+# The send_email function has been moved to api/endpoints/email.py
+# This function definition is commented out to avoid route conflicts
+"""
 @action("api/email/send", method=["POST"])
 def send_email():
-    """
-    Send an email using SMTP server.
-
-    Parameters:
-    - recipient: The email address of the recipient.
-    - title: The subject of the email.
-    - content: The main content/body of the email.
-    - company_logo: URL or path to the company logo.
-    - sender_name: The name of the sender.
-    - sender_quality: The title or position of the sender.
-
-    Returns:
-    - JSON-formatted response indicating the result of the email sending operation.
-    """
     import json
     import smtplib
     from email.mime.multipart import MIMEMultipart
@@ -445,7 +410,7 @@ def send_email():
                 sender_name = payload["sender_name"]
 
         # HTML template
-        html_template = f"""
+        html_template = f'''
             <html>
                 <body>
                     <div>{content}</div>
@@ -465,7 +430,7 @@ def send_email():
                     </p>
                 </body>
             </html>
-            """
+            '''
 
         # Create the MIMEText object
         msg = MIMEMultipart("alternative")
@@ -512,24 +477,15 @@ def send_email():
     except Exception as e:
         logger.error(f"Unexpected error in send_email: {str(e)}")
         return json.dumps({"status": "error", "message": f"Unexpected error: {str(e)}"})
+"""
 
 
+# COMPATIBILITY NOTICE:
+# The send_email_with_attachment function has been moved to api/endpoints/email.py
+# This function definition is commented out to avoid route conflicts
+"""
 @action("api/email/send_with_attachment", method=["POST"])
 def send_email_with_attachment():
-    """
-    Send an email with a PDF attachment using SMTP server.
-
-    Parameters:
-    - recipient: The email address of the recipient.
-    - subject: The subject of the email.
-    - content: The main content/body of the email.
-    - attachmentName: The filename for the attachment.
-    - attachmentData: The base64-encoded data of the attachment.
-    - attachmentType: The MIME type of the attachment (default: application/pdf).
-
-    Returns:
-    - JSON-formatted response indicating the result of the email sending operation.
-    """
     import json
     import smtplib
     import traceback
@@ -606,7 +562,7 @@ def send_email_with_attachment():
         logger.info(f"Attachment data length: {len(attachment_data)}")
 
         # HTML template
-        html_template = f"""
+        html_template = f'''
             <html>
                 <body>
                     <div>{content}</div>
@@ -626,7 +582,7 @@ def send_email_with_attachment():
                     </p>
                 </body>
             </html>
-            """
+            '''
 
         # Create the MIMEMultipart object
         msg = MIMEMultipart()
@@ -729,6 +685,7 @@ def send_email_with_attachment():
         logger.error(f"Unexpected error in send_email_with_attachment: {str(e)}")
         logger.error(traceback.format_exc())
         return json.dumps({"status": "error", "message": f"Unexpected error: {str(e)}"})
+"""
 
 
 @action("api/worklist/batch", method=["POST"])

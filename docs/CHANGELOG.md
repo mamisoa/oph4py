@@ -6,6 +6,28 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- 2025-04-14T23:17:45.251451: Fixed API endpoint conflicts during modularization
+  - Resolved route conflicts between original rest.py endpoints and modular API endpoints
+  - Fixed duplicate endpoint registrations for UUID generation, BeID card reading, and email functionality
+  - Properly commented out conflicting endpoints in rest.py while maintaining documentation
+  - Added compatibility notices to clearly indicate where endpoints have been moved
+  - Ensured smooth transition to modular API architecture without breaking functionality
+  - Installed missing pyscard package required by the BeID module
+  - Resolved challenges with application startup and endpoint registration
+  - Implemented proper backward compatibility strategy for API transition
+
+- 2025-04-14T21:18:22.686743: Implemented modular API architecture
+  - Created structured API directory with organized modules
+  - Separated core functionality from endpoint implementations
+  - Migrated UUID generation endpoint to api/endpoints/utils.py
+  - Migrated BeID card reading endpoint to api/endpoints/devices/beid.py
+  - Migrated email sending endpoints to api/endpoints/email.py
+  - Added consistent error handling with standardized responses
+  - Improved API documentation with comprehensive docstrings
+  - Maintained backward compatibility through transition layer
+  - Enhanced code organization for better maintainability
+  - Provided framework for continuing API modularization
+
 - 2025-04-13T20:05:59.006082: Modernized addToWorklist function with vanilla JavaScript
   - Converted jQuery selectors and methods to native JavaScript
   - Added comprehensive JSDoc documentation

@@ -36,17 +36,21 @@ Oph4py follows the Model-View-Controller (MVC) pattern using the Py4web framewor
    ├── controllers.py     # Base controllers
    ├── modalityctr.py     # Modality-specific controllers
    ├── manage.py          # Management interface controllers
-   ├── rest.py           # REST API implementation
-   ├── common.py         # Shared utilities and functions
-   ├── useful.py         # Additional utility functions
-   ├── settings.py       # Application configuration
-   ├── static/           # Static assets (JS, CSS, images)
-   ├── templates/        # HTML templates
-   ├── modules/          # Custom Python modules
-   ├── databases/        # Database files
-   ├── uploads/          # File uploads
-   ├── docs/            # Documentation
-   └── translations/     # Internationalization files
+   ├── rest.py            # REST API implementation (legacy)
+   ├── api/               # Modular API structure
+   │   ├── core/          # Core API functionality
+   │   ├── endpoints/     # Endpoint implementations
+   │   └── models/        # API-specific models
+   ├── common.py          # Shared utilities and functions
+   ├── useful.py          # Additional utility functions
+   ├── settings.py        # Application configuration
+   ├── static/            # Static assets (JS, CSS, images)
+   ├── templates/         # HTML templates
+   ├── modules/           # Custom Python modules
+   ├── databases/         # Database files
+   ├── uploads/           # File uploads
+   ├── docs/              # Documentation
+   └── translations/      # Internationalization files
    ```
 
 2. **Database Patterns**
@@ -60,6 +64,7 @@ Oph4py follows the Model-View-Controller (MVC) pattern using the Py4web framewor
    - Consistent error handling
    - Authentication middleware
    - Rate limiting
+   - Modular architecture with separated concerns
 
 ## Key Technical Decisions
 
@@ -149,6 +154,131 @@ Oph4py follows the Model-View-Controller (MVC) pattern using the Py4web framewor
    - Performance benchmarking
 
 ## Architecture Patterns
+
+### Modular API Architecture
+
+The API follows a modular architecture pattern to enhance maintainability, testability, and organization:
+
+```
+api/
+├── __init__.py             # Main package initialization
+├── core/                   # Core functionality
+│   ├── __init__.py
+│   ├── policy.py           # API policies and permissions
+│   ├── utils.py            # Utility functions
+│   └── base.py             # Shared base functionality
+├── endpoints/              # Individual API endpoints
+│   ├── __init__.py
+│   ├── auth.py             # User authentication endpoints
+│   ├── email.py            # Email functionality
+│   ├── upload.py           # File upload endpoints
+│   ├── utils.py            # Utility endpoints (UUID, etc.)
+│   ├── worklist.py         # Worklist operations
+│   └── devices/            # Device-specific endpoints
+│       ├── __init__.py
+│       └── beid.py         # Belgium eID card endpoints
+└── models/                 # API-specific models
+    └── __init__.py
+```
+
+#### Key Design Principles
+
+1. **Separation of Concerns**
+   - Core functionality separate from endpoint implementations
+   - Device-specific endpoints isolated in their own namespace
+   - Shared utilities centralized in core modules
+
+2. **Standardized Response Handling**
+   ```python
+   class APIResponse:
+       @staticmethod
+       def success(data=None, message="Operation successful", status_code=200):
+           # Create standardized success response
+           return json.dumps({
+               "status": "success",
+               "message": message,
+               "code": status_code,
+               "data": data
+           })
+       
+       @staticmethod
+       def error(message="An error occurred", status_code=400, error_type="validation_error"):
+           # Create standardized error response
+           return json.dumps({
+               "status": "error", 
+               "message": message,
+               "code": status_code,
+               "error_type": error_type
+           })
+   ```
+
+3. **Consistent Error Handling**
+   ```python
+   def handle_rest_api_request(tablename, rec_id=None):
+       try:
+           # Process request
+           return json_response
+       except ValueError as e:
+           # Handle validation errors
+           return APIResponse.error(str(e), 400, "validation_error")
+       except Exception as e:
+           # Handle unexpected errors
+           logger.error(traceback.format_exc())
+           return APIResponse.error(str(e), 500, "server_error")
+   ```
+
+4. **Backward Compatibility Layer**
+   - Legacy API endpoints maintained during transition
+   - New endpoints implement enhanced functionality
+   - Gradual migration path for client code
+
+### API Migration Pattern
+
+To safely migrate from a monolithic REST API to a modular structure while maintaining compatibility, the following pattern is used:
+
+1. **Phased Implementation**
+   - Endpoints are migrated one at a time to prevent widespread disruption
+   - Each endpoint migration is tested thoroughly before committing
+   - Documentation is updated to reflect the new location
+
+2. **Compatibility Layer**
+   ```python
+   # Old file (rest.py)
+   # COMPATIBILITY NOTICE:
+   # This function has been moved to api/endpoints/utils.py
+   # This function definition is commented out to avoid route conflicts
+   """
+   @action("api/uuid", method=["GET"])
+   def generate_unique_id():
+       # Implementation
+   """
+   ```
+
+3. **Import Strategy**
+   ```python
+   # Import modular endpoints in main init file
+   from .api import beid, email, endpoint_utils
+   ```
+
+4. **Conflict Resolution**
+   - When route conflicts occur, implement these steps:
+     1. Comment out the original implementation in rest.py
+     2. Add a compatibility notice indicating where the endpoint was moved
+     3. Ensure both implementations are identical in behavior
+     4. Update all references to use the new implementation
+     5. Test thoroughly to verify functionality
+
+5. **Documentation Updates**
+   - Add migration notes to CHANGELOG.md
+   - Update technical documentation to reflect new module structure
+   - Document any changes in behavior or parameters
+
+6. **Dependency Management**
+   - Ensure all required dependencies are properly installed
+   - When moving device-specific endpoints, verify device libraries are available
+   - Consider adding environment validation to prevent startup issues
+
+This migration pattern ensures smooth transition with minimal disruption, maintains backward compatibility, and improves code organization and maintainability.
 
 ### Worklist Management System
 

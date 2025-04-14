@@ -28,6 +28,13 @@
   - Template engine
   - Form handling
 
+- **Modular API Architecture**
+  - Organized directory structure
+  - Core functionality separation
+  - Standardized response handling
+  - Consistent error management
+  - Backward compatibility layer
+
 ### Database
 
 - **MySQL**
@@ -129,6 +136,68 @@ mypy
 - database migration settings
 - device integration parameters
 
+## API Architecture
+
+### Modular Structure
+
+```
+api/
+├── __init__.py             # Main package initialization
+├── core/                   # Core functionality
+│   ├── __init__.py
+│   ├── policy.py           # API policies and permissions
+│   ├── utils.py            # Utility functions
+│   └── base.py             # Shared base functionality
+├── endpoints/              # Individual API endpoints
+│   ├── __init__.py
+│   ├── auth.py             # User authentication endpoints
+│   ├── email.py            # Email functionality
+│   ├── upload.py           # File upload endpoints
+│   ├── utils.py            # Utility endpoints (UUID, etc.)
+│   ├── worklist.py         # Worklist operations
+│   └── devices/            # Device-specific endpoints
+│       ├── __init__.py
+│       └── beid.py         # Belgium eID card endpoints
+└── models/                 # API-specific models
+    └── __init__.py
+```
+
+### Response Format
+
+Standard success response:
+```json
+{
+  "status": "success",
+  "message": "Operation successful",
+  "code": 200,
+  "data": { ... }
+}
+```
+
+Standard error response:
+```json
+{
+  "status": "error",
+  "message": "Specific error message",
+  "code": 400,
+  "error_type": "validation_error"
+}
+```
+
+### Error Handling Strategy
+
+- Consistent error types across all endpoints
+- Detailed error messages for debugging
+- Appropriate HTTP status codes
+- Proper exception handling and logging
+
+### Migration Strategy
+
+- Legacy endpoints maintained in rest.py
+- Gradual migration to modular structure
+- Backward compatibility during transition
+- Client code updates planned in phases
+
 ## Deployment Architecture
 
 ### Development
@@ -176,6 +245,15 @@ mypy
 - Consistent naming conventions
 - Documentation requirements
 - Type hints usage
+- Comprehensive docstrings
+
+### API Development Standards
+
+- Follow modular architecture pattern
+- Use standardized response formats
+- Implement proper error handling
+- Include thorough documentation
+- Maintain backward compatibility
 
 ### Testing Requirements
 
@@ -183,6 +261,7 @@ mypy
 - Integration testing
 - UI/UX testing
 - Performance testing
+- API endpoint testing
 
 ### Version Control
 
@@ -201,9 +280,10 @@ mypy
 
 ### Backend
 
-- Py4web framework
-- RESTful API endpoints
-- SQL database for persistence
+- Py4web framework for overall application
+- Modular API architecture for REST endpoints
+- MySQL database for persistence
+- Custom Python modules for business logic
 
 ## Technical Challenges
 

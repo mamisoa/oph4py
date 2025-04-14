@@ -2,7 +2,119 @@
 
 ## Current Focus and Priorities
 
-The current focus is on completing the stabilization of the transaction management system in the worklist module. We've been addressing issues with the transaction recovery UI and fixing serialization problems.
+The current focus is on modularizing the REST API to improve code organization, maintainability, and scalability. We've started implementing a structured approach by creating a dedicated API directory with organized modules.
+
+### Recent Changes (Last 48 Hours)
+
+1. **API Modularization Fixes**
+   - Fixed critical route conflicts between original rest.py endpoints and modular API endpoints
+   - Resolved duplicate endpoint registrations for three key areas:
+     - UUID generation endpoint (`api/uuid`)
+     - BeID card reading endpoint (`api/beid`)
+     - Email endpoints (`api/email/send` and `api/email/send_with_attachment`)
+   - Implemented proper commenting strategy in rest.py to maintain backward compatibility
+   - Added compatibility notices to document endpoint migration
+   - Installed missing pyscard package required by the BeID module
+   - Fixed application startup errors related to endpoint conflicts
+
+2. **API Modularization**
+   - Created modular API structure with dedicated directories:
+     - `api/core/`: Core functionality and utilities
+     - `api/endpoints/`: Individual API endpoint implementations 
+     - `api/endpoints/devices/`: Device-specific endpoints
+   - Migrated key endpoints to the new structure:
+     - UUID generation endpoint to `api/endpoints/utils.py`
+     - BeID card reading endpoint to `api/endpoints/devices/beid.py`
+     - Email sending endpoints to `api/endpoints/email.py`
+   - Implemented standardized error handling with `APIResponse` class
+   - Added backward compatibility layer in `rest.py`
+   - Enhanced documentation with comprehensive docstrings
+
+3. **Core API Modules**
+   - Created `api/core/policy.py` for REST API policy configuration
+   - Created `api/core/utils.py` for shared utility functions
+   - Implemented `api/core/base.py` with request handling and error management
+   - Added proper datetime serialization for consistent API responses
+   - Standardized response formats for both success and error conditions
+
+### Next Steps (Short-term)
+
+1. **Continue API Migration**
+   - Migrate the main database CRUD endpoints to `api/endpoints/auth.py`
+   - Migrate worklist batch operations to `api/endpoints/worklist.py`
+   - Migrate file upload functionality to `api/endpoints/upload.py`
+   - Ensure all endpoints maintain backward compatibility
+
+2. **Endpoint Testing**
+   - Test migrated endpoints to ensure identical behavior
+   - Verify error handling works correctly
+   - Test with various input conditions and edge cases
+
+3. **Documentation**
+   - Update API documentation to reflect the new modular structure
+   - Document migration strategy for developers
+   - Create guidelines for implementing new API endpoints
+
+### API Transition Challenges and Solutions
+
+During the migration to a modular API structure, we faced several challenges:
+
+1. **Route Conflicts**: 
+   - Challenge: Importing both old and new endpoint implementations caused route registration conflicts in py4web
+   - Solution: Commented out duplicate functions in rest.py while maintaining documentation and adding compatibility notices
+
+2. **Missing Dependencies**: 
+   - Challenge: After modularization, the BeID module failed due to missing smartcard package
+   - Solution: Installed pyscard package in the py4web conda environment
+
+3. **Backward Compatibility**: 
+   - Challenge: Needed to maintain existing API functionality while transitioning to modular structure
+   - Solution: Implemented a transitional approach where endpoints are migrated one by one with clear documentation
+
+### Technical Context
+
+The modular API structure follows this pattern:
+
+```
+api/
+├── __init__.py             # Main package initialization
+├── core/                   # Core functionality
+│   ├── __init__.py
+│   ├── policy.py           # API policies and permissions
+│   ├── utils.py            # Utility functions
+│   └── base.py             # Shared base functionality
+├── endpoints/              # Individual API endpoints
+│   ├── __init__.py
+│   ├── auth.py             # User authentication endpoints
+│   ├── email.py            # Email functionality
+│   ├── upload.py           # File upload endpoints
+│   ├── utils.py            # Utility endpoints (UUID, etc.)
+│   ├── worklist.py         # Worklist operations
+│   └── devices/            # Device-specific endpoints
+│       ├── __init__.py
+│       └── beid.py         # Belgium eID card endpoints
+└── models/                 # API-specific models
+    └── __init__.py
+```
+
+The old `rest.py` file now includes a compatibility layer:
+
+```python
+# restAPI controllers
+#
+# COMPATIBILITY NOTICE:
+# This file is being gradually migrated to a modular structure in the 'api/' directory.
+# New code should be added to the appropriate modules in 'api/endpoints/'.
+# This file is maintained for backward compatibility during the transition.
+
+# Import the modular API endpoints
+# This ensures the endpoints are registered with py4web
+from .api import email, beid, endpoint_utils
+```
+
+## Previous Focus: Transaction Management
+
+The project is currently focused on completing the stabilization of the transaction management system in the worklist module. We've been addressing issues with the transaction recovery UI and fixing serialization problems.
 
 ### Recent Changes (Last 48 Hours)
 
