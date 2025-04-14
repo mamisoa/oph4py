@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- 2025-04-15T00:37:08.712402: Completed API modularization of utility functions
+  - Completed migration of utility functions from rest.py to modular API architecture:
+    - Commented out rows2json and valid_date functions in rest.py
+    - Added clear compatibility notices to direct users to api/core/utils.py
+    - Updated api/endpoints/utils.py to import from api/core/utils.py
+    - Maintained backward compatibility during transition
+  - Improved code organization for better maintainability
+  - Completed the refactoring of rest.py to modular architecture
+  - Ensured consistent implementation of utility functions across the application
+
 - 2025-04-14T23:56:01.558560: Refactored patient-bar.js with modern JavaScript best practices
   - Implemented proper module pattern with IIFE for encapsulated scope
   - Fixed "btnArr is not defined" reference error in tonometry module

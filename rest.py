@@ -38,8 +38,12 @@ policy.set("*", "PUT", authorize=True)
 policy.set("*", "DELETE", authorize=True)
 
 
+# COMPATIBILITY NOTICE:
+# The rows2json function has been moved to api/endpoints/utils.py
+# This function definition is commented out to avoid conflicts
+"""
 def rows2json(tablename, rows):
-    """
+    \"\"\"
     Converts a list of rows from a table into a JSON string.
 
     This function converts each row in the input list into a JSON object. If the row contains a datetime or date object,
@@ -55,7 +59,7 @@ def rows2json(tablename, rows):
 
     Raises:
     TypeError: If any of the values in the rows are neither serializable as JSON nor instances of datetime.datetime or datetime.date.
-    """
+    \"\"\"
     import datetime
     import json
 
@@ -74,10 +78,15 @@ def rows2json(tablename, rows):
     concat = concat.strip(",")
     concat = concat + "]}"
     return concat
+"""
 
 
+# COMPATIBILITY NOTICE:
+# The valid_date function has been moved to api/endpoints/utils.py
+# This function definition is commented out to avoid conflicts
+"""
 def valid_date(datestring):
-    """
+    \"\"\"
     Check if a given date string is a valid date in the format 'YYYY-MM-DD'.
 
     Parameters:
@@ -91,7 +100,7 @@ def valid_date(datestring):
         True
         >>> valid_date('2023-13-40')
         False
-    """
+    \"\"\"
     import datetime
 
     try:
@@ -99,6 +108,7 @@ def valid_date(datestring):
         return True
     except ValueError:
         return False
+"""
 
 
 # COMPATIBILITY NOTICE:

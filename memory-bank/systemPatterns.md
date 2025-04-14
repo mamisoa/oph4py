@@ -165,7 +165,7 @@ api/
 ├── core/                   # Core functionality
 │   ├── __init__.py
 │   ├── policy.py           # API policies and permissions
-│   ├── utils.py            # Utility functions
+│   ├── utils.py            # Utility functions (rows2json, valid_date, etc.)
 │   └── base.py             # Shared base functionality
 ├── endpoints/              # Individual API endpoints
 │   ├── __init__.py
@@ -234,22 +234,30 @@ api/
 
 ### API Migration Pattern
 
-To safely migrate from a monolithic REST API to a modular structure while maintaining compatibility, the following pattern is used:
+The API migration has been completed following this pattern:
 
 1. **Phased Implementation**
-   - Endpoints are migrated one at a time to prevent widespread disruption
-   - Each endpoint migration is tested thoroughly before committing
-   - Documentation is updated to reflect the new location
+   - Endpoints were migrated one at a time to prevent widespread disruption
+   - Each endpoint migration was tested thoroughly before committing
+   - Documentation was updated to reflect the new location
+   - All utility functions are now properly located in api/core/utils.py
 
 2. **Compatibility Layer**
    ```python
    # Old file (rest.py)
    # COMPATIBILITY NOTICE:
-   # This function has been moved to api/endpoints/utils.py
-   # This function definition is commented out to avoid route conflicts
+   # The rows2json function has been moved to api/core/utils.py
+   # This function definition is commented out to avoid conflicts
    """
-   @action("api/uuid", method=["GET"])
-   def generate_unique_id():
+   def rows2json(tablename, rows):
+       # Implementation
+   """
+
+   # COMPATIBILITY NOTICE:
+   # The valid_date function has been moved to api/core/utils.py
+   # This function definition is commented out to avoid conflicts
+   """
+   def valid_date(datestring):
        # Implementation
    """
    ```
@@ -258,27 +266,37 @@ To safely migrate from a monolithic REST API to a modular structure while mainta
    ```python
    # Import modular endpoints in main init file
    from .api import beid, email, endpoint_utils
+
+   # Import utility functions from core
+   from ..core.utils import rows2json, valid_date  # Import from core.utils
    ```
 
 4. **Conflict Resolution**
-   - When route conflicts occur, implement these steps:
-     1. Comment out the original implementation in rest.py
-     2. Add a compatibility notice indicating where the endpoint was moved
-     3. Ensure both implementations are identical in behavior
-     4. Update all references to use the new implementation
-     5. Test thoroughly to verify functionality
+   - When route conflicts were encountered, we implemented these steps:
+     1. Commented out the original implementation in rest.py
+     2. Added a compatibility notice indicating where the function was moved
+     3. Ensured both implementations were identical in behavior
+     4. Updated all references to use the new implementation
+     5. Tested thoroughly to verify functionality
 
-5. **Documentation Updates**
-   - Add migration notes to CHANGELOG.md
-   - Update technical documentation to reflect new module structure
-   - Document any changes in behavior or parameters
+5. **Central Utility Location**
+   - All utility functions are centralized in api/core/utils.py
+   - Other modules import from this central location
+   - This prevents code duplication and ensures consistency
+   - Documentation clearly indicates where to find utility functions
 
-6. **Dependency Management**
-   - Ensure all required dependencies are properly installed
-   - When moving device-specific endpoints, verify device libraries are available
-   - Consider adding environment validation to prevent startup issues
+6. **Documentation Updates**
+   - Added migration notes to CHANGELOG.md
+   - Updated technical documentation to reflect new module structure
+   - Updated memory bank files with migration progress
+   - Documented any changes in behavior or parameters
 
-This migration pattern ensures smooth transition with minimal disruption, maintains backward compatibility, and improves code organization and maintainability.
+7. **Dependency Management**
+   - Ensured all required dependencies are properly installed
+   - When moving device-specific endpoints, verified device libraries are available
+   - Added environment validation to prevent startup issues
+
+This migration pattern ensured smooth transition with minimal disruption, maintained backward compatibility, and improved code organization and maintainability. The migration is now complete, with all endpoints and utility functions properly organized in the modular structure.
 
 ### Worklist Management System
 

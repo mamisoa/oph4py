@@ -11,6 +11,7 @@ from py4web import action, request, response
 
 from ...common import db, session
 from ..core.base import APIResponse
+from ..core.utils import rows2json, valid_date  # Import from core.utils
 
 
 @action("api/uuid", method=["GET"])
