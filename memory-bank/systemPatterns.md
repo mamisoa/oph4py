@@ -36,8 +36,7 @@ Oph4py follows the Model-View-Controller (MVC) pattern using the Py4web framewor
    ├── controllers.py     # Base controllers
    ├── modalityctr.py     # Modality-specific controllers
    ├── manage.py          # Management interface controllers
-   ├── rest.py            # REST API implementation (legacy)
-   ├── api/               # Modular API structure
+   ├── api/               # Modular API structure (complete)
    │   ├── core/          # Core API functionality
    │   ├── endpoints/     # Endpoint implementations
    │   └── models/        # API-specific models
@@ -157,7 +156,7 @@ Oph4py follows the Model-View-Controller (MVC) pattern using the Py4web framewor
 
 ### Modular API Architecture
 
-The API follows a modular architecture pattern to enhance maintainability, testability, and organization:
+The API follows a modular architecture pattern that has completely replaced the legacy REST API implementation. This architecture enhances maintainability, testability, and organization:
 
 ```
 api/
@@ -180,6 +179,35 @@ api/
 └── models/                 # API-specific models
     └── __init__.py
 ```
+
+#### API Modularization Journey
+
+The API modularization project was completed in several phases:
+
+1. **Planning and Analysis**
+   - Identified all endpoints in the legacy `rest.py` file
+   - Designed the modular structure with separation of concerns
+   - Created a migration strategy with backward compatibility
+
+2. **Initial Implementation**
+   - Created the core API modules (policy.py, utils.py, base.py)
+   - Implemented standardized response handling
+   - Migrated initial endpoints while maintaining compatibility
+
+3. **Full Migration**
+   - Moved all endpoints to the modular structure
+   - Added compatibility notices in the original file
+   - Ensured behavioral consistency between old and new implementations
+
+4. **Transition Phase**
+   - Updated application to use the new API structure
+   - Maintained backward compatibility during testing
+   - Verified all functionality with the new implementation
+
+5. **Completion**
+   - Updated `__init__.py` to import from the new API structure
+   - Removed the legacy `rest.py` file
+   - Completed the modularization with full documentation
 
 #### Key Design Principles
 
