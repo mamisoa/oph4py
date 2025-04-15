@@ -26,8 +26,18 @@ This document describes the complete workflow of the ophthalmology electronic me
   1. **Combo Procedures** (e.g., 'Routine')
      - Predefined set of procedures (`combo` table)
      - Multiple modalities combined
+     - All items are created as a single unit for consistency
+     - System ensures all related items are created together
   2. **Specific Procedures**
      - Individual procedures for targeted examinations
+
+#### Enhanced Combo Reliability
+
+- Improved combo creation ensures all related procedures are processed as a single unit
+- System provides clear feedback on combo creation status
+- In rare cases of partial completion, the system offers recovery options
+- Transaction history allows tracking of all combo operations
+- Users can view detailed transaction status information if needed
 
 #### Required Information
 
@@ -160,6 +170,24 @@ The MD procedure includes comprehensive examination modules:
 - Processing time monitoring
 - Automatic alerts for delays
 - Regular table refresh (every 40 seconds)
+
+## Transaction Management
+
+### Combo Operations
+
+- All combo operations are tracked as unified transactions
+- Users receive clear feedback on transaction status:
+  - Complete: All procedures created successfully
+  - Partial: Some procedures created, with recovery options
+  - Failed: No procedures created, with error details
+
+### Recovery Options
+
+- If a combo transaction partially completes, the system offers recovery options:
+  - View transaction details
+  - Attempt automatic recovery
+  - Delete partial entries and retry
+- Administrative users can view transaction history for audit purposes
 
 ## Security and Access Control
 

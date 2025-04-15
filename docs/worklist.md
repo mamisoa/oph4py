@@ -9,6 +9,71 @@ The Worklist controller is a critical component of the ophthalmology electronic 
 - `worklist.html`: Main view template
 - `static/js/wl.js`: Core JavaScript functionality
 - `static/js/wl_bt.js`: Bootstrap table configurations and handlers
+- `static/js/wl-state-manager.js`: State management for worklist operations
+
+## Key Workflows
+
+### Patient Registration with BeID
+
+The system supports patient registration using Belgian electronic ID cards (BeID):
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as User Interface
+    participant API as BeID API
+    participant DB as Database
+    
+    User->>UI: Click "New Patient"
+    UI->>UI: Open Patient Form
+    User->>UI: Click "Read BeID"
+    UI->>API: Request BeID data
+    API->>API: Access card reader
+    API->>UI: Return BeID data (name, birthdate, address, photo)
+    UI->>UI: Populate form fields
+    User->>UI: Add phone number
+    User->>UI: Verify data and submit
+    UI->>DB: Create patient record
+    UI->>DB: Create address record
+    UI->>DB: Create phone record
+    DB->>UI: Confirm successful creation
+    UI->>User: Display success message
+```
+
+### Adding a Combo to Worklist
+
+Creating multiple related tasks using the combo feature:
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as User Interface
+    participant SM as State Manager
+    participant API as Batch API
+    participant DB as Database
+    
+    User->>UI: Select patient from list
+    User->>UI: Click "Add to Worklist"
+    UI->>UI: Open Worklist Modal
+    User->>UI: Select procedure
+    UI->>UI: Load combo options
+    User->>UI: Select multiple modalities
+    User->>UI: Fill other details (time, provider)
+    User->>UI: Submit form
+    UI->>SM: Prepare worklist items
+    SM->>SM: Validate patient context
+    SM->>SM: Create unique transaction ID
+    SM->>API: Send batch operation request
+    API->>DB: Begin transaction
+    API->>DB: Create main worklist item
+    API->>DB: Create related modality items
+    DB->>API: Confirm creation
+    API->>DB: Commit transaction
+    API->>DB: Record transaction audit
+    API->>SM: Return success with IDs
+    SM->>UI: Update UI with new items
+    UI->>User: Display success message
+```
 
 ## Features
 
@@ -72,6 +137,16 @@ The Worklist controller is a critical component of the ophthalmology electronic 
 - Inter-facility communication
 - Location tracking
 
+### 6. Combo Management
+
+#### Atomic Operations
+
+- Transaction-based combo creation
+- Batch API support for atomic operations
+- Transaction status tracking
+- Error recovery mechanisms
+- Transaction history and audit logs
+
 ## Technical Implementation
 
 ### Database Tables
@@ -79,7 +154,7 @@ The Worklist controller is a critical component of the ophthalmology electronic 
 The controller interacts with multiple database tables:
 
 1. **Worklist Management**
-   - `worklist`: Main worklist entries
+   - `worklist`: Main worklist entries (includes transaction_id field)
    - `facility`: Facility information
    - `procedure`: Available procedures
    - `modality`: Equipment and devices
@@ -88,6 +163,9 @@ The controller interacts with multiple database tables:
 2. **Modality Management**
    - `modality_controller`: Device controllers
    - `combo`: Procedure combinations
+
+3. **Transaction Management**
+   - `transaction_audit`: Transaction tracking and status information
 
 ### Key Components
 
@@ -115,6 +193,17 @@ The worklist form handles:
 - Status management
 - Counter tracking
 - Warning messages
+
+#### 3. State Management
+
+The state management system (`wl-state-manager.js`) provides:
+
+- Client-side state tracking for worklist items
+- Request queueing to prevent race conditions
+- UI protection during operations
+- Transaction tracking and history
+- Error recovery for failed operations
+- Patient context validation
 
 ### JavaScript Functions
 
@@ -144,6 +233,14 @@ function getModalityOptions(procedureId)
 function getCombo(id_procedure)
 ```
 
+#### 4. State Management
+
+```javascript
+class WorklistStateManager
+class RequestQueue
+class UIManager
+```
+
 ### API Endpoints
 
 The controller uses several API endpoints:
@@ -152,6 +249,7 @@ The controller uses several API endpoints:
 const API_USER_LIST = HOSTURL + '/api/auth_user'
 const API_PROCEDURE_LIST = HOSTURL + '/api/worklist'
 const API_PROCEDURE_LIST_TODAY = HOSTURL + '/api/worklist'
+const API_BATCH = HOSTURL + '/api/batch'
 ```
 
 ## Usage Guidelines
@@ -180,6 +278,16 @@ const API_PROCEDURE_LIST_TODAY = HOSTURL + '/api/worklist'
 3. Verify availability
 4. Manage workload
 
+### 4. Combo Creation
+
+1. Select patient
+2. Choose main procedure
+3. Select multiple modalities from combo options
+4. Submit the form
+5. System creates all items as a single transaction
+6. Transaction status is tracked and displayed
+7. In case of failures, recovery options are provided
+
 ## Error Handling
 
 The system implements:
@@ -189,6 +297,9 @@ The system implements:
 - Status verification
 - Time monitoring alerts
 - User feedback messages
+- Transaction rollback for failed batch operations
+- Recovery mechanisms for partial transaction completion
+- Detailed transaction status tracking
 
 ## Security Considerations
 
@@ -203,6 +314,8 @@ The system implements:
    - Secure API calls
    - Audit logging
    - Status tracking
+   - Transaction boundaries
+   - Atomic operations
 
 ## Dependencies
 
@@ -223,6 +336,8 @@ Regular maintenance includes:
 4. Verifying modality controllers
 5. Checking API endpoints
 6. Updating documentation
+7. Monitoring transaction audit logs
+8. Verifying transaction completion rates
 
 ## Conclusion
 
@@ -233,5 +348,7 @@ The Worklist Controller provides:
 3. Efficient workflow management
 4. Modality integration
 5. Provider coordination
+6. Atomic transaction support for combo operations
+7. Reliable data integrity through transaction handling
 
 Regular updates ensure optimal functionality and user experience.
