@@ -31,7 +31,7 @@ function setModalityOptions(procedureId){
             let items = data.items;
             let html = '';
             for (let item of items) {
-                html += '<option value="'+ item.id + '">'+ item.modality_name+'</option>';
+                html += '<option value="'+ item['id_modality.id'] + '">'+ item['id_modality.modality_name']+'</option>';
             };
             // console.log(html);
             $('#modality_destSelect').html(html);
@@ -44,7 +44,7 @@ function getModalityOptions(procedureId) {
     return Promise.resolve(
         $.ajax({
             type: "GET",
-            url: HOSTURL+"/"+APP_NAME+"/api/modality?id_modality.procedure_family.id_procedure.eq="+procedureId,
+            url: HOSTURL+"/"+APP_NAME+"/api/procedure_family?id_procedure="+procedureId+"&@lookup=id_modality!:id_modality[id,modality_name]",
             dataType: "json",
             success: function (data) {
                 // console.log(data); 

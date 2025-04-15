@@ -277,7 +277,23 @@ All notable changes to this project will be documented in this file.
   - Matches previous fixes for similar validation issues in other modules
   - Maintains backward compatibility with existing code
 
-### Fixed
+- 2025-04-15T20:49:59.849290: Fixed worklist modality selection API error
+  - Resolved "Invalid fields: ['first_name', 'last_name', 'id']" error in modality API query:
+    - Fixed `getModalityOptions()` function in static/js/wl.js to use correct query structure
+    - Updated `setModalityOptions()` to handle the new response format correctly
+  - Challenges overcome:
+    - Initial fix attempt still produced errors due to invalid field references
+    - Needed to understand the many-to-many relationship between procedure and modality tables
+    - Required proper navigation of the procedure_family join table
+  - Technical solution:
+    - Changed API query from direct modality lookup to procedure_family table lookup
+    - Used the @lookup parameter to get related modality information
+    - Updated data access pattern to use correct lookup field references
+  - Benefits:
+    - Fixed procedure-to-modality selection dropdown in worklist form
+    - Prevented database errors during modality selection
+    - Ensured proper REST API query format following database schema design
+    - Maintained existing functionality without requiring database schema changes
 
 - 2025-03-30T19:52:59: Fixed base64 encoding error in contacts prescription email
   - Fixed "InvalidCharacterError: Failed to execute 'btoa' on 'Window': The string to be encoded contains characters outside of the Latin1 range"
