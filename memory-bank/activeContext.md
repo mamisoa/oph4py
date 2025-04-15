@@ -2,21 +2,83 @@
 
 ## Current Focus and Priorities
 
-The current focus is on JavaScript code modernization following the successful completion of the API modularization effort. We're improving the quality and maintainability of frontend code by applying modern JavaScript best practices.
+The current focus is on implementing a modern Next.js 15 version of the worklist module alongside JavaScript code modernization in the existing py4web codebase. We're improving the quality and maintainability of the application by adopting modern frameworks and practices.
 
 ### Recent Changes (Last 48 Hours)
 
-1. **API Modularization Completion**
+1. **Fixed React Key Prop Error in UsersTable Component (2025-04-16T00:20:09.849719)**
+   - Fixed React warning "Each child in a list should have a unique key prop" in UsersTable component:
+     - Replaced anonymous fragments (`<>...</>`) with `<React.Fragment key={user.id}>` in user rows mapping
+     - Added unique key to expanded row using composite key pattern (`key={`${user.id}-expanded`}`)
+     - Removed redundant key from TableRow since it's now on the Fragment
+     - Improved rendering performance with proper list item identification
+     - Enhanced component stability in the Next.js worklist implementation
+   - Added entry to CHANGELOG.md documenting the fix and technical details
+   - This fix ensures React can properly track and update list items efficiently
+
+2. **Implemented UsersTable Component and Fixed Prisma Configuration (2025-04-16)**
+   - Created comprehensive UsersTable component for the Next.js worklist conversion:
+     - Built reusable component in UsersTable.tsx with Shadcn UI components
+     - Implemented server-side pagination with efficient data fetching
+     - Added search functionality and column sorting capabilities
+     - Created expandable rows for detailed user information
+     - Implemented action buttons (view, edit, delete)
+     - Added role badges with color coding based on membership type
+   - Fixed critical Prisma database configuration issues:
+     - Corrected the database provider from PostgreSQL to MySQL
+     - Used Prisma introspection (`npx prisma db pull`) to accurately map database structure
+     - Fixed field name conflicts (duplicate `agent` field in allergy model)
+     - Regenerated the Prisma client to ensure compatibility
+     - Resolved runtime errors in data fetching
+   - Created dedicated API endpoint for user data:
+     - Implemented filtering by name, email, and username
+     - Added pagination with limit and offset
+     - Created sorting functionality for relevant columns
+     - Added proper error handling
+   - Updated documentation in worklist_to_js.md and CHANGELOG.md to reflect progress
+
+3. **Next.js Worklist Conversion API Layer Implementation (Completed)**
+   - Created comprehensive TypeScript interfaces for all API requests and responses
+   - Implemented all required API endpoints for the Next.js worklist migration:
+     - Auth API endpoints matching py4web functionality
+     - Worklist API endpoints for item listing and management
+     - Batch operation endpoints with transaction support
+     - Utils endpoints for UUID generation
+     - Email endpoints for both regular and attachment-based emails
+   - Set up error handling matching py4web response format
+   - Added Zod validation for request data
+   - Configured email sending with proper templates
+   - Created configuration files for SMTP settings
+   - Updated project documentation to reflect progress
+   - Added entry to CHANGELOG.md (2025-04-15T23:33:00.665456)
+
+4. **Next.js Worklist Conversion (Phase 1 Complete)**
+   - Completed project setup phase with Next.js 15, Prisma ORM, and Tailwind CSS
+   - Created comprehensive Prisma schema mapping all database tables
+   - Added missing `auth_user` fields (`action_token` and `sso_id`) to ensure compatibility with py4web
+   - Set up initial API routes structure
+   - Implemented state management approach
+   - Created utility functions for data formatting
+   - Fixed Tailwind configuration issues
+   - Established database connection to MySQL
+
+5. **API Structure and Implementation**
+   - The Next.js app will access the same database as the py4web application
+   - Building a modern UI with Tailwind CSS
+   - Implementing batch operations API with transaction support
+   - The project is organized in the `oph4js/` directory for parallel development
+
+6. **API Modularization Completion**
    - Completed migration of utility functions from rest.py to modular API architecture:
      - Migrated all endpoints to dedicated modules in api/endpoints directory
      - Implemented core functionality in api/core directory
      - Completed removal of rest.py after verifying all functionality works
-     - Updated __init__.py to import directly from the modular API structure
+     - Updated **init**.py to import directly from the modular API structure
    - Improved code organization for better maintainability
    - Ensured consistent implementation of utility functions across the application
    - Updated memory bank and documentation to reflect migration completion
 
-2. **JavaScript Modernization and Fixes**
+7. **JavaScript Modernization and Fixes**
    - Refactored patient-bar.js using modern JavaScript best practices:
      - Implemented proper module pattern with IIFE for encapsulated scope
      - Fixed reference errors in tonometry and MD modules
@@ -34,7 +96,7 @@ The current focus is on JavaScript code modernization following the successful c
    - This modernization aligns with previous efforts to convert jQuery code to vanilla JavaScript
    - Fixed critical issue where undefined btnArr variable was causing errors in the tonometry module
 
-3. **API Modularization Fixes**
+8. **API Modularization Fixes**
    - Fixed critical route conflicts between original rest.py endpoints and modular API endpoints
    - Resolved duplicate endpoint registrations for three key areas:
      - UUID generation endpoint (`api/uuid`)
@@ -45,7 +107,7 @@ The current focus is on JavaScript code modernization following the successful c
    - Installed missing pyscard package required by the BeID module
    - Fixed application startup errors related to endpoint conflicts
 
-4. **API Modularization**
+9. **API Modularization**
    - Created modular API structure with dedicated directories:
      - `api/core/`: Core functionality and utilities
      - `api/endpoints/`: Individual API endpoint implementations
@@ -58,28 +120,36 @@ The current focus is on JavaScript code modernization following the successful c
    - Added backward compatibility layer in `rest.py`
    - Enhanced documentation with comprehensive docstrings
 
-5. **Core API Modules**
-   - Created `api/core/policy.py` for REST API policy configuration
-   - Created `api/core/utils.py` for shared utility functions
-   - Implemented `api/core/base.py` with request handling and error management
-   - Added proper datetime serialization for consistent API responses
-   - Standardized response formats for both success and error conditions
+10. **Core API Modules**
+    - Created `api/core/policy.py` for REST API policy configuration
+    - Created `api/core/utils.py` for shared utility functions
+    - Implemented `api/core/base.py` with request handling and error management
+    - Added proper datetime serialization for consistent API responses
+    - Standardized response formats for both success and error conditions
 
 ### Next Steps (Short-term)
 
-1. **Continue UI Modernization**
-   - Modernize form validation across the application
-   - Convert more jQuery components to vanilla JavaScript
-   - Improve error handling and user notifications
-   - Enhance mobile responsiveness
+1. **Next.js Implementation**
+   - Implement core table and form components
+   - Connect authentication system to existing db
+   - Develop transaction management interface
+   - Add patient registration with BeID support
+   - Build time tracking functionality
+   - Implement search and filtering capabilities
 
-2. **Testing and Validation**
-   - Test modularized API endpoints to ensure identical behavior
-   - Verify error handling works correctly
-   - Test with various input conditions and edge cases
-   - Validate form submissions across the application
+2. **JavaScript Modernization**
+   - Continue converting jQuery code to vanilla JavaScript
+   - Improve error handling and form validation
+   - Enhance client-side performance
+   - Add comprehensive documentation
 
-3. **Documentation**
+3. **Testing and Validation**
+   - Create testing framework for Next.js components
+   - Validate data flow between frontend and backend
+   - Ensure backward compatibility
+   - Stress test batch operations
+
+4. **Documentation**
    - Update API documentation to reflect the completed modular structure
    - Document migration strategy for developers
    - Create guidelines for implementing new API endpoints
@@ -193,3 +263,205 @@ for record in audit_records:
         elif isinstance(value, datetime.date):
             record[key] = value.strftime("%Y-%m-%d")
 ```
+
+## Next.js Worklist Conversion and JavaScript Code Modernization
+
+### Current Focus
+
+We are implementing a modern Next.js 15 version of the worklist module while continuing to modernize the JavaScript codebase. This dual approach allows us to build a more maintainable and feature-rich application. The Next.js implementation will initially run parallel to the existing Py4web application.
+
+### Recent Changes (Last 48 Hours)
+
+- **Next.js Worklist Conversion (Phase 1 Complete)**
+  - Completed project setup phase with Next.js 15, Prisma ORM, and Tailwind CSS
+  - Created comprehensive Prisma schema mapping all database tables
+  - Added missing `auth_user` fields (`action_token` and `sso_id`) to ensure compatibility with py4web
+  - Set up initial API routes structure
+  - Implemented state management approach
+  - Created utility functions for data formatting
+  - Fixed Tailwind configuration issues
+  - Established database connection to MySQL
+
+- **API Structure and Implementation**
+  - The Next.js app will access the same database as the py4web application
+  - Building a modern UI with Tailwind CSS
+  - Implementing batch operations API with transaction support
+  - The project is organized in the `oph4js/` directory for parallel development
+
+### Previous Focus (For Context)
+
+- **API Modularization (Completed)**
+  - Migrated utility functions to appropriate locations
+  - Removed the old `rest.py` file
+  - Fixed route conflicts and endpoint registrations
+  - Created a clean, modular API structure
+  - Improved code organization for maintainability
+
+- **JavaScript Modernization**
+  - Refactored patient-bar.js using modern JavaScript practices
+  - Fixed reference errors in the tonometry module
+  - Restructured critical UI components
+  - Enhanced error handling across the application
+
+### Next Steps
+
+1. **Next.js Implementation**
+   - Implement core table and form components
+   - Connect authentication system to existing db
+   - Develop transaction management interface
+   - Add patient registration with BeID support
+   - Build time tracking functionality
+   - Implement search and filtering capabilities
+
+2. **JavaScript Modernization**
+   - Continue converting jQuery code to vanilla JavaScript
+   - Improve error handling and form validation
+   - Enhance client-side performance
+   - Add comprehensive documentation
+
+3. **Testing and Validation**
+   - Create testing framework for Next.js components
+   - Validate data flow between frontend and backend
+   - Ensure backward compatibility
+   - Stress test batch operations
+
+## Technical Context
+
+### Next.js Project Structure
+
+```tree
+oph4js/
+├── app/
+│   ├── api/
+│   │   ├── auth/
+│   │   └── worklist/
+│   │       └── worklist/
+│   └── (routes)/
+│       └── worklist/
+├── components/
+│   ├── ui/
+│   └── worklist/
+├── lib/
+│   ├── prisma.ts
+│   └── utils.ts
+├── prisma/
+│   └── schema.prisma
+└── public/
+```
+
+### Prisma Schema
+
+Our Prisma schema mirrors the existing database structure, with customizations to support Next.js patterns:
+
+- All tables from the py4web application mapped to Prisma models
+- Special attention to the `auth_user` table for authentication
+- Relation mappings for complex data relationships
+
+### Compatibility Considerations
+
+- The Next.js application will initially run alongside the existing py4web application
+- Both applications will share the same database
+- Authentication will be managed through the existing system initially
+- We'll implement a gradual transition strategy
+
+## Current Project: Next.js Worklist Conversion (oph4js)
+
+We are working on converting the Worklist module from the current Py4web MVC implementation to a modern Next.js 15 application using Shadcn UI components. The following components have been implemented so far:
+
+### Completed Tasks
+
+- Project setup with Next.js 15, Prisma ORM, and Tailwind CSS
+- Comprehensive Prisma schema mapping all database tables
+- API routes for worklist and batch operations
+- State management hooks for data handling
+
+### Recently Implemented
+
+- WorklistTable Component
+  - Created using Shadcn UI Table components
+  - Implemented server-side pagination with page controls
+  - Added status-based row coloring for visual identification
+  - Created expandable rows for detailed information view
+  - Added dropdown menus for item actions (view, edit, delete, status updates)
+  - Implemented time tracking with proper date-fns formatting
+  - Added column sorting with proper visual indicators
+  - Created comprehensive TypeScript typing with Prisma schema
+
+### Next Tasks
+
+- Implement UsersTable component
+- Create modals for new worklist items and users
+- Implement form components with validation
+- Create state management for the worklist page
+
+### Project Structure
+
+```tree
+/oph4js                       # Root of the Next.js project
+  /prisma
+    schema.prisma            # Generated from models.py
+  /src
+    /app
+      /api                   # Next.js API routes (mirrors py4web api/ structure)
+        /auth
+          route.ts
+        /worklist
+          route.ts
+        /batch
+          route.ts
+        /email
+          /send
+            route.ts
+          /send_with_attachment
+            route.ts
+        /utils
+          route.ts
+      /worklist
+        /components
+          /tables
+            WorklistTable.tsx  # Implemented
+            UsersTable.tsx     # To be implemented
+          /modals
+            NewUserModal.tsx
+            NewWorklistItemModal.tsx
+            TransactionRecoveryModal.tsx
+          /forms
+            UserForm.tsx
+            WorklistItemForm.tsx
+          WorklistFilters.tsx
+          PaginationControls.tsx
+        /hooks
+          useWorklistState.ts
+        page.tsx
+        layout.tsx
+        actions.ts
+    /lib
+      /db                    # Prisma client setup
+        index.ts
+      /utils
+        formatters.ts
+        timer.ts
+    /components
+      /ui
+        /shadcn-components
+```
+
+### Technical Details
+
+- The WorklistTable component uses Shadcn UI Table components with proper TypeScript typing
+- It integrates with Prisma's schema for type-safe data access
+- The component includes comprehensive prop interfaces for flexibility
+- It handles loading states, empty states, and error states
+- Expanded rows show detailed information about worklist items
+- Action buttons are implemented through dropdown menus
+- Status updates are reflected visually through color-coding
+- Wait time is calculated using date-fns for proper formatting
+- The component is responsive and works on all device sizes
+
+### Next Steps
+
+1. Create the UsersTable component following the same pattern
+2. Implement modal components for adding/editing items
+3. Create form components with validation
+4. Implement the page-level state management
+5. Connect the components to the API endpoints

@@ -118,3 +118,5 @@ node_modules/
 debug.log
 logs/
 output/
+oph4js/src/generated
+oph4js/pnpm-lock.yaml

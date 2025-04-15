@@ -507,16 +507,14 @@ All notable changes to this project will be documented in this file.
   - Eliminates potential conflicts in table event handlers
   - Ensures consistent table behavior across all modules
 
-### Added
-
-- 2025-03-30T19:43:21: Added email functionality to contacts prescription module
+- 2025-03:30T19:43:21: Added email functionality to contacts prescription module
   - Added "Send by email" button to contact lenses prescription modal (CxRxModal)
   - Added hidden actionType field to track whether user wants to print or email
   - Implemented the action handling in the form submission function
   - Added notifyUser function for consistent user notification
   - Email feature matches existing functionality in glasses prescription module
 
-- 2025-03-30T13:30:42: Added email functionality to certificates module
+- 2025-03:30T13:30:42: Added email functionality to certificates module
   - Modified `static/js/certificates.js` to allow sending certificates as email attachments
   - Added radio button UI in the certificateModal for selecting between print and email actions
   - Created new API endpoint `api/email/send_with_attachment` in `rest.py` for handling PDF attachments
@@ -707,6 +705,45 @@ All notable changes to this project will be documented in this file.
   - Complex query endpoints for aggregated data
   - Clinical examination endpoints with detailed response structures
 
+- 2025-04-15T23:13:19.332977: Completed Next.js worklist conversion Phase 1
+  - Successfully established Next.js 15 framework with Prisma ORM and Tailwind CSS
+  - Created comprehensive Prisma schema mapping all database tables from models.py
+  - Added proper relations between tables for complex data relationships
+  - Implemented initial API routes with transaction support
+  - Set up state management hooks for efficient data management
+  - Established successful database connection to existing MySQL database
+  - Configured project according to Next.js 15 best practices
+  - Enhanced project maintainability with TypeScript and strict typing
+
+- 2025-04-15T23:57:57.834189: Implemented Users Table component for Next.js worklist conversion
+  - Created UsersTable component in oph4js/src/app/worklist/components/tables/UsersTable.tsx
+  - Implemented RESTful API endpoint for user data in oph4js/src/app/api/users/route.ts
+  - Added user management tab to the worklist page with proper pagination
+  - Implemented searching, sorting, and filtering for user records
+  - Added expandable rows for detailed user information
+  - Integrated with Prisma ORM for efficient database queries
+  - Enhanced worklist interface with tabbed navigation for different data types
+  - Included proper action buttons for user management operations
+  - Used Shadcn UI components for consistent modern interface
+
+- 2025-04-16T00:10:46.657466: Fixed Prisma database configuration for Next.js worklist conversion
+  - Corrected database provider from PostgreSQL to MySQL in Prisma schema
+  - Fixed field name conflicts in database schema (duplicate 'agent' field in allergy model)
+  - Used Prisma introspection (db pull) to accurately map existing database structure
+  - Regenerated Prisma client to ensure compatibility with actual database
+  - Resolved runtime errors in user data fetching
+  - Fixed issues with database table column mappings
+  - Enhanced schema model definitions with proper relation field names
+  - Documented troubleshooting steps for Prisma schema errors
+
+- 2025-04-16T00:17:25.191692: Fixed missing key prop error in UsersTable component
+  - Added React.Fragment with key prop to replace anonymous fragments in user rows mapping
+  - Added unique key to expanded row using composite key pattern (id-expanded)
+  - Removed redundant key from TableRow that is now on the Fragment
+  - Fixed React warning "Each child in a list should have a unique key prop"
+  - Improved rendering performance with proper list item identification
+  - Enhanced component stability in the Next.js worklist implementation
+
 ## [2025-03-30] - UI and Email Improvements
 
 - Updated email subject line format to: "{type of document} de {LASTNAME Firstname} | Centre Médical Bruxelles-Schuman"
@@ -752,3 +789,57 @@ All notable changes to this project will be documented in this file.
   - The legacy compatibility layer is no longer needed
   - All REST API functionality is now managed through the api/ module structure
   - This completes the API modularization project
+
+- 2025-04-15T22:55:14.669181: Completed Project Setup phase for Next.js worklist conversion
+  - Created comprehensive Prisma schema in schema.prisma:
+    - Mapped all database tables from models.py to Prisma models
+    - Added relationships between tables
+    - Included auth_user fields from common.py
+    - Set up proper field types and default values
+  - Created initial project structure:
+    - Set up API routes for worklist and batch operations
+    - Added state management with useWorklistState hook
+    - Created formatters and timer utilities
+    - Added placeholder worklist page for UI development
+  - Configured database connection:
+    - Set up .env with DATABASE_URL pointing to existing MySQL database
+    - Created Prisma client setup in lib/db/index.ts
+    - Added transaction handling for atomic operations
+  - Created tailwind.config.ts for styling configuration
+  - Organized project according to Next.js 15 best practices
+  - Set up required directory structure following project plan
+
+- 2025-04-15T23:11:48.185343: Enhanced Next.js worklist conversion - Schema and Config improvements
+  - Updated Prisma schema with missing auth_user fields:
+    - Added action_token field for authentication workflows (password reset, verification)
+    - Added sso_id field for single sign-on integration
+    - Ensured full compatibility with py4web's auth_user table definition
+  - Fixed tailwind.config.ts configuration:
+    - Corrected fontFamily import to use default import from defaultTheme
+    - Updated darkMode configuration to use string format
+    - Replaced require() style imports with ES modules imports
+    - Eliminated TypeScript and linter errors
+  - Improved compatibility with the existing py4web authentication system
+  - Enhanced project setup with production-ready configuration
+
+## 2025-04-15
+
+### API Layer Implementation for Next.js Migration
+- Completed API layer implementation for the worklist Next.js migration
+- Implemented TypeScript interfaces for all API requests and responses
+- Created auth API endpoints matching py4web functionality
+- Implemented utility endpoints for UUID generation
+- Added email sending endpoints with and without attachment support
+- Set up proper error handling and validation using Zod
+
+### Added
+- Implemented WorklistTable component for Next.js conversion
+  - Created a new WorklistTable component using Shadcn UI
+  - Added server-side pagination support
+  - Implemented status-based row coloring
+  - Added detail view expansion functionality
+  - Implemented action buttons for item operations
+  - Added status update functionality
+  - Implemented wait time tracking
+  - Added column sorting with client-side state
+  - Created responsive design with proper mobile support

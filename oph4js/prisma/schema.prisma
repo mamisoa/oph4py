@@ -1,0 +1,1946 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Gender {
+  id        Int         @id @default(autoincrement())
+  sex       String?     @db.VarChar(512)
+  users     AuthUser[]
+  testtable TestTable[]
+
+  @@map("gender")
+}
+
+model Ethny {
+  id    Int        @id @default(autoincrement())
+  ethny String?    @db.VarChar(512)
+  users AuthUser[]
+
+  @@map("ethny")
+}
+
+model Marital {
+  id             Int        @id @default(autoincrement())
+  marital_status String?    @db.VarChar(512)
+  users          AuthUser[]
+
+  @@map("marital")
+}
+
+model Membership {
+  id         Int        @id @default(autoincrement())
+  membership String?    @db.VarChar(512)
+  hierarchy  Int?
+  users      AuthUser[]
+
+  @@map("membership")
+}
+
+model AuthUser {
+  id                                                                       Int                        @id @default(autoincrement())
+  username                                                                 String?                    @unique(map: "username") @db.VarChar(512)
+  email                                                                    String?                    @unique(map: "email") @db.VarChar(512)
+  password                                                                 String?                    @db.VarChar(512)
+  first_name                                                               String?                    @db.VarChar(512)
+  last_name                                                                String?                    @db.VarChar(512)
+  sso_id                                                                   String?                    @db.VarChar(512)
+  action_token                                                             String?                    @db.VarChar(512)
+  last_password_change                                                     DateTime?                  @db.DateTime(0)
+  past_passwords_hash                                                      String?                    @db.LongText
+  uid                                                                      String?                    @default(uuid()) @db.VarChar(512)
+  membershipId                                                             Int?                       @map("membership")
+  maiden_name                                                              String?                    @db.VarChar(512)
+  dob                                                                      DateTime?                  @map("dob") @db.Date
+  birth_town                                                               String?                    @db.VarChar(512)
+  birth_country                                                            String?                    @db.VarChar(512)
+  genderId                                                                 Int?                       @map("gender")
+  maritalId                                                                Int?                       @map("marital")
+  ethnyId                                                                  Int?                       @map("ethny")
+  idc_num                                                                  String?                    @db.VarChar(512)
+  ssn                                                                      String?                    @db.VarChar(512)
+  user_notes                                                               String?                    @db.VarChar(512)
+  chipnumber                                                               String?                    @db.VarChar(512)
+  validfrom                                                                DateTime?                  @db.Date
+  validtill                                                                DateTime?                  @db.Date
+  initials                                                                 String?                    @db.VarChar(512)
+  nationality                                                              String?                    @db.VarChar(512)
+  noblecondition                                                           String?                    @db.VarChar(512)
+  documenttype                                                             Int?
+  specialstatus                                                            Int?
+  photob64                                                                 Bytes?
+  createdOn                                                                DateTime?                  @map("created_on") @db.DateTime(0)
+  createdBy                                                                Int?                       @map("created_by")
+  modifiedOn                                                               DateTime?                  @map("modified_on") @db.DateTime(0)
+  modifiedBy                                                               Int?                       @map("modified_by")
+  is_active                                                                String?                    @db.Char(1)
+  address                                                                  Address[]
+  address_address_created_byToauth_user                                    Address[]                  @relation("address_created_byToauth_user")
+  address_address_modified_byToauth_user                                   Address[]                  @relation("address_modified_byToauth_user")
+  agent_agent_created_byToauth_user                                        agent[]                    @relation("agent_created_byToauth_user")
+  agent_agent_modified_byToauth_user                                       agent[]                    @relation("agent_modified_byToauth_user")
+  allergy_allergy_id_auth_userToauth_user                                  allergy[]                  @relation("allergy_id_auth_userToauth_user")
+  allergy_allergy_created_byToauth_user                                    allergy[]                  @relation("allergy_created_byToauth_user")
+  allergy_allergy_modified_byToauth_user                                   allergy[]                  @relation("allergy_modified_byToauth_user")
+  ant_biom_ant_biom_id_auth_userToauth_user                                ant_biom[]                 @relation("ant_biom_id_auth_userToauth_user")
+  ant_biom_ant_biom_created_byToauth_user                                  ant_biom[]                 @relation("ant_biom_created_byToauth_user")
+  ant_biom_ant_biom_modified_byToauth_user                                 ant_biom[]                 @relation("ant_biom_modified_byToauth_user")
+  auscultation_auscultation_id_auth_userToauth_user                        auscultation[]             @relation("auscultation_id_auth_userToauth_user")
+  auscultation_auscultation_created_byToauth_user                          auscultation[]             @relation("auscultation_created_byToauth_user")
+  auscultation_auscultation_modified_byToauth_user                         auscultation[]             @relation("auscultation_modified_byToauth_user")
+  membership                                                               Membership?                @relation(fields: [membershipId], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auth_user_ibfk_1")
+  gender                                                                   Gender?                    @relation(fields: [genderId], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auth_user_ibfk_2")
+  marital                                                                  Marital?                   @relation(fields: [maritalId], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auth_user_ibfk_3")
+  ethny                                                                    Ethny?                     @relation(fields: [ethnyId], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auth_user_ibfk_4")
+  auth_user_auth_user_created_byToauth_user                                AuthUser?                  @relation("auth_user_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auth_user_ibfk_5")
+  other_auth_user_auth_user_created_byToauth_user                          AuthUser[]                 @relation("auth_user_created_byToauth_user")
+  auth_user_auth_user_modified_byToauth_user                               AuthUser?                  @relation("auth_user_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auth_user_ibfk_6")
+  other_auth_user_auth_user_modified_byToauth_user                         AuthUser[]                 @relation("auth_user_modified_byToauth_user")
+  auth_user_tag_groups                                                     auth_user_tag_groups[]
+  auto_dict_auto_dict_created_byToauth_user                                auto_dict[]                @relation("auto_dict_created_byToauth_user")
+  auto_dict_auto_dict_modified_byToauth_user                               auto_dict[]                @relation("auto_dict_modified_byToauth_user")
+  billing_billing_id_auth_userToauth_user                                  billing[]                  @relation("billing_id_auth_userToauth_user")
+  billing_billing_created_byToauth_user                                    billing[]                  @relation("billing_created_byToauth_user")
+  billing_billing_modified_byToauth_user                                   billing[]                  @relation("billing_modified_byToauth_user")
+  biometry_biometry_id_auth_userToauth_user                                biometry[]                 @relation("biometry_id_auth_userToauth_user")
+  biometry_biometry_created_byToauth_user                                  biometry[]                 @relation("biometry_created_byToauth_user")
+  biometry_biometry_modified_byToauth_user                                 biometry[]                 @relation("biometry_modified_byToauth_user")
+  capsulotomy_capsulotomy_id_auth_userToauth_user                          capsulotomy[]              @relation("capsulotomy_id_auth_userToauth_user")
+  capsulotomy_capsulotomy_created_byToauth_user                            capsulotomy[]              @relation("capsulotomy_created_byToauth_user")
+  capsulotomy_capsulotomy_modified_byToauth_user                           capsulotomy[]              @relation("capsulotomy_modified_byToauth_user")
+  ccx_ccx_id_auth_userToauth_user                                          ccx[]                      @relation("ccx_id_auth_userToauth_user")
+  ccx_ccx_created_byToauth_user                                            ccx[]                      @relation("ccx_created_byToauth_user")
+  ccx_ccx_modified_byToauth_user                                           ccx[]                      @relation("ccx_modified_byToauth_user")
+  certificates_certificates_id_auth_userToauth_user                        certificates[]             @relation("certificates_id_auth_userToauth_user")
+  certificates_certificates_created_byToauth_user                          certificates[]             @relation("certificates_created_byToauth_user")
+  certificates_certificates_modified_byToauth_user                         certificates[]             @relation("certificates_modified_byToauth_user")
+  cl_cl_created_byToauth_user                                              cl[]                       @relation("cl_created_byToauth_user")
+  cl_cl_modified_byToauth_user                                             cl[]                       @relation("cl_modified_byToauth_user")
+  cleaning_solution_cleaning_solution_created_byToauth_user                cleaning_solution[]        @relation("cleaning_solution_created_byToauth_user")
+  cleaning_solution_cleaning_solution_modified_byToauth_user               cleaning_solution[]        @relation("cleaning_solution_modified_byToauth_user")
+  combo_combo_created_byToauth_user                                        Combo[]                    @relation("combo_created_byToauth_user")
+  combo_combo_modified_byToauth_user                                       Combo[]                    @relation("combo_modified_byToauth_user")
+  combo_codes_combo_codes_created_byToauth_user                            combo_codes[]              @relation("combo_codes_created_byToauth_user")
+  combo_codes_combo_codes_modified_byToauth_user                           combo_codes[]              @relation("combo_codes_modified_byToauth_user")
+  combo_proxy_nomenclature_combo_proxy_nomenclature_created_byToauth_user  combo_proxy_nomenclature[] @relation("combo_proxy_nomenclature_created_byToauth_user")
+  combo_proxy_nomenclature_combo_proxy_nomenclature_modified_byToauth_user combo_proxy_nomenclature[] @relation("combo_proxy_nomenclature_modified_byToauth_user")
+  contacts_rx_list_contacts_rx_list_id_auth_userToauth_user                contacts_rx_list[]         @relation("contacts_rx_list_id_auth_userToauth_user")
+  contacts_rx_list_contacts_rx_list_created_byToauth_user                  contacts_rx_list[]         @relation("contacts_rx_list_created_byToauth_user")
+  contacts_rx_list_contacts_rx_list_modified_byToauth_user                 contacts_rx_list[]         @relation("contacts_rx_list_modified_byToauth_user")
+  current_hx_current_hx_id_auth_userToauth_user                            current_hx[]               @relation("current_hx_id_auth_userToauth_user")
+  current_hx_current_hx_created_byToauth_user                              current_hx[]               @relation("current_hx_created_byToauth_user")
+  current_hx_current_hx_modified_byToauth_user                             current_hx[]               @relation("current_hx_modified_byToauth_user")
+  disease_ref_disease_ref_created_byToauth_user                            disease_ref[]              @relation("disease_ref_created_byToauth_user")
+  disease_ref_disease_ref_modified_byToauth_user                           disease_ref[]              @relation("disease_ref_modified_byToauth_user")
+  facilities_facilities_created_byToauth_user                              Facilities[]               @relation("facilities_created_byToauth_user")
+  facilities_facilities_modified_byToauth_user                             Facilities[]               @relation("facilities_modified_byToauth_user")
+  facility_facility_created_byToauth_user                                  Facility[]                 @relation("facility_created_byToauth_user")
+  facility_facility_modified_byToauth_user                                 Facility[]                 @relation("facility_modified_byToauth_user")
+  followup_followup_id_auth_userToauth_user                                followup[]                 @relation("followup_id_auth_userToauth_user")
+  followup_followup_created_byToauth_user                                  followup[]                 @relation("followup_created_byToauth_user")
+  followup_followup_modified_byToauth_user                                 followup[]                 @relation("followup_modified_byToauth_user")
+  glasses_rx_list_glasses_rx_list_id_auth_userToauth_user                  glasses_rx_list[]          @relation("glasses_rx_list_id_auth_userToauth_user")
+  glasses_rx_list_glasses_rx_list_created_byToauth_user                    glasses_rx_list[]          @relation("glasses_rx_list_created_byToauth_user")
+  glasses_rx_list_glasses_rx_list_modified_byToauth_user                   glasses_rx_list[]          @relation("glasses_rx_list_modified_byToauth_user")
+  gpexam_gpexam_id_auth_userToauth_user                                    gpexam[]                   @relation("gpexam_id_auth_userToauth_user")
+  gpexam_gpexam_created_byToauth_user                                      gpexam[]                   @relation("gpexam_created_byToauth_user")
+  gpexam_gpexam_modified_byToauth_user                                     gpexam[]                   @relation("gpexam_modified_byToauth_user")
+  inspection_inspection_id_auth_userToauth_user                            inspection[]               @relation("inspection_id_auth_userToauth_user")
+  inspection_inspection_created_byToauth_user                              inspection[]               @relation("inspection_created_byToauth_user")
+  inspection_inspection_modified_byToauth_user                             inspection[]               @relation("inspection_modified_byToauth_user")
+  insurance                                                                Insurance[]
+  insurance_insurance_created_byToauth_user                                Insurance[]                @relation("insurance_created_byToauth_user")
+  insurance_insurance_modified_byToauth_user                               Insurance[]                @relation("insurance_modified_byToauth_user")
+  invoices_invoices_id_auth_userToauth_user                                invoices[]                 @relation("invoices_id_auth_userToauth_user")
+  invoices_invoices_created_byToauth_user                                  invoices[]                 @relation("invoices_created_byToauth_user")
+  invoices_invoices_modified_byToauth_user                                 invoices[]                 @relation("invoices_modified_byToauth_user")
+  keratometries                                                            Km[]
+  km_km_created_byToauth_user                                              Km[]                       @relation("km_created_byToauth_user")
+  km_km_modified_byToauth_user                                             Km[]                       @relation("km_modified_byToauth_user")
+  lenses_lenses_created_byToauth_user                                      lenses[]                   @relation("lenses_created_byToauth_user")
+  lenses_lenses_modified_byToauth_user                                     lenses[]                   @relation("lenses_modified_byToauth_user")
+  md_params_md_params_id_auth_userToauth_user                              md_params[]                @relation("md_params_id_auth_userToauth_user")
+  md_params_md_params_created_byToauth_user                                md_params[]                @relation("md_params_created_byToauth_user")
+  md_params_md_params_modified_byToauth_user                               md_params[]                @relation("md_params_modified_byToauth_user")
+  medic_ref_medic_ref_created_byToauth_user                                medic_ref[]                @relation("medic_ref_created_byToauth_user")
+  medic_ref_medic_ref_modified_byToauth_user                               medic_ref[]                @relation("medic_ref_modified_byToauth_user")
+  medical_rx_list_medical_rx_list_id_auth_userToauth_user                  medical_rx_list[]          @relation("medical_rx_list_id_auth_userToauth_user")
+  medical_rx_list_medical_rx_list_created_byToauth_user                    medical_rx_list[]          @relation("medical_rx_list_created_byToauth_user")
+  medical_rx_list_medical_rx_list_modified_byToauth_user                   medical_rx_list[]          @relation("medical_rx_list_modified_byToauth_user")
+  modality_modality_created_byToauth_user                                  Modality[]                 @relation("modality_created_byToauth_user")
+  modality_modality_modified_byToauth_user                                 Modality[]                 @relation("modality_modified_byToauth_user")
+  modality_controller_modality_controller_created_byToauth_user            ModalityController[]       @relation("modality_controller_created_byToauth_user")
+  modality_controller_modality_controller_modified_byToauth_user           ModalityController[]       @relation("modality_controller_modified_byToauth_user")
+  modality_family_modality_family_created_byToauth_user                    ModalityFamily[]           @relation("modality_family_created_byToauth_user")
+  modality_family_modality_family_modified_byToauth_user                   ModalityFamily[]           @relation("modality_family_modified_byToauth_user")
+  motility_motility_id_auth_userToauth_user                                motility[]                 @relation("motility_id_auth_userToauth_user")
+  motility_motility_created_byToauth_user                                  motility[]                 @relation("motility_created_byToauth_user")
+  motility_motility_modified_byToauth_user                                 motility[]                 @relation("motility_modified_byToauth_user")
+  mx_mx_id_auth_userToauth_user                                            mx[]                       @relation("mx_id_auth_userToauth_user")
+  mx_mx_created_byToauth_user                                              mx[]                       @relation("mx_created_byToauth_user")
+  mx_mx_modified_byToauth_user                                             mx[]                       @relation("mx_modified_byToauth_user")
+  neuro_neuro_id_auth_userToauth_user                                      neuro[]                    @relation("neuro_id_auth_userToauth_user")
+  neuro_neuro_created_byToauth_user                                        neuro[]                    @relation("neuro_created_byToauth_user")
+  neuro_neuro_modified_byToauth_user                                       neuro[]                    @relation("neuro_modified_byToauth_user")
+  nomenclature_nomenclature_created_byToauth_user                          nomenclature[]             @relation("nomenclature_created_byToauth_user")
+  nomenclature_nomenclature_modified_byToauth_user                         nomenclature[]             @relation("nomenclature_modified_byToauth_user")
+  optotype_optotype_created_byToauth_user                                  optotype[]                 @relation("optotype_created_byToauth_user")
+  optotype_optotype_modified_byToauth_user                                 optotype[]                 @relation("optotype_modified_byToauth_user")
+  palpation_palpation_id_auth_userToauth_user                              palpation[]                @relation("palpation_id_auth_userToauth_user")
+  palpation_palpation_created_byToauth_user                                palpation[]                @relation("palpation_created_byToauth_user")
+  palpation_palpation_modified_byToauth_user                               palpation[]                @relation("palpation_modified_byToauth_user")
+  percussion_percussion_id_auth_userToauth_user                            percussion[]               @relation("percussion_id_auth_userToauth_user")
+  percussion_percussion_created_byToauth_user                              percussion[]               @relation("percussion_created_byToauth_user")
+  percussion_percussion_modified_byToauth_user                             percussion[]               @relation("percussion_modified_byToauth_user")
+  phistory_phistory_id_auth_userToauth_user                                phistory[]                 @relation("phistory_id_auth_userToauth_user")
+  phistory_phistory_created_byToauth_user                                  phistory[]                 @relation("phistory_created_byToauth_user")
+  phistory_phistory_modified_byToauth_user                                 phistory[]                 @relation("phistory_modified_byToauth_user")
+  phone                                                                    Phone[]
+  phone_phone_created_byToauth_user                                        Phone[]                    @relation("phone_created_byToauth_user")
+  phone_phone_modified_byToauth_user                                       Phone[]                    @relation("phone_modified_byToauth_user")
+  phoria_phoria_id_auth_userToauth_user                                    phoria[]                   @relation("phoria_id_auth_userToauth_user")
+  phoria_phoria_created_byToauth_user                                      phoria[]                   @relation("phoria_created_byToauth_user")
+  phoria_phoria_modified_byToauth_user                                     phoria[]                   @relation("phoria_modified_byToauth_user")
+  photoId                                                                  PhotoId[]
+  photo_id_photo_id_created_byToauth_user                                  PhotoId[]                  @relation("photo_id_created_byToauth_user")
+  photo_id_photo_id_modified_byToauth_user                                 PhotoId[]                  @relation("photo_id_modified_byToauth_user")
+  post_biom_post_biom_id_auth_userToauth_user                              post_biom[]                @relation("post_biom_id_auth_userToauth_user")
+  post_biom_post_biom_created_byToauth_user                                post_biom[]                @relation("post_biom_created_byToauth_user")
+  post_biom_post_biom_modified_byToauth_user                               post_biom[]                @relation("post_biom_modified_byToauth_user")
+  procedure_procedure_created_byToauth_user                                Procedure[]                @relation("procedure_created_byToauth_user")
+  procedure_procedure_modified_byToauth_user                               Procedure[]                @relation("procedure_modified_byToauth_user")
+  procedure_family_procedure_family_created_byToauth_user                  ProcedureFamily[]          @relation("procedure_family_created_byToauth_user")
+  procedure_family_procedure_family_modified_byToauth_user                 ProcedureFamily[]          @relation("procedure_family_modified_byToauth_user")
+  pupils_pupils_id_auth_userToauth_user                                    pupils[]                   @relation("pupils_id_auth_userToauth_user")
+  pupils_pupils_created_byToauth_user                                      pupils[]                   @relation("pupils_created_byToauth_user")
+  pupils_pupils_modified_byToauth_user                                     pupils[]                   @relation("pupils_modified_byToauth_user")
+  rx_rx_id_auth_userToauth_user                                            rx[]                       @relation("rx_id_auth_userToauth_user")
+  rx_rx_created_byToauth_user                                              rx[]                       @relation("rx_created_byToauth_user")
+  rx_rx_modified_byToauth_user                                             rx[]                       @relation("rx_modified_byToauth_user")
+  soap_soap_id_auth_userToauth_user                                        soap[]                     @relation("soap_id_auth_userToauth_user")
+  soap_soap_created_byToauth_user                                          soap[]                     @relation("soap_created_byToauth_user")
+  soap_soap_modified_byToauth_user                                         soap[]                     @relation("soap_modified_byToauth_user")
+  social_sec_documents_social_sec_documents_id_auth_userToauth_user        social_sec_documents[]     @relation("social_sec_documents_id_auth_userToauth_user")
+  social_sec_documents_social_sec_documents_created_byToauth_user          social_sec_documents[]     @relation("social_sec_documents_created_byToauth_user")
+  social_sec_documents_social_sec_documents_modified_byToauth_user         social_sec_documents[]     @relation("social_sec_documents_modified_byToauth_user")
+  status_rx_status_rx_created_byToauth_user                                status_rx[]                @relation("status_rx_created_byToauth_user")
+  status_rx_status_rx_modified_byToauth_user                               status_rx[]                @relation("status_rx_modified_byToauth_user")
+  testtable_testtable_created_byToauth_user                                TestTable[]                @relation("testtable_created_byToauth_user")
+  testtable_testtable_modified_byToauth_user                               TestTable[]                @relation("testtable_modified_byToauth_user")
+  tonometries                                                              Tono[]
+  tono_tono_created_byToauth_user                                          Tono[]                     @relation("tono_created_byToauth_user")
+  tono_tono_modified_byToauth_user                                         Tono[]                     @relation("tono_modified_byToauth_user")
+  transaction_audit_transaction_audit_created_byToauth_user                transaction_audit[]        @relation("transaction_audit_created_byToauth_user")
+  transaction_audit_transaction_audit_modified_byToauth_user               transaction_audit[]        @relation("transaction_audit_modified_byToauth_user")
+  transactions_transactions_id_auth_userToauth_user                        transactions[]             @relation("transactions_id_auth_userToauth_user")
+  transactions_transactions_created_byToauth_user                          transactions[]             @relation("transactions_created_byToauth_user")
+  transactions_transactions_modified_byToauth_user                         transactions[]             @relation("transactions_modified_byToauth_user")
+  vitals_vitals_id_auth_userToauth_user                                    vitals[]                   @relation("vitals_id_auth_userToauth_user")
+  vitals_vitals_created_byToauth_user                                      vitals[]                   @relation("vitals_created_byToauth_user")
+  vitals_vitals_modified_byToauth_user                                     vitals[]                   @relation("vitals_modified_byToauth_user")
+  wl_codes_wl_codes_id_auth_userToauth_user                                wl_codes[]                 @relation("wl_codes_id_auth_userToauth_user")
+  wl_codes_wl_codes_created_byToauth_user                                  wl_codes[]                 @relation("wl_codes_created_byToauth_user")
+  wl_codes_wl_codes_modified_byToauth_user                                 wl_codes[]                 @relation("wl_codes_modified_byToauth_user")
+  wl_payments_wl_payments_id_auth_userToauth_user                          wl_payments[]              @relation("wl_payments_id_auth_userToauth_user")
+  wl_payments_wl_payments_created_byToauth_user                            wl_payments[]              @relation("wl_payments_created_byToauth_user")
+  wl_payments_wl_payments_modified_byToauth_user                           wl_payments[]              @relation("wl_payments_modified_byToauth_user")
+  worklists                                                                Worklist[]
+  providedWorklists                                                        Worklist[]                 @relation("ProviderDoctor")
+  seniorWorklists                                                          Worklist[]                 @relation("SeniorDoctor")
+  worklist_worklist_created_byToauth_user                                  Worklist[]                 @relation("worklist_created_byToauth_user")
+  worklist_worklist_modified_byToauth_user                                 Worklist[]                 @relation("worklist_modified_byToauth_user")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([ethnyId], map: "ethny__idx")
+  @@index([genderId], map: "gender__idx")
+  @@index([maritalId], map: "marital__idx")
+  @@index([membershipId], map: "membership__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("auth_user")
+}
+
+model PhotoId {
+  id                                        Int       @id @default(autoincrement())
+  imagefile                                 String?   @db.VarChar(512)
+  b64img                                    String?   @db.LongText
+  id_auth_user                              Int?
+  createdOn                                 DateTime? @map("created_on") @db.DateTime(0)
+  createdBy                                 Int?      @map("created_by")
+  modifiedOn                                DateTime? @map("modified_on") @db.DateTime(0)
+  modifiedBy                                Int?      @map("modified_by")
+  is_active                                 String?   @db.Char(1)
+  user                                      AuthUser? @relation(fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "photo_id_ibfk_1")
+  auth_user_photo_id_created_byToauth_user  AuthUser? @relation("photo_id_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "photo_id_ibfk_2")
+  auth_user_photo_id_modified_byToauth_user AuthUser? @relation("photo_id_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "photo_id_ibfk_3")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("photo_id")
+}
+
+model Facility {
+  id                                        Int        @id @default(autoincrement())
+  facility_name                             String?    @db.VarChar(512)
+  createdOn                                 DateTime?  @map("created_on") @db.DateTime(0)
+  createdBy                                 Int?       @map("created_by")
+  modifiedOn                                DateTime?  @map("modified_on") @db.DateTime(0)
+  modifiedBy                                Int?       @map("modified_by")
+  is_active                                 String?    @db.Char(1)
+  auth_user_facility_created_byToauth_user  AuthUser?  @relation("facility_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "facility_ibfk_1")
+  auth_user_facility_modified_byToauth_user AuthUser?  @relation("facility_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "facility_ibfk_2")
+  sendingWorklists                          Worklist[] @relation("SendingFacility")
+  receivingWorklists                        Worklist[] @relation("ReceivingFacility")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("facility")
+}
+
+model Facilities {
+  id                                          Int       @id @default(autoincrement())
+  facility_name                               String?   @db.VarChar(512)
+  hosp_id                                     Int?
+  createdOn                                   DateTime? @map("created_on") @db.DateTime(0)
+  createdBy                                   Int?      @map("created_by")
+  modifiedOn                                  DateTime? @map("modified_on") @db.DateTime(0)
+  modifiedBy                                  Int?      @map("modified_by")
+  is_active                                   String?   @db.Char(1)
+  auth_user_facilities_created_byToauth_user  AuthUser? @relation("facilities_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "facilities_ibfk_1")
+  auth_user_facilities_modified_byToauth_user AuthUser? @relation("facilities_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "facilities_ibfk_2")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("facilities")
+}
+
+model ModalityFamily {
+  id                                               Int               @id @default(autoincrement())
+  family                                           String?           @db.VarChar(512)
+  createdOn                                        DateTime?         @map("created_on") @db.DateTime(0)
+  createdBy                                        Int?              @map("created_by")
+  modifiedOn                                       DateTime?         @map("modified_on") @db.DateTime(0)
+  modifiedBy                                       Int?              @map("modified_by")
+  is_active                                        String?           @db.Char(1)
+  auth_user_modality_family_created_byToauth_user  AuthUser?         @relation("modality_family_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "modality_family_ibfk_1")
+  auth_user_modality_family_modified_byToauth_user AuthUser?         @relation("modality_family_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "modality_family_ibfk_2")
+  procedureFamilies                                ProcedureFamily[]
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("modality_family")
+}
+
+model ModalityController {
+  id                                                   Int        @id @default(autoincrement())
+  modality_controller_name                             String?    @db.VarChar(512)
+  createdOn                                            DateTime?  @map("created_on") @db.DateTime(0)
+  createdBy                                            Int?       @map("created_by")
+  modifiedOn                                           DateTime?  @map("modified_on") @db.DateTime(0)
+  modifiedBy                                           Int?       @map("modified_by")
+  is_active                                            String?    @db.Char(1)
+  modalities                                           Modality[]
+  auth_user_modality_controller_created_byToauth_user  AuthUser?  @relation("modality_controller_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "modality_controller_ibfk_1")
+  auth_user_modality_controller_modified_byToauth_user AuthUser?  @relation("modality_controller_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "modality_controller_ibfk_2")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("modality_controller")
+}
+
+model Modality {
+  id                                        Int                    @id @default(autoincrement())
+  modality_name                             String?                @db.VarChar(512)
+  id_modality_controller                    Int?
+  createdOn                                 DateTime?              @map("created_on") @db.DateTime(0)
+  createdBy                                 Int?                   @map("created_by")
+  modifiedOn                                DateTime?              @map("modified_on") @db.DateTime(0)
+  modifiedBy                                Int?                   @map("modified_by")
+  is_active                                 String?                @db.Char(1)
+  biometry                                  biometry[]
+  combos                                    Combo[]
+  controller                                ModalityController?    @relation(fields: [id_modality_controller], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "modality_ibfk_1")
+  auth_user_modality_created_byToauth_user  AuthUser?              @relation("modality_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "modality_ibfk_2")
+  auth_user_modality_modified_byToauth_user AuthUser?              @relation("modality_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "modality_ibfk_3")
+  modality_tag_default                      modality_tag_default[]
+  procedureFamilies                         ProcedureFamily[]
+  worklists                                 Worklist[]
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([id_modality_controller], map: "id_modality_controller__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("modality")
+}
+
+model DataOrigin {
+  id     Int     @id @default(autoincrement())
+  origin String? @db.VarChar(512)
+
+  @@map("data_origin")
+}
+
+model Address {
+  id                                       Int       @id @default(autoincrement())
+  id_auth_user                             Int?
+  home_num                                 String?   @db.VarChar(512)
+  box_num                                  String?   @db.VarChar(512)
+  address1                                 String?   @db.VarChar(512)
+  address2                                 String?   @db.VarChar(512)
+  zipcode                                  String?   @db.VarChar(512)
+  town                                     String?   @db.VarChar(512)
+  country                                  String?   @db.VarChar(512)
+  address_rank                             Int?
+  address_origin                           String?   @db.VarChar(512)
+  createdOn                                DateTime? @map("created_on") @db.DateTime(0)
+  createdBy                                Int?      @map("created_by")
+  modifiedOn                               DateTime? @map("modified_on") @db.DateTime(0)
+  modifiedBy                               Int?      @map("modified_by")
+  is_active                                String?   @db.Char(1)
+  user                                     AuthUser? @relation(fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "address_ibfk_1")
+  auth_user_address_created_byToauth_user  AuthUser? @relation("address_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "address_ibfk_2")
+  auth_user_address_modified_byToauth_user AuthUser? @relation("address_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "address_ibfk_3")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("address")
+}
+
+model Phone {
+  id                                     Int       @id @default(autoincrement())
+  id_auth_user                           Int?
+  phone_prefix                           Int?
+  phone                                  String?   @db.VarChar(512)
+  phone_origin                           String?   @db.VarChar(512)
+  createdOn                              DateTime? @map("created_on") @db.DateTime(0)
+  createdBy                              Int?      @map("created_by")
+  modifiedOn                             DateTime? @map("modified_on") @db.DateTime(0)
+  modifiedBy                             Int?      @map("modified_by")
+  is_active                              String?   @db.Char(1)
+  user                                   AuthUser? @relation(fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phone_ibfk_1")
+  auth_user_phone_created_byToauth_user  AuthUser? @relation("phone_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phone_ibfk_2")
+  auth_user_phone_modified_byToauth_user AuthUser? @relation("phone_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phone_ibfk_3")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("phone")
+}
+
+model InsuranceSector {
+  id     Int     @id @default(autoincrement())
+  sector String? @db.VarChar(512)
+
+  @@map("insurance_sector")
+}
+
+model Insurance {
+  id                                         Int       @id @default(autoincrement())
+  id_auth_user                               Int?
+  insurance_name                             String?   @db.VarChar(512)
+  insurance_plan                             String?   @db.VarChar(512)
+  insurance_type                             String?   @db.VarChar(512)
+  createdOn                                  DateTime? @map("created_on") @db.DateTime(0)
+  createdBy                                  Int?      @map("created_by")
+  modifiedOn                                 DateTime? @map("modified_on") @db.DateTime(0)
+  modifiedBy                                 Int?      @map("modified_by")
+  is_active                                  String?   @db.Char(1)
+  user                                       AuthUser? @relation(fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "insurance_ibfk_1")
+  auth_user_insurance_created_byToauth_user  AuthUser? @relation("insurance_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "insurance_ibfk_2")
+  auth_user_insurance_modified_byToauth_user AuthUser? @relation("insurance_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "insurance_ibfk_3")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("insurance")
+}
+
+model Procedure {
+  id                                         Int               @id @default(autoincrement())
+  loinc_code                                 String?           @db.VarChar(512)
+  exam_name                                  String?           @db.VarChar(512)
+  exam_description                           String?           @db.VarChar(512)
+  cycle_num                                  Int?
+  procedure_seq                              String?           @db.VarChar(512)
+  createdOn                                  DateTime?         @map("created_on") @db.DateTime(0)
+  createdBy                                  Int?              @map("created_by")
+  modifiedOn                                 DateTime?         @map("modified_on") @db.DateTime(0)
+  modifiedBy                                 Int?              @map("modified_by")
+  is_active                                  String?           @db.Char(1)
+  combos                                     Combo[]
+  auth_user_procedure_created_byToauth_user  AuthUser?         @relation("procedure_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "procedure_ibfk_1")
+  auth_user_procedure_modified_byToauth_user AuthUser?         @relation("procedure_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "procedure_ibfk_2")
+  procedureFamilies                          ProcedureFamily[]
+  worklists                                  Worklist[]
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("procedure")
+}
+
+model ProcedureFamily {
+  id                                                Int             @id @default(autoincrement())
+  id_procedure                                      Int?
+  id_modality                                       Int?
+  id_modality_family                                Int?
+  createdOn                                         DateTime?       @map("created_on") @db.DateTime(0)
+  createdBy                                         Int?            @map("created_by")
+  modifiedOn                                        DateTime?       @map("modified_on") @db.DateTime(0)
+  modifiedBy                                        Int?            @map("modified_by")
+  is_active                                         String?         @db.Char(1)
+  procedure                                         Procedure?      @relation(fields: [id_procedure], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "procedure_family_ibfk_1")
+  modality                                          Modality?       @relation(fields: [id_modality], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "procedure_family_ibfk_2")
+  modalityFamily                                    ModalityFamily? @relation(fields: [id_modality_family], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "procedure_family_ibfk_3")
+  auth_user_procedure_family_created_byToauth_user  AuthUser?       @relation("procedure_family_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "procedure_family_ibfk_4")
+  auth_user_procedure_family_modified_byToauth_user AuthUser?       @relation("procedure_family_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "procedure_family_ibfk_5")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([id_modality], map: "id_modality__idx")
+  @@index([id_modality_family], map: "id_modality_family__idx")
+  @@index([id_procedure], map: "id_procedure__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("procedure_family")
+}
+
+model Combo {
+  id                                     Int        @id @default(autoincrement())
+  id_procedure                           Int?
+  id_modality                            Int?
+  createdOn                              DateTime?  @map("created_on") @db.DateTime(0)
+  createdBy                              Int?       @map("created_by")
+  modifiedOn                             DateTime?  @map("modified_on") @db.DateTime(0)
+  modifiedBy                             Int?       @map("modified_by")
+  is_active                              String?    @db.Char(1)
+  procedure                              Procedure? @relation(fields: [id_procedure], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "combo_ibfk_1")
+  modality                               Modality?  @relation(fields: [id_modality], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "combo_ibfk_2")
+  auth_user_combo_created_byToauth_user  AuthUser?  @relation("combo_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "combo_ibfk_3")
+  auth_user_combo_modified_byToauth_user AuthUser?  @relation("combo_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "combo_ibfk_4")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([id_modality], map: "id_modality__idx")
+  @@index([id_procedure], map: "id_procedure__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("combo")
+}
+
+model Worklist {
+  id                                        Int                    @id @default(autoincrement())
+  id_auth_user                              Int?
+  sending_app                               String?                @db.VarChar(512)
+  sending_facility                          Int?
+  receiving_app                             String?                @db.VarChar(512)
+  receiving_facility                        Int?
+  procedure                                 Int?
+  provider                                  Int?
+  senior                                    Int?
+  requested_time                            DateTime?              @db.DateTime(0)
+  modality_dest                             Int?
+  laterality                                String?                @db.VarChar(512)
+  status_flag                               String?                @db.VarChar(512)
+  counter                                   Int?
+  warning                                   String?                @db.VarChar(512)
+  createdOn                                 DateTime?              @map("created_on") @db.DateTime(0)
+  createdBy                                 Int?                   @map("created_by")
+  modifiedOn                                DateTime?              @map("modified_on") @db.DateTime(0)
+  modifiedBy                                Int?                   @map("modified_by")
+  is_active                                 String?                @db.Char(1)
+  message_unique_id                         String?                @db.VarChar(512)
+  transaction_id                            String?                @db.VarChar(512)
+  ant_biom                                  ant_biom[]
+  auscultation                              auscultation[]
+  billing                                   billing[]
+  biometry                                  biometry[]
+  capsulotomy                               capsulotomy[]
+  ccx                                       ccx[]
+  certificates                              certificates[]
+  contacts_rx_list                          contacts_rx_list[]
+  current_hx                                current_hx[]
+  followup                                  followup[]
+  glasses_rx_list                           glasses_rx_list[]
+  gpexam                                    gpexam[]
+  inspection                                inspection[]
+  invoices                                  invoices[]
+  keratometries                             Km[]
+  medical_rx_list                           medical_rx_list[]
+  motility                                  motility[]
+  mx                                        mx[]
+  neuro                                     neuro[]
+  palpation                                 palpation[]
+  percussion                                percussion[]
+  phistory                                  phistory[]
+  phoria                                    phoria[]
+  post_biom                                 post_biom[]
+  pupils                                    pupils[]
+  rx                                        rx[]
+  soap                                      soap[]
+  social_sec_documents                      social_sec_documents[]
+  tonometries                               Tono[]
+  transactions                              transactions[]
+  vitals                                    vitals[]
+  wl_codes                                  wl_codes[]
+  wl_payments                               wl_payments[]
+  patient                                   AuthUser?              @relation(fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "worklist_ibfk_1")
+  sendingFacility                           Facility?              @relation("SendingFacility", fields: [sending_facility], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "worklist_ibfk_2")
+  receivingFacility                         Facility?              @relation("ReceivingFacility", fields: [receiving_facility], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "worklist_ibfk_3")
+  procedureRel                              Procedure?             @relation(fields: [procedure], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "worklist_ibfk_4")
+  providerDoctor                            AuthUser?              @relation("ProviderDoctor", fields: [provider], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "worklist_ibfk_5")
+  seniorDoctor                              AuthUser?              @relation("SeniorDoctor", fields: [senior], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "worklist_ibfk_6")
+  modality                                  Modality?              @relation(fields: [modality_dest], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "worklist_ibfk_7")
+  auth_user_worklist_created_byToauth_user  AuthUser?              @relation("worklist_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "worklist_ibfk_8")
+  auth_user_worklist_modified_byToauth_user AuthUser?              @relation("worklist_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "worklist_ibfk_9")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([modality_dest], map: "modality_dest__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@index([procedure], map: "procedure__idx")
+  @@index([provider], map: "provider__idx")
+  @@index([receiving_facility], map: "receiving_facility__idx")
+  @@index([sending_facility], map: "sending_facility__idx")
+  @@index([senior], map: "senior__idx")
+  @@map("worklist")
+}
+
+model Tono {
+  id                                    Int       @id @default(autoincrement())
+  id_auth_user                          Int?
+  id_worklist                           Int?
+  timestamp                             DateTime? @db.DateTime(0)
+  tonometry                             Decimal?  @db.Decimal(4, 2)
+  pachymetry                            Int?
+  techno                                String?   @db.VarChar(512)
+  laterality                            String?   @db.VarChar(512)
+  createdOn                             DateTime? @map("created_on") @db.DateTime(0)
+  createdBy                             Int?      @map("created_by")
+  modifiedOn                            DateTime? @map("modified_on") @db.DateTime(0)
+  modifiedBy                            Int?      @map("modified_by")
+  is_active                             String?   @db.Char(1)
+  patient                               AuthUser? @relation(fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "tono_ibfk_1")
+  worklist                              Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "tono_ibfk_2")
+  auth_user_tono_created_byToauth_user  AuthUser? @relation("tono_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "tono_ibfk_3")
+  auth_user_tono_modified_byToauth_user AuthUser? @relation("tono_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "tono_ibfk_4")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("tono")
+}
+
+model Km {
+  id                                  Int       @id @default(autoincrement())
+  id_auth_user                        Int?
+  id_worklist                         Int?
+  timestamp                           DateTime? @db.DateTime(0)
+  k1                                  Decimal?  @db.Decimal(4, 2)
+  k2                                  Decimal?  @db.Decimal(4, 2)
+  axis1                               Decimal?  @db.Decimal(5, 2)
+  axis2                               Decimal?  @db.Decimal(5, 2)
+  note                                String?   @db.VarChar(512)
+  laterality                          String?   @db.VarChar(512)
+  createdOn                           DateTime? @map("created_on") @db.DateTime(0)
+  createdBy                           Int?      @map("created_by")
+  modifiedOn                          DateTime? @map("modified_on") @db.DateTime(0)
+  modifiedBy                          Int?      @map("modified_by")
+  is_active                           String?   @db.Char(1)
+  patient                             AuthUser? @relation(fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "km_ibfk_1")
+  worklist                            Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "km_ibfk_2")
+  auth_user_km_created_byToauth_user  AuthUser? @relation("km_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "km_ibfk_3")
+  auth_user_km_modified_byToauth_user AuthUser? @relation("km_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "km_ibfk_4")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@map("km")
+}
+
+model TestTable {
+  id                                         Int       @id @default(autoincrement())
+  test_name                                  String?   @db.VarChar(512)
+  test_id                                    Int?
+  test_gender                                Int?
+  createdOn                                  DateTime? @map("created_on") @db.DateTime(0)
+  createdBy                                  Int?      @map("created_by")
+  modifiedOn                                 DateTime? @map("modified_on") @db.DateTime(0)
+  modifiedBy                                 Int?      @map("modified_by")
+  is_active                                  String?   @db.Char(1)
+  gender                                     Gender?   @relation(fields: [test_gender], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "testtable_ibfk_1")
+  auth_user_testtable_created_byToauth_user  AuthUser? @relation("testtable_created_byToauth_user", fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "testtable_ibfk_2")
+  auth_user_testtable_modified_byToauth_user AuthUser? @relation("testtable_modified_byToauth_user", fields: [modifiedBy], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "testtable_ibfk_3")
+
+  @@index([createdBy], map: "created_by__idx")
+  @@index([modifiedBy], map: "modified_by__idx")
+  @@index([test_gender], map: "test_gender__idx")
+  @@map("testtable")
+}
+
+model agent {
+  id                                     Int       @id @default(autoincrement())
+  name                                   String?   @db.VarChar(512)
+  code                                   String?   @db.VarChar(512)
+  description                            String?   @db.VarChar(512)
+  created_on                             DateTime? @db.DateTime(0)
+  created_by                             Int?
+  modified_on                            DateTime? @db.DateTime(0)
+  modified_by                            Int?
+  is_active                              String?   @db.Char(1)
+  auth_user_agent_created_byToauth_user  AuthUser? @relation("agent_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "agent_ibfk_1")
+  auth_user_agent_modified_byToauth_user AuthUser? @relation("agent_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "agent_ibfk_2")
+  allergy                                allergy[]
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model allergy {
+  id                                        Int       @id @default(autoincrement())
+  id_auth_user                              Int?
+  id_agent                                  Int?
+  typ                                       String?   @db.VarChar(512)
+  agent                                     String?   @db.VarChar(512)
+  onset                                     DateTime? @db.Date
+  ended                                     DateTime? @db.Date
+  created_on                                DateTime? @db.DateTime(0)
+  created_by                                Int?
+  modified_on                               DateTime? @db.DateTime(0)
+  modified_by                               Int?
+  is_active                                 String?   @db.Char(1)
+  auth_user_allergy_id_auth_userToauth_user AuthUser? @relation("allergy_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "allergy_ibfk_1")
+  agentRelation                             agent?    @relation(fields: [id_agent], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "allergy_ibfk_2")
+  auth_user_allergy_created_byToauth_user   AuthUser? @relation("allergy_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "allergy_ibfk_3")
+  auth_user_allergy_modified_byToauth_user  AuthUser? @relation("allergy_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "allergy_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_agent], map: "id_agent__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model ant_biom {
+  id                                         Int       @id @default(autoincrement())
+  id_auth_user                               Int?
+  id_worklist                                Int?
+  laterality                                 String?   @db.VarChar(512)
+  cornea                                     String?   @db.VarChar(512)
+  ant_chamb                                  String?   @db.VarChar(512)
+  iris                                       String?   @db.VarChar(512)
+  lens                                       String?   @db.VarChar(512)
+  other                                      String?   @db.VarChar(512)
+  created_on                                 DateTime? @db.DateTime(0)
+  created_by                                 Int?
+  modified_on                                DateTime? @db.DateTime(0)
+  modified_by                                Int?
+  is_active                                  String?   @db.Char(1)
+  outer                                      String?   @db.VarChar(512)
+  auth_user_ant_biom_id_auth_userToauth_user AuthUser? @relation("ant_biom_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ant_biom_ibfk_1")
+  worklist                                   Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ant_biom_ibfk_2")
+  auth_user_ant_biom_created_byToauth_user   AuthUser? @relation("ant_biom_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ant_biom_ibfk_3")
+  auth_user_ant_biom_modified_byToauth_user  AuthUser? @relation("ant_biom_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ant_biom_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model auscultation {
+  id                                             Int       @id @default(autoincrement())
+  id_auth_user                                   Int?
+  id_worklist                                    Int?
+  lungs                                          String?   @db.VarChar(512)
+  heart                                          String?   @db.VarChar(512)
+  abdomen                                        String?   @db.VarChar(512)
+  neck                                           String?   @db.VarChar(512)
+  vascular                                       String?   @db.VarChar(512)
+  others                                         String?   @db.VarChar(512)
+  created_on                                     DateTime? @db.DateTime(0)
+  created_by                                     Int?
+  modified_on                                    DateTime? @db.DateTime(0)
+  modified_by                                    Int?
+  is_active                                      String?   @db.Char(1)
+  auth_user_auscultation_id_auth_userToauth_user AuthUser? @relation("auscultation_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auscultation_ibfk_1")
+  worklist                                       Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auscultation_ibfk_2")
+  auth_user_auscultation_created_byToauth_user   AuthUser? @relation("auscultation_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auscultation_ibfk_3")
+  auth_user_auscultation_modified_byToauth_user  AuthUser? @relation("auscultation_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auscultation_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model auth_user_tag_groups {
+  id        Int       @id @default(autoincrement())
+  path      String?   @db.VarChar(512)
+  record_id Int?
+  auth_user AuthUser? @relation(fields: [record_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auth_user_tag_groups_ibfk_1")
+
+  @@index([record_id], map: "record_id__idx")
+}
+
+model auto_dict {
+  id                                         Int       @id @default(autoincrement())
+  keywd                                      String?   @db.VarChar(512)
+  keyoption                                  String?   @db.VarChar(512)
+  keysynonym                                 String?   @db.VarChar(512)
+  keyvalue                                   String?   @db.VarChar(512)
+  created_on                                 DateTime? @db.DateTime(0)
+  created_by                                 Int?
+  modified_on                                DateTime? @db.DateTime(0)
+  modified_by                                Int?
+  is_active                                  String?   @db.Char(1)
+  auth_user_auto_dict_created_byToauth_user  AuthUser? @relation("auto_dict_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auto_dict_ibfk_1")
+  auth_user_auto_dict_modified_byToauth_user AuthUser? @relation("auto_dict_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "auto_dict_ibfk_2")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model billing {
+  id                                        Int       @id @default(autoincrement())
+  id_auth_user                              Int?
+  id_worklist                               Int?
+  description                               String?   @db.VarChar(512)
+  created_on                                DateTime? @db.DateTime(0)
+  created_by                                Int?
+  modified_on                               DateTime? @db.DateTime(0)
+  modified_by                               Int?
+  is_active                                 String?   @db.Char(1)
+  auth_user_billing_id_auth_userToauth_user AuthUser? @relation("billing_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "billing_ibfk_1")
+  worklist                                  Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "billing_ibfk_2")
+  auth_user_billing_created_byToauth_user   AuthUser? @relation("billing_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "billing_ibfk_3")
+  auth_user_billing_modified_byToauth_user  AuthUser? @relation("billing_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "billing_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model biometry {
+  id                                         Int       @id @default(autoincrement())
+  white_white_diameter                       Float?
+  white_white_barycenter_x                   Float?
+  white_white_barycenter_y                   Float?
+  pupillometry_diameter                      Float?
+  pupillometry_barycenter_x                  Float?
+  pupillometry_barycenter_y                  Float?
+  id_auth_user                               Int?
+  id_worklist                                Int?
+  id_modality                                Int?
+  laterality                                 String?   @db.VarChar(512)
+  exam_date                                  DateTime? @db.DateTime(0)
+  a_scan_aqueous_depth                       Float?
+  a_scan_axial_length                        Float?
+  a_scan_central_cornea_thickness            Int?
+  a_scan_lense_thickness                     Float?
+  a_scan_mode                                String?   @db.VarChar(512)
+  keratometry_flat_meridian                  Float?
+  keratometry_flat_meridian_axis             Int?
+  keratometry_steep_meridian                 Float?
+  created_on                                 DateTime? @db.DateTime(0)
+  created_by                                 Int?
+  modified_on                                DateTime? @db.DateTime(0)
+  modified_by                                Int?
+  is_active                                  String?   @db.Char(1)
+  auth_user_biometry_id_auth_userToauth_user AuthUser? @relation("biometry_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "biometry_ibfk_1")
+  worklist                                   Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "biometry_ibfk_2")
+  modality                                   Modality? @relation(fields: [id_modality], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "biometry_ibfk_3")
+  auth_user_biometry_created_byToauth_user   AuthUser? @relation("biometry_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "biometry_ibfk_4")
+  auth_user_biometry_modified_byToauth_user  AuthUser? @relation("biometry_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "biometry_ibfk_5")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_modality], map: "id_modality__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model capsulotomy {
+  id                                            Int       @id @default(autoincrement())
+  id_auth_user                                  Int?
+  id_worklist                                   Int?
+  timestamp                                     DateTime? @db.DateTime(0)
+  power_intensity                               Decimal?  @db.Decimal(4, 2)
+  spot_size                                     Decimal?  @db.Decimal(4, 2)
+  laterality                                    String?   @db.VarChar(512)
+  created_on                                    DateTime? @db.DateTime(0)
+  created_by                                    Int?
+  modified_on                                   DateTime? @db.DateTime(0)
+  modified_by                                   Int?
+  is_active                                     String?   @db.Char(1)
+  auth_user_capsulotomy_id_auth_userToauth_user AuthUser? @relation("capsulotomy_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "capsulotomy_ibfk_1")
+  worklist                                      Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "capsulotomy_ibfk_2")
+  auth_user_capsulotomy_created_byToauth_user   AuthUser? @relation("capsulotomy_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "capsulotomy_ibfk_3")
+  auth_user_capsulotomy_modified_byToauth_user  AuthUser? @relation("capsulotomy_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "capsulotomy_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model ccx {
+  id                                    Int       @id @default(autoincrement())
+  id_auth_user                          Int?
+  id_worklist                           Int?
+  laterality                            String?   @db.VarChar(512)
+  description                           String?   @db.VarChar(512)
+  created_on                            DateTime? @db.DateTime(0)
+  created_by                            Int?
+  modified_on                           DateTime? @db.DateTime(0)
+  modified_by                           Int?
+  is_active                             String?   @db.Char(1)
+  auth_user_ccx_id_auth_userToauth_user AuthUser? @relation("ccx_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ccx_ibfk_1")
+  worklist                              Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ccx_ibfk_2")
+  auth_user_ccx_created_byToauth_user   AuthUser? @relation("ccx_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ccx_ibfk_3")
+  auth_user_ccx_modified_byToauth_user  AuthUser? @relation("ccx_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ccx_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model certificates {
+  id                                             Int       @id @default(autoincrement())
+  uuid                                           String?   @db.VarChar(512)
+  id_auth_user                                   Int?
+  id_worklist                                    Int?
+  datestamp                                      DateTime? @db.Date
+  onset                                          DateTime? @db.Date
+  ended                                          DateTime? @db.Date
+  category                                       String?   @db.VarChar(512)
+  pdf_report                                     Bytes?
+  created_on                                     DateTime? @db.DateTime(0)
+  created_by                                     Int?
+  modified_on                                    DateTime? @db.DateTime(0)
+  modified_by                                    Int?
+  is_active                                      String?   @db.Char(1)
+  auth_user_certificates_id_auth_userToauth_user AuthUser? @relation("certificates_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "certificates_ibfk_1")
+  worklist                                       Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "certificates_ibfk_2")
+  auth_user_certificates_created_byToauth_user   AuthUser? @relation("certificates_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "certificates_ibfk_3")
+  auth_user_certificates_modified_byToauth_user  AuthUser? @relation("certificates_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "certificates_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model cl {
+  id                                  Int       @id @default(autoincrement())
+  name                                String?   @db.VarChar(512)
+  brand                               String?   @db.VarChar(512)
+  material                            String?   @db.VarChar(512)
+  design                              String?   @db.VarChar(512)
+  edge                                String?   @db.VarChar(512)
+  opticalzone                         Decimal?  @db.Decimal(5, 2)
+  basecurve                           Decimal?  @db.Decimal(5, 2)
+  diameter                            Decimal?  @db.Decimal(5, 2)
+  rigidity                            String?   @db.VarChar(512)
+  toricity                            String?   @db.Char(1)
+  minsph                              Decimal?  @db.Decimal(4, 2)
+  maxsph                              Decimal?  @db.Decimal(4, 2)
+  mincyl                              Decimal?  @db.Decimal(4, 2)
+  maxcyl                              Decimal?  @db.Decimal(4, 2)
+  water                               Decimal?  @db.Decimal(5, 2)
+  dk                                  Decimal?  @db.Decimal(5, 2)
+  wear                                String?   @db.VarChar(512)
+  replacement                         String?   @db.VarChar(512)
+  packaging                           String?   @db.VarChar(512)
+  misc                                String?   @db.VarChar(512)
+  created_on                          DateTime? @db.DateTime(0)
+  created_by                          Int?
+  modified_on                         DateTime? @db.DateTime(0)
+  modified_by                         Int?
+  is_active                           String?   @db.Char(1)
+  auth_user_cl_created_byToauth_user  AuthUser? @relation("cl_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "cl_ibfk_1")
+  auth_user_cl_modified_byToauth_user AuthUser? @relation("cl_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "cl_ibfk_2")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model cleaning_solution {
+  id                                                 Int       @id @default(autoincrement())
+  name                                               String?   @db.VarChar(512)
+  brand                                              String?   @db.VarChar(512)
+  cat                                                String?   @db.VarChar(512)
+  created_on                                         DateTime? @db.DateTime(0)
+  created_by                                         Int?
+  modified_on                                        DateTime? @db.DateTime(0)
+  modified_by                                        Int?
+  is_active                                          String?   @db.Char(1)
+  auth_user_cleaning_solution_created_byToauth_user  AuthUser? @relation("cleaning_solution_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "cleaning_solution_ibfk_1")
+  auth_user_cleaning_solution_modified_byToauth_user AuthUser? @relation("cleaning_solution_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "cleaning_solution_ibfk_2")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model combo_codes {
+  id                                           Int                        @id @default(autoincrement())
+  combo                                        String?                    @db.VarChar(512)
+  combo_desc                                   String?                    @db.VarChar(512)
+  combo_price                                  Float?
+  note                                         String?                    @db.VarChar(512)
+  need_cme                                     String?                    @db.Char(1)
+  created_on                                   DateTime?                  @db.DateTime(0)
+  created_by                                   Int?
+  modified_on                                  DateTime?                  @db.DateTime(0)
+  modified_by                                  Int?
+  is_active                                    String?                    @db.Char(1)
+  auth_user_combo_codes_created_byToauth_user  AuthUser?                  @relation("combo_codes_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "combo_codes_ibfk_1")
+  auth_user_combo_codes_modified_byToauth_user AuthUser?                  @relation("combo_codes_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "combo_codes_ibfk_2")
+  combo_proxy_nomenclature                     combo_proxy_nomenclature[]
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model combo_proxy_nomenclature {
+  id                                                        Int           @id @default(autoincrement())
+  combo_id                                                  Int?
+  nomenclature_id                                           Int?
+  created_on                                                DateTime?     @db.DateTime(0)
+  created_by                                                Int?
+  modified_on                                               DateTime?     @db.DateTime(0)
+  modified_by                                               Int?
+  is_active                                                 String?       @db.Char(1)
+  combo_codes                                               combo_codes?  @relation(fields: [combo_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "combo_proxy_nomenclature_ibfk_1")
+  nomenclature                                              nomenclature? @relation(fields: [nomenclature_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "combo_proxy_nomenclature_ibfk_2")
+  auth_user_combo_proxy_nomenclature_created_byToauth_user  AuthUser?     @relation("combo_proxy_nomenclature_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "combo_proxy_nomenclature_ibfk_3")
+  auth_user_combo_proxy_nomenclature_modified_byToauth_user AuthUser?     @relation("combo_proxy_nomenclature_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "combo_proxy_nomenclature_ibfk_4")
+
+  @@index([combo_id], map: "combo_id__idx")
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+  @@index([nomenclature_id], map: "nomenclature_id__idx")
+}
+
+model contacts_rx_list {
+  id                                                 Int       @id @default(autoincrement())
+  uuid                                               String?   @db.VarChar(512)
+  id_auth_user                                       Int?
+  id_worklist                                        Int?
+  datestamp                                          DateTime? @db.Date
+  sph_farR                                           Decimal?  @db.Decimal(4, 2)
+  cyl_farR                                           Decimal?  @db.Decimal(4, 2)
+  axis_farR                                          Int?
+  sph_intR                                           Decimal?  @db.Decimal(4, 2)
+  cyl_intR                                           Decimal?  @db.Decimal(4, 2)
+  axis_intR                                          Int?
+  sph_closeR                                         Decimal?  @db.Decimal(4, 2)
+  cyl_closeR                                         Decimal?  @db.Decimal(4, 2)
+  axis_closeR                                        Int?
+  sph_farL                                           Decimal?  @db.Decimal(4, 2)
+  cyl_farL                                           Decimal?  @db.Decimal(4, 2)
+  axis_farL                                          Int?
+  sph_intL                                           Decimal?  @db.Decimal(4, 2)
+  cyl_intL                                           Decimal?  @db.Decimal(4, 2)
+  axis_intL                                          Int?
+  sph_closeL                                         Decimal?  @db.Decimal(4, 2)
+  cyl_closeL                                         Decimal?  @db.Decimal(4, 2)
+  axis_closeL                                        Int?
+  remarks                                            String?   @db.VarChar(512)
+  art30                                              String?   @db.Char(1)
+  prismR                                             Decimal?  @db.Decimal(4, 2)
+  baseR                                              String?   @db.VarChar(512)
+  prismL                                             Decimal?  @db.Decimal(4, 2)
+  baseL                                              String?   @db.VarChar(512)
+  sphR                                               Decimal?  @db.Decimal(4, 2)
+  cylR                                               Decimal?  @db.Decimal(4, 2)
+  axisR                                              Int?
+  sphL                                               Decimal?  @db.Decimal(4, 2)
+  cylL                                               Decimal?  @db.Decimal(4, 2)
+  axisL                                              Int?
+  cleaningR                                          String?   @db.VarChar(512)
+  lensnameR                                          String?   @db.VarChar(512)
+  diameterR                                          String?   @db.VarChar(512)
+  edgeR                                              String?   @db.VarChar(512)
+  designR                                            String?   @db.VarChar(512)
+  basecurveR                                         String?   @db.VarChar(512)
+  materialR                                          String?   @db.VarChar(512)
+  opticalzoneR                                       String?   @db.VarChar(512)
+  cleaningL                                          String?   @db.VarChar(512)
+  lensnameL                                          String?   @db.VarChar(512)
+  diameterL                                          String?   @db.VarChar(512)
+  edgeL                                              String?   @db.VarChar(512)
+  designL                                            String?   @db.VarChar(512)
+  basecurveL                                         String?   @db.VarChar(512)
+  materialL                                          String?   @db.VarChar(512)
+  opticalzoneL                                       String?   @db.VarChar(512)
+  g1sspheric                                         String?   @db.Char(1)
+  g1storic                                           String?   @db.Char(1)
+  g1rspheric                                         String?   @db.Char(1)
+  g1rtoric                                           String?   @db.Char(1)
+  g2soft                                             String?   @db.Char(1)
+  g2rigidc                                           String?   @db.Char(1)
+  g2rigidcs                                          String?   @db.Char(1)
+  g2rigids                                           String?   @db.Char(1)
+  g3iris                                             String?   @db.Char(1)
+  g3pupil                                            String?   @db.Char(1)
+  addcR                                              Decimal?  @db.Decimal(4, 2)
+  addcL                                              Decimal?  @db.Decimal(4, 2)
+  pdf_report                                         Bytes?
+  created_on                                         DateTime? @db.DateTime(0)
+  created_by                                         Int?
+  modified_on                                        DateTime? @db.DateTime(0)
+  modified_by                                        Int?
+  is_active                                          String?   @db.Char(1)
+  auth_user_contacts_rx_list_id_auth_userToauth_user AuthUser? @relation("contacts_rx_list_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "contacts_rx_list_ibfk_1")
+  worklist                                           Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "contacts_rx_list_ibfk_2")
+  auth_user_contacts_rx_list_created_byToauth_user   AuthUser? @relation("contacts_rx_list_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "contacts_rx_list_ibfk_3")
+  auth_user_contacts_rx_list_modified_byToauth_user  AuthUser? @relation("contacts_rx_list_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "contacts_rx_list_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model current_hx {
+  id                                           Int       @id @default(autoincrement())
+  id_auth_user                                 Int?
+  id_worklist                                  Int?
+  description                                  String?   @db.VarChar(512)
+  created_on                                   DateTime? @db.DateTime(0)
+  created_by                                   Int?
+  modified_on                                  DateTime? @db.DateTime(0)
+  modified_by                                  Int?
+  is_active                                    String?   @db.Char(1)
+  auth_user_current_hx_id_auth_userToauth_user AuthUser? @relation("current_hx_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "current_hx_ibfk_1")
+  worklist                                     Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "current_hx_ibfk_2")
+  auth_user_current_hx_created_byToauth_user   AuthUser? @relation("current_hx_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "current_hx_ibfk_3")
+  auth_user_current_hx_modified_byToauth_user  AuthUser? @relation("current_hx_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "current_hx_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model disease_ref {
+  id                                           Int        @id @default(autoincrement())
+  title                                        String?    @db.VarChar(512)
+  category                                     String?    @db.VarChar(512)
+  icd10                                        String?    @db.VarChar(512)
+  description                                  String?    @db.VarChar(512)
+  created_on                                   DateTime?  @db.DateTime(0)
+  created_by                                   Int?
+  modified_on                                  DateTime?  @db.DateTime(0)
+  modified_by                                  Int?
+  is_active                                    String?    @db.Char(1)
+  auth_user_disease_ref_created_byToauth_user  AuthUser?  @relation("disease_ref_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "disease_ref_ibfk_1")
+  auth_user_disease_ref_modified_byToauth_user AuthUser?  @relation("disease_ref_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "disease_ref_ibfk_2")
+  phistory                                     phistory[]
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model followup {
+  id                                         Int       @id @default(autoincrement())
+  id_auth_user                               Int?
+  id_worklist                                Int?
+  description                                String?   @db.VarChar(512)
+  created_on                                 DateTime? @db.DateTime(0)
+  created_by                                 Int?
+  modified_on                                DateTime? @db.DateTime(0)
+  modified_by                                Int?
+  is_active                                  String?   @db.Char(1)
+  auth_user_followup_id_auth_userToauth_user AuthUser? @relation("followup_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "followup_ibfk_1")
+  worklist                                   Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "followup_ibfk_2")
+  auth_user_followup_created_byToauth_user   AuthUser? @relation("followup_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "followup_ibfk_3")
+  auth_user_followup_modified_byToauth_user  AuthUser? @relation("followup_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "followup_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model glasses_rx_list {
+  id                                                Int       @id @default(autoincrement())
+  uuid                                              String?   @db.VarChar(512)
+  id_auth_user                                      Int?
+  id_worklist                                       Int?
+  datestamp                                         DateTime? @db.Date
+  glass_type                                        String?   @db.VarChar(512)
+  sph_farR                                          Decimal?  @db.Decimal(4, 2)
+  cyl_farR                                          Decimal?  @db.Decimal(4, 2)
+  axis_farR                                         Int?
+  sph_intR                                          Decimal?  @db.Decimal(4, 2)
+  cyl_intR                                          Decimal?  @db.Decimal(4, 2)
+  axis_intR                                         Int?
+  sph_closeR                                        Decimal?  @db.Decimal(4, 2)
+  cyl_closeR                                        Decimal?  @db.Decimal(4, 2)
+  axis_closeR                                       Int?
+  sph_farL                                          Decimal?  @db.Decimal(4, 2)
+  cyl_farL                                          Decimal?  @db.Decimal(4, 2)
+  axis_farL                                         Int?
+  sph_intL                                          Decimal?  @db.Decimal(4, 2)
+  cyl_intL                                          Decimal?  @db.Decimal(4, 2)
+  axis_intL                                         Int?
+  sph_closeL                                        Decimal?  @db.Decimal(4, 2)
+  cyl_closeL                                        Decimal?  @db.Decimal(4, 2)
+  axis_closeL                                       Int?
+  remarks                                           String?   @db.VarChar(512)
+  art30                                             String?   @db.Char(1)
+  prismR                                            Decimal?  @db.Decimal(4, 2)
+  baseR                                             String?   @db.VarChar(512)
+  prismL                                            Decimal?  @db.Decimal(4, 2)
+  baseL                                             String?   @db.VarChar(512)
+  tint                                              String?   @db.Char(1)
+  photo                                             String?   @db.Char(1)
+  created_on                                        DateTime? @db.DateTime(0)
+  created_by                                        Int?
+  modified_on                                       DateTime? @db.DateTime(0)
+  modified_by                                       Int?
+  is_active                                         String?   @db.Char(1)
+  pdf_report                                        Bytes?
+  auth_user_glasses_rx_list_id_auth_userToauth_user AuthUser? @relation("glasses_rx_list_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "glasses_rx_list_ibfk_1")
+  worklist                                          Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "glasses_rx_list_ibfk_2")
+  auth_user_glasses_rx_list_created_byToauth_user   AuthUser? @relation("glasses_rx_list_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "glasses_rx_list_ibfk_3")
+  auth_user_glasses_rx_list_modified_byToauth_user  AuthUser? @relation("glasses_rx_list_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "glasses_rx_list_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model gpexam {
+  id                                       Int       @id @default(autoincrement())
+  id_auth_user                             Int?
+  id_worklist                              Int?
+  description                              String?   @db.VarChar(512)
+  created_on                               DateTime? @db.DateTime(0)
+  created_by                               Int?
+  modified_on                              DateTime? @db.DateTime(0)
+  modified_by                              Int?
+  is_active                                String?   @db.Char(1)
+  auth_user_gpexam_id_auth_userToauth_user AuthUser? @relation("gpexam_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "gpexam_ibfk_1")
+  worklist                                 Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "gpexam_ibfk_2")
+  auth_user_gpexam_created_byToauth_user   AuthUser? @relation("gpexam_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "gpexam_ibfk_3")
+  auth_user_gpexam_modified_byToauth_user  AuthUser? @relation("gpexam_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "gpexam_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model inspection {
+  id                                           Int       @id @default(autoincrement())
+  id_auth_user                                 Int?
+  id_worklist                                  Int?
+  skin                                         String?   @db.VarChar(512)
+  head                                         String?   @db.VarChar(512)
+  hands                                        String?   @db.VarChar(512)
+  chest                                        String?   @db.VarChar(512)
+  abdomen                                      String?   @db.VarChar(512)
+  legs                                         String?   @db.VarChar(512)
+  veins                                        String?   @db.VarChar(512)
+  genitals                                     String?   @db.VarChar(512)
+  others                                       String?   @db.VarChar(512)
+  created_on                                   DateTime? @db.DateTime(0)
+  created_by                                   Int?
+  modified_on                                  DateTime? @db.DateTime(0)
+  modified_by                                  Int?
+  is_active                                    String?   @db.Char(1)
+  auth_user_inspection_id_auth_userToauth_user AuthUser? @relation("inspection_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "inspection_ibfk_1")
+  worklist                                     Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "inspection_ibfk_2")
+  auth_user_inspection_created_byToauth_user   AuthUser? @relation("inspection_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "inspection_ibfk_3")
+  auth_user_inspection_modified_byToauth_user  AuthUser? @relation("inspection_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "inspection_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model invoices {
+  id                                         Int       @id @default(autoincrement())
+  id_auth_user                               Int?
+  id_worklist                                Int?
+  date                                       DateTime? @db.DateTime(0)
+  pdfReportBlob                              Bytes?
+  note                                       String?   @db.VarChar(512)
+  created_on                                 DateTime? @db.DateTime(0)
+  created_by                                 Int?
+  modified_on                                DateTime? @db.DateTime(0)
+  modified_by                                Int?
+  is_active                                  String?   @db.Char(1)
+  auth_user_invoices_id_auth_userToauth_user AuthUser? @relation("invoices_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "invoices_ibfk_1")
+  worklist                                   Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "invoices_ibfk_2")
+  auth_user_invoices_created_byToauth_user   AuthUser? @relation("invoices_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "invoices_ibfk_3")
+  auth_user_invoices_modified_byToauth_user  AuthUser? @relation("invoices_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "invoices_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model lenses {
+  id                                      Int       @id @default(autoincrement())
+  name                                    String?   @db.VarChar(512)
+  brand                                   String?   @db.VarChar(512)
+  material                                String?   @db.VarChar(512)
+  design                                  String?   @db.VarChar(512)
+  edge                                    String?   @db.VarChar(512)
+  opticalzone                             String?   @db.VarChar(512)
+  basecurve                               String?   @db.VarChar(512)
+  diameter                                String?   @db.VarChar(512)
+  rigidity                                String?   @db.VarChar(512)
+  misc                                    String?   @db.VarChar(512)
+  created_on                              DateTime? @db.DateTime(0)
+  created_by                              Int?
+  modified_on                             DateTime? @db.DateTime(0)
+  modified_by                             Int?
+  is_active                               String?   @db.Char(1)
+  auth_user_lenses_created_byToauth_user  AuthUser? @relation("lenses_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "lenses_ibfk_1")
+  auth_user_lenses_modified_byToauth_user AuthUser? @relation("lenses_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "lenses_ibfk_2")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model md_params {
+  id                                          Int       @id @default(autoincrement())
+  id_auth_user                                Int?
+  inami                                       String?   @db.VarChar(512)
+  email                                       String?   @db.VarChar(512)
+  officename                                  String?   @db.VarChar(512)
+  officeaddress                               String?   @db.VarChar(512)
+  officezip                                   String?   @db.VarChar(512)
+  officetown                                  String?   @db.VarChar(512)
+  officecountry                               String?   @db.VarChar(512)
+  officephone                                 String?   @db.VarChar(512)
+  officeurl                                   String?   @db.VarChar(512)
+  companynum                                  String?   @db.VarChar(512)
+  companyname                                 String?   @db.VarChar(512)
+  companyaddress                              String?   @db.VarChar(512)
+  companyiban                                 String?   @db.VarChar(512)
+  created_on                                  DateTime? @db.DateTime(0)
+  created_by                                  Int?
+  modified_on                                 DateTime? @db.DateTime(0)
+  modified_by                                 Int?
+  is_active                                   String?   @db.Char(1)
+  auth_user_md_params_id_auth_userToauth_user AuthUser? @relation("md_params_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "md_params_ibfk_1")
+  auth_user_md_params_created_byToauth_user   AuthUser? @relation("md_params_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "md_params_ibfk_2")
+  auth_user_md_params_modified_byToauth_user  AuthUser? @relation("md_params_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "md_params_ibfk_3")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model medic_ref {
+  id                                         Int       @id @default(autoincrement())
+  name                                       String?   @db.VarChar(512)
+  brand                                      String?   @db.VarChar(512)
+  packaging                                  String?   @db.VarChar(512)
+  active_ingredient                          String?   @db.VarChar(512)
+  dosage                                     String?   @db.VarChar(512)
+  form                                       String?   @db.VarChar(512)
+  delivery                                   String?   @db.VarChar(512)
+  created_on                                 DateTime? @db.DateTime(0)
+  created_by                                 Int?
+  modified_on                                DateTime? @db.DateTime(0)
+  modified_by                                Int?
+  is_active                                  String?   @db.Char(1)
+  auth_user_medic_ref_created_byToauth_user  AuthUser? @relation("medic_ref_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "medic_ref_ibfk_1")
+  auth_user_medic_ref_modified_byToauth_user AuthUser? @relation("medic_ref_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "medic_ref_ibfk_2")
+  mx                                         mx[]
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model medical_rx_list {
+  id                                                Int       @id @default(autoincrement())
+  id_auth_user                                      Int?
+  id_worklist                                       Int?
+  uuid                                              String?   @db.VarChar(512)
+  created_on                                        DateTime? @db.DateTime(0)
+  created_by                                        Int?
+  modified_on                                       DateTime? @db.DateTime(0)
+  modified_by                                       Int?
+  is_active                                         String?   @db.Char(1)
+  id_mx_ref                                         String?   @db.VarChar(512)
+  mx_names                                          String?   @db.VarChar(512)
+  pdf_report                                        Bytes?
+  auth_user_medical_rx_list_id_auth_userToauth_user AuthUser? @relation("medical_rx_list_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "medical_rx_list_ibfk_1")
+  worklist                                          Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "medical_rx_list_ibfk_3")
+  auth_user_medical_rx_list_created_byToauth_user   AuthUser? @relation("medical_rx_list_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "medical_rx_list_ibfk_4")
+  auth_user_medical_rx_list_modified_byToauth_user  AuthUser? @relation("medical_rx_list_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "medical_rx_list_ibfk_5")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model modality_tag_default {
+  id        Int       @id @default(autoincrement())
+  path      String?   @db.VarChar(512)
+  record_id Int?
+  modality  Modality? @relation(fields: [record_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "modality_tag_default_ibfk_1")
+
+  @@index([record_id], map: "record_id__idx")
+}
+
+model motility {
+  id                                         Int       @id @default(autoincrement())
+  id_auth_user                               Int?
+  id_worklist                                Int?
+  description                                String?   @db.VarChar(512)
+  created_on                                 DateTime? @db.DateTime(0)
+  created_by                                 Int?
+  modified_on                                DateTime? @db.DateTime(0)
+  modified_by                                Int?
+  is_active                                  String?   @db.Char(1)
+  auth_user_motility_id_auth_userToauth_user AuthUser? @relation("motility_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "motility_ibfk_1")
+  worklist                                   Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "motility_ibfk_2")
+  auth_user_motility_created_byToauth_user   AuthUser? @relation("motility_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "motility_ibfk_3")
+  auth_user_motility_modified_byToauth_user  AuthUser? @relation("motility_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "motility_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model mx {
+  id                                   Int        @id @default(autoincrement())
+  id_auth_user                         Int?
+  id_medic_ref                         Int?
+  id_worklist                          Int?
+  medication                           String?    @db.VarChar(512)
+  delivery                             String?    @db.VarChar(512)
+  unit_per_intake                      Decimal?   @db.Decimal(4, 2)
+  frequency                            String?    @db.VarChar(512)
+  onset                                DateTime?  @db.Date
+  ended                                DateTime?  @db.Date
+  note                                 String?    @db.VarChar(512)
+  prescribed                           String?    @db.Char(1)
+  created_on                           DateTime?  @db.DateTime(0)
+  created_by                           Int?
+  modified_on                          DateTime?  @db.DateTime(0)
+  modified_by                          Int?
+  is_active                            String?    @db.Char(1)
+  auth_user_mx_id_auth_userToauth_user AuthUser?  @relation("mx_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "mx_ibfk_1")
+  medic_ref                            medic_ref? @relation(fields: [id_medic_ref], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "mx_ibfk_2")
+  worklist                             Worklist?  @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "mx_ibfk_3")
+  auth_user_mx_created_byToauth_user   AuthUser?  @relation("mx_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "mx_ibfk_4")
+  auth_user_mx_modified_byToauth_user  AuthUser?  @relation("mx_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "mx_ibfk_5")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_medic_ref], map: "id_medic_ref__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model neuro {
+  id                                      Int       @id @default(autoincrement())
+  id_auth_user                            Int?
+  id_worklist                             Int?
+  motor                                   String?   @db.VarChar(512)
+  sensorial                               String?   @db.VarChar(512)
+  reflexes                                String?   @db.VarChar(512)
+  others                                  String?   @db.VarChar(512)
+  created_on                              DateTime? @db.DateTime(0)
+  created_by                              Int?
+  modified_on                             DateTime? @db.DateTime(0)
+  modified_by                             Int?
+  is_active                               String?   @db.Char(1)
+  head                                    String?   @db.VarChar(512)
+  auth_user_neuro_id_auth_userToauth_user AuthUser? @relation("neuro_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "neuro_ibfk_1")
+  worklist                                Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "neuro_ibfk_2")
+  auth_user_neuro_created_byToauth_user   AuthUser? @relation("neuro_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "neuro_ibfk_3")
+  auth_user_neuro_modified_byToauth_user  AuthUser? @relation("neuro_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "neuro_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model nomenclature {
+  id                                            Int                        @id @default(autoincrement())
+  date                                          DateTime?                  @db.DateTime(0)
+  note                                          String?                    @db.VarChar(512)
+  price_list                                    String?                    @db.VarChar(512)
+  supplement_ratio                              Decimal?                   @db.Decimal(10, 2)
+  not_compatible                                String?                    @db.VarChar(512)
+  min_reccurency                                String?                    @db.VarChar(512)
+  add_documents                                 String?                    @db.VarChar(512)
+  min_age                                       Float?
+  max_age                                       Float?
+  covered                                       String?                    @db.Char(1)
+  need_cme                                      String?                    @db.Char(1)
+  created_on                                    DateTime?                  @db.DateTime(0)
+  created_by                                    Int?
+  modified_on                                   DateTime?                  @db.DateTime(0)
+  modified_by                                   Int?
+  is_active                                     String?                    @db.Char(1)
+  code                                          String?                    @unique(map: "code") @db.VarChar(512)
+  code_desc                                     String?                    @db.LongText
+  combo_proxy_nomenclature                      combo_proxy_nomenclature[]
+  auth_user_nomenclature_created_byToauth_user  AuthUser?                  @relation("nomenclature_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "nomenclature_ibfk_1")
+  auth_user_nomenclature_modified_byToauth_user AuthUser?                  @relation("nomenclature_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "nomenclature_ibfk_2")
+  wl_codes                                      wl_codes[]
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model optotype {
+  id                                        Int       @id @default(autoincrement())
+  distance                                  String?   @db.VarChar(512)
+  opto                                      String?   @db.VarChar(512)
+  created_on                                DateTime? @db.DateTime(0)
+  created_by                                Int?
+  modified_on                               DateTime? @db.DateTime(0)
+  modified_by                               Int?
+  is_active                                 String?   @db.Char(1)
+  auth_user_optotype_created_byToauth_user  AuthUser? @relation("optotype_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "optotype_ibfk_1")
+  auth_user_optotype_modified_byToauth_user AuthUser? @relation("optotype_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "optotype_ibfk_2")
+  rx_rx_opto_farTooptotype                  rx[]      @relation("rx_opto_farTooptotype")
+  rx_rx_opto_intTooptotype                  rx[]      @relation("rx_opto_intTooptotype")
+  rx_rx_opto_closeTooptotype                rx[]      @relation("rx_opto_closeTooptotype")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model palpation {
+  id                                          Int       @id @default(autoincrement())
+  id_auth_user                                Int?
+  id_worklist                                 Int?
+  abdomen                                     String?   @db.VarChar(512)
+  chest                                       String?   @db.VarChar(512)
+  ganglions                                   String?   @db.VarChar(512)
+  articulations                               String?   @db.VarChar(512)
+  others                                      String?   @db.VarChar(512)
+  created_on                                  DateTime? @db.DateTime(0)
+  created_by                                  Int?
+  modified_on                                 DateTime? @db.DateTime(0)
+  modified_by                                 Int?
+  is_active                                   String?   @db.Char(1)
+  auth_user_palpation_id_auth_userToauth_user AuthUser? @relation("palpation_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "palpation_ibfk_1")
+  worklist                                    Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "palpation_ibfk_2")
+  auth_user_palpation_created_byToauth_user   AuthUser? @relation("palpation_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "palpation_ibfk_3")
+  auth_user_palpation_modified_byToauth_user  AuthUser? @relation("palpation_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "palpation_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model percussion {
+  id                                           Int       @id @default(autoincrement())
+  id_auth_user                                 Int?
+  id_worklist                                  Int?
+  abdomen                                      String?   @db.VarChar(512)
+  chest                                        String?   @db.VarChar(512)
+  others                                       String?   @db.VarChar(512)
+  created_on                                   DateTime? @db.DateTime(0)
+  created_by                                   Int?
+  modified_on                                  DateTime? @db.DateTime(0)
+  modified_by                                  Int?
+  is_active                                    String?   @db.Char(1)
+  auth_user_percussion_id_auth_userToauth_user AuthUser? @relation("percussion_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "percussion_ibfk_1")
+  worklist                                     Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "percussion_ibfk_2")
+  auth_user_percussion_created_byToauth_user   AuthUser? @relation("percussion_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "percussion_ibfk_3")
+  auth_user_percussion_modified_byToauth_user  AuthUser? @relation("percussion_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "percussion_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model phistory {
+  id                                         Int          @id @default(autoincrement())
+  id_auth_user                               Int?
+  id_disease_ref                             Int?
+  id_worklist                                Int?
+  site                                       String?      @db.VarChar(512)
+  title                                      String?      @db.VarChar(512)
+  category                                   String?      @db.VarChar(512)
+  note                                       String?      @db.VarChar(512)
+  onset                                      DateTime?    @db.Date
+  ended                                      DateTime?    @db.Date
+  created_on                                 DateTime?    @db.DateTime(0)
+  created_by                                 Int?
+  modified_on                                DateTime?    @db.DateTime(0)
+  modified_by                                Int?
+  is_active                                  String?      @db.Char(1)
+  auth_user_phistory_id_auth_userToauth_user AuthUser?    @relation("phistory_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phistory_ibfk_1")
+  disease_ref                                disease_ref? @relation(fields: [id_disease_ref], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phistory_ibfk_2")
+  worklist                                   Worklist?    @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phistory_ibfk_3")
+  auth_user_phistory_created_byToauth_user   AuthUser?    @relation("phistory_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phistory_ibfk_4")
+  auth_user_phistory_modified_byToauth_user  AuthUser?    @relation("phistory_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phistory_ibfk_5")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_disease_ref], map: "id_disease_ref__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model phoria {
+  id                                       Int       @id @default(autoincrement())
+  id_auth_user                             Int?
+  id_worklist                              Int?
+  description                              String?   @db.VarChar(512)
+  created_on                               DateTime? @db.DateTime(0)
+  created_by                               Int?
+  modified_on                              DateTime? @db.DateTime(0)
+  modified_by                              Int?
+  is_active                                String?   @db.Char(1)
+  auth_user_phoria_id_auth_userToauth_user AuthUser? @relation("phoria_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phoria_ibfk_1")
+  worklist                                 Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phoria_ibfk_2")
+  auth_user_phoria_created_byToauth_user   AuthUser? @relation("phoria_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phoria_ibfk_3")
+  auth_user_phoria_modified_byToauth_user  AuthUser? @relation("phoria_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "phoria_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model post_biom {
+  id                                          Int       @id @default(autoincrement())
+  id_auth_user                                Int?
+  id_worklist                                 Int?
+  laterality                                  String?   @db.VarChar(512)
+  vitreous                                    String?   @db.VarChar(512)
+  retina                                      String?   @db.VarChar(512)
+  macula                                      String?   @db.VarChar(512)
+  papil                                       String?   @db.VarChar(512)
+  other                                       String?   @db.VarChar(512)
+  created_on                                  DateTime? @db.DateTime(0)
+  created_by                                  Int?
+  modified_on                                 DateTime? @db.DateTime(0)
+  modified_by                                 Int?
+  is_active                                   String?   @db.Char(1)
+  post_chamb                                  String?   @db.VarChar(512)
+  auth_user_post_biom_id_auth_userToauth_user AuthUser? @relation("post_biom_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "post_biom_ibfk_1")
+  worklist                                    Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "post_biom_ibfk_2")
+  auth_user_post_biom_created_byToauth_user   AuthUser? @relation("post_biom_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "post_biom_ibfk_3")
+  auth_user_post_biom_modified_byToauth_user  AuthUser? @relation("post_biom_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "post_biom_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model pupils {
+  id                                       Int       @id @default(autoincrement())
+  id_auth_user                             Int?
+  id_worklist                              Int?
+  description                              String?   @db.VarChar(512)
+  created_on                               DateTime? @db.DateTime(0)
+  created_by                               Int?
+  modified_on                              DateTime? @db.DateTime(0)
+  modified_by                              Int?
+  is_active                                String?   @db.Char(1)
+  auth_user_pupils_id_auth_userToauth_user AuthUser? @relation("pupils_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "pupils_ibfk_1")
+  worklist                                 Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "pupils_ibfk_2")
+  auth_user_pupils_created_byToauth_user   AuthUser? @relation("pupils_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "pupils_ibfk_3")
+  auth_user_pupils_modified_byToauth_user  AuthUser? @relation("pupils_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "pupils_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model rx {
+  id                                   Int        @id @default(autoincrement())
+  id_auth_user                         Int?
+  id_worklist                          Int?
+  timestamp                            DateTime?  @db.DateTime(0)
+  rx_origin                            String?    @db.VarChar(512)
+  glass_type                           String?    @db.VarChar(512)
+  va_far                               Decimal?   @db.Decimal(3, 2)
+  opto_far                             Int?
+  sph_far                              Decimal?   @db.Decimal(4, 2)
+  cyl_far                              Decimal?   @db.Decimal(4, 2)
+  axis_far                             Int?
+  opto_int                             Int?
+  va_int                               Decimal?   @db.Decimal(3, 2)
+  sph_int                              Decimal?   @db.Decimal(4, 2)
+  cyl_int                              Decimal?   @db.Decimal(4, 2)
+  axis_int                             Int?
+  opto_close                           Int?
+  va_close                             Decimal?   @db.Decimal(3, 2)
+  sph_close                            Decimal?   @db.Decimal(4, 2)
+  cyl_close                            Decimal?   @db.Decimal(4, 2)
+  axis_close                           Int?
+  note                                 String?    @db.VarChar(512)
+  laterality                           String?    @db.VarChar(512)
+  status                               Int?
+  created_on                           DateTime?  @db.DateTime(0)
+  created_by                           Int?
+  modified_on                          DateTime?  @db.DateTime(0)
+  modified_by                          Int?
+  is_active                            String?    @db.Char(1)
+  id_pair                              String?    @db.VarChar(512)
+  pd05                                 Decimal?   @db.Decimal(4, 2)
+  color                                String?    @db.VarChar(512)
+  Vprismd                              Decimal?   @db.Decimal(4, 2)
+  Vbase                                String?    @db.VarChar(512)
+  Hprismd                              Decimal?   @db.Decimal(4, 2)
+  Hbase                                String?    @db.VarChar(512)
+  pangle                               Int?
+  auth_user_rx_id_auth_userToauth_user AuthUser?  @relation("rx_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "rx_ibfk_1")
+  worklist                             Worklist?  @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "rx_ibfk_2")
+  optotype_rx_opto_farTooptotype       optotype?  @relation("rx_opto_farTooptotype", fields: [opto_far], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "rx_ibfk_3")
+  optotype_rx_opto_intTooptotype       optotype?  @relation("rx_opto_intTooptotype", fields: [opto_int], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "rx_ibfk_4")
+  optotype_rx_opto_closeTooptotype     optotype?  @relation("rx_opto_closeTooptotype", fields: [opto_close], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "rx_ibfk_5")
+  status_rx                            status_rx? @relation(fields: [status], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "rx_ibfk_6")
+  auth_user_rx_created_byToauth_user   AuthUser?  @relation("rx_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "rx_ibfk_7")
+  auth_user_rx_modified_byToauth_user  AuthUser?  @relation("rx_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "rx_ibfk_8")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+  @@index([opto_close], map: "opto_close__idx")
+  @@index([opto_far], map: "opto_far__idx")
+  @@index([opto_int], map: "opto_int__idx")
+  @@index([status], map: "status__idx")
+}
+
+model soap {
+  id                                     Int       @id @default(autoincrement())
+  id_auth_user                           Int?
+  id_worklist                            Int?
+  description                            String?   @db.VarChar(512)
+  created_on                             DateTime? @db.DateTime(0)
+  created_by                             Int?
+  modified_on                            DateTime? @db.DateTime(0)
+  modified_by                            Int?
+  is_active                              String?   @db.Char(1)
+  auth_user_soap_id_auth_userToauth_user AuthUser? @relation("soap_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "soap_ibfk_1")
+  worklist                               Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "soap_ibfk_2")
+  auth_user_soap_created_byToauth_user   AuthUser? @relation("soap_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "soap_ibfk_3")
+  auth_user_soap_modified_byToauth_user  AuthUser? @relation("soap_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "soap_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model social_sec_documents {
+  id                                                     Int       @id @default(autoincrement())
+  id_auth_user                                           Int?
+  id_worklist                                            Int?
+  date                                                   DateTime? @db.DateTime(0)
+  price                                                  Float?
+  pdfReportBlob                                          Bytes?
+  note                                                   String?   @db.VarChar(512)
+  status                                                 String?   @db.Char(1)
+  created_on                                             DateTime? @db.DateTime(0)
+  created_by                                             Int?
+  modified_on                                            DateTime? @db.DateTime(0)
+  modified_by                                            Int?
+  is_active                                              String?   @db.Char(1)
+  auth_user_social_sec_documents_id_auth_userToauth_user AuthUser? @relation("social_sec_documents_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "social_sec_documents_ibfk_1")
+  worklist                                               Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "social_sec_documents_ibfk_2")
+  auth_user_social_sec_documents_created_byToauth_user   AuthUser? @relation("social_sec_documents_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "social_sec_documents_ibfk_3")
+  auth_user_social_sec_documents_modified_byToauth_user  AuthUser? @relation("social_sec_documents_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "social_sec_documents_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model status_rx {
+  id                                         Int       @id @default(autoincrement())
+  status                                     String?   @db.VarChar(512)
+  created_on                                 DateTime? @db.DateTime(0)
+  created_by                                 Int?
+  modified_on                                DateTime? @db.DateTime(0)
+  modified_by                                Int?
+  is_active                                  String?   @db.Char(1)
+  rx                                         rx[]
+  auth_user_status_rx_created_byToauth_user  AuthUser? @relation("status_rx_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "status_rx_ibfk_1")
+  auth_user_status_rx_modified_byToauth_user AuthUser? @relation("status_rx_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "status_rx_ibfk_2")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model transaction_audit {
+  id                                                 Int       @id @default(autoincrement())
+  transaction_id                                     String?   @db.VarChar(512)
+  operation                                          String?   @db.VarChar(512)
+  table_name                                         String?   @db.VarChar(512)
+  record_id                                          Int?
+  status                                             String?   @db.VarChar(512)
+  error_message                                      String?   @db.VarChar(512)
+  retry_count                                        Int?
+  created_on                                         DateTime? @db.DateTime(0)
+  created_by                                         Int?
+  modified_on                                        DateTime? @db.DateTime(0)
+  modified_by                                        Int?
+  is_active                                          String?   @db.Char(1)
+  auth_user_transaction_audit_created_byToauth_user  AuthUser? @relation("transaction_audit_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "transaction_audit_ibfk_1")
+  auth_user_transaction_audit_modified_byToauth_user AuthUser? @relation("transaction_audit_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "transaction_audit_ibfk_2")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model transactions {
+  id                                             Int        @id @default(autoincrement())
+  id_auth_user                                   Int?
+  id_worklist                                    Int?
+  date                                           DateTime?  @db.DateTime(0)
+  price                                          Decimal?   @db.Decimal(10, 2)
+  covered_1600                                   Decimal?   @db.Decimal(10, 2)
+  covered_1300                                   Decimal?   @db.Decimal(10, 2)
+  cash_payment                                   Decimal?   @db.Decimal(10, 2)
+  card_payment                                   Decimal?   @db.Decimal(10, 2)
+  invoice_payment                                Decimal?   @db.Decimal(10, 2)
+  status                                         Int?
+  note                                           String?    @db.VarChar(512)
+  description                                    String?    @db.VarChar(512)
+  created_on                                     DateTime?  @db.DateTime(0)
+  created_by                                     Int?
+  modified_on                                    DateTime?  @db.DateTime(0)
+  modified_by                                    Int?
+  is_active                                      String?    @db.Char(1)
+  price_covered                                  Decimal?   @db.Decimal(10, 2)
+  uncovered                                      Decimal?   @db.Decimal(10, 2)
+  paid                                           Int?
+  auth_user_transactions_id_auth_userToauth_user AuthUser?  @relation("transactions_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "transactions_ibfk_1")
+  worklist                                       Worklist?  @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "transactions_ibfk_2")
+  auth_user_transactions_created_byToauth_user   AuthUser?  @relation("transactions_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "transactions_ibfk_3")
+  auth_user_transactions_modified_byToauth_user  AuthUser?  @relation("transactions_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "transactions_ibfk_4")
+  wl_codes                                       wl_codes[]
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model upload {
+  id   Int     @id @default(autoincrement())
+  file String? @db.VarChar(512)
+}
+
+model vitals {
+  id                                       Int       @id @default(autoincrement())
+  id_auth_user                             Int?
+  id_worklist                              Int?
+  weight_kg                                Decimal?  @db.Decimal(4, 2)
+  weight_lb                                Decimal?  @db.Decimal(4, 2)
+  height_cm                                Decimal?  @db.Decimal(4, 2)
+  height_in                                Decimal?  @db.Decimal(4, 2)
+  waist_cm                                 Decimal?  @db.Decimal(4, 2)
+  waist_in                                 Decimal?  @db.Decimal(4, 2)
+  head_cm                                  Decimal?  @db.Decimal(4, 2)
+  head_in                                  Decimal?  @db.Decimal(4, 2)
+  systolic                                 Decimal?  @db.Decimal(4, 2)
+  diastolic                                Decimal?  @db.Decimal(4, 2)
+  pulse                                    Int?
+  temperature_c                            Decimal?  @db.Decimal(4, 2)
+  temperature_f                            Decimal?  @db.Decimal(4, 2)
+  temperature_loc                          String?   @db.VarChar(512)
+  o2saturation                             Decimal?  @db.Decimal(4, 2)
+  o2flow                                   Decimal?  @db.Decimal(4, 2)
+  o2inhaled                                Decimal?  @db.Decimal(4, 2)
+  created_on                               DateTime? @db.DateTime(0)
+  created_by                               Int?
+  modified_on                              DateTime? @db.DateTime(0)
+  modified_by                              Int?
+  is_active                                String?   @db.Char(1)
+  auth_user_vitals_id_auth_userToauth_user AuthUser? @relation("vitals_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "vitals_ibfk_1")
+  worklist                                 Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "vitals_ibfk_2")
+  auth_user_vitals_created_byToauth_user   AuthUser? @relation("vitals_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "vitals_ibfk_3")
+  auth_user_vitals_modified_byToauth_user  AuthUser? @relation("vitals_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "vitals_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
+
+model wl_codes {
+  id                                         Int           @id @default(autoincrement())
+  id_auth_user                               Int?
+  id_worklist                                Int?
+  id_transactions                            Int?
+  date                                       DateTime?     @db.DateTime(0)
+  nomenclature_id                            Int?
+  combo_id                                   Int?
+  laterality                                 String?       @db.VarChar(512)
+  note                                       String?       @db.VarChar(512)
+  status                                     Int?
+  need_cme                                   String?       @db.Char(1)
+  created_on                                 DateTime?     @db.DateTime(0)
+  created_by                                 Int?
+  modified_on                                DateTime?     @db.DateTime(0)
+  modified_by                                Int?
+  is_active                                  String?       @db.Char(1)
+  auth_user_wl_codes_id_auth_userToauth_user AuthUser?     @relation("wl_codes_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "wl_codes_ibfk_1")
+  worklist                                   Worklist?     @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "wl_codes_ibfk_2")
+  transactions                               transactions? @relation(fields: [id_transactions], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "wl_codes_ibfk_3")
+  nomenclature                               nomenclature? @relation(fields: [nomenclature_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "wl_codes_ibfk_4")
+  auth_user_wl_codes_created_byToauth_user   AuthUser?     @relation("wl_codes_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "wl_codes_ibfk_5")
+  auth_user_wl_codes_modified_byToauth_user  AuthUser?     @relation("wl_codes_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "wl_codes_ibfk_6")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_transactions], map: "id_transactions__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+  @@index([nomenclature_id], map: "nomenclature_id__idx")
+}
+
+model wl_payments {
+  id                                            Int       @id @default(autoincrement())
+  id_auth_user                                  Int?
+  id_worklist                                   Int?
+  date                                          DateTime? @db.DateTime(0)
+  cash_payment                                  Decimal?  @db.Decimal(10, 2)
+  card_payment                                  Decimal?  @db.Decimal(10, 2)
+  card_type                                     String?   @db.VarChar(512)
+  invoice_payment                               Decimal?  @db.Decimal(10, 2)
+  invoice_type                                  String?   @db.VarChar(512)
+  note                                          String?   @db.VarChar(512)
+  created_on                                    DateTime? @db.DateTime(0)
+  created_by                                    Int?
+  modified_on                                   DateTime? @db.DateTime(0)
+  modified_by                                   Int?
+  is_active                                     String?   @db.Char(1)
+  auth_user_wl_payments_id_auth_userToauth_user AuthUser? @relation("wl_payments_id_auth_userToauth_user", fields: [id_auth_user], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "wl_payments_ibfk_1")
+  worklist                                      Worklist? @relation(fields: [id_worklist], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "wl_payments_ibfk_2")
+  auth_user_wl_payments_created_byToauth_user   AuthUser? @relation("wl_payments_created_byToauth_user", fields: [created_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "wl_payments_ibfk_3")
+  auth_user_wl_payments_modified_byToauth_user  AuthUser? @relation("wl_payments_modified_byToauth_user", fields: [modified_by], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "wl_payments_ibfk_4")
+
+  @@index([created_by], map: "created_by__idx")
+  @@index([id_auth_user], map: "id_auth_user__idx")
+  @@index([id_worklist], map: "id_worklist__idx")
+  @@index([modified_by], map: "modified_by__idx")
+}
