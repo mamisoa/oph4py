@@ -6,6 +6,24 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- 2025-04-15T22:19:31.955234: Enhanced worklist Next.js conversion plan with Prisma integration
+  - Updated docs/worklist_to_js.md with specific oph4js/ project location details
+  - Added Prisma ORM configuration for direct database connection
+  - Created detailed Prisma schema example for existing database models
+  - Outlined API routes structure mirroring existing py4web endpoints
+  - Added transaction handling implementation with Prisma
+  - Expanded implementation phases with database integration as first phase
+  - Enhanced completion criteria with Prisma-specific requirements
+
+- 2025-04-15T22:11:20.672486: Created worklist Next.js 15 conversion plan
+  - Added detailed migration roadmap in docs/worklist_to_js.md
+  - Outlined conversion from Py4web MVC to Next.js 15 with Shadcn UI
+  - Created comprehensive task list with implementation phases
+  - Documented current and target architecture
+  - Detailed project structure and component organization
+  - Added technical considerations for state management and atomic operations
+  - Included migration strategy and completion criteria
+
 - 2025-04-15T00:37:08.712402: Completed API modularization of utility functions
   - Completed migration of utility functions from rest.py to modular API architecture:
     - Commented out rows2json and valid_date functions in rest.py
