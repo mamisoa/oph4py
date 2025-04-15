@@ -6,7 +6,18 @@ The current focus is on implementing a modern Next.js 15 version of the worklist
 
 ### Recent Changes (Last 48 Hours)
 
-1. **Fixed React Key Prop Error in UsersTable Component (2025-04-16T00:20:09.849719)**
+1. **Added ID Column Sorting in Next.js UsersTable Component (2025-04-16T00:26:33.274801)**
+   - Enhanced UsersTable component with the ability to sort by ID column:
+     - Added sort handler to ID column header
+     - Modified ID column header to include sort direction indicator
+     - Added explicit handling for ID sorting in the users API route
+     - Fixed linter warnings in route.ts file
+   - Improved user experience with consistent sorting behavior across all columns
+   - Maintained existing sort functionality for other columns (name, email, role)
+   - Added entry to CHANGELOG.md documenting the enhancement
+   - This enhancement provides a complete sorting solution for the UsersTable component
+
+2. **Fixed React Key Prop Error in UsersTable Component (2025-04-16T00:20:09.849719)**
    - Fixed React warning "Each child in a list should have a unique key prop" in UsersTable component:
      - Replaced anonymous fragments (`<>...</>`) with `<React.Fragment key={user.id}>` in user rows mapping
      - Added unique key to expanded row using composite key pattern (`key={`${user.id}-expanded`}`)
@@ -16,7 +27,7 @@ The current focus is on implementing a modern Next.js 15 version of the worklist
    - Added entry to CHANGELOG.md documenting the fix and technical details
    - This fix ensures React can properly track and update list items efficiently
 
-2. **Implemented UsersTable Component and Fixed Prisma Configuration (2025-04-16)**
+3. **Implemented UsersTable Component and Fixed Prisma Configuration (2025-04-16)**
    - Created comprehensive UsersTable component for the Next.js worklist conversion:
      - Built reusable component in UsersTable.tsx with Shadcn UI components
      - Implemented server-side pagination with efficient data fetching
@@ -37,7 +48,7 @@ The current focus is on implementing a modern Next.js 15 version of the worklist
      - Added proper error handling
    - Updated documentation in worklist_to_js.md and CHANGELOG.md to reflect progress
 
-3. **Next.js Worklist Conversion API Layer Implementation (Completed)**
+4. **Next.js Worklist Conversion API Layer Implementation (Completed)**
    - Created comprehensive TypeScript interfaces for all API requests and responses
    - Implemented all required API endpoints for the Next.js worklist migration:
      - Auth API endpoints matching py4web functionality
@@ -52,7 +63,7 @@ The current focus is on implementing a modern Next.js 15 version of the worklist
    - Updated project documentation to reflect progress
    - Added entry to CHANGELOG.md (2025-04-15T23:33:00.665456)
 
-4. **Next.js Worklist Conversion (Phase 1 Complete)**
+5. **Next.js Worklist Conversion (Phase 1 Complete)**
    - Completed project setup phase with Next.js 15, Prisma ORM, and Tailwind CSS
    - Created comprehensive Prisma schema mapping all database tables
    - Added missing `auth_user` fields (`action_token` and `sso_id`) to ensure compatibility with py4web
@@ -62,13 +73,13 @@ The current focus is on implementing a modern Next.js 15 version of the worklist
    - Fixed Tailwind configuration issues
    - Established database connection to MySQL
 
-5. **API Structure and Implementation**
+6. **API Structure and Implementation**
    - The Next.js app will access the same database as the py4web application
    - Building a modern UI with Tailwind CSS
    - Implementing batch operations API with transaction support
    - The project is organized in the `oph4js/` directory for parallel development
 
-6. **API Modularization Completion**
+7. **API Modularization Completion**
    - Completed migration of utility functions from rest.py to modular API architecture:
      - Migrated all endpoints to dedicated modules in api/endpoints directory
      - Implemented core functionality in api/core directory
@@ -78,7 +89,7 @@ The current focus is on implementing a modern Next.js 15 version of the worklist
    - Ensured consistent implementation of utility functions across the application
    - Updated memory bank and documentation to reflect migration completion
 
-7. **JavaScript Modernization and Fixes**
+8. **JavaScript Modernization and Fixes**
    - Refactored patient-bar.js using modern JavaScript best practices:
      - Implemented proper module pattern with IIFE for encapsulated scope
      - Fixed reference errors in tonometry and MD modules
@@ -96,7 +107,7 @@ The current focus is on implementing a modern Next.js 15 version of the worklist
    - This modernization aligns with previous efforts to convert jQuery code to vanilla JavaScript
    - Fixed critical issue where undefined btnArr variable was causing errors in the tonometry module
 
-8. **API Modularization Fixes**
+9. **API Modularization Fixes**
    - Fixed critical route conflicts between original rest.py endpoints and modular API endpoints
    - Resolved duplicate endpoint registrations for three key areas:
      - UUID generation endpoint (`api/uuid`)
@@ -107,20 +118,20 @@ The current focus is on implementing a modern Next.js 15 version of the worklist
    - Installed missing pyscard package required by the BeID module
    - Fixed application startup errors related to endpoint conflicts
 
-9. **API Modularization**
-   - Created modular API structure with dedicated directories:
-     - `api/core/`: Core functionality and utilities
-     - `api/endpoints/`: Individual API endpoint implementations
-     - `api/endpoints/devices/`: Device-specific endpoints
-   - Migrated key endpoints to the new structure:
-     - UUID generation endpoint to `api/endpoints/utils.py`
-     - BeID card reading endpoint to `api/endpoints/devices/beid.py`
-     - Email sending endpoints to `api/endpoints/email.py`
-   - Implemented standardized error handling with `APIResponse` class
-   - Added backward compatibility layer in `rest.py`
-   - Enhanced documentation with comprehensive docstrings
+10. **API Modularization**
+    - Created modular API structure with dedicated directories:
+      - `api/core/`: Core functionality and utilities
+      - `api/endpoints/`: Individual API endpoint implementations
+      - `api/endpoints/devices/`: Device-specific endpoints
+    - Migrated key endpoints to the new structure:
+      - UUID generation endpoint to `api/endpoints/utils.py`
+      - BeID card reading endpoint to `api/endpoints/devices/beid.py`
+      - Email sending endpoints to `api/endpoints/email.py`
+    - Implemented standardized error handling with `APIResponse` class
+    - Added backward compatibility layer in `rest.py`
+    - Enhanced documentation with comprehensive docstrings
 
-10. **Core API Modules**
+11. **Core API Modules**
     - Created `api/core/policy.py` for REST API policy configuration
     - Created `api/core/utils.py` for shared utility functions
     - Implemented `api/core/base.py` with request handling and error management

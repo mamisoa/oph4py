@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- 2025-04-16T00:26:33.274801: Added ID column sorting in Next.js UsersTable component
+  - Enhanced UsersTable component with the ability to sort by ID column
+  - Modified ID column header to include sort direction indicator
+  - Added explicit handling for ID sorting in the users API route
+  - Improved user experience with consistent sorting behavior across all columns
+  - Maintained existing sort functionality for other columns (name, email, role)
+
 - 2025-04-15T22:19:31.955234: Enhanced worklist Next.js conversion plan with Prisma integration
   - Updated docs/worklist_to_js.md with specific oph4js/ project location details
   - Added Prisma ORM configuration for direct database connection

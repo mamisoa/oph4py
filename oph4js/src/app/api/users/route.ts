@@ -46,6 +46,8 @@ export async function GET(request: Request) {
       orderBy = { email: sortDirection };
     } else if (sortColumn === 'username') {
       orderBy = { username: sortDirection };
+    } else if (sortColumn === 'id') {
+      orderBy = { id: sortDirection };
     } else {
       // Default to sorting by last name
       orderBy = { last_name: 'asc' };

@@ -32,13 +32,17 @@
 
 1. **Next.js Worklist Conversion - Core Components (IN PROGRESS)**
    - ✅ WorklistTable component with server-side pagination and sorting
-   - ✅ UsersTable component with pagination, search, and action buttons
+   - ✅ UsersTable component with complete functionality:
+     - Pagination, search, and action buttons
+     - Column sorting for all columns including ID, name, email, and role
+     - Expandable rows for detailed user information
+     - Proper TypeScript typing with Prisma schema
+     - Status badges for different user roles
    - ✅ Implemented tabbed navigation for switching between worklist and users
    - ✅ Fixed critical Prisma database configuration issues (provider, field conflicts)
    - ✅ Created API endpoints for user data with filtering and sorting
    - ✅ Used Prisma introspection to accurately map the database structure
    - ✅ Separated server and client components for proper metadata handling
-   - ✅ Implemented expandable rows for detailed information display
    - ✅ Added comprehensive documentation in worklist_to_js.md
    - ✅ Updated CHANGELOG.md with implementation details
 

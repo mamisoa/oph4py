@@ -131,7 +131,17 @@ export function UsersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[50px]">ID</TableHead>
+              <TableHead className="w-[50px]">
+                <div 
+                  className="flex items-center cursor-pointer"
+                  onClick={() => handleSort("id")}
+                >
+                  ID
+                  {sortColumn === "id" && (
+                    <ChevronDown className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "transform rotate-180" : ""}`} />
+                  )}
+                </div>
+              </TableHead>
               <TableHead className="min-w-[150px]">
                 <div 
                   className="flex items-center cursor-pointer"
