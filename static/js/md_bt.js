@@ -2421,10 +2421,8 @@ function applyBillingCombo(comboId, note) {
 			note: note,
 		}),
 		success: function (response) {
-			bootbox.alert("Billing combo applied successfully!", function () {
-				$("#billComboModal").modal("hide");
-				$bill_tbl.bootstrapTable("refresh");
-			});
+			$("#billComboModal").modal("hide");
+			$bill_tbl.bootstrapTable("refresh");
 		},
 		error: function (xhr, status, error) {
 			console.error("Error applying billing combo:", error);
@@ -2650,7 +2648,6 @@ $(document).ready(function () {
 		crudp("billing_codes", dataObj["id"] || "0", req, dataStr)
 			.then(function () {
 				$bill_tbl.bootstrapTable("refresh");
-				bootbox.alert("Billing code saved successfully!");
 			})
 			.catch(function (error) {
 				console.error("Error saving billing code:", error);

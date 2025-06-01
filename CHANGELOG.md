@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-01T21:24:12.693251] - Made Fee Field Editable in Billing Modal
+
+### Changed
+- **Fee Field Now Editable in Billing Code Modal**
+  - Removed `readonly` attribute from the fee input field in `templates/modalityCtr/md.html`
+  - Users can now manually edit the fee amount after selecting a nomenclature code
+  - Fee field is pre-populated from nomenclature search but remains editable for custom adjustments
+  - Maintains step="0.01" for precise decimal input (cents)
+
+### Technical Details
+- **HTML Template**: Removed `readonly` from `#billFee` input field
+- **JavaScript Behavior**: Fee value is populated from nomenclature selection but field remains editable
+- **User Experience**: Allows fee customization while maintaining automatic population from nomenclature database
+
+## [2025-06-01T21:09:44.309502] - Improved UX by Removing Redundant Alert Messages
+
+### Removed
+
+- **Redundant Bootbox Alerts in Billing Module**
+  - Removed `bootbox.alert("Billing code saved successfully!")` from individual code save operation
+  - Removed `bootbox.alert("Billing combo applied successfully!")` from combo application operation
+  - These were redundant as there are already toast notifications providing the same feedback
+  - Streamlined user experience by reducing duplicate success messages
+
+### Technical Details
+
+- **Billing Code Save**: Now only shows toast notification and refreshes table
+- **Billing Combo Apply**: Now only shows toast notification, hides modal, and refreshes table
+- **Error Handling**: Preserved bootbox alerts for error cases as they are important for user attention
+- **UX Improvement**: Reduced notification noise while maintaining essential feedback
+
 ## [2025-06-01T21:04:59.182309] - Enhanced Billing Table with Fee Code Display
 
 ### Added
