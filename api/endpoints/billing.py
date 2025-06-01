@@ -29,7 +29,7 @@ from ..core.nomenclature import NomenclatureClient
 @action("api/billing_codes/<rec_id:int>", method=["GET", "PUT", "DELETE"])
 def billing_codes(rec_id: Optional[int] = None):
     """
-    CRUD operations for billing codes.
+    Enhanced CRUD operations for billing codes with secondary nomenclature support.
 
     GET /api/billing_codes - List all billing codes with optional filters
     GET /api/billing_codes/123 - Get specific billing code
@@ -43,25 +43,59 @@ def billing_codes(rec_id: Optional[int] = None):
     - status.eq=draft: Filter by status
     - nomen_code.like=123: Search by nomenclature code prefix
 
+    Enhanced Features:
+    - Secondary nomenclature code support
+    - Validation ensuring secondary codes differ from main codes
+    - Total fee calculations (main + secondary)
+    - Comprehensive error handling and logging
+
     Returns:
         JSON response with billing codes data
     """
     try:
-        logger.info(f"Billing codes request - Method: {request.method}, ID: {rec_id}")
+        logger.info(
+            f"Enhanced billing codes request - Method: {request.method}, ID: {rec_id}"
+        )
 
-        # For POST requests, validate and enrich data
-        if request.method == "POST" and request.json:
+        # For POST/PUT requests, validate and enrich data
+        if request.method in ["POST", "PUT"] and request.json:
             data = request.json.copy()
 
-            # Validate required fields
+            # Enhanced validation for required fields
             required_fields = ["id_auth_user", "id_worklist", "nomen_code"]
             missing_fields = [f for f in required_fields if f not in data]
             if missing_fields:
+                logger.warning(f"Missing required fields: {', '.join(missing_fields)}")
                 return APIResponse.error(
                     message=f"Missing required fields: {', '.join(missing_fields)}",
                     status_code=400,
                     error_type="validation_error",
                 )
+
+            # Enhanced validation for secondary codes
+            main_code = data.get("nomen_code")
+            secondary_code = data.get("secondary_nomen_code")
+
+            if secondary_code is not None:
+                # Secondary code must be different from main code
+                if secondary_code == main_code:
+                    logger.warning(
+                        f"Secondary code {secondary_code} same as main code {main_code}"
+                    )
+                    return APIResponse.error(
+                        message="Secondary nomenclature code must be different from main code",
+                        status_code=400,
+                        error_type="validation_error",
+                    )
+
+                # Secondary code must be a valid integer
+                if not isinstance(secondary_code, int) or secondary_code <= 0:
+                    logger.warning(f"Invalid secondary code: {secondary_code}")
+                    return APIResponse.error(
+                        message="Secondary nomenclature code must be a positive integer",
+                        status_code=400,
+                        error_type="validation_error",
+                    )
 
             # Set defaults
             data.setdefault("quantity", 1)
@@ -69,45 +103,145 @@ def billing_codes(rec_id: Optional[int] = None):
             data.setdefault("status", "draft")
             data.setdefault("date_performed", datetime.date.today())
 
-            # If nomenclature description is not provided, try to fetch it
+            # Enhanced nomenclature enrichment for both main and secondary codes
+            nomenclature = NomenclatureClient()
+
+            # Enrich main nomenclature code if description is not provided
             if not data.get("nomen_desc_fr") and not data.get("nomen_desc_nl"):
                 try:
-                    nomenclature = NomenclatureClient()
                     code_details = nomenclature.get_code_details(data["nomen_code"])
                     if code_details is not None:
                         data["nomen_desc_fr"] = code_details.get("description_fr")
                         data["nomen_desc_nl"] = code_details.get("description_nl")
                         data["fee"] = code_details.get("fee")
                         data["feecode"] = code_details.get("feecode")
+                        logger.info(
+                            f"Enriched main code {main_code} with fee €{data.get('fee', 0)}"
+                        )
                 except Exception as e:
-                    logger.warning(f"Could not fetch nomenclature details: {str(e)}")
+                    logger.warning(
+                        f"Could not fetch main nomenclature details for {main_code}: {str(e)}"
+                    )
+
+            # Enrich secondary nomenclature code if provided but description is missing
+            if (
+                secondary_code
+                and not data.get("secondary_nomen_desc_fr")
+                and not data.get("secondary_nomen_desc_nl")
+            ):
+                try:
+                    secondary_details = nomenclature.get_code_details(secondary_code)
+                    if secondary_details is not None:
+                        data["secondary_nomen_desc_fr"] = secondary_details.get(
+                            "description_fr"
+                        )
+                        data["secondary_nomen_desc_nl"] = secondary_details.get(
+                            "description_nl"
+                        )
+                        data["secondary_fee"] = secondary_details.get("fee")
+                        data["secondary_feecode"] = secondary_details.get("feecode")
+                        logger.info(
+                            f"Enriched secondary code {secondary_code} with fee €{data.get('secondary_fee', 0)}"
+                        )
+                except Exception as e:
+                    logger.warning(
+                        f"Could not fetch secondary nomenclature details for {secondary_code}: {str(e)}"
+                    )
+
+            # Calculate and log total fee for audit purposes
+            main_fee = float(data.get("fee") or 0)
+            secondary_fee = float(data.get("secondary_fee") or 0)
+            total_fee = main_fee + secondary_fee
+
+            logger.info(
+                f"Billing code - Method: {request.method}, "
+                f"Main: {main_code} (€{main_fee:.2f}), "
+                f"Secondary: {secondary_code or 'None'} (€{secondary_fee:.2f}), "
+                f"Total: €{total_fee:.2f}"
+            )
 
             # Update request with enriched data
             request.json = data
 
-        return handle_rest_api_request("billing_codes", str(rec_id) if rec_id else None)
+        # Handle GET requests with enhanced response processing
+        if request.method == "GET":
+            result = handle_rest_api_request(
+                "billing_codes", str(rec_id) if rec_id else None
+            )
+
+            # Enhance response with calculated totals for individual records or lists
+            if isinstance(result, dict) and result.get("data") is not None:
+                data = result.get("data")
+                if isinstance(data, list):
+                    # Multiple records - enhance each
+                    for record in data:
+                        enhance_billing_response(record)
+                elif isinstance(data, dict):
+                    # Single record - enhance it
+                    enhance_billing_response(data)
+
+            return result
+        else:
+            # For POST/PUT/DELETE, use standard handler
+            return handle_rest_api_request(
+                "billing_codes", str(rec_id) if rec_id else None
+            )
 
     except Exception as e:
-        logger.error(f"Error in billing_codes endpoint: {str(e)}")
+        logger.error(f"Error in enhanced billing_codes endpoint: {str(e)}")
         logger.error(traceback.format_exc())
         return APIResponse.error(
-            message=str(e), status_code=500, error_type="server_error"
+            message=f"Server error: {str(e)}",
+            status_code=500,
+            error_type="server_error",
         )
+
+
+def enhance_billing_response(record):
+    """
+    Enhance billing code response with calculated totals and secondary code indicators.
+
+    Args:
+        record (dict): Billing code record to enhance
+
+    Returns:
+        dict: Enhanced record with additional computed fields
+    """
+    if record:
+        main_fee = float(record.get("fee") or 0)
+        secondary_fee = float(record.get("secondary_fee") or 0)
+        total_fee = main_fee + secondary_fee
+
+        # Add computed fields
+        record["total_fee"] = round(total_fee, 2)
+        record["has_secondary"] = bool(record.get("secondary_nomen_code"))
+        record["main_fee_formatted"] = f"€{main_fee:.2f}"
+        record["secondary_fee_formatted"] = (
+            f"€{secondary_fee:.2f}" if record["has_secondary"] else None
+        )
+        record["total_fee_formatted"] = f"€{total_fee:.2f}"
+
+    return record
 
 
 @action("api/billing_codes/by_worklist/<worklist_id:int>", method=["GET"])
 def billing_codes_by_worklist(worklist_id: int):
     """
-    Get all billing codes for a specific worklist item.
+    Get all billing codes for a specific worklist item with enhanced secondary code support.
 
     Args:
         worklist_id: The worklist ID to filter by
 
+    Enhanced Features:
+    - Secondary nomenclature code support
+    - Total fee calculations including secondary fees
+    - Enhanced response with computed fields
+
     Returns:
-        JSON response with billing codes for the worklist
+        JSON response with billing codes for the worklist including totals
     """
     try:
-        logger.info(f"Getting billing codes for worklist {worklist_id}")
+        logger.info(f"Getting enhanced billing codes for worklist {worklist_id}")
 
         # Check if worklist exists
         worklist = db(db.worklist.id == worklist_id).select().first()
@@ -124,21 +258,53 @@ def billing_codes_by_worklist(worklist_id: int):
             orderby=db.billing_codes.date_performed | db.billing_codes.id,
         )
 
-        # Calculate totals
-        total_fee = sum(float(code.fee or 0) * (code.quantity or 1) for code in codes)
-        total_codes = len(codes)
+        # Enhanced calculations including secondary fees
+        enhanced_codes = []
+        total_main_fee = 0
+        total_secondary_fee = 0
+        total_combined_fee = 0
+        codes_with_secondary = 0
+
+        for code in codes:
+            code_dict = code.as_dict()
+
+            # Enhance each record with computed fields
+            enhance_billing_response(code_dict)
+            enhanced_codes.append(code_dict)
+
+            # Calculate running totals
+            main_fee = float(code.fee or 0) * (code.quantity or 1)
+            secondary_fee = float(code.secondary_fee or 0) * (code.quantity or 1)
+
+            total_main_fee += main_fee
+            total_secondary_fee += secondary_fee
+            total_combined_fee += main_fee + secondary_fee
+
+            if code.secondary_nomen_code:
+                codes_with_secondary += 1
+
+        logger.info(
+            f"Worklist {worklist_id} summary: {len(codes)} codes, "
+            f"{codes_with_secondary} with secondary, total: €{total_combined_fee:.2f}"
+        )
 
         return APIResponse.success(
-            data=[code.as_dict() for code in codes],
+            data=enhanced_codes,
             meta={
-                "total_codes": total_codes,
-                "total_fee": total_fee,
+                "total_codes": len(codes),
+                "codes_with_secondary": codes_with_secondary,
+                "total_main_fee": round(total_main_fee, 2),
+                "total_secondary_fee": round(total_secondary_fee, 2),
+                "total_combined_fee": round(total_combined_fee, 2),
+                "main_fee_formatted": f"€{total_main_fee:.2f}",
+                "secondary_fee_formatted": f"€{total_secondary_fee:.2f}",
+                "total_fee_formatted": f"€{total_combined_fee:.2f}",
                 "worklist_id": worklist_id,
             },
         )
 
     except Exception as e:
-        logger.error(f"Error getting billing codes by worklist: {str(e)}")
+        logger.error(f"Error getting enhanced billing codes by worklist: {str(e)}")
         return APIResponse.error(
             message=str(e), status_code=500, error_type="server_error"
         )
@@ -238,7 +404,7 @@ def billing_combo(rec_id: Optional[int] = None):
 @action("api/billing_combo/<combo_id:int>/apply", method=["POST"])
 def apply_billing_combo(combo_id: int):
     """
-    Apply a billing combo to a worklist item.
+    Apply a billing combo to a worklist item with enhanced secondary code support.
 
     Expected JSON:
     {
@@ -247,6 +413,11 @@ def apply_billing_combo(combo_id: int):
         "note": "Applied standard consultation combo"
     }
 
+    Enhanced Features:
+    - Support for secondary codes in combo definitions
+    - Enhanced fee calculations and logging
+    - Backward compatibility with existing combo format
+
     Args:
         combo_id: The billing combo ID to apply
 
@@ -254,7 +425,7 @@ def apply_billing_combo(combo_id: int):
         JSON response with created billing codes and usage record
     """
     try:
-        logger.info(f"Applying billing combo {combo_id}")
+        logger.info(f"Applying enhanced billing combo {combo_id}")
 
         data = request.json
         if not data:
@@ -290,7 +461,7 @@ def apply_billing_combo(combo_id: int):
                 error_type="validation_error",
             )
 
-        # Parse combo codes
+        # Parse combo codes with enhanced structure support
         try:
             combo_codes = json.loads(combo.combo_codes) if combo.combo_codes else []
         except json.JSONDecodeError:
@@ -313,10 +484,39 @@ def apply_billing_combo(combo_id: int):
 
         created_codes = []
         nomenclature = NomenclatureClient()
+        total_main_fees = 0
+        total_secondary_fees = 0
+        codes_with_secondary = 0
 
         try:
-            # Create billing codes for each code in the combo
-            for nomen_code in combo_codes:
+            # Enhanced combo code processing - supports both old and new formats
+            for code_def in combo_codes:
+                # Handle both old format (integer) and new format (object with secondary support)
+                if isinstance(code_def, int):
+                    # Old format: simple integer code
+                    nomen_code = code_def
+                    secondary_code = None
+                    logger.info(f"Processing legacy combo code: {nomen_code}")
+                elif isinstance(code_def, dict):
+                    # New format: object with potential secondary codes
+                    nomen_code = code_def.get("nomen_code")
+                    secondary_code = code_def.get("secondary_nomen_code")
+                    logger.info(
+                        f"Processing enhanced combo code: {nomen_code} + secondary: {secondary_code}"
+                    )
+                else:
+                    logger.warning(
+                        f"Skipping invalid combo code definition: {code_def}"
+                    )
+                    continue
+
+                if not nomen_code:
+                    logger.warning(
+                        f"Skipping combo code with missing nomen_code: {code_def}"
+                    )
+                    continue
+
+                # Build base code data
                 code_data = {
                     "id_auth_user": data["id_auth_user"],
                     "id_worklist": data["id_worklist"],
@@ -327,7 +527,7 @@ def apply_billing_combo(combo_id: int):
                     "date_performed": datetime.date.today(),
                 }
 
-                # Try to get nomenclature details
+                # Try to get main nomenclature details
                 try:
                     code_details = nomenclature.get_code_details(nomen_code)
                     if code_details is not None:
@@ -335,15 +535,45 @@ def apply_billing_combo(combo_id: int):
                         code_data["nomen_desc_nl"] = code_details.get("description_nl")
                         code_data["fee"] = code_details.get("fee")
                         code_data["feecode"] = code_details.get("feecode")
+                        total_main_fees += float(code_details.get("fee") or 0)
                 except Exception as e:
                     logger.warning(
-                        f"Could not fetch details for code {nomen_code}: {str(e)}"
+                        f"Could not fetch details for main code {nomen_code}: {str(e)}"
                     )
+
+                # Handle secondary code if present
+                if secondary_code:
+                    try:
+                        secondary_details = nomenclature.get_code_details(
+                            secondary_code
+                        )
+                        if secondary_details is not None:
+                            code_data["secondary_nomen_code"] = secondary_code
+                            code_data["secondary_nomen_desc_fr"] = (
+                                secondary_details.get("description_fr")
+                            )
+                            code_data["secondary_nomen_desc_nl"] = (
+                                secondary_details.get("description_nl")
+                            )
+                            code_data["secondary_fee"] = secondary_details.get("fee")
+                            code_data["secondary_feecode"] = secondary_details.get(
+                                "feecode"
+                            )
+                            total_secondary_fees += float(
+                                secondary_details.get("fee") or 0
+                            )
+                            codes_with_secondary += 1
+                    except Exception as e:
+                        logger.warning(
+                            f"Could not fetch details for secondary code {secondary_code}: {str(e)}"
+                        )
 
                 # Create billing code
                 code_id = db.billing_codes.insert(**code_data)
                 created_code = db(db.billing_codes.id == code_id).select().first()
-                created_codes.append(created_code.as_dict())
+                enhanced_code = created_code.as_dict()
+                enhance_billing_response(enhanced_code)
+                created_codes.append(enhanced_code)
 
             # Create combo usage record
             usage_id = db.billing_combo_usage.insert(
@@ -357,8 +587,12 @@ def apply_billing_combo(combo_id: int):
             # Commit transaction
             db.commit()
 
+            total_combined_fees = total_main_fees + total_secondary_fees
+
             logger.info(
-                f"Applied combo {combo_id}: created {len(created_codes)} billing codes"
+                f"Applied enhanced combo {combo_id}: created {len(created_codes)} billing codes, "
+                f"{codes_with_secondary} with secondary codes, "
+                f"total fees: €{total_combined_fees:.2f} (main: €{total_main_fees:.2f}, secondary: €{total_secondary_fees:.2f})"
             )
 
             return APIResponse.success(
@@ -366,8 +600,12 @@ def apply_billing_combo(combo_id: int):
                     "combo_usage_id": usage_id,
                     "created_codes": created_codes,
                     "combo_name": combo.combo_name,
+                    "codes_with_secondary": codes_with_secondary,
+                    "total_main_fees": round(total_main_fees, 2),
+                    "total_secondary_fees": round(total_secondary_fees, 2),
+                    "total_combined_fees": round(total_combined_fees, 2),
                 },
-                message=f"Successfully applied combo '{combo.combo_name}' with {len(created_codes)} codes",
+                message=f"Successfully applied combo '{combo.combo_name}' with {len(created_codes)} codes (total: €{total_combined_fees:.2f})",
             )
 
         except Exception as e:
@@ -376,7 +614,7 @@ def apply_billing_combo(combo_id: int):
             raise e
 
     except Exception as e:
-        logger.error(f"Error applying billing combo: {str(e)}")
+        logger.error(f"Error applying enhanced billing combo: {str(e)}")
         return APIResponse.error(
             message=str(e), status_code=500, error_type="server_error"
         )

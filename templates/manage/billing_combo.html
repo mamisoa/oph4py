@@ -4,11 +4,17 @@
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
 [[ end ]]
 
+<!-- Toast Container for Notifications -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 11000">
+    <div id="toast-container"></div>
+</div>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col">
             <h1>Billing Combo Management</h1>
-            <p class="text-muted">Create and manage reusable billing code combinations for medical procedures</p>
+            <p class="text-muted">Create and manage reusable billing code combinations for medical procedures with
+                optional secondary codes</p>
         </div>
     </div>
 
@@ -65,7 +71,8 @@
                                         <i class="fas fa-search"></i>
                                     </button>
                                 </div>
-                                <div class="form-text">Search and add nomenclature codes to this combo</div>
+                                <div class="form-text">Search and add nomenclature codes to this combo. Each code can
+                                    have an optional secondary code.</div>
                             </div>
                         </div>
 
@@ -89,14 +96,16 @@
                             </div>
                         </div>
 
-                        <!-- Selected Codes -->
+                        <!-- Selected Codes with Enhanced Secondary Support -->
                         <div class="row mb-3">
                             <div class="col">
                                 <label class="form-label">Selected Codes</label>
-                                <div id="selectedCodes" class="border rounded p-3 bg-light" style="min-height: 100px;">
+                                <div id="selectedCodes" class="border rounded p-3 bg-light" style="min-height: 150px;">
                                     <div id="noCodesMessage" class="text-muted text-center">
                                         <i class="fas fa-info-circle"></i> No codes selected yet. Search and add codes
                                         above.
+                                        <br><small>Each main code can have an optional secondary code for complex
+                                            procedures.</small>
                                     </div>
                                     <div id="selectedCodesList" style="display: none;"></div>
                                 </div>
@@ -140,7 +149,7 @@
                                 <th data-field="specialty" data-sortable="true" data-formatter="specialtyFormatter">
                                     Specialty</th>
                                 <th data-field="combo_description">Description</th>
-                                <th data-field="combo_codes" data-formatter="codesFormatter">Codes</th>
+                                <th data-field="combo_codes" data-formatter="enhancedCodesFormatter">Codes</th>
                                 <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">
                                     Actions</th>
                             </tr>

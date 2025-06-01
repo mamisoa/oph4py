@@ -1,5 +1,6 @@
 /**
  * Billing Combo Manager JavaScript
+ * Enhanced for Secondary Nomenclature Code Support
  * Handles the creation, editing, and management of billing code combinations
  */
 
@@ -13,6 +14,7 @@ if (typeof API_BASE === "undefined") {
 
 class BillingComboManager {
 	constructor() {
+		// Enhanced structure: each entry has nomen_code, description, feecode, fee, and optional secondary_*
 		this.selectedCodes = [];
 		this.searchTimeout = null;
 		this.currentEditId = null;
@@ -41,12 +43,18 @@ class BillingComboManager {
 		$("#btnResetForm").on("click", () => this.resetForm());
 		$("#btnCancelEdit").on("click", () => this.cancelEdit());
 
-		// Dynamic events for results
+		// Dynamic events for results and secondary code management
 		$(document).on("click", ".add-nomen-code", (e) =>
 			this.addNomenclatureCode(e)
 		);
 		$(document).on("click", ".remove-selected-code", (e) =>
 			this.removeSelectedCode(e)
+		);
+		$(document).on("click", ".add-secondary-code", (e) =>
+			this.addSecondaryCode(e)
+		);
+		$(document).on("click", ".remove-secondary-code", (e) =>
+			this.removeSecondaryCode(e)
 		);
 	}
 
@@ -128,15 +136,13 @@ class BillingComboManager {
 				const feecode = item.feecode || "N/A";
 				const fee = item.fee ? parseFloat(item.fee).toFixed(2) : "N/A";
 
-				// Check if code is already selected
-				const isSelected = this.selectedCodes.some(
-					(selected) => selected.code == code
-				);
-				const buttonClass = isSelected
+				// Check if code is already used (as main or secondary)
+				const isUsed = this.isCodeAlreadyUsed(code);
+				const buttonClass = isUsed
 					? "btn-secondary disabled"
 					: "btn-primary add-nomen-code";
-				const buttonText = isSelected ? "Added" : "Add";
-				const buttonIcon = isSelected ? "fas fa-check" : "fas fa-plus";
+				const buttonText = isUsed ? "Used" : "Add as Main";
+				const buttonIcon = isUsed ? "fas fa-check" : "fas fa-plus";
 
 				tbody.append(`
                     <tr>
@@ -154,7 +160,7 @@ class BillingComboManager {
                                     data-description="${description}" 
                                     data-feecode="${feecode}" 
                                     data-fee="${fee}"
-                                    ${isSelected ? "disabled" : ""}>
+                                    ${isUsed ? "disabled" : ""}>
                                 <i class="${buttonIcon}"></i> ${buttonText}
                             </button>
                         </td>
@@ -166,6 +172,13 @@ class BillingComboManager {
 		$("#nomenclatureResults").show();
 	}
 
+	isCodeAlreadyUsed(code) {
+		return this.selectedCodes.some(
+			(selected) =>
+				selected.nomen_code == code || selected.secondary_nomen_code == code
+		);
+	}
+
 	addNomenclatureCode(event) {
 		const button = $(event.currentTarget);
 		const code = button.data("code");
@@ -173,17 +186,22 @@ class BillingComboManager {
 		const feecode = button.data("feecode");
 		const fee = button.data("fee");
 
-		// Check if already selected
-		if (this.selectedCodes.some((selected) => selected.code == code)) {
+		// Check if already used
+		if (this.isCodeAlreadyUsed(code)) {
 			return;
 		}
 
-		// Add to selected codes
+		// Add to selected codes (enhanced structure for secondary code support)
 		this.selectedCodes.push({
-			code: code,
-			description: description,
+			nomen_code: code,
+			nomen_desc_fr: description,
 			feecode: feecode,
 			fee: fee,
+			// Secondary fields (optional)
+			secondary_nomen_code: null,
+			secondary_nomen_desc_fr: null,
+			secondary_feecode: null,
+			secondary_fee: null,
 		});
 
 		// Update UI
@@ -195,29 +213,123 @@ class BillingComboManager {
 			.removeClass("btn-primary add-nomen-code")
 			.addClass("btn-secondary disabled")
 			.prop("disabled", true)
-			.html('<i class="fas fa-check"></i> Added');
+			.html('<i class="fas fa-check"></i> Used');
 
 		// Hide search results
 		$("#nomenclatureResults").hide();
 		$("#nomenclatureSearch").val("");
 
-		this.showToast(`Added code ${code} to combo`, "success");
+		this.showToast(`Added main code ${code} to combo`, "success");
+	}
+
+	addSecondaryCode(event) {
+		const button = $(event.currentTarget);
+		const mainIndex = button.data("main-index");
+
+		// Show a modal or inline form to select secondary code
+		this.showSecondaryCodeSelector(mainIndex);
+	}
+
+	showSecondaryCodeSelector(mainIndex) {
+		const mainCode = this.selectedCodes[mainIndex];
+		if (!mainCode) return;
+
+		// Create a simple prompt for the secondary code (could be enhanced with a modal)
+		const secondaryCodeInput = prompt(
+			`Enter secondary nomenclature code for main code ${mainCode.nomen_code}:`
+		);
+
+		if (secondaryCodeInput && secondaryCodeInput.trim()) {
+			const secondaryCode = secondaryCodeInput.trim();
+
+			// Validate secondary code is different from main
+			if (secondaryCode === mainCode.nomen_code.toString()) {
+				this.showToast(
+					"Secondary code must be different from main code",
+					"error"
+				);
+				return;
+			}
+
+			// Check if secondary code is already used
+			if (this.isCodeAlreadyUsed(secondaryCode)) {
+				this.showToast("This code is already used in this combo", "error");
+				return;
+			}
+
+			// Fetch details for secondary code
+			this.fetchSecondaryCodeDetails(mainIndex, secondaryCode);
+		}
+	}
+
+	async fetchSecondaryCodeDetails(mainIndex, secondaryCode) {
+		try {
+			const response = await fetch(
+				`${API_BASE}/nomenclature/code/${secondaryCode}`
+			);
+			const data = await response.json();
+
+			if (data.status === "success" && data.data) {
+				const details = data.data;
+
+				// Update the main code entry with secondary details
+				this.selectedCodes[mainIndex].secondary_nomen_code = secondaryCode;
+				this.selectedCodes[mainIndex].secondary_nomen_desc_fr =
+					details.description_fr || details.description;
+				this.selectedCodes[mainIndex].secondary_feecode = details.feecode;
+				this.selectedCodes[mainIndex].secondary_fee = details.fee;
+
+				this.updateSelectedCodesDisplay();
+				this.showToast(`Added secondary code ${secondaryCode}`, "success");
+			} else {
+				this.showToast("Could not fetch secondary code details", "warning");
+				// Allow manual entry
+				this.selectedCodes[mainIndex].secondary_nomen_code = secondaryCode;
+				this.updateSelectedCodesDisplay();
+			}
+		} catch (error) {
+			console.error("Error fetching secondary code details:", error);
+			this.showToast("Error fetching secondary code details", "error");
+		}
+	}
+
+	removeSecondaryCode(event) {
+		const button = $(event.currentTarget);
+		const mainIndex = button.data("main-index");
+
+		if (this.selectedCodes[mainIndex]) {
+			const secondaryCode = this.selectedCodes[mainIndex].secondary_nomen_code;
+
+			// Clear secondary fields
+			this.selectedCodes[mainIndex].secondary_nomen_code = null;
+			this.selectedCodes[mainIndex].secondary_nomen_desc_fr = null;
+			this.selectedCodes[mainIndex].secondary_feecode = null;
+			this.selectedCodes[mainIndex].secondary_fee = null;
+
+			this.updateSelectedCodesDisplay();
+			this.showToast(`Removed secondary code ${secondaryCode}`, "info");
+		}
 	}
 
 	removeSelectedCode(event) {
 		const button = $(event.currentTarget);
-		const code = button.data("code");
+		const index = button.data("index");
 
-		// Remove from selected codes
-		this.selectedCodes = this.selectedCodes.filter(
-			(selected) => selected.code != code
-		);
+		if (this.selectedCodes[index]) {
+			const removedCode = this.selectedCodes[index];
 
-		// Update UI
-		this.updateSelectedCodesDisplay();
-		this.updateFormState();
+			// Remove from selected codes
+			this.selectedCodes.splice(index, 1);
 
-		this.showToast(`Removed code ${code} from combo`, "info");
+			// Update UI
+			this.updateSelectedCodesDisplay();
+			this.updateFormState();
+
+			this.showToast(
+				`Removed code ${removedCode.nomen_code} from combo`,
+				"info"
+			);
+		}
 	}
 
 	updateSelectedCodesDisplay() {
@@ -232,22 +344,105 @@ class BillingComboManager {
 			container.show();
 
 			let html = '<div class="row g-2">';
-			this.selectedCodes.forEach((code) => {
+			this.selectedCodes.forEach((code, index) => {
+				const hasSecondary = code.secondary_nomen_code !== null;
+				const mainFee = parseFloat(code.fee || 0);
+				const secondaryFee = parseFloat(code.secondary_fee || 0);
+				const totalFee = mainFee + secondaryFee;
+
 				html += `
                     <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center bg-white p-2 border rounded">
-                            <div>
-                                <strong>${code.code}</strong> - ${code.description}
-                                <br>
-                                <small class="text-muted">
-                                    Fee Code: <span class="badge bg-info">${code.feecode}</span> | 
-                                    Fee: €${code.fee}
-                                </small>
+                        <div class="card border-primary">
+                            <div class="card-body p-3">
+                                <!-- Main Code -->
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="card-title mb-2">
+                                            <i class="fas fa-star text-primary"></i> 
+                                            <strong>${
+																							code.nomen_code
+																						}</strong> - ${code.nomen_desc_fr}
+                                        </h6>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <small class="text-muted">Fee Code:</small>
+                                                <span class="badge bg-info">${
+																									code.feecode
+																								}</span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <small class="text-muted">Fee:</small>
+                                                <strong>€${mainFee.toFixed(
+																									2
+																								)}</strong>
+                                            </div>
+                                            <div class="col-md-4">
+                                                ${
+																									!hasSecondary
+																										? `
+                                                    <button type="button" class="btn btn-sm btn-outline-success add-secondary-code" 
+                                                            data-main-index="${index}">
+                                                        <i class="fas fa-plus"></i> Add Secondary
+                                                    </button>
+                                                `
+																										: ""
+																								}
+                                            </div>
+                                        </div>
+                                        
+                                        ${
+																					hasSecondary
+																						? `
+                                            <!-- Secondary Code -->
+                                            <hr class="my-2">
+                                            <div class="bg-light p-2 rounded">
+                                                <h6 class="mb-2">
+                                                    <i class="fas fa-plus-circle text-secondary"></i> 
+                                                    Secondary: <strong>${
+																											code.secondary_nomen_code
+																										}</strong> - ${
+																								code.secondary_nomen_desc_fr ||
+																								"N/A"
+																						  }
+                                                </h6>
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <small class="text-muted">Fee Code:</small>
+                                                        <span class="badge bg-secondary">${
+																													code.secondary_feecode ||
+																													"N/A"
+																												}</span>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <small class="text-muted">Fee:</small>
+                                                        <strong>€${secondaryFee.toFixed(
+																													2
+																												)}</strong>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <small class="text-muted">Total:</small>
+                                                        <strong class="text-success">€${totalFee.toFixed(
+																													2
+																												)}</strong>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger remove-secondary-code" 
+                                                                data-main-index="${index}">
+                                                            <i class="fas fa-times"></i> Remove
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `
+																						: ""
+																				}
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-selected-code ms-2" 
+                                            data-index="${index}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-danger remove-selected-code" 
-                                    data-code="${code.code}">
-                                <i class="fas fa-times"></i>
-                            </button>
                         </div>
                     </div>
                 `;
@@ -256,8 +451,8 @@ class BillingComboManager {
 			container.html(html);
 		}
 
-		// Update hidden field
-		$("#comboCodes").val(JSON.stringify(this.selectedCodes.map((c) => c.code)));
+		// Update hidden field with enhanced structure for API
+		$("#comboCodes").val(JSON.stringify(this.selectedCodes));
 	}
 
 	updateFormState() {
@@ -280,7 +475,7 @@ class BillingComboManager {
 			combo_name: $("#comboName").val().trim(),
 			combo_description: $("#comboDescription").val().trim(),
 			specialty: $("#comboSpecialty").val(),
-			combo_codes: this.selectedCodes.map((c) => c.code),
+			combo_codes: this.selectedCodes, // Send enhanced structure directly
 		};
 
 		try {
@@ -340,7 +535,7 @@ class BillingComboManager {
 		this.exitEditMode();
 	}
 
-	// Edit functionality - now uses main form
+	// Enhanced edit functionality - now handles secondary codes
 	editCombo(id, row) {
 		this.currentEditId = id;
 		this.isEditMode = true;
@@ -354,7 +549,7 @@ class BillingComboManager {
 		$("#comboSpecialty").val(row.specialty);
 		$("#editComboId").val(id);
 
-		// Parse and load selected codes
+		// Parse and load selected codes with enhanced structure support
 		let codes = [];
 		try {
 			codes = JSON.parse(row.combo_codes || "[]");
@@ -362,13 +557,48 @@ class BillingComboManager {
 			console.error("Error parsing combo codes:", e);
 		}
 
-		// Convert codes array to selected codes objects (simplified version for editing)
-		this.selectedCodes = codes.map((code) => ({
-			code: code,
-			description: `Code ${code}`, // Simplified description for editing
-			feecode: "N/A",
-			fee: "N/A",
-		}));
+		// Convert codes array to enhanced structure for editing
+		// Support both old format (integers) and new format (objects with secondary codes)
+		this.selectedCodes = codes.map((code) => {
+			if (typeof code === "number") {
+				// Old format: simple integer code
+				return {
+					nomen_code: code,
+					nomen_desc_fr: `Code ${code}`, // Simplified description for editing
+					feecode: "N/A",
+					fee: 0,
+					secondary_nomen_code: null,
+					secondary_nomen_desc_fr: null,
+					secondary_feecode: null,
+					secondary_fee: null,
+				};
+			} else if (typeof code === "object" && code.nomen_code) {
+				// New format: object with potential secondary codes
+				return {
+					nomen_code: code.nomen_code,
+					nomen_desc_fr: code.nomen_desc_fr || `Code ${code.nomen_code}`,
+					feecode: code.feecode || "N/A",
+					fee: code.fee || 0,
+					secondary_nomen_code: code.secondary_nomen_code || null,
+					secondary_nomen_desc_fr: code.secondary_nomen_desc_fr || null,
+					secondary_feecode: code.secondary_feecode || null,
+					secondary_fee: code.secondary_fee || null,
+				};
+			} else {
+				// Fallback for unexpected format
+				console.warn("Unexpected code format:", code);
+				return {
+					nomen_code: code,
+					nomen_desc_fr: `Code ${code}`,
+					feecode: "N/A",
+					fee: 0,
+					secondary_nomen_code: null,
+					secondary_nomen_desc_fr: null,
+					secondary_feecode: null,
+					secondary_fee: null,
+				};
+			}
+		});
 
 		// Update displays
 		this.updateSelectedCodesDisplay();
@@ -387,8 +617,8 @@ class BillingComboManager {
 		this.isEditMode = true;
 		$("#formTitle").text("Edit Billing Combo");
 		$("#saveButtonText").text("Update Combo");
-		$("#editModeAlert").show();
 		$("#btnSaveCombo").removeClass("btn-primary").addClass("btn-warning");
+		$("#editModeAlert").show();
 	}
 
 	exitEditMode() {
@@ -396,9 +626,9 @@ class BillingComboManager {
 		this.currentEditId = null;
 		$("#formTitle").text("Create New Billing Combo");
 		$("#saveButtonText").text("Save Billing Combo");
+		$("#btnSaveCombo").removeClass("btn-warning").addClass("btn-primary");
 		$("#editModeAlert").hide();
 		$("#editComboId").val("");
-		$("#btnSaveCombo").removeClass("btn-warning").addClass("btn-primary");
 	}
 
 	cancelEdit() {
@@ -408,32 +638,34 @@ class BillingComboManager {
 
 	async deleteCombo(id, name) {
 		const confirmed = await this.showConfirmDialog(
-			`Are you sure you want to delete the combo "${name}"?`,
-			"This action cannot be undone."
+			"Delete Billing Combo",
+			`Are you sure you want to delete the combo "${name}"?<br><br><strong>This action cannot be undone!</strong>`
 		);
 
-		if (!confirmed) return;
+		if (confirmed) {
+			try {
+				const response = await fetch(`${API_BASE}/billing_combo/${id}`, {
+					method: "DELETE",
+				});
 
-		try {
-			const response = await fetch(`${API_BASE}/billing_combo/${id}`, {
-				method: "DELETE",
-			});
+				const result = await response.json();
 
-			const result = await response.json();
-
-			if (response.ok && result.status === "success") {
-				this.showToast("Billing combo deleted successfully!", "success");
-				$("#billingComboTable").bootstrapTable("refresh");
-			} else {
-				throw new Error(result.message || "Failed to delete combo");
+				if (response.ok && result.status === "success") {
+					this.showToast("Billing combo deleted successfully!", "success");
+					$("#billingComboTable").bootstrapTable("refresh");
+				} else {
+					throw new Error(result.message || "Failed to delete combo");
+				}
+			} catch (error) {
+				console.error("Error deleting combo:", error);
+				this.showToast(`Error: ${error.message}`, "error");
 			}
-		} catch (error) {
-			console.error("Error deleting combo:", error);
-			this.showToast(`Error: ${error.message}`, "error");
 		}
 	}
 
 	showToast(message, type = "info") {
+		// Create toast with auto-dismiss
+		const toastId = "toast-" + Date.now();
 		const bgClass =
 			{
 				success: "bg-success",
@@ -442,15 +674,21 @@ class BillingComboManager {
 				info: "bg-info",
 			}[type] || "bg-info";
 
-		$.toast({
-			heading: type.charAt(0).toUpperCase() + type.slice(1),
-			text: message,
-			position: "top-right",
-			loaderBg: "#ff6849",
-			icon: type,
-			hideAfter: 3000,
-			stack: 6,
-		});
+		const toast = $(`
+            <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `);
+
+		$("#toast-container").append(toast);
+		const toastEl = new bootstrap.Toast(toast[0]);
+		toastEl.show();
+
+		// Auto-remove after toast hides
+		toast.on("hidden.bs.toast", () => toast.remove());
 	}
 
 	showConfirmDialog(title, message) {
@@ -459,13 +697,13 @@ class BillingComboManager {
 				title: title,
 				message: message,
 				buttons: {
-					confirm: {
-						label: "Yes, Delete",
-						className: "btn-danger",
-					},
 					cancel: {
-						label: "Cancel",
+						label: "<i class='fas fa-times'></i> Cancel",
 						className: "btn-secondary",
+					},
+					confirm: {
+						label: "<i class='fas fa-check'></i> Confirm",
+						className: "btn-danger",
 					},
 				},
 				callback: (result) => resolve(result),
@@ -474,110 +712,135 @@ class BillingComboManager {
 	}
 }
 
-// Bootstrap Table formatters and event handlers
+// =============================================================================
+// Global Functions for Bootstrap Table
+// =============================================================================
+
 function responseHandler_billingCombo(res) {
 	// Handle different response formats
-	if (res.status === "success" && res.data) {
-		return {
-			total: res.meta?.total || res.data.length,
-			rows: res.data,
-		};
-	} else if (res.items) {
-		return {
-			total: res.count || res.items.length,
-			rows: res.items,
-		};
+	if (res && res.status === "success") {
+		return res.data || res;
+	} else if (res && res.items) {
+		return res;
 	} else if (Array.isArray(res)) {
-		return {
-			total: res.length,
-			rows: res,
-		};
+		return { rows: res, total: res.length };
 	}
-	return { total: 0, rows: [] };
+	return res;
 }
 
 function specialtyFormatter(value) {
-	const badges = {
-		ophthalmology: "bg-primary",
-		general: "bg-secondary",
-		consultation: "bg-info",
+	const specialtyLabels = {
+		ophthalmology: "Ophthalmology",
+		general: "General Medicine",
+		consultation: "Consultation",
 	};
-	const badgeClass = badges[value] || "bg-secondary";
-	return `<span class="badge ${badgeClass}">${
-		value?.charAt(0).toUpperCase() + value?.slice(1) || "N/A"
-	}</span>`;
+
+	const label = specialtyLabels[value] || value;
+	const badgeClass = value === "ophthalmology" ? "bg-primary" : "bg-secondary";
+
+	return `<span class="badge ${badgeClass}">${label}</span>`;
 }
 
-function codesFormatter(value) {
+// Enhanced codes formatter with secondary code support
+function enhancedCodesFormatter(value) {
 	try {
 		const codes = JSON.parse(value || "[]");
-		if (codes.length === 0) {
+		if (!Array.isArray(codes) || codes.length === 0) {
 			return '<span class="text-muted">No codes</span>';
 		}
-		return (
-			codes
-				.slice(0, 3)
-				.map((code) => `<span class="badge bg-secondary me-1">${code}</span>`)
-				.join("") +
-			(codes.length > 3 ? ` <small>+${codes.length - 3} more</small>` : "")
-		);
+
+		let html = '<div class="codes-list">';
+		let totalMainFees = 0;
+		let totalSecondaryFees = 0;
+		let codesWithSecondary = 0;
+
+		codes.forEach((code, index) => {
+			if (typeof code === "number") {
+				// Old format: simple integer code
+				html += `<span class="badge bg-primary me-1 mb-1">${code}</span>`;
+			} else if (typeof code === "object" && code.nomen_code) {
+				// New format: object with potential secondary codes
+				const mainFee = parseFloat(code.fee || 0);
+				const hasSecondary = code.secondary_nomen_code;
+				const secondaryFee = parseFloat(code.secondary_fee || 0);
+
+				totalMainFees += mainFee;
+				if (hasSecondary) {
+					totalSecondaryFees += secondaryFee;
+					codesWithSecondary++;
+				}
+
+				html += `<div class="mb-1">`;
+				html += `<span class="badge bg-primary">${code.nomen_code}</span>`;
+
+				if (hasSecondary) {
+					html += ` <span class="badge bg-secondary">+${code.secondary_nomen_code}</span>`;
+				}
+
+				if (index < codes.length - 1) {
+					html += `<br>`;
+				}
+				html += `</div>`;
+			} else {
+				// Fallback for unexpected format
+				html += `<span class="badge bg-warning me-1 mb-1">${code}</span>`;
+			}
+		});
+
+		html += "</div>";
+
+		// Add summary if there are secondary codes
+		if (codesWithSecondary > 0) {
+			const totalFees = totalMainFees + totalSecondaryFees;
+			html += `<small class="text-muted d-block mt-1">`;
+			html += `${codes.length} codes (${codesWithSecondary} with secondary)<br>`;
+			html += `Total: €${totalFees.toFixed(2)}`;
+			html += `</small>`;
+		}
+
+		return html;
 	} catch (e) {
-		return '<span class="text-muted">Invalid format</span>';
+		console.error("Error formatting codes:", e);
+		return '<span class="text-danger">Invalid format</span>';
 	}
 }
 
 function operateFormatter(value, row, index) {
 	return `
         <div class="btn-group" role="group">
-            <button class="btn btn-sm btn-outline-primary edit-combo" title="Edit">
+            <button type="button" class="btn btn-sm btn-outline-primary edit-combo" 
+                    data-id="${row.id}" title="Edit">
                 <i class="fas fa-edit"></i>
             </button>
-            <button class="btn btn-sm btn-outline-danger delete-combo" title="Delete">
+            <button type="button" class="btn btn-sm btn-outline-danger delete-combo" 
+                    data-id="${row.id}" data-name="${row.combo_name}" title="Delete">
                 <i class="fas fa-trash"></i>
             </button>
         </div>
     `;
 }
 
-// Global event handlers for bootstrap table
+// Global event handlers for table operations
 window.operateEvents = {
 	"click .edit-combo": function (e, value, row, index) {
-		billingComboManager.editCombo(row.id, row);
+		window.billingComboManager.editCombo(row.id, row);
 	},
 	"click .delete-combo": function (e, value, row, index) {
-		billingComboManager.deleteCombo(row.id, row.combo_name);
+		const id = $(this).data("id");
+		const name = $(this).data("name");
+		window.billingComboManager.deleteCombo(id, name);
 	},
 };
 
-// Initialize when document is ready
-let billingComboManager;
+// =============================================================================
+// Initialize on Document Ready
+// =============================================================================
 
 $(document).ready(function () {
-	console.log("Document ready - initializing billing combo manager");
+	// Initialize the billing combo manager
+	window.billingComboManager = new BillingComboManager();
 
-	// Give the DOM a moment to fully render, then check specialty
-	setTimeout(function () {
-		const currentSpecialty = $("#comboSpecialty").val();
-		console.log("Current specialty value:", currentSpecialty);
-		console.log("Specialty options HTML:", $("#comboSpecialty").html());
-
-		// Force set the default specialty if empty
-		if (!currentSpecialty || currentSpecialty === "") {
-			console.log("Setting default specialty to ophthalmology");
-			$("#comboSpecialty").val("ophthalmology");
-			// Trigger change event to ensure UI updates
-			$("#comboSpecialty").trigger("change");
-
-			// Double-check it worked
-			const newValue = $("#comboSpecialty").val();
-			console.log("Specialty value after setting:", newValue);
-		}
-	}, 100);
-
-	billingComboManager = new BillingComboManager();
-
-	// Form validation on input
-	$("#comboName, #comboSpecialty").on("input change", function () {
-		billingComboManager.updateFormState();
-	});
+	console.log(
+		"Enhanced Billing Combo Manager initialized with secondary code support"
+	);
 });

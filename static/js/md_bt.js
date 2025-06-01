@@ -1884,9 +1884,12 @@ function responseHandler_billing(res) {
 
 	let display = [];
 	$.each(list, function (i) {
-		let totalFee = (
-			parseFloat(list[i].fee || 0) * parseInt(list[i].quantity || 1)
-		).toFixed(2);
+		// Enhanced fee calculation including secondary fees
+		const mainFee = parseFloat(list[i].fee || 0);
+		const secondaryFee = parseFloat(list[i].secondary_fee || 0);
+		const quantity = parseInt(list[i].quantity || 1);
+		const totalFee = (mainFee + secondaryFee) * quantity;
+
 		display.push({
 			id: list[i].id,
 			id_auth_user: list[i].id_auth_user,
@@ -1896,9 +1899,16 @@ function responseHandler_billing(res) {
 			nomen_desc_nl: list[i].nomen_desc_nl,
 			fee: list[i].fee ? "€" + parseFloat(list[i].fee).toFixed(2) : "",
 			feecode: list[i].feecode,
+			// Secondary nomenclature fields
+			secondary_nomen_code: list[i].secondary_nomen_code,
+			secondary_nomen_desc_fr: list[i].secondary_nomen_desc_fr,
+			secondary_nomen_desc_nl: list[i].secondary_nomen_desc_nl,
+			secondary_fee: list[i].secondary_fee,
+			secondary_feecode: list[i].secondary_feecode,
+			// Enhanced total fee calculation
+			total_fee: totalFee.toFixed(2),
 			laterality: list[i].laterality,
 			quantity: list[i].quantity,
-			total_fee: totalFee,
 			date_performed: list[i].date_performed,
 			note: list[i].note,
 			status: list[i].status,
@@ -1915,7 +1925,7 @@ function responseHandler_billing(res) {
 
 	console.log(`Processed ${display.length} records for display`);
 
-	// Update billing summary
+	// Update billing summary with enhanced calculations
 	updateBillingSummary(display);
 
 	return {
@@ -1926,10 +1936,24 @@ function responseHandler_billing(res) {
 
 // total fee formatter
 function totalFeeFormatter(value, row, index) {
-	let fee = parseFloat(row.fee?.replace("€", "") || 0);
-	let quantity = parseInt(row.quantity || 1);
-	let total = (fee * quantity).toFixed(2);
-	return "€" + total;
+	const mainFee = parseFloat(row.fee?.replace("€", "") || 0);
+	const secondaryFee = parseFloat(row.secondary_fee || 0);
+	const quantity = parseInt(row.quantity || 1);
+	const totalFee = (mainFee + secondaryFee) * quantity;
+
+	if (totalFee > 0) {
+		// Use enhanced styling for total fee with secondary indicator
+		const hasSecondary = row.secondary_nomen_code
+			? ' title="Includes secondary fee"'
+			: "";
+		const badgeClass = row.secondary_nomen_code
+			? "total-fee-badge"
+			: "bg-primary";
+		return `<span class="badge ${badgeClass} fw-bold"${hasSecondary}>€${totalFee.toFixed(
+			2
+		)}</span>`;
+	}
+	return '<span class="text-muted">€0.00</span>';
 }
 
 // feecode formatter
@@ -1937,6 +1961,34 @@ function feecodeFormatter(value, row, index) {
 	return value
 		? '<span class="badge bg-info">' + value + "</span>"
 		: '<span class="text-muted">-</span>';
+}
+
+// formatter for secondary nomenclature code
+function secondaryCodeFormatter(value, row, index) {
+	return value
+		? `<span class="badge secondary-code" title="Secondary nomenclature code">${value}</span>`
+		: '<span class="text-muted">—</span>';
+}
+
+// formatter for secondary description
+function secondaryDescFormatter(value, row, index) {
+	if (value) {
+		// Truncate long descriptions for table display
+		const truncated =
+			value.length > 50 ? value.substring(0, 47) + "..." : value;
+		return `<span title="${value}">${truncated}</span>`;
+	}
+	return '<span class="text-muted">—</span>';
+}
+
+// formatter for secondary fee
+function secondaryFeeFormatter(value, row, index) {
+	if (value && parseFloat(value) > 0) {
+		return `<span class="badge secondary-fee" title="Secondary procedure fee">€${parseFloat(
+			value
+		).toFixed(2)}</span>`;
+	}
+	return '<span class="text-muted">—</span>';
 }
 
 // operational icons for billing list
@@ -1964,6 +2016,29 @@ window.operateEvents_billing = {
 		$("#billCodeModal [name=nomen_code]").val(row.nomen_code);
 		$("#billCodeModal [name=nomen_desc_fr]").val(row.nomen_desc_fr);
 		$("#billCodeModal [name=fee]").val(row.fee?.replace("€", ""));
+
+		// Populate secondary nomenclature fields if they exist
+		if (row.secondary_nomen_code) {
+			$("#billCodeModal [name=secondary_nomen_code]").val(
+				row.secondary_nomen_code
+			);
+			$("#billCodeModal [name=secondary_nomen_desc_fr]").val(
+				row.secondary_nomen_desc_fr
+			);
+			$("#billCodeModal [name=secondary_fee]").val(row.secondary_fee);
+			$("#billCodeModal [name=secondary_feecode]").val(row.secondary_feecode);
+			// Show the clear secondary button
+			document.getElementById("clearSecondaryBtn").style.display =
+				"inline-block";
+		} else {
+			// Clear secondary fields and hide clear button
+			$("#billCodeModal [name=secondary_nomen_code]").val("");
+			$("#billCodeModal [name=secondary_nomen_desc_fr]").val("");
+			$("#billCodeModal [name=secondary_fee]").val("");
+			$("#billCodeModal [name=secondary_feecode]").val("");
+			document.getElementById("clearSecondaryBtn").style.display = "none";
+		}
+
 		$('#billCodeModal [name=laterality][value="' + row.laterality + '"]').prop(
 			"checked",
 			true
@@ -1973,6 +2048,9 @@ window.operateEvents_billing = {
 		$("#billCodeModal [name=status]").val(row.status);
 		$("#billCodeModal [name=note]").val(row.note);
 		$("#billCodeModal [name=methodBillCodeSubmit]").val("PUT");
+
+		// Update total fee display
+		updateTotalFee();
 
 		$("#billCodeModalLabel").html("Edit Billing Code #" + row.id);
 		$("#billCodeSubmit").html("Update Code");
@@ -1987,8 +2065,14 @@ window.operateEvents_billing = {
 // detail formatter for billing codes
 function detailFormatter_billing(index, row) {
 	var html = [];
+	html.push('<div class="container-fluid">');
 	html.push('<div class="row">');
+
+	// Main nomenclature code section
 	html.push('<div class="col-md-6">');
+	html.push(
+		'<h6 class="text-primary"><i class="fas fa-star me-2"></i>Main Nomenclature Code</h6>'
+	);
 	html.push(
 		"<p><strong>Code:</strong> " + checkIfNull(row.nomen_code, "N/A") + "</p>"
 	);
@@ -1998,49 +2082,232 @@ function detailFormatter_billing(index, row) {
 			"</p>"
 	);
 	html.push(
+		"<p><strong>Fee:</strong> " + checkIfNull(row.fee, "€0.00") + "</p>"
+	);
+	html.push(
 		"<p><strong>Fee Code:</strong> " + checkIfNull(row.feecode, "N/A") + "</p>"
+	);
+	html.push("</div>");
+
+	// Secondary nomenclature code section
+	html.push('<div class="col-md-6">');
+	if (row.secondary_nomen_code) {
+		html.push(
+			'<h6 class="text-success"><i class="fas fa-plus-circle me-2"></i>Secondary Nomenclature Code</h6>'
+		);
+		html.push("<p><strong>Code:</strong> " + row.secondary_nomen_code + "</p>");
+		html.push(
+			"<p><strong>Description:</strong> " +
+				checkIfNull(row.secondary_nomen_desc_fr, "N/A") +
+				"</p>"
+		);
+		html.push(
+			"<p><strong>Fee:</strong> €" +
+				parseFloat(row.secondary_fee || 0).toFixed(2) +
+				"</p>"
+		);
+		html.push(
+			"<p><strong>Fee Code:</strong> " +
+				checkIfNull(row.secondary_feecode, "N/A") +
+				"</p>"
+		);
+	} else {
+		html.push(
+			'<h6 class="text-muted"><i class="fas fa-plus-circle me-2"></i>No Secondary Code</h6>'
+		);
+		html.push(
+			'<p class="text-muted">This billing code does not have a secondary nomenclature code.</p>'
+		);
+	}
+	html.push("</div>");
+
+	html.push("</div>"); // end row
+
+	// Additional information row
+	html.push('<div class="row mt-3">');
+	html.push('<div class="col-md-6">');
+	html.push(
+		'<h6 class="text-info"><i class="fas fa-info-circle me-2"></i>Additional Information</h6>'
+	);
+	html.push(
+		"<p><strong>Laterality:</strong> " +
+			checkIfNull(row.laterality, "N/A") +
+			"</p>"
+	);
+	html.push(
+		"<p><strong>Quantity:</strong> " + checkIfNull(row.quantity, "1") + "</p>"
+	);
+	html.push(
+		'<p><strong>Status:</strong> <span class="badge bg-secondary">' +
+			checkIfNull(row.status, "draft") +
+			"</span></p>"
 	);
 	html.push(
 		"<p><strong>Note:</strong> " + checkIfNull(row.note, "None") + "</p>"
 	);
 	html.push("</div>");
+
+	// Fee calculation section
 	html.push('<div class="col-md-6">');
 	html.push(
-		"<p><strong>Created by:</strong> " +
+		'<h6 class="text-warning"><i class="fas fa-calculator me-2"></i>Fee Calculation</h6>'
+	);
+
+	const mainFee = parseFloat(row.fee?.replace("€", "") || 0);
+	const secondaryFee = parseFloat(row.secondary_fee || 0);
+	const quantity = parseInt(row.quantity || 1);
+	const totalPerUnit = mainFee + secondaryFee;
+	const totalAmount = totalPerUnit * quantity;
+
+	html.push('<div class="card border-light">');
+	html.push('<div class="card-body py-2">');
+	html.push('<div class="d-flex justify-content-between small">');
+	html.push("<span>Main Fee:</span>");
+	html.push('<span class="fw-bold">€' + mainFee.toFixed(2) + "</span>");
+	html.push("</div>");
+
+	if (secondaryFee > 0) {
+		html.push('<div class="d-flex justify-content-between small">');
+		html.push("<span>Secondary Fee:</span>");
+		html.push('<span class="fw-bold">€' + secondaryFee.toFixed(2) + "</span>");
+		html.push("</div>");
+		html.push('<hr class="my-1">');
+		html.push('<div class="d-flex justify-content-between small">');
+		html.push("<span>Per Unit Total:</span>");
+		html.push('<span class="fw-bold">€' + totalPerUnit.toFixed(2) + "</span>");
+		html.push("</div>");
+	}
+
+	if (quantity > 1) {
+		html.push('<div class="d-flex justify-content-between small">');
+		html.push("<span>Quantity:</span>");
+		html.push('<span class="fw-bold">×' + quantity + "</span>");
+		html.push("</div>");
+		html.push('<hr class="my-1">');
+	}
+
+	html.push('<div class="d-flex justify-content-between">');
+	html.push('<span class="fw-bold">Total Amount:</span>');
+	html.push(
+		'<span class="fw-bold text-success">€' + totalAmount.toFixed(2) + "</span>"
+	);
+	html.push("</div>");
+	html.push("</div>");
+	html.push("</div>");
+	html.push("</div>");
+
+	// Audit information row
+	html.push('<div class="col-md-12 mt-3">');
+	html.push(
+		'<h6 class="text-secondary"><i class="fas fa-history me-2"></i>Audit Information</h6>'
+	);
+	html.push('<div class="row">');
+	html.push('<div class="col-md-6">');
+	html.push(
+		'<p class="small"><strong>Created by:</strong> ' +
 			checkIfNull(row.created_by_name, "N/A") +
 			"</p>"
 	);
 	html.push(
-		"<p><strong>Created on:</strong> " +
+		'<p class="small"><strong>Created on:</strong> ' +
 			checkIfNull(row.created_on, "N/A") +
 			"</p>"
 	);
+	html.push("</div>");
+	html.push('<div class="col-md-6">');
 	html.push(
-		"<p><strong>Modified by:</strong> " +
+		'<p class="small"><strong>Modified by:</strong> ' +
 			checkIfNull(row.modified_by_name, "N/A") +
 			"</p>"
 	);
 	html.push(
-		"<p><strong>Modified on:</strong> " +
+		'<p class="small"><strong>Modified on:</strong> ' +
 			checkIfNull(row.modified_on, "N/A") +
 			"</p>"
 	);
 	html.push("</div>");
 	html.push("</div>");
+	html.push("</div>");
+
+	html.push("</div>"); // end additional info row
+	html.push("</div>"); // end container
 	return html.join("");
 }
 
 // update billing summary
 function updateBillingSummary(billingData) {
 	let totalCodes = billingData.length;
+	let codesWithSecondary = 0;
+	let totalMainFees = 0;
+	let totalSecondaryFees = 0;
+
+	// Enhanced calculation including secondary fees
 	let totalAmount = billingData.reduce((sum, item) => {
-		let fee = parseFloat(item.fee?.replace("€", "") || 0);
-		let quantity = parseInt(item.quantity || 1);
-		return sum + fee * quantity;
+		const mainFee = parseFloat(item.fee?.replace("€", "") || 0);
+		const secondaryFee = parseFloat(item.secondary_fee || 0);
+		const quantity = parseInt(item.quantity || 1);
+
+		// Track separate totals for summary
+		totalMainFees += mainFee * quantity;
+		totalSecondaryFees += secondaryFee * quantity;
+
+		// Count codes with secondary nomenclature
+		if (item.secondary_nomen_code) {
+			codesWithSecondary++;
+		}
+
+		return sum + (mainFee + secondaryFee) * quantity;
 	}, 0);
 
+	// Update main summary display
 	$("#totalCodes").text(totalCodes);
 	$("#totalAmount").text("€" + totalAmount.toFixed(2));
+
+	// Enhanced summary with secondary code information
+	const summaryHtml = `
+		<div class="row">
+			<div class="col-md-6">
+				<h5>Total Codes: <span class="badge bg-primary">${totalCodes}</span></h5>
+				<h5>With Secondary: <span class="badge bg-info">${codesWithSecondary}</span></h5>
+				<h5>Total Amount: <span class="badge bg-success">€${totalAmount.toFixed(
+					2
+				)}</span></h5>
+			</div>
+			<div class="col-md-6">
+				<div class="card border-light">
+					<div class="card-body py-2 px-3">
+						<h6 class="card-title mb-2">Fee Breakdown</h6>
+						<div class="d-flex justify-content-between small">
+							<span>Main Fees:</span>
+							<span class="fw-bold">€${totalMainFees.toFixed(2)}</span>
+						</div>
+						<div class="d-flex justify-content-between small">
+							<span>Secondary Fees:</span>
+							<span class="fw-bold">€${totalSecondaryFees.toFixed(2)}</span>
+						</div>
+						<hr class="my-1">
+						<div class="d-flex justify-content-between">
+							<span class="fw-bold">Total:</span>
+							<span class="fw-bold text-success">€${totalAmount.toFixed(2)}</span>
+						</div>
+					</div>
+				</div>
+				<div class="btn-group mt-2" role="group">
+					<button type="button" class="btn btn-outline-primary btn-sm"
+						onclick="exportBilling('pdf')">
+						Export PDF<i class="ms-1 fas fa-file-pdf"></i>
+					</button>
+					<button type="button" class="btn btn-outline-success btn-sm"
+						onclick="exportBilling('excel')">
+						Export Excel<i class="ms-1 fas fa-file-excel"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	`;
+
+	// Update the billing summary container
+	$("#billingSummary").html(summaryHtml);
 }
 
 // search nomenclature codes
@@ -2300,14 +2567,24 @@ function displayNomenclatureResults(results) {
 					}</span></td>
 					<td><span class="badge bg-info">${feecode}</span></td>
 					<td>
-						<button class="btn btn-sm btn-primary select-nomen" 
-								data-code="${code}" 
-								data-desc="${description}" 
-								data-fee="${fee || 0}" 
-								data-feecode="${feecode || 0}"
-								title="Select this nomenclature code">
-							<i class="fas fa-check"></i> Select
-						</button>
+						<div class="btn-group" role="group">
+							<button class="btn btn-sm btn-primary select-main-code" 
+									data-code="${code}" 
+									data-desc="${description}" 
+									data-fee="${fee || 0}" 
+									data-feecode="${feecode || 0}"
+									title="Select as main procedure code">
+								<i class="fas fa-star"></i> Main
+							</button>
+							<button class="btn btn-sm btn-outline-secondary select-secondary-code" 
+									data-code="${code}" 
+									data-desc="${description}" 
+									data-fee="${fee || 0}" 
+									data-feecode="${feecode || 0}"
+									title="Select as secondary procedure code">
+								<i class="fas fa-plus"></i> Secondary
+							</button>
+						</div>
 					</td>
 				</tr>
 			`);
@@ -2447,20 +2724,283 @@ function applyBillingCombo(comboId, note) {
 
 // export billing data
 function exportBilling(format) {
-	let url = HOSTURL + "/" + APP_NAME + "/api/billing_codes/by_worklist/" + wlId;
+	// Get current billing data from the table
+	const tableData = $("#bill_tbl").bootstrapTable("getData");
+
+	if (!tableData || tableData.length === 0) {
+		bootbox.alert("No billing data to export!");
+		return;
+	}
 
 	if (format === "pdf") {
-		// TODO: Implement PDF export
-		bootbox.alert("PDF export feature coming soon!");
+		exportBillingToPDF(tableData);
 	} else if (format === "excel") {
-		// TODO: Implement Excel export
-		bootbox.alert("Excel export feature coming soon!");
+		exportBillingToExcel(tableData);
+	}
+}
+
+/**
+ * Export billing data to PDF using pdfmake
+ */
+function exportBillingToPDF(billingData) {
+	try {
+		// Prepare data for PDF
+		const tableBody = [
+			// Header row
+			[
+				{ text: "Date", style: "tableHeader" },
+				{ text: "Main Code", style: "tableHeader" },
+				{ text: "Main Description", style: "tableHeader" },
+				{ text: "Main Fee", style: "tableHeader" },
+				{ text: "Secondary Code", style: "tableHeader" },
+				{ text: "Secondary Description", style: "tableHeader" },
+				{ text: "Secondary Fee", style: "tableHeader" },
+				{ text: "Total Fee", style: "tableHeader" },
+				{ text: "Laterality", style: "tableHeader" },
+				{ text: "Qty", style: "tableHeader" },
+				{ text: "Status", style: "tableHeader" },
+			],
+		];
+
+		// Add data rows
+		billingData.forEach((item) => {
+			const mainFee = parseFloat(item.fee?.replace("€", "") || 0);
+			const secondaryFee = parseFloat(item.secondary_fee || 0);
+			const quantity = parseInt(item.quantity || 1);
+			const totalFee = (mainFee + secondaryFee) * quantity;
+
+			tableBody.push([
+				item.date_performed || "-",
+				item.nomen_code || "-",
+				item.nomen_desc_fr || "-",
+				item.fee || "€0.00",
+				item.secondary_nomen_code || "-",
+				item.secondary_nomen_desc_fr || "-",
+				secondaryFee > 0 ? `€${secondaryFee.toFixed(2)}` : "-",
+				`€${totalFee.toFixed(2)}`,
+				item.laterality || "-",
+				item.quantity || "1",
+				item.status || "draft",
+			]);
+		});
+
+		// Calculate totals
+		const totalAmount = billingData.reduce((sum, item) => {
+			const mainFee = parseFloat(item.fee?.replace("€", "") || 0);
+			const secondaryFee = parseFloat(item.secondary_fee || 0);
+			const quantity = parseInt(item.quantity || 1);
+			return sum + (mainFee + secondaryFee) * quantity;
+		}, 0);
+
+		const codesWithSecondary = billingData.filter(
+			(item) => item.secondary_nomen_code
+		).length;
+
+		// PDF document definition
+		const docDefinition = {
+			pageSize: "A4",
+			pageOrientation: "landscape",
+			pageMargins: [40, 60, 40, 60],
+			content: [
+				{
+					text: "Billing Summary Report",
+					style: "header",
+					alignment: "center",
+					margin: [0, 0, 0, 20],
+				},
+				{
+					columns: [
+						{
+							text: `Generated: ${new Date().toLocaleDateString()}`,
+							style: "subheader",
+						},
+						{
+							text: `Total Codes: ${billingData.length} | With Secondary: ${codesWithSecondary}`,
+							style: "subheader",
+							alignment: "right",
+						},
+					],
+					margin: [0, 0, 0, 20],
+				},
+				{
+					table: {
+						headerRows: 1,
+						widths: [
+							"auto",
+							"auto",
+							"*",
+							"auto",
+							"auto",
+							"*",
+							"auto",
+							"auto",
+							"auto",
+							"auto",
+							"auto",
+						],
+						body: tableBody,
+					},
+					layout: {
+						fillColor: function (rowIndex) {
+							return rowIndex === 0
+								? "#cccccc"
+								: rowIndex % 2 === 0
+								? "#f9f9f9"
+								: null;
+						},
+					},
+				},
+				{
+					text: `Total Amount: €${totalAmount.toFixed(2)}`,
+					style: "total",
+					alignment: "right",
+					margin: [0, 20, 0, 0],
+				},
+			],
+			styles: {
+				header: {
+					fontSize: 18,
+					bold: true,
+				},
+				subheader: {
+					fontSize: 12,
+					bold: true,
+				},
+				tableHeader: {
+					bold: true,
+					fontSize: 10,
+					color: "black",
+				},
+				total: {
+					fontSize: 14,
+					bold: true,
+					color: "#2e7d32",
+				},
+			},
+			defaultStyle: {
+				fontSize: 8,
+			},
+		};
+
+		// Generate and download PDF
+		if (typeof pdfMake !== "undefined") {
+			pdfMake
+				.createPdf(docDefinition)
+				.download(
+					`billing_report_${new Date().toISOString().split("T")[0]}.pdf`
+				);
+			showNotification("PDF export completed successfully!", "success");
+		} else {
+			console.error("pdfMake is not loaded");
+			bootbox.alert(
+				"PDF export library not available. Please ensure pdfMake is loaded."
+			);
+		}
+	} catch (error) {
+		console.error("PDF export error:", error);
+		bootbox.alert("Error generating PDF: " + error.message);
+	}
+}
+
+/**
+ * Export billing data to Excel/CSV format
+ */
+function exportBillingToExcel(billingData) {
+	try {
+		// Prepare CSV data
+		const headers = [
+			"Date",
+			"Main Code",
+			"Main Description",
+			"Main Fee",
+			"Secondary Code",
+			"Secondary Description",
+			"Secondary Fee",
+			"Total Fee",
+			"Laterality",
+			"Quantity",
+			"Status",
+			"Note",
+		];
+
+		// Convert data to CSV format
+		const csvData = [headers];
+
+		billingData.forEach((item) => {
+			const mainFee = parseFloat(item.fee?.replace("€", "") || 0);
+			const secondaryFee = parseFloat(item.secondary_fee || 0);
+			const quantity = parseInt(item.quantity || 1);
+			const totalFee = (mainFee + secondaryFee) * quantity;
+
+			csvData.push([
+				item.date_performed || "",
+				item.nomen_code || "",
+				item.nomen_desc_fr || "",
+				mainFee.toFixed(2),
+				item.secondary_nomen_code || "",
+				item.secondary_nomen_desc_fr || "",
+				secondaryFee.toFixed(2),
+				totalFee.toFixed(2),
+				item.laterality || "",
+				item.quantity || "1",
+				item.status || "draft",
+				item.note || "",
+			]);
+		});
+
+		// Convert to CSV string
+		const csvContent = csvData
+			.map((row) =>
+				row.map((field) => `"${String(field).replace(/"/g, '""')}"`).join(",")
+			)
+			.join("\n");
+
+		// Create and download file
+		const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+		const link = document.createElement("a");
+
+		if (link.download !== undefined) {
+			const url = URL.createObjectURL(blob);
+			link.setAttribute("href", url);
+			link.setAttribute(
+				"download",
+				`billing_report_${new Date().toISOString().split("T")[0]}.csv`
+			);
+			link.style.visibility = "hidden";
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			showNotification("Excel/CSV export completed successfully!", "success");
+		} else {
+			throw new Error("Browser does not support file download");
+		}
+	} catch (error) {
+		console.error("Excel export error:", error);
+		bootbox.alert("Error generating Excel file: " + error.message);
 	}
 }
 
 // ============================================================================
 // Event Handlers for Billing
 // ============================================================================
+
+// Global functions needed for billing operations
+// These functions must be global to be accessible from operateEvents_billing
+
+/**
+ * Update total fee calculation for billing modal
+ * This function is global to be accessible from operateEvents_billing
+ */
+function updateTotalFee() {
+	const mainFee = parseFloat(document.getElementById("billFee").value) || 0;
+	const secondaryFee =
+		parseFloat(document.getElementById("billSecondaryFee").value) || 0;
+	const totalFee = mainFee + secondaryFee;
+
+	$("#mainFeeDisplay").text("€" + mainFee.toFixed(2));
+	$("#secondaryFeeDisplay").text("€" + secondaryFee.toFixed(2));
+	$("#totalFeeDisplay").text("€" + totalFee.toFixed(2));
+}
 
 $(document).ready(function () {
 	// Test DOM elements on page load
@@ -2545,6 +3085,108 @@ $(document).ready(function () {
 		$("#nomenSearchResults").hide();
 		$("#nomenSearchInput").val("");
 	});
+
+	/**
+	 * Select nomenclature code as main procedure
+	 * @param {Object} codeData - Nomenclature code data from search
+	 */
+	function selectMainCode(codeData) {
+		document.getElementById("billNomenCode").value = codeData.nomen_code;
+		document.getElementById("billNomenDesc").value = codeData.nomen_desc_fr;
+		document.getElementById("billFee").value = codeData.fee || "";
+
+		// Store feecode in hidden field
+		if ($("#billFeeCode").length === 0) {
+			$("#billCodeForm").append(
+				'<input type="hidden" id="billFeeCode" name="feecode">'
+			);
+		}
+		$("#billFeeCode").val(codeData.feecode);
+
+		updateTotalFee();
+		showNotification("Main code selected", "success");
+		$("#nomenSearchResults").hide();
+		$("#nomenSearchInput").val("");
+	}
+
+	/**
+	 * Select nomenclature code as secondary procedure
+	 * @param {Object} codeData - Nomenclature code data from search
+	 */
+	function selectSecondaryCode(codeData) {
+		document.getElementById("billSecondaryNomenCode").value =
+			codeData.nomen_code;
+		document.getElementById("billSecondaryNomenDesc").value =
+			codeData.nomen_desc_fr;
+		document.getElementById("billSecondaryFee").value = codeData.fee || "";
+
+		// Store secondary feecode in hidden field
+		$("#billSecondaryFeeCode").val(codeData.feecode);
+
+		document.getElementById("clearSecondaryBtn").style.display = "inline-block";
+		updateTotalFee();
+		showNotification("Secondary code selected", "success");
+		$("#nomenSearchResults").hide();
+		$("#nomenSearchInput").val("");
+	}
+
+	/**
+	 * Clear secondary nomenclature code
+	 */
+	function clearSecondaryCode() {
+		document.getElementById("billSecondaryNomenCode").value = "";
+		document.getElementById("billSecondaryNomenDesc").value = "";
+		document.getElementById("billSecondaryFee").value = "";
+		document.getElementById("clearSecondaryBtn").style.display = "none";
+		$("#billSecondaryFeeCode").val("");
+
+		updateTotalFee();
+		showNotification("Secondary code cleared", "info");
+	}
+
+	/**
+	 * Enhanced form validation
+	 */
+	function validateBillingForm() {
+		const mainCode = document.getElementById("billNomenCode").value;
+		const secondaryCode = document.getElementById(
+			"billSecondaryNomenCode"
+		).value;
+
+		// Main code is required
+		if (!mainCode) {
+			showNotification("Main nomenclature code is required", "error");
+			return false;
+		}
+
+		// If secondary code is provided, it must be different from main
+		if (secondaryCode && secondaryCode === mainCode) {
+			showNotification(
+				"Secondary code must be different from main code",
+				"error"
+			);
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Show notification message
+	 */
+	function showNotification(message, type) {
+		// Use bootbox for notifications if available, otherwise console log
+		if (typeof bootbox !== "undefined") {
+			if (type === "error") {
+				bootbox.alert(message);
+			} else {
+				// For success and info, we could use a more subtle notification
+				console.log(type + ": " + message);
+			}
+		} else {
+			console.log(type + ": " + message);
+		}
+	}
 
 	// Load combos when modal opens
 	$("#billComboModal").on("show.bs.modal", function () {
@@ -2676,8 +3318,107 @@ $(document).ready(function () {
 			dataObj["date_performed"] = wlDate.toISOString().split("T")[0];
 		}
 
+		// Clean up main fee fields - convert empty strings to null
+		if (dataObj["fee"] === "" || dataObj["fee"] === undefined) {
+			dataObj["fee"] = null;
+		}
+		if (dataObj["feecode"] === "" || dataObj["feecode"] === undefined) {
+			dataObj["feecode"] = null;
+		}
+
+		// Convert main fee to number if it's a non-empty string
+		if (dataObj["fee"] !== null && typeof dataObj["fee"] === "string") {
+			const parsedMainFee = parseFloat(dataObj["fee"]);
+			if (!isNaN(parsedMainFee)) {
+				dataObj["fee"] = parsedMainFee;
+			} else {
+				dataObj["fee"] = null;
+			}
+		}
+
+		// Convert main feecode to integer if it's a non-empty string
+		if (dataObj["feecode"] !== null && typeof dataObj["feecode"] === "string") {
+			const parsedMainFeecode = parseInt(dataObj["feecode"], 10);
+			if (!isNaN(parsedMainFeecode)) {
+				dataObj["feecode"] = parsedMainFeecode;
+			} else {
+				dataObj["feecode"] = null;
+			}
+		}
+
+		// Clean up secondary nomenclature fields - convert empty strings to null
+		const secondaryFields = [
+			"secondary_nomen_code",
+			"secondary_nomen_desc_fr",
+			"secondary_nomen_desc_nl",
+			"secondary_fee",
+			"secondary_feecode",
+		];
+
+		secondaryFields.forEach((field) => {
+			if (dataObj[field] === "" || dataObj[field] === undefined) {
+				dataObj[field] = null;
+			}
+		});
+
+		// Convert secondary_nomen_code to integer if it's a non-empty string
+		if (
+			dataObj["secondary_nomen_code"] !== null &&
+			typeof dataObj["secondary_nomen_code"] === "string"
+		) {
+			const parsedCode = parseInt(dataObj["secondary_nomen_code"], 10);
+			if (!isNaN(parsedCode)) {
+				dataObj["secondary_nomen_code"] = parsedCode;
+			} else {
+				dataObj["secondary_nomen_code"] = null;
+			}
+		}
+
+		// Convert secondary_fee to number if it's a non-empty string
+		if (
+			dataObj["secondary_fee"] !== null &&
+			typeof dataObj["secondary_fee"] === "string"
+		) {
+			const parsedFee = parseFloat(dataObj["secondary_fee"]);
+			if (!isNaN(parsedFee)) {
+				dataObj["secondary_fee"] = parsedFee;
+			} else {
+				dataObj["secondary_fee"] = null;
+			}
+		}
+
+		// Convert secondary_feecode to integer if it's a non-empty string
+		if (
+			dataObj["secondary_feecode"] !== null &&
+			typeof dataObj["secondary_feecode"] === "string"
+		) {
+			const parsedFeecode = parseInt(dataObj["secondary_feecode"], 10);
+			if (!isNaN(parsedFeecode)) {
+				dataObj["secondary_feecode"] = parsedFeecode;
+			} else {
+				dataObj["secondary_feecode"] = null;
+			}
+		}
+
 		delete dataObj["methodBillCodeSubmit"];
 		dataStr = JSON.stringify(dataObj);
+
+		// Validate data before submission
+		if (!dataObj["nomen_code"]) {
+			bootbox.alert("Main nomenclature code is required");
+			return;
+		}
+
+		// If secondary code is provided, it must be different from main
+		if (
+			dataObj["secondary_nomen_code"] &&
+			dataObj["secondary_nomen_code"] === dataObj["nomen_code"]
+		) {
+			bootbox.alert("Secondary code must be different from main code");
+			return;
+		}
+
+		console.log("Submitting billing code data:", dataObj); // Debug log
 
 		// Use crudp function following the same pattern as other forms
 		crudp("billing_codes", dataObj["id"] || "0", req, dataStr)
@@ -2692,6 +3433,52 @@ $(document).ready(function () {
 		document.getElementById("billCodeForm").reset();
 		$("#billCodeModal").modal("hide");
 	});
+
+	// Select nomenclature code as main
+	$(document).on("click", ".select-main-code", function () {
+		let code = $(this).data("code");
+		let desc = $(this).data("desc");
+		let fee = $(this).data("fee");
+		let feecode = $(this).data("feecode");
+
+		selectMainCode({
+			nomen_code: code,
+			nomen_desc_fr: desc,
+			fee: fee,
+			feecode: feecode,
+		});
+	});
+
+	// Select nomenclature code as secondary
+	$(document).on("click", ".select-secondary-code", function () {
+		let code = $(this).data("code");
+		let desc = $(this).data("desc");
+		let fee = $(this).data("fee");
+		let feecode = $(this).data("feecode");
+
+		selectSecondaryCode({
+			nomen_code: code,
+			nomen_desc_fr: desc,
+			fee: fee,
+			feecode: feecode,
+		});
+	});
+
+	// Clear secondary code button
+	$(document).on("click", "#clearSecondaryBtn", function () {
+		clearSecondaryCode();
+	});
+
+	// Add event listeners for fee updates
+	$(document).on("input", "#billFee", function () {
+		updateTotalFee();
+	});
+
+	$(document).on("input", "#billSecondaryFee", function () {
+		updateTotalFee();
+	});
+
+	// Removed redundant form validation handler - validation is handled in main submit handler
 });
 
 // Test function to verify DOM elements
@@ -2959,101 +3746,16 @@ function testWithExactUserData() {
 		},
 	};
 
+	console.log("=== Processing test response ===");
 	console.log("Test response:", testResponse);
-	console.log("Response type:", typeof testResponse);
-	console.log("Response keys:", Object.keys(testResponse));
 
-	// Test the exact data extraction logic from searchNomenclature
-	let resultsData = [];
-
-	console.log("Testing data extraction...");
-	if (testResponse && typeof testResponse === "object") {
-		console.log("Analyzing response structure:");
-		console.log("- response.status:", testResponse.status);
-		console.log("- response.message:", testResponse.message);
-		console.log("- response.code:", testResponse.code);
-		console.log("- response.data type:", typeof testResponse.data);
-		console.log("- response.data is array:", Array.isArray(testResponse.data));
-		console.log("- response.meta:", testResponse.meta);
-
-		// Primary format check - exact match for the user's format
-		if (testResponse.status === "success" && Array.isArray(testResponse.data)) {
-			resultsData = testResponse.data;
-			console.log(
-				"✅ Success format detected - Using response.data (found " +
-					resultsData.length +
-					" items)"
-			);
-			console.log("Response meta:", testResponse.meta);
-		}
-		// Fallback: check for data field regardless of status
-		else if (Array.isArray(testResponse.data)) {
-			resultsData = testResponse.data;
-			console.log(
-				"✅ Data array found - Using response.data (found " +
-					resultsData.length +
-					" items) [Status: " +
-					testResponse.status +
-					"]"
-			);
-		}
-		// No valid format found
-		else {
-			console.error("❌ Could not extract data from response");
-			console.log("Response structure debug:");
-			console.log("- response type:", typeof testResponse);
-			console.log("- response keys:", Object.keys(testResponse));
-			console.log("- response.data:", testResponse.data);
-			console.log("- response.items:", testResponse.items);
-			console.log("- is array:", Array.isArray(testResponse));
-			resultsData = [];
-		}
-	} else {
-		console.error("❌ Invalid response - not an object:", testResponse);
-		resultsData = [];
-	}
-
-	console.log("Final results data:", resultsData);
-	console.log(
-		"Sample item:",
-		resultsData.length > 0 ? resultsData[0] : "No items"
-	);
-	console.log(
-		"About to call displayNomenclatureResults with",
-		resultsData.length,
-		"items"
-	);
-
-	// Test displayNomenclatureResults with this data
+	// Test the displayNomenclatureResults function with this data
 	try {
-		displayNomenclatureResults(resultsData);
-		console.log("✅ displayNomenclatureResults completed successfully");
+		displayNomenclatureResults(testResponse.data);
+		console.log("✅ Display function completed successfully");
 	} catch (error) {
-		console.error("❌ Error in displayNomenclatureResults:", error);
-		console.error("Error stack:", error.stack);
+		console.error("❌ Display function failed:", error);
 	}
+
+	console.log("=== End exact user data test ===");
 }
-
-// Test function to simulate the complete search flow
-function testCompleteSearchFlow() {
-	console.log("=== Testing complete search flow ===");
-
-	// First test DOM elements
-	testNomenclatureElements();
-
-	// Wait a bit, then test with exact data
-	setTimeout(function () {
-		testWithExactUserData();
-	}, 1000);
-
-	// Simulate manual search
-	console.log(
-		"- To test manually, open the billing modal and type '105' in the search box"
-	);
-	console.log("- Or call: searchNomenclature('105')");
-	console.log("- Or call: testWithExactUserData()");
-}
-
-// Make test functions available globally for debugging
-window.testWithExactUserData = testWithExactUserData;
-window.testCompleteSearchFlow = testCompleteSearchFlow;

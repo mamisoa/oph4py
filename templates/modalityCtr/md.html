@@ -7,6 +7,81 @@
     section#main {
         margin-top: 0px;
     }
+
+    /* Enhanced responsive styling for billing table */
+    @media (max-width: 768px) {
+
+        /* Hide secondary columns on small screens */
+        #bill_tbl th[data-field="secondary_nomen_code"],
+        #bill_tbl td[data-field="secondary_nomen_code"],
+        #bill_tbl th[data-field="secondary_nomen_desc_fr"],
+        #bill_tbl td[data-field="secondary_nomen_desc_fr"],
+        #bill_tbl th[data-field="secondary_fee"],
+        #bill_tbl td[data-field="secondary_fee"] {
+            display: none;
+        }
+
+        /* Adjust main description column */
+        #bill_tbl th[data-field="nomen_desc_fr"],
+        #bill_tbl td[data-field="nomen_desc_fr"] {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Make billing summary more compact */
+        #billingSummary .card {
+            font-size: 0.9rem;
+        }
+
+        #billingSummary .btn-group {
+            flex-direction: column;
+        }
+
+        #billingSummary .btn-group .btn {
+            margin-bottom: 0.25rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+
+        /* Further hide columns on extra small screens */
+        #bill_tbl th[data-field="feecode"],
+        #bill_tbl td[data-field="feecode"],
+        #bill_tbl th[data-field="quantity"],
+        #bill_tbl td[data-field="quantity"],
+        #bill_tbl th[data-field="laterality"],
+        #bill_tbl td[data-field="laterality"] {
+            display: none;
+        }
+    }
+
+    /* Enhanced badge styling for secondary codes */
+    .badge.secondary-code {
+        background-color: #198754 !important;
+        color: white;
+    }
+
+    .badge.secondary-fee {
+        background-color: #20c997 !important;
+        color: white;
+    }
+
+    /* Improved detail view styling */
+    .bootstrap-table .fixed-table-container .fixed-table-body .card-view .card-view-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    /* Enhanced total fee display */
+    .total-fee-badge {
+        font-size: 1.1em;
+        font-weight: bold;
+        background: linear-gradient(45deg, #28a745, #20c997);
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 </style>
 [[ end ]]
 
@@ -1272,15 +1347,22 @@
                                         <thead>
                                             <tr>
                                                 <th data-field="date_performed" data-sortable="true">Date</th>
-                                                <th data-field="nomen_code" data-sortable="true">Code</th>
-                                                <th data-field="nomen_desc_fr" data-sortable="false">Description</th>
+                                                <th data-field="nomen_code" data-sortable="true">Main Code</th>
+                                                <th data-field="nomen_desc_fr" data-sortable="false">Main Description
+                                                </th>
+                                                <th data-field="fee" data-sortable="false">Main Fee</th>
+                                                <th data-field="secondary_nomen_code"
+                                                    data-formatter="secondaryCodeFormatter" data-sortable="true">
+                                                    Secondary Code</th>
+                                                <th data-field="secondary_nomen_desc_fr"
+                                                    data-formatter="secondaryDescFormatter" data-sortable="false">
+                                                    Secondary Description</th>
+                                                <th data-field="secondary_fee" data-formatter="secondaryFeeFormatter"
+                                                    data-sortable="false">Secondary Fee</th>
+                                                <th data-field="total_fee" data-formatter="totalFeeFormatter"
+                                                    data-sortable="false">Total Fee</th>
                                                 <th data-field="laterality" data-sortable="true">Laterality</th>
                                                 <th data-field="quantity" data-sortable="false">Qty</th>
-                                                <th data-field="fee" data-sortable="false">Fee</th>
-                                                <th data-field="feecode" data-formatter="feecodeFormatter"
-                                                    data-sortable="true">Fee Code</th>
-                                                <th data-field="total_fee" data-formatter="totalFeeFormatter"
-                                                    data-sortable="false">Total</th>
                                                 <th data-field="status" data-sortable="true">Status</th>
                                                 <th data-field="operate" data-formatter="operateFormatter_billing"
                                                     data-events="operateEvents_billing">Action</th>
@@ -1303,6 +1385,7 @@
                     <div class="row bg-left">
                         <div class="col">
                             <div id="billingSummary" class="p-3">
+                                <!-- Summary content will be dynamically generated by updateBillingSummary() -->
                                 <div class="row">
                                     <div class="col-md-6">
                                         <h5>Total Codes: <span id="totalCodes" class="badge bg-primary">0</span></h5>
@@ -2541,11 +2624,18 @@
                     </div>
                     <!-- Form Section -->
                     <form id="billCodeForm" enctype="multipart/form-data" method="POST">
+                        <!-- Main Nomenclature Code Section -->
                         <div class="row mb-3">
+                            <div class="col-12">
+                                <h6 class="text-primary">
+                                    <i class="fas fa-star"></i> Main Nomenclature Code *
+                                </h6>
+                            </div>
                             <div class="col-md-3">
-                                <label for="billNomenCode" class="form-label">Nomenclature Code *</label>
+                                <label for="billNomenCode" class="form-label">Code</label>
                                 <input type="number" class="form-control" id="billNomenCode" name="nomen_code" required
                                     readonly>
+                                <div class="form-text">Primary procedure code</div>
                             </div>
                             <div class="col-md-6">
                                 <label for="billNomenDesc" class="form-label">Description</label>
@@ -2557,6 +2647,60 @@
                                 <input type="number" class="form-control" id="billFee" name="fee" step="0.01">
                             </div>
                         </div>
+
+                        <!-- Secondary Nomenclature Code Section -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h6 class="text-secondary">
+                                    <i class="fas fa-plus-circle"></i> Secondary Nomenclature Code (Optional)
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-2"
+                                        id="clearSecondaryBtn" style="display: none;">
+                                        <i class="fas fa-times"></i> Clear
+                                    </button>
+                                </h6>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="billSecondaryNomenCode" class="form-label">Code</label>
+                                <input type="number" class="form-control" id="billSecondaryNomenCode"
+                                    name="secondary_nomen_code" readonly>
+                                <div class="form-text">Additional procedure code</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="billSecondaryNomenDesc" class="form-label">Description</label>
+                                <input type="text" class="form-control" id="billSecondaryNomenDesc"
+                                    name="secondary_nomen_desc_fr" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="billSecondaryFee" class="form-label">Fee (€)</label>
+                                <input type="number" class="form-control" id="billSecondaryFee" name="secondary_fee"
+                                    step="0.01">
+                            </div>
+                        </div>
+
+                        <!-- Total Fee Display -->
+                        <div class="row mb-3">
+                            <div class="col-md-6 offset-md-6">
+                                <div class="card border-success">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Main Fee:</span>
+                                            <span id="mainFeeDisplay">€0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Secondary Fee:</span>
+                                            <span id="secondaryFeeDisplay">€0.00</span>
+                                        </div>
+                                        <hr class="my-1">
+                                        <div class="d-flex justify-content-between fw-bold">
+                                            <span>Total Fee:</span>
+                                            <span id="totalFeeDisplay">€0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Common fields -->
                         <div class="row mb-3">
                             <div class="col-md-3">
                                 <label class="form-label">Laterality</label>
@@ -2606,6 +2750,8 @@
                         <input type="hidden" name="id_auth_user" id="billUserId" value="[[=patientId]]">
                         <input type="hidden" name="id_worklist" id="billWorklistId" value="[[=wlId]]">
                         <input type="hidden" name="methodBillCodeSubmit" id="methodBillCodeSubmit" value="POST">
+                        <!-- Hidden secondary fields for feecode -->
+                        <input type="hidden" name="secondary_feecode" id="billSecondaryFeeCode">
                     </form>
                 </div>
             </div>
