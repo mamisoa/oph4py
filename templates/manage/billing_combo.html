@@ -161,6 +161,104 @@
     </div>
 </div>
 
+<!-- Secondary Code Selection Modal -->
+<div class="modal fade" id="secondaryCodeModal" tabindex="-1" aria-labelledby="secondaryCodeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="secondaryCodeModalLabel">Add Secondary Nomenclature Code</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Main Code Info -->
+                <div class="alert alert-info" id="mainCodeInfo">
+                    <strong>Main Code:</strong> <span id="mainCodeDisplay"></span>
+                </div>
+
+                <!-- Search for Secondary Code -->
+                <div class="mb-3">
+                    <label for="secondaryNomenclatureSearch" class="form-label">Search Secondary Nomenclature
+                        Code</label>
+                    <div class="input-group">
+                        <input type="text" id="secondaryNomenclatureSearch" class="form-control"
+                            placeholder="Search nomenclature codes by code or description (min 3 chars)">
+                        <button type="button" id="btnSearchSecondaryNomen" class="btn btn-outline-secondary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="form-text">Search for a nomenclature code to add as secondary procedure</div>
+                </div>
+
+                <!-- Search Results -->
+                <div id="secondaryNomenclatureResults" class="mb-3" style="display: none;">
+                    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                        <table class="table table-sm table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Description</th>
+                                    <th>Fee Code</th>
+                                    <th>Fee</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="secondaryNomenclatureResultsBody">
+                                <!-- Search results will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Selected Secondary Code Form -->
+                <div id="selectedSecondaryForm" style="display: none;">
+                    <hr>
+                    <h6>Selected Secondary Code</h6>
+                    <form id="secondaryCodeForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="selectedSecondaryCode" class="form-label">Code</label>
+                                <input type="text" id="selectedSecondaryCode" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="selectedSecondaryFeeCode" class="form-label">Fee Code</label>
+                                <input type="text" id="selectedSecondaryFeeCode" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <label for="selectedSecondaryDescription" class="form-label">Description</label>
+                                <textarea id="selectedSecondaryDescription" class="form-control" rows="2"
+                                    readonly></textarea>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label for="selectedSecondaryFee" class="form-label">Fee (€)</label>
+                                <input type="number" id="selectedSecondaryFee" class="form-control" step="0.01" min="0"
+                                    placeholder="0.00">
+                                <div class="form-text">You can edit the fee if needed</div>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <button type="button" id="btnClearSecondarySelection" class="btn btn-outline-warning">
+                                    <i class="fas fa-times"></i> Clear Selection
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="selectedMainIndex" value="">
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="btnSaveSecondaryCode" class="btn btn-primary" style="display: none;">
+                    <i class="fas fa-save"></i> Save Secondary Code
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 [[ block js_scripts]]
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>

@@ -17,6 +17,7 @@ class BillingComboManager {
 		// Enhanced structure: each entry has nomen_code, description, feecode, fee, and optional secondary_*
 		this.selectedCodes = [];
 		this.searchTimeout = null;
+		this.secondarySearchTimeout = null;
 		this.currentEditId = null;
 		this.isEditMode = false;
 
@@ -56,6 +57,21 @@ class BillingComboManager {
 		$(document).on("click", ".remove-secondary-code", (e) =>
 			this.removeSecondaryCode(e)
 		);
+
+		// Secondary code modal handlers
+		$("#secondaryNomenclatureSearch").on("input", (e) =>
+			this.handleSecondaryNomenclatureSearch(e)
+		);
+		$("#btnSearchSecondaryNomen").on("click", () =>
+			this.searchSecondaryNomenclature()
+		);
+		$(document).on("click", ".add-secondary-nomen-code", (e) =>
+			this.selectSecondaryNomenclatureCode(e)
+		);
+		$("#btnClearSecondarySelection").on("click", () =>
+			this.clearSecondarySelection()
+		);
+		$("#btnSaveSecondaryCode").on("click", () => this.saveSecondaryCode());
 	}
 
 	handleNomenclatureSearch(event) {
@@ -234,32 +250,19 @@ class BillingComboManager {
 		const mainCode = this.selectedCodes[mainIndex];
 		if (!mainCode) return;
 
-		// Create a simple prompt for the secondary code (could be enhanced with a modal)
-		const secondaryCodeInput = prompt(
-			`Enter secondary nomenclature code for main code ${mainCode.nomen_code}:`
+		// Store the main index for later use
+		$("#selectedMainIndex").val(mainIndex);
+
+		// Display main code info in modal
+		$("#mainCodeDisplay").text(
+			`${mainCode.nomen_code} - ${mainCode.nomen_desc_fr}`
 		);
 
-		if (secondaryCodeInput && secondaryCodeInput.trim()) {
-			const secondaryCode = secondaryCodeInput.trim();
+		// Reset modal state
+		this.resetSecondaryModal();
 
-			// Validate secondary code is different from main
-			if (secondaryCode === mainCode.nomen_code.toString()) {
-				this.showToast(
-					"Secondary code must be different from main code",
-					"error"
-				);
-				return;
-			}
-
-			// Check if secondary code is already used
-			if (this.isCodeAlreadyUsed(secondaryCode)) {
-				this.showToast("This code is already used in this combo", "error");
-				return;
-			}
-
-			// Fetch details for secondary code
-			this.fetchSecondaryCodeDetails(mainIndex, secondaryCode);
-		}
+		// Show the modal
+		$("#secondaryCodeModal").modal("show");
 	}
 
 	async fetchSecondaryCodeDetails(mainIndex, secondaryCode) {
@@ -346,8 +349,8 @@ class BillingComboManager {
 			let html = '<div class="row g-2">';
 			this.selectedCodes.forEach((code, index) => {
 				const hasSecondary = code.secondary_nomen_code !== null;
-				const mainFee = parseFloat(code.fee || 0);
-				const secondaryFee = parseFloat(code.secondary_fee || 0);
+				const mainFee = this.safeParseFloat(code.fee, 0);
+				const secondaryFee = this.safeParseFloat(code.secondary_fee, 0);
 				const totalFee = mainFee + secondaryFee;
 
 				html += `
@@ -710,6 +713,199 @@ class BillingComboManager {
 			});
 		});
 	}
+
+	// New methods for secondary code modal functionality
+	resetSecondaryModal() {
+		$("#secondaryNomenclatureSearch").val("");
+		$("#secondaryNomenclatureResults").hide();
+		$("#selectedSecondaryForm").hide();
+		$("#btnSaveSecondaryCode").hide();
+		$("#selectedSecondaryCode").val("");
+		$("#selectedSecondaryDescription").val("");
+		$("#selectedSecondaryFeeCode").val("");
+		$("#selectedSecondaryFee").val("");
+	}
+
+	handleSecondaryNomenclatureSearch(event) {
+		const query = event.target.value.trim();
+
+		// Clear timeout if it exists
+		if (this.secondarySearchTimeout) {
+			clearTimeout(this.secondarySearchTimeout);
+		}
+
+		// Only search if query is 3+ characters
+		if (query.length >= 3) {
+			this.secondarySearchTimeout = setTimeout(() => {
+				this.searchSecondaryNomenclature(query);
+			}, 300);
+		} else {
+			$("#secondaryNomenclatureResults").hide();
+		}
+	}
+
+	async searchSecondaryNomenclature(query = null) {
+		query = query || $("#secondaryNomenclatureSearch").val().trim();
+
+		if (query.length < 3) {
+			this.showToast("Please enter at least 3 characters to search", "warning");
+			return;
+		}
+
+		try {
+			// Determine if query is numeric (code) or text (description)
+			const isNumeric = /^\d+$/.test(query);
+			const params = new URLSearchParams();
+
+			if (isNumeric) {
+				params.append("code", query);
+			} else {
+				params.append("description", query);
+			}
+
+			const response = await fetch(`${API_BASE}/nomenclature/search?${params}`);
+			const data = await response.json();
+
+			let results = [];
+			if (data.status === "success" && data.data) {
+				results = data.data;
+			} else if (Array.isArray(data)) {
+				results = data;
+			}
+
+			this.displaySecondaryNomenclatureResults(results);
+		} catch (error) {
+			console.error("Error searching secondary nomenclature:", error);
+			this.showToast("Error searching nomenclature codes", "error");
+		}
+	}
+
+	displaySecondaryNomenclatureResults(results) {
+		const tbody = $("#secondaryNomenclatureResultsBody");
+		const container = $("#secondaryNomenclatureResults");
+
+		if (!results || results.length === 0) {
+			tbody.html(
+				'<tr><td colspan="5" class="text-center text-muted">No results found</td></tr>'
+			);
+			container.show();
+			return;
+		}
+
+		const mainIndex = parseInt($("#selectedMainIndex").val());
+		const mainCode = this.selectedCodes[mainIndex];
+
+		let html = "";
+		results.forEach((item) => {
+			const code = item.nomen_code || item.code;
+			const description =
+				item.nomen_desc_fr ||
+				item.desc_fr ||
+				item.description_fr ||
+				item.description ||
+				"N/A";
+			const feecode = item.feecode || "N/A";
+			const fee = parseFloat(item.fee || 0).toFixed(2);
+
+			// Check if this code is already used or is the same as main code
+			const isDisabled =
+				this.isCodeAlreadyUsed(code) || code == mainCode.nomen_code;
+			const buttonClass = isDisabled
+				? "btn-secondary disabled"
+				: "btn-primary add-secondary-nomen-code";
+			const buttonText = isDisabled ? "Cannot Use" : "Select";
+
+			html += `
+				<tr>
+					<td><strong>${code}</strong></td>
+					<td>${
+						description.length > 50
+							? description.substring(0, 50) + "..."
+							: description
+					}</td>
+					<td><span class="badge bg-info">${feecode}</span></td>
+					<td><strong>€${fee}</strong></td>
+					<td>
+						<button type="button" class="${buttonClass}" 
+								data-code="${code}" 
+								data-description="${description}" 
+								data-feecode="${feecode}" 
+								data-fee="${fee}"
+								${isDisabled ? "disabled" : ""}>
+							${buttonText}
+						</button>
+					</td>
+				</tr>
+			`;
+		});
+
+		tbody.html(html);
+		container.show();
+	}
+
+	selectSecondaryNomenclatureCode(event) {
+		const button = $(event.currentTarget);
+		const code = button.data("code");
+		const description = button.data("description");
+		const feecode = button.data("feecode");
+		const fee = parseFloat(button.data("fee") || 0);
+
+		// Populate the selection form
+		$("#selectedSecondaryCode").val(code);
+		$("#selectedSecondaryDescription").val(description);
+		$("#selectedSecondaryFeeCode").val(feecode);
+		$("#selectedSecondaryFee").val(fee.toFixed(2));
+
+		// Show the form and save button
+		$("#selectedSecondaryForm").show();
+		$("#btnSaveSecondaryCode").show();
+
+		// Hide search results
+		$("#secondaryNomenclatureResults").hide();
+		$("#secondaryNomenclatureSearch").val("");
+
+		this.showToast(`Selected secondary code ${code}`, "success");
+	}
+
+	clearSecondarySelection() {
+		$("#selectedSecondaryForm").hide();
+		$("#btnSaveSecondaryCode").hide();
+		this.resetSecondaryModal();
+	}
+
+	saveSecondaryCode() {
+		const mainIndex = parseInt($("#selectedMainIndex").val());
+		const code = $("#selectedSecondaryCode").val();
+		const description = $("#selectedSecondaryDescription").val();
+		const feecode = $("#selectedSecondaryFeeCode").val();
+		const fee = parseFloat($("#selectedSecondaryFee").val() || 0);
+
+		if (!code || mainIndex < 0 || !this.selectedCodes[mainIndex]) {
+			this.showToast("Invalid selection", "error");
+			return;
+		}
+
+		// Update the main code entry with secondary details
+		this.selectedCodes[mainIndex].secondary_nomen_code = code;
+		this.selectedCodes[mainIndex].secondary_nomen_desc_fr = description;
+		this.selectedCodes[mainIndex].secondary_feecode = feecode;
+		this.selectedCodes[mainIndex].secondary_fee = fee;
+
+		// Update display and hide modal
+		this.updateSelectedCodesDisplay();
+		$("#secondaryCodeModal").modal("hide");
+
+		this.showToast(`Added secondary code ${code}`, "success");
+	}
+
+	// Helper function to safely parse fees and avoid NaN
+	safeParseFloat(value, defaultValue = 0) {
+		if (value === null || value === undefined || value === "") {
+			return defaultValue;
+		}
+		const parsed = parseFloat(value);
+		return isNaN(parsed) ? defaultValue : parsed;
+	}
 }
 
 // =============================================================================
@@ -717,14 +913,39 @@ class BillingComboManager {
 // =============================================================================
 
 function responseHandler_billingCombo(res) {
-	// Handle different response formats
-	if (res && res.status === "success") {
-		return res.data || res;
-	} else if (res && res.items) {
-		return res;
-	} else if (Array.isArray(res)) {
-		return { rows: res, total: res.length };
+	console.log("Raw API response:", res); // Debug logging
+
+	// Handle PyDAL RestAPI response format
+	if (res && res.status === "success" && res.items) {
+		console.log("Using PyDAL format - items:", res.items.length);
+		return {
+			total: res.count || res.items.length,
+			rows: res.items,
+		};
 	}
+	// Handle FastAPI response format
+	else if (res && res.status === "success" && res.data) {
+		console.log("Using FastAPI format - data:", res.data.length);
+		return {
+			total: res.data.length,
+			rows: res.data,
+		};
+	}
+	// Handle direct array response
+	else if (Array.isArray(res)) {
+		console.log("Using array format - length:", res.length);
+		return {
+			total: res.length,
+			rows: res,
+		};
+	}
+	// Handle legacy py4web format
+	else if (res && res.items) {
+		console.log("Using legacy format - items:", res.items.length);
+		return res;
+	}
+
+	console.warn("Unknown response format:", res);
 	return res;
 }
 
@@ -744,7 +965,44 @@ function specialtyFormatter(value) {
 // Enhanced codes formatter with secondary code support
 function enhancedCodesFormatter(value) {
 	try {
-		const codes = JSON.parse(value || "[]");
+		console.log("Formatting codes value:", value); // Debug logging
+
+		// Handle empty or null values
+		if (!value || value === "[]") {
+			return '<span class="text-muted">No codes</span>';
+		}
+
+		let codes;
+
+		// Try to parse the value
+		if (typeof value === "string") {
+			try {
+				// First attempt: direct JSON parse
+				codes = JSON.parse(value);
+			} catch (e) {
+				console.log(
+					"Direct JSON parse failed, attempting JavaScript evaluation..."
+				);
+
+				// Replace Python literals with JavaScript equivalents
+				let jsCode = value
+					.replace(/True/g, "true")
+					.replace(/False/g, "false")
+					.replace(/None/g, "null");
+
+				try {
+					// Use eval in a safe way (since this is controlled data from our own database)
+					codes = eval("(" + jsCode + ")");
+					console.log("Successfully parsed with eval:", codes);
+				} catch (evalError) {
+					console.error("Eval parsing failed:", evalError);
+					throw evalError;
+				}
+			}
+		} else {
+			codes = value;
+		}
+
 		if (!Array.isArray(codes) || codes.length === 0) {
 			return '<span class="text-muted">No codes</span>';
 		}
@@ -754,15 +1012,30 @@ function enhancedCodesFormatter(value) {
 		let totalSecondaryFees = 0;
 		let codesWithSecondary = 0;
 
+		// Helper function to safely parse fees
+		const safeParseFloat = (value, defaultValue = 0) => {
+			if (
+				value === null ||
+				value === undefined ||
+				value === "" ||
+				value === "N/A"
+			) {
+				return defaultValue;
+			}
+			const parsed = parseFloat(value);
+			return isNaN(parsed) ? defaultValue : parsed;
+		};
+
 		codes.forEach((code, index) => {
 			if (typeof code === "number") {
 				// Old format: simple integer code
 				html += `<span class="badge bg-primary me-1 mb-1">${code}</span>`;
 			} else if (typeof code === "object" && code.nomen_code) {
 				// New format: object with potential secondary codes
-				const mainFee = parseFloat(code.fee || 0);
-				const hasSecondary = code.secondary_nomen_code;
-				const secondaryFee = parseFloat(code.secondary_fee || 0);
+				const mainFee = safeParseFloat(code.fee, 0);
+				const hasSecondary =
+					code.secondary_nomen_code && code.secondary_nomen_code !== null;
+				const secondaryFee = safeParseFloat(code.secondary_fee, 0);
 
 				totalMainFees += mainFee;
 				if (hasSecondary) {
@@ -800,8 +1073,9 @@ function enhancedCodesFormatter(value) {
 
 		return html;
 	} catch (e) {
-		console.error("Error formatting codes:", e);
-		return '<span class="text-danger">Invalid format</span>';
+		console.error("Error formatting codes:", e, "Value:", value);
+		// Return a simplified fallback that just shows "Complex format"
+		return '<span class="text-warning">Complex format - Edit to view details</span>';
 	}
 }
 
