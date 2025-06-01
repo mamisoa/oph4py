@@ -11,7 +11,7 @@ from .core.policy import default_policy
 from .core.utils import format_response_datetime, rows2json, valid_date
 
 # Import endpoints to ensure they're registered with py4web
-from .endpoints import auth, email, upload
+from .endpoints import auth, billing, email, upload
 from .endpoints import utils as endpoint_utils
 from .endpoints import worklist
 from .endpoints.devices import beid
@@ -26,6 +26,7 @@ __all__ = [
     "handle_rest_api_request",
     # Endpoints
     "auth",
+    "billing",
     "email",
     "endpoint_utils",
     "beid",

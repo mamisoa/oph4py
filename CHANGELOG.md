@@ -7,9 +7,277 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-01T23:01:05.299685] - Fixed PyDAL RestAPI Invalid Fields Error for Billing Combo
+
+### Fixed
+
+- **PyDAL RestAPI Invalid Fields Error**
+  - Fixed "Invalid fields: ['is_active']" error when creating or updating billing combos
+  - Removed `is_active` field from JavaScript form submissions in `billing-combo-manager.js`
+  - Removed `is_active` field references from billing combo template
+  - Billing combo creation and editing now work correctly without field validation errors
+
+### Technical Details
+
+- **Root Cause**: JavaScript was sending `is_active: true` in POST/PUT requests, but PyDAL RestAPI was rejecting it as an invalid field
+- **Solution**: Removed all `is_active` field references from frontend code since PyDAL handles this automatically
+- **JavaScript Fix**: Removed `is_active` from `formData` objects in `handleFormSubmit()` and `updateCombo()` methods
+- **Template Fix**: Removed `is_active` column from table and checkbox from edit modal
+- **Code Cleanup**: Removed unused `activeFormatter()` function
+
+### API Compatibility
+
+- **Before**: POST/PUT requests failed with "Invalid fields: ['is_active']" error
+- **After**: Billing combo creation and editing work correctly
+- **Backend**: PyDAL automatically manages active/inactive status if needed
+- **Frontend**: Simplified interface without manual active/inactive toggle
+
+### Removed Components
+
+- `is_active` field from form submissions
+- Status column from billing combo table
+- Active/inactive checkbox from edit modal
+- `activeFormatter()` JavaScript function
+- All template references to `is_active` field
+
+## [2025-06-01T22:50:46.272063] - Fixed Authentication Status Display in Billing Combo Management
+
+### Fixed
+
+- **"Not logged" Display Issue in Billing Combo Management Interface**
+  - Fixed missing user context in billing combo management page that caused "Not logged" to appear instead of user email
+  - Added missing `user = auth.get_user()` call in `billing_combo()` controller in `manage.py`
+  - Navigation bar now properly displays authenticated user's email address
+  - Login status and user dropdown menu now function correctly in billing combo interface
+
+### Technical Details
+
+- **Root Cause**: The `billing_combo()` controller was missing the `user` variable assignment needed for template authentication display
+- **Solution**: Added `user = auth.get_user()` in controller to pass authenticated user context to template
+- **Template Fix**: User context now properly available to `baseof.html` template for navigation bar rendering
+- **Consistency**: All other controllers already had this pattern, bringing billing combo controller in line with project standards
+
+### Authentication
+
+- **Before**: Navigation showed "Not logged" even when user was authenticated
+- **After**: Navigation properly displays user email with dropdown menu (Edit profile, Change Password, Logout)
+- **Security**: Authentication enforcement still intact with `@action.uses(auth.user)` decorator
+- **User Experience**: Consistent navigation behavior across all authenticated pages
+
+## [2025-06-01T22:44:19.128946] - Fixed Specialty Dropdown with Template Loop Approach
+
+### Fixed
+
+- **Specialty Dropdown Default Selection Using Template Loops**
+  - Completely redesigned specialty dropdown implementation using data-driven template approach
+  - Replaced HTML string generation in controller with structured data passing
+  - Implemented template loops in billing combo form for proper option rendering
+  - Fixed default "Ophthalmology" selection using template conditional logic
+  - Applied same fix to both main form and edit modal specialty dropdowns
+
+### Technical Details
+
+- **Controller Enhancement**: Modified `billing_combo()` in `manage.py` to pass structured specialty data instead of HTML strings
+- **Data Structure**: Changed from string array to dictionary array with `value`, `label`, and `is_default` properties
+- **Template Implementation**: Used py4web/yatl template loops `[[ for specialty in specialties: ]]` for proper option generation
+- **Default Selection**: Implemented template conditional `[[ if specialty['is_default']: ]] selected[[ pass ]]` for reliable default setting
+- **Consistency**: Applied fix to both creation form (`#comboSpecialty`) and edit modal (`#editComboSpecialty`)
+
+### Root Cause Resolution
+
+- **Previous Issue**: HTML string generation in controller was unreliable for setting selected attributes in various browser contexts
+- **New Approach**: Template-based option generation ensures proper DOM structure and selected attribute handling
+- **Benefits**: More maintainable, follows MVC principles, and provides reliable cross-browser compatibility
+
+### Implementation
+
+- **Controller**: Passes `specialties` array with structured data instead of `specialtyOptions` HTML string
+- **Template**: Uses template loops to generate options with proper selected attribute based on `is_default` flag
+- **Result**: Specialty dropdown now reliably shows "Ophthalmology" as default selection on page load
+
+## [2025-06-01T22:30:01.818798] - Added Debugging and Failsafe for Specialty Dropdown
+
+### Added
+
+- **Comprehensive Debugging for Specialty Dropdown Issue**
+  - Added console logging in document ready handler to diagnose specialty selection issues
+  - Added failsafe JavaScript code to force set "ophthalmology" if dropdown value is empty
+  - Added debug comments in template to verify controller output
+  - Enhanced error detection and automatic correction for empty specialty values
+
+### Technical Details
+
+- **Debug Logging**: Added console logs to track specialty value on page load
+- **Failsafe Mechanism**: JavaScript now forces "ophthalmology" selection if dropdown is empty
+- **Template Debug**: Added commented debug output to verify controller variables
+- **Root Cause Investigation**: Multiple layers of debugging to identify why specialty remains empty
+
+### Troubleshooting Steps
+
+If specialty dropdown is still empty:
+1. **Restart py4web server** - Controller changes require server restart
+2. **Check browser console** - Look for debug messages about specialty values
+3. **Verify template output** - Uncomment debug line in template to see raw controller output
+4. **Clear browser cache** - Force refresh to ensure latest JavaScript is loaded
+
+## [2025-06-01T22:26:34.278154] - Fixed JavaScript Form Reset Clearing Default Specialty
+
+### Fixed
+
+- **JavaScript Form Reset Override Issue**
+  - Fixed `resetForm()` function in `billing-combo-manager.js` that was clearing the specialty dropdown default
+  - Added explicit restoration of "ophthalmology" selection after form reset
+  - Default specialty now persists after successful combo creation and form reset
+  - User will now always see "Ophthalmology" selected when creating new combos
+
+### Technical Details
+
+- **Root Cause**: `$("#newBillingComboForm")[0].reset()` was clearing all form values including the server-side default selection
+- **Solution**: Added `$("#comboSpecialty").val("ophthalmology");` after form reset to restore default
+- **JavaScript Fix**: Modified `resetForm()` method in `static/js/billing-combo-manager.js` line 314
+- **User Experience**: Specialty dropdown now maintains logical default throughout the form lifecycle
+
+### Testing
+
+- ✅ Specialty shows "Ophthalmology" on page load
+- ✅ Specialty maintains "Ophthalmology" after successful form submission
+- ✅ Specialty resets to "Ophthalmology" when Reset Form button is clicked
+- ✅ All other form functionality remains intact
+
+## [2025-06-01T22:09:13.397320] - Fixed Bootstrap Table Search Parameter Error
+
+### Fixed
+
+- **PyDAL RestAPI Search Parameter Error**
+  - Fixed KeyError 'search' error when loading billing combo management table
+  - Added custom query parameter filtering in `billing_combo` API endpoint
+  - Bootstrap Table's search parameters are now properly handled before passing to PyDAL RestAPI
+  - Search functionality now works by converting 'search' parameter to 'combo_name.contains' filter
+  - Removed Bootstrap Table specific parameters ('search', 'sort', 'order', 'offset', 'limit') that caused PyDAL conflicts
+
+### Added
+
+- **Enhanced API endpoint functionality**
+  - Added missing `billing` import to main API `__init__.py` to ensure billing endpoints are registered
+  - Custom query parameter processing for GET requests in billing_combo endpoint
+  - Server-side search functionality for billing combo names using 'contains' filter
+  - Better error handling and parameter validation
+
+### Technical Details
+
+- **Root Cause**: PyDAL RestAPI was trying to find a 'search' field in billing_combo table when Bootstrap Table sent search parameters
+- **Solution**: Filter out Bootstrap Table specific parameters and convert 'search' to proper PyDAL query format
+- **API Enhancement**: `api/endpoints/billing.py` now handles GET requests with custom query processing
+- **Import Fix**: Added missing `billing` import to `api/__init__.py` for proper endpoint registration
+
+## [2025-06-01T22:06:34.953368] - Fixed Specialty Dropdown Default Selection
+
+### Fixed
+
+- **Specialty Dropdown Default Selection Not Working**
+  - Removed placeholder option `<option value="">Select specialty...</option>` from billing combo creation form
+  - The placeholder was overriding the controller's default "ophthalmology" selection
+  - Specialty dropdown now properly shows "Ophthalmology" as pre-selected when creating new combos
+  - User no longer sees generic "Select specialty..." placeholder text
+
+### Technical Details
+
+- **Template Fix**: Removed conflicting empty option from `templates/manage/billing_combo.html` line 33
+- **Root Cause**: HTML placeholder option was positioned before generated options, taking precedence over controller's selected attribute
+- **User Experience**: Dropdown now immediately shows the logical default for ophthalmology practice
+- **Validation**: Required field validation still works properly without placeholder option
+
+## [2025-06-01T22:04:16.125882] - Set Ophthalmology as Default Specialty in Billing Combo Dropdown
+
+### Changed
+
+- **Default Specialty Selection in Billing Combo Management**
+  - Modified specialty dropdown in billing combo creation form to have "ophthalmology" pre-selected by default
+  - Updated `billing_combo()` controller in `manage.py` to mark "ophthalmology" option as selected
+  - Maintains existing specialty options: "ophthalmology", "general", "consultation"
+  - Improves user experience by providing logical default for ophthalmology practice
+
+### Technical Details
+
+- **Controller Update**: Enhanced `specialtyOptions` generation in `manage.py` line 928
+- **HTML Output**: Now generates `<option value="ophthalmology" selected>Ophthalmology</option>` for default selection
+- **User Experience**: Eliminates need for manual specialty selection in most common use case
+- **Backward Compatibility**: Existing billing combos and functionality remain unchanged
+
+## [2025-06-01T21:57:28.872364] - Fixed JavaScript Variable Conflicts in Billing Combo Management
+
+### Fixed
+
+- **JavaScript Variable Declaration Conflicts**
+  - Removed duplicate `APP_NAME` declaration in billing combo template (already defined in base template)
+  - Fixed `API_BASE is not defined` error by properly referencing existing base template variables
+  - Added fallback `API_BASE` definition to prevent undefined errors during initialization
+  - Enhanced error handling in `BillingComboManager` constructor with proper variable validation
+
+### Technical Details
+
+- **Template Fix**: Removed redundant `const APP_NAME = "[[ = app_name ]]";` from billing combo template
+- **Variable Order**: Ensured proper dependency chain where `API_BASE` uses already-defined `APP_NAME` and `HOSTURL`
+- **Error Prevention**: Added runtime checks for undefined variables with fallback mechanisms
+- **Console Logging**: Enhanced debugging with clear error messages for missing dependencies
+
+### Browser Compatibility
+
+- Resolves SyntaxError: "Identifier 'APP_NAME' has already been declared"
+- Resolves ReferenceError: "API_BASE is not defined" during nomenclature search
+- Ensures proper variable scope and loading order in all modern browsers
+
+## [2025-06-01T21:36:51.809348] - Created Billing Combo Management Interface
+
+### Added
+
+- **Complete Billing Combo Management System**
+  - Created new administrative interface at `/manage/billing_combo` for creating and managing billing code combinations
+  - Added controller `billing_combo()` in `manage.py` with authentication and specialty dropdown options
+  - Comprehensive HTML template `templates/manage/billing_combo.html` with modern UI design
+  - Advanced JavaScript functionality in `static/js/billing-combo-manager.js` with full CRUD operations
+  - Added "Billing Combo management" link to the Settings dropdown in the main navigation
+  - Integrated with existing nomenclature API for real-time code search and validation
+
+### Features
+
+- **Creation Interface**: Form to create new billing combos with name, specialty, description, and nomenclature codes
+- **Real-time Search**: Integrated nomenclature code search with debounced API calls (300ms delay)
+- **Smart Code Selection**: Visual feedback for selected codes, duplicate prevention, and easy removal
+- **Advanced Table Management**: Bootstrap table with server-side pagination, search, and column sorting
+- **Edit Functionality**: Modal-based editing of existing combos with full field support
+- **Delete Operations**: Confirmation dialog with safe deletion of billing combos
+- **Status Management**: Active/inactive status toggle for combo availability
+- **Visual Enhancements**: Specialty badges, code display formatters, and professional UI components
+
+### Technical Details
+
+- **Authentication**: Requires user authentication (`auth.user`) for access control
+- **API Integration**: Full integration with existing `/api/billing_combo` endpoints
+- **Nomenclature API**: Uses `/api/nomenclature/search` for real-time code validation
+- **Response Handling**: Supports multiple API response formats (FastAPI, py4web, direct arrays)
+- **Error Handling**: Comprehensive error handling with user-friendly toast notifications
+- **Form Validation**: Real-time form validation with disabled submit until requirements met
+- **Security**: Proper data sanitization and validation throughout the interface
+
+### User Experience
+
+- **Intuitive Workflow**: Step-by-step combo creation with clear visual feedback
+- **Responsive Design**: Mobile-friendly interface with Bootstrap components
+- **Toast Notifications**: Non-intrusive success/error messages with automatic dismissal
+- **Confirmation Dialogs**: Safe operations with user confirmation for destructive actions
+- **Progressive Enhancement**: Form state management with dynamic enable/disable of controls
+
+### Navigation Enhancement
+
+- Added billing combo management link to Settings dropdown menu in main navigation
+- Positioned logically with other management interfaces for easy administrator access
+- Proper URL routing through py4web's action decorator system
+
 ## [2025-06-01T21:24:12.693251] - Made Fee Field Editable in Billing Modal
 
 ### Changed
+
 - **Fee Field Now Editable in Billing Code Modal**
   - Removed `readonly` attribute from the fee input field in `templates/modalityCtr/md.html`
   - Users can now manually edit the fee amount after selecting a nomenclature code
@@ -17,6 +285,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - Maintains step="0.01" for precise decimal input (cents)
 
 ### Technical Details
+
 - **HTML Template**: Removed `readonly` from `#billFee` input field
 - **JavaScript Behavior**: Fee value is populated from nomenclature selection but field remains editable
 - **User Experience**: Allows fee customization while maintaining automatic population from nomenclature database

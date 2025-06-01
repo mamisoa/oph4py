@@ -892,6 +892,50 @@ def combo():
     return locals()
 
 
+# manage billing combo codes
+@action("manage/billing_combo")
+@action.uses(session, auth.user, db, "manage/billing_combo.html")
+def billing_combo():
+    """
+    Manages billing combo codes in the ophthalmology system.
+
+    This function serves as the controller for the billing combo management interface. It handles:
+    - Creating new billing code combinations
+    - Editing existing billing combos
+    - Managing combo categories by specialty
+    - Integration with nomenclature API for code validation
+
+    Returns:
+        dict: A dictionary containing:
+            - env_status: Current environment status
+            - timeOffset: System time offset
+            - app_name: Application name
+            - hosturl: Host URL
+            - user: Current authenticated user object
+            - specialties: List of specialty data with default selection
+
+    Requires:
+        - Authentication (auth.user)
+        - Session management
+        - Database access
+        - Billing combo template
+    """
+    env_status = ENV_STATUS
+    timeOffset = TIMEOFFSET
+    app_name = APP_NAME
+    hosturl = LOCAL_URL
+    user = auth.get_user()
+
+    # Specialty data structure for template loop
+    specialties = [
+        {"value": "ophthalmology", "label": "Ophthalmology", "is_default": True},
+        {"value": "general", "label": "General", "is_default": False},
+        {"value": "consultation", "label": "Consultation", "is_default": False},
+    ]
+
+    return locals()
+
+
 # manage billing summary
 @action("billing/summary")
 @action("billing/summary/<rec_id>")

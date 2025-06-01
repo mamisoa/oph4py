@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Dropdown</title>
+</head>
+
+<body>
+    <h1>Test Specialty Dropdown</h1>
+
+    <select id="testSpecialty" name="specialty" class="form-select">
+        <option value="ophthalmology" selected>Ophthalmology</option>
+        <option value="general">General</option>
+        <option value="consultation">Consultation</option>
+    </select>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const select = document.getElementById('testSpecialty');
+            console.log('Selected value:', select.value);
+            console.log('Selected index:', select.selectedIndex);
+            console.log('Options:', Array.from(select.options).map(o => ({ value: o.value, text: o.text, selected: o.selected })));
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,208 @@
+[[extend "baseof.html"]]
+
+[[ block page_head]]
+<link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
+[[ end ]]
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h1>Billing Combo Management</h1>
+            <p class="text-muted">Create and manage reusable billing code combinations for medical procedures</p>
+        </div>
+    </div>
+
+    <!-- Add New Combo Form -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Create New Billing Combo</h5>
+                </div>
+                <div class="card-body">
+                    <form id="newBillingComboForm" method="POST">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="comboName" class="form-label">Combo Name <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" id="comboName" name="combo_name" class="form-control"
+                                    placeholder="e.g., Standard Consultation" required>
+                                <div class="form-text">Enter a descriptive name for this combo</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="comboSpecialty" class="form-label">Specialty <span
+                                        class="text-danger">*</span></label>
+                                <select id="comboSpecialty" name="specialty" class="form-select" required>
+                                    [[ for specialty in specialties: ]]
+                                    <option value="[[= specialty['value'] ]]" [[ if specialty['is_default']: ]]
+                                        selected[[ pass ]]>[[= specialty['label'] ]]</option>
+                                    [[ pass ]]
+                                </select>
+                                <div class="form-text">Select the medical specialty</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="comboDescription" class="form-label">Description</label>
+                                <textarea id="comboDescription" name="combo_description" class="form-control" rows="2"
+                                    placeholder="Optional description of when to use this combo"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="nomenclatureSearch" class="form-label">Add Nomenclature Codes <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" id="nomenclatureSearch" class="form-control"
+                                        placeholder="Search nomenclature codes by code or description (min 3 chars)">
+                                    <button type="button" id="btnSearchNomen" class="btn btn-outline-secondary">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text">Search and add nomenclature codes to this combo</div>
+                            </div>
+                        </div>
+
+                        <!-- Search Results -->
+                        <div id="nomenclatureResults" class="mb-3" style="display: none;">
+                            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-sm table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Description</th>
+                                            <th>Fee Code</th>
+                                            <th>Fee</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="nomenclatureResultsBody">
+                                        <!-- Search results will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Selected Codes -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Selected Codes</label>
+                                <div id="selectedCodes" class="border rounded p-3 bg-light" style="min-height: 100px;">
+                                    <div id="noCodesMessage" class="text-muted text-center">
+                                        <i class="fas fa-info-circle"></i> No codes selected yet. Search and add codes
+                                        above.
+                                    </div>
+                                    <div id="selectedCodesList" style="display: none;"></div>
+                                </div>
+                                <input type="hidden" id="comboCodes" name="combo_codes" value="[]">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <button type="submit" id="btnSaveCombo" class="btn btn-primary" disabled>
+                                    <i class="fas fa-save"></i> Save Billing Combo
+                                </button>
+                                <button type="button" id="btnResetForm" class="btn btn-secondary">
+                                    <i class="fas fa-undo"></i> Reset Form
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Existing Combos Table -->
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Existing Billing Combos</h5>
+                </div>
+                <div class="card-body">
+                    <table id="billingComboTable" data-toggle="table" data-url="[[=URL('api/billing_combo')]]"
+                        data-side-pagination="server" data-pagination="true" data-page-size="10" data-search="true"
+                        data-show-refresh="true" data-show-columns="true" data-sort-name="combo_name"
+                        data-sort-order="asc" data-response-handler="responseHandler_billingCombo"
+                        class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th data-field="combo_name" data-sortable="true">Combo Name</th>
+                                <th data-field="specialty" data-sortable="true" data-formatter="specialtyFormatter">
+                                    Specialty</th>
+                                <th data-field="combo_description">Description</th>
+                                <th data-field="combo_codes" data-formatter="codesFormatter">Codes</th>
+                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editComboModal" tabindex="-1" aria-labelledby="editComboModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editComboModalLabel">Edit Billing Combo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editComboForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="editComboName" class="form-label">Combo Name</label>
+                            <input type="text" id="editComboName" name="combo_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editComboSpecialty" class="form-label">Specialty</label>
+                            <select id="editComboSpecialty" name="specialty" class="form-select" required>
+                                [[ for specialty in specialties: ]]
+                                <option value="[[= specialty['value'] ]]" [[ if specialty['is_default']: ]] selected[[
+                                    pass ]]>[[= specialty['label'] ]]</option>
+                                [[ pass ]]
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="editComboDescription" class="form-label">Description</label>
+                            <textarea id="editComboDescription" name="combo_description" class="form-control"
+                                rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label class="form-label">Codes</label>
+                            <div id="editSelectedCodes" class="border rounded p-3 bg-light"></div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="editComboId">
+                    <input type="hidden" id="editComboCodes" name="combo_codes">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="btnUpdateCombo" class="btn btn-primary">Update Combo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+[[ block js_scripts]]
+<script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
+<script src="js/bootbox/bootbox.all.min.js"></script>
+<script src="js/jquery.serialize-object.min.js"></script>
+<script src="js/billing-combo-manager.js"></script>
+<script type="text/javascript">
+    // Global variables - APP_NAME is already defined in baseof.html
+    const HOSTURL = "[[ = hosturl ]]";
+    const API_BASE = HOSTURL + "/" + APP_NAME + "/api";
+</script>
+[[ end ]]

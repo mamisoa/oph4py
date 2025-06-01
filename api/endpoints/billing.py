@@ -172,6 +172,27 @@ def billing_combo(rec_id: Optional[int] = None):
     try:
         logger.info(f"Billing combo request - Method: {request.method}, ID: {rec_id}")
 
+        # Handle GET requests with custom query processing
+        if request.method == "GET":
+            # Get query parameters and filter out Bootstrap Table specific ones
+            query_params = dict(request.GET)
+
+            # Remove Bootstrap Table parameters that PyDAL RestAPI doesn't understand
+            bootstrap_params = ["search", "sort", "order", "offset", "limit"]
+            filtered_query = {
+                k: v for k, v in query_params.items() if k not in bootstrap_params
+            }
+
+            # Handle search functionality manually if search parameter exists
+            if "search" in query_params and query_params["search"]:
+                search_term = query_params["search"]
+                # Add search condition for combo_name
+                filtered_query["combo_name.contains"] = search_term
+
+            return handle_rest_api_request(
+                "billing_combo", str(rec_id) if rec_id else None, filtered_query
+            )
+
         # For POST/PUT requests, validate combo_codes format
         if request.method in ["POST", "PUT"] and request.json:
             data = request.json.copy()
