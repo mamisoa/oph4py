@@ -1277,6 +1277,8 @@
                                                 <th data-field="laterality" data-sortable="true">Laterality</th>
                                                 <th data-field="quantity" data-sortable="false">Qty</th>
                                                 <th data-field="fee" data-sortable="false">Fee</th>
+                                                <th data-field="feecode" data-formatter="feecodeFormatter"
+                                                    data-sortable="true">Fee Code</th>
                                                 <th data-field="total_fee" data-formatter="totalFeeFormatter"
                                                     data-sortable="false">Total</th>
                                                 <th data-field="status" data-sortable="true">Status</th>
@@ -2509,11 +2511,12 @@
                             <h6>Search Nomenclature Codes</h6>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="nomenSearchInput"
-                                    placeholder="Search by code or description">
+                                    placeholder="Enter at least 3 characters to search by code or description...">
                                 <button class="btn btn-outline-secondary" type="button" id="nomenSearchBtn">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
+                            <div class="form-text">Start typing to see autocomplete suggestions</div>
                         </div>
                     </div>
                     <!-- Search Results -->
@@ -2524,8 +2527,9 @@
                                     <thead>
                                         <tr>
                                             <th>Code</th>
-                                            <th>Description (FR)</th>
-                                            <th>Fee</th>
+                                            <th>Description</th>
+                                            <th>Fee (€)</th>
+                                            <th>Fee Code</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -2540,7 +2544,8 @@
                         <div class="row mb-3">
                             <div class="col-md-3">
                                 <label for="billNomenCode" class="form-label">Nomenclature Code *</label>
-                                <input type="number" class="form-control" id="billNomenCode" name="nomen_code" required>
+                                <input type="number" class="form-control" id="billNomenCode" name="nomen_code" required
+                                    readonly>
                             </div>
                             <div class="col-md-6">
                                 <label for="billNomenDesc" class="form-label">Description</label>
@@ -2549,7 +2554,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="billFee" class="form-label">Fee (€)</label>
-                                <input type="number" class="form-control" id="billFee" name="fee" step="0.01">
+                                <input type="number" class="form-control" id="billFee" name="fee" step="0.01" readonly>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -2575,7 +2580,9 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="billDatePerformed" class="form-label">Date Performed</label>
-                                <input type="date" class="form-control" id="billDatePerformed" name="date_performed">
+                                <input type="date" class="form-control" id="billDatePerformed" name="date_performed"
+                                    readonly>
+                                <div class="form-text">Automatically set from worklist date</div>
                             </div>
                             <div class="col-md-4">
                                 <label for="billStatus" class="form-label">Status</label>
@@ -2590,7 +2597,8 @@
                         <div class="row mb-3">
                             <div class="col">
                                 <label for="billNote" class="form-label">Note</label>
-                                <textarea class="form-control" id="billNote" name="note" rows="2"></textarea>
+                                <textarea class="form-control" id="billNote" name="note" rows="2"
+                                    placeholder="Optional note..."></textarea>
                             </div>
                         </div>
                         <!-- Hidden fields -->

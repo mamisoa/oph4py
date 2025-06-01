@@ -423,11 +423,11 @@ def nomenclature_search():
     """
     try:
         # Get search parameters
-        code = request.vars.get("code", "").strip()
-        description = request.vars.get("description", "").strip()
-        feecode = request.vars.get("feecode", "").strip()
-        limit = min(int(request.vars.get("limit", 20)), 100)
-        offset = int(request.vars.get("offset", 0))
+        code = request.query.get("code", "").strip()
+        description = request.query.get("description", "").strip()
+        feecode = request.query.get("feecode", "").strip()
+        limit = min(int(request.query.get("limit", 20)), 100)
+        offset = int(request.query.get("offset", 0))
 
         # Validate input
         if not code and not description:

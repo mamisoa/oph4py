@@ -1850,7 +1850,38 @@ window.operateEvents_cert = {
 
 // billing codes table response handler
 function responseHandler_billing(res) {
-	let list = res.items;
+	console.log("=== responseHandler_billing called ===");
+	console.log("Response:", res);
+	console.log("Response type:", typeof res);
+	console.log("Response keys:", Object.keys(res || {}));
+
+	// Handle both FastAPI format (res.data) and py4web format (res.items)
+	let list = [];
+	let total = 0;
+
+	if (res && res.data && Array.isArray(res.data)) {
+		// FastAPI format: {status: "success", data: [...], meta: {...}}
+		console.log("✅ FastAPI format detected - using res.data");
+		list = res.data;
+		total = res.meta ? res.meta.total_codes : list.length;
+	} else if (res && res.items && Array.isArray(res.items)) {
+		// py4web format: {items: [...], count: n}
+		console.log("✅ py4web format detected - using res.items");
+		list = res.items;
+		total = res.count || list.length;
+	} else if (Array.isArray(res)) {
+		// Direct array
+		console.log("✅ Direct array format detected");
+		list = res;
+		total = list.length;
+	} else {
+		console.error("❌ Unknown response format:", res);
+		list = [];
+		total = 0;
+	}
+
+	console.log(`Processing ${list.length} billing codes`);
+
 	let display = [];
 	$.each(list, function (i) {
 		let totalFee = (
@@ -1882,12 +1913,14 @@ function responseHandler_billing(res) {
 		});
 	});
 
+	console.log(`Processed ${display.length} records for display`);
+
 	// Update billing summary
 	updateBillingSummary(display);
 
 	return {
 		rows: display,
-		total: res.count,
+		total: total,
 	};
 }
 
@@ -1897,6 +1930,13 @@ function totalFeeFormatter(value, row, index) {
 	let quantity = parseInt(row.quantity || 1);
 	let total = (fee * quantity).toFixed(2);
 	return "€" + total;
+}
+
+// feecode formatter
+function feecodeFormatter(value, row, index) {
+	return value
+		? '<span class="badge bg-info">' + value + "</span>"
+		: '<span class="text-muted">-</span>';
 }
 
 // operational icons for billing list
@@ -1913,6 +1953,7 @@ function operateFormatter_billing(value, row, index) {
 }
 
 // modal button links to edit or remove billing codes
+// THIS MUST BE OUTSIDE $(document).ready() TO BE AVAILABLE FOR BOOTSTRAP TABLE INITIALIZATION
 window.operateEvents_billing = {
 	"click .edit": function (e, value, row, index) {
 		console.log("Edit billing code: " + JSON.stringify(row));
@@ -2004,54 +2045,310 @@ function updateBillingSummary(billingData) {
 
 // search nomenclature codes
 function searchNomenclature(query) {
-	if (!query || query.length < 2) {
+	console.log("=== searchNomenclature called with query:", query);
+
+	if (!query || query.length < 3) {
 		$("#nomenSearchResults").hide();
 		return;
 	}
 
+	// Determine if query is numeric (code) or text (description)
+	const params = new URLSearchParams();
+	if (/^\d+$/.test(query)) {
+		params.append("code", query);
+	} else {
+		params.append("description", query);
+	}
+	params.append("limit", "20");
+
+	const apiUrl =
+		HOSTURL + "/" + APP_NAME + "/api/nomenclature/search?" + params.toString();
+	console.log("API URL:", apiUrl);
+
 	$.ajax({
-		url: HOSTURL + "/" + APP_NAME + "/api/nomenclature/search",
+		url: apiUrl,
 		method: "GET",
-		data: { q: query },
+		dataType: "json", // Explicitly set expected data type
 		success: function (response) {
-			displayNomenclatureResults(response.data || []);
+			console.log("=== API SUCCESS ===");
+			console.log("Full response:", response);
+			console.log("Response type:", typeof response);
+			console.log("Response keys:", Object.keys(response || {}));
+
+			// Extract data from response - Enhanced for the exact API format
+			let resultsData = [];
+
+			// Handle the exact format: {"status": "success", "message": "...", "code": 200, "data": [...], "meta": {...}}
+			if (response && typeof response === "object") {
+				console.log("Analyzing response structure:");
+				console.log("- response.status:", response.status);
+				console.log("- response.message:", response.message);
+				console.log("- response.code:", response.code);
+				console.log("- response.data type:", typeof response.data);
+				console.log("- response.data is array:", Array.isArray(response.data));
+				console.log("- response.meta:", response.meta);
+
+				// Primary format check - exact match for the user's format
+				if (response.status === "success" && Array.isArray(response.data)) {
+					resultsData = response.data;
+					console.log(
+						"✅ Success format detected - Using response.data (found " +
+							resultsData.length +
+							" items)"
+					);
+					console.log("Response meta:", response.meta);
+				}
+				// Fallback: check for data field regardless of status
+				else if (Array.isArray(response.data)) {
+					resultsData = response.data;
+					console.log(
+						"✅ Data array found - Using response.data (found " +
+							resultsData.length +
+							" items) [Status: " +
+							response.status +
+							"]"
+					);
+				}
+				// Fallback: py4web format with items
+				else if (Array.isArray(response.items)) {
+					resultsData = response.items;
+					console.log(
+						"✅ py4web format - Using response.items (found " +
+							resultsData.length +
+							" items)"
+					);
+				}
+				// Fallback: direct array response
+				else if (Array.isArray(response)) {
+					resultsData = response;
+					console.log(
+						"✅ Direct array - Using response directly (found " +
+							resultsData.length +
+							" items)"
+					);
+				}
+				// No valid format found
+				else {
+					console.error("❌ Could not extract data from response");
+					console.log("Response structure debug:");
+					console.log("- response type:", typeof response);
+					console.log("- response keys:", Object.keys(response));
+					console.log("- response.data:", response.data);
+					console.log("- response.items:", response.items);
+					console.log("- is array:", Array.isArray(response));
+					resultsData = [];
+				}
+			} else {
+				console.error("❌ Invalid response - not an object:", response);
+				resultsData = [];
+			}
+
+			console.log("Final results data:", resultsData);
+			console.log(
+				"Sample item:",
+				resultsData.length > 0 ? resultsData[0] : "No items"
+			);
+			console.log(
+				"About to call displayNomenclatureResults with",
+				resultsData.length,
+				"items"
+			);
+
+			// Call display function with enhanced error handling
+			try {
+				displayNomenclatureResults(resultsData);
+				console.log("✅ displayNomenclatureResults completed successfully");
+			} catch (error) {
+				console.error("❌ Error in displayNomenclatureResults:", error);
+				console.error("Error stack:", error.stack);
+			}
 		},
 		error: function (xhr, status, error) {
-			console.error("Nomenclature search error:", error);
-			bootbox.alert("Error searching nomenclature codes. Please try again.");
+			console.error("=== API ERROR ===");
+			console.error("Status:", status);
+			console.error("Error:", error);
+			console.error("Response text:", xhr.responseText);
+			console.error("XHR status:", xhr.status);
+			console.error("XHR ready state:", xhr.readyState);
+
+			// Try to parse error response
+			try {
+				const errorResponse = JSON.parse(xhr.responseText);
+				console.error("Parsed error response:", errorResponse);
+				bootbox.alert(
+					"Error searching nomenclature codes: " +
+						(errorResponse.message || error)
+				);
+			} catch (parseError) {
+				console.error("Could not parse error response:", parseError);
+				bootbox.alert("Error searching nomenclature codes: " + error);
+			}
 		},
 	});
 }
 
 // display nomenclature search results
 function displayNomenclatureResults(results) {
+	console.log("=== displayNomenclatureResults called ===");
+	console.log("Results parameter:", results);
+	console.log("Results type:", typeof results);
+	console.log("Results is array:", Array.isArray(results));
+	console.log("Results length:", results ? results.length : "N/A");
+
+	// Ensure we have an array
+	if (!Array.isArray(results)) {
+		console.error("❌ Results is not an array, converting...");
+		results = [];
+	}
+
+	// Find table body with multiple strategies
 	let tbody = $("#nomenSearchTableBody");
+	console.log("Strategy 1 - Direct ID search:", tbody.length);
+
+	if (tbody.length === 0) {
+		console.log("Trying alternative DOM search strategies...");
+
+		// Strategy 2: Search within the modal
+		tbody = $("#billCodeModal").find("#nomenSearchTableBody");
+		console.log("Strategy 2 - Within modal:", tbody.length);
+
+		if (tbody.length === 0) {
+			// Strategy 3: Search for any tbody in the modal
+			tbody = $("#billCodeModal").find("tbody");
+			console.log("Strategy 3 - Any tbody in modal:", tbody.length);
+
+			if (tbody.length === 0) {
+				// Strategy 4: Search globally for nomenclature table
+				tbody = $("table")
+					.find("tbody")
+					.filter(function () {
+						return (
+							$(this)
+								.closest("table")
+								.find("thead th")
+								.text()
+								.indexOf("Code") >= 0
+						);
+					});
+				console.log("Strategy 4 - Global search:", tbody.length);
+
+				if (tbody.length === 0) {
+					console.error(
+						"❌ Could not find table body element with any strategy!"
+					);
+					console.log("Available elements in modal:");
+					$("#billCodeModal")
+						.find("*")
+						.each(function () {
+							if (this.id) console.log("- Element with ID:", this.id);
+						});
+					return;
+				}
+			}
+		}
+	}
+
+	console.log("✅ Found tbody element:", tbody[0]);
+
+	// Clear existing content
 	tbody.empty();
+	console.log("✅ Cleared tbody content");
 
 	if (results.length === 0) {
+		console.log("No results, showing 'No results found' message");
 		tbody.append(
-			'<tr><td colspan="4" class="text-center">No results found</td></tr>'
+			'<tr><td colspan="5" class="text-center text-muted">No results found</td></tr>'
 		);
 	} else {
-		results.forEach(function (item) {
-			let row = $("<tr>");
-			row.append("<td>" + item.code + "</td>");
-			row.append("<td>" + (item.description_fr || "N/A") + "</td>");
-			row.append("<td>" + (item.fee ? "€" + item.fee : "N/A") + "</td>");
-			row.append(
-				'<td><button class="btn btn-sm btn-primary select-nomen" data-code="' +
-					item.code +
-					'" data-desc="' +
-					(item.description_fr || "") +
-					'" data-fee="' +
-					(item.fee || "") +
-					'">Select</button></td>'
-			);
+		console.log("Processing", results.length, "results...");
+
+		results.forEach(function (item, index) {
+			console.log(`Processing item ${index + 1}:`, item);
+
+			// Extract data with enhanced fallbacks for FastAPI format
+			const code = item.nomen_code || item.code || "N/A";
+			const descFr =
+				item.nomen_desc_fr ||
+				item.desc_fr ||
+				item.description_fr ||
+				item.description ||
+				"";
+			const descNl =
+				item.nomen_desc_nl || item.desc_nl || item.description_nl || "";
+			const description = descFr || descNl || "No description";
+			const fee = item.fee || item.tarif || 0;
+			const feecode = item.feecode || item.fee_code || 0;
+
+			console.log(`Item ${index + 1} extracted:`, {
+				code,
+				description: description.substring(0, 50) + "...",
+				fee,
+				feecode,
+			});
+
+			// Create table row with enhanced data attributes
+			const row = $(`
+				<tr>
+					<td><strong>${code}</strong></td>
+					<td title="${description}">${
+				description.length > 80
+					? description.substring(0, 80) + "..."
+					: description
+			}</td>
+					<td><span class="badge bg-success">${
+						fee ? "€" + parseFloat(fee).toFixed(2) : "N/A"
+					}</span></td>
+					<td><span class="badge bg-info">${feecode}</span></td>
+					<td>
+						<button class="btn btn-sm btn-primary select-nomen" 
+								data-code="${code}" 
+								data-desc="${description}" 
+								data-fee="${fee || 0}" 
+								data-feecode="${feecode || 0}"
+								title="Select this nomenclature code">
+							<i class="fas fa-check"></i> Select
+						</button>
+					</td>
+				</tr>
+			`);
+
 			tbody.append(row);
+			console.log(`✅ Added row ${index + 1} to table`);
 		});
 	}
 
-	$("#nomenSearchResults").show();
+	// Show results with multiple strategies
+	let resultsDiv = $("#nomenSearchResults");
+	console.log("Found results div:", resultsDiv.length);
+
+	if (resultsDiv.length === 0) {
+		console.log("Trying alternative strategies to find results div...");
+		resultsDiv = $("#billCodeModal").find("#nomenSearchResults");
+		console.log("Alternative search:", resultsDiv.length);
+
+		if (resultsDiv.length === 0) {
+			console.error("❌ Could not find #nomenSearchResults element!");
+			console.log("Available elements with 'search' in ID:");
+			$("[id*='search']").each(function () {
+				console.log("- Found element:", this.id);
+			});
+			return;
+		}
+	}
+
+	// Force show the results div
+	resultsDiv.show().css("display", "block");
+	console.log("✅ Results div should now be visible");
+	console.log("Results div display style:", resultsDiv.css("display"));
+	console.log("Results div is visible:", resultsDiv.is(":visible"));
+
+	// Scroll to results if needed
+	if (resultsDiv.is(":visible")) {
+		resultsDiv[0].scrollIntoView({ behavior: "smooth", block: "nearest" });
+		console.log("✅ Scrolled to results");
+	}
+
+	console.log("=== displayNomenclatureResults completed ===");
 }
 
 // load billing combos
@@ -2158,10 +2455,55 @@ function exportBilling(format) {
 // ============================================================================
 
 $(document).ready(function () {
-	// Nomenclature search
+	// Test DOM elements on page load
+	console.log("Document ready - testing nomenclature elements");
+	testNomenclatureElements();
+
+	// Make test functions available globally for manual testing
+	window.testNomenclatureElements = testNomenclatureElements;
+	window.testWithRealData = testWithRealData;
+	window.testAPICall = testAPICall;
+	window.testDirectAPI = testDirectAPI;
+	window.testWithUserProvidedData = testWithUserProvidedData;
+	window.displayNomenclatureResults = displayNomenclatureResults;
+	window.searchNomenclature = searchNomenclature;
+
+	console.log("Test functions added to window object. You can call:");
+	console.log("- window.testNomenclatureElements() // Test DOM elements");
+	console.log("- window.testWithRealData() // Test display with sample data");
+	console.log("- window.testAPICall() // Test search with query '105'");
+	console.log("- window.testDirectAPI() // Test direct API call");
+	console.log(
+		"- window.testWithUserProvidedData() // Test with user's exact response"
+	);
+	console.log("- window.searchNomenclature('105') // Manual search");
+
+	// Nomenclature search with debounce for autocomplete
 	$("#nomenSearchBtn").on("click", function () {
 		let query = $("#nomenSearchInput").val();
 		searchNomenclature(query);
+	});
+
+	// Add autocomplete functionality - search after 3 characters with debounce
+	let searchTimeout;
+	$("#nomenSearchInput").on("input", function () {
+		const query = $(this).val().trim();
+
+		// Clear previous timeout
+		if (searchTimeout) {
+			clearTimeout(searchTimeout);
+		}
+
+		// Hide results if less than 3 characters
+		if (query.length < 3) {
+			$("#nomenSearchResults").hide();
+			return;
+		}
+
+		// Debounce search to avoid too many API calls
+		searchTimeout = setTimeout(function () {
+			searchNomenclature(query);
+		}, 300);
 	});
 
 	$("#nomenSearchInput").on("keypress", function (e) {
@@ -2177,10 +2519,20 @@ $(document).ready(function () {
 		let code = $(this).data("code");
 		let desc = $(this).data("desc");
 		let fee = $(this).data("fee");
+		let feecode = $(this).data("feecode");
 
 		$("#billNomenCode").val(code);
 		$("#billNomenDesc").val(desc);
 		$("#billFee").val(fee);
+
+		// Store feecode in a hidden field if it exists
+		if ($("#billFeeCode").length === 0) {
+			// Create hidden field for feecode if it doesn't exist
+			$("#billCodeForm").append(
+				'<input type="hidden" id="billFeeCode" name="feecode">'
+			);
+		}
+		$("#billFeeCode").val(feecode);
 
 		$("#nomenSearchResults").hide();
 		$("#nomenSearchInput").val("");
@@ -2245,10 +2597,23 @@ $(document).ready(function () {
 		$("#applyComboBtn").prop("disabled", true);
 	});
 
-	// Set default date to today
+	// Set default date from worklist when modal opens
 	$("#billCodeModal").on("show.bs.modal", function () {
+		// Set date_performed from worklist requested_time
 		if (!$("#billDatePerformed").val()) {
-			$("#billDatePerformed").val(new Date().toISOString().split("T")[0]);
+			// Get the worklist requested_time and convert to date format
+			if (
+				typeof wlObj !== "undefined" &&
+				wlObj.worklist &&
+				wlObj.worklist.requested_time
+			) {
+				let wlDate = new Date(wlObj.worklist.requested_time);
+				let dateString = wlDate.toISOString().split("T")[0];
+				$("#billDatePerformed").val(dateString);
+			} else {
+				// Fallback to today's date
+				$("#billDatePerformed").val(new Date().toISOString().split("T")[0]);
+			}
 		}
 	});
 
@@ -2266,6 +2631,17 @@ $(document).ready(function () {
 		// Ensure required fields
 		dataObj["id_auth_user"] = dataObj["id_auth_user"] || patientId;
 		dataObj["id_worklist"] = dataObj["id_worklist"] || wlId;
+
+		// Set date_performed from worklist if not set
+		if (
+			!dataObj["date_performed"] &&
+			typeof wlObj !== "undefined" &&
+			wlObj.worklist &&
+			wlObj.worklist.requested_time
+		) {
+			let wlDate = new Date(wlObj.worklist.requested_time);
+			dataObj["date_performed"] = wlDate.toISOString().split("T")[0];
+		}
 
 		delete dataObj["methodBillCodeSubmit"];
 		dataStr = JSON.stringify(dataObj);
@@ -2285,3 +2661,367 @@ $(document).ready(function () {
 		$("#billCodeModal").modal("hide");
 	});
 });
+
+// Test function to verify DOM elements
+function testNomenclatureElements() {
+	console.log("=== Testing Nomenclature DOM Elements ===");
+	console.log(
+		"Search input:",
+		$("#nomenSearchInput").length,
+		$("#nomenSearchInput")[0]
+	);
+	console.log(
+		"Search button:",
+		$("#nomenSearchBtn").length,
+		$("#nomenSearchBtn")[0]
+	);
+	console.log(
+		"Results div:",
+		$("#nomenSearchResults").length,
+		$("#nomenSearchResults")[0]
+	);
+	console.log(
+		"Results table body:",
+		$("#nomenSearchTableBody").length,
+		$("#nomenSearchTableBody")[0]
+	);
+	console.log("Modal:", $("#billCodeModal").length, $("#billCodeModal")[0]);
+
+	// Test if we can show/hide the results div
+	console.log("Testing show/hide functionality:");
+	let resultsDiv = $("#nomenSearchResults");
+	console.log("Initial display state:", resultsDiv.css("display"));
+	resultsDiv.show();
+	console.log("After show():", resultsDiv.css("display"));
+	resultsDiv.hide();
+	console.log("After hide():", resultsDiv.css("display"));
+	console.log("=== End DOM Test ===");
+}
+
+// Manual test function with real API data structure
+function testWithRealData() {
+	console.log("=== Testing with real API data ===");
+
+	// Use the actual structure from the API response
+	const testData = [
+		{
+			nomen_code: 105755,
+			nomen_desc_fr:
+				"Consultation au cabinet par un médecin spécialiste en ophtalmologie accrédité",
+			nomen_desc_nl:
+				"Raadpleging in de spreekkamer door een geaccrediteerde arts-specialist in de oftalmologie",
+			fee: 32.85,
+			feecode: 0,
+		},
+		{
+			nomen_code: 105092,
+			nomen_desc_fr:
+				"Consultation avec l'élaboration d'un rapport écrit d'un bilan diagnostique",
+			nomen_desc_nl:
+				"Raadpleging met het opstellen van een schriftelijk verslag",
+			fee: 26.08,
+			feecode: 0,
+		},
+	];
+
+	console.log("Test data:", testData);
+	console.log("Calling displayNomenclatureResults with test data...");
+
+	displayNomenclatureResults(testData);
+
+	console.log("=== End real data test ===");
+}
+
+// Test API call function
+function testAPICall() {
+	console.log("=== Testing API Call ===");
+
+	const testQuery = "105";
+	console.log("Testing with query:", testQuery);
+
+	searchNomenclature(testQuery);
+
+	console.log("=== API call initiated ===");
+}
+
+// Test direct API endpoint
+function testDirectAPI() {
+	console.log("=== Testing Direct API Call ===");
+
+	const apiUrl =
+		HOSTURL + "/" + APP_NAME + "/api/nomenclature/search?code=105755&limit=5";
+	console.log("Direct API URL:", apiUrl);
+
+	$.ajax({
+		url: apiUrl,
+		method: "GET",
+		success: function (response) {
+			console.log("✅ Direct API success:");
+			console.log("Full Response Object:", response);
+			console.log("Response Type:", typeof response);
+			console.log("Response Keys:", Object.keys(response || {}));
+
+			// Detailed analysis
+			console.log("\n=== RESPONSE STRUCTURE ANALYSIS ===");
+			console.log("response.status:", response.status);
+			console.log("response.data exists:", response.data !== undefined);
+			console.log("response.data type:", typeof response.data);
+			console.log("response.data is array:", Array.isArray(response.data));
+			console.log(
+				"response.data length:",
+				response.data ? response.data.length : "N/A"
+			);
+			console.log("response.pagination:", response.pagination);
+			console.log("response.filters:", response.filters);
+
+			if (response.data && response.data.length > 0) {
+				console.log("First item structure:", response.data[0]);
+				console.log("First item keys:", Object.keys(response.data[0] || {}));
+			}
+
+			// Test the extraction logic
+			console.log("\n=== TESTING EXTRACTION LOGIC ===");
+			if (response && response.data && Array.isArray(response.data)) {
+				console.log(
+					"✅ Extraction would work: Found",
+					response.data.length,
+					"items"
+				);
+				console.log("Sample item:", response.data[0]);
+			} else {
+				console.log("❌ Extraction would fail");
+			}
+		},
+		error: function (xhr, status, error) {
+			console.error("❌ Direct API error:");
+			console.error("Status:", status);
+			console.error("Error:", error);
+			console.error("Response:", xhr.responseText);
+		},
+	});
+}
+
+// Test function with the exact FastAPI response format provided by user
+function testWithUserProvidedData() {
+	console.log("=== Testing with User's Exact Response Data ===");
+
+	// This is the exact response structure the user provided
+	const userResponse = {
+		status: "success",
+		message: "Operation successful",
+		code: 200,
+		data: [
+			{
+				nomen_code: 105092,
+				nomen_desc_nl:
+					"Raadpleging met het opstellen van een schriftelijk verslag van een gespecialiseerd diagnostisch bilan voor wervelkolompathologie door een arts-specialist voor orthopedische heelkunde of neurochirurgie",
+				nomen_desc_fr:
+					"Consultation avec l'élaboration d'un rapport écrit d'un bilan diagnostique spécialisé pour pathologie de la colonne vertébrale par un médecin spécialiste en chirurgie orthopédique ou en neurochirurgie",
+				fee: 26.08,
+				feecode: 0,
+			},
+			{
+				nomen_code: 105114,
+				nomen_desc_nl:
+					"Raadpleging met het opstellen van een schriftelijk verslag van een gespecialiseerd diagnostisch bilan voor wervelkolompathologie door een geaccrediteerde arts-specialist voor orthopedische heelkunde of neurochirurgie",
+				nomen_desc_fr:
+					"Consultation avec l'élaboration d'un rapport écrit d'un bilan diagnostique spécialisé pour pathologie de la colonne vertébrale par un médecin spécialiste en chirurgie orthopédique ou en neurochirurgie, accrédité",
+				fee: 32.84,
+				feecode: 0,
+			},
+		],
+		meta: {
+			total: 20,
+			limit: 20,
+			offset: 0,
+			has_more: false,
+		},
+	};
+
+	console.log("User response structure:", userResponse);
+	console.log("Testing data extraction logic...");
+
+	// Test the extraction logic exactly as it appears in searchNomenclature
+	let resultsData = [];
+
+	if (
+		userResponse &&
+		userResponse.status === "success" &&
+		userResponse.data &&
+		Array.isArray(userResponse.data)
+	) {
+		resultsData = userResponse.data;
+		console.log(
+			"✅ FastAPI format detected - Using response.data (found " +
+				resultsData.length +
+				" items)"
+		);
+		console.log("Response meta:", userResponse.meta);
+	} else {
+		console.error("❌ Data extraction failed!");
+	}
+
+	console.log("Extracted results:", resultsData);
+	console.log("Sample item:", resultsData[0]);
+
+	console.log("Now testing displayNomenclatureResults...");
+	try {
+		displayNomenclatureResults(resultsData);
+		console.log("✅ Display function completed");
+	} catch (error) {
+		console.error("❌ Display function failed:", error);
+	}
+
+	console.log("=== End User Data Test ===");
+}
+
+// Test function to verify nomenclature search with exact user-provided data
+function testWithExactUserData() {
+	console.log("=== Testing with exact user-provided API data ===");
+
+	// This is the exact response format provided by the user
+	const testResponse = {
+		status: "success",
+		message: "Operation successful",
+		code: 200,
+		data: [
+			{
+				nomen_code: 105092,
+				nomen_desc_nl:
+					"Raadpleging met het opstellen van een schriftelijk verslag van een gespecialiseerd diagnostisch bilan voor wervelkolompathologie door een arts-specialist voor orthopedische heelkunde of neurochirurgie",
+				nomen_desc_fr:
+					"Consultation avec l'élaboration d'un rapport écrit d'un bilan diagnostique spécialisé pour pathologie de la colonne vertébrale par un médecin spécialiste en chirurgie orthopédique ou en neurochirurgie",
+				dbegin_fee: "2025-01-01 00:00:00",
+				dend_fee: "2999-12-31 00:00:00",
+				fee_code_cat: 1,
+				fee_code_cat_desc_nl: "Honoraria en prijzen",
+				fee_code_cat_desc_fr: "Honoraires et prix",
+				feecode: 0,
+				fee_code_desc_nl: "Honorarium",
+				fee_code_desc_fr: "Honoraire",
+				fee: 26.08,
+				nomen_grp_n: "N01",
+				AUTHOR_DOC: "OA2024_400",
+				nomen_grp_n_desc_nl: "Raadplegingen, bezoeken en adviezen van artsen",
+				nomen_grp_n_desc_fr: "Consultations, visites et avis de médecins",
+				dbegin_key_letter_value: "01/01/2025",
+				key_letter1: "N",
+				key_letter_index1: "N200",
+				key_coeff1: "8",
+				key_letter1_value: "3,260036",
+				key_letter2: null,
+				key_letter_index2: null,
+				key_coeff2: null,
+				key_letter2_value: null,
+				key_letter3: null,
+				key_letter_index3: null,
+				key_coeff3: null,
+				key_letter3_value: null,
+			},
+		],
+		meta: {
+			total: 20,
+			limit: 20,
+			offset: 0,
+			has_more: false,
+		},
+	};
+
+	console.log("Test response:", testResponse);
+	console.log("Response type:", typeof testResponse);
+	console.log("Response keys:", Object.keys(testResponse));
+
+	// Test the exact data extraction logic from searchNomenclature
+	let resultsData = [];
+
+	console.log("Testing data extraction...");
+	if (testResponse && typeof testResponse === "object") {
+		console.log("Analyzing response structure:");
+		console.log("- response.status:", testResponse.status);
+		console.log("- response.message:", testResponse.message);
+		console.log("- response.code:", testResponse.code);
+		console.log("- response.data type:", typeof testResponse.data);
+		console.log("- response.data is array:", Array.isArray(testResponse.data));
+		console.log("- response.meta:", testResponse.meta);
+
+		// Primary format check - exact match for the user's format
+		if (testResponse.status === "success" && Array.isArray(testResponse.data)) {
+			resultsData = testResponse.data;
+			console.log(
+				"✅ Success format detected - Using response.data (found " +
+					resultsData.length +
+					" items)"
+			);
+			console.log("Response meta:", testResponse.meta);
+		}
+		// Fallback: check for data field regardless of status
+		else if (Array.isArray(testResponse.data)) {
+			resultsData = testResponse.data;
+			console.log(
+				"✅ Data array found - Using response.data (found " +
+					resultsData.length +
+					" items) [Status: " +
+					testResponse.status +
+					"]"
+			);
+		}
+		// No valid format found
+		else {
+			console.error("❌ Could not extract data from response");
+			console.log("Response structure debug:");
+			console.log("- response type:", typeof testResponse);
+			console.log("- response keys:", Object.keys(testResponse));
+			console.log("- response.data:", testResponse.data);
+			console.log("- response.items:", testResponse.items);
+			console.log("- is array:", Array.isArray(testResponse));
+			resultsData = [];
+		}
+	} else {
+		console.error("❌ Invalid response - not an object:", testResponse);
+		resultsData = [];
+	}
+
+	console.log("Final results data:", resultsData);
+	console.log(
+		"Sample item:",
+		resultsData.length > 0 ? resultsData[0] : "No items"
+	);
+	console.log(
+		"About to call displayNomenclatureResults with",
+		resultsData.length,
+		"items"
+	);
+
+	// Test displayNomenclatureResults with this data
+	try {
+		displayNomenclatureResults(resultsData);
+		console.log("✅ displayNomenclatureResults completed successfully");
+	} catch (error) {
+		console.error("❌ Error in displayNomenclatureResults:", error);
+		console.error("Error stack:", error.stack);
+	}
+}
+
+// Test function to simulate the complete search flow
+function testCompleteSearchFlow() {
+	console.log("=== Testing complete search flow ===");
+
+	// First test DOM elements
+	testNomenclatureElements();
+
+	// Wait a bit, then test with exact data
+	setTimeout(function () {
+		testWithExactUserData();
+	}, 1000);
+
+	// Simulate manual search
+	console.log(
+		"- To test manually, open the billing modal and type '105' in the search box"
+	);
+	console.log("- Or call: searchNomenclature('105')");
+	console.log("- Or call: testWithExactUserData()");
+}
+
+// Make test functions available globally for debugging
+window.testWithExactUserData = testWithExactUserData;
+window.testCompleteSearchFlow = testCompleteSearchFlow;
