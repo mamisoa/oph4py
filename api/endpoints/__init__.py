@@ -6,8 +6,8 @@ The modules in this package define route handlers for different API functionalit
 """
 
 # Import all endpoint modules to ensure they're loaded
-from . import auth, email, upload, utils, worklist
+from . import auth, billing, email, upload, utils, worklist
 from .devices import beid
 
 # List of all endpoint modules for easy importing
-all_endpoints = ["auth", "email", "upload", "utils", "worklist", "beid"]
+all_endpoints = ["auth", "billing", "email", "upload", "utils", "worklist", "beid"]

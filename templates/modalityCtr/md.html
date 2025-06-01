@@ -1245,91 +1245,84 @@
                 <div class="col">
                     <div class="row">
                         <div class="col">
-                            <h3 class="title-right">Right eye</h3>
+                            <h3 class="title-right">Billing Codes</h3>
                         </div>
                     </div>
-                    <div class="row bg-right">
+                    <div class="row">
                         <div class="col">
-                            Billing right eye
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <button type="button" id="btnNewBillCode" class="btn btn-dark btn-sm me-2"
+                                        data-bs-toggle="modal" data-bs-target="#billCodeModal">
+                                        Add Code<i class="mx-2 fas fa-plus"></i>
+                                    </button>
+                                    <button type="button" id="btnApplyCombo" class="btn btn-success btn-sm"
+                                        data-bs-toggle="modal" data-bs-target="#billComboModal">
+                                        Apply Combo<i class="mx-2 fas fa-layer-group"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row bg-neutral">
+                                <div class="col">
+                                    <table id="bill_tbl" data-side-pagination="server" data-pagination="true"
+                                        data-page-size="10" data-search="false" data-query-params="queryParams"
+                                        data-response-handler="responseHandler_billing"
+                                        data-detail-formatter="detailFormatter_billing" data-detail-view="true"
+                                        data-detail-view-icon="true">
+                                        <thead>
+                                            <tr>
+                                                <th data-field="date_performed" data-sortable="true">Date</th>
+                                                <th data-field="nomen_code" data-sortable="true">Code</th>
+                                                <th data-field="nomen_desc_fr" data-sortable="false">Description</th>
+                                                <th data-field="laterality" data-sortable="true">Laterality</th>
+                                                <th data-field="quantity" data-sortable="false">Qty</th>
+                                                <th data-field="fee" data-sortable="false">Fee</th>
+                                                <th data-field="total_fee" data-formatter="totalFeeFormatter"
+                                                    data-sortable="false">Total</th>
+                                                <th data-field="status" data-sortable="true">Status</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_billing"
+                                                    data-events="operateEvents_billing">Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="row mt-3">
                 <div class="col">
                     <div class="row">
                         <div class="col">
-                            <h3 class="title-left">Left eye</h3>
+                            <h3 class="title-left">Billing Summary</h3>
                         </div>
                     </div>
                     <div class="row bg-left">
                         <div class="col">
-                            Billing left eye
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="row">
-                        <div class="col">
-                            <h3 class="title-right">General</h3>
-                        </div>
-                    </div>
-                    <div class="row bg-right py-3">
-                        <div class="col">
-                            <form id="bilForm" enctype="multipart/form-data" method="POST">
-                                <div class="container-fluid">
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="input-group">
-                                                <button id="bilFormSubmit" type="submit"
-                                                    class="btn btn-secondary">Update<i
-                                                        class="mx-2 fas fa-plus"></i></button>
-                                                <textarea class="form-control" aria-label="With textarea"
-                                                    name="description">[[ = XML(billing['description']) ]]</textarea>
-                                            </div>
+                            <div id="billingSummary" class="p-3">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5>Total Codes: <span id="totalCodes" class="badge bg-primary">0</span></h5>
+                                        <h5>Total Amount: <span id="totalAmount" class="badge bg-success">€0.00</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-primary btn-sm"
+                                                onclick="exportBilling('pdf')">
+                                                Export PDF<i class="ms-1 fas fa-file-pdf"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success btn-sm"
+                                                onclick="exportBilling('excel')">
+                                                Export Excel<i class="ms-1 fas fa-file-excel"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <input id="idbil" type="text" class="visually-hidden" name="id"
-                                    value="[[ = XML(billing['id']) ]]" />
-                                <input id="idPatientbil" type="text" class="visually-hidden" name="id_auth_user"
-                                    value="[[=patientId]]" />
-                                <input id="idWlbil" type="text" class="visually-hidden" name="id_worklist"
-                                    value="[[=wlId]]" />
-                            </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a
-                        doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro
-                        explicabo laborum? Impedit!</p>
-                </div>
-                <div class="col bg-left">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a
-                        doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro
-                        explicabo laborum? Impedit!</p>
-                </div>
-                <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a
-                        doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro
-                        explicabo laborum? Impedit!</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row mb-3 bill">
-        <div class="col">
-            <div class="row">
-                <div class="col">
-                    <h3 class="title-right">Recap</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col bg-right">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis deleniti dolor vitae libero a
-                        doloremque nobis quo quidem incidunt non suscipit molestiae odit velit obcaecati pariatur, porro
-                        explicabo laborum? Impedit!</p>
                 </div>
             </div>
         </div>
@@ -1925,7 +1918,8 @@
                                         <div class="col">
                                             <label for="GxRxemailInput" class="form-label">Email:</label>
                                             <input id="GxRxemailInput" type="email" class="form-control" name="email">
-                                            <div id="GxRxemailHelp" class="form-text">Email address for sending prescription (pre-filled with patient's email)</div>
+                                            <div id="GxRxemailHelp" class="form-text">Email address for sending
+                                                prescription (pre-filled with patient's email)</div>
                                         </div>
                                     </div>
                                 </div>
@@ -2321,7 +2315,8 @@
                                         <div class="col">
                                             <label for="CxRxemailInput" class="form-label">Email:</label>
                                             <input id="CxRxemailInput" type="email" class="form-control" name="email">
-                                            <div id="CxRxemailHelp" class="form-text">Email address for sending prescription (pre-filled with patient's email)</div>
+                                            <div id="CxRxemailHelp" class="form-text">Email address for sending
+                                                prescription (pre-filled with patient's email)</div>
                                         </div>
                                     </div>
                                 </div>
@@ -2370,7 +2365,8 @@
                                 <div class="col">
                                     <label for="certificateEmailInput" class="form-label">Email:</label>
                                     <input id="certificateEmailInput" type="email" class="form-control" name="email">
-                                    <div id="certificateEmailHelp" class="form-text">Email address for sending certificate (pre-filled with patient's email)</div>
+                                    <div id="certificateEmailHelp" class="form-text">Email address for sending
+                                        certificate (pre-filled with patient's email)</div>
                                 </div>
                             </div>
                             <div class="row">
@@ -2496,7 +2492,185 @@
     </div>
 </div>
 
+<!-- Modal billCodeModal -->
+<div class="modal fade" id="billCodeModal" tabindex="-1" role="dialog" aria-labelledby="billCodeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="billCodeModalLabel">Add Billing Code</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <!-- Search Section -->
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h6>Search Nomenclature Codes</h6>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="nomenSearchInput"
+                                    placeholder="Search by code or description">
+                                <button class="btn btn-outline-secondary" type="button" id="nomenSearchBtn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Search Results -->
+                    <div class="row mb-3" id="nomenSearchResults" style="display: none;">
+                        <div class="col">
+                            <div class="table-responsive" style="max-height: 300px;">
+                                <table class="table table-sm table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Description (FR)</th>
+                                            <th>Fee</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="nomenSearchTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Form Section -->
+                    <form id="billCodeForm" enctype="multipart/form-data" method="POST">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="billNomenCode" class="form-label">Nomenclature Code *</label>
+                                <input type="number" class="form-control" id="billNomenCode" name="nomen_code" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="billNomenDesc" class="form-label">Description</label>
+                                <input type="text" class="form-control" id="billNomenDesc" name="nomen_desc_fr"
+                                    readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="billFee" class="form-label">Fee (€)</label>
+                                <input type="number" class="form-control" id="billFee" name="fee" step="0.01">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Laterality</label>
+                                <div class="btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="laterality" value="both" id="lat_both"
+                                        checked>
+                                    <label class="btn btn-outline-primary" for="lat_both">Both</label>
+                                    <input type="radio" class="btn-check" name="laterality" value="right"
+                                        id="lat_right">
+                                    <label class="btn btn-outline-primary" for="lat_right">Right</label>
+                                    <input type="radio" class="btn-check" name="laterality" value="left" id="lat_left">
+                                    <label class="btn btn-outline-primary" for="lat_left">Left</label>
+                                    <input type="radio" class="btn-check" name="laterality" value="none" id="lat_none">
+                                    <label class="btn btn-outline-primary" for="lat_none">None</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="billQuantity" class="form-label">Quantity</label>
+                                <input type="number" class="form-control" id="billQuantity" name="quantity" value="1"
+                                    min="1">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="billDatePerformed" class="form-label">Date Performed</label>
+                                <input type="date" class="form-control" id="billDatePerformed" name="date_performed">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="billStatus" class="form-label">Status</label>
+                                <select class="form-select" id="billStatus" name="status">
+                                    <option value="draft" selected>Draft</option>
+                                    <option value="validated">Validated</option>
+                                    <option value="billed">Billed</option>
+                                    <option value="paid">Paid</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="billNote" class="form-label">Note</label>
+                                <textarea class="form-control" id="billNote" name="note" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <!-- Hidden fields -->
+                        <input type="hidden" name="id" id="billCodeId">
+                        <input type="hidden" name="id_auth_user" id="billUserId" value="[[=patientId]]">
+                        <input type="hidden" name="id_worklist" id="billWorklistId" value="[[=wlId]]">
+                        <input type="hidden" name="methodBillCodeSubmit" id="methodBillCodeSubmit" value="POST">
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="billCodeForm" class="btn btn-primary" id="billCodeSubmit">Add Code</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Modal billComboModal -->
+<div class="modal fade" id="billComboModal" tabindex="-1" role="dialog" aria-labelledby="billComboModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="billComboModalLabel">Apply Billing Combo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h6>Available Combos</h6>
+                            <div class="table-responsive" style="max-height: 400px;">
+                                <table class="table table-sm table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Specialty</th>
+                                            <th>Codes</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="comboTableBody">
+                                        <!-- Combos will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3" id="comboPreview" style="display: none;">
+                        <div class="col">
+                            <h6>Combo Preview</h6>
+                            <div class="alert alert-info">
+                                <h6 id="comboPreviewTitle"></h6>
+                                <p id="comboPreviewDesc"></p>
+                                <div id="comboPreviewCodes"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <form id="comboApplyForm">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="comboNote" class="form-label">Application Note</label>
+                                <textarea class="form-control" id="comboNote" name="note" rows="2"
+                                    placeholder="Optional note for this combo application"></textarea>
+                            </div>
+                        </div>
+                        <input type="hidden" name="id_combo" id="selectedComboId">
+                        <input type="hidden" name="id_auth_user" value="[[=patientId]]">
+                        <input type="hidden" name="id_worklist" value="[[=wlId]]">
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="applyComboBtn" disabled>Apply Combo</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- cache offcanvas -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCache" aria-labelledby="offcanvas cache">
@@ -2702,11 +2876,17 @@
         url: API_KMLEFT
     });
 
+    // table listing billing codes for current worklist
+    const API_BILLING = HOSTURL + "/" + APP_NAME + "/api/billing_codes/by_worklist/" + wlId;
+    var $bill_tbl = $('#bill_tbl').bootstrapTable({
+        url: API_BILLING
+    });
+
     // tables list
     const tablesArr = ['#mx_tbl', '#ax_tbl', '#mHx_tbl', '#sHx_tbl', '#oHx_tbl', '#table-wl',
         '#rxRight_tbl', '#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl',
         '#kmRight_tbl', '#kmLeft_tbl',
-        '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl', '#cert_tbl'];
+        '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl', '#cert_tbl', '#bill_tbl'];
 
     // init tinymce
     tinymce.init({
