@@ -2367,8 +2367,16 @@ function loadBillingCombos() {
 	});
 }
 
+// Global variable to store combo data to avoid HTML attribute corruption
+let loadedCombos = [];
+
 // display billing combos
 function displayBillingCombos(combos) {
+	console.log("displayBillingCombos called with:", combos);
+
+	// Store combos in global variable for reliable access
+	loadedCombos = combos;
+
 	let tbody = $("#comboTableBody");
 	tbody.empty();
 
@@ -2378,11 +2386,17 @@ function displayBillingCombos(combos) {
 		);
 	} else {
 		combos.forEach(function (combo) {
+			console.log("Processing combo:", combo);
+			console.log("combo.combo_codes raw:", combo.combo_codes);
+			console.log("typeof combo.combo_codes:", typeof combo.combo_codes);
+
 			let codes = [];
 			try {
 				codes = JSON.parse(combo.combo_codes || "[]");
+				console.log("Parsed codes successfully:", codes);
 			} catch (e) {
 				console.error("Error parsing combo codes:", e);
+				console.error("Failed to parse:", combo.combo_codes);
 			}
 
 			let row = $("<tr>");
@@ -2393,15 +2407,11 @@ function displayBillingCombos(combos) {
 					"</span></td>"
 			);
 			row.append("<td>" + codes.join(", ") + "</td>");
+
+			// Store only the combo ID in data attribute, retrieve full data from loadedCombos array
 			row.append(
 				'<td><button class="btn btn-sm btn-success select-combo" data-combo-id="' +
 					combo.id +
-					'" data-combo-name="' +
-					combo.combo_name +
-					'" data-combo-desc="' +
-					(combo.combo_description || "") +
-					'" data-combo-codes="' +
-					combo.combo_codes +
 					'">Select</button></td>'
 			);
 			tbody.append(row);
@@ -2543,10 +2553,30 @@ $(document).ready(function () {
 
 	// Select combo
 	$(document).on("click", ".select-combo", function () {
+		console.log("=== Combo Selection Clicked ===");
 		let comboId = $(this).data("combo-id");
-		let comboName = $(this).data("combo-name");
-		let comboDesc = $(this).data("combo-desc");
-		let comboCodes = $(this).data("combo-codes");
+		console.log("comboId:", comboId);
+
+		// Find the combo data from the loadedCombos array
+		let combo = loadedCombos.find((c) => c.id == comboId);
+		if (!combo) {
+			console.error("Could not find combo with ID:", comboId);
+			bootbox.alert(
+				"Error: Could not find combo data. Please refresh and try again."
+			);
+			return;
+		}
+
+		console.log("Found combo:", combo);
+
+		let comboName = combo.combo_name;
+		let comboDesc = combo.combo_description || "";
+		let comboCodes = combo.combo_codes;
+
+		console.log("comboName:", comboName);
+		console.log("comboDesc:", comboDesc);
+		console.log("comboCodes raw:", comboCodes);
+		console.log("typeof comboCodes:", typeof comboCodes);
 
 		$("#selectedComboId").val(comboId);
 		$("#comboPreviewTitle").text(comboName);
@@ -2555,15 +2585,20 @@ $(document).ready(function () {
 		// Display codes
 		try {
 			let codes = JSON.parse(comboCodes || "[]");
+			console.log("Successfully parsed codes:", codes);
 			$("#comboPreviewCodes").html(
 				"<strong>Codes:</strong> " + codes.join(", ")
 			);
 		} catch (e) {
+			console.error("Error parsing codes in click handler:", e);
+			console.error("Failed to parse comboCodes:", comboCodes);
 			$("#comboPreviewCodes").html("<strong>Codes:</strong> Invalid format");
 		}
 
+		console.log("Showing combo preview...");
 		$("#comboPreview").show();
 		$("#applyComboBtn").prop("disabled", false);
+		console.log("=== End Combo Selection ===");
 	});
 
 	// Apply combo

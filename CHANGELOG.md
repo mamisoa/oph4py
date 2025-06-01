@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-01T23:18:58.674996] - Fixed Billing Combo Selection Issue
+
+### Fixed
+
+- **Combo Selection Not Working in Billing Modal**
+  - Fixed issue where combo selection was failing due to JSON string corruption in HTML data attributes
+  - Replaced HTML data attribute storage with JavaScript variable storage for combo data integrity
+  - Added comprehensive debugging console logs for troubleshooting combo selection issues
+  - Combo selection in billing modal now works reliably with proper data parsing
+
+### Technical Details
+
+- **Root Cause**: JSON strings containing combo codes were being corrupted when stored as HTML data attributes, causing `JSON.parse()` failures
+- **Solution**: Created `loadedCombos` global variable to store combo data and reference by ID instead of storing complete data in HTML attributes
+- **Data Flow**: `displayBillingCombos()` now stores combo data in `loadedCombos` array and only stores combo ID in HTML data attribute
+- **Selection**: Click handler retrieves full combo data from `loadedCombos.find()` using the combo ID, ensuring data integrity
+- **Enhanced Debugging**: Added extensive console logging to track data flow and identify parsing failures
+
+### User Experience
+
+- **Before**: Clicking "Select" button on billing combos had no effect or showed "Invalid format" errors
+- **After**: Combo selection works properly, showing combo preview with name, description, and parsed codes
+- **Reliability**: Combo codes now parse correctly regardless of special characters or array complexity
+- **Debugging**: Enhanced error logging helps identify any remaining issues during development
+
+### Code Changes
+
+- Added `loadedCombos` global variable for reliable data storage
+- Simplified HTML button generation to only include `data-combo-id` attribute
+- Enhanced click handler to retrieve combo data from JavaScript variable instead of HTML attributes
+- Added comprehensive debug logging throughout the combo selection workflow
+
 ## [2025-06-01T23:10:00.989143] - Improved Edit Experience with In-Form Editing
 
 ### Changed
