@@ -17,7 +17,13 @@
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Create New Billing Combo</h5>
+                    <h5 class="card-title mb-0" id="formTitle">Create New Billing Combo</h5>
+                    <div id="editModeAlert" class="alert alert-info mt-2" style="display: none;">
+                        <i class="fas fa-edit"></i> You are editing an existing combo.
+                        <button type="button" id="btnCancelEdit" class="btn btn-sm btn-outline-secondary ms-2">
+                            <i class="fas fa-times"></i> Cancel Edit
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <form id="newBillingComboForm" method="POST">
@@ -101,11 +107,12 @@
                         <div class="row">
                             <div class="col">
                                 <button type="submit" id="btnSaveCombo" class="btn btn-primary" disabled>
-                                    <i class="fas fa-save"></i> Save Billing Combo
+                                    <i class="fas fa-save"></i> <span id="saveButtonText">Save Billing Combo</span>
                                 </button>
                                 <button type="button" id="btnResetForm" class="btn btn-secondary">
                                     <i class="fas fa-undo"></i> Reset Form
                                 </button>
+                                <input type="hidden" id="editComboId" value="">
                             </div>
                         </div>
                     </form>
@@ -140,56 +147,6 @@
                         </thead>
                     </table>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Modal -->
-<div class="modal fade" id="editComboModal" tabindex="-1" aria-labelledby="editComboModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editComboModalLabel">Edit Billing Combo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editComboForm">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="editComboName" class="form-label">Combo Name</label>
-                            <input type="text" id="editComboName" name="combo_name" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="editComboSpecialty" class="form-label">Specialty</label>
-                            <select id="editComboSpecialty" name="specialty" class="form-select" required>
-                                [[ for specialty in specialties: ]]
-                                <option value="[[= specialty['value'] ]]" [[ if specialty['is_default']: ]] selected[[
-                                    pass ]]>[[= specialty['label'] ]]</option>
-                                [[ pass ]]
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col">
-                            <label for="editComboDescription" class="form-label">Description</label>
-                            <textarea id="editComboDescription" name="combo_description" class="form-control"
-                                rows="2"></textarea>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col">
-                            <label class="form-label">Codes</label>
-                            <div id="editSelectedCodes" class="border rounded p-3 bg-light"></div>
-                        </div>
-                    </div>
-                    <input type="hidden" id="editComboId">
-                    <input type="hidden" id="editComboCodes" name="combo_codes">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="btnUpdateCombo" class="btn btn-primary">Update Combo</button>
             </div>
         </div>
     </div>

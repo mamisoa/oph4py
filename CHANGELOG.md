@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-01T23:10:00.989143] - Improved Edit Experience with In-Form Editing
+
+### Changed
+
+- **Enhanced Edit User Experience**
+  - Removed edit modal and implemented in-form editing for billing combos
+  - When users click "Edit", the main form now populates with the combo data for modification
+  - Added visual indicators showing edit mode with alert banner and button color changes
+  - Form title changes from "Create New Billing Combo" to "Edit Billing Combo"
+  - Save button changes from "Save Billing Combo" to "Update Combo" with warning color
+  - Added "Cancel Edit" button to return to creation mode without saving changes
+
+### Added
+
+- **Edit Mode State Management**
+  - Added `isEditMode` state tracking in JavaScript
+  - Added edit mode alert banner with visual feedback
+  - Added automatic scrolling to form when editing is initiated
+  - Added cancel edit functionality with confirmation toast
+  - Added dynamic form button text and styling changes
+
+### Technical Details
+
+- **Single Form Approach**: Uses the same form for both creation and editing, improving code maintainability
+- **State Management**: Added proper edit mode state tracking with `isEditMode` and `currentEditId` properties
+- **UI Feedback**: Clear visual indicators when in edit mode including title changes, button styling, and alert banner
+- **Form Reset**: Enhanced reset functionality to properly exit edit mode and return to creation state
+- **Auto-scroll**: Form automatically scrolls into view when edit is initiated for better user experience
+
+### User Experience Improvements
+
+- **Consistent Interface**: Users work with the same familiar form for both creating and editing
+- **No Modal Context Switching**: Eliminates the need to context-switch between main form and modal
+- **Visual Clarity**: Clear indicators show when in edit vs. create mode
+- **Easy Cancellation**: One-click cancel button to abandon edits and return to creation mode
+- **Smooth Workflow**: Seamless transition between viewing, editing, and creating combos
+
+### Removed Components
+
+- Edit modal (`#editComboModal`) completely removed from template
+- Separate edit form removed from HTML
+- Modal-specific JavaScript methods consolidated into main form logic
+- Modal event handlers removed and replaced with in-form edit handling
+
 ## [2025-06-01T23:01:05.299685] - Fixed PyDAL RestAPI Invalid Fields Error for Billing Combo
 
 ### Fixed

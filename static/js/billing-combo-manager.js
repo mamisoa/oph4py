@@ -16,6 +16,7 @@ class BillingComboManager {
 		this.selectedCodes = [];
 		this.searchTimeout = null;
 		this.currentEditId = null;
+		this.isEditMode = false;
 
 		// Ensure API_BASE is defined
 		if (typeof API_BASE === "undefined") {
@@ -38,9 +39,7 @@ class BillingComboManager {
 		// Form handling
 		$("#newBillingComboForm").on("submit", (e) => this.handleFormSubmit(e));
 		$("#btnResetForm").on("click", () => this.resetForm());
-
-		// Edit modal
-		$("#btnUpdateCombo").on("click", () => this.updateCombo());
+		$("#btnCancelEdit").on("click", () => this.cancelEdit());
 
 		// Dynamic events for results
 		$(document).on("click", ".add-nomen-code", (e) =>
@@ -285,25 +284,44 @@ class BillingComboManager {
 		};
 
 		try {
-			const response = await fetch(`${API_BASE}/billing_combo`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(formData),
-			});
+			let response, successMessage;
+
+			if (this.isEditMode && this.currentEditId) {
+				// Update existing combo
+				response = await fetch(
+					`${API_BASE}/billing_combo/${this.currentEditId}`,
+					{
+						method: "PUT",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(formData),
+					}
+				);
+				successMessage = "Billing combo updated successfully!";
+			} else {
+				// Create new combo
+				response = await fetch(`${API_BASE}/billing_combo`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(formData),
+				});
+				successMessage = "Billing combo created successfully!";
+			}
 
 			const result = await response.json();
 
 			if (response.ok && result.status === "success") {
-				this.showToast("Billing combo created successfully!", "success");
+				this.showToast(successMessage, "success");
 				this.resetForm();
 				$("#billingComboTable").bootstrapTable("refresh");
 			} else {
-				throw new Error(result.message || "Failed to create combo");
+				throw new Error(result.message || "Failed to save combo");
 			}
 		} catch (error) {
-			console.error("Error creating combo:", error);
+			console.error("Error saving combo:", error);
 			this.showToast(`Error: ${error.message}`, "error");
 		}
 	}
@@ -317,18 +335,26 @@ class BillingComboManager {
 		this.updateFormState();
 		$("#nomenclatureResults").hide();
 		$("#nomenclatureSearch").val("");
+
+		// Reset edit mode
+		this.exitEditMode();
 	}
 
-	// Edit functionality
+	// Edit functionality - now uses main form
 	editCombo(id, row) {
 		this.currentEditId = id;
+		this.isEditMode = true;
 
+		// Update UI to show edit mode
+		this.enterEditMode();
+
+		// Populate form fields
+		$("#comboName").val(row.combo_name);
+		$("#comboDescription").val(row.combo_description || "");
+		$("#comboSpecialty").val(row.specialty);
 		$("#editComboId").val(id);
-		$("#editComboName").val(row.combo_name);
-		$("#editComboDescription").val(row.combo_description || "");
-		$("#editComboSpecialty").val(row.specialty);
 
-		// Parse and display codes
+		// Parse and load selected codes
 		let codes = [];
 		try {
 			codes = JSON.parse(row.combo_codes || "[]");
@@ -336,52 +362,48 @@ class BillingComboManager {
 			console.error("Error parsing combo codes:", e);
 		}
 
-		let codesHtml = "";
-		if (codes.length > 0) {
-			codesHtml = codes
-				.map((code) => `<span class="badge bg-primary me-1">${code}</span>`)
-				.join("");
-		} else {
-			codesHtml = '<span class="text-muted">No codes defined</span>';
-		}
-		$("#editSelectedCodes").html(codesHtml);
-		$("#editComboCodes").val(row.combo_codes);
+		// Convert codes array to selected codes objects (simplified version for editing)
+		this.selectedCodes = codes.map((code) => ({
+			code: code,
+			description: `Code ${code}`, // Simplified description for editing
+			feecode: "N/A",
+			fee: "N/A",
+		}));
 
-		$("#editComboModal").modal("show");
+		// Update displays
+		this.updateSelectedCodesDisplay();
+		this.updateFormState();
+
+		// Scroll to form
+		document.getElementById("newBillingComboForm").scrollIntoView({
+			behavior: "smooth",
+			block: "start",
+		});
+
+		this.showToast(`Editing combo: ${row.combo_name}`, "info");
 	}
 
-	async updateCombo() {
-		const id = $("#editComboId").val();
+	enterEditMode() {
+		this.isEditMode = true;
+		$("#formTitle").text("Edit Billing Combo");
+		$("#saveButtonText").text("Update Combo");
+		$("#editModeAlert").show();
+		$("#btnSaveCombo").removeClass("btn-primary").addClass("btn-warning");
+	}
 
-		const formData = {
-			combo_name: $("#editComboName").val().trim(),
-			combo_description: $("#editComboDescription").val().trim(),
-			specialty: $("#editComboSpecialty").val(),
-			combo_codes: $("#editComboCodes").val(),
-		};
+	exitEditMode() {
+		this.isEditMode = false;
+		this.currentEditId = null;
+		$("#formTitle").text("Create New Billing Combo");
+		$("#saveButtonText").text("Save Billing Combo");
+		$("#editModeAlert").hide();
+		$("#editComboId").val("");
+		$("#btnSaveCombo").removeClass("btn-warning").addClass("btn-primary");
+	}
 
-		try {
-			const response = await fetch(`${API_BASE}/billing_combo/${id}`, {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(formData),
-			});
-
-			const result = await response.json();
-
-			if (response.ok && result.status === "success") {
-				this.showToast("Billing combo updated successfully!", "success");
-				$("#editComboModal").modal("hide");
-				$("#billingComboTable").bootstrapTable("refresh");
-			} else {
-				throw new Error(result.message || "Failed to update combo");
-			}
-		} catch (error) {
-			console.error("Error updating combo:", error);
-			this.showToast(`Error: ${error.message}`, "error");
-		}
+	cancelEdit() {
+		this.resetForm();
+		this.showToast("Edit cancelled", "info");
 	}
 
 	async deleteCombo(id, name) {
