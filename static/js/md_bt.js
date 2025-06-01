@@ -2669,11 +2669,69 @@ function displayBillingCombos(combos) {
 
 			let codes = [];
 			try {
-				codes = JSON.parse(combo.combo_codes || "[]");
-				console.log("Parsed codes successfully:", codes);
+				// Use robust parsing logic to handle Python-style JSON
+				if (!combo.combo_codes || combo.combo_codes === "[]") {
+					codes = [];
+				} else if (typeof combo.combo_codes === "string") {
+					try {
+						// First attempt: direct JSON parse
+						codes = JSON.parse(combo.combo_codes);
+						console.log("Successfully parsed with JSON.parse:", codes);
+					} catch (e) {
+						console.log(
+							"Direct JSON parse failed, attempting JavaScript evaluation..."
+						);
+
+						// Replace Python literals with JavaScript equivalents
+						let jsCode = combo.combo_codes
+							.replace(/True/g, "true")
+							.replace(/False/g, "false")
+							.replace(/None/g, "null");
+
+						try {
+							// Use eval in a safe way (since this is controlled data from our own database)
+							codes = eval("(" + jsCode + ")");
+							console.log("Successfully parsed with eval:", codes);
+						} catch (evalError) {
+							console.error("Eval parsing failed:", evalError);
+							throw evalError;
+						}
+					}
+				} else {
+					codes = combo.combo_codes;
+				}
+
+				// Process codes for display - handle both old and new formats
+				let displayCodes = [];
+				if (Array.isArray(codes)) {
+					codes.forEach((code) => {
+						if (typeof code === "number") {
+							// Old format: simple integer code
+							displayCodes.push(code.toString());
+						} else if (typeof code === "object" && code.nomen_code) {
+							// New format: object with potential secondary codes
+							if (code.secondary_nomen_code) {
+								displayCodes.push(
+									`${code.nomen_code}+${code.secondary_nomen_code}`
+								);
+							} else {
+								displayCodes.push(code.nomen_code.toString());
+							}
+						} else {
+							// Fallback
+							displayCodes.push(code.toString());
+						}
+					});
+					codes = displayCodes;
+				}
 			} catch (e) {
-				console.error("Error parsing combo codes:", e);
-				console.error("Failed to parse:", combo.combo_codes);
+				console.error(
+					"Error parsing combo codes in displayBillingCombos:",
+					e,
+					"Raw value:",
+					combo.combo_codes
+				);
+				codes = [];
 			}
 
 			let row = $("<tr>");
@@ -2698,28 +2756,241 @@ function displayBillingCombos(combos) {
 
 // apply billing combo
 function applyBillingCombo(comboId, note) {
-	$.ajax({
-		url: HOSTURL + "/" + APP_NAME + "/api/billing_combo/" + comboId + "/apply",
-		method: "POST",
-		contentType: "application/json",
-		data: JSON.stringify({
+	console.log("=== Starting Combo Application ===");
+	console.log("Applying combo ID:", comboId, "with note:", note);
+
+	// Find the combo data from the loadedCombos array
+	let combo = loadedCombos.find((c) => c.id == comboId);
+	if (!combo) {
+		console.error("Could not find combo with ID:", comboId);
+		bootbox.alert(
+			"Error: Could not find combo data. Please refresh and try again."
+		);
+		return;
+	}
+
+	console.log("Found combo data:", combo);
+
+	// Parse combo codes using the same robust logic as the preview
+	let codes = [];
+	try {
+		let comboCodes = combo.combo_codes;
+		console.log("Raw combo codes:", comboCodes);
+
+		if (!comboCodes || comboCodes === "[]") {
+			codes = [];
+		} else if (typeof comboCodes === "string") {
+			try {
+				// First attempt: direct JSON parse
+				codes = JSON.parse(comboCodes);
+				console.log("Successfully parsed codes with JSON.parse:", codes);
+			} catch (e) {
+				console.log(
+					"Direct JSON parse failed, attempting JavaScript evaluation..."
+				);
+
+				// Replace Python literals with JavaScript equivalents
+				let jsCode = comboCodes
+					.replace(/True/g, "true")
+					.replace(/False/g, "false")
+					.replace(/None/g, "null");
+
+				try {
+					// Use eval in a safe way (since this is controlled data from our own database)
+					codes = eval("(" + jsCode + ")");
+					console.log("Successfully parsed codes with eval:", codes);
+				} catch (evalError) {
+					console.error("Eval parsing failed:", evalError);
+					throw evalError;
+				}
+			}
+		} else {
+			codes = comboCodes;
+		}
+	} catch (e) {
+		console.error("Error parsing combo codes:", e);
+		bootbox.alert("Error: Could not parse combo codes. Please try again.");
+		return;
+	}
+
+	if (!Array.isArray(codes) || codes.length === 0) {
+		bootbox.alert("Error: No valid codes found in this combo.");
+		return;
+	}
+
+	console.log("Parsed codes array:", codes);
+
+	// Prepare individual billing code requests
+	let billingRequests = [];
+
+	codes.forEach((code, index) => {
+		let billingData = {
 			id_auth_user: patientId,
 			id_worklist: wlId,
-			note: note,
-		}),
-		success: function (response) {
+			note: note || "",
+		};
+
+		// Set date_performed from worklist if available
+		if (
+			typeof wlObj !== "undefined" &&
+			wlObj.worklist &&
+			wlObj.worklist.requested_time
+		) {
+			let wlDate = new Date(wlObj.worklist.requested_time);
+			billingData.date_performed = wlDate.toISOString().split("T")[0];
+		} else {
+			billingData.date_performed = new Date().toISOString().split("T")[0];
+		}
+
+		if (typeof code === "number") {
+			// Old format: simple integer code
+			billingData.nomen_code = code;
+		} else if (typeof code === "object" && code.nomen_code) {
+			// New format: object with potential secondary codes
+			billingData.nomen_code = parseInt(code.nomen_code);
+			billingData.nomen_desc_fr = code.nomen_desc_fr || null;
+
+			// Clean and convert fee fields - handle "N/A" values
+			billingData.fee =
+				code.fee === "N/A" || code.fee === "" || code.fee === undefined
+					? null
+					: parseFloat(code.fee) || null;
+			billingData.feecode =
+				code.feecode === "N/A" ||
+				code.feecode === "" ||
+				code.feecode === undefined
+					? null
+					: parseInt(code.feecode) || null;
+
+			// Add secondary code fields if present
+			if (code.secondary_nomen_code) {
+				// Convert secondary_nomen_code to integer
+				billingData.secondary_nomen_code = parseInt(code.secondary_nomen_code);
+				billingData.secondary_nomen_desc_fr =
+					code.secondary_nomen_desc_fr || null;
+
+				// Clean and convert secondary fee fields - handle "N/A" values
+				billingData.secondary_fee =
+					code.secondary_fee === "N/A" ||
+					code.secondary_fee === "" ||
+					code.secondary_fee === undefined
+						? null
+						: parseFloat(code.secondary_fee) || null;
+				billingData.secondary_feecode =
+					code.secondary_feecode === "N/A" ||
+					code.secondary_feecode === "" ||
+					code.secondary_feecode === undefined
+						? null
+						: parseInt(code.secondary_feecode) || null;
+			}
+		} else {
+			// Fallback: treat as simple code
+			billingData.nomen_code = parseInt(code);
+		}
+
+		console.log(`Prepared billing request ${index + 1}:`, billingData);
+		billingRequests.push(billingData);
+	});
+
+	console.log("Total billing requests to make:", billingRequests.length);
+
+	// Show progress indication
+	let progressMessage = `Applying combo "${combo.combo_name}" with ${billingRequests.length} codes...`;
+	console.log("INFO: " + progressMessage);
+
+	// Apply each code individually
+	let completedRequests = 0;
+	let failedRequests = 0;
+	let errors = [];
+
+	billingRequests.forEach((billingData, index) => {
+		$.ajax({
+			url: HOSTURL + "/" + APP_NAME + "/api/billing_codes",
+			method: "POST",
+			contentType: "application/json",
+			data: JSON.stringify(billingData),
+			success: function (response) {
+				completedRequests++;
+				console.log(
+					`Successfully applied code ${index + 1}/${billingRequests.length}:`,
+					response
+				);
+
+				// Check if all requests are complete
+				if (completedRequests + failedRequests === billingRequests.length) {
+					handleComboApplicationComplete(
+						completedRequests,
+						failedRequests,
+						errors,
+						combo.combo_name
+					);
+				}
+			},
+			error: function (xhr, status, error) {
+				failedRequests++;
+				let errorMsg = "Unknown error";
+				if (xhr.responseJSON && xhr.responseJSON.message) {
+					errorMsg = xhr.responseJSON.message;
+				}
+				errors.push(`Code ${billingData.nomen_code}: ${errorMsg}`);
+				console.error(
+					`Failed to apply code ${index + 1}/${billingRequests.length}:`,
+					error,
+					errorMsg
+				);
+
+				// Check if all requests are complete
+				if (completedRequests + failedRequests === billingRequests.length) {
+					handleComboApplicationComplete(
+						completedRequests,
+						failedRequests,
+						errors,
+						combo.combo_name
+					);
+				}
+			},
+		});
+	});
+}
+
+// Handle completion of combo application
+function handleComboApplicationComplete(
+	completedRequests,
+	failedRequests,
+	errors,
+	comboName
+) {
+	console.log("=== Combo Application Complete ===");
+	console.log("Completed:", completedRequests, "Failed:", failedRequests);
+
+	if (failedRequests === 0) {
+		// All codes applied successfully
+		console.log(
+			'SUCCESS: Successfully applied combo "' +
+				comboName +
+				'" with ' +
+				completedRequests +
+				" codes!"
+		);
+		$("#billComboModal").modal("hide");
+		$bill_tbl.bootstrapTable("refresh");
+	} else if (completedRequests > 0) {
+		// Partial success
+		let message = `Combo "${comboName}" partially applied.\n`;
+		message += `Success: ${completedRequests} codes\n`;
+		message += `Failed: ${failedRequests} codes\n\n`;
+		message += "Failed codes:\n" + errors.join("\n");
+
+		bootbox.alert(message, function () {
 			$("#billComboModal").modal("hide");
 			$bill_tbl.bootstrapTable("refresh");
-		},
-		error: function (xhr, status, error) {
-			console.error("Error applying billing combo:", error);
-			let errorMsg = "Error applying billing combo. Please try again.";
-			if (xhr.responseJSON && xhr.responseJSON.message) {
-				errorMsg = xhr.responseJSON.message;
-			}
-			bootbox.alert(errorMsg);
-		},
-	});
+		});
+	} else {
+		// Complete failure
+		let message = `Failed to apply combo "${comboName}".\n\n`;
+		message += "Errors:\n" + errors.join("\n");
+		bootbox.alert(message);
+	}
 }
 
 // export billing data
@@ -3226,14 +3497,68 @@ $(document).ready(function () {
 
 		// Display codes
 		try {
-			let codes = JSON.parse(comboCodes || "[]");
-			console.log("Successfully parsed codes:", codes);
+			// Use robust parsing logic to handle Python-style JSON
+			let codes = [];
+			if (!comboCodes || comboCodes === "[]") {
+				codes = [];
+			} else if (typeof comboCodes === "string") {
+				try {
+					// First attempt: direct JSON parse
+					codes = JSON.parse(comboCodes);
+					console.log("Successfully parsed codes for preview:", codes);
+				} catch (e) {
+					console.log(
+						"Direct JSON parse failed for preview, attempting JavaScript evaluation..."
+					);
+
+					// Replace Python literals with JavaScript equivalents
+					let jsCode = comboCodes
+						.replace(/True/g, "true")
+						.replace(/False/g, "false")
+						.replace(/None/g, "null");
+
+					try {
+						// Use eval in a safe way (since this is controlled data from our own database)
+						codes = eval("(" + jsCode + ")");
+						console.log("Successfully parsed preview codes with eval:", codes);
+					} catch (evalError) {
+						console.error("Eval parsing failed for preview:", evalError);
+						throw evalError;
+					}
+				}
+			} else {
+				codes = comboCodes;
+			}
+
+			// Process codes for preview display - handle both old and new formats
+			let displayCodes = [];
+			if (Array.isArray(codes)) {
+				codes.forEach((code) => {
+					if (typeof code === "number") {
+						// Old format: simple integer code
+						displayCodes.push(code.toString());
+					} else if (typeof code === "object" && code.nomen_code) {
+						// New format: object with potential secondary codes
+						if (code.secondary_nomen_code) {
+							displayCodes.push(
+								`${code.nomen_code} (+${code.secondary_nomen_code})`
+							);
+						} else {
+							displayCodes.push(code.nomen_code.toString());
+						}
+					} else {
+						// Fallback
+						displayCodes.push(code.toString());
+					}
+				});
+			}
+
 			$("#comboPreviewCodes").html(
-				"<strong>Codes:</strong> " + codes.join(", ")
+				"<strong>Codes:</strong> " + displayCodes.join(", ")
 			);
 		} catch (e) {
-			console.error("Error parsing codes in click handler:", e);
-			console.error("Failed to parse comboCodes:", comboCodes);
+			console.error("Error parsing codes for preview:", e);
+			console.error("Failed to parse comboCodes for preview:", comboCodes);
 			$("#comboPreviewCodes").html("<strong>Codes:</strong> Invalid format");
 		}
 

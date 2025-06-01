@@ -142,7 +142,7 @@ class BillingComboManager {
                 </tr>
             `);
 		} else {
-			results.forEach((item) => {
+			results.forEach((item, index) => {
 				const code = item.nomen_code || item.code;
 				const description =
 					item.nomen_desc_fr ||
@@ -150,7 +150,8 @@ class BillingComboManager {
 					item.description ||
 					"N/A";
 				const feecode = item.feecode || "N/A";
-				const fee = item.fee ? parseFloat(item.fee).toFixed(2) : "N/A";
+				// Show "0.00" instead of "N/A" for fees and ensure proper formatting
+				const fee = item.fee ? parseFloat(item.fee).toFixed(2) : "0.00";
 
 				// Check if code is already used (as main or secondary)
 				const isUsed = this.isCodeAlreadyUsed(code);
@@ -169,13 +170,26 @@ class BillingComboManager {
 														: description
 												}</td>
                         <td><span class="badge bg-info">${feecode}</span></td>
-                        <td>€${fee}</td>
+                        <td>
+                            <div class="input-group input-group-sm" style="max-width: 120px;">
+                                <span class="input-group-text">€</span>
+                                <input type="number" 
+                                       class="form-control editable-fee" 
+                                       value="${fee}" 
+                                       step="0.01" 
+                                       min="0" 
+                                       data-original-fee="${fee}"
+                                       data-result-index="${index}"
+                                       ${isUsed ? "disabled" : ""}>
+                            </div>
+                        </td>
                         <td>
                             <button type="button" class="btn btn-sm ${buttonClass}" 
                                     data-code="${code}" 
                                     data-description="${description}" 
                                     data-feecode="${feecode}" 
                                     data-fee="${fee}"
+                                    data-result-index="${index}"
                                     ${isUsed ? "disabled" : ""}>
                                 <i class="${buttonIcon}"></i> ${buttonText}
                             </button>
@@ -200,7 +214,11 @@ class BillingComboManager {
 		const code = button.data("code");
 		const description = button.data("description");
 		const feecode = button.data("feecode");
-		const fee = button.data("fee");
+		const resultIndex = button.data("result-index");
+
+		// Get the current fee value from the editable input field
+		const feeInput = button.closest("tr").find(".editable-fee");
+		const fee = feeInput.val() || "0.00";
 
 		// Check if already used
 		if (this.isCodeAlreadyUsed(code)) {
@@ -231,11 +249,17 @@ class BillingComboManager {
 			.prop("disabled", true)
 			.html('<i class="fas fa-check"></i> Used');
 
+		// Disable the fee input as well
+		feeInput.prop("disabled", true);
+
 		// Hide search results
 		$("#nomenclatureResults").hide();
 		$("#nomenclatureSearch").val("");
 
-		this.showToast(`Added main code ${code} to combo`, "success");
+		this.showToast(
+			`Added main code ${code} with fee €${fee} to combo`,
+			"success"
+		);
 	}
 
 	addSecondaryCode(event) {
@@ -553,11 +577,49 @@ class BillingComboManager {
 		$("#editComboId").val(id);
 
 		// Parse and load selected codes with enhanced structure support
+		// Use the same robust parsing logic as the enhancedCodesFormatter
 		let codes = [];
 		try {
-			codes = JSON.parse(row.combo_codes || "[]");
+			console.log("Parsing combo codes for edit:", row.combo_codes);
+
+			if (!row.combo_codes || row.combo_codes === "[]") {
+				codes = [];
+			} else if (typeof row.combo_codes === "string") {
+				try {
+					// First attempt: direct JSON parse
+					codes = JSON.parse(row.combo_codes);
+					console.log("Successfully parsed with JSON.parse:", codes);
+				} catch (e) {
+					console.log(
+						"Direct JSON parse failed, attempting JavaScript evaluation..."
+					);
+
+					// Replace Python literals with JavaScript equivalents
+					let jsCode = row.combo_codes
+						.replace(/True/g, "true")
+						.replace(/False/g, "false")
+						.replace(/None/g, "null");
+
+					try {
+						// Use eval in a safe way (since this is controlled data from our own database)
+						codes = eval("(" + jsCode + ")");
+						console.log("Successfully parsed with eval:", codes);
+					} catch (evalError) {
+						console.error("Eval parsing failed:", evalError);
+						throw evalError;
+					}
+				}
+			} else {
+				codes = row.combo_codes;
+			}
 		} catch (e) {
-			console.error("Error parsing combo codes:", e);
+			console.error(
+				"Error parsing combo codes for edit:",
+				e,
+				"Raw value:",
+				row.combo_codes
+			);
+			codes = [];
 		}
 
 		// Convert codes array to enhanced structure for editing
@@ -602,6 +664,8 @@ class BillingComboManager {
 				};
 			}
 		});
+
+		console.log("Loaded selectedCodes for editing:", this.selectedCodes);
 
 		// Update displays
 		this.updateSelectedCodesDisplay();
@@ -796,7 +860,7 @@ class BillingComboManager {
 		const mainCode = this.selectedCodes[mainIndex];
 
 		let html = "";
-		results.forEach((item) => {
+		results.forEach((item, index) => {
 			const code = item.nomen_code || item.code;
 			const description =
 				item.nomen_desc_fr ||
@@ -805,7 +869,8 @@ class BillingComboManager {
 				item.description ||
 				"N/A";
 			const feecode = item.feecode || "N/A";
-			const fee = parseFloat(item.fee || 0).toFixed(2);
+			// Show "0.00" instead of "N/A" for fees
+			const fee = item.fee ? parseFloat(item.fee).toFixed(2) : "0.00";
 
 			// Check if this code is already used or is the same as main code
 			const isDisabled =
@@ -824,13 +889,26 @@ class BillingComboManager {
 							: description
 					}</td>
 					<td><span class="badge bg-info">${feecode}</span></td>
-					<td><strong>€${fee}</strong></td>
+					<td>
+						<div class="input-group input-group-sm" style="max-width: 120px;">
+							<span class="input-group-text">€</span>
+							<input type="number" 
+								   class="form-control editable-secondary-fee" 
+								   value="${fee}" 
+								   step="0.01" 
+								   min="0" 
+								   data-original-fee="${fee}"
+								   data-result-index="${index}"
+								   ${isDisabled ? "disabled" : ""}>
+						</div>
+					</td>
 					<td>
 						<button type="button" class="${buttonClass}" 
 								data-code="${code}" 
 								data-description="${description}" 
 								data-feecode="${feecode}" 
 								data-fee="${fee}"
+								data-result-index="${index}"
 								${isDisabled ? "disabled" : ""}>
 							${buttonText}
 						</button>
@@ -848,7 +926,11 @@ class BillingComboManager {
 		const code = button.data("code");
 		const description = button.data("description");
 		const feecode = button.data("feecode");
-		const fee = parseFloat(button.data("fee") || 0);
+		const resultIndex = button.data("result-index");
+
+		// Get the current fee value from the editable input field
+		const feeInput = button.closest("tr").find(".editable-secondary-fee");
+		const fee = parseFloat(feeInput.val() || "0.00");
 
 		// Populate the selection form
 		$("#selectedSecondaryCode").val(code);
@@ -864,7 +946,10 @@ class BillingComboManager {
 		$("#secondaryNomenclatureResults").hide();
 		$("#secondaryNomenclatureSearch").val("");
 
-		this.showToast(`Selected secondary code ${code}`, "success");
+		this.showToast(
+			`Selected secondary code ${code} with fee €${fee.toFixed(2)}`,
+			"success"
+		);
 	}
 
 	clearSecondarySelection() {
