@@ -147,11 +147,12 @@
                                     <th>Total</th>
                                     <th>Status</th>
                                     <th>Processed By</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="transaction-history-body">
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted">Loading transaction history...</td>
+                                    <td colspan="8" class="text-center text-muted">Loading transaction history...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -247,6 +248,48 @@
 <!-- Alert Messages -->
 <div id="alert-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
     <!-- Dynamic alerts will be inserted here -->
+</div>
+
+<!-- Cancel Transaction Modal -->
+<div class="modal fade" id="cancel-transaction-modal" tabindex="-1" aria-labelledby="cancelTransactionModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="cancelTransactionModalLabel">
+                    <i class="fas fa-ban me-2"></i>Cancel Transaction
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> This will cancel the transaction and update the payment balance.
+                    The transaction will remain in the history for audit purposes but will be marked as cancelled.
+                </div>
+                <p><strong>Transaction Details:</strong></p>
+                <ul>
+                    <li><strong>Date:</strong> <span id="cancel-transaction-date"></span></li>
+                    <li><strong>Amount:</strong> €<span id="cancel-transaction-amount"></span></li>
+                    <li><strong>Payment Methods:</strong> <span id="cancel-transaction-methods"></span></li>
+                </ul>
+                <div class="mb-3">
+                    <label for="cancellation-reason" class="form-label">Cancellation Reason (Optional):</label>
+                    <textarea class="form-control" id="cancellation-reason" rows="3"
+                        placeholder="Enter reason for cancellation..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Keep Transaction
+                </button>
+                <button type="button" class="btn btn-danger" id="confirm-cancel-transaction-btn">
+                    <i class="fas fa-ban me-1"></i>Cancel Transaction
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 [[ block script ]]

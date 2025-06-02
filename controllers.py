@@ -25,6 +25,8 @@ session, db, T, auth, and tempates are examples of Fixtures.
 Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
 """
 
+import datetime
+
 # grid
 from functools import reduce
 
@@ -280,3 +282,139 @@ def payment_view(worklist_id):
         app_name=app_name,
         hosturl=hosturl,
     )
+
+
+@action("daily_transactions")
+@action.uses(session, auth.user, db, "billing/daily_transactions.html")
+def daily_transactions():
+    """
+    Display all transactions from the current day
+
+    Shows a comprehensive view of all payment transactions processed today,
+    including patient information, payment methods, and summary statistics.
+
+    Returns:
+        dict: Template variables including transactions list and summary data
+    """
+    try:
+        env_status = ENV_STATUS
+        timeOffset = TIMEOFFSET
+        app_name = APP_NAME
+        user = auth.get_user()
+
+        # Get today's date range
+        today = datetime.date.today()
+        start_of_day = datetime.datetime.combine(today, datetime.time.min)
+        end_of_day = datetime.datetime.combine(today, datetime.time.max)
+
+        # Query today's transactions with patient and worklist information
+        transactions = db(
+            (db.worklist_transactions.transaction_date >= start_of_day)
+            & (db.worklist_transactions.transaction_date <= end_of_day)
+            & (db.worklist_transactions.is_active == True)
+        ).select(
+            db.worklist_transactions.ALL,
+            db.auth_user.first_name,
+            db.auth_user.last_name,
+            db.auth_user.email,
+            db.worklist.procedure,
+            db.worklist.requested_time,
+            db.worklist.laterality,
+            db.procedure.exam_name,
+            left=[
+                db.auth_user.on(
+                    db.worklist_transactions.id_auth_user == db.auth_user.id
+                ),
+                db.worklist.on(db.worklist_transactions.id_worklist == db.worklist.id),
+                db.procedure.on(db.worklist.procedure == db.procedure.id),
+            ],
+            orderby=~db.worklist_transactions.transaction_date,
+        )
+
+        # Calculate summary statistics
+        total_transactions = len(transactions)
+        total_amount = sum(
+            float(t.worklist_transactions.total_amount) for t in transactions
+        )
+        total_card = sum(
+            float(t.worklist_transactions.amount_card or 0) for t in transactions
+        )
+        total_cash = sum(
+            float(t.worklist_transactions.amount_cash or 0) for t in transactions
+        )
+        total_invoice = sum(
+            float(t.worklist_transactions.amount_invoice or 0) for t in transactions
+        )
+
+        # Payment status breakdown
+        status_counts = {}
+        for t in transactions:
+            status = t.worklist_transactions.payment_status
+            status_counts[status] = status_counts.get(status, 0) + 1
+
+        # Format transactions for display
+        formatted_transactions = []
+        for row in transactions:
+            transaction = row.worklist_transactions
+            patient = row.auth_user
+            worklist = row.worklist
+            procedure = row.procedure
+
+            formatted_transactions.append(
+                {
+                    "id": transaction.id,
+                    "transaction_date": transaction.transaction_date,
+                    "patient_name": (
+                        f"{patient.first_name} {patient.last_name}"
+                        if patient
+                        else "Unknown"
+                    ),
+                    "patient_email": patient.email if patient else "",
+                    "procedure_name": procedure.exam_name if procedure else "N/A",
+                    "laterality": worklist.laterality if worklist else "N/A",
+                    "amount_card": float(transaction.amount_card or 0),
+                    "amount_cash": float(transaction.amount_cash or 0),
+                    "amount_invoice": float(transaction.amount_invoice or 0),
+                    "total_amount": float(transaction.total_amount),
+                    "payment_status": transaction.payment_status,
+                    "remaining_balance": float(transaction.remaining_balance or 0),
+                    "notes": transaction.notes,
+                    "feecode_used": transaction.feecode_used,
+                }
+            )
+
+        summary = {
+            "date": today.strftime("%Y-%m-%d"),
+            "total_transactions": total_transactions,
+            "total_amount": total_amount,
+            "total_card": total_card,
+            "total_cash": total_cash,
+            "total_invoice": total_invoice,
+            "status_counts": status_counts,
+        }
+
+        return locals()
+
+    except Exception as e:
+        logger.error(f"Error in daily_transactions: {str(e)}")
+        flash.set(f"Error loading daily transactions: {str(e)}", sanitize=True)
+        return dict(
+            transactions=[],
+            formatted_transactions=[],
+            summary={
+                "date": datetime.date.today().strftime("%Y-%m-%d"),
+                "total_transactions": 0,
+                "total_amount": 0,
+                "total_card": 0,
+                "total_cash": 0,
+                "total_invoice": 0,
+                "status_counts": {},
+            },
+            env_status=ENV_STATUS,
+            timeOffset=TIMEOFFSET,
+            app_name=APP_NAME,
+            user=auth.get_user(),
+        )
+
+
+# always commit your models to avoid problems later

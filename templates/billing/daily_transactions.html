@@ -1,0 +1,413 @@
+[[extend 'baseof.html']]
+[[ block left_nav ]]
+[[ include 'partials/nav.html' ]]
+[[ end]]
+
+<div class="container-fluid py-4" style="margin-top: 70px;">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header Section -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="text-dark mb-1">
+                        <i class="fas fa-receipt text-primary me-2"></i>
+                        Daily Transactions
+                    </h2>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-calendar-day me-1"></i>
+                        [[=summary['date'] ]]
+                    </p>
+                </div>
+                <div class="btn-group shadow-sm" role="group">
+                    <button type="button" class="btn btn-outline-primary" onclick="window.print()">
+                        <i class="fas fa-print me-1"></i>Print
+                    </button>
+                    <button type="button" class="btn btn-outline-success" onclick="exportToCSV()">
+                        <i class="fas fa-download me-1"></i>Export CSV
+                    </button>
+                    <button type="button" class="btn btn-outline-info" onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body bg-primary text-white rounded">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title text-white-50 mb-1 text-uppercase fw-light">Total Transactions
+                                    </h6>
+                                    <h2 class="mb-0 fw-bold">[[=summary['total_transactions'] ]]</h2>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-list-ol fa-2x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body bg-success text-white rounded">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title text-white-50 mb-1 text-uppercase fw-light">Total Amount</h6>
+                                    <h2 class="mb-0 fw-bold">€[[="{:.2f}".format(summary['total_amount']) ]]</h2>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-euro-sign fa-2x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body bg-info text-white rounded">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title text-white-50 mb-1 text-uppercase fw-light">Card Payments</h6>
+                                    <h2 class="mb-0 fw-bold">€[[="{:.2f}".format(summary['total_card']) ]]</h2>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-credit-card fa-2x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body bg-warning text-dark rounded">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title text-dark-50 mb-1 text-uppercase fw-light">Cash Payments</h6>
+                                    <h2 class="mb-0 fw-bold">€[[="{:.2f}".format(summary['total_cash']) ]]</h2>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-money-bill-wave fa-2x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Cards -->
+            <div class="row mb-4">
+                <div class="col-lg-6 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light border-0">
+                            <h5 class="card-title mb-0 text-dark">
+                                <i class="fas fa-chart-pie text-primary me-2"></i>
+                                Payment Methods Breakdown
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded">
+                                        <div class="bg-info rounded-circle me-3" style="width: 12px; height: 12px;">
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Card</small>
+                                            <strong class="text-info">€[[="{:.2f}".format(summary['total_card'])
+                                                ]]</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded">
+                                        <div class="bg-warning rounded-circle me-3" style="width: 12px; height: 12px;">
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Cash</small>
+                                            <strong class="text-warning">€[[="{:.2f}".format(summary['total_cash'])
+                                                ]]</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center p-2 bg-light rounded">
+                                        <div class="bg-secondary rounded-circle me-3"
+                                            style="width: 12px; height: 12px;"></div>
+                                        <div>
+                                            <small class="text-muted d-block">Invoice</small>
+                                            <strong class="text-secondary">€[[="{:.2f}".format(summary['total_invoice'])
+                                                ]]</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light border-0">
+                            <h5 class="card-title mb-0 text-dark">
+                                <i class="fas fa-chart-bar text-primary me-2"></i>
+                                Payment Status
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            [[ if summary['status_counts']: ]]
+                            <div class="row g-2">
+                                [[ for status, count in summary['status_counts'].items(): ]]
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                        <span class="text-capitalize fw-medium">[[=status ]]</span>
+                                        [[ if status == 'complete': ]]
+                                        <span class="badge bg-success">[[=count ]]</span>
+                                        [[ elif status == 'partial': ]]
+                                        <span class="badge bg-warning">[[=count ]]</span>
+                                        [[ elif status == 'overpaid': ]]
+                                        <span class="badge bg-info">[[=count ]]</span>
+                                        [[ else: ]]
+                                        <span class="badge bg-secondary">[[=count ]]</span>
+                                        [[ pass ]]
+                                    </div>
+                                </div>
+                                [[ pass ]]
+                            </div>
+                            [[ else: ]]
+                            <div class="text-center py-3">
+                                <i class="fas fa-info-circle text-muted me-2"></i>
+                                <span class="text-muted">No transactions today</span>
+                            </div>
+                            [[ pass ]]
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-white border-0">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-table me-2"></i>
+                        Transaction Details
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    [[ if formatted_transactions: ]]
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="transactionsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="fw-semibold">Time</th>
+                                    <th class="fw-semibold">Patient</th>
+                                    <th class="fw-semibold">Procedure</th>
+                                    <th class="fw-semibold">Laterality</th>
+                                    <th class="fw-semibold text-center">Card</th>
+                                    <th class="fw-semibold text-center">Cash</th>
+                                    <th class="fw-semibold text-center">Invoice</th>
+                                    <th class="fw-semibold text-center">Total</th>
+                                    <th class="fw-semibold text-center">Status</th>
+                                    <th class="fw-semibold text-center">Balance</th>
+                                    <th class="fw-semibold">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                [[ for transaction in formatted_transactions: ]]
+                                <tr class="align-middle">
+                                    <td class="text-nowrap">
+                                        [[ if transaction['transaction_date']: ]]
+                                        <small class="fw-medium">[[=transaction['transaction_date'].strftime('%H:%M:%S')
+                                            ]]</small>
+                                        [[ else: ]]
+                                        <small class="text-muted">N/A</small>
+                                        [[ pass ]]
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <div class="fw-semibold text-dark">[[=transaction['patient_name'] ]]</div>
+                                            [[ if transaction['patient_email']: ]]
+                                            <small class="text-muted">[[=transaction['patient_email'] ]]</small>
+                                            [[ pass ]]
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">[[=transaction['procedure_name'] ]]</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary bg-opacity-10 text-dark border">
+                                            [[=transaction['laterality'].title() ]]
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        [[ if transaction['amount_card'] > 0: ]]
+                                        <span
+                                            class="fw-semibold text-info">€[[="{:.2f}".format(transaction['amount_card'])
+                                            ]]</span>
+                                        [[ else: ]]
+                                        <span class="text-muted">-</span>
+                                        [[ pass ]]
+                                    </td>
+                                    <td class="text-center">
+                                        [[ if transaction['amount_cash'] > 0: ]]
+                                        <span
+                                            class="fw-semibold text-warning">€[[="{:.2f}".format(transaction['amount_cash'])
+                                            ]]</span>
+                                        [[ else: ]]
+                                        <span class="text-muted">-</span>
+                                        [[ pass ]]
+                                    </td>
+                                    <td class="text-center">
+                                        [[ if transaction['amount_invoice'] > 0: ]]
+                                        <span
+                                            class="fw-semibold text-secondary">€[[="{:.2f}".format(transaction['amount_invoice'])
+                                            ]]</span>
+                                        [[ else: ]]
+                                        <span class="text-muted">-</span>
+                                        [[ pass ]]
+                                    </td>
+                                    <td class="text-center">
+                                        <strong
+                                            class="text-success fs-6">€[[="{:.2f}".format(transaction['total_amount'])
+                                            ]]</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        [[ if transaction['payment_status'] == 'complete': ]]
+                                        <span class="badge bg-success">Complete</span>
+                                        [[ elif transaction['payment_status'] == 'partial': ]]
+                                        <span class="badge bg-warning">Partial</span>
+                                        [[ elif transaction['payment_status'] == 'overpaid': ]]
+                                        <span class="badge bg-info">Overpaid</span>
+                                        [[ else: ]]
+                                        <span class="badge bg-secondary">[[=transaction['payment_status'].title()
+                                            ]]</span>
+                                        [[ pass ]]
+                                    </td>
+                                    <td class="text-center">
+                                        [[ if transaction['remaining_balance'] > 0: ]]
+                                        <span
+                                            class="fw-semibold text-danger">€[[="{:.2f}".format(transaction['remaining_balance'])
+                                            ]]</span>
+                                        [[ elif transaction['remaining_balance'] < 0: ]] <span
+                                            class="fw-semibold text-info">
+                                            €[[="{:.2f}".format(abs(transaction['remaining_balance'])) ]] credit</span>
+                                            [[ else: ]]
+                                            <span class="fw-semibold text-success">€0.00</span>
+                                            [[ pass ]]
+                                    </td>
+                                    <td>
+                                        [[ if transaction['notes']: ]]
+                                        <span class="text-truncate d-inline-block" style="max-width: 150px;"
+                                            title="[[=transaction['notes'] ]]">
+                                            [[ if len(transaction['notes']) > 30: ]]
+                                            [[=transaction['notes'][:30] + '...' ]]
+                                            [[ else: ]]
+                                            [[=transaction['notes'] ]]
+                                            [[ pass ]]
+                                        </span>
+                                        [[ else: ]]
+                                        <span class="text-muted">-</span>
+                                        [[ pass ]]
+                                    </td>
+                                </tr>
+                                [[ pass ]]
+                            </tbody>
+                        </table>
+                    </div>
+                    [[ else: ]]
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="fas fa-receipt fa-3x text-muted opacity-50"></i>
+                        </div>
+                        <h5 class="text-muted mb-2">No transactions found for today</h5>
+                        <p class="text-muted">Transactions will appear here as they are processed.</p>
+                    </div>
+                    [[ pass ]]
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .bg-dark-50 {
+        opacity: 0.7;
+    }
+
+    .text-dark-50 {
+        opacity: 0.7;
+    }
+
+    @media print {
+        .btn-group {
+            display: none !important;
+        }
+
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #dee2e6 !important;
+        }
+
+        .table {
+            font-size: 11px !important;
+        }
+
+        .container-fluid {
+            padding: 0 !important;
+        }
+    }
+</style>
+
+<script>
+    // Export to CSV functionality
+    function exportToCSV() {
+        const table = document.getElementById('transactionsTable');
+        if (!table) {
+            alert('No data to export');
+            return;
+        }
+
+        let csv = [];
+        const rows = table.querySelectorAll('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = [];
+            const cols = rows[i].querySelectorAll('td, th');
+
+            for (let j = 0; j < cols.length; j++) {
+                let cellText = cols[j].innerText.replace(/"/g, '""');
+                row.push('"' + cellText + '"');
+            }
+            csv.push(row.join(','));
+        }
+
+        const csvFile = new Blob([csv.join('\n')], { type: 'text/csv' });
+        const downloadLink = document.createElement('a');
+        downloadLink.download = 'daily_transactions_[[=summary["date"] ]].csv';
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+
+    // Auto-refresh every 5 minutes
+    setTimeout(() => {
+        location.reload();
+    }, 300000);
+</script>

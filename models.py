@@ -961,7 +961,7 @@ db.define_table(
 db.worklist_transactions.payment_status.requires = IS_IN_SET(
     ["partial", "complete", "overpaid", "refunded"]
 )
-db.worklist_transactions.is_active.requires = IS_IN_SET(["T", "F"])
+db.worklist_transactions.is_active.requires = IS_IN_SET([True, False])
 
 # Add indexes for better performance
 db.executesql(

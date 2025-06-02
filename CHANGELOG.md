@@ -7,6 +7,159 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-02T04:27:17.036512] - Daily Transactions View Implementation
+
+### Added
+- **Daily Transactions Dashboard**: Comprehensive view for monitoring all transactions from the current day
+  - **New Controller Action**: `daily_transactions()` in `controllers.py` to display current day's transaction data
+  - **Daily Transaction Template**: Created `templates/billing/daily_transactions.html` with modern Bootstrap UI
+  - **Navigation Integration**: Added "Daily Transactions" link to main navbar with receipt icon
+  - **Summary Statistics**: Card-based summary showing total transactions, amounts, and payment method breakdowns
+  - **Transaction Table**: Detailed table with patient names, procedure info, payment methods, and timestamps
+  - **Export Functionality**: CSV export feature for daily transaction data
+  - **Print Support**: Print-optimized layout for transaction reports
+
+### Features
+- **Real-time Information**:
+  - Patient names and email addresses
+  - Procedure details and laterality
+  - Payment method breakdown (card, cash, invoice)
+  - Payment status and remaining balances
+  - Transaction timestamps and notes
+  - User-friendly status badges and color coding
+
+- **Summary Dashboard**:
+  - Total transaction count for the day
+  - Total amount collected across all payment methods
+  - Individual payment method totals (card, cash, invoice)
+  - Payment status breakdown (complete, partial, overpaid)
+
+- **User Experience**:
+  - Responsive design with Bootstrap cards and tables
+  - Auto-refresh every 5 minutes for real-time updates
+  - Export to CSV with date-stamped filename
+  - Print-friendly layout with optimized styling
+  - Empty state handling when no transactions exist
+
+### Technical Implementation
+- **Database Query**: Efficient JOIN query combining `worklist_transactions`, `auth_user`, `worklist`, and `procedure` tables
+- **Date Filtering**: Precise day-range filtering using `datetime.combine()` for start/end of day
+- **Performance**: Query limited to current day with proper indexing on `transaction_date`
+- **Error Handling**: Comprehensive exception handling with fallback to empty state
+- **Navigation**: Added to main navbar for easy access from any page
+
+### Files Modified
+- `controllers.py`: Added `daily_transactions()` controller action
+- `templates/billing/daily_transactions.html`: New comprehensive dashboard template
+- `templates/partials/nav.html`: Added navigation link with Font Awesome receipt icon
+
+### User Interface
+- **Visual Design**: Modern card-based layout with color-coded payment method indicators
+- **Data Presentation**: Table with responsive columns and clear typography
+- **Action Buttons**: Print, Export CSV, and Refresh functionality
+- **Status Indicators**: Badge-based payment status with appropriate colors
+- **Empty State**: Friendly message when no transactions exist for the day
+
+## [2025-06-02T04:18:13.522889] - Fixed Payment Balance Display Issue
+
+### Fixed
+- **Transaction History Balance Display**: Fixed incorrect balance display in transaction history
+  - **Root Cause**: Each transaction stored its own balance at creation time, but these became obsolete when new transactions were added
+  - **Problem**: Historical transactions showed outdated balances that didn't reflect the true cumulative payment state
+  - **Solution**: Enhanced JavaScript to calculate real-time cumulative balances instead of using stored values
+  - **User Impact**: Transaction history now shows accurate running balance after each payment
+
+### Technical Implementation
+- **Dynamic Balance Calculation**: Modified `displayTransactionHistory()` function to calculate cumulative balances
+- **Chronological Processing**: Sorts transactions by date to build accurate payment timeline
+- **Real-time Updates**: Balances now reflect current state including cancelled transactions
+- **Enhanced Display**: Added balance information to each transaction row for clarity
+
+### User Experience Improvements
+- **Before**: Each transaction showed its stored balance which became incorrect over time
+- **After**: Each transaction shows the actual cumulative balance at that point in time
+- **Visual Enhancement**: Balance information displayed as small text under payment status
+- **Accuracy**: Balance calculations now properly exclude cancelled transactions
+
+### Example Balance Progression
+- Total Due: €82.00
+- After €60.00 payment: Balance €22.00 ✅ (was showing outdated values)
+- After €10.00 payment: Balance €12.00 ✅ (now correctly calculated)
+- After €10.00 payment: Balance €2.00 ✅ (real-time cumulative)
+- After €2.00 payment: Balance €0.00 ✅ (accurate final balance)
+
+## [2025-06-02T04:10:16.939067] - Fixed Transaction Cancellation UI Display Issue
+
+### Fixed
+- **Transaction Cancellation Buttons**: Fixed issue where all transactions showed "Cancelled" in the Actions column
+  - **Root Cause**: Mismatch between database values ("T"/"F" strings) and py4web boolean expectations (True/False)
+  - **Solution**: Updated all `is_active` comparisons and assignments to use boolean values (True/False) instead of strings
+  - **Impact**: Cancel buttons now properly appear for active transactions, "Cancelled" text shows only for actually cancelled transactions
+  - **Files Modified**: `api/endpoints/payment.py`, `models.py`, `static/js/payment-manager.js`
+
+### Technical Details
+- **Before**: API used string comparisons `is_active == "T"` and assignments `is_active="F"`
+- **After**: API uses boolean comparisons `is_active == True` and assignments `is_active=False`
+- **Database Compatibility**: py4web automatically handles conversion between database CHAR(1) and Python boolean types
+- **Validation**: Updated field validation to accept boolean values `IS_IN_SET([True, False])`
+
+### User Experience Improvements
+- **Visual Clarity**: Active transactions now show cancel button (🚫) instead of "Cancelled" text
+- **Proper Status**: Only actually cancelled transactions show "Cancelled" with strikethrough styling
+- **Action Availability**: Cancel buttons only appear for transactions that can actually be cancelled
+
+## [2025-06-02T03:39:22.240227] - Payment Transaction Cancellation Feature
+
+### Added
+- **Transaction Cancellation Functionality**: Added ability to cancel payment transactions without deleting them
+  - **New API Endpoint**: `PATCH /api/worklist/{worklist_id}/transactions/{transaction_id}/cancel`
+  - **Cancel Button**: Added cancel action button in transaction history for active transactions
+  - **Cancellation Modal**: Added confirmation dialog with transaction details and optional reason field
+  - **Audit Trail**: Cancelled transactions remain in history but marked as "CANCELLED" with audit notes
+  - **Balance Recalculation**: Automatically updates payment balance when transactions are cancelled
+  - **User Tracking**: Records who cancelled the transaction and when in audit notes
+
+### Enhanced
+- **Transaction History Display**: 
+  - Now shows both active and cancelled transactions
+  - Cancelled transactions have strikethrough styling and "CANCELLED" badge
+  - Added "Actions" column with cancel button for active transactions
+  - Visual distinction between active and cancelled transactions
+
+### Technical Implementation
+- **Database**: Uses `is_active='F'` to mark cancelled transactions without deletion
+- **API Security**: Validates transaction ownership and prevents double-cancellation
+- **Frontend**: Enhanced PaymentManager with cancellation workflow and modal handling
+- **Audit Logging**: Comprehensive audit trail with user ID, timestamp, and optional reason
+
+### User Experience
+- **Non-Destructive**: Transactions are cancelled, not deleted, maintaining complete audit trail
+- **Confirmation Flow**: Clear confirmation dialog with transaction details before cancellation
+- **Real-time Updates**: Payment balance and status automatically update after cancellation
+- **Visual Feedback**: Clear indication of cancelled vs active transactions in history
+
+### API Details
+- **Endpoint**: `PATCH /api/worklist/{worklist_id}/transactions/{transaction_id}/cancel`
+- **Request Body**: `{"reason": "Optional cancellation reason"}`
+- **Response**: Updated balance, payment status, and transaction details
+- **Validation**: Ensures transaction exists, belongs to worklist, and is currently active
+
+## [2025-06-02T03:34:56.792744] - Payment Processing User Tracking Fix
+
+### Fixed
+- **Transaction User Tracking**: Fixed payment transaction processing to properly capture the logged-in user
+  - **Issue**: Transaction history was showing "Unknown" for "Processed By" field
+  - **Root Cause**: `created_by` field was not being set when creating transaction records
+  - **Solution**: Added `created_by=auth.current_user.get('id')` to transaction creation in payment processing
+  - **Impact**: Transaction history now properly shows which user processed each payment
+  - **Location**: `api/endpoints/payment.py` - `process_payment()` function
+
+### Technical Details
+- **Before**: `created_by` field was NULL, causing "Unknown" to appear in transaction history
+- **After**: `created_by` field properly set to current authenticated user ID
+- **Database**: `worklist_transactions.created_by` now properly references `auth_user.id`
+- **User Experience**: Payment audit trail now shows actual user names instead of "Unknown"
+
 ## [2025-06-02T02:27:14.677917] - Payment System Integration
 
 ### Added

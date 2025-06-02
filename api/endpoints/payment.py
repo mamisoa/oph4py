@@ -81,7 +81,7 @@ def payment_summary(worklist_id: int):
         # Calculate total paid from transactions
         transaction_rows = db(
             (db.worklist_transactions.id_worklist == worklist_id)
-            & (db.worklist_transactions.is_active == "T")
+            & (db.worklist_transactions.is_active == True)
         ).select()
 
         total_paid = Decimal("0.00")
@@ -316,7 +316,7 @@ def process_payment(worklist_id: int):
 
         transaction_rows = db(
             (db.worklist_transactions.id_worklist == worklist_id)
-            & (db.worklist_transactions.is_active == "T")
+            & (db.worklist_transactions.is_active == True)
         ).select()
 
         total_paid = Decimal("0.00")
@@ -345,7 +345,8 @@ def process_payment(worklist_id: int):
             remaining_balance=float(new_balance),
             feecode_used=feecode_used,
             notes=notes,
-            is_active="T",
+            is_active=True,
+            created_by=auth.current_user.get("id") if auth.current_user else None,
         )
 
         result = {
@@ -372,6 +373,8 @@ def process_payment(worklist_id: int):
 def transaction_history(worklist_id: int):
     """
     Get transaction history for a worklist
+
+    Returns both active and cancelled transactions with their status.
     """
     try:
         logger.info(f"Transaction history request for worklist {worklist_id}")
@@ -382,11 +385,8 @@ def transaction_history(worklist_id: int):
                 message="Worklist not found", status_code=404, error_type="not_found"
             )
 
-        # Get transactions for the worklist
-        transactions = db(
-            (db.worklist_transactions.id_worklist == worklist_id)
-            & (db.worklist_transactions.is_active == "T")
-        ).select(
+        # Get ALL transactions for the worklist (both active and cancelled)
+        transactions = db(db.worklist_transactions.id_worklist == worklist_id).select(
             db.worklist_transactions.ALL,
             db.auth_user.first_name,
             db.auth_user.last_name,
@@ -400,6 +400,11 @@ def transaction_history(worklist_id: int):
         for row in transactions:
             transaction = row.worklist_transactions
             user = row.auth_user
+
+            # Determine transaction status
+            transaction_status = (
+                "active" if transaction.is_active == True else "cancelled"
+            )
 
             history.append(
                 {
@@ -440,6 +445,10 @@ def transaction_history(worklist_id: int):
                     "processed_by": (
                         f"{user.first_name} {user.last_name}" if user else "Unknown"
                     ),
+                    "transaction_status": transaction_status,
+                    "is_active": transaction.is_active == True,
+                    "can_cancel": transaction.is_active
+                    == True,  # Can only cancel active transactions
                 }
             )
 
@@ -447,6 +456,136 @@ def transaction_history(worklist_id: int):
 
     except Exception as e:
         logger.error(f"Error in transaction_history: {str(e)}")
+        return APIResponse.error(
+            message=f"Server error: {str(e)}",
+            status_code=500,
+            error_type="server_error",
+        )
+
+
+@action(
+    "api/worklist/<worklist_id:int>/transactions/<transaction_id:int>/cancel",
+    method=["PATCH"],
+)
+def cancel_transaction(worklist_id: int, transaction_id: int):
+    """
+    Cancel a payment transaction
+
+    Marks the transaction as inactive (is_active='F') without deleting it.
+    Maintains audit trail while invalidating the payment.
+
+    Args:
+        worklist_id: The worklist ID
+        transaction_id: The transaction ID to cancel
+
+    Returns:
+        dict: Updated transaction status and new balance information
+    """
+    try:
+        logger.info(
+            f"Cancel transaction request: worklist {worklist_id}, transaction {transaction_id}"
+        )
+
+        # Verify worklist exists
+        worklist = db.worklist[worklist_id]
+        if not worklist:
+            return APIResponse.error(
+                message="Worklist not found", status_code=404, error_type="not_found"
+            )
+
+        # Get the transaction to cancel
+        transaction = db.worklist_transactions[transaction_id]
+        if not transaction:
+            return APIResponse.error(
+                message="Transaction not found", status_code=404, error_type="not_found"
+            )
+
+        # Verify transaction belongs to this worklist
+        if transaction.id_worklist != worklist_id:
+            return APIResponse.error(
+                message="Transaction does not belong to this worklist",
+                status_code=400,
+                error_type="validation_error",
+            )
+
+        # Check if transaction is already cancelled
+        if transaction.is_active != True:
+            return APIResponse.error(
+                message="Transaction is already cancelled",
+                status_code=400,
+                error_type="validation_error",
+            )
+
+        # Get cancellation reason from request
+        cancellation_data = request.json or {}
+        cancellation_reason = cancellation_data.get("reason", "")
+
+        # Cancel the transaction
+        current_user_id = auth.current_user.get("id") if auth.current_user else None
+        cancellation_note = f"[CANCELLED {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} by user {current_user_id}]"
+        if cancellation_reason:
+            cancellation_note += f" Reason: {cancellation_reason}"
+
+        # Add cancellation note to existing notes
+        updated_notes = (
+            f"{transaction.notes}\n{cancellation_note}"
+            if transaction.notes
+            else cancellation_note
+        )
+
+        # Update transaction to cancelled status
+        db(db.worklist_transactions.id == transaction_id).update(
+            is_active=False,
+            notes=updated_notes,
+            modified_on=datetime.datetime.now(),
+            modified_by=current_user_id,
+        )
+
+        # Recalculate balance after cancellation
+        billing_rows = db(db.billing_codes.id_worklist == worklist_id).select()
+        total_fee = Decimal("0.00")
+
+        for billing in billing_rows:
+            if billing.fee:
+                total_fee += Decimal(str(billing.fee)) * (billing.quantity or 1)
+            if billing.secondary_fee:
+                total_fee += Decimal(str(billing.secondary_fee)) * (
+                    billing.quantity or 1
+                )
+
+        # Calculate new total paid (excluding cancelled transactions)
+        active_transaction_rows = db(
+            (db.worklist_transactions.id_worklist == worklist_id)
+            & (db.worklist_transactions.is_active == True)
+        ).select()
+
+        total_paid = Decimal("0.00")
+        for active_transaction in active_transaction_rows:
+            total_paid += Decimal(str(active_transaction.total_amount))
+
+        new_balance = total_fee - total_paid
+
+        # Determine new payment status
+        if new_balance <= 0:
+            payment_status = "complete" if new_balance == 0 else "overpaid"
+        else:
+            payment_status = "partial" if total_paid > 0 else "unpaid"
+
+        result = {
+            "success": True,
+            "transaction_id": transaction_id,
+            "cancelled_amount": float(transaction.total_amount),
+            "new_balance": float(new_balance),
+            "new_payment_status": payment_status,
+            "total_paid": float(total_paid),
+            "total_fee": float(total_fee),
+            "message": f"Transaction €{transaction.total_amount:.2f} cancelled successfully",
+        }
+
+        return APIResponse.success(data=result)
+
+    except Exception as e:
+        logger.error(f"Error in cancel_transaction: {str(e)}")
         return APIResponse.error(
             message=f"Server error: {str(e)}",
             status_code=500,

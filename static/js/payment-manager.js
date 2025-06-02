@@ -85,6 +85,16 @@ class PaymentManager {
 				await this.processPayment();
 			});
 		}
+
+		// Confirm cancel transaction button
+		const confirmCancelBtn = document.getElementById(
+			"confirm-cancel-transaction-btn"
+		);
+		if (confirmCancelBtn) {
+			confirmCancelBtn.addEventListener("click", async () => {
+				await this.cancelTransaction();
+			});
+		}
 	}
 
 	/**
@@ -244,7 +254,7 @@ class PaymentManager {
 	}
 
 	/**
-	 * Display transaction history
+	 * Display transaction history with cancel options
 	 */
 	displayTransactionHistory(transactions) {
 		const tbody = document.getElementById("transaction-history-body");
@@ -252,33 +262,249 @@ class PaymentManager {
 
 		if (transactions.length === 0) {
 			tbody.innerHTML =
-				'<tr><td colspan="7" class="text-center text-muted">No transactions found</td></tr>';
+				'<tr><td colspan="8" class="text-center text-muted">No transactions found</td></tr>';
 			return;
 		}
 
+		// Calculate cumulative balances
+		const totalFee = this.paymentSummary.total_fee || 0;
+		let cumulativePaid = 0;
+
+		// Sort transactions by date (oldest first) for cumulative calculation
+		const sortedTransactions = [...transactions].sort(
+			(a, b) => new Date(a.transaction_date) - new Date(b.transaction_date)
+		);
+
+		// Calculate cumulative balance for each transaction
+		const transactionsWithCumulativeBalance = sortedTransactions.map(
+			(transaction) => {
+				if (transaction.transaction_status === "active") {
+					cumulativePaid += transaction.total_amount;
+				}
+				const cumulativeBalance = totalFee - cumulativePaid;
+
+				return {
+					...transaction,
+					cumulative_balance: cumulativeBalance,
+					cumulative_paid: cumulativePaid,
+				};
+			}
+		);
+
+		// Sort back to newest first for display
+		const displayTransactions = transactionsWithCumulativeBalance.sort(
+			(a, b) => new Date(b.transaction_date) - new Date(a.transaction_date)
+		);
+
 		let html = "";
-		transactions.forEach((transaction) => {
+		displayTransactions.forEach((transaction) => {
 			const date = new Date(transaction.transaction_date).toLocaleDateString();
+
+			// Determine row styling based on transaction status
+			const rowClass =
+				transaction.transaction_status === "cancelled"
+					? "table-secondary text-muted"
+					: "";
+			const amountStyle =
+				transaction.transaction_status === "cancelled"
+					? "text-decoration-line-through"
+					: "";
+
+			// Create cancel button for active transactions
+			let actionButton = "";
+			if (transaction.can_cancel === true) {
+				actionButton = `<button class="btn btn-sm btn-outline-danger cancel-transaction-btn" 
+					data-transaction-id="${transaction.id}" 
+					data-amount="${transaction.total_amount}" 
+					data-date="${transaction.transaction_date}"
+					data-card="${transaction.amount_card}"
+					data-cash="${transaction.amount_cash}"
+					data-invoice="${transaction.amount_invoice}"
+					title="Cancel Transaction">
+					<i class="fas fa-ban"></i>
+				</button>`;
+			} else {
+				actionButton = '<span class="text-muted">Cancelled</span>';
+			}
+
+			// Use cumulative balance instead of stored balance
+			const balanceToShow = transaction.cumulative_balance;
+
 			html += `
-                <tr>
+                <tr class="${rowClass}">
                     <td>${date}</td>
-                    <td>€${transaction.amount_card.toFixed(2)}</td>
-                    <td>€${transaction.amount_cash.toFixed(2)}</td>
-                    <td>€${transaction.amount_invoice.toFixed(2)}</td>
-                    <td class="fw-bold">€${transaction.total_amount.toFixed(
-											2
-										)}</td>
-                    <td><span class="badge ${this.getStatusBadgeClass(
-											transaction.payment_status
-										)}">${this.getStatusText(
-				transaction.payment_status
-			)}</span></td>
+                    <td class="${amountStyle}">€${transaction.amount_card.toFixed(
+				2
+			)}</td>
+                    <td class="${amountStyle}">€${transaction.amount_cash.toFixed(
+				2
+			)}</td>
+                    <td class="${amountStyle}">€${transaction.amount_invoice.toFixed(
+				2
+			)}</td>
+                    <td class="fw-bold ${amountStyle}">€${transaction.total_amount.toFixed(
+				2
+			)}</td>
+                    <td>
+						<span class="badge ${this.getStatusBadgeClass(
+							transaction.payment_status
+						)}">${this.getStatusText(transaction.payment_status)}</span>
+						${
+							transaction.transaction_status === "cancelled"
+								? '<br><small class="text-danger">CANCELLED</small>'
+								: ""
+						}
+						<br><small class="text-muted">Balance: €${balanceToShow.toFixed(2)}</small>
+					</td>
                     <td>${transaction.processed_by}</td>
+                    <td>${actionButton}</td>
                 </tr>
             `;
 		});
 
 		tbody.innerHTML = html;
+
+		// Bind cancel button events
+		this.bindCancelButtonEvents();
+	}
+
+	/**
+	 * Bind cancel button events
+	 */
+	bindCancelButtonEvents() {
+		const cancelButtons = document.querySelectorAll(".cancel-transaction-btn");
+		cancelButtons.forEach((button) => {
+			button.addEventListener("click", (e) => {
+				const transactionId = e.currentTarget.dataset.transactionId;
+				const amount = e.currentTarget.dataset.amount;
+				const date = e.currentTarget.dataset.date;
+				const cardAmount = e.currentTarget.dataset.card;
+				const cashAmount = e.currentTarget.dataset.cash;
+				const invoiceAmount = e.currentTarget.dataset.invoice;
+
+				this.openCancelTransactionModal(transactionId, {
+					amount,
+					date,
+					cardAmount,
+					cashAmount,
+					invoiceAmount,
+				});
+			});
+		});
+	}
+
+	/**
+	 * Open cancel transaction modal
+	 */
+	openCancelTransactionModal(transactionId, transactionData) {
+		// Populate modal with transaction data
+		document.getElementById("cancel-transaction-date").textContent = new Date(
+			transactionData.date
+		).toLocaleDateString();
+		document.getElementById("cancel-transaction-amount").textContent =
+			parseFloat(transactionData.amount).toFixed(2);
+
+		// Build payment methods string
+		const methods = [];
+		if (parseFloat(transactionData.cardAmount) > 0) {
+			methods.push(
+				`Card: €${parseFloat(transactionData.cardAmount).toFixed(2)}`
+			);
+		}
+		if (parseFloat(transactionData.cashAmount) > 0) {
+			methods.push(
+				`Cash: €${parseFloat(transactionData.cashAmount).toFixed(2)}`
+			);
+		}
+		if (parseFloat(transactionData.invoiceAmount) > 0) {
+			methods.push(
+				`Invoice: €${parseFloat(transactionData.invoiceAmount).toFixed(2)}`
+			);
+		}
+		document.getElementById("cancel-transaction-methods").textContent =
+			methods.join(", ") || "No payment method details";
+
+		// Clear cancellation reason
+		document.getElementById("cancellation-reason").value = "";
+
+		// Store transaction ID for confirmation
+		this.cancelTransactionId = transactionId;
+
+		// Show modal
+		const modal = new bootstrap.Modal(
+			document.getElementById("cancel-transaction-modal")
+		);
+		modal.show();
+	}
+
+	/**
+	 * Cancel a transaction
+	 */
+	async cancelTransaction() {
+		if (!this.cancelTransactionId) {
+			this.showAlert("No transaction selected for cancellation", "danger");
+			return;
+		}
+
+		const reason = document.getElementById("cancellation-reason").value.trim();
+
+		try {
+			// Disable confirm button
+			const confirmBtn = document.getElementById(
+				"confirm-cancel-transaction-btn"
+			);
+			confirmBtn.disabled = true;
+			confirmBtn.innerHTML =
+				'<i class="fas fa-spinner fa-spin me-1"></i>Cancelling...';
+
+			const response = await fetch(
+				`${this.baseUrl}/api/worklist/${this.worklistId}/transactions/${this.cancelTransactionId}/cancel`,
+				{
+					method: "PATCH",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ reason }),
+				}
+			);
+
+			const result = await response.json();
+
+			if (result.status === "success" && result.data) {
+				// Close modal
+				const modal = bootstrap.Modal.getInstance(
+					document.getElementById("cancel-transaction-modal")
+				);
+				modal.hide();
+
+				// Show success message
+				this.showAlert(
+					result.data.message || "Transaction cancelled successfully",
+					"success"
+				);
+
+				// Refresh data
+				await this.loadPaymentSummary();
+				await this.loadTransactionHistory();
+				this.updatePaymentButton();
+			} else {
+				throw new Error(result.message || "Failed to cancel transaction");
+			}
+		} catch (error) {
+			console.error("Error cancelling transaction:", error);
+			this.showAlert(
+				"Error cancelling transaction: " + error.message,
+				"danger"
+			);
+		} finally {
+			// Re-enable confirm button
+			const confirmBtn = document.getElementById(
+				"confirm-cancel-transaction-btn"
+			);
+			confirmBtn.disabled = false;
+			confirmBtn.innerHTML =
+				'<i class="fas fa-ban me-1"></i>Cancel Transaction';
+		}
 	}
 
 	/**
