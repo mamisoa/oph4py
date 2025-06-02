@@ -1,0 +1,126 @@
+/* Payment Interface Styles */
+
+.payment-summary-totals {
+	background-color: #f8f9fa;
+	padding: 15px;
+	border-radius: 8px;
+	margin-top: 10px;
+}
+
+.payment-summary-totals p {
+	margin-bottom: 8px;
+}
+
+.payment-summary-totals p:last-child {
+	margin-bottom: 0;
+}
+
+/* Payment Modal Styles */
+.payment-input:focus {
+	border-color: #28a745;
+	box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.input-group-text {
+	background-color: #e9ecef;
+	border-color: #ced4da;
+}
+
+/* Alert Styles */
+.alert-floating {
+	animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+	from {
+		transform: translateX(100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+/* Table Styles */
+.table-hover tbody tr:hover {
+	background-color: rgba(0, 123, 255, 0.1);
+}
+
+.table th {
+	border-top: none;
+	font-weight: 600;
+}
+
+/* Card Styles */
+.card {
+	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+	border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-header {
+	font-weight: 600;
+}
+
+/* Button Styles */
+.btn:disabled {
+	cursor: not-allowed;
+}
+
+/* Badge Styles */
+.badge {
+	font-size: 0.875em;
+}
+
+/* Loading Spinner */
+.spinner-border-sm {
+	width: 1rem;
+	height: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.payment-summary-totals {
+		margin-top: 15px;
+	}
+
+	.table-responsive {
+		font-size: 0.875rem;
+	}
+
+	.modal-dialog {
+		margin: 1rem;
+	}
+}
+
+/* Payment status badges */
+.badge.bg-success {
+	background-color: #28a745 !important;
+}
+
+.badge.bg-warning {
+	background-color: #ffc107 !important;
+}
+
+.badge.bg-danger {
+	background-color: #dc3545 !important;
+}
+
+.badge.bg-secondary {
+	background-color: #6c757d !important;
+}
+
+/* Fee calculation highlights */
+.fee-total {
+	font-weight: bold;
+	color: #007bff;
+}
+
+.reimbursement-amount {
+	color: #28a745;
+}
+
+.patient-pays {
+	color: #dc3545;
+	font-weight: 600;
+}

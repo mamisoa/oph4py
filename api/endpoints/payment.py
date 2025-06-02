@@ -1,0 +1,454 @@
+"""
+Payment API endpoints for worklist transactions
+
+This module provides API endpoints for processing payments,
+managing transactions, and calculating billing amounts.
+"""
+
+import datetime
+import json
+import logging
+from decimal import Decimal
+from typing import Optional
+
+from py4web import action, request
+from py4web.core import Fixture
+
+from ...common import auth, db, logger
+from ..core.base import APIResponse, handle_rest_api_request
+from ..core.nomenclature import NomenclatureClient
+
+logger = logging.getLogger(__name__)
+
+# Real Belgian healthcare feecodes (removed 0, keeping the rest)
+VALID_FEECODES = [
+    1300,
+    1600,
+    3300,
+    3600,
+    86,
+    1306,
+    1606,
+    3306,
+    3606,
+    83,
+    1320,
+    1620,
+    3320,
+    3620,
+]
+
+
+@action("api/worklist/<worklist_id:int>/payment_summary", method=["GET"])
+def payment_summary(worklist_id: int):
+    """
+    Get payment summary for a specific worklist
+
+    Returns comprehensive billing information, total fees,
+    payments made, and remaining balance.
+
+    Args:
+        worklist_id: The worklist ID to get payment summary for
+
+    Returns:
+        dict: Payment summary with patient info, fees, and balance
+    """
+    try:
+        logger.info(f"Payment summary request for worklist {worklist_id}")
+
+        # Verify worklist exists and user has access
+        worklist = db.worklist[worklist_id]
+        if not worklist:
+            return APIResponse.error(
+                message="Worklist not found", status_code=404, error_type="not_found"
+            )
+
+        # Get patient information
+        patient = db.auth_user[worklist.id_auth_user]
+
+        # Calculate total fees from billing codes
+        billing_rows = db(db.billing_codes.id_worklist == worklist_id).select()
+        total_fee = Decimal("0.00")
+
+        for billing in billing_rows:
+            if billing.fee:
+                total_fee += Decimal(str(billing.fee)) * (billing.quantity or 1)
+            if billing.secondary_fee:
+                total_fee += Decimal(str(billing.secondary_fee)) * (
+                    billing.quantity or 1
+                )
+
+        # Calculate total paid from transactions
+        transaction_rows = db(
+            (db.worklist_transactions.id_worklist == worklist_id)
+            & (db.worklist_transactions.is_active == "T")
+        ).select()
+
+        total_paid = Decimal("0.00")
+        for transaction in transaction_rows:
+            total_paid += Decimal(str(transaction.total_amount))
+
+        # Calculate remaining balance
+        remaining_balance = total_fee - total_paid
+
+        # Determine payment status
+        if remaining_balance <= 0:
+            payment_status = "complete" if remaining_balance == 0 else "overpaid"
+        else:
+            payment_status = "partial" if total_paid > 0 else "unpaid"
+
+        result = {
+            "worklist_id": worklist_id,
+            "patient": {
+                "id": patient.id,
+                "first_name": patient.first_name,
+                "last_name": patient.last_name,
+                "email": patient.email,
+            },
+            "worklist": {
+                "procedure": (
+                    worklist.procedure.exam_name if worklist.procedure else None
+                ),
+                "requested_time": (
+                    worklist.requested_time.isoformat()
+                    if worklist.requested_time
+                    else None
+                ),
+                "provider": (
+                    f"{worklist.provider.first_name} {worklist.provider.last_name}"
+                    if worklist.provider
+                    else None
+                ),
+            },
+            "total_fee": float(total_fee),
+            "total_paid": float(total_paid),
+            "remaining_balance": float(remaining_balance),
+            "payment_status": payment_status,
+        }
+
+        return APIResponse.success(data=result)
+
+    except Exception as e:
+        logger.error(f"Error in payment_summary: {str(e)}")
+        return APIResponse.error(
+            message=f"Server error: {str(e)}",
+            status_code=500,
+            error_type="server_error",
+        )
+
+
+@action("api/worklist/<worklist_id:int>/billing_breakdown", method=["GET"])
+def billing_breakdown(worklist_id: int):
+    """
+    Get billing breakdown with fees and reimbursement calculations
+
+    Query parameters:
+    - feecode: Fee code for reimbursement calculation (Belgian healthcare feecodes)
+
+    Uses nomen.c66.ovh API to get actual reimbursement amounts.
+    Secondary codes have NO reimbursement regardless of feecode.
+    """
+    try:
+        feecode = int(
+            request.query.get("feecode", 1300)
+        )  # Default to first valid feecode
+        logger.info(
+            f"Billing breakdown request for worklist {worklist_id}, feecode {feecode}"
+        )
+
+        # Verify worklist exists
+        if not db.worklist[worklist_id]:
+            return APIResponse.error(
+                message="Worklist not found", status_code=404, error_type="not_found"
+            )
+
+        # Validate feecode is in valid list
+        if feecode not in VALID_FEECODES:
+            return APIResponse.error(
+                message=f"Invalid feecode. Must be one of: {', '.join(map(str, VALID_FEECODES))}",
+                status_code=400,
+                error_type="validation_error",
+            )
+
+        # Get billing codes for the worklist
+        billing_rows = db(db.billing_codes.id_worklist == worklist_id).select()
+
+        # Initialize nomenclature client for API calls
+        nomen_client = NomenclatureClient()
+
+        breakdown = []
+        for billing in billing_rows:
+            # Start with basic billing info
+            item = {
+                "id": billing.id,
+                "nomen_code": billing.nomen_code,
+                "description": billing.nomen_desc_fr
+                or billing.nomen_desc_nl
+                or f"Code {billing.nomen_code}",
+                "fee": float(billing.fee) if billing.fee else 0.00,
+                "quantity": billing.quantity or 1,
+                "laterality": billing.laterality,
+            }
+
+            # Get reimbursement from nomen API for main code
+            reimbursement_amount = 0.00
+            if billing.nomen_code and billing.fee:
+                try:
+                    # Search for the code with the specific feecode to get reimbursement
+                    search_result = nomen_client.search(
+                        code_prefix=str(billing.nomen_code), feecode=feecode, limit=1
+                    )
+
+                    if search_result.get("items"):
+                        # Find exact match for the nomen_code
+                        for result_item in search_result["items"]:
+                            if result_item.get("nomen_code") == billing.nomen_code:
+                                reimbursement_amount = float(
+                                    result_item.get("fee", 0.00)
+                                )
+                                break
+
+                        # If no exact match found, use the first result as fallback
+                        if reimbursement_amount == 0.00 and search_result["items"]:
+                            reimbursement_amount = float(
+                                search_result["items"][0].get("fee", 0.00)
+                            )
+
+                except Exception as api_error:
+                    logger.warning(
+                        f"Failed to get reimbursement from nomen API for code {billing.nomen_code}: {api_error}"
+                    )
+                    # Fallback to 0 reimbursement if API fails
+                    reimbursement_amount = 0.00
+
+            # Calculate patient payment
+            original_fee = float(billing.fee) if billing.fee else 0.00
+            patient_pays = max(0.00, original_fee - reimbursement_amount)
+
+            item.update(
+                {
+                    "reimbursement": reimbursement_amount,
+                    "patient_pays": patient_pays,
+                }
+            )
+
+            # Handle secondary code - NO reimbursement regardless of feecode
+            if billing.secondary_nomen_code and billing.secondary_fee:
+                secondary_fee = float(billing.secondary_fee)
+                item.update(
+                    {
+                        "secondary_code": billing.secondary_nomen_code,
+                        "secondary_description": billing.secondary_nomen_desc_fr
+                        or billing.secondary_nomen_desc_nl,
+                        "secondary_fee": secondary_fee,
+                        "secondary_reimbursement": 0.00,  # NO reimbursement for secondary codes
+                        "secondary_patient_pays": secondary_fee,  # Patient pays full amount
+                    }
+                )
+
+            breakdown.append(item)
+
+        return APIResponse.success(data=breakdown)
+
+    except Exception as e:
+        logger.error(f"Error in billing_breakdown: {str(e)}")
+        return APIResponse.error(
+            message=f"Server error: {str(e)}",
+            status_code=500,
+            error_type="server_error",
+        )
+
+
+@action("api/worklist/<worklist_id:int>/payment", method=["POST"])
+def process_payment(worklist_id: int):
+    """
+    Process a payment transaction for a worklist
+
+    Accepts payment data and creates a transaction record.
+    Updates payment status and remaining balance.
+    """
+    try:
+        logger.info(f"Process payment request for worklist {worklist_id}")
+
+        # Verify worklist exists
+        worklist = db.worklist[worklist_id]
+        if not worklist:
+            return APIResponse.error(
+                message="Worklist not found", status_code=404, error_type="not_found"
+            )
+
+        if not request.json:
+            return APIResponse.error(
+                message="Invalid JSON data",
+                status_code=400,
+                error_type="validation_error",
+            )
+
+        payment_data = request.json
+
+        # Validate payment amounts
+        amount_card = Decimal(str(payment_data.get("amount_card", 0)))
+        amount_cash = Decimal(str(payment_data.get("amount_cash", 0)))
+        amount_invoice = Decimal(str(payment_data.get("amount_invoice", 0)))
+        total_amount = amount_card + amount_cash + amount_invoice
+
+        if total_amount <= 0:
+            return APIResponse.error(
+                message="Payment amount must be greater than zero",
+                status_code=400,
+                error_type="validation_error",
+            )
+
+        feecode_used = payment_data.get("feecode_used", 0)
+        notes = payment_data.get("notes", "")
+
+        # Calculate current balance
+        billing_rows = db(db.billing_codes.id_worklist == worklist_id).select()
+        total_fee = Decimal("0.00")
+
+        for billing in billing_rows:
+            if billing.fee:
+                total_fee += Decimal(str(billing.fee)) * (billing.quantity or 1)
+            if billing.secondary_fee:
+                total_fee += Decimal(str(billing.secondary_fee)) * (
+                    billing.quantity or 1
+                )
+
+        transaction_rows = db(
+            (db.worklist_transactions.id_worklist == worklist_id)
+            & (db.worklist_transactions.is_active == "T")
+        ).select()
+
+        total_paid = Decimal("0.00")
+        for transaction in transaction_rows:
+            total_paid += Decimal(str(transaction.total_amount))
+
+        current_balance = total_fee - total_paid
+        new_balance = current_balance - total_amount
+
+        # Determine payment status
+        if new_balance <= 0:
+            payment_status = "complete" if new_balance == 0 else "overpaid"
+        else:
+            payment_status = "partial"
+
+        # Create transaction record
+        transaction_id = db.worklist_transactions.insert(
+            id_auth_user=worklist.id_auth_user,
+            id_worklist=worklist_id,
+            transaction_date=datetime.datetime.now(),
+            amount_card=float(amount_card),
+            amount_cash=float(amount_cash),
+            amount_invoice=float(amount_invoice),
+            total_amount=float(total_amount),
+            payment_status=payment_status,
+            remaining_balance=float(new_balance),
+            feecode_used=feecode_used,
+            notes=notes,
+            is_active="T",
+        )
+
+        result = {
+            "success": True,
+            "transaction_id": transaction_id,
+            "total_amount": float(total_amount),
+            "remaining_balance": float(new_balance),
+            "payment_status": payment_status,
+            "message": f"Payment of €{total_amount:.2f} processed successfully",
+        }
+
+        return APIResponse.success(data=result)
+
+    except Exception as e:
+        logger.error(f"Error in process_payment: {str(e)}")
+        return APIResponse.error(
+            message=f"Server error: {str(e)}",
+            status_code=500,
+            error_type="server_error",
+        )
+
+
+@action("api/worklist/<worklist_id:int>/transactions", method=["GET"])
+def transaction_history(worklist_id: int):
+    """
+    Get transaction history for a worklist
+    """
+    try:
+        logger.info(f"Transaction history request for worklist {worklist_id}")
+
+        # Verify worklist exists
+        if not db.worklist[worklist_id]:
+            return APIResponse.error(
+                message="Worklist not found", status_code=404, error_type="not_found"
+            )
+
+        # Get transactions for the worklist
+        transactions = db(
+            (db.worklist_transactions.id_worklist == worklist_id)
+            & (db.worklist_transactions.is_active == "T")
+        ).select(
+            db.worklist_transactions.ALL,
+            db.auth_user.first_name,
+            db.auth_user.last_name,
+            left=db.auth_user.on(
+                db.worklist_transactions.created_by == db.auth_user.id
+            ),
+            orderby=~db.worklist_transactions.transaction_date,
+        )
+
+        history = []
+        for row in transactions:
+            transaction = row.worklist_transactions
+            user = row.auth_user
+
+            history.append(
+                {
+                    "id": transaction.id,
+                    "transaction_date": (
+                        transaction.transaction_date.isoformat()
+                        if transaction.transaction_date
+                        else None
+                    ),
+                    "amount_card": (
+                        float(transaction.amount_card)
+                        if transaction.amount_card
+                        else 0.00
+                    ),
+                    "amount_cash": (
+                        float(transaction.amount_cash)
+                        if transaction.amount_cash
+                        else 0.00
+                    ),
+                    "amount_invoice": (
+                        float(transaction.amount_invoice)
+                        if transaction.amount_invoice
+                        else 0.00
+                    ),
+                    "total_amount": (
+                        float(transaction.total_amount)
+                        if transaction.total_amount
+                        else 0.00
+                    ),
+                    "payment_status": transaction.payment_status,
+                    "remaining_balance": (
+                        float(transaction.remaining_balance)
+                        if transaction.remaining_balance
+                        else 0.00
+                    ),
+                    "feecode_used": transaction.feecode_used,
+                    "notes": transaction.notes,
+                    "processed_by": (
+                        f"{user.first_name} {user.last_name}" if user else "Unknown"
+                    ),
+                }
+            )
+
+        return APIResponse.success(data=history)
+
+    except Exception as e:
+        logger.error(f"Error in transaction_history: {str(e)}")
+        return APIResponse.error(
+            message=f"Server error: {str(e)}",
+            status_code=500,
+            error_type="server_error",
+        )

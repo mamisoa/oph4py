@@ -1,0 +1,266 @@
+[[extend 'baseof.html']]
+
+[[ block left_nav ]]
+[[ include 'partials/nav-test.html' ]]
+[[ end]]
+
+[[ block head ]]
+<link rel="stylesheet" href="[[=URL('static/css/payment-styles.css')]]">
+[[ end]]
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-dollar-sign text-success me-2"></i>Payment Management</h2>
+                <a href="[[=URL('index')]]" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Summary Card -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Patient Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Patient:</strong> [[=patient.first_name]] [[=patient.last_name]]</p>
+                            <p><strong>Email:</strong> [[=patient.email or 'Not provided']]</p>
+                            <p><strong>Date:</strong> <span id="appointment-date">[[=worklist.requested_time]]</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Procedure:</strong> <span id="procedure-name">Loading...</span></p>
+                            <p><strong>Provider:</strong> <span id="provider-name">Loading...</span></p>
+                            <div class="payment-summary-totals">
+                                <p><strong>Total Due:</strong> <span class="text-primary">€<span
+                                            id="total-due">0.00</span></span></p>
+                                <p><strong>Total Paid:</strong> <span class="text-success">€<span
+                                            id="total-paid">0.00</span></span></p>
+                                <p><strong>Balance:</strong> <span class="text-warning fw-bold">€<span
+                                            id="remaining-balance">0.00</span></span></p>
+                                <p><strong>Status:</strong> <span id="payment-status"
+                                        class="badge bg-secondary">Loading...</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fee Code Selection -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Reimbursement Calculation</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="feecode-select" class="form-label">Select Reimbursement Type:</label>
+                        <select id="feecode-select" class="form-control">
+                            <option value="1300">Fee Code 1300</option>
+                            <option value="1600">Fee Code 1600</option>
+                            <option value="3300">Fee Code 3300</option>
+                            <option value="3600">Fee Code 3600</option>
+                            <option value="86">Fee Code 86</option>
+                            <option value="1306">Fee Code 1306</option>
+                            <option value="1606">Fee Code 1606</option>
+                            <option value="3306">Fee Code 3306</option>
+                            <option value="3606">Fee Code 3606</option>
+                            <option value="83">Fee Code 83</option>
+                            <option value="1320">Fee Code 1320</option>
+                            <option value="1620">Fee Code 1620</option>
+                            <option value="3320">Fee Code 3320</option>
+                            <option value="3620">Fee Code 3620</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Billing Codes Table -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Billing Breakdown</h5>
+                    <button class="btn btn-success" id="process-payment-btn" disabled>
+                        <i class="fas fa-credit-card me-1"></i>Process Payment
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="billing-codes-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Description</th>
+                                    <th>Qty</th>
+                                    <th>Fee</th>
+                                    <th>Reimbursement</th>
+                                    <th>Patient Pays</th>
+                                    <th>Laterality</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billing-codes-body">
+                                <tr>
+                                    <td colspan="7" class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        Loading billing codes...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction History -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Transaction History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm" id="transaction-history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Card</th>
+                                    <th>Cash</th>
+                                    <th>Invoice</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Processed By</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaction-history-body">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">Loading transaction history...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal fade" id="payment-modal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="paymentModalLabel">
+                    <i class="fas fa-credit-card me-2"></i>Process Payment
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <strong>Amount to Pay:</strong> €<span id="amount-to-pay">0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="amount-card" class="form-label">
+                            <i class="fas fa-credit-card me-1"></i>Card Payment:
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">€</span>
+                            <input type="number" class="form-control payment-input" id="amount-card" step="0.01" min="0"
+                                placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="amount-cash" class="form-label">
+                            <i class="fas fa-money-bill me-1"></i>Cash Payment:
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">€</span>
+                            <input type="number" class="form-control payment-input" id="amount-cash" step="0.01" min="0"
+                                placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="amount-invoice" class="form-label">
+                            <i class="fas fa-file-invoice me-1"></i>Invoice Amount:
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">€</span>
+                            <input type="number" class="form-control payment-input" id="amount-invoice" step="0.01"
+                                min="0" placeholder="0.00">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="payment-notes" class="form-label">Notes (Optional):</label>
+                        <textarea class="form-control" id="payment-notes" rows="3"
+                            placeholder="Add any payment notes..."></textarea>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-secondary mb-0">
+                            <strong>Payment Total:</strong> €<span id="payment-total">0.00</span>
+                            <div id="payment-validation-message" class="text-danger mt-2" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-success" id="confirm-payment-btn" disabled>
+                    <i class="fas fa-check me-1"></i>Confirm Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Messages -->
+<div id="alert-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+    <!-- Dynamic alerts will be inserted here -->
+</div>
+
+[[ block script ]]
+<script>
+    // Set global variables for PaymentManager
+    window.HOSTURL = "[[=hosturl]]";
+    window.APP_NAME = "[[=app_name]]";
+    window.worklistId = [[=worklist_id]];
+
+    console.log("Payment interface globals set:", {
+        HOSTURL: window.HOSTURL,
+        APP_NAME: window.APP_NAME,
+        worklistId: window.worklistId
+    });
+</script>
+<script src="[[=URL('static/js/payment-manager.js')]]"></script>
+[[ end]]

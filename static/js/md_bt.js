@@ -587,6 +587,12 @@ function operateFormatter_wl(value, row, index) {
 	html.push(
 		'<a class="modality_ctr ms-1" href="javascript:void(0)" title="Execute task"><i class="fas fa-heartbeat"></i></a>'
 	);
+	// Add payment button for completed procedures
+	if (row.status_flag == "done") {
+		html.push(
+			'<a class="payment ms-1" href="javascript:void(0)" title="Process payment"><i class="fas fa-dollar-sign"></i></a>'
+		);
+	}
 	html.push("</div>");
 	return html.join("");
 }
@@ -605,6 +611,10 @@ window.operateEvents_wl = {
 		let controller = modalityDict[row.modality];
 		link =
 			HOSTURL + "/" + APP_NAME + "/modalityCtr/" + controller + "/" + row.id;
+		window.location.href = link;
+	},
+	"click .payment": function (e, value, row, index) {
+		let link = HOSTURL + "/" + APP_NAME + "/payment/" + row.id;
 		window.location.href = link;
 	},
 };

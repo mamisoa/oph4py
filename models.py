@@ -934,3 +934,42 @@ db.define_table(
     Field("note", "string"),
     auth.signature,
 )
+
+################################################################
+#               PAYMENT SYSTEM TABLES                         #
+################################################################
+
+# Worklist transactions table - stores payment transactions for worklist items
+db.define_table(
+    "worklist_transactions",
+    Field("id_auth_user", "reference auth_user", required=True),
+    Field("id_worklist", "reference worklist", required=True),
+    Field("transaction_date", "datetime", required=True, default=datetime.datetime.now),
+    # Payment amounts by method
+    Field("amount_card", "decimal(10,2)", default=0.00),
+    Field("amount_cash", "decimal(10,2)", default=0.00),
+    Field("amount_invoice", "decimal(10,2)", default=0.00),
+    Field("total_amount", "decimal(10,2)", required=True),
+    # Payment status and tracking
+    Field("payment_status", "string", default="partial"),
+    Field("remaining_balance", "decimal(10,2)", default=0.00),
+    Field("feecode_used", "integer"),
+    Field("notes", "text"),
+    auth.signature,
+)
+
+db.worklist_transactions.payment_status.requires = IS_IN_SET(
+    ["partial", "complete", "overpaid", "refunded"]
+)
+db.worklist_transactions.is_active.requires = IS_IN_SET(["T", "F"])
+
+# Add indexes for better performance
+db.executesql(
+    "CREATE INDEX IF NOT EXISTS idx_worklist_transactions_worklist ON worklist_transactions(id_worklist)"
+)
+db.executesql(
+    "CREATE INDEX IF NOT EXISTS idx_worklist_transactions_user ON worklist_transactions(id_auth_user)"
+)
+db.executesql(
+    "CREATE INDEX IF NOT EXISTS idx_worklist_transactions_date ON worklist_transactions(transaction_date)"
+)
