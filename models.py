@@ -963,13 +963,13 @@ db.worklist_transactions.payment_status.requires = IS_IN_SET(
 )
 db.worklist_transactions.is_active.requires = IS_IN_SET([True, False])
 
-# Add indexes for better performance
-db.executesql(
-    "CREATE INDEX IF NOT EXISTS idx_worklist_transactions_worklist ON worklist_transactions(id_worklist)"
-)
-db.executesql(
-    "CREATE INDEX IF NOT EXISTS idx_worklist_transactions_user ON worklist_transactions(id_auth_user)"
-)
-db.executesql(
-    "CREATE INDEX IF NOT EXISTS idx_worklist_transactions_date ON worklist_transactions(transaction_date)"
-)
+# # Add indexes for better performance
+# db.executesql(
+#     "CREATE INDEX IF NOT EXISTS idx_worklist_transactions_worklist ON worklist_transactions(id_worklist)"
+# )
+# db.executesql(
+#     "CREATE INDEX IF NOT EXISTS idx_worklist_transactions_user ON worklist_transactions(id_auth_user)"
+# )
+# db.executesql(
+#     "CREATE INDEX IF NOT EXISTS idx_worklist_transactions_date ON worklist_transactions(transaction_date)"
+# )
