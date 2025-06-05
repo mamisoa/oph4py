@@ -84,6 +84,10 @@
     const membership = [[=membership]];
     const HOSTURL = "[[ = hosturl ]]";
 
+    // Set global variables for payment functionality
+    window.HOSTURL = HOSTURL;
+    window.APP_NAME = "oph4py";
+
     // set tables
     const TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0, 10);
     const API_PROCEDURE_LIST = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~requested_time,~id';
@@ -103,13 +107,27 @@
 
     // Fires after the table body is rendered and available in the DOM, the parameters contain data
     $('#table-wl').on('post-body.bs.table', function () {
-
+        // Update payment button colors after table content is loaded
+        setTimeout(function () {
+            if (typeof updatePaymentButtonColors === 'function') {
+                updatePaymentButtonColors();
+            }
+        }, 100);
     });
 
     $(document).ready(function () {
         if (window.performance.getEntriesByType('navigation')[0].type == 'back-forward') {
             $('#table-wl').bootstrapTable('refresh');
         };
+
+        // Also update payment colors on initial table load
+        $('#table-wl').on('load-success.bs.table', function () {
+            setTimeout(function () {
+                if (typeof updatePaymentButtonColors === 'function') {
+                    updatePaymentButtonColors();
+                }
+            }, 100);
+        });
     });
 
     $('#btnFullList').click(function () {

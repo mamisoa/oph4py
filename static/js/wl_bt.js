@@ -187,14 +187,119 @@ function operateFormatter_wl(value, row, index) {
 		);
 	} else {
 	}
-	// Add payment button for completed procedures
-	if (row.status_flag == "done") {
+	// Add payment button for completed MD procedures only
+	if (row.status_flag == "done" && row.modality == "MD") {
+		// Determine payment button color based on payment status
+		let paymentStyle = 'style="color: #dc143c; font-weight: bold;"'; // Bright red (unpaid/incomplete)
+		let titleText = "Process payment";
+		let buttonClass = "payment payment-unpaid";
+
+		// Check if payment status is available in row data
+		if (row.payment_status) {
+			if (row.payment_status === "complete") {
+				paymentStyle = 'style="color: #ffd700; font-weight: bold;"'; // Gold for complete
+				titleText = "View payment details";
+				buttonClass = "payment payment-complete";
+			} else if (row.payment_status === "partial") {
+				paymentStyle = 'style="color: #ff8c00; font-weight: bold;"'; // Orange for partial
+				titleText = "Complete payment";
+				buttonClass = "payment payment-partial";
+			}
+		}
+
 		html.push(
-			'<a class="payment ms-1" href="javascript:void(0)" title="Process payment"><i class="fas fa-dollar-sign"></i></a>'
+			'<a class="' +
+				buttonClass +
+				' ms-1" href="javascript:void(0)" title="' +
+				titleText +
+				'" ' +
+				paymentStyle +
+				' data-worklist-id="' +
+				row.id +
+				'"><i class="fas fa-dollar-sign"></i></a>'
 		);
 	}
 	html.push("</div>");
 	return html.join("");
+}
+
+/**
+ * Update payment button colors based on actual payment status
+ * This function checks payment status for each worklist item and updates button appearance
+ */
+async function updatePaymentButtonColors() {
+	// Get all payment buttons
+	const paymentButtons = document.querySelectorAll(
+		".payment[data-worklist-id]"
+	);
+
+	if (paymentButtons.length === 0) return;
+
+	// Create array of promises to check payment status for each worklist item
+	const statusPromises = Array.from(paymentButtons).map(async (button) => {
+		const worklistId = button.getAttribute("data-worklist-id");
+		if (!worklistId) return null;
+
+		try {
+			const baseUrl =
+				(window.HOSTURL || location.origin) +
+				"/" +
+				(window.APP_NAME || "oph4py");
+			const response = await fetch(
+				`${baseUrl}/api/worklist/${worklistId}/payment_summary`
+			);
+
+			if (!response.ok) return null;
+
+			const result = await response.json();
+			if (result.status === "success" && result.data) {
+				return {
+					button: button,
+					worklistId: worklistId,
+					paymentStatus: result.data.payment_status,
+					remainingBalance: result.data.remaining_balance || 0,
+				};
+			}
+		} catch (error) {
+			console.warn(
+				`Failed to check payment status for worklist ${worklistId}:`,
+				error
+			);
+		}
+		return null;
+	});
+
+	// Wait for all status checks to complete
+	const results = await Promise.allSettled(statusPromises);
+
+	// Update button appearance based on payment status
+	results.forEach((result) => {
+		if (result.status === "fulfilled" && result.value) {
+			const { button, paymentStatus, remainingBalance } = result.value;
+
+			let newStyle, newTitle, newClass;
+
+			if (paymentStatus === "complete" || remainingBalance <= 0) {
+				newStyle = "color: #ffd700; font-weight: bold;"; // Gold for complete
+				newTitle = "View payment details";
+				newClass = "payment payment-complete ms-1";
+			} else if (paymentStatus === "partial") {
+				newStyle = "color: #ff8c00; font-weight: bold;"; // Orange for partial
+				newTitle = "Complete payment";
+				newClass = "payment payment-partial ms-1";
+			} else {
+				// Keep default red for unpaid
+				newStyle = "color: #dc143c; font-weight: bold;"; // Bright red for unpaid
+				newTitle = "Process payment";
+				newClass = "payment payment-unpaid ms-1";
+			}
+
+			// Update button attributes
+			button.setAttribute("style", newStyle);
+			button.setAttribute("title", newTitle);
+			button.className = newClass;
+		}
+	});
 }
 
 // Update the window.operateEvents_wl object with all the event handlers
@@ -665,3 +770,22 @@ function setWlItemStatusWithoutToast(dataStr) {
 			});
 	});
 }
+
+// Hook into bootstrap table events to update payment button colors
+$(document).ready(function () {
+	// Wait for table to be initialized, then bind events
+	setTimeout(function () {
+		if (typeof $table_wl !== "undefined" && $table_wl.length) {
+			// Listen for table refresh events
+			$table_wl.on("post-body.bs.table", function () {
+				// Update payment button colors after table content is loaded
+				setTimeout(updatePaymentButtonColors, 100);
+			});
+
+			// Also update colors on initial load
+			$table_wl.on("load-success.bs.table", function () {
+				setTimeout(updatePaymentButtonColors, 100);
+			});
+		}
+	}, 1000);
+});

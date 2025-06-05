@@ -2,6 +2,89 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-06T01:38:27.338864] - Files Module Payment Button Enhancement - Fixed
+
+### Fixed
+
+- **Payment Status Detection Issue**: Resolved payment button color functionality in Files module
+  - Added missing `APP_NAME` global variable in `templates/manage/files.html`
+  - Fixed Bootstrap Table event handler conflicts by integrating directly into template
+  - Ensured proper API endpoint URL construction for payment status checks
+
+- **Event Handler Integration**: Fixed Bootstrap Table event binding conflicts
+  - Moved payment color update calls to existing template event handlers
+  - Removed duplicate event bindings from `files_bt.js` to prevent conflicts
+  - Added proper function existence checks before calling `updatePaymentButtonColors()`
+
+### Changed
+
+- **Files Module Payment Integration**: Extended payment button functionality to Files management interface
+  - Applied same enhanced payment button behavior from main worklist to `static/js/files_bt.js`
+  - Payment button ("$") shows ONLY when `status_flag == "done"` AND `modality == "MD"`
+  - Consistent color coding across both interfaces: Bright RED (#dc143c), Gold (#ffd700), Orange (#ff8c00)
+
+- **Unified Payment Status Detection**: Implemented real-time payment status checking
+  - `updatePaymentButtonColors()` function integrated into Files module
+  - Bootstrap Table event integration for automatic status updates
+  - Global variable setup for proper API URL construction
+
+### Technical Details
+
+- **Files Modified**: 
+  - `static/js/files_bt.js` - Payment button enhancement with color detection
+  - `templates/manage/files.html` - Global variables and event handler integration
+- **Global Variables**: Added `window.HOSTURL` and `window.APP_NAME` for API consistency
+- **Event Integration**: Bootstrap Table events (`post-body.bs.table`, `load-success.bs.table`)
+- **API Consistency**: Uses same `/api/worklist/{id}/payment_summary` endpoint
+- **Conflict Resolution**: Avoided duplicate event handlers by using template-based integration
+
+## [2025-06-06T01:29:23.617296] - Worklist Payment Button Enhanced with Dynamic Status Detection
+
+### Changed
+
+- **Payment Button Visibility**: Modified payment action button to show only for specific conditions
+  - Payment button ("$") now appears ONLY when `status_flag == "done"` AND `modality == "MD"`
+  - Previously showed for all completed procedures regardless of modality
+  - Enhanced targeting for medical doctor consultations specifically
+
+- **Payment Status Color Coding**: Implemented dynamic color coding for payment button
+  - **Bright RED** (`#dc143c`): Enhanced visibility for unpaid/incomplete payments with title "Process payment"
+  - **Gold** (`#ffd700`): For complete payments with title "View payment details"
+  - **Orange** (`#ff8c00`): For partial payments with title "Complete payment"
+  - All colors use bold font weight for enhanced visibility
+
+### Added
+
+- **Real-Time Payment Status Detection**: Implemented `updatePaymentButtonColors()` function
+  - Dynamically checks payment status via API calls to `/api/worklist/{id}/payment_summary`
+  - Updates button colors and tooltips based on actual payment completion status
+  - Handles complete, partial, and unpaid states with appropriate visual feedback
+
+- **Automatic Status Updates**: Bootstrap Table event integration
+  - Hooks into `post-body.bs.table` and `load-success.bs.table` events
+  - Automatically updates payment button colors when table refreshes
+  - Ensures payment status is always current without manual intervention
+
+- **Enhanced Button Attributes**: 
+  - Added `data-worklist-id` attributes for precise payment status tracking
+  - Dynamic CSS classes (`payment-complete`, `payment-partial`, `payment-unpaid`)
+  - Context-aware tooltips that change based on payment completion status
+
+### Fixed
+
+- **Color Visibility**: Changed red color from `#dc3545` to `#dc143c` for better visibility
+- **Payment Status Detection**: Resolved issue where completed payments still showed as unpaid
+  - Now correctly detects when `payment_status === "complete"` or `remaining_balance <= 0`
+  - Properly handles edge cases and API response validation
+
+### Technical Details
+
+- **File Modified**: `static/js/wl_bt.js` - Complete payment button enhancement
+- **API Integration**: Leverages existing payment summary endpoint for status detection
+- **Performance Optimization**: Uses Promise.allSettled() for concurrent status checks
+- **Error Handling**: Graceful fallback to default red color if API calls fail
+- **Event-Driven Updates**: Automatic status refresh on table reload without blocking UI
+
 ## [2025-06-06T14:30:00] - Worklist Modal Responsive Design Improvements
 
 ### Changed
