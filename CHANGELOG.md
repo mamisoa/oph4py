@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-06T14:30:00] - Worklist Modal Responsive Design Improvements
+
+### Changed
+
+- **Modal Layout Enhancement**: Improved responsive design for `newWlItemModal` in `templates/worklist.html`
+  - **Z-index Fix**: Modal and backdrop now properly appear above navbar (z-index: 10500 for modal, 10400 for backdrop)
+  - **Flexbox Layout**: Converted modal content to flexbox with fixed header/footer and flexible body
+  - **Height Optimization**: Modal uses 90vh height with proper scrolling behavior
+  - **Responsive Behavior**: Added mobile-specific adjustments for smaller screens
+
+- **Worklist Items Preview Table**: Complete redesign of the items preview section
+  - **Fixed Table Headers**: Added proper column structure with sticky headers for From, To, Procedure, Provider, Senior, Timeslot, Modality, Status, Counter, and Action columns
+  - **Professional Styling**: Enhanced table with centered text, proper spacing, and badge styling for status values
+  - **Empty State**: Added user-friendly "No worklist items selected" message with inbox icon when table is empty
+  - **Dynamic Height**: Preview area now uses flexbox to fill remaining modal space, eliminating excess white space
+
+### Added
+
+- **CSS Enhancements**: New responsive CSS classes for modal and table styling
+  - `.modal-backdrop` z-index override for navbar compatibility
+  - Flexbox utilities for proper modal content distribution
+  - Table styling improvements with responsive font sizes and padding
+  - Empty state styling with centered layout and visual feedback
+
+- **JavaScript Improvements**: Enhanced table population logic in `static/js/wl.js`
+  - `getStatusBadgeClass()` function for consistent status badge styling (requested: warning, processing: info, done: success, cancelled: secondary)
+  - Updated `appendWlItem()` function to work with fixed table structure and proper column ordering
+  - Enhanced `delWlItemModal()` function to show/hide empty state appropriately
+  - Improved `addToWorklist()` and form submission functions to reset empty state correctly
+
+### Fixed
+
+- **Modal Accessibility**: Modal now properly appears above fixed navbar and doesn't get masked
+- **Table Overflow**: Preview table no longer overflows modal boundaries and scrolls properly within allocated space
+- **Empty State Management**: Table correctly shows/hides empty state when items are added or removed
+- **Responsive Behavior**: Modal adapts properly to different screen sizes with appropriate sizing constraints
+- **Toast Auto-Hide**: Fixed `displayToast` function in `static/js/baseof.js` to automatically hide notifications after 5 seconds instead of staying permanently visible
+
+### Technical Details
+
+- **Bootstrap 5 Compliance**: Leveraged Bootstrap 5 flexbox utilities and modal classes for optimal responsive behavior
+- **Viewport-relative Sizing**: Used `vh` units and `calc()` functions for precise height management
+- **State Management**: Enhanced JavaScript state management for proper empty state transitions
+- **Performance**: Optimized DOM manipulation to minimize reflows and maintain smooth user experience
+
 ## [2025-06-05T22:44:59.608137] - Phase 4 Progress - Third Complex Section Complete
 
 ### Added
@@ -486,6 +531,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ## [2025-06-05T23:07:44.738394] - Phase 4: Eighth Complex Section Complete
 
 ### Added
+
 - **New modular component**: `templates/modalityCtr/sections/examination/clinical-exam.html` (358 lines)
   - Contains 4 clinical examination forms: antRightForm, postRightForm, antLeftForm, postLeftForm
   - Anterior and posterior examination forms for both eyes
@@ -494,12 +540,14 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - Preserved all form IDs, validation, and template variable bindings
 
 ### Changed
+
 - **Updated main template**: `templates/modalityCtr/md.html`
   - Replaced 355-line clinical exam section with single include statement
   - Further reduced main template size following modular architecture
   - Maintained proper include order and structure
 
 ### Fixed
+
 - **Template variable preservation**: All py4web template variables maintained
   - `antRight`, `antLeft`, `postRight`, `postLeft` dictionaries properly referenced
   - Form submission endpoints and hidden field values preserved

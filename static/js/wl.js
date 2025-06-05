@@ -371,24 +371,34 @@ function appendWlItem(dataStr, cnt, modalityName) {
 		'input[name="warning"]'
 	).value;
 
-	// Build HTML string for table header and row
-	let head = "<tr>";
+	// Build HTML string for table row
 	let html = `<tr id="wlItem${cnt}">`;
 
-	for (const item in wlItemsHtml) {
-		head += `<th scope="col">${item}</th>`;
-		html += `<td>${wlItemsHtml[item]}</td>`;
+	// Add cells in the exact order of headers: From, To, Procedure, Provider, Senior, Timeslot, Modality, Status, Counter, Action
+	html += `<td class="text-center">${wlItemsHtml["From"]}</td>`;
+	html += `<td class="text-center">${wlItemsHtml["To"]}</td>`;
+	html += `<td class="text-center">${wlItemsHtml["Procedure"]}</td>`;
+	html += `<td class="text-center">${wlItemsHtml["Provider"]}</td>`;
+	html += `<td class="text-center">${wlItemsHtml["Senior"]}</td>`;
+	html += `<td class="text-center">${wlItemsHtml["Timeslot"]}</td>`;
+	html += `<td class="text-center">${wlItemsHtml["Modality"]}</td>`;
+
+	// Status with badge styling
+	const statusClass = getStatusBadgeClass(wlItemsHtml["Status"]);
+	html += `<td class="text-center"><span class="badge ${statusClass}">${wlItemsHtml["Status"]}</span></td>`;
+
+	html += `<td class="text-center">${wlItemsHtml["Counter"]}</td>`;
+	html += `<td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="delWlItemModal('${cnt}');" data-index=${cnt} title="Remove item"><i class="far fa-trash-alt"></i></button></td>`;
+	html += "</tr>";
+
+	// Update DOM - hide empty state and add the new row
+	const emptyRow = document.getElementById("emptyItemsRow");
+	if (emptyRow) {
+		emptyRow.style.display = "none";
 	}
 
-	html += `<td class="list-group-item"><button type="button" class="btn btn-danger btn-sm" onclick="delWlItemModal('${cnt}');" data-index=${cnt}><i class="far fa-trash-alt"></i></button></td>`;
-	html += "</tr>";
-	head += "<tr>";
-
-	// Update DOM
 	const tbodyItems = document.getElementById("tbodyItems");
 	tbodyItems.insertAdjacentHTML("beforeend", html);
-
-	document.getElementById("theadItems").innerHTML = head;
 
 	// Set data attribute with cleaned JSON
 	const rowElement = document.getElementById(`wlItem${cnt}`);
@@ -403,6 +413,26 @@ function appendWlItem(dataStr, cnt, modalityName) {
 	}
 
 	wlItemsCounter += 1;
+}
+
+/**
+ * Returns the appropriate Bootstrap badge class for a status
+ * @param {string} status - The status value
+ * @returns {string} - Bootstrap badge class
+ */
+function getStatusBadgeClass(status) {
+	switch (status?.toLowerCase()) {
+		case "requested":
+			return "bg-warning text-dark";
+		case "processing":
+			return "bg-info text-dark";
+		case "done":
+			return "bg-success";
+		case "cancelled":
+			return "bg-secondary";
+		default:
+			return "bg-secondary";
+	}
 }
 
 // delete item in item worklist to append
@@ -436,6 +466,17 @@ function delWlItemModal(itemId) {
 			// Remove the element from the DOM
 			element.remove();
 
+			// Check if table is now empty and show empty state
+			const remainingRows = document.querySelectorAll(
+				"#tbodyItems tr:not(#emptyItemsRow)"
+			);
+			if (remainingRows.length === 0) {
+				const emptyRow = document.getElementById("emptyItemsRow");
+				if (emptyRow) {
+					emptyRow.style.display = "";
+				}
+			}
+
 			// Show feedback
 			WorklistState.UI.showFeedback(
 				"success",
@@ -448,6 +489,18 @@ function delWlItemModal(itemId) {
 			);
 			// Still remove from DOM even if state manager removal failed
 			element.remove();
+
+			// Check if table is now empty and show empty state
+			const remainingRows = document.querySelectorAll(
+				"#tbodyItems tr:not(#emptyItemsRow)"
+			);
+			if (remainingRows.length === 0) {
+				const emptyRow = document.getElementById("emptyItemsRow");
+				if (emptyRow) {
+					emptyRow.style.display = "";
+				}
+			}
+
 			WorklistState.UI.showFeedback(
 				"warning",
 				"Item removed from display but may still be in queue",
@@ -485,10 +538,17 @@ function addToWorklist(userId) {
 		}
 	});
 
-	// Clear existing items
+	// Clear existing items and show empty state
 	const tbodyItems = document.getElementById("tbodyItems");
 	if (tbodyItems) {
-		tbodyItems.innerHTML = "";
+		tbodyItems.innerHTML = `
+			<tr id="emptyItemsRow">
+				<td colspan="10" class="text-center text-muted py-4">
+					<i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+					No worklist items selected
+				</td>
+			</tr>
+		`;
 	}
 
 	// Set patient ID in form
@@ -890,8 +950,15 @@ $("#newWlItemForm").submit(function (e) {
 								// Clear all pending items
 								WorklistState.Manager.clearPendingItems();
 
-								// Clear the displayed items
-								document.getElementById("tbodyItems").innerHTML = "";
+								// Clear the displayed items and show empty state
+								document.getElementById("tbodyItems").innerHTML = `
+					<tr id="emptyItemsRow">
+						<td colspan="10" class="text-center text-muted py-4">
+							<i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+							No worklist items selected
+						</td>
+					</tr>
+				`;
 
 								// Refresh the worklist table
 								$table_wl.bootstrapTable("refresh");
