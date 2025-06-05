@@ -28,11 +28,49 @@ class PaymentManager {
 	async init() {
 		console.log("Initializing Payment Manager for worklist:", this.worklistId);
 
+		// Show loading state for transaction history
+		this.showTransactionHistoryLoading();
+
 		try {
-			// Load all data
-			await this.loadPaymentSummary();
-			await this.loadBillingCodes();
-			await this.loadTransactionHistory();
+			// Load payment summary and billing codes in parallel (independent)
+			const [summaryResult, billingResult] = await Promise.allSettled([
+				this.loadPaymentSummary(),
+				this.loadBillingCodes(),
+			]);
+
+			// Handle payment summary result
+			if (summaryResult.status === "rejected") {
+				console.error("Failed to load payment summary:", summaryResult.reason);
+				this.showAlert(
+					"Failed to load payment summary: " + summaryResult.reason.message,
+					"warning"
+				);
+			}
+
+			// Handle billing codes result
+			if (billingResult.status === "rejected") {
+				console.error("Failed to load billing codes:", billingResult.reason);
+				this.showAlert(
+					"Failed to load billing codes: " + billingResult.reason.message,
+					"warning"
+				);
+			}
+
+			// Load transaction history only after payment summary is available (needed for calculations)
+			if (summaryResult.status === "fulfilled") {
+				try {
+					await this.loadTransactionHistory();
+				} catch (error) {
+					console.error("Error loading transaction history:", error);
+					this.showTransactionHistoryError(
+						"Failed to load transaction history: " + error.message
+					);
+				}
+			} else {
+				this.showTransactionHistoryError(
+					"Cannot load transaction history without payment summary"
+				);
+			}
 
 			// Set dropdown default value
 			const feecodeSelect = document.getElementById("feecode-select");
@@ -47,6 +85,7 @@ class PaymentManager {
 		} catch (error) {
 			console.error("Error initializing Payment Manager:", error);
 			this.showAlert("Error loading payment data: " + error.message, "danger");
+			this.showTransactionHistoryError("Failed to initialize payment system");
 		}
 	}
 
@@ -93,6 +132,16 @@ class PaymentManager {
 		if (confirmCancelBtn) {
 			confirmCancelBtn.addEventListener("click", async () => {
 				await this.cancelTransaction();
+			});
+		}
+
+		// Refresh transactions button
+		const refreshTransactionsBtn = document.getElementById(
+			"refresh-transactions-btn"
+		);
+		if (refreshTransactionsBtn) {
+			refreshTransactionsBtn.addEventListener("click", async () => {
+				await this.refreshTransactionHistory();
 			});
 		}
 	}
@@ -150,6 +199,11 @@ class PaymentManager {
 			const response = await fetch(
 				`${this.baseUrl}/api/worklist/${this.worklistId}/transactions`
 			);
+
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			}
+
 			const result = await response.json();
 
 			if (result.status === "success" && result.data) {
@@ -159,7 +213,10 @@ class PaymentManager {
 			}
 		} catch (error) {
 			console.error("Error loading transaction history:", error);
-			// Don't throw error for transaction history as it's not critical
+			this.showTransactionHistoryError(
+				"Error loading transactions: " + error.message
+			);
+			throw error; // Re-throw so calling code can handle it
 		}
 	}
 
@@ -266,33 +323,19 @@ class PaymentManager {
 			return;
 		}
 
-		// Calculate cumulative balances
-		const totalFee = this.paymentSummary.total_fee || 0;
-		let cumulativePaid = 0;
+		// Safety check for payment summary
+		if (!this.paymentSummary || this.paymentSummary.total_fee === undefined) {
+			console.warn(
+				"Payment summary not available for transaction history calculations"
+			);
+			tbody.innerHTML =
+				'<tr><td colspan="8" class="text-center text-warning">Loading payment summary...</td></tr>';
+			return;
+		}
 
-		// Sort transactions by date (oldest first) for cumulative calculation
-		const sortedTransactions = [...transactions].sort(
-			(a, b) => new Date(a.transaction_date) - new Date(b.transaction_date)
-		);
-
-		// Calculate cumulative balance for each transaction
-		const transactionsWithCumulativeBalance = sortedTransactions.map(
-			(transaction) => {
-				if (transaction.transaction_status === "active") {
-					cumulativePaid += transaction.total_amount;
-				}
-				const cumulativeBalance = totalFee - cumulativePaid;
-
-				return {
-					...transaction,
-					cumulative_balance: cumulativeBalance,
-					cumulative_paid: cumulativePaid,
-				};
-			}
-		);
-
-		// Sort back to newest first for display
-		const displayTransactions = transactionsWithCumulativeBalance.sort(
+		// Sort transactions by date (newest first for display)
+		// The API already provides correct remaining_balance for each transaction
+		const displayTransactions = [...transactions].sort(
 			(a, b) => new Date(b.transaction_date) - new Date(a.transaction_date)
 		);
 
@@ -327,8 +370,8 @@ class PaymentManager {
 				actionButton = '<span class="text-muted">Cancelled</span>';
 			}
 
-			// Use cumulative balance instead of stored balance
-			const balanceToShow = transaction.cumulative_balance;
+			// Use the balance from the API response
+			const balanceToShow = transaction.remaining_balance;
 
 			html += `
                 <tr class="${rowClass}">
@@ -366,6 +409,21 @@ class PaymentManager {
 
 		// Bind cancel button events
 		this.bindCancelButtonEvents();
+	}
+
+	/**
+	 * Refresh transaction history data
+	 */
+	async refreshTransactionHistory() {
+		this.showTransactionHistoryLoading();
+		try {
+			await this.loadTransactionHistory();
+		} catch (error) {
+			console.error("Error refreshing transaction history:", error);
+			this.showTransactionHistoryError(
+				"Failed to refresh transactions: " + error.message
+			);
+		}
 	}
 
 	/**
@@ -485,7 +543,7 @@ class PaymentManager {
 
 				// Refresh data
 				await this.loadPaymentSummary();
-				await this.loadTransactionHistory();
+				await this.refreshTransactionHistory();
 				this.updatePaymentButton();
 			} else {
 				throw new Error(result.message || "Failed to cancel transaction");
@@ -638,7 +696,7 @@ class PaymentManager {
 
 				// Refresh data
 				await this.loadPaymentSummary();
-				await this.loadTransactionHistory();
+				await this.refreshTransactionHistory();
 				this.updatePaymentButton();
 			} else {
 				throw new Error(result.message || "Failed to process payment");
@@ -731,6 +789,51 @@ class PaymentManager {
 				}
 			}
 		}, 5000);
+	}
+
+	/**
+	 * Show transaction history loading state
+	 */
+	showTransactionHistoryLoading() {
+		const tbody = document.getElementById("transaction-history-body");
+		if (tbody) {
+			tbody.innerHTML = `
+				<tr>
+					<td colspan="8" class="text-center">
+						<div class="d-flex align-items-center justify-content-center">
+							<div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+								<span class="visually-hidden">Loading...</span>
+							</div>
+							Loading transaction history...
+						</div>
+					</td>
+				</tr>
+			`;
+		}
+	}
+
+	/**
+	 * Show transaction history error
+	 */
+	showTransactionHistoryError(message) {
+		const tbody = document.getElementById("transaction-history-body");
+		if (tbody) {
+			tbody.innerHTML = `
+				<tr>
+					<td colspan="8" class="text-center text-danger">
+						<div class="d-flex align-items-center justify-content-center">
+							<i class="fas fa-exclamation-triangle me-2"></i>
+							${message}
+						</div>
+						<div class="mt-2">
+							<button class="btn btn-sm btn-outline-primary" onclick="location.reload()">
+								<i class="fas fa-refresh me-1"></i>Reload Page
+							</button>
+						</div>
+					</td>
+				</tr>
+			`;
+		}
 	}
 }
 
