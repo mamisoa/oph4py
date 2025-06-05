@@ -391,7 +391,8 @@
                                     <div class="visually-hidden">
                                         <input id="idPatientWl" type="text" name="id_auth_user" />
                                         <input id="idWl" type="text" name="id" />
-                                        <input id="methodWlItemSubmit" type="text" name="methodWlItemSubmit" value="POST" />
+                                        <input id="methodWlItemSubmit" type="text" name="methodWlItemSubmit"
+                                            value="POST" />
                                         <input id="btnNewWlItemSubmit" type="submit" />
                                     </div>
                                 </div> <!--end container form  -->
@@ -416,7 +417,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="labelSubmit" for="btnNewWlItemSubmit" class="btn btn-primary" tabindex="0" role="button">Submit</label>
+                <label id="labelSubmit" for="btnNewWlItemSubmit" class="btn btn-primary" tabindex="0"
+                    role="button">Submit</label>
             </div>
         </div>
     </div>
@@ -427,7 +429,8 @@
 </div>
 
 <!-- Transaction Recovery Modal -->
-<div class="modal fade" id="transactionRecoveryModal" tabindex="-1" role="dialog" aria-labelledby="transactionRecoveryModalLabel" aria-hidden="true">
+<div class="modal fade" id="transactionRecoveryModal" tabindex="-1" role="dialog"
+    aria-labelledby="transactionRecoveryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -455,7 +458,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="row mb-3" id="transactionDetailsContainer" style="display: none;">
                     <div class="col">
                         <h6>Transaction Details</h6>
@@ -640,17 +643,9 @@
 <script src="js/wl.js"></script>
 <script>
     // Initialize worklist components after all dependencies are loaded
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Make sure state manager is properly initialized
         if (typeof WorklistState !== 'undefined') {
-            // Create a feedback container if it doesn't exist
-            if (!document.getElementById('feedbackContainer')) {
-                const container = document.createElement('div');
-                container.id = 'feedbackContainer';
-                container.className = 'container mt-2';
-                document.querySelector('#worklistTable').prepend(container);
-            }
-            
             // Initialize the worklist
             initWorklist();
         } else {

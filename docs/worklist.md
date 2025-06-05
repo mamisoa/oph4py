@@ -395,9 +395,19 @@ The system implements comprehensive error handling:
 - **Debug Logging**: Comprehensive logging for troubleshooting deletion issues
 - **Recovery Options**: Debugging tools available for development and troubleshooting
 
+### Non-Intrusive Toast Notifications (Enhanced 2025-01-23)
+
+- **Toast Integration**: Replaced shifting alert notifications with fixed-position toast notifications
+- **Layout Stability**: Eliminated content shifting when notifications appear above the worklist
+- **Consistent UX**: Uses the same toast system (`displayToast`) as the rest of the application
+- **Auto-Dismiss**: Toast notifications automatically disappear after a timeout
+- **Backward Compatibility**: Existing `showFeedback()` calls continue to work seamlessly
+- **Error Fallback**: Graceful degradation to console warnings if toast system unavailable
+
 ### Critical Bug Fixes
 
 **Worklist Item Deletion Bug (2025-06-05)**:
+
 - **Issue**: Multiple modality procedures failed to delete due to undefined uniqueId in combo tasks
 - **Root Cause**: uniqueId was not properly set during combo creation, causing silent deletion failures
 - **Solution**: Enhanced `delWlItemModal()` with proper validation and error handling
@@ -465,6 +475,7 @@ addItemWithTracking(itemData);
 ```
 
 These tools help identify and resolve issues with:
+
 - Item deletion failures
 - State synchronization problems
 - uniqueId generation issues
@@ -484,7 +495,8 @@ The Worklist Controller provides:
 8. **Enhanced item deletion with proper validation** (Fixed 2025-06-05)
 9. **Comprehensive debugging capabilities** for troubleshooting
 10. **Improved error handling and user feedback**
+11. **Non-intrusive toast notifications** (Enhanced 2025-01-23)
 
-The recent enhancements ensure reliable worklist item management with proper deletion validation, preventing silent failures and maintaining data consistency between the UI and backend systems.
+The recent enhancements ensure reliable worklist item management with proper deletion validation, preventing silent failures and maintaining data consistency between the UI and backend systems. The notification system has been improved to use fixed-position toasts that don't disrupt the layout, providing a better user experience.
 
 Regular updates ensure optimal functionality and user experience.

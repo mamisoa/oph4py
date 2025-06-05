@@ -575,38 +575,31 @@ class UIManager {
 	}
 
 	/**
-	 * Show feedback to the user
+	 * Show feedback to the user using toast notifications
 	 * @param {String} status - Status type (success, error, warning, info)
 	 * @param {String} message - Message to display
-	 * @param {String} containerId - ID of the container to show the message in
+	 * @param {String} containerId - Deprecated parameter for backward compatibility
 	 */
-	showFeedback(status, message, containerId = "feedbackContainer") {
-		const container = document.getElementById(containerId);
-		if (!container) return;
+	showFeedback(status, message, containerId = null) {
+		// Map status types to displayToast expected values
+		const statusMap = {
+			error: "error",
+			success: "success",
+			warning: "warning",
+			info: "info",
+			danger: "error", // Handle Bootstrap alert class
+		};
 
-		const alertClass = `alert-${status === "error" ? "danger" : status}`;
+		const toastStatus = statusMap[status] || "info";
+		const heading = status.charAt(0).toUpperCase() + status.slice(1);
 
-		const alertElement = document.createElement("div");
-		alertElement.className = `alert ${alertClass} alert-dismissible fade show`;
-		alertElement.setAttribute("role", "alert");
-		alertElement.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-
-		container.appendChild(alertElement);
-
-		// Auto-dismiss after 5 seconds
-		setTimeout(() => {
-			if (alertElement.parentNode) {
-				alertElement.classList.remove("show");
-				setTimeout(() => {
-					if (alertElement.parentNode) {
-						alertElement.parentNode.removeChild(alertElement);
-					}
-				}, 150);
-			}
-		}, 5000);
+		// Use the existing displayToast function
+		if (typeof displayToast === "function") {
+			displayToast(toastStatus, heading, message, false);
+		} else {
+			// Fallback to console if displayToast is not available
+			console.warn(`Notification: ${heading} - ${message}`);
+		}
 	}
 
 	/**
