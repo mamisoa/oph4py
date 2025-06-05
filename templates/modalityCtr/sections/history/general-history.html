@@ -1,0 +1,157 @@
+<!-- General History Section - Contains 4 tables: mx_tbl, ax_tbl, mHx_tbl, sHx_tbl -->
+<div class="row history">
+    <div class="col">
+        <h3 class="big-title bg-secondary"><a role="button" data-bs-toggle="collapse" href=".gHx">General
+                history</a></h3>
+        <div class="row gHx">
+            <div class="col">
+                <div class="row mb-3"> <!-- row medications -->
+                    <div class="col">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="title-right">Medications</h4>
+                                <div>
+                                    <button type="button" id="btnNewMx" class="btn btn-dark btn-sm"
+                                        data-bs-toggle="modal" data-status-flag="historyMx" data-mx-flag="historyMx"
+                                        data-bs-target="#mxModal">
+                                        Add medication<i class="mx-2 fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3 bg-right">
+                            <div class="col">
+                                <table id="mx_tbl" data-side-pagination="server" data-pagination="true"
+                                    data-page-size="10" data-search="false" data-query-params="queryParams"
+                                    data-response-handler="responseHandler_mx"
+                                    data-detail-formatter="detailFormatter_mx" data-detail-view="true"
+                                    data-detail-view-icon="true">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="onset" data-sortable="true">Onset</th>
+                                            <th data-field="ended" data-sortable="false">Ended</th>
+                                            <th data-field="medication" data-sortable="true">Medication</th>
+                                            <th data-field="delivery" data-sortable="false">Delivery</th>
+                                            <th data-field="frequency_h" data-sortable="false">Frequency</th>
+                                            <th data-field="note" data-sortable="false">Note</th>
+                                            <th data-field="prescribed" data-sortable="false">Prescribed</th>
+                                            <th data-field="operate" data-formatter="operateFormatter_mx"
+                                                data-events="operateEvents_mx">Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row mb-3">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h4 class="big-title bg-warning">Allergy</h4>
+                        </div>
+                        <div>
+                            <button type="button" id="btnNewAx" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#axModal">
+                                Add allergy<i class="mx-2 fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row mb-3 bg-neutral">
+                        <div class="col">
+                            <table id="ax_tbl" data-side-pagination="server" data-pagination="true" data-page-size="10"
+                                data-search="false" data-query-params="queryParams" data-row-style="rowStyle_ax"
+                                data-response-handler="responseHandler_ax" data-detail-formatter="detailFormatter_ax"
+                                data-detail-view="true" data-detail-view-icon="true">
+                                <thead>
+                                    <tr>
+                                        <th data-field="onset" data-sortable="true">Onset</th>
+                                        <th data-field="ended" data-sortable="false">Ended</th>
+                                        <th data-field="typ" data-sortable="true">Type</th>
+                                        <th data-field="agent" data-sortable="true">Agent</th>
+                                        <th data-field="operate" data-formatter="operateFormatter_ax"
+                                            data-events="operateEvents_ax">Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end div row medications allergy -->
+        <div class="row gHx">
+            <div class="col">
+                <div class="row mb-3"> <!-- row mHx -->
+                    <div class="col">
+                        <h4 class="title-right">Medical Hx</h4>
+                        <div>
+                            <button type="button" id="btnNewmHx" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#mHxModal" data-category-flag="medical">Add past medical history<i
+                                    class="mx-2 fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row mt-3 bg-right"> <!-- mHx_tbl-->
+                        <div class="col">
+                            <table id="mHx_tbl" data-side-pagination="server" data-pagination="true" data-page-size="10"
+                                data-search="false" data-query-params="queryParams"
+                                data-response-handler="responseHandler_msHx"
+                                data-detail-formatter="detailFormatter_msHx" data-detail-view="true"
+                                data-detail-view-icon="true">
+                                <thead>
+                                    <tr>
+                                        <th data-field="onset" data-sortable="true">Onset</th>
+                                        <th data-field="ended" data-sortable="false">Ended</th>
+                                        <th data-field="title" data-sortable="true">Title</th>
+                                        <th data-field="icd10" data-sortable="true">ICD-10</th>
+                                        <th data-field="site" data-sortable="true">Site</th>
+                                        <th data-field="note" data-sortable="true">Note</th>
+                                        <th data-field="operate" data-formatter="operateFormatter_msHx"
+                                            data-events="operateEvents_msHx">Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div> <!-- end row mHx_tbl-->
+                </div>
+            </div>
+            <div class="col">
+                <div class="row mb-3">
+                    <div class="row mb-3">
+                        <h4 class="title-left">Surgical Hx</h4>
+                        <div>
+                            <button type="button" id="btnNewsHx" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#mHxModal" data-category-flag="surgical">Add past surgical history<i
+                                    class="mx-2 fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row mb-3 bg-left">
+                        <div class="col">
+                            <table id="sHx_tbl" data-side-pagination="server" data-pagination="true" data-page-size="10"
+                                data-search="false" data-query-params="queryParams"
+                                data-response-handler="responseHandler_msHx"
+                                data-detail-formatter="detailFormatter_msHx" data-detail-view="true"
+                                data-detail-view-icon="true">
+                                <thead>
+                                    <tr>
+                                        <th data-field="onset" data-sortable="true">Onset</th>
+                                        <th data-field="ended" data-sortable="false">Ended</th>
+                                        <th data-field="title" data-sortable="true">Title</th>
+                                        <th data-field="icd10" data-sortable="true">ICD-10</th>
+                                        <th data-field="site" data-sortable="true">Site</th>
+                                        <th data-field="note" data-sortable="true">Note</th>
+                                        <th data-field="operate" data-formatter="operateFormatter_msHx"
+                                            data-events="operateEvents_msHx">Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end div row mHx sHx -->
+    </div>
+</div>

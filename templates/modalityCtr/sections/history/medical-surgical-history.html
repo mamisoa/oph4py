@@ -1,0 +1,220 @@
+<!-- Medical-Surgical History Section -->
+<!-- Contains: oHx_tbl, table-wl, tonoRight_tbl, tonoLeft_tbl, rxRight_tbl, rxLeft_tbl, kmRight_tbl, kmLeft_tbl -->
+<div class="row history">
+    <h3 class="big-title bg-info"><a role="button" data-bs-toggle="collapse" href=".oHx">Ocular history</a></h3>
+    [[ if userMembership == 'Doctor':]]
+    <div class="row mb-3 bg-neutral"> <!-- row oHx-->
+        <div class="col oHx">
+            <table id="oHx_tbl" data-side-pagination="server" data-pagination="true" data-page-size="10"
+                data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_msHx"
+                data-detail-formatter="detailFormatter_msHx" data-detail-view="true" data-detail-view-icon="true">
+                <thead>
+                    <tr>
+                        <th data-field="onset" data-sortable="true">Onset</th>
+                        <th data-field="ended" data-sortable="false">Ended</th>
+                        <th data-field="title" data-sortable="true">Title</th>
+                        <th data-field="icd10" data-sortable="true">ICD-10</th>
+                        <th data-field="site" data-sortable="true">Side</th>
+                        <th data-field="note" data-sortable="true">Note</th>
+                        <th data-field="operate" data-formatter="operateFormatter_msHx"
+                            data-events="operateEvents_msHx">Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div> <!-- end oHx col-->
+    </div> <!-- end oHx row-->
+    [[ pass ]]
+    <div class="row mb-3 oHx"> <!-- row wlHx-->
+        <div class="col">
+            <h4><span class=""><i class="fas fa-list me-2"></i>Worklist<span></h4>
+            <div id="toolbar-wl">
+            </div>
+            <table id="table-wl" data-toolbar-align="right" data-toolbar="#toolbar-wl" data-id-field="id"
+                data-side-pagination="server" data-show-refresh="true" data-pagination="true" data-page-size="5"
+                data-show-columns="true" data-search="true" data-search-accent-neutralise="true"
+                data-visible-search="false" data-query-params="queryParams_wl"
+                data-response-handler="responseHandler_wl" data-row-style="rowStyle_wl" data-detail-view="true"
+                data-detail-view-icon="true" data-detail-formatter="detailFormatter_wl"
+                data-detail-view-by-click="false">
+                <thead class="thead-dark">
+                    <th data-field="id" data-sortable="true">ID</th>
+                    <th data-field="sending_facility" data-sortable="true">Sending facility:</th>
+                    <th data-field="receiving_facility" data-title="Receiving facility" data-sortable="true">
+                        Receving facility:</th>
+                    <th data-field="procedure" data-searchable="true" data-sortable="true">Procedure:</th>
+                    <th data-field="provider" data-searchable="true" data-sortable="true">Provider:</th>
+                    <th data-field="senior" data-searchable="true" data-sortable="true">Senior:</th>
+                    <th data-field="modality" data-searchable="true" data-sortable="true">Modality:</th>
+                    <th data-field="laterality" data-sortable="false" data-searchable="false">Laterality:</th>
+                    <th data-field="requested_time" data-sortable="true" data-searchable="true">Timeslot:</th>
+                    <th data-field="status_flag" data-searchable="true" data-sortable="true">Status:</th>
+                    <th data-field="counter" data-searchable="true" data-sortable="false"
+                        data-formatter="counterFormatter_wl">Counter:</th>
+                    <th data-field="warning" data-searchable="true" data-sortable="false">Warning:</th>
+                    <th data-field="operate" data-formatter="operateFormatter_wl" data-events="operateEvents_wl">
+                        Action</th>
+                </thead>
+            </table>
+        </div>
+    </div> <!-- end row wlHx-->
+    <div class="row mb-3 oHx"> <!-- row tono-->
+        <div class="col"> <!-- right column-->
+            <div class="row">
+                <div class="col">
+                    <h4 class="title-right">Right tono</h4>
+                </div>
+            </div>
+            <div class="row bg-right">
+                <div class="col"> <!-- right table tono-->
+                    <table id="tonoRight_tbl" data-side-pagination="server" data-pagination="true" data-page-size="10"
+                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_tono"
+                        data-detail-view="true" data-detail-view-icon="true"
+                        data-detail-formatter="detailFormatter_tono" data-detail-view-by-click="false">
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="true">Timestamp</th>
+                                <th data-field="tonometry" data-sortable="true">Tono</th>
+                                <th data-field="techno" data-sortable="true">Method</th>
+                                <th data-field="pachymetry" data-sortable="true">Pachy</th>
+                                <th data-field="operate" data-formatter="operateFormatter_tono"
+                                    data-events="operateEvents_tono">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col"> <!-- left column -->
+            <div class="row">
+                <div class="col">
+                    <h4 class="title-left">Left tono</h4>
+                </div>
+            </div>
+            <div class="row bg-left">
+                <div class="col"> <!-- left table tono-->
+                    <table id="tonoLeft_tbl" data-side-pagination="server" data-pagination="true" data-page-size="10"
+                        data-query-params="queryParams" data-response-handler="responseHandler_tono"
+                        data-detail-view="true" data-detail-view-icon="true"
+                        data-detail-formatter="detailFormatter_tono" data-detail-view-by-click="false">
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="true">Timestamp</th>
+                                <th data-field="tonometry" data-sortable="true">Tono</th>
+                                <th data-field="techno" data-sortable="true">Method</th>
+                                <th data-field="pachymetry" data-sortable="true">Pachy</th>
+                                <th data-field="operate" data-formatter="operateFormatter_tono"
+                                    data-events="operateEvents_tono">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end row tono-->
+    <div class="row mb-3 oHx"> <!-- row rx-->
+        <div class="col"> <!-- right column-->
+            <div class="row">
+                <div class="col">
+                    <h4 class="title-right">Right rx</h4>
+                </div>
+            </div>
+            <div class="row bg-right">
+                <div class="col"> <!-- right table rx-->
+                    <table id="rxRight_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
+                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_rx"
+                        data-detail-formatter="detailFormatter_rx" data-row-style="rowStyle_type"
+                        data-detail-view="true" data-detail-view-icon="true">
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="true">Timestamp</th>
+                                <th data-field="rx_origin" data-sortable="true">Type</th>
+                                <th data-field="note" data-sortable="false">Note</th>
+                                <th data-field="va_far" data-sortable="true">VA far</th>
+                                <th data-field="rx_far" data-cell-style="cellStyle_formula" data-sortable="false">Rx
+                                    far</th>
+                                <th data-field="se_far" data-cell-style="cellStyle_formula" data-sortable="false">SE
+                                </th>
+                                <th data-field="add" data-cell-style="cellStyle_add" data-sortable="false">Add</th>
+                                <th data-field="va_close" data-sortable="true">VA close</th>
+                                <th data-field="operate" data-formatter="operateFormatter_rx"
+                                    data-events="operateEvents_rx">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="row bg-right">
+                <div class="col"> <!-- right table km-->
+                    <table id="kmRight_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
+                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_km"
+                        data-detail-formatter="detailFormatter_km" data-row-style="rowStyle_km" data-detail-view="true"
+                        data-detail-view-icon="true">
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="true">Timestamp</th>
+                                <th data-field="formulak1" data-sortable="false" data-cell-style="cellStyle_k1">K1
+                                </th>
+                                <th data-field="formulak2" data-sortable="false" data-cell-style="cellStyle_k2">K2
+                                </th>
+                                <th data-field="operate" data-formatter="operateFormatter_km"
+                                    data-events="operateEvents_km">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col"> <!-- left column -->
+            <div class="row">
+                <div class="col">
+                    <h4 class="title-left">Left rx</h4>
+                </div>
+            </div>
+            <div class="row bg-left">
+                <div class="col"> <!-- left table rx-->
+                    <table id="rxLeft_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
+                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_rx"
+                        data-detail-formatter="detailFormatter_rx" data-row-style="rowStyle_type"
+                        data-detail-view="true" data-detail-view-icon="true">
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="true">Timestamp</th>
+                                <th data-field="rx_origin" data-sortable="true">Type</th>
+                                <th data-field="note" data-sortable="false">Note</th>
+                                <th data-field="va_far" data-sortable="true">VA far</th>
+                                <th data-field="rx_far" data-cell-style="cellStyle_formula" data-sortable="false">Rx
+                                    far</th>
+                                <th data-field="se_far" data-cell-style="cellStyle_formula" data-sortable="false">SE
+                                </th>
+                                <th data-field="add" data-cell-style="cellStyle_add" data-sortable="false">Add</th>
+                                <th data-field="va_close" data-sortable="true">VA close</th>
+                                <th data-field="operate" data-formatter="operateFormatter_rx"
+                                    data-events="operateEvents_rx">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="row bg-left">
+                <div class="col"> <!-- left table km-->
+                    <table id="kmLeft_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
+                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_km"
+                        data-detail-formatter="detailFormatter_km" data-row-style="rowStyle_km" data-detail-view="true"
+                        data-detail-view-icon="true">
+                        <thead>
+                            <tr>
+                                <th data-field="timestamp" data-sortable="true">Timestamp</th>
+                                <th data-field="formulak1" data-sortable="false" data-cell-style="cellStyle_k1">K1
+                                </th>
+                                <th data-field="formulak2" data-sortable="false" data-cell-style="cellStyle_k2">K2
+                                </th>
+                                <th data-field="operate" data-formatter="operateFormatter_km"
+                                    data-events="operateEvents_km">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end row rx-->
+</div> <!-- end row oHx -->

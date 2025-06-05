@@ -2,21 +2,125 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-05T22:44:59.608137] - Phase 4 Progress - Third Complex Section Complete
+
+### Added
+
+- **templates/modalityCtr/sections/examination/conclusions.html** (141 lines) - Extracted complex conclusions section containing 3 forms + 1 bootstrap table
+  - `ccxForm` - General conclusions form with main description textarea and template variables
+  - `ccxRForm` - Right eye specific conclusions form with laterality handling
+  - `ccxLForm` - Left eye specific conclusions form with laterality handling  
+  - `coding_tbl` - ICD-10 medical coding table with comprehensive search and management capabilities
+
+### Changed
+
+- **templates/modalityCtr/md.html** - Replaced 142-line conclusions section with include statement
+  - Added `[[ include 'modalityCtr/sections/examination/conclusions.html' ]]`
+  - Further reduced main template size (additional content modularized)
+  - Maintained all form validation, submission handlers, and table functionality
+
+### Fixed
+
+- **Bootstrap table dependencies** - The extracted `coding_tbl` maintains proper:
+  - API endpoint configuration with `responseHandler_msHx` and query parameters
+  - Event handlers (`operateEvents_msHx`) for table row actions and interactions
+  - Formatters (`operateFormatter_msHx`, `detailFormatter_msHx`) for display and detail views
+  - Modal integration (`btnNewCoding` button properly connects to `#mHxModal`)
+- **Form functionality** - All 3 forms preserve:
+  - Template variable integration (`ccx`, `ccxR`, `ccxL` data objects)
+  - Hidden field configurations for patient and worklist IDs
+  - Proper form submission handlers and validation logic
+
+### Architecture Progress
+
+- **Phase 4 Complex Sections**: Third major complex section completed ✅
+- **Bootstrap Tables**: 13 total complex tables successfully modularized (4 in general-history + 8 in medical-surgical-history + 1 in conclusions)
+- **File Size Compliance**: 141 lines (< 300 line target achieved)
+- **Forms Integration**: 3 forms with bilateral eye-specific functionality properly modularized
+- **Total Extraction Progress**: 515 lines of complex content modularized across 3 sections
+
+## [2025-06-05T22:40:58.585825] - Phase 4 Progress - Second Complex Section Complete
+
+### Added
+
+- **templates/modalityCtr/sections/history/medical-surgical-history.html** (217 lines) - Extracted complex medical-surgical history section containing 8 bootstrap tables
+  - `oHx_tbl` - Ocular history table with medical/surgical history tracking
+  - `table-wl` - Worklist procedures table with comprehensive procedure management
+  - `tonoRight_tbl`, `tonoLeft_tbl` - Bilateral tonometry measurement tables
+  - `rxRight_tbl`, `rxLeft_tbl` - Bilateral refraction measurement tables
+  - `kmRight_tbl`, `kmLeft_tbl` - Bilateral keratometry measurement tables
+
+### Changed
+
+- **templates/modalityCtr/md.html** - Replaced 215-line medical-surgical history section with include statement
+  - Added `[[ include 'modalityCtr/sections/history/medical-surgical-history.html' ]]`
+  - Further reduced main template size from 2,526 to 2,311 lines (additional 8.5% reduction)
+  - Maintained all bootstrap table configurations and JavaScript dependencies
+
+### Fixed
+
+- **Bootstrap table dependencies** - All 8 extracted tables maintain proper:
+  - API endpoint configurations (responseHandler_msHx, responseHandler_wl, responseHandler_tono, responseHandler_rx, responseHandler_km)
+  - Event handlers (operateEvents_msHx, operateEvents_wl, operateEvents_tono, operateEvents_rx, operateEvents_km)
+  - Formatters (operateFormatter_*, detailFormatter_*, counterFormatter_wl, rowStyle_*)
+  - Template variable access (userMembership conditions, query parameters)
+
+### Architecture Progress
+
+- **Phase 4 Complex Sections**: Second major complex section completed ✅
+- **Bootstrap Tables**: 12 total complex tables successfully modularized (4 in general-history + 8 in medical-surgical-history)
+- **File Size Compliance**: 217 lines (< 300 line target achieved)
+- **Total Extraction Progress**: 372 lines of complex history content modularized across 2 sections
+
+## [2025-06-05T22:36:02.166991] - Medical Examination Template Refactoring - Phase 4 Complex Sections
+
+### Added
+
+- **templates/modalityCtr/sections/history/general-history.html** (157 lines) - First complex section extraction
+  - Contains 4 bootstrap tables: mx_tbl (medications), ax_tbl (allergies), mHx_tbl (medical history), sHx_tbl (surgical history)
+  - Includes all associated buttons, forms, and table configurations
+  - Maintains all bootstrap table dependencies and event handlers
+
+### Changed
+
+- **templates/modalityCtr/md.html** - Replaced general history section with include statement
+  - Reduced file size by extracting 144 lines of complex history content
+  - Added `[[ include 'modalityCtr/sections/history/general-history.html' ]]` include statement
+  - Preserved bootstrap table functionality and JavaScript dependencies
+
+### Fixed
+
+- **Bootstrap table dependencies** - All 4 tables (mx_tbl, ax_tbl, mHx_tbl, sHx_tbl) maintain their:
+  - API endpoint configurations
+  - Response handlers (responseHandler_mx, responseHandler_ax, responseHandler_msHx)
+  - Event handlers (operateEvents_mx, operateEvents_ax, operateEvents_msHx)
+  - Formatters (operateFormatter_mx, operateFormatter_ax, operateFormatter_msHx, detailFormatter_mx, detailFormatter_ax, detailFormatter_msHx)
+
+### Architecture Progress
+
+- **Phase 4 Complex Sections**: First complex section completed ✅
+- **Bootstrap Tables**: 4 complex tables successfully modularized
+- **File Size Compliance**: 157 lines (< 300 line target achieved)
+- **Modular Structure**: History section properly organized in sections/history/ subdirectory
+
 ## [Phase 4 - Simple Section Extraction COMPLETE] - 2025-06-05T22:31:38.764640
 
 ### Added
-- **New section files**: 
+
+- **New section files**:
   - `templates/modalityCtr/sections/examination/present-history.html` (26 lines) - Simple form for current history
   - `templates/modalityCtr/sections/actions/follow-up.html` (27 lines) - Simple form for follow-up recommendations
   - `templates/modalityCtr/sections/examination/miscellaneous.html` (92 lines) - Three forms (Motility, Phoria, Pupils)
 - **Directory structure**: Created `sections/examination/` and `sections/actions/` for modular section organization
 
 ### Changed
+
 - **Main template reduction**: `templates/modalityCtr/md.html` reduced from 2,686 to 2,526 lines (160 lines extracted)
 - **Modular includes**: Replaced inline sections with include statements for better maintainability
 - **Phase 4 milestone**: Successfully completed ALL simple sections according to refactoring plan
 
 ### Fixed
+
 - **Section extraction methodology**: Validated extraction process with 3 different section types (simple forms, multi-forms)
 - **Template variable access**: Confirmed py4web template variables work correctly in extracted sections
 - **Form functionality**: Preserved all form IDs (`motForm`, `phoForm`, `pupForm`, etc.), submission handlers, and validation logic
@@ -378,3 +482,27 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 - **Integration**: Seamlessly integrated with existing worklist action buttons
 
 ## [2025-06-02T02:22:15.460757] - Payment System Phase 1 Complete
+
+## [2025-06-05T23:07:44.738394] - Phase 4: Eighth Complex Section Complete
+
+### Added
+- **New modular component**: `templates/modalityCtr/sections/examination/clinical-exam.html` (358 lines)
+  - Contains 4 clinical examination forms: antRightForm, postRightForm, antLeftForm, postLeftForm
+  - Anterior and posterior examination forms for both eyes
+  - Form fields for anterior chamber, cornea, iris, lens examinations
+  - Form fields for vitreous, retina, macula, papil examinations
+  - Preserved all form IDs, validation, and template variable bindings
+
+### Changed
+- **Updated main template**: `templates/modalityCtr/md.html`
+  - Replaced 355-line clinical exam section with single include statement
+  - Further reduced main template size following modular architecture
+  - Maintained proper include order and structure
+
+### Fixed
+- **Template variable preservation**: All py4web template variables maintained
+  - `antRight`, `antLeft`, `postRight`, `postLeft` dictionaries properly referenced
+  - Form submission endpoints and hidden field values preserved
+  - User membership access control (`[[ if userMembership == 'Doctor']]`) maintained
+
+## [2025-06-05T23:01:34.745836] - Phase 4: Seventh Complex Section Complete

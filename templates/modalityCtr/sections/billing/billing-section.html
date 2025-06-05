@@ -1,0 +1,108 @@
+<!-- Billing Section - Contains bill_tbl table + action buttons + summary -->
+[[ if userMembership == 'Doctor':]]
+<div id="bill-container" class="container-fluid mb-3"> <!-- container billing -->
+    <div class="row mb-3 big-title bg-success">
+        <div class="col">
+            <h2><a role="button" data-bs-toggle="collapse" href=".bill">Billing</a></h2>
+        </div>
+    </div>
+    <div class="row mb-3 bill">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-right">Billing Codes</h3>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <button type="button" id="btnNewBillCode" class="btn btn-dark btn-sm me-2"
+                                        data-bs-toggle="modal" data-bs-target="#billCodeModal">
+                                        Add Code<i class="mx-2 fas fa-plus"></i>
+                                    </button>
+                                    <button type="button" id="btnApplyCombo" class="btn btn-success btn-sm"
+                                        data-bs-toggle="modal" data-bs-target="#billComboModal">
+                                        Apply Combo<i class="mx-2 fas fa-layer-group"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row bg-neutral">
+                                <div class="col">
+                                    <table id="bill_tbl" data-side-pagination="server" data-pagination="true"
+                                        data-page-size="10" data-search="false" data-query-params="queryParams"
+                                        data-response-handler="responseHandler_billing"
+                                        data-detail-formatter="detailFormatter_billing" data-detail-view="true"
+                                        data-detail-view-icon="true">
+                                        <thead>
+                                            <tr>
+                                                <th data-field="date_performed" data-sortable="true">Date</th>
+                                                <th data-field="nomen_code" data-sortable="true">Main Code</th>
+                                                <th data-field="nomen_desc_fr" data-sortable="false">Main Description
+                                                </th>
+                                                <th data-field="fee" data-sortable="false">Main Fee</th>
+                                                <th data-field="secondary_nomen_code"
+                                                    data-formatter="secondaryCodeFormatter" data-sortable="true">
+                                                    Secondary Code</th>
+                                                <th data-field="secondary_nomen_desc_fr"
+                                                    data-formatter="secondaryDescFormatter" data-sortable="false">
+                                                    Secondary Description</th>
+                                                <th data-field="secondary_fee" data-formatter="secondaryFeeFormatter"
+                                                    data-sortable="false">Secondary Fee</th>
+                                                <th data-field="total_fee" data-formatter="totalFeeFormatter"
+                                                    data-sortable="false">Total Fee</th>
+                                                <th data-field="laterality" data-sortable="true">Laterality</th>
+                                                <th data-field="quantity" data-sortable="false">Qty</th>
+                                                <th data-field="status" data-sortable="true">Status</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_billing"
+                                                    data-events="operateEvents_billing">Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-left">Billing Summary</h3>
+                        </div>
+                    </div>
+                    <div class="row bg-left">
+                        <div class="col">
+                            <div id="billingSummary" class="p-3">
+                                <!-- Summary content will be dynamically generated by updateBillingSummary() -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5>Total Codes: <span id="totalCodes" class="badge bg-primary">0</span></h5>
+                                        <h5>Total Amount: <span id="totalAmount" class="badge bg-success">€0.00</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-primary btn-sm"
+                                                onclick="exportBilling('pdf')">
+                                                Export PDF<i class="ms-1 fas fa-file-pdf"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success btn-sm"
+                                                onclick="exportBilling('excel')">
+                                                Export Excel<i class="ms-1 fas fa-file-excel"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+[[ pass ]]

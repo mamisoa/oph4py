@@ -1,0 +1,62 @@
+<!-- Modal billComboModal -->
+<div class="modal fade" id="billComboModal" tabindex="-1" role="dialog" aria-labelledby="billComboModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="billComboModalLabel">Apply Billing Combo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h6>Available Combos</h6>
+                            <div class="table-responsive" style="max-height: 400px;">
+                                <table class="table table-sm table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Specialty</th>
+                                            <th>Codes</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="comboTableBody">
+                                        <!-- Combos will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3" id="comboPreview" style="display: none;">
+                        <div class="col">
+                            <h6>Combo Preview</h6>
+                            <div class="alert alert-info">
+                                <h6 id="comboPreviewTitle"></h6>
+                                <p id="comboPreviewDesc"></p>
+                                <div id="comboPreviewCodes"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <form id="comboApplyForm">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="comboNote" class="form-label">Application Note</label>
+                                <textarea class="form-control" id="comboNote" name="note" rows="2"
+                                    placeholder="Optional note for this combo application"></textarea>
+                            </div>
+                        </div>
+                        <input type="hidden" name="id_combo" id="selectedComboId">
+                        <input type="hidden" name="id_auth_user" value="[[=patientId]]">
+                        <input type="hidden" name="id_worklist" value="[[=wlId]]">
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="applyComboBtn" disabled>Apply Combo</button>
+            </div>
+        </div>
+    </div>
+</div>

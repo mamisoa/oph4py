@@ -1,0 +1,43 @@
+<!-- Certificates and Papers Section -->
+<!-- Contains: Certificate action buttons + cert_tbl bootstrap table -->
+<!-- Dependencies: cert_tbl bootstrap table variable, certificate modals, queryParams, responseHandler_cert -->
+
+<div class="row bg-right">
+    <div class="col">
+        <h4 class="title-right">List of printed certificates</h4>
+        <button type="button" id="btnNewcertificate" class="btn btn-info btn-sm" data-bs-toggle="modal"
+            data-bs-target="#certificateModal" data-cert-flag="presence">Presence certificate<i
+                class="mx-2 fas fa-plus"></i></button>
+        <button type="button" id="btnNewcertsickleave" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+            data-bs-target="#sickModal">Sick leave certificate<i class="mx-2 fas fa-plus"></i></button>
+        <button type="button" id="btnNewfreecertificate" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+            data-bs-target="#certificateModal" data-cert-flag="free">Free
+            certificate<i class="mx-2 fas fa-plus"></i></button>
+        <button type="button" id="btnNewdoccertificate" class="btn btn-secondary btn-sm" data-bs-toggle="modal"
+            data-bs-target="#certificateModal" data-cert-flag="doc">MD certificate<i
+                class="mx-2 fas fa-plus"></i></button>
+        <button type="button" id="btnNeworthocertificate" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+            data-bs-target="#certificateModal" data-cert-flag="ortho">Ortho
+            certificate<i class="mx-2 fas fa-plus"></i></button>
+        <button type="button" id="btnNewpreopcertificate" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+            data-bs-target="#certificateModal" data-cert-flag="preop">Preop
+            certificate<i class="mx-2 fas fa-plus"></i></button>
+        <button type="button" id="btnNewpostopcertificate" class="btn btn-secondary btn-sm" data-bs-toggle="modal"
+            data-bs-target="#certificateModal" data-cert-flag="postop">Postop
+            certificate<i class="mx-2 fas fa-plus"></i></button>
+        <button type="button" id="btnNewemailInfo" class="btn btn-info btn-sm" data-bs-toggle="modal"
+            data-bs-target="#emailInfoModal" data-cert-flag="email">Email info<i class="mx-2 fas fa-plus"></i></button>
+        <table id="cert_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5" data-search="false"
+            data-query-params="queryParams" data-response-handler="responseHandler_cert"
+            data-detail-formatter="detailFormatter_cert" data-detail-view="true" data-detail-view-icon="true">
+            <thead>
+                <tr>
+                    <th data-field="datestamp" data-sortable="true">Datestamp</th>
+                    <th data-field="category" data-sortable="true">Category</th>
+                    <th data-field="operate" data-formatter="operateFormatter_cert" data-events="operateEvents_cert">
+                        Action</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

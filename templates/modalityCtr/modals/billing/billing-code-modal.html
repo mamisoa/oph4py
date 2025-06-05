@@ -1,0 +1,185 @@
+<!-- Modal billCodeModal -->
+<div class="modal fade" id="billCodeModal" tabindex="-1" role="dialog" aria-labelledby="billCodeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="billCodeModalLabel">Add Billing Code</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <!-- Search Section -->
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h6>Search Nomenclature Codes</h6>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="nomenSearchInput"
+                                    placeholder="Enter at least 3 characters to search by code or description...">
+                                <button class="btn btn-outline-secondary" type="button" id="nomenSearchBtn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">Start typing to see autocomplete suggestions</div>
+                        </div>
+                    </div>
+                    <!-- Search Results -->
+                    <div class="row mb-3" id="nomenSearchResults" style="display: none;">
+                        <div class="col">
+                            <div class="table-responsive" style="max-height: 300px;">
+                                <table class="table table-sm table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Description</th>
+                                            <th>Fee (€)</th>
+                                            <th>Fee Code</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="nomenSearchTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Form Section -->
+                    <form id="billCodeForm" enctype="multipart/form-data" method="POST">
+                        <!-- Main Nomenclature Code Section -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h6 class="text-primary">
+                                    <i class="fas fa-star"></i> Main Nomenclature Code *
+                                </h6>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="billNomenCode" class="form-label">Code</label>
+                                <input type="number" class="form-control" id="billNomenCode" name="nomen_code" required
+                                    readonly>
+                                <div class="form-text">Primary procedure code</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="billNomenDesc" class="form-label">Description</label>
+                                <input type="text" class="form-control" id="billNomenDesc" name="nomen_desc_fr"
+                                    readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="billFee" class="form-label">Fee (€)</label>
+                                <input type="number" class="form-control" id="billFee" name="fee" step="0.01">
+                            </div>
+                        </div>
+
+                        <!-- Secondary Nomenclature Code Section -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h6 class="text-secondary">
+                                    <i class="fas fa-plus-circle"></i> Secondary Nomenclature Code (Optional)
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-2"
+                                        id="clearSecondaryBtn" style="display: none;">
+                                        <i class="fas fa-times"></i> Clear
+                                    </button>
+                                </h6>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="billSecondaryNomenCode" class="form-label">Code</label>
+                                <input type="number" class="form-control" id="billSecondaryNomenCode"
+                                    name="secondary_nomen_code" readonly>
+                                <div class="form-text">Additional procedure code</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="billSecondaryNomenDesc" class="form-label">Description</label>
+                                <input type="text" class="form-control" id="billSecondaryNomenDesc"
+                                    name="secondary_nomen_desc_fr" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="billSecondaryFee" class="form-label">Fee (€)</label>
+                                <input type="number" class="form-control" id="billSecondaryFee" name="secondary_fee"
+                                    step="0.01">
+                            </div>
+                        </div>
+
+                        <!-- Total Fee Display -->
+                        <div class="row mb-3">
+                            <div class="col-md-6 offset-md-6">
+                                <div class="card border-success">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Main Fee:</span>
+                                            <span id="mainFeeDisplay">€0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Secondary Fee:</span>
+                                            <span id="secondaryFeeDisplay">€0.00</span>
+                                        </div>
+                                        <hr class="my-1">
+                                        <div class="d-flex justify-content-between fw-bold">
+                                            <span>Total Fee:</span>
+                                            <span id="totalFeeDisplay">€0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Common fields -->
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Laterality</label>
+                                <div class="btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="laterality" value="both" id="lat_both"
+                                        checked>
+                                    <label class="btn btn-outline-primary" for="lat_both">Both</label>
+                                    <input type="radio" class="btn-check" name="laterality" value="right"
+                                        id="lat_right">
+                                    <label class="btn btn-outline-primary" for="lat_right">Right</label>
+                                    <input type="radio" class="btn-check" name="laterality" value="left" id="lat_left">
+                                    <label class="btn btn-outline-primary" for="lat_left">Left</label>
+                                    <input type="radio" class="btn-check" name="laterality" value="none" id="lat_none">
+                                    <label class="btn btn-outline-primary" for="lat_none">None</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="billQuantity" class="form-label">Quantity</label>
+                                <input type="number" class="form-control" id="billQuantity" name="quantity" value="1"
+                                    min="1">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="billDatePerformed" class="form-label">Date Performed</label>
+                                <input type="date" class="form-control" id="billDatePerformed" name="date_performed"
+                                    readonly>
+                                <div class="form-text">Automatically set from worklist date</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="billStatus" class="form-label">Status</label>
+                                <select class="form-select" id="billStatus" name="status">
+                                    <option value="draft" selected>Draft</option>
+                                    <option value="validated">Validated</option>
+                                    <option value="billed">Billed</option>
+                                    <option value="paid">Paid</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="billNote" class="form-label">Note</label>
+                                <textarea class="form-control" id="billNote" name="note" rows="2"
+                                    placeholder="Optional note..."></textarea>
+                            </div>
+                        </div>
+                        <!-- Hidden fields -->
+                        <input type="hidden" name="id" id="billCodeId">
+                        <input type="hidden" name="id_auth_user" id="billUserId" value="[[=patientId]]">
+                        <input type="hidden" name="id_worklist" id="billWorklistId" value="[[=wlId]]">
+                        <input type="hidden" name="methodBillCodeSubmit" id="methodBillCodeSubmit" value="POST">
+                        <!-- Hidden secondary fields for feecode -->
+                        <input type="hidden" name="secondary_feecode" id="billSecondaryFeeCode">
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="billCodeForm" class="btn btn-primary" id="billCodeSubmit">Add Code</button>
+            </div>
+        </div>
+    </div>
+</div>

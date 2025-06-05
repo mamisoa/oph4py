@@ -1,0 +1,142 @@
+<div id="cc-container" class="container-fluid mb-3"> <!-- container conclusions -->
+    <div class="row mb-3">
+        <div class="col">
+            <div class="row">
+                <div class="col big-title bg-primary">
+                    <h2><a role="button" data-bs-toggle="collapse" href=".dx">Conclusions</a></h2>
+                </div>
+            </div>
+            <div class="row bg-right py-3 dx">
+                <div class="col">
+                    <form id="ccxForm" enctype="multipart/form-data" method="POST">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-group">
+                                        <button id="ccxFormSubmit" type="submit" class="btn btn-secondary">Update<i
+                                                class="mx-2 fas fa-plus"></i></button>
+                                        <textarea class="form-control" aria-label="With textarea"
+                                            name="description">[[ = XML(ccx['description']) ]]</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input id="lateralityccx" type="text" class="visually-hidden" name="laterality" value="na" />
+                        <input id="idccx" type="text" class="visually-hidden" name="id"
+                            value="[[ = XML(ccx['id']) ]]" />
+                        <input id="idPatientccx" type="text" class="visually-hidden" name="id_auth_user"
+                            value="[[=patientId]]" />
+                        <input id="idWlccx" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3 dx">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-right">Right eye</h3>
+                        </div>
+                    </div>
+                    <div class="row bg-right py-3">
+                        <div class="col">
+                            <form id="ccxRForm" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <button id="ccxRFormSubmit" type="submit"
+                                                    class="btn btn-secondary">Update<i
+                                                        class="mx-2 fas fa-plus"></i></button>
+                                                <textarea class="form-control" aria-label="With textarea"
+                                                    name="description">[[ = XML(ccxR['description']) ]]</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="lateralityccxR" type="text" class="visually-hidden" name="laterality"
+                                    value="right" />
+                                <input id="idccxR" type="text" class="visually-hidden" name="id"
+                                    value="[[ = XML(ccxR['id']) ]]" />
+                                <input id="idPatientccxR" type="text" class="visually-hidden" name="id_auth_user"
+                                    value="[[=patientId]]" />
+                                <input id="idWlccxR" type="text" class="visually-hidden" name="id_worklist"
+                                    value="[[=wlId]]" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="title-left">Left eye</h3>
+                        </div>
+                    </div>
+                    <div class="row bg-left py-3">
+                        <div class="col">
+                            <form id="ccxLForm" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <button id="ccxLFormSubmit" type="submit"
+                                                    class="btn btn-secondary">Update<i
+                                                        class="mx-2 fas fa-plus"></i></button>
+                                                <textarea class="form-control" aria-label="With textarea"
+                                                    name="description">[[ = XML(ccxL['description']) ]]</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="lateralityccxL" type="text" class="visually-hidden" name="laterality"
+                                    value="left" />
+                                <input id="idccxL" type="text" class="visually-hidden" name="id"
+                                    value="[[ = XML(ccxR['id']) ]]" />
+                                <input id="idPatientccxL" type="text" class="visually-hidden" name="id_auth_user"
+                                    value="[[=patientId]]" />
+                                <input id="idWlccxL" type="text" class="visually-hidden" name="id_worklist"
+                                    value="[[=wlId]]" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3 dx">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3 class="title-right">Coding</h3>
+                </div>
+            </div>
+            <div class="row bg-right">
+                <div class="col ">
+                    <button type="button" id="btnNewCoding" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#mHxModal" data-category-flag="medical" data-mhx-flag="code">Add code<i
+                            class="mx-2 fas fa-plus"></i></button>
+                    <table id="coding_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
+                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_msHx"
+                        data-detail-formatter="detailFormatter_msHx" data-detail-view="true"
+                        data-detail-view-icon="true">
+                        <thead>
+                            <tr>
+                                <th data-field="onset" data-sortable="true">Onset</th>
+                                <th data-field="ended" data-sortable="false">Ended</th>
+                                <th data-field="title" data-sortable="true">Title</th>
+                                <th data-field="icd10" data-sortable="true">ICD-10</th>
+                                <th data-field="site" data-sortable="true">Side</th>
+                                <th data-field="note" data-sortable="true">Note</th>
+                                <th data-field="operate" data-formatter="operateFormatter_msHx"
+                                    data-events="operateEvents_msHx">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div> <!-- end coding col-->
+            </div>
+        </div>
+    </div>
+</div>

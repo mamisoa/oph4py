@@ -1,0 +1,51 @@
+<!-- Optical Prescriptions Section -->
+<!-- Contains: Glasses prescriptions (GxRx_tbl) + Contact lens prescriptions (cxrx_tbl) + action buttons -->
+<!-- Dependencies: GxRx_tbl and cxrx_tbl bootstrap table variables, optical modals, queryParams, responseHandlers -->
+
+<div class="row">
+    <div class="col">
+        <h3 class="title-left">Glass Rx</h3>
+    </div>
+</div>
+<div class="row bg-left">
+    <div class="col">
+        <button type="button" id="btnGxRx" class="btn btn-warning btn-sm mx-2 float-end">Prescribe glasses<i
+                class="mx-2 fas fa-glasses"></i></button>
+        <table id="GxRx_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5" data-search="false"
+            data-query-params="queryParams" data-response-handler="responseHandler_gx"
+            data-detail-formatter="detailFormatter_gx" data-detail-view="true" data-detail-view-icon="true">
+            <thead>
+                <tr>
+                    <th data-field="datestamp" data-sortable="true">Datestamp</th>
+                    <th data-field="glass_type" data-sortable="false">Glass type</th>
+                    <th data-field="formulaR" data-sortable="true">Rx right</th>
+                    <th data-field="formulaL" data-sortable="true">Rx left</th>
+                    <th data-field="operate" data-formatter="operateFormatter_gx" data-events="operateEvents_gx">Action
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<div class="row bg-left">
+    <div class="col">
+        <h4 class="title-left">List of printed lenses prescriptions</h4>
+        <button type="button" id="btnCxRx" class="btn btn-warning btn-sm mx-2 float-end">Prescribe
+            contacts<i class="mx-2 fas fa-bullseye"></i></button>
+        <table id="cxrx_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5" data-search="false"
+            data-query-params="queryParams" data-response-handler="responseHandler_cxrx"
+            data-detail-formatter="detailFormatter_cxrx" data-detail-view="true" data-detail-view-icon="true">
+            <thead>
+                <tr>
+                    <th data-field="datestamp" data-sortable="true">Datestamp</th>
+                    <th data-field="lensnameR" data-sortable="false">Right lens</th>
+                    <th data-field="formulaR" data-sortable="true">Rx right</th>
+                    <th data-field="lensnameR" data-sortable="false">Left lens</th>
+                    <th data-field="formulaL" data-sortable="true">Rx left</th>
+                    <th data-field="operate" data-formatter="operateFormatter_cxrx" data-events="operateEvents_cxrx">
+                        Action</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
