@@ -403,35 +403,7 @@
         </div> <!-- end row rx-->
     </div> <!-- end row oHx -->
 </div> <!-- end Hx container-->
-<div class="container-fluid mb-3" id="cHxDiv">
-    <div class="row">
-        <div class="col text-center">
-            <h2 class="big-title bg-info"><a role="button" data-bs-toggle="collapse" href=".cHx">Present History</a>
-            </h2>
-        </div>
-    </div>
-    <div class="row cHx py-2 bg-right">
-        <div class="col">
-            <form id="cHxForm" enctype="multipart/form-data" method="POST">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col" id="descriptionCol">
-                            <div class="input-group">
-                                <button id="cHxFormSubmit" type="submit" class="btn btn-secondary">Update<i
-                                        class="mx-2 fas fa-plus"></i></button>
-                                <textarea class="form-control" aria-label="With textarea"
-                                    name="description">[[ = XML(currentHx['description']) ]]</textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <input id="idcHx" type="text" class="visually-hidden" name="id" value="[[ = XML(currentHx['id']) ]]" />
-                <input id="idPatientcHx" type="text" class="visually-hidden" name="id_auth_user" />
-                <input id="idWlcHx" type="text" class="visually-hidden" name="id_worklist" />
-            </form>
-        </div>
-    </div>
-</div> <!-- end cHx container-->
+[[ include 'modalityCtr/sections/examination/present-history.html' ]]
 <div id="cx-container" class="container-fluid mb-3"> <!-- container clinical exam -->
     <div class="row mb-3 big-title bg-primary">
         <div>
@@ -782,107 +754,7 @@
         <div class="col">
             <div class="row">
                 <div class="col">
-                    <div class="row">
-                        <div class="col">
-                            <h3 class="big-title bg-secondary"><a role="button" data-bs-toggle="collapse"
-                                    href=".misc">Miscellaneous</a></h3>
-                        </div>
-                    </div>
-                    <div class="row misc">
-                        <div class="col">
-                            <div class="row">
-                                <div class="col">
-                                    <h4 class="big-title">Motility</h4>
-                                </div>
-                            </div>
-                            <div class="row py-2 bg-right">
-                                <div class="col">
-                                    <form id="motForm" enctype="multipart/form-data" method="POST">
-                                        <div class="container-fluid">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="input-group">
-                                                        <button id="motFormSubmit" type="submit"
-                                                            class="btn btn-secondary">Update<i
-                                                                class="mx-2 fas fa-plus"></i></button>
-                                                        <textarea class="form-control" aria-label="With textarea"
-                                                            name="description">[[ = XML(motility['description']) ]]</textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <input id="idmot" type="text" class="visually-hidden" name="id"
-                                            value="[[ = XML(motility['id']) ]]" />
-                                        <input id="idPatientmot" type="text" class="visually-hidden"
-                                            name="id_auth_user" />
-                                        <input id="idWlmot" type="text" class="visually-hidden" name="id_worklist" />
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="row">
-                                <div class="col">
-                                    <h4 class="big-title">Phoria</h4>
-                                </div>
-                            </div>
-                            <div class="row py-2 bg-left">
-                                <div class="col">
-                                    <form id="phoForm" enctype="multipart/form-data" method="POST">
-                                        <div class="container-fluid">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="input-group">
-                                                        <button id="phoFormSubmit" type="submit"
-                                                            class="btn btn-secondary">Update<i
-                                                                class="mx-2 fas fa-plus"></i></button>
-                                                        <textarea class="form-control" aria-label="With textarea"
-                                                            name="description">[[ = XML(phoria['description']) ]]</textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <input id="idpho" type="text" class="visually-hidden" name="id"
-                                            value="[[ = XML(phoria['id']) ]]" />
-                                        <input id="idPatientpho" type="text" class="visually-hidden"
-                                            name="id_auth_user" />
-                                        <input id="idWlpho" type="text" class="visually-hidden" name="id_worklist" />
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="row">
-                                <div class="col">
-                                    <h4 class="big-title">Pupils</h4>
-                                </div>
-                            </div>
-                            <div class="row py-2 bg-right">
-                                <div class="col">
-                                    <form id="pupForm" enctype="multipart/form-data" method="POST">
-                                        <div class="container-fluid">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="input-group">
-                                                        <button id="pupFormSubmit" type="submit"
-                                                            class="btn btn-secondary">Update<i
-                                                                class="mx-2 fas fa-plus"></i></button>
-                                                        <textarea class="form-control" aria-label="With textarea"
-                                                            name="description">[[ = XML(pupils['description']) ]]</textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <input id="idpup" type="text" class="visually-hidden" name="id"
-                                            value="[[ = XML(pupils['id']) ]]" />
-                                        <input id="idPatientpup" type="text" class="visually-hidden"
-                                            name="id_auth_user" />
-                                        <input id="idWlpup" type="text" class="visually-hidden" name="id_worklist" />
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    [[ include 'modalityCtr/sections/examination/miscellaneous.html' ]]
                 </div>
             </div>
         </div>
@@ -1193,38 +1065,7 @@
         </div>
     </div>
 
-    <div class="row mb-3 actions">
-        <div class="col">
-            <div class="row">
-                <div class="col">
-                    <h3 class="big-title bg-info">Follow-up</h3>
-                </div>
-            </div>
-            <div class="row bg-right py-3">
-                <div class="col">
-                    <form id="folForm" enctype="multipart/form-data" method="POST">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col">
-                                    <div class="input-group">
-                                        <button id="folFormSubmit" type="submit" class="btn btn-secondary">Update<i
-                                                class="mx-2 fas fa-plus"></i></button>
-                                        <textarea class="form-control" aria-label="With textarea"
-                                            name="description">[[ = XML(followup['description']) ]]</textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <input id="idfol" type="text" class="visually-hidden" name="id"
-                            value="[[ = XML(followup['id']) ]]" />
-                        <input id="idPatientfol" type="text" class="visually-hidden" name="id_auth_user"
-                            value="[[=patientId]]" />
-                        <input id="idWlfol" type="text" class="visually-hidden" name="id_worklist" value="[[=wlId]]" />
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    [[ include 'modalityCtr/sections/actions/follow-up.html' ]]
 
 </div>
 
