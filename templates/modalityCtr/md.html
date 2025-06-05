@@ -2,87 +2,8 @@
 
 [[ block page_head]]
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
-<style>
-    /* overide when topnavbar is not fixed-top */
-    section#main {
-        margin-top: 0px;
-    }
-
-    /* Enhanced responsive styling for billing table */
-    @media (max-width: 768px) {
-
-        /* Hide secondary columns on small screens */
-        #bill_tbl th[data-field="secondary_nomen_code"],
-        #bill_tbl td[data-field="secondary_nomen_code"],
-        #bill_tbl th[data-field="secondary_nomen_desc_fr"],
-        #bill_tbl td[data-field="secondary_nomen_desc_fr"],
-        #bill_tbl th[data-field="secondary_fee"],
-        #bill_tbl td[data-field="secondary_fee"] {
-            display: none;
-        }
-
-        /* Adjust main description column */
-        #bill_tbl th[data-field="nomen_desc_fr"],
-        #bill_tbl td[data-field="nomen_desc_fr"] {
-            max-width: 120px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        /* Make billing summary more compact */
-        #billingSummary .card {
-            font-size: 0.9rem;
-        }
-
-        #billingSummary .btn-group {
-            flex-direction: column;
-        }
-
-        #billingSummary .btn-group .btn {
-            margin-bottom: 0.25rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-
-        /* Further hide columns on extra small screens */
-        #bill_tbl th[data-field="feecode"],
-        #bill_tbl td[data-field="feecode"],
-        #bill_tbl th[data-field="quantity"],
-        #bill_tbl td[data-field="quantity"],
-        #bill_tbl th[data-field="laterality"],
-        #bill_tbl td[data-field="laterality"] {
-            display: none;
-        }
-    }
-
-    /* Enhanced badge styling for secondary codes */
-    .badge.secondary-code {
-        background-color: #198754 !important;
-        color: white;
-    }
-
-    .badge.secondary-fee {
-        background-color: #20c997 !important;
-        color: white;
-    }
-
-    /* Improved detail view styling */
-    .bootstrap-table .fixed-table-container .fixed-table-body .card-view .card-view-title {
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-
-    /* Enhanced total fee display */
-    .total-fee-badge {
-        font-size: 1.1em;
-        font-weight: bold;
-        background: linear-gradient(45deg, #28a745, #20c997);
-        border: none;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-</style>
+[[ include 'modalityCtr/styles/md-responsive.html' ]]
+[[ include 'modalityCtr/styles/md-billing.html' ]]
 [[ end ]]
 
 [[ block left_nav ]]
@@ -2863,25 +2784,10 @@
 
 [[ block js_scripts]]
 
-<script type="text/javascript">
-    // Global variables
-    const HOSTURL = "[[ = hosturl ]]";
-    var usermdObj = [[ =XML(mdParams)]];
-    var userObj = [[ =XML(userDict)]];
-    // for timer
-    var timer_id = [];
-    // modality controllers
-    var modalityDict = [[ = XML(modalityDict)]];
-    let modalityController = '[[ = XML(modalityController) ]]';
-    // prescription objects
-    var rxObj = [], tonoObj = [];
-    var prescRxObj = {};
-    var axe64 = 'data:image/png;base64,' + '[[=XML(axe64)]]';
-    var logo64 = 'data:image/jpg;base64,' + '[[=XML(logo64)]]';
-    // submit btn to disable when done
-    const btnArr = ['#btnTaskDone', '#btnNewMx', '#btnNewAx', '#btnNewmHx', '#btnNewsHx', 'input', 'textarea', '#btnNewCoding', '#btnNewMxWl', '#btnMxRx', '#btnGxRx'];
+<!-- 1. Global Variables - MUST load first -->
+[[ include 'modalityCtr/js-sections/md-globals.html' ]]
 
-</script>
+<!-- 2. External Libraries - Load after globals -->
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/jquery.serialize-object.min.js"></script>
@@ -2899,185 +2805,16 @@
 <!-- tinymce -->
 <script src="js/tinymce/tinymce.min.js"></script>
 
-<script type="text/javascript">
+<!-- 3. API Endpoints - Depends on globals -->
+[[ include 'modalityCtr/js-sections/md-apis.html' ]]
 
-    // 
-    const API_MD = HOSTURL + "/" + APP_NAME + "/api/md?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq=" + wlId;
+<!-- 4. Bootstrap Tables - Depends on APIs and external libraries -->
+[[ include 'modalityCtr/js-sections/md-tables.html' ]]
 
-    // TODO: to implement
-    // add keywd parameter & keyoptions eg 'frequency&keyoptions.contains=...' for autocomplete
-    const API_AUTODICT = HOSTURL + "/" + APP_NAME + "/api/auto_dict?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&keywd.eq=";
+<!-- 5. Initialization - Depends on all previous sections -->
+[[ include 'modalityCtr/js-sections/md-init.html' ]]
 
-    // API_MEDICATION lists medications for autocomplete
-    const API_MEDICATIONS = HOSTURL + "/" + APP_NAME + "/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-    // API_AGENT lists agents for autocomplete
-    const API_AGENTS = HOSTURL + "/" + APP_NAME + "/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-    // API_DISEASES lists diseases for autocomplete
-    const API_DISEASES = HOSTURL + "/" + APP_NAME + "/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-
-    // API_LENSES lists lenses for autocomplete
-    const API_LENSES = HOSTURL + "/" + APP_NAME + "/api/cl?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-
-    // API_CLEANING lists cleaning solutions for autocomplete
-    const API_CLEANING = HOSTURL + "/" + APP_NAME + "/api/cleaning_solution?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
-
-    // table listing ALL medications taken by user
-    const API_MXUSER = HOSTURL + "/" + APP_NAME + "/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-    var $mx_tbl = $('#mx_tbl').bootstrapTable({
-        url: API_MXUSER
-    });
-
-    // table listing ALL allergy to agents by user
-    const API_AXUSER = HOSTURL + "/" + APP_NAME + "/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-    var $ax_tbl = $('#ax_tbl').bootstrapTable({
-        url: API_AXUSER
-    });
-
-    // table listing medical history by user
-    const API_MHXUSER = HOSTURL + "/" + APP_NAME + "/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-    var $mHx_tbl = $('#mHx_tbl').bootstrapTable({
-        url: API_MHXUSER
-    });
-
-    // table listing surgical history by user
-    const API_SHXUSER = HOSTURL + "/" + APP_NAME + "/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-    var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
-        url: API_SHXUSER
-    });
-
-    // table listing ocular history by user
-    const API_OHXUSER = HOSTURL + "/" + APP_NAME + "/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-    var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
-        url: API_OHXUSER
-    });
-
-    // table listing procedure worklist for user
-    const API_PROCEDURE_LIST = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&id_auth_user.id.eq=' + patientId + '&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
-    $table_wl = $('#table-wl').bootstrapTable({
-        url: API_PROCEDURE_LIST,
-        formatSearch: function () {
-            return 'Procedure, modality';
-        }
-    });
-
-    // table listing refraction right eye by user
-    const API_RXRIGHT = HOSTURL + "/" + APP_NAME + "/api/rx?id_auth_user.eq=" + patientId + "&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-    var $rxRight = $('#rxRight_tbl').bootstrapTable({
-        url: API_RXRIGHT
-    });
-
-    // table listing refraction left eye by user
-    const API_RXLEFT = HOSTURL + "/" + APP_NAME + "/api/rx?id_auth_user.eq=" + patientId + "&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-    var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
-        url: API_RXLEFT
-    });
-
-    // table listing code encoded for worklist to user
-    const API_CODING = HOSTURL + "/" + APP_NAME + "/api/phistory?id_worklist.eq=" + wlId + "&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-    var $coding = $('#coding_tbl').bootstrapTable({
-        url: API_CODING
-    });
-
-    // table listing medication encoded for current worklist 
-    const API_MXWLUSER = HOSTURL + "/" + APP_NAME + "/api/mx?id_worklist.eq=" + wlId + "&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
-    var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
-        url: API_MXWLUSER
-    });
-
-    const API_TONORIGHT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user=" + patientId;
-    var $tonoRight_tbl = $('#tonoRight_tbl').bootstrapTable({
-        url: API_TONORIGHT
-    });
-
-    const API_TONOLEFT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user=" + patientId;
-    var $tonoLeft_tbl = $('#tonoLeft_tbl').bootstrapTable({
-        url: API_TONOLEFT
-    });
-
-    // table listing refraction right eye by user
-    const API_GXRX = HOSTURL + "/" + APP_NAME + "/api/glasses_rx_list?id_auth_user.eq=" + patientId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-    var $gxrx_tbl = $('#GxRx_tbl').bootstrapTable({
-        url: API_GXRX
-    });
-
-    // table listing medication encoded for current worklist 
-    const API_MXRX = HOSTURL + "/" + APP_NAME + "/api/medical_rx_list?id_worklist.eq=" + wlId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-    var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
-        url: API_MXRX
-    });
-
-    // table listing refraction right eye by user
-    const API_CXRX = HOSTURL + "/" + APP_NAME + "/api/contacts_rx_list?id_auth_user.eq=" + patientId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-    var $cxrx_tbl = $('#cxrx_tbl').bootstrapTable({
-        url: API_CXRX
-    });
-
-    // table listing refraction right eye by user
-    const API_CERT = HOSTURL + "/" + APP_NAME + "/api/certificates?id_auth_user.eq=" + patientId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-    var $cert_tbl = $('#cert_tbl').bootstrapTable({
-        url: API_CERT
-    });
-
-    // table listing km right eye by user
-    const API_KMRIGHT = HOSTURL + "/" + APP_NAME + "/api/km?id_auth_user.eq=" + patientId + "&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-    var $kmRight = $('#kmRight_tbl').bootstrapTable({
-        url: API_KMRIGHT
-    });
-
-    // table listing km right eye by user
-    const API_KMLEFT = HOSTURL + "/" + APP_NAME + "/api/km?id_auth_user.eq=" + patientId + "&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-    var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
-        url: API_KMLEFT
-    });
-
-    // table listing billing codes for current worklist
-    const API_BILLING = HOSTURL + "/" + APP_NAME + "/api/billing_codes/by_worklist/" + wlId;
-    var $bill_tbl = $('#bill_tbl').bootstrapTable({
-        url: API_BILLING
-    });
-
-    // tables list
-    const tablesArr = ['#mx_tbl', '#ax_tbl', '#mHx_tbl', '#sHx_tbl', '#oHx_tbl', '#table-wl',
-        '#rxRight_tbl', '#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl',
-        '#kmRight_tbl', '#kmLeft_tbl',
-        '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl', '#cert_tbl', '#bill_tbl'];
-
-    // init tinymce
-    tinymce.init({
-        selector: '#certificateContent',
-        height: '500px',
-        plugins: 'save code link table',
-        license_key: 'gpl'
-    });
-
-    tinymce.init({
-        selector: '#emailContent',
-        height: '500px',
-        plugins: 'save code link table',
-        license_key: 'gpl'
-    });
-
-    $(document).ready(function () {
-        if (document.referrer.includes('modalityCtr/autorx')) {
-            refreshTables(['#rxRight_tbl', '#rxLeft_tbl']);
-            console.log('rx tables should be refreshed');
-        };
-        if (document.referrer.includes('modalityCtr/tono')) {
-            refreshTables(['#tonoRight_tbl', '#tonoLeft_tbl']);
-            console.log('tono tables should be refreshed');
-        };
-    });
-
-    $('#rxRight_tbl').on('post-body.bs.table', function () {
-    });
-
-    if (window.performance.getEntriesByType('navigation')[0].type == 'back_forward' || window.performance.getEntriesByType('navigation')[0].type == 'prerender') {
-        console.log('tables:', tablesArr);
-        refreshTables(tablesArr);
-        console.log(' all tables should be refreshed');
-    };
-
-</script>
+<!-- 6. Medical Examination Logic - Load after all bootstrap tables -->
 <script src="js/md.js"></script>
 <script src="js/prescription.js"></script>
 <script src="js/glasses.js"></script>

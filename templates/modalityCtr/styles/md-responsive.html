@@ -1,0 +1,55 @@
+<style>
+    /* overide when topnavbar is not fixed-top */
+    section#main {
+        margin-top: 0px;
+    }
+
+    /* Enhanced responsive styling for billing table */
+    @media (max-width: 768px) {
+
+        /* Hide secondary columns on small screens */
+        #bill_tbl th[data-field="secondary_nomen_code"],
+        #bill_tbl td[data-field="secondary_nomen_code"],
+        #bill_tbl th[data-field="secondary_nomen_desc_fr"],
+        #bill_tbl td[data-field="secondary_nomen_desc_fr"],
+        #bill_tbl th[data-field="secondary_fee"],
+        #bill_tbl td[data-field="secondary_fee"] {
+            display: none;
+        }
+
+        /* Adjust main description column */
+        #bill_tbl th[data-field="nomen_desc_fr"],
+        #bill_tbl td[data-field="nomen_desc_fr"] {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Make billing summary more compact */
+        #billingSummary .card {
+            font-size: 0.9rem;
+        }
+
+        #billingSummary .btn-group {
+            flex-direction: column;
+        }
+
+        #billingSummary .btn-group .btn {
+            margin-bottom: 0.25rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+
+        /* Further hide columns on extra small screens */
+        #bill_tbl th[data-field="feecode"],
+        #bill_tbl td[data-field="feecode"],
+        #bill_tbl th[data-field="quantity"],
+        #bill_tbl td[data-field="quantity"],
+        #bill_tbl th[data-field="laterality"],
+        #bill_tbl td[data-field="laterality"] {
+            display: none;
+        }
+    }
+</style>

@@ -1,0 +1,76 @@
+<script type="text/javascript">
+    // API Endpoints
+    const API_MD = HOSTURL + "/" + APP_NAME + "/api/md?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&id_worklist.eq=" + wlId;
+
+    // TODO: to implement
+    // add keywd parameter & keyoptions eg 'frequency&keyoptions.contains=...' for autocomplete
+    const API_AUTODICT = HOSTURL + "/" + APP_NAME + "/api/auto_dict?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&keywd.eq=";
+
+    // API_MEDICATION lists medications for autocomplete
+    const API_MEDICATIONS = HOSTURL + "/" + APP_NAME + "/api/medic_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+    // API_AGENT lists agents for autocomplete
+    const API_AGENTS = HOSTURL + "/" + APP_NAME + "/api/agent?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+    // API_DISEASES lists diseases for autocomplete
+    const API_DISEASES = HOSTURL + "/" + APP_NAME + "/api/disease_ref?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+
+    // API_LENSES lists lenses for autocomplete
+    const API_LENSES = HOSTURL + "/" + APP_NAME + "/api/cl?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+
+    // API_CLEANING lists cleaning solutions for autocomplete
+    const API_CLEANING = HOSTURL + "/" + APP_NAME + "/api/cleaning_solution?@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+
+    // table listing ALL medications taken by user
+    const API_MXUSER = HOSTURL + "/" + APP_NAME + "/api/mx?@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+
+    // table listing ALL allergy to agents by user
+    const API_AXUSER = HOSTURL + "/" + APP_NAME + "/api/allergy?@lookup=agentRef!:id_agent[id,name,code,description],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+
+    // table listing medical history by user
+    const API_MHXUSER = HOSTURL + "/" + APP_NAME + "/api/phistory?category.eq=medical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+
+    // table listing surgical history by user
+    const API_SHXUSER = HOSTURL + "/" + APP_NAME + "/api/phistory?category.eq=surgical&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+
+    // table listing ocular history by user
+    const API_OHXUSER = HOSTURL + "/" + APP_NAME + "/api/phistory?site.in=right,left,both&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+
+    // table listing procedure worklist for user
+    const API_PROCEDURE_LIST = HOSTURL + '[[=URL('api','worklist')]]' + '?@count=true&id_auth_user.id.eq=' + patientId + '&@lookup=id_auth_user!:id_auth_user[id,first_name,last_name],provider!:provider[id,first_name,last_name],procedure!:procedure,modality!:modality_dest[id,modality_name],receiving_facility!:receiving_facility[id,facility_name],sending_facility!:sending_facility[id,facility_name],senior!:senior[id,first_name,last_name],created_by!:created_by[id,first_name,last_name],modified_by!:modified_by[id,first_name,last_name]&@order=~id';
+
+    // table listing refraction right eye by user
+    const API_RXRIGHT = HOSTURL + "/" + APP_NAME + "/api/rx?id_auth_user.eq=" + patientId + "&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+
+    // table listing refraction left eye by user
+    const API_RXLEFT = HOSTURL + "/" + APP_NAME + "/api/rx?id_auth_user.eq=" + patientId + "&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+
+    // table listing code encoded for worklist to user
+    const API_CODING = HOSTURL + "/" + APP_NAME + "/api/phistory?id_worklist.eq=" + wlId + "&@lookup=disease!:id_disease_ref[id,title,category,icd10],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+
+    // table listing medication encoded for current worklist 
+    const API_MXWLUSER = HOSTURL + "/" + APP_NAME + "/api/mx?id_worklist.eq=" + wlId + "&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
+
+    const API_TONORIGHT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user=" + patientId;
+
+    const API_TONOLEFT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user=" + patientId;
+
+    // table listing refraction right eye by user
+    const API_GXRX = HOSTURL + "/" + APP_NAME + "/api/glasses_rx_list?id_auth_user.eq=" + patientId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+
+    // table listing medication encoded for current worklist 
+    const API_MXRX = HOSTURL + "/" + APP_NAME + "/api/medical_rx_list?id_worklist.eq=" + wlId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+
+    // table listing refraction right eye by user
+    const API_CXRX = HOSTURL + "/" + APP_NAME + "/api/contacts_rx_list?id_auth_user.eq=" + patientId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+
+    // table listing refraction right eye by user
+    const API_CERT = HOSTURL + "/" + APP_NAME + "/api/certificates?id_auth_user.eq=" + patientId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+
+    // table listing km right eye by user
+    const API_KMRIGHT = HOSTURL + "/" + APP_NAME + "/api/km?id_auth_user.eq=" + patientId + "&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+
+    // table listing km right eye by user
+    const API_KMLEFT = HOSTURL + "/" + APP_NAME + "/api/km?id_auth_user.eq=" + patientId + "&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+
+    // table listing billing codes for current worklist
+    const API_BILLING = HOSTURL + "/" + APP_NAME + "/api/billing_codes/by_worklist/" + wlId;
+</script>

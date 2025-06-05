@@ -1,0 +1,38 @@
+<script type="text/javascript">
+    // TinyMCE initialization
+    tinymce.init({
+        selector: '#certificateContent',
+        height: '500px',
+        plugins: 'save code link table',
+        license_key: 'gpl'
+    });
+
+    tinymce.init({
+        selector: '#emailContent',
+        height: '500px',
+        plugins: 'save code link table',
+        license_key: 'gpl'
+    });
+
+    // Document ready handlers
+    $(document).ready(function () {
+        if (document.referrer.includes('modalityCtr/autorx')) {
+            refreshTables(['#rxRight_tbl', '#rxLeft_tbl']);
+            console.log('rx tables should be refreshed');
+        };
+        if (document.referrer.includes('modalityCtr/tono')) {
+            refreshTables(['#tonoRight_tbl', '#tonoLeft_tbl']);
+            console.log('tono tables should be refreshed');
+        };
+    });
+
+    $('#rxRight_tbl').on('post-body.bs.table', function () {
+    });
+
+    // Navigation-based refresh logic
+    if (window.performance.getEntriesByType('navigation')[0].type == 'back_forward' || window.performance.getEntriesByType('navigation')[0].type == 'prerender') {
+        console.log('tables:', tablesArr);
+        refreshTables(tablesArr);
+        console.log(' all tables should be refreshed');
+    };
+</script>

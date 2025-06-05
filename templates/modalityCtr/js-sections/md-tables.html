@@ -1,0 +1,87 @@
+<script type="text/javascript">
+    // Bootstrap Table Instances
+    var $mx_tbl = $('#mx_tbl').bootstrapTable({
+        url: API_MXUSER
+    });
+
+    var $ax_tbl = $('#ax_tbl').bootstrapTable({
+        url: API_AXUSER
+    });
+
+    var $mHx_tbl = $('#mHx_tbl').bootstrapTable({
+        url: API_MHXUSER
+    });
+
+    var $sHx_tbl = $('#sHx_tbl').bootstrapTable({
+        url: API_SHXUSER
+    });
+
+    var $oHx_tbl = $('#oHx_tbl').bootstrapTable({
+        url: API_OHXUSER
+    });
+
+    $table_wl = $('#table-wl').bootstrapTable({
+        url: API_PROCEDURE_LIST,
+        formatSearch: function () {
+            return 'Procedure, modality';
+        }
+    });
+
+    var $rxRight = $('#rxRight_tbl').bootstrapTable({
+        url: API_RXRIGHT
+    });
+
+    var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
+        url: API_RXLEFT
+    });
+
+    var $coding = $('#coding_tbl').bootstrapTable({
+        url: API_CODING
+    });
+
+    var $mxWl_tbl = $('#mxWl_tbl').bootstrapTable({
+        url: API_MXWLUSER
+    });
+
+    var $tonoRight_tbl = $('#tonoRight_tbl').bootstrapTable({
+        url: API_TONORIGHT
+    });
+
+    var $tonoLeft_tbl = $('#tonoLeft_tbl').bootstrapTable({
+        url: API_TONOLEFT
+    });
+
+    var $gxrx_tbl = $('#GxRx_tbl').bootstrapTable({
+        url: API_GXRX
+    });
+
+    var $mxrx_tbl = $('#mxrx_tbl').bootstrapTable({
+        url: API_MXRX
+    });
+
+    var $cxrx_tbl = $('#cxrx_tbl').bootstrapTable({
+        url: API_CXRX
+    });
+
+    var $cert_tbl = $('#cert_tbl').bootstrapTable({
+        url: API_CERT
+    });
+
+    var $kmRight = $('#kmRight_tbl').bootstrapTable({
+        url: API_KMRIGHT
+    });
+
+    var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
+        url: API_KMLEFT
+    });
+
+    var $bill_tbl = $('#bill_tbl').bootstrapTable({
+        url: API_BILLING
+    });
+
+    // tables list
+    const tablesArr = ['#mx_tbl', '#ax_tbl', '#mHx_tbl', '#sHx_tbl', '#oHx_tbl', '#table-wl',
+        '#rxRight_tbl', '#rxLeft_tbl', '#coding_tbl', '#mxWl_tbl',
+        '#kmRight_tbl', '#kmLeft_tbl',
+        '#tonoRight_tbl', '#tonoLeft_tbl', '#GxRx_tbl', '#mxrx_tbl', '#cxrx_tbl', '#cert_tbl', '#bill_tbl'];
+</script>
