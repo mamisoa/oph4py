@@ -2275,42 +2275,64 @@ function updateBillingSummary(billingData) {
 
 	// Enhanced summary with secondary code information
 	const summaryHtml = `
-		<div class="row">
+		<div class="row g-4">
 			<div class="col-md-6">
-				<h5>Total Codes: <span class="badge bg-primary">${totalCodes}</span></h5>
-				<h5>With Secondary: <span class="badge bg-info">${codesWithSecondary}</span></h5>
-				<h5>Total Amount: <span class="badge bg-success">€${totalAmount.toFixed(
-					2
-				)}</span></h5>
-			</div>
-			<div class="col-md-6">
-				<div class="card border-light">
-					<div class="card-body py-2 px-3">
-						<h6 class="card-title mb-2">Fee Breakdown</h6>
-						<div class="d-flex justify-content-between small">
-							<span>Main Fees:</span>
-							<span class="fw-bold">€${totalMainFees.toFixed(2)}</span>
-						</div>
-						<div class="d-flex justify-content-between small">
-							<span>Secondary Fees:</span>
-							<span class="fw-bold">€${totalSecondaryFees.toFixed(2)}</span>
-						</div>
-						<hr class="my-1">
-						<div class="d-flex justify-content-between">
-							<span class="fw-bold">Total:</span>
-							<span class="fw-bold text-success">€${totalAmount.toFixed(2)}</span>
+				<div class="card border-0 bg-light">
+					<div class="card-body p-4">
+						<div class="d-flex flex-column gap-3">
+							<div class="d-flex justify-content-between align-items-center">
+								<h5 class="mb-0 fw-bold">Total Codes:</h5>
+								<span class="badge bg-primary fs-6 px-3 py-2">${totalCodes}</span>
+							</div>
+							<div class="d-flex justify-content-between align-items-center">
+								<h5 class="mb-0 fw-bold">With Secondary:</h5>
+								<span class="badge bg-info fs-6 px-3 py-2">${codesWithSecondary}</span>
+							</div>
+							<div class="d-flex justify-content-between align-items-center">
+								<h5 class="mb-0 fw-bold">Total Amount:</h5>
+								<span class="badge bg-success fs-5 px-3 py-2">€${totalAmount.toFixed(2)}</span>
+							</div>
+							<div class="text-center mt-3">
+								<a href="${window.location.origin}/${APP_NAME}/payment/${
+		typeof wlId !== "undefined" ? wlId : window.wlId || ""
+	}" class="btn btn-warning btn-lg shadow-sm">
+									<i class="fas fa-dollar-sign me-2"></i>Go to Payment
+								</a>
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="btn-group mt-2" role="group">
-					<button type="button" class="btn btn-outline-primary btn-sm"
-						onclick="exportBilling('pdf')">
-						Export PDF<i class="ms-1 fas fa-file-pdf"></i>
-					</button>
-					<button type="button" class="btn btn-outline-success btn-sm"
-						onclick="exportBilling('excel')">
-						Export Excel<i class="ms-1 fas fa-file-excel"></i>
-					</button>
+			</div>
+			<div class="col-md-6">
+				<div class="card border-0 bg-light">
+					<div class="card-body p-4">
+						<h6 class="card-title mb-3 fw-bold text-primary">Fee Breakdown</h6>
+						<div class="d-flex justify-content-between mb-2">
+							<span class="fw-medium">Main Fees:</span>
+							<span class="fw-bold">€${totalMainFees.toFixed(2)}</span>
+						</div>
+						<div class="d-flex justify-content-between mb-2">
+							<span class="fw-medium">Secondary Fees:</span>
+							<span class="fw-bold">€${totalSecondaryFees.toFixed(2)}</span>
+						</div>
+						<hr class="my-3">
+						<div class="d-flex justify-content-between mb-3">
+							<span class="fw-bold fs-6">Total:</span>
+							<span class="fw-bold text-success fs-6">€${totalAmount.toFixed(2)}</span>
+						</div>
+						<div class="d-grid gap-2">
+							<div class="btn-group" role="group">
+								<button type="button" class="btn btn-outline-primary"
+									onclick="exportBilling('pdf')">
+									<i class="fas fa-file-pdf me-1"></i>Export PDF
+								</button>
+								<button type="button" class="btn btn-outline-success"
+									onclick="exportBilling('excel')">
+									<i class="fas fa-file-excel me-1"></i>Export Excel
+								</button>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

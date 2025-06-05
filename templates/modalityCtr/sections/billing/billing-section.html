@@ -85,15 +85,20 @@
                                         </h5>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-outline-primary btn-sm"
-                                                onclick="exportBilling('pdf')">
-                                                Export PDF<i class="ms-1 fas fa-file-pdf"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-outline-success btn-sm"
-                                                onclick="exportBilling('excel')">
-                                                Export Excel<i class="ms-1 fas fa-file-excel"></i>
-                                            </button>
+                                        <div class="btn-group-vertical" role="group" aria-label="Billing actions">
+                                            <div class="btn-group mb-2" role="group">
+                                                <button type="button" class="btn btn-outline-primary btn-sm"
+                                                    onclick="exportBilling('pdf')">
+                                                    Export PDF<i class="ms-1 fas fa-file-pdf"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-outline-success btn-sm"
+                                                    onclick="exportBilling('excel')">
+                                                    Export Excel<i class="ms-1 fas fa-file-excel"></i>
+                                                </button>
+                                            </div>
+                                            <a href="[[=URL('payment', wlId)]]" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-dollar-sign me-1"></i>Go to Payment
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
