@@ -7,9 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-05T20:39:06.128657] - Fixed Worklist Item Deletion Bug
+
+### Fixed
+
+- **Critical Bug**: Fixed worklist item deletion failing for multiple modality procedures
+  - Root cause: `uniqueId` was undefined in combo task, causing deletion to fail silently
+  - Items were still being submitted despite being "deleted" from UI
+  - Enhanced `delWlItemModal()` with proper validation and error handling
+  - Added comprehensive debugging functions for troubleshooting
+
+### Added
+
+- Debug function `debugWorklistState()` for development testing
+- Helper function `addItemWithTracking()` for consistent item management
+- Better logging and validation in deletion process
+- Console debugging tools available via `testWorklistFunctions()`
+
+### Changed
+
+- Improved error messages and user feedback during item deletion
+- Standardized uniqueId handling across combo and single modality workflows
+- Enhanced logging in state manager for better troubleshooting
+
+### Technical Details
+
+- Fixed undefined `o.uniqueId` in combo task by using returned value from `addItem()`
+- Added validation for undefined/null uniqueIds before deletion attempts
+- Improved state consistency between UI table and state manager
+
 ## [2025-06-02T04:27:17.036512] - Daily Transactions View Implementation
 
 ### Added
+
 - **Daily Transactions Dashboard**: Comprehensive view for monitoring all transactions from the current day
   - **New Controller Action**: `daily_transactions()` in `controllers.py` to display current day's transaction data
   - **Daily Transaction Template**: Created `templates/billing/daily_transactions.html` with modern Bootstrap UI
@@ -20,6 +50,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - **Print Support**: Print-optimized layout for transaction reports
 
 ### Features
+
 - **Real-time Information**:
   - Patient names and email addresses
   - Procedure details and laterality
@@ -42,6 +73,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - Empty state handling when no transactions exist
 
 ### Technical Implementation
+
 - **Database Query**: Efficient JOIN query combining `worklist_transactions`, `auth_user`, `worklist`, and `procedure` tables
 - **Date Filtering**: Precise day-range filtering using `datetime.combine()` for start/end of day
 - **Performance**: Query limited to current day with proper indexing on `transaction_date`
@@ -49,11 +81,13 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 - **Navigation**: Added to main navbar for easy access from any page
 
 ### Files Modified
+
 - `controllers.py`: Added `daily_transactions()` controller action
 - `templates/billing/daily_transactions.html`: New comprehensive dashboard template
 - `templates/partials/nav.html`: Added navigation link with Font Awesome receipt icon
 
 ### User Interface
+
 - **Visual Design**: Modern card-based layout with color-coded payment method indicators
 - **Data Presentation**: Table with responsive columns and clear typography
 - **Action Buttons**: Print, Export CSV, and Refresh functionality
@@ -63,6 +97,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ## [2025-06-02T04:18:13.522889] - Fixed Payment Balance Display Issue
 
 ### Fixed
+
 - **Transaction History Balance Display**: Fixed incorrect balance display in transaction history
   - **Root Cause**: Each transaction stored its own balance at creation time, but these became obsolete when new transactions were added
   - **Problem**: Historical transactions showed outdated balances that didn't reflect the true cumulative payment state
@@ -70,18 +105,21 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - **User Impact**: Transaction history now shows accurate running balance after each payment
 
 ### Technical Implementation
+
 - **Dynamic Balance Calculation**: Modified `displayTransactionHistory()` function to calculate cumulative balances
 - **Chronological Processing**: Sorts transactions by date to build accurate payment timeline
 - **Real-time Updates**: Balances now reflect current state including cancelled transactions
 - **Enhanced Display**: Added balance information to each transaction row for clarity
 
 ### User Experience Improvements
+
 - **Before**: Each transaction showed its stored balance which became incorrect over time
 - **After**: Each transaction shows the actual cumulative balance at that point in time
 - **Visual Enhancement**: Balance information displayed as small text under payment status
 - **Accuracy**: Balance calculations now properly exclude cancelled transactions
 
 ### Example Balance Progression
+
 - Total Due: €82.00
 - After €60.00 payment: Balance €22.00 ✅ (was showing outdated values)
 - After €10.00 payment: Balance €12.00 ✅ (now correctly calculated)
@@ -91,6 +129,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ## [2025-06-02T04:10:16.939067] - Fixed Transaction Cancellation UI Display Issue
 
 ### Fixed
+
 - **Transaction Cancellation Buttons**: Fixed issue where all transactions showed "Cancelled" in the Actions column
   - **Root Cause**: Mismatch between database values ("T"/"F" strings) and py4web boolean expectations (True/False)
   - **Solution**: Updated all `is_active` comparisons and assignments to use boolean values (True/False) instead of strings
@@ -98,12 +137,14 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - **Files Modified**: `api/endpoints/payment.py`, `models.py`, `static/js/payment-manager.js`
 
 ### Technical Details
+
 - **Before**: API used string comparisons `is_active == "T"` and assignments `is_active="F"`
 - **After**: API uses boolean comparisons `is_active == True` and assignments `is_active=False`
 - **Database Compatibility**: py4web automatically handles conversion between database CHAR(1) and Python boolean types
 - **Validation**: Updated field validation to accept boolean values `IS_IN_SET([True, False])`
 
 ### User Experience Improvements
+
 - **Visual Clarity**: Active transactions now show cancel button (🚫) instead of "Cancelled" text
 - **Proper Status**: Only actually cancelled transactions show "Cancelled" with strikethrough styling
 - **Action Availability**: Cancel buttons only appear for transactions that can actually be cancelled
@@ -111,6 +152,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ## [2025-06-02T03:39:22.240227] - Payment Transaction Cancellation Feature
 
 ### Added
+
 - **Transaction Cancellation Functionality**: Added ability to cancel payment transactions without deleting them
   - **New API Endpoint**: `PATCH /api/worklist/{worklist_id}/transactions/{transaction_id}/cancel`
   - **Cancel Button**: Added cancel action button in transaction history for active transactions
@@ -120,25 +162,29 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - **User Tracking**: Records who cancelled the transaction and when in audit notes
 
 ### Enhanced
-- **Transaction History Display**: 
+
+- **Transaction History Display**:
   - Now shows both active and cancelled transactions
   - Cancelled transactions have strikethrough styling and "CANCELLED" badge
   - Added "Actions" column with cancel button for active transactions
   - Visual distinction between active and cancelled transactions
 
 ### Technical Implementation
+
 - **Database**: Uses `is_active='F'` to mark cancelled transactions without deletion
 - **API Security**: Validates transaction ownership and prevents double-cancellation
 - **Frontend**: Enhanced PaymentManager with cancellation workflow and modal handling
 - **Audit Logging**: Comprehensive audit trail with user ID, timestamp, and optional reason
 
 ### User Experience
+
 - **Non-Destructive**: Transactions are cancelled, not deleted, maintaining complete audit trail
 - **Confirmation Flow**: Clear confirmation dialog with transaction details before cancellation
 - **Real-time Updates**: Payment balance and status automatically update after cancellation
 - **Visual Feedback**: Clear indication of cancelled vs active transactions in history
 
 ### API Details
+
 - **Endpoint**: `PATCH /api/worklist/{worklist_id}/transactions/{transaction_id}/cancel`
 - **Request Body**: `{"reason": "Optional cancellation reason"}`
 - **Response**: Updated balance, payment status, and transaction details
@@ -147,6 +193,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ## [2025-06-02T03:34:56.792744] - Payment Processing User Tracking Fix
 
 ### Fixed
+
 - **Transaction User Tracking**: Fixed payment transaction processing to properly capture the logged-in user
   - **Issue**: Transaction history was showing "Unknown" for "Processed By" field
   - **Root Cause**: `created_by` field was not being set when creating transaction records
@@ -155,6 +202,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - **Location**: `api/endpoints/payment.py` - `process_payment()` function
 
 ### Technical Details
+
 - **Before**: `created_by` field was NULL, causing "Unknown" to appear in transaction history
 - **After**: `created_by` field properly set to current authenticated user ID
 - **Database**: `worklist_transactions.created_by` now properly references `auth_user.id`
@@ -163,6 +211,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ## [2025-06-02T02:27:14.677917] - Payment System Integration
 
 ### Added
+
 - **Payment Action Button**: Added '$' (dollar sign) button to worklist interface for completed procedures
   - Button appears only when `status_flag` is 'done'
   - Located in the action column alongside existing buttons (edit, delete, summary, etc.)
@@ -176,11 +225,13 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 - **Consistent UI**: Payment button uses Font Awesome dollar-sign icon with tooltip "Process payment"
 
 ### Changed
+
 - **Action Button Layout**: Modified `operateFormatter_wl` function across all modality JavaScript files
 - **Event Handlers**: Added `'click .payment'` event handlers to all worklist implementations
 - **User Experience**: Streamlined workflow from procedure completion to payment processing
 
 ### Technical Details
+
 - **URL Pattern**: Payment links follow format `HOSTURL/APP_NAME/payment/{worklist_id}`
 - **Button Visibility**: Payment button only visible for procedures with `status_flag == 'done'`
 - **Icon**: Uses `fas fa-dollar-sign` Font Awesome icon
@@ -190,9 +241,11 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ## [2025-06-02T02:22:15.460757] - Payment System Phase 1 Complete
 
 ## [2025-06-02T02:13:42.977559
+
 ]
 
 ### Added
+
 - **Payment System Implementation**: Complete worklist payment and transaction system
   - Added `worklist_transactions` table to track payment transactions
   - Created payment API endpoints (`/api/worklist/{id}/payment_summary`, `/api/feecodes`, `/api/worklist/{id}/billing_breakdown`, `/api/worklist/{id}/payment`, `/api/worklist/{id}/transactions`)
@@ -248,7 +301,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 ### Technical Specifications
 
-- **Database Design**: 
+- **Database Design**:
   - `worklist_transactions` table with card/cash/invoice amount tracking
   - Foreign key relationships to worklist, auth_user, and billing systems
   - Payment status tracking (partial, complete, overpaid)
