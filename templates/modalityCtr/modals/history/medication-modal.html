@@ -1,0 +1,118 @@
+<!-- Modal mxModal -->
+<div class="modal fade" id="mxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New medication</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="mxFormModal" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <span class="form-label">Side:</span>
+                                            <div class="input-group">
+                                                <div class="btn-group mxdelivery_modal">
+                                                    <input type="radio" id="mxdelivery_right_modal" name="delivery"
+                                                        class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_right_modal">Right</label>
+                                                    <input type="radio" id="mxdelivery_left_modal" name="delivery"
+                                                        class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_left_modal">Left</label>
+                                                    <input type="radio" id="mxdelivery_both_modal" name="delivery"
+                                                        class="btn-check" value="both" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_both_modal">Both</label>
+                                                    <input type="radio" id="mxdelivery_po_modal" name="delivery"
+                                                        class="btn-check" value="PO" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_po_modal">PO</label>
+                                                    <input type="radio" id="mxdelivery_local_modal" name="delivery"
+                                                        class="btn-check" value="local" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_local_modal">Local</label>
+                                                    <input type="radio" id="mxdelivery_iv_modal" name="delivery"
+                                                        class="btn-check" value="IV" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_iv_modal">IV</label>
+                                                    <input type="radio" id="mxdelivery_im_modal" name="delivery"
+                                                        class="btn-check" value="IM" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mxdelivery_im_modal">IM</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="mxOnset" class="form-label">Onset:</label>
+                                            <input id="mxOnset" type="date" step="1" class="form-control" name="onset">
+                                            <div id="mxOnsetHelp" class="form-text">Adjust onset</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="mxEnded" class="form-label">End:</label>
+                                            <input id="mxEnded" type="date" step="1" class="form-control" name="ended">
+                                            <div id="mxEndedHelp" class="form-text">Adjust end date</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="medicModal" class="form-label">Medication:</label>
+                                            <input id="medicModal" type="text" class="form-control" name="medication"
+                                                autocomplete="off">
+                                            <div id="medicModalHelp" class="form-text">Enter medication name</div>
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="intake_modal" class="form-label">Intake:</label>
+                                            <div class="input-group mb-3">
+                                                <button class="btn btn-outline-secondary counter_down_intake"
+                                                    type="button">-</button>
+                                                <input type="text"
+                                                    class="form-control form-control-sm intake_modal counter_intake text-center"
+                                                    value="1.00" aria-label="Intake" name="unit_per_intake"
+                                                    id="intake_modal">
+                                                <button class="btn btn-outline-secondary counter_up_intake"
+                                                    type="button">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="freqModal" class="form-label">Frequency:</label>
+                                            <input id="freqModal" type="text" class="form-control" name="frequency"
+                                                autocomplete="off">
+                                            <div id="freqModalHelp" class="form-text">Enter frequency</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="mxNoteModal" class="form-label">Note:</label>
+                                            <input id="mxNoteModal" type="text" class="form-control" name="note"
+                                                autocomplete="off">
+                                            <div id="mxNoteModalHelp" class="form-text">Note</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idMx" type="text" class="visually-hidden" name="id_medic_ref" />
+                                <input id="idMxWl" type="text" class="visually-hidden" name="id_worklist"
+                                    value="[[=wlId]]" />
+                                <input id="idMxPrescribed" type="text" class="visually-hidden" name="prescribed" />
+                                <input id="idMxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idPatientRx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodMxModalSubmit" type="text" class="visually-hidden"
+                                    name="methodMxModalSubmit" value="POST" />
+                                <input id="btnMxModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="mxModalSubmit" for="btnMxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>

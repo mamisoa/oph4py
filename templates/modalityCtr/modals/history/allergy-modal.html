@@ -1,0 +1,72 @@
+<!-- Modal axModal -->
+<div class="modal fade" id="axModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New allergy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="axFormModal" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <span class="form-label">Type:</span>
+                                            <div class="input-group">
+                                                <div class="btn-group typ_modal">
+                                                    <input type="radio" id="typ_allergy_modal" name="typ"
+                                                        class="btn-check" value="allergy" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="typ_allergy_modal">Allergy</label>
+                                                    <input type="radio" id="typ_atopy_modal" name="typ"
+                                                        class="btn-check" value="atopy" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="typ_atopy_modal">Atopy</label>
+                                                    <input type="radio" id="typ_intolerance_modal" name="typ"
+                                                        class="btn-check" value="intolerance" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="typ_intolerance_modal">Intolerance</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="axOnset" class="form-label">Onset:</label>
+                                            <input id="axOnset" type="date" step="1" class="form-control" name="onset">
+                                            <div id="axOnsetHelp" class="form-text">Adjust onset</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="axEnded" class="form-label">End:</label>
+                                            <input id="axEnded" type="date" step="1" class="form-control" name="ended">
+                                            <div id="axEndedHelp" class="form-text">Adjust end date</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="agentModal" class="form-label">Agent:</label>
+                                            <input id="agentModal" type="text" class="form-control" name="agent"
+                                                autocomplete="off">
+                                            <div id="medicModalHelp" class="form-text">Enter agent name</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idAgent" type="text" class="visually-hidden" name="id_agent" />
+                                <input id="idAxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idPatientAx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodAxModalSubmit" type="text" class="visually-hidden"
+                                    name="methodAxModalSubmit" value="POST" />
+                                <input id="btnAxModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="axModalSubmit" for="btnAxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,40 @@
+<!-- Modal emailInfoModal -->
+<div class="modal fade" id="emailInfoModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Email module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form id="emailInfoFormModal">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <textarea name="content" id="emailContent">
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <input id="emailCat" type="text" class="visually-hidden" name="category" />
+                        <input id="emailDest" type="text" class="visually-hidden" name="destination" />
+                        <input id="emailTitle" type="text" class="visually-hidden" name="title" />
+                        <input id="emailOnset" type="text" class="visually-hidden" name="onset" />
+                        <input id="emailEnded" type="text" class="visually-hidden" name="ended" />
+                        <input id="idemailWl" type="text" class="visually-hidden" name="id_worklist" />
+                        <input id="idPatientemail" type="text" class="visually-hidden" name="id_auth_user" />
+                        <input id="methodcemailodalSubmit" type="text" class="visually-hidden"
+                            name="methodemailModalSubmit" value="POST" />
+                        <input id="btnemailModalSubmit" type="submit" class="visually-hidden" />
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="emailModalSubmit" for="btnemailModalSubmit" class="btn btn-primary" tabindex="0">Send</label>
+            </div>
+        </div>
+    </div>
+</div>

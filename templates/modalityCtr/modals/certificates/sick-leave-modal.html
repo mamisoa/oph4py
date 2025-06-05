@@ -1,0 +1,51 @@
+<!-- Modal sickModal -->
+<div class="modal fade" id="sickModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Sick leave module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form id="sickFormModal">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="onsetsick" class="form-label">Onset:</label>
+                                    <input id="onsetsick" type="date" step="1" class="form-control" name="onset">
+                                    <div id="onsetsickHelp" class="form-text">Sick leave onset</div>
+                                </div>
+                                <div class="col">
+                                    <label for="endedsick" class="form-label">End:</label>
+                                    <input id="endedsick" type="date" step="1" class="form-control" name="ended">
+                                    <div id="endedsickHelp" class="form-text">Sick leave end</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <span class="form-label">Exit allowance:</span>
+                                    <div class="input-group">
+                                        <div class="btn-group laterality">
+                                            <input type="radio" id="exit_yes" name="exit" class="btn-check" value="yes"
+                                                autocomplete="off" checked>
+                                            <label class="btn btn-outline-success" for="exit_yes">Yes</label>
+                                            <input type="radio" id="exit_no" name="exit" class="btn-check" value="no"
+                                                autocomplete="off">
+                                            <label class="btn btn-outline-danger" for="exit_no">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" data-bs-target="#certificateModal" data-bs-toggle="modal"
+                    data-bs-dismiss="modal" data-cert-flag="sick">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>

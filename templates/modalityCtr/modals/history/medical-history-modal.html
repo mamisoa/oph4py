@@ -1,0 +1,104 @@
+<!-- Modal mHxModal -->
+<div class="modal fade" id="mHxModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New medical history</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <form id="mHxFormModal" enctype="multipart/form-data" method="POST">
+                                <div class="container-fluid">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <span class="form-label">Category:</span>
+                                            <div class="input-group">
+                                                <div class="btn-group category_modal">
+                                                    <input type="radio" id="mHxcategory_medical_modal" name="category"
+                                                        class="btn-check" value="medical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxcategory_medical_modal">Medical</label>
+                                                    <input type="radio" id="mHxcategory_surgical_modal" name="category"
+                                                        class="btn-check" value="surgical" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxcategory_surgical_modal">Surgical</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <span class="form-label">Site:</span>
+                                            <div class="input-group">
+                                                <div class="btn-group site_modal">
+                                                    <input type="radio" id="mHxsite_right_modal" name="site"
+                                                        class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxsite_right_modal">Right</label>
+                                                    <input type="radio" id="mHxsite_left_modal" name="site"
+                                                        class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxsite_left_modal">Left</label>
+                                                    <input type="radio" id="mHxsite_both_modal" name="site"
+                                                        class="btn-check" value="both" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxsite_both_modal">Both</label>
+                                                    <input type="radio" id="mHxsite_local_modal" name="site"
+                                                        class="btn-check" value="local" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxsite_local_modal">Local</label>
+                                                    <input type="radio" id="mHxsite_systemic_modal" name="site"
+                                                        class="btn-check" value="systemic" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="mHxsite_systemic_modal">Systemic</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="mHxOnset" class="form-label">Onset:</label>
+                                            <input id="mHxOnset" type="date" step="1" class="form-control" name="onset">
+                                            <div id="mHxOnsetHelp" class="form-text">Adjust onset</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="mHxEnded" class="form-label">End:</label>
+                                            <input id="mHxEnded" type="date" step="1" class="form-control" name="ended">
+                                            <div id="mHxEndedHelp" class="form-text">Adjust end date</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="mHxtitleModal" class="form-label">Title:</label>
+                                            <input id="mHxtitleModal" type="text" class="form-control" name="title"
+                                                autocomplete="off">
+                                            <div id="mHxtitleModalHelp" class="form-text">Enter disease title</div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="mHxnoteModal" class="form-label">Note:</label>
+                                            <input id="mHxnoteModal" type="text" class="form-control" name="note"
+                                                autocomplete="off">
+                                            <div id="mHxnoteModalHelp" class="form-text">Note</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="idDiseaseRef" type="text" class="visually-hidden" name="id_disease_ref" />
+                                <input id="idmHxRow" type="text" class="visually-hidden" name="id" />
+                                <input id="idmHxWl" type="text" class="visually-hidden" name="id_worklist" />
+                                <input id="idPatientmHx" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="methodmHxModalSubmit" type="text" class="visually-hidden"
+                                    name="methodmHxModalSubmit" value="POST" />
+                                <input id="btnmHxModalSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="mHxModalSubmit" for="btnmHxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
