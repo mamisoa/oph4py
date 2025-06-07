@@ -445,16 +445,15 @@ class PaymentManager {
             `;
 		});
 
-		// Remove optimistic transactions before updating with real data
-		if (!append) {
-			const optimisticRows = tbody.querySelectorAll(".optimistic-transaction");
-			optimisticRows.forEach((row) => row.remove());
-		}
-
 		// Update table content - append or replace
 		if (append && tbody.innerHTML.trim() !== "") {
 			tbody.insertAdjacentHTML("beforeend", html);
 		} else {
+			// Remove optimistic transactions before replacing with real data
+			const optimisticRows = tbody.querySelectorAll(".optimistic-transaction");
+			optimisticRows.forEach((row) => row.remove());
+
+			// Set the new content
 			tbody.innerHTML = html;
 		}
 
@@ -548,14 +547,16 @@ class PaymentManager {
 	 * Refresh transaction history data
 	 */
 	async refreshTransactionHistory() {
-		this.showTransactionHistoryLoading();
 		try {
+			console.log("Refreshing transaction history...");
 			await this.loadTransactionHistory();
+			console.log("Transaction history refreshed successfully");
 		} catch (error) {
 			console.error("Error refreshing transaction history:", error);
 			this.showTransactionHistoryError(
 				"Failed to refresh transactions: " + error.message
 			);
+			throw error; // Re-throw so caller can handle it
 		}
 	}
 
@@ -830,11 +831,15 @@ class PaymentManager {
 				// Add optimistic transaction to UI immediately
 				this.addOptimisticTransaction(paymentData, result.data);
 
-				// Refresh data in parallel (no await - don't block UI)
-				Promise.allSettled([
-					this.loadPaymentSummary(),
-					this.refreshTransactionHistory(),
-				]).then(([summaryResult, historyResult]) => {
+				// Refresh data immediately with proper sequencing
+				try {
+					// First, refresh payment summary and transaction history in parallel
+					const [summaryResult, historyResult] = await Promise.allSettled([
+						this.loadPaymentSummary(),
+						this.refreshTransactionHistory(),
+					]);
+
+					// Log any errors but don't fail the process
 					if (summaryResult.status === "rejected") {
 						console.error(
 							"Failed to refresh payment summary:",
@@ -847,8 +852,21 @@ class PaymentManager {
 							historyResult.reason
 						);
 					}
+
+					// Update button state after both operations complete
 					this.updatePaymentButton();
-				});
+
+					console.log(
+						"Payment processing complete - transaction history updated"
+					);
+				} catch (refreshError) {
+					console.error("Error during post-payment refresh:", refreshError);
+					// Show error but don't fail since payment succeeded
+					this.showAlert(
+						"Payment successful but failed to refresh display. Please refresh the page.",
+						"warning"
+					);
+				}
 			} else {
 				throw new Error(result.message || "Failed to process payment");
 			}
@@ -886,20 +904,22 @@ class PaymentManager {
 			paymentData.amount_invoice;
 
 		const optimisticRow = `
-			<tr class="table-info optimistic-transaction">
+			<tr class="table-success optimistic-transaction">
 				<td>${now.toLocaleDateString()}</td>
 				<td>€${paymentData.amount_card.toFixed(2)}</td>
 				<td>€${paymentData.amount_cash.toFixed(2)}</td>
 				<td>€${paymentData.amount_invoice.toFixed(2)}</td>
 				<td class="fw-bold">€${totalAmount.toFixed(2)}</td>
 				<td>
-					<span class="badge bg-info">Processing...</span>
+					<span class="badge bg-success">
+						<i class="fas fa-spinner fa-spin me-1"></i>Updating...
+					</span>
 					<br><small class="text-muted">Balance: €${(
 						responseData.remaining_balance || 0
 					).toFixed(2)}</small>
 				</td>
-				<td><small class="text-muted">Processing...</small></td>
-				<td><small class="text-muted">Just processed</small></td>
+				<td><i class="fas fa-clock me-1"></i><small class="text-muted">Updating...</small></td>
+				<td><span class="badge bg-success">Just Processed</span></td>
 			</tr>
 		`;
 
