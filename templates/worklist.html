@@ -772,6 +772,10 @@
     const HOSTURL = "[[ = hosturl ]]";
     const LOCAL_BEID = "[[ = localbeid ]]";
 
+    // Set global variables for payment functionality
+    window.HOSTURL = HOSTURL;
+    window.APP_NAME = "[[ = app_name ]]";
+
     // set tables
     const TODAY_DATE = new Date().addHours(timeOffsetInHours).toJSON().slice(0, 10);
     const API_USER_LIST = HOSTURL + '[[=URL('api','auth_user')]]' + '?@lookup=gender:gender[id,sex]&@order=~id&@count=true'; // lists all users
