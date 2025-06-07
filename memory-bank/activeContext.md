@@ -137,7 +137,7 @@ Converting the daily transactions view to use bootstrap table with filtering cap
 
 ### Files Modified ✅
 
-1. **`templates/billing/daily_transactions.html`** ✅ 
+1. **`templates/billing/daily_transactions.html`** ✅
    - Bootstrap table conversion complete with export functionality
    - Bootstrap-table CSS/JS dependencies + export extension added
    - Variable conflicts resolved with window namespace
@@ -145,13 +145,19 @@ Converting the daily transactions view to use bootstrap table with filtering cap
 
 2. **`controllers.py`** ✅ - Daily transactions controller updated with seniorOptions
 
-3. **`static/js/daily_transactions.js`** ✅ 
+3. **`static/js/daily_transactions.js`** ✅
    - Complete JavaScript implementation with enhanced features
-   - Senior filtering re-enabled and working
-   - Enhanced lookups for complete data retrieval
+   - Senior filtering re-enabled using custom API endpoint
+   - Modified parameter format for custom API compatibility
    - Raw value storage for accurate summary calculations
    - Smart export functionality with dynamic filenames
    - Improved filter display with senior/date status
+
+4. **`controllers.py`** ✅ - Added custom API endpoint `api_daily_transactions_filtered()`
+   - Server-side senior filtering using proper JOIN queries
+   - Enhanced parameter handling (`senior_id`, `date_start`, `date_end`)
+   - Complete patient information retrieval
+   - Bootstrap table compatible response format
 
 ### API Endpoints Ready ✅
 
@@ -205,18 +211,31 @@ The daily transactions bootstrap table implementation is now complete and produc
 
 **Test URL**: `http://localhost:8000/oph4py/daily_transactions`
 
-**Status**: ✅ **PRODUCTION READY** - Core functionality working, senior filtering temporarily disabled
+**Status**: ✅ **PRODUCTION READY** - All functionality working, performance optimization needed
 
-### Recent Fix Applied
+### Senior Filtering Re-enabled ✅
 
-**Issue**: `AttributeError: 'DAL' object has no attribute 'senior'` when using nested lookups
-**Solution**: Simplified lookup syntax to basic working version - `@lookup=id_auth_user[first_name,last_name,email]`  
-**Working Features**: 
-- ✅ Date filtering (`transaction_date.ge` and `transaction_date.lt`)
-- ✅ Patient information display with full names and email
-- ✅ Payment amount calculations for summary cards 
-- ✅ Bootstrap table pagination, sorting, search, and export
-- ✅ Loading states, error handling, and performance optimizations
+**Previous Issue**: `AttributeError: 'DAL' object has no attribute 'senior'` when using nested lookups
+**Solution Implemented**: **Option 1: Server-side Filtering** - Created custom API endpoint
+**Implementation Details**:
 
-**Temporarily Disabled**: Senior doctor filtering (will need separate implementation approach)
-**Impact**: Core daily transactions functionality works perfectly, senior filtering can be added later
+- ✅ **New Custom API Endpoint**: `/oph4py/api/daily_transactions_filtered`
+- ✅ **Server-side Senior Filtering**: Proper JOIN queries with worklist table
+- ✅ **Enhanced Parameter Format**: `senior_id`, `date_start`, `date_end`, `search`, `order`, `order_dir`
+- ✅ **Complete Functionality**: Date filtering, senior filtering, search, pagination, sorting
+
+### Working Features ✅
+
+- ✅ **Date Filtering**: Custom API with `date_start` and `date_end` parameters
+- ✅ **Senior Doctor Filtering**: Server-side JOIN query `db.worklist.senior == senior_id`
+- ✅ **Patient Information**: Full patient names and email display
+- ✅ **Payment Calculations**: All amount fields for accurate summary cards
+- ✅ **Bootstrap Table**: Pagination, sorting, search, and export functionality
+- ✅ **Loading States**: Error handling and performance optimizations
+- ✅ **Search Functionality**: Patient name search with "lastname, firstname" support
+
+### Performance Concern ⚠️
+
+- **Issue**: Senior filtering feels slow when applied
+- **Likely Cause**: Database query optimization needed for JOIN operations
+- **Next Step**: Optimize the custom API endpoint queries and add database indexes

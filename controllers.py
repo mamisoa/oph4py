@@ -410,6 +410,14 @@ def api_daily_transactions_filtered():
     This endpoint handles server-side filtering for date and senior doctor,
     avoiding issues with py4web RestAPI nested lookup limitations.
 
+    PERFORMANCE OPTIMIZATION:
+    - Uses single JOIN query instead of subquery + belongs() for senior filtering
+    - Recommended database indexes for optimal performance:
+      - CREATE INDEX idx_worklist_senior ON worklist(senior);
+      - CREATE INDEX idx_worklist_transactions_date ON worklist_transactions(transaction_date);
+      - CREATE INDEX idx_worklist_transactions_worklist ON worklist_transactions(id_worklist);
+      - CREATE INDEX idx_auth_user_names ON auth_user(last_name, first_name);
+
     Query Parameters:
     - date_start: Start date (YYYY-MM-DD HH:MM:SS format)
     - date_end: End date (YYYY-MM-DD HH:MM:SS format)
@@ -423,6 +431,10 @@ def api_daily_transactions_filtered():
     Returns:
         JSON response compatible with bootstrap table format
     """
+    import time
+
+    start_time = time.time()
+
     try:
         # Get query parameters
         date_start = request.query.get("date_start")
@@ -434,8 +446,16 @@ def api_daily_transactions_filtered():
         order_field = request.query.get("order", "transaction_date")
         order_dir = request.query.get("order_dir", "desc")
 
-        # Build base query
-        query = db.worklist_transactions.is_active == True
+        # Log the incoming request
+        logger.info(f"Daily Transactions API Request:")
+        logger.info(f"  - Date Range: {date_start} to {date_end}")
+        logger.info(f"  - Senior ID: {senior_id}")
+        logger.info(f"  - Search: '{search}'" if search else f"  - Search: None")
+        logger.info(f"  - Pagination: offset={offset}, limit={limit}")
+        logger.info(f"  - Order: {order_field} {order_dir}")
+
+        # Build query step by step
+        base_query = db.worklist_transactions.is_active == True
 
         # Date filtering
         if date_start:
@@ -443,68 +463,62 @@ def api_daily_transactions_filtered():
                 start_datetime = datetime.datetime.strptime(
                     date_start, "%Y-%m-%d %H:%M:%S"
                 )
-                query &= db.worklist_transactions.transaction_date >= start_datetime
+                base_query &= (
+                    db.worklist_transactions.transaction_date >= start_datetime
+                )
             except ValueError:
                 pass
 
         if date_end:
             try:
                 end_datetime = datetime.datetime.strptime(date_end, "%Y-%m-%d %H:%M:%S")
-                query &= db.worklist_transactions.transaction_date <= end_datetime
+                base_query &= db.worklist_transactions.transaction_date <= end_datetime
             except ValueError:
                 pass
 
-        # Senior filtering - this is the key improvement
+        # Senior filtering - simple approach
         if senior_id:
             try:
                 senior_id = int(senior_id)
-                # Get worklist IDs where senior matches
-                worklist_ids = db(db.worklist.senior == senior_id).select(
-                    db.worklist.id
-                )
-                worklist_id_list = [w.id for w in worklist_ids]
-
-                if worklist_id_list:
-                    query &= db.worklist_transactions.id_worklist.belongs(
-                        worklist_id_list
-                    )
-                else:
-                    # No worklists found for this senior - return empty result
-                    return {"items": [], "count": 0, "status": "success"}
+                # Join with worklist only when needed for senior filtering
+                base_query &= (
+                    db.worklist_transactions.id_worklist == db.worklist.id
+                ) & (db.worklist.senior == senior_id)
             except ValueError:
                 pass
 
-        # Search filtering (patient names)
-        if search:
-            # Split search terms (support "lastname, firstname" format)
-            search_terms = [term.strip() for term in search.split(",")]
-            search_query = None
+        # Always join with auth_user for patient information
+        final_query = (
+            db.worklist_transactions.id_auth_user == db.auth_user.id
+        ) & base_query
 
+        # Search filtering (patient names) - apply to the joined query
+        if search:
+            search_terms = [term.strip() for term in search.split(",")]
             if len(search_terms) >= 2:
-                # Search by "lastname, firstname"
-                lastname = search_terms[0]
-                firstname = search_terms[1]
+                lastname, firstname = search_terms[0], search_terms[1]
                 search_query = (db.auth_user.last_name.contains(lastname)) & (
                     db.auth_user.first_name.contains(firstname)
                 )
             else:
-                # Search by single term in either first or last name
                 term = search_terms[0]
                 search_query = (db.auth_user.last_name.contains(term)) | (
                     db.auth_user.first_name.contains(term)
                 )
+            final_query &= search_query
 
-            if search_query:
-                query &= search_query
+        # Count total results
+        total_count = db(final_query).count()
 
-        # Join with auth_user for patient information
-        join_query = (db.worklist_transactions.id_auth_user == db.auth_user.id) & query
-
-        # Count total results for pagination
-        total_count = db(join_query).count()
+        # Log query performance metrics
+        count_time = time.time()
+        logger.info(f"Query Analysis:")
+        logger.info(f"  - Total matching transactions: {total_count}")
+        logger.info(f"  - Count query time: {(count_time - start_time):.3f}s")
+        logger.info(f"  - Uses worklist join: {'Yes' if senior_id else 'No'}")
+        logger.info(f"  - Uses search filter: {'Yes' if search else 'No'}")
 
         # Build orderby
-        orderby = []
         if order_field == "transaction_date" or order_field == "transaction_time":
             orderby_field = db.worklist_transactions.transaction_date
         elif order_field == "patient_name":
@@ -516,13 +530,10 @@ def api_daily_transactions_filtered():
         else:
             orderby_field = db.worklist_transactions.transaction_date
 
-        if order_dir.lower() == "desc":
-            orderby = ~orderby_field
-        else:
-            orderby = orderby_field
+        orderby = ~orderby_field if order_dir.lower() == "desc" else orderby_field
 
         # Execute query with pagination
-        results = db(join_query).select(
+        results = db(final_query).select(
             db.worklist_transactions.ALL,
             db.auth_user.first_name,
             db.auth_user.last_name,
@@ -572,15 +583,55 @@ def api_daily_transactions_filtered():
                 }
             )
 
+        # Log final performance metrics
+        end_time = time.time()
+        total_execution_time = end_time - start_time
+        select_time = end_time - count_time
+
+        logger.info(f"API Response Summary:")
+        logger.info(f"  - Total execution time: {total_execution_time:.3f}s")
+        logger.info(f"  - SELECT query time: {select_time:.3f}s")
+        logger.info(f"  - Items returned: {len(items)}")
+        logger.info(f"  - Items per page: {limit}")
+        logger.info(f"  - Current page: {(offset // limit) + 1 if limit > 0 else 1}")
+        logger.info(
+            f"  - Total pages: {(total_count + limit - 1) // limit if limit > 0 else 1}"
+        )
+
+        # Log performance warning if query is slow
+        if total_execution_time > 1.0:
+            logger.warning(
+                f"SLOW QUERY WARNING: Daily transactions query took {total_execution_time:.3f}s"
+            )
+            logger.warning(
+                f"  - Consider adding database indexes or optimizing filters"
+            )
+
         return {
             "items": items,
             "count": total_count,
             "status": "success",
             "api_version": "1.0",
+            "performance": {
+                "execution_time": round(total_execution_time, 3),
+                "items_returned": len(items),
+                "total_items": total_count,
+            },
         }
 
     except Exception as e:
         import traceback
+
+        # Log the error with execution time
+        error_time = time.time()
+        execution_time = error_time - start_time
+
+        logger.error(f"Daily Transactions API Error:")
+        logger.error(f"  - Execution time before error: {execution_time:.3f}s")
+        logger.error(f"  - Error message: {str(e)}")
+        logger.error(
+            f"  - Traceback: {traceback.format_exc() if hasattr(traceback, 'format_exc') else str(e)}"
+        )
 
         return {
             "items": [],
