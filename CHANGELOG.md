@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-08T00:21:56.503759] - Payment System Toast Integration
+
+### Changed
+- **Payment Notifications**: Replaced custom Bootstrap alert system with app's standard `displayToast` function
+  - All payment success, error, and warning messages now use consistent toast notifications
+  - Removed custom `showAlert` method from PaymentManager class
+  - Removed unused alert container from payment template
+  - Toast notifications match the green success style shown in the app screenshot
+  - Improved consistency with rest of application's notification system
+  - Enhanced user experience with standardized notification positioning and styling
+
+### Technical Details
+- Updated 12 notification calls in `static/js/payment-manager.js` to use `displayToast(status, heading, text, duration)`
+- Removed 32 lines of custom alert code and HTML container
+- Toast notifications auto-dismiss after appropriate durations (5-8 seconds based on message type)
+- Maintained all error handling and user feedback functionality
+
 ## [2025-06-08T00:16:30.978765] - Documentation Enhancement
 
 ### Added

@@ -41,18 +41,22 @@ class PaymentManager {
 			// Handle payment summary result
 			if (summaryResult.status === "rejected") {
 				console.error("Failed to load payment summary:", summaryResult.reason);
-				this.showAlert(
+				displayToast(
+					"warning",
+					"Payment Summary Error",
 					"Failed to load payment summary: " + summaryResult.reason.message,
-					"warning"
+					6000
 				);
 			}
 
 			// Handle billing codes result
 			if (billingResult.status === "rejected") {
 				console.error("Failed to load billing codes:", billingResult.reason);
-				this.showAlert(
+				displayToast(
+					"warning",
+					"Billing Codes Error",
 					"Failed to load billing codes: " + billingResult.reason.message,
-					"warning"
+					6000
 				);
 			}
 
@@ -84,7 +88,12 @@ class PaymentManager {
 			console.log("Payment Manager initialized successfully");
 		} catch (error) {
 			console.error("Error initializing Payment Manager:", error);
-			this.showAlert("Error loading payment data: " + error.message, "danger");
+			displayToast(
+				"error",
+				"Initialization Error",
+				"Error loading payment data: " + error.message,
+				6000
+			);
 			this.showTransactionHistoryError("Failed to initialize payment system");
 		}
 	}
@@ -531,9 +540,11 @@ class PaymentManager {
 					await this.loadTransactionHistory(limit, offset, true); // append = true
 				} catch (error) {
 					console.error("Error loading more transactions:", error);
-					this.showAlert(
+					displayToast(
+						"warning",
+						"Loading Error",
 						"Failed to load more transactions: " + error.message,
-						"warning"
+						6000
 					);
 				} finally {
 					e.target.disabled = false;
@@ -634,7 +645,12 @@ class PaymentManager {
 	 */
 	async cancelTransaction() {
 		if (!this.cancelTransactionId) {
-			this.showAlert("No transaction selected for cancellation", "danger");
+			displayToast(
+				"error",
+				"Cancellation Error",
+				"No transaction selected for cancellation",
+				5000
+			);
 			return;
 		}
 
@@ -670,9 +686,11 @@ class PaymentManager {
 				modal.hide();
 
 				// Show success message
-				this.showAlert(
+				displayToast(
+					"success",
+					"Transaction Cancelled",
 					result.data.message || "Transaction cancelled successfully",
-					"success"
+					5000
 				);
 
 				// Refresh data
@@ -684,9 +702,11 @@ class PaymentManager {
 			}
 		} catch (error) {
 			console.error("Error cancelling transaction:", error);
-			this.showAlert(
+			displayToast(
+				"error",
+				"Cancellation Error",
 				"Error cancelling transaction: " + error.message,
-				"danger"
+				6000
 			);
 		} finally {
 			// Re-enable confirm button
@@ -713,7 +733,12 @@ class PaymentManager {
 	openPaymentModal() {
 		const balance = this.paymentSummary.remaining_balance || 0;
 		if (balance <= 0) {
-			this.showAlert("No payment required. Balance is already paid.", "info");
+			displayToast(
+				"info",
+				"Payment Information",
+				"No payment required. Balance is already paid.",
+				5000
+			);
 			return;
 		}
 
@@ -791,7 +816,12 @@ class PaymentManager {
 				paymentData.amount_invoice <=
 			0
 		) {
-			this.showAlert("Please enter a valid payment amount", "danger");
+			displayToast(
+				"error",
+				"Payment Validation",
+				"Please enter a valid payment amount",
+				5000
+			);
 			return;
 		}
 
@@ -823,9 +853,11 @@ class PaymentManager {
 				modal.hide();
 
 				// Show success message
-				this.showAlert(
+				displayToast(
+					"success",
+					"Payment Processed",
 					result.data.message || "Payment processed successfully",
-					"success"
+					5000
 				);
 
 				// Add optimistic transaction to UI immediately
@@ -862,9 +894,11 @@ class PaymentManager {
 				} catch (refreshError) {
 					console.error("Error during post-payment refresh:", refreshError);
 					// Show error but don't fail since payment succeeded
-					this.showAlert(
+					displayToast(
+						"warning",
+						"Display Refresh Warning",
 						"Payment successful but failed to refresh display. Please refresh the page.",
-						"warning"
+						8000
 					);
 				}
 			} else {
@@ -872,7 +906,12 @@ class PaymentManager {
 			}
 		} catch (error) {
 			console.error("Error processing payment:", error);
-			this.showAlert("Error processing payment: " + error.message, "danger");
+			displayToast(
+				"error",
+				"Payment Error",
+				"Error processing payment: " + error.message,
+				6000
+			);
 		} finally {
 			// Re-enable confirm button
 			const confirmBtn = document.getElementById("confirm-payment-btn");
@@ -982,38 +1021,6 @@ class PaymentManager {
 			refunded: "bg-secondary",
 		};
 		return classMap[status] || "bg-secondary";
-	}
-
-	/**
-	 * Show alert message
-	 */
-	showAlert(message, type = "info") {
-		const alertContainer = document.getElementById("alert-container");
-		if (!alertContainer) {
-			console.warn("Alert container not found");
-			return;
-		}
-
-		const alertId = "alert-" + Date.now();
-		const alertHtml = `
-            <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show alert-floating" role="alert">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `;
-
-		alertContainer.insertAdjacentHTML("beforeend", alertHtml);
-
-		// Auto-dismiss after 5 seconds
-		setTimeout(() => {
-			const alertElement = document.getElementById(alertId);
-			if (alertElement) {
-				const alert = bootstrap.Alert.getInstance(alertElement);
-				if (alert) {
-					alert.close();
-				}
-			}
-		}, 5000);
 	}
 
 	/**
