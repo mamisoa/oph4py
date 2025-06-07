@@ -356,10 +356,10 @@
 <script type="text/javascript">
     // Global variables - define only once
     window.HOSTURL = "[[ = hosturl ]]";
-    window.APP_NAME = "oph4py";
+    window.APP_NAME = "[[ = app_name ]]";
     window.BASE_API = `${HOSTURL}/${APP_NAME}/api`;
     window.wlId = "[[= wlId ]]";
-    
+
     // Tables configuration
     window.TONO_TABLES_CONFIG = {
         '#airPachyRight_tbl': { laterality: 'right', techno: 'air' },
@@ -367,7 +367,7 @@
         '#aplaRight_tbl': { laterality: 'right', techno: 'apla' },
         '#aplaLeft_tbl': { laterality: 'left', techno: 'apla' }
     };
-    
+
     // API endpoints with params - note the @lookup prefix
     window.TONO_PARAMS = {
         '@lookup': 'mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]',
@@ -405,7 +405,7 @@
                 'id_worklist.eq': wlId,
                 '@limit': 10
             };
-            
+
             return await makeAPIRequest(`${BASE_API}/tono`, params);
         } catch (error) {
             console.error(`Failed to fetch ${techno} tonometry data for ${laterality} eye:`, error);
@@ -456,13 +456,13 @@
     }
 
     // Initialize when document is ready
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Initialize bootstrap tables with correct configuration
         Object.entries(TONO_TABLES_CONFIG).forEach(([tableId, config]) => {
             $(tableId).bootstrapTable({
                 ...BOOTSTRAP_TABLE_OPTIONS,
                 url: `${BASE_API}/tono`,
-                queryParams: function(params) {
+                queryParams: function (params) {
                     return {
                         ...TONO_PARAMS,
                         '@limit': params.pageSize,
@@ -480,7 +480,7 @@
     });
 
     // Clean up on page unload
-    $(window).on('unload', function() {
+    $(window).on('unload', function () {
         stopAutoRefresh();
     });
 </script>

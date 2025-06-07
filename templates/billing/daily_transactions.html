@@ -294,7 +294,7 @@
     window.TODAY_DATE = new Date().toISOString().slice(0, 10);
 
     // API URLs - using custom endpoint with proper senior filtering
-    window.API_TRANSACTIONS_BASE = window.HOSTURL + '/oph4py/api/daily_transactions_filtered';
+    window.API_TRANSACTIONS_BASE = window.HOSTURL + '/' + window.APP_NAME + '/api/daily_transactions_filtered';
 
     // Set default date to today
     document.getElementById('filterDate').value = window.TODAY_DATE;
