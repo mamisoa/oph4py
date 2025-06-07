@@ -332,6 +332,10 @@ def process_payment(worklist_id: int):
         else:
             payment_status = "partial"
 
+        # CRITICAL FIX: Start explicit database transaction
+        db.commit()  # Commit any pending transactions first
+        db._adapter.connection.begin()  # Begin explicit transaction
+
         # Create transaction record
         transaction_id = db.worklist_transactions.insert(
             id_auth_user=worklist.id_auth_user,
@@ -365,8 +369,13 @@ def process_payment(worklist_id: int):
         return APIResponse.success(data=result)
 
     except Exception as e:
-        # CRITICAL FIX: Rollback on error
-        db.rollback()
+        # CRITICAL FIX: Rollback on error to maintain database consistency
+        try:
+            db.rollback()
+            logger.info("Database transaction rolled back due to error")
+        except Exception as rollback_error:
+            logger.error(f"Error during rollback: {str(rollback_error)}")
+
         logger.error(f"Error in process_payment: {str(e)}")
         return APIResponse.error(
             message=f"Server error: {str(e)}",
@@ -563,6 +572,10 @@ def cancel_transaction(worklist_id: int, transaction_id: int):
             if transaction.notes
             else cancellation_note
         )
+
+        # CRITICAL FIX: Start explicit database transaction for cancellation
+        db.commit()  # Commit any pending transactions first
+        db._adapter.connection.begin()  # Begin explicit transaction
 
         # Update transaction to cancelled status
         db(db.worklist_transactions.id == transaction_id).update(
