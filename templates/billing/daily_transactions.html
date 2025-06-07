@@ -6,6 +6,7 @@
 
 [[ block js_scripts ]]
 <script src="[[=URL('static', 'js/bootstrap-table_1.22/bootstrap-table.min.js')]]"></script>
+<script src="[[=URL('static', 'js/bootstrap-table_1.22/extensions/export/bootstrap-table-export.min.js')]]"></script>
 <script src="[[=URL('static', 'js/daily_transactions.js')]]"></script>
 [[ end ]]
 
@@ -218,9 +219,11 @@
                         <!-- Bootstrap table toolbar will be inserted here -->
                     </div>
                     <table id="table-transactions" data-toolbar="#toolbar-transactions" data-side-pagination="server"
-                        data-show-refresh="true" data-pagination="true" data-page-size="25" data-show-columns="true"
+                        data-show-refresh="true" data-pagination="true" data-page-size="50" data-show-columns="true"
                         data-search="true" data-search-accent-neutralise="true" data-visible-search="false"
-                        data-query-params="queryParams_transactions"
+                        data-show-export="true" data-export-types="['csv', 'excel', 'pdf']"
+                        data-page-list="[25, 50, 100, 200, 'All']" data-smart-display="true" data-escape="false"
+                        data-maintain-meta-data="true" data-query-params="queryParams_transactions"
                         data-response-handler="responseHandler_transactions" data-row-style="rowStyle_transactions"
                         data-url="">
                         <thead class="table-light">
@@ -295,43 +298,15 @@
     window.APP_NAME = "[[= app_name ]]";
     window.TODAY_DATE = new Date().toISOString().slice(0, 10);
 
-    // API URLs
-    window.API_TRANSACTIONS_BASE = window.HOSTURL + '/oph4py/api/worklist_transactions';
+    // API URLs - using custom endpoint with proper senior filtering
+    window.API_TRANSACTIONS_BASE = window.HOSTURL + '/oph4py/api/daily_transactions_filtered';
 
     // Set default date to today
     document.getElementById('filterDate').value = window.TODAY_DATE;
     document.getElementById('currentDateDisplay').textContent = window.TODAY_DATE;
 
-    // Export to CSV functionality
+    // Export functionality - use the function from daily_transactions.js
     function exportToCSV() {
-        const table = document.getElementById('table-transactions');
-        if (!table) {
-            alert('No data to export');
-            return;
-        }
-
-        let csv = [];
-        const rows = table.querySelectorAll('tr');
-
-        for (let i = 0; i < rows.length; i++) {
-            const row = [];
-            const cols = rows[i].querySelectorAll('td, th');
-
-            for (let j = 0; j < cols.length; j++) {
-                let cellText = cols[j].innerText.replace(/"/g, '""');
-                row.push('"' + cellText + '"');
-            }
-            csv.push(row.join(','));
-        }
-
-        const csvFile = new Blob([csv.join('\n')], { type: 'text/csv' });
-        const downloadLink = document.createElement('a');
-        const selectedDate = document.getElementById('filterDate').value || 'all';
-        downloadLink.download = `daily_transactions_${selectedDate}.csv`;
-        downloadLink.href = window.URL.createObjectURL(csvFile);
-        downloadLink.style.display = 'none';
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
+        window.exportToCSV();
     }
 </script>

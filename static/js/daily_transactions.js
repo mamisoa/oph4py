@@ -6,9 +6,10 @@
 // Global variables for bootstrap table (API_TRANSACTIONS_BASE and TODAY_DATE are defined in the template)
 let s_transactions = "";
 let toggle_transactions = "";
+let filterTimeout = null; // For debouncing filter changes
 
 /**
- * Build query parameters for bootstrap table API requests
+ * Build query parameters for custom daily transactions API
  * @param {Object} params - Bootstrap table parameters
  * @returns {String} URL-encoded query string
  */
@@ -19,71 +20,43 @@ function queryParams_transactions(params) {
 	const selectedDate = document.getElementById("filterDate").value;
 	const selectedSenior = document.getElementById("selectSenior").value;
 
-	// Date filtering
+	// Date filtering - use custom parameter format
 	if (selectedDate) {
 		const startDate = selectedDate + " 00:00:00";
 		const endDate = selectedDate + " 23:59:59";
-		query += `&transaction_date.ge=${encodeURIComponent(
+		query += `&date_start=${encodeURIComponent(
 			startDate
-		)}&transaction_date.lt=${encodeURIComponent(endDate)}`;
+		)}&date_end=${encodeURIComponent(endDate)}`;
 	}
 
-	// Senior filtering temporarily disabled for testing
-	// if (selectedSenior) {
-	//	query += `&id_worklist.senior.id=${selectedSenior}`;
-	// }
+	// Senior filtering - now properly supported server-side
+	if (selectedSenior) {
+		query += `&senior_id=${selectedSenior}`;
+	}
 
-	// Search functionality
+	// Search functionality - simplified format for custom API
 	if (params.search && params.search.trim() !== "") {
-		const searchTerms = params.search.split(",");
-		if (searchTerms[0] && searchTerms[0].trim() !== "") {
-			query += `&id_auth_user.last_name.contains=${encodeURIComponent(
-				searchTerms[0].trim()
-			)}`;
-		}
-		if (searchTerms[1] && searchTerms[1].trim() !== "") {
-			query += `&id_auth_user.first_name.contains=${encodeURIComponent(
-				searchTerms[1].trim()
-			)}`;
-		}
+		query += `&search=${encodeURIComponent(params.search.trim())}`;
 	}
 
-	// Sorting
+	// Sorting - use custom parameter format
 	if (params.sort !== undefined) {
 		let sortField = params.sort;
+		const sortDirection = toggle_transactions === "" ? "asc" : "desc";
 
-		// Map frontend field names to backend field names
-		if (sortField === "patient_name") {
-			sortField = "id_auth_user";
-		} else if (sortField === "procedure_name") {
-			sortField = "id_worklist.procedure";
-		} else if (sortField === "senior_name") {
-			sortField = "id_worklist.senior";
-		} else if (sortField === "transaction_time") {
-			sortField = "transaction_date";
-		}
-
-		const sortDirection = toggle_transactions === "" ? "" : "~";
-		query += `&@order=${sortDirection}${sortField}`;
-		toggle_transactions = toggle_transactions === "" ? "~" : "";
+		query += `&order=${sortField}&order_dir=${sortDirection}`;
+		toggle_transactions = toggle_transactions === "" ? "desc" : "";
 	}
 
-	// Pagination
-	if (params.offset && params.offset !== "0") {
-		query += `&@offset=${params.offset}`;
+	// Pagination - use custom parameter format
+	if (params.offset) {
+		query += `&offset=${params.offset}`;
 	}
-	if (params.limit && params.limit !== "0") {
-		query += `&@limit=${params.limit}`;
+	if (params.limit) {
+		query += `&limit=${params.limit}`;
 	}
 
-	// Add basic lookups following py4web documentation format
-	const lookups = "@lookup=id_auth_user[first_name,last_name,email]";
-	query += `&${lookups}`;
-
-	// Add count for pagination
-	query += "&@count=true";
-
-	console.log("Query params:", query);
+	console.log("Query params for custom API:", query);
 	return query.substring(1); // Remove leading &
 }
 
@@ -95,25 +68,44 @@ function queryParams_transactions(params) {
 function responseHandler_transactions(res) {
 	console.log("Raw API response:", res);
 
+	// Hide loading indicators
+	hideLoadingState();
+
 	let formattedData = {
 		total: 0,
 		rows: [],
 	};
 
-	// Handle PyDAL RestAPI response format
-	if (res && res.items && Array.isArray(res.items)) {
-		formattedData.total = res.count || res.items.length;
-		formattedData.rows = res.items.map(formatTransactionRow);
-	} else if (res && Array.isArray(res)) {
-		formattedData.total = res.length;
-		formattedData.rows = res.map(formatTransactionRow);
-	} else {
-		console.warn("Unknown response format:", res);
-		formattedData = res;
-	}
+	try {
+		// Handle PyDAL RestAPI response format
+		if (res && res.items && Array.isArray(res.items)) {
+			formattedData.total = res.count || res.items.length;
+			formattedData.rows = res.items.map(formatTransactionRow);
+		} else if (res && Array.isArray(res)) {
+			formattedData.total = res.length;
+			formattedData.rows = res.map(formatTransactionRow);
+		} else if (res && res.error) {
+			// Handle API error response
+			console.error("API Error:", res.error);
+			showErrorState(res.error);
+			return { total: 0, rows: [] };
+		} else {
+			console.warn("Unknown response format:", res);
+			formattedData = res || { total: 0, rows: [] };
+		}
 
-	// Update summary cards with current data
-	updateSummaryCards(formattedData.rows);
+		// Update summary cards with current data
+		updateSummaryCards(formattedData.rows);
+
+		// Show empty state if no data
+		if (formattedData.rows.length === 0) {
+			showEmptyState();
+		}
+	} catch (error) {
+		console.error("Error processing response:", error);
+		showErrorState("Error processing data");
+		return { total: 0, rows: [] };
+	}
 
 	return formattedData;
 }
@@ -138,9 +130,9 @@ function formatTransactionRow(transaction) {
 			? formatTime(transaction.transaction_date)
 			: "N/A",
 		patient_name: formatPatientName(patient),
-		procedure_name: "N/A", // Simplified for testing
-		senior_name: "N/A", // Simplified for testing
-		laterality: "N/A", // Simplified for testing
+		procedure_name: `WL-${transaction.id_worklist || "N/A"}`, // Show worklist ID for now
+		senior_name: "N/A", // Will be populated later if needed
+		laterality: "N/A", // Will be populated later if needed
 		amount_card: formatCurrency(transaction.amount_card),
 		amount_cash: formatCurrency(transaction.amount_cash),
 		amount_invoice: formatCurrency(transaction.amount_invoice),
@@ -148,6 +140,12 @@ function formatTransactionRow(transaction) {
 		payment_status: formatPaymentStatus(transaction.payment_status),
 		remaining_balance: formatBalance(transaction.remaining_balance),
 		notes: formatNotes(transaction.notes),
+		// Store raw values for summary calculations
+		_raw_amount_card: transaction.amount_card || 0,
+		_raw_amount_cash: transaction.amount_cash || 0,
+		_raw_amount_invoice: transaction.amount_invoice || 0,
+		_raw_total_amount: transaction.total_amount || 0,
+		_raw_payment_status: transaction.payment_status || "unknown",
 	};
 }
 
@@ -319,21 +317,34 @@ function updateSummaryCards(transactions) {
 	let statusCounts = {};
 
 	transactions.forEach((transaction) => {
-		// Extract numeric values from formatted strings or use raw values
-		const cardAmount = extractNumericValue(transaction.amount_card);
-		const cashAmount = extractNumericValue(transaction.amount_cash);
-		const invoiceAmount = extractNumericValue(transaction.amount_invoice);
-		const totalTransactionAmount = extractNumericValue(
-			transaction.total_amount
-		);
+		// Use raw values if available, otherwise extract from formatted strings
+		const cardAmount =
+			transaction._raw_amount_card !== undefined
+				? transaction._raw_amount_card
+				: extractNumericValue(transaction.amount_card);
+		const cashAmount =
+			transaction._raw_amount_cash !== undefined
+				? transaction._raw_amount_cash
+				: extractNumericValue(transaction.amount_cash);
+		const invoiceAmount =
+			transaction._raw_amount_invoice !== undefined
+				? transaction._raw_amount_invoice
+				: extractNumericValue(transaction.amount_invoice);
+		const totalTransactionAmount =
+			transaction._raw_total_amount !== undefined
+				? transaction._raw_total_amount
+				: extractNumericValue(transaction.total_amount);
 
 		totalCard += cardAmount;
 		totalCash += cashAmount;
 		totalInvoice += invoiceAmount;
 		totalAmount += totalTransactionAmount;
 
-		// Count payment statuses
-		const status = extractStatusFromBadge(transaction.payment_status);
+		// Count payment statuses using raw values if available
+		const status =
+			transaction._raw_payment_status !== undefined
+				? transaction._raw_payment_status.toLowerCase()
+				: extractStatusFromBadge(transaction.payment_status);
 		statusCounts[status] = (statusCounts[status] || 0) + 1;
 	});
 
@@ -435,7 +446,7 @@ function updateStatusBreakdown(statusCounts) {
 }
 
 /**
- * Build filter query string for API requests
+ * Build filter query string for API requests (now uses custom API format)
  * @returns {String} Filter query string
  */
 function buildFilterQuery() {
@@ -447,13 +458,14 @@ function buildFilterQuery() {
 	if (selectedDate) {
 		const startDate = selectedDate + " 00:00:00";
 		const endDate = selectedDate + " 23:59:59";
-		query += `&transaction_date.ge=${encodeURIComponent(
+		query += `&date_start=${encodeURIComponent(
 			startDate
-		)}&transaction_date.lt=${encodeURIComponent(endDate)}`;
+		)}&date_end=${encodeURIComponent(endDate)}`;
 	}
 
+	// Senior filtering now properly supported
 	if (selectedSenior) {
-		query += `&id_worklist.senior.id=${selectedSenior}`;
+		query += `&senior_id=${selectedSenior}`;
 	}
 
 	return query;
@@ -472,19 +484,45 @@ function initDailyTransactions() {
 		formatSearch: function () {
 			return "Last name, first name, procedure";
 		},
+		onLoadingStarted: function () {
+			showLoadingState();
+		},
+		onLoadError: function (status) {
+			console.error("Bootstrap table load error:", status);
+			showErrorState(`HTTP ${status}: Failed to load data`);
+		},
+		onRefresh: function () {
+			showLoadingState();
+		},
 	});
 
-	// Set up filter event handlers
+	// Set up filter event handlers with debouncing for performance
 	$("#filterDate, #selectSenior").change(function () {
 		console.log("Filter changed");
 
-		// Just refresh the table - queryParams_transactions will handle the filtering
-		$("#table-transactions").bootstrapTable("refresh");
+		// Clear previous timeout
+		if (filterTimeout) {
+			clearTimeout(filterTimeout);
+		}
 
-		// Update current date display
+		// Show loading state immediately for better UX
+		showLoadingState();
+
+		// Update current date display immediately
 		const selectedDate = document.getElementById("filterDate").value;
-		document.getElementById("currentDateDisplay").textContent =
-			selectedDate || "All dates";
+		const selectedSenior = document.getElementById("selectSenior").value;
+		const seniorText = selectedSenior
+			? $("#selectSenior option:selected").text()
+			: "All seniors";
+
+		document.getElementById("currentDateDisplay").textContent = selectedDate
+			? `${selectedDate} (${seniorText})`
+			: `All dates (${seniorText})`;
+
+		// Debounce the actual API call to avoid excessive requests
+		filterTimeout = setTimeout(function () {
+			$("#table-transactions").bootstrapTable("refresh");
+		}, 300); // 300ms delay
 	});
 
 	// Today's transactions button
@@ -513,6 +551,153 @@ function initDailyTransactions() {
 
 	// Load today's transactions by default
 	$("#btnTodayTransactions").click();
+}
+
+/**
+ * Export filtered transactions to CSV
+ */
+function exportToCSV() {
+	const selectedDate = document.getElementById("filterDate").value;
+	const selectedSenior = document.getElementById("selectSenior").value;
+	const seniorText = selectedSenior
+		? $("#selectSenior option:selected").text()
+		: "all-seniors";
+
+	// Build filename based on filters
+	const dateText = selectedDate || "all-dates";
+	const filename = `daily-transactions-${dateText}-${seniorText
+		.replace(/\s+/g, "-")
+		.toLowerCase()}.csv`;
+
+	// Use bootstrap table's built-in export functionality
+	$("#table-transactions").bootstrapTable("export", {
+		type: "csv",
+		fileName: filename,
+		ignoreColumn: ["actions"], // If we add action buttons later
+	});
+}
+
+/**
+ * Print the current view
+ */
+function printTransactions() {
+	window.print();
+}
+
+/**
+ * Show loading state
+ */
+function showLoadingState() {
+	// Update summary cards with loading state
+	document.getElementById("totalTransactions").innerHTML =
+		'<i class="fas fa-spinner fa-spin"></i>';
+	document.getElementById("totalAmount").innerHTML =
+		'<i class="fas fa-spinner fa-spin"></i>';
+	document.getElementById("totalCard").innerHTML =
+		'<i class="fas fa-spinner fa-spin"></i>';
+	document.getElementById("totalCash").innerHTML =
+		'<i class="fas fa-spinner fa-spin"></i>';
+
+	// Update breakdown with loading state
+	document.getElementById("cardBreakdown").innerHTML =
+		'<i class="fas fa-spinner fa-spin"></i>';
+	document.getElementById("cashBreakdown").innerHTML =
+		'<i class="fas fa-spinner fa-spin"></i>';
+	document.getElementById("invoiceBreakdown").innerHTML =
+		'<i class="fas fa-spinner fa-spin"></i>';
+
+	// Update status breakdown
+	document.getElementById("statusBreakdown").innerHTML = `
+		<div class="text-center py-3">
+			<i class="fas fa-spinner fa-spin text-primary me-2"></i>
+			<span class="text-muted">Loading transaction data...</span>
+		</div>
+	`;
+}
+
+/**
+ * Hide loading state
+ */
+function hideLoadingState() {
+	// This will be overridden by updateSummaryCards when data loads
+	// Just ensure we're not showing loading state indefinitely
+}
+
+/**
+ * Show error state
+ * @param {String} error - Error message
+ */
+function showErrorState(error) {
+	// Update summary cards with error state
+	const errorDisplay =
+		'<i class="fas fa-exclamation-triangle text-danger"></i>';
+	document.getElementById("totalTransactions").innerHTML = errorDisplay;
+	document.getElementById("totalAmount").innerHTML = errorDisplay;
+	document.getElementById("totalCard").innerHTML = errorDisplay;
+	document.getElementById("totalCash").innerHTML = errorDisplay;
+
+	// Update breakdown with error state
+	document.getElementById("cardBreakdown").innerHTML = errorDisplay;
+	document.getElementById("cashBreakdown").innerHTML = errorDisplay;
+	document.getElementById("invoiceBreakdown").innerHTML = errorDisplay;
+
+	// Update status breakdown
+	document.getElementById("statusBreakdown").innerHTML = `
+		<div class="text-center py-3">
+			<i class="fas fa-exclamation-triangle text-danger me-2"></i>
+			<span class="text-danger">Error loading data: ${error}</span>
+		</div>
+	`;
+
+	// Show toast notification if available
+	if (typeof showToast === "function") {
+		showToast("Error", `Failed to load transaction data: ${error}`, "error");
+	}
+}
+
+/**
+ * Show empty state when no transactions found
+ */
+function showEmptyState() {
+	// Reset summary cards to zero
+	document.getElementById("totalTransactions").textContent = "0";
+	document.getElementById("totalAmount").textContent = "€0.00";
+	document.getElementById("totalCard").textContent = "€0.00";
+	document.getElementById("totalCash").textContent = "€0.00";
+
+	// Reset breakdown values
+	document.getElementById("cardBreakdown").textContent = "€0.00";
+	document.getElementById("cashBreakdown").textContent = "€0.00";
+	document.getElementById("invoiceBreakdown").textContent = "€0.00";
+
+	// Update status breakdown
+	document.getElementById("statusBreakdown").innerHTML = `
+		<div class="text-center py-3">
+			<i class="fas fa-info-circle text-muted me-2"></i>
+			<span class="text-muted">No transactions found for the selected filters</span>
+		</div>
+	`;
+}
+
+/**
+ * Add retry functionality for failed requests
+ * @param {Function} callback - Function to retry
+ * @param {Number} maxRetries - Maximum number of retries (default: 3)
+ */
+function retryRequest(callback, maxRetries = 3) {
+	let retryCount = 0;
+
+	function attempt() {
+		if (retryCount < maxRetries) {
+			retryCount++;
+			console.log(`Retry attempt ${retryCount}/${maxRetries}`);
+			callback();
+		} else {
+			showErrorState("Maximum retry attempts reached");
+		}
+	}
+
+	return attempt;
 }
 
 // Initialize when document is ready

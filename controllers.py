@@ -401,4 +401,196 @@ def daily_transactions():
         )
 
 
+@action("api/daily_transactions_filtered")
+@action.uses(session, auth.user, db)
+def api_daily_transactions_filtered():
+    """
+    Custom API endpoint for daily transactions with proper senior filtering
+
+    This endpoint handles server-side filtering for date and senior doctor,
+    avoiding issues with py4web RestAPI nested lookup limitations.
+
+    Query Parameters:
+    - date_start: Start date (YYYY-MM-DD HH:MM:SS format)
+    - date_end: End date (YYYY-MM-DD HH:MM:SS format)
+    - senior_id: Senior doctor ID for filtering
+    - offset: Pagination offset (default: 0)
+    - limit: Results per page (default: 50)
+    - search: Search term for patient names
+    - order: Field to order by (default: transaction_date)
+    - order_dir: Order direction - asc or desc (default: desc)
+
+    Returns:
+        JSON response compatible with bootstrap table format
+    """
+    try:
+        # Get query parameters
+        date_start = request.query.get("date_start")
+        date_end = request.query.get("date_end")
+        senior_id = request.query.get("senior_id")
+        offset = int(request.query.get("offset", 0))
+        limit = int(request.query.get("limit", 50))
+        search = request.query.get("search", "").strip()
+        order_field = request.query.get("order", "transaction_date")
+        order_dir = request.query.get("order_dir", "desc")
+
+        # Build base query
+        query = db.worklist_transactions.is_active == True
+
+        # Date filtering
+        if date_start:
+            try:
+                start_datetime = datetime.datetime.strptime(
+                    date_start, "%Y-%m-%d %H:%M:%S"
+                )
+                query &= db.worklist_transactions.transaction_date >= start_datetime
+            except ValueError:
+                pass
+
+        if date_end:
+            try:
+                end_datetime = datetime.datetime.strptime(date_end, "%Y-%m-%d %H:%M:%S")
+                query &= db.worklist_transactions.transaction_date <= end_datetime
+            except ValueError:
+                pass
+
+        # Senior filtering - this is the key improvement
+        if senior_id:
+            try:
+                senior_id = int(senior_id)
+                # Get worklist IDs where senior matches
+                worklist_ids = db(db.worklist.senior == senior_id).select(
+                    db.worklist.id
+                )
+                worklist_id_list = [w.id for w in worklist_ids]
+
+                if worklist_id_list:
+                    query &= db.worklist_transactions.id_worklist.belongs(
+                        worklist_id_list
+                    )
+                else:
+                    # No worklists found for this senior - return empty result
+                    return {"items": [], "count": 0, "status": "success"}
+            except ValueError:
+                pass
+
+        # Search filtering (patient names)
+        if search:
+            # Split search terms (support "lastname, firstname" format)
+            search_terms = [term.strip() for term in search.split(",")]
+            search_query = None
+
+            if len(search_terms) >= 2:
+                # Search by "lastname, firstname"
+                lastname = search_terms[0]
+                firstname = search_terms[1]
+                search_query = (db.auth_user.last_name.contains(lastname)) & (
+                    db.auth_user.first_name.contains(firstname)
+                )
+            else:
+                # Search by single term in either first or last name
+                term = search_terms[0]
+                search_query = (db.auth_user.last_name.contains(term)) | (
+                    db.auth_user.first_name.contains(term)
+                )
+
+            if search_query:
+                query &= search_query
+
+        # Join with auth_user for patient information
+        join_query = (db.worklist_transactions.id_auth_user == db.auth_user.id) & query
+
+        # Count total results for pagination
+        total_count = db(join_query).count()
+
+        # Build orderby
+        orderby = []
+        if order_field == "transaction_date" or order_field == "transaction_time":
+            orderby_field = db.worklist_transactions.transaction_date
+        elif order_field == "patient_name":
+            orderby_field = db.auth_user.last_name
+        elif order_field == "total_amount":
+            orderby_field = db.worklist_transactions.total_amount
+        elif order_field == "payment_status":
+            orderby_field = db.worklist_transactions.payment_status
+        else:
+            orderby_field = db.worklist_transactions.transaction_date
+
+        if order_dir.lower() == "desc":
+            orderby = ~orderby_field
+        else:
+            orderby = orderby_field
+
+        # Execute query with pagination
+        results = db(join_query).select(
+            db.worklist_transactions.ALL,
+            db.auth_user.first_name,
+            db.auth_user.last_name,
+            db.auth_user.email,
+            orderby=orderby,
+            limitby=(offset, offset + limit),
+        )
+
+        # Format results for bootstrap table
+        items = []
+        for row in results:
+            transaction = row.worklist_transactions
+            patient = row.auth_user
+
+            items.append(
+                {
+                    "id": transaction.id,
+                    "id_worklist": transaction.id_worklist,
+                    "id_auth_user": {
+                        "first_name": patient.first_name,
+                        "last_name": patient.last_name,
+                        "email": patient.email,
+                    },
+                    "transaction_date": (
+                        transaction.transaction_date.isoformat()
+                        if transaction.transaction_date
+                        else None
+                    ),
+                    "amount_card": float(transaction.amount_card or 0),
+                    "amount_cash": float(transaction.amount_cash or 0),
+                    "amount_invoice": float(transaction.amount_invoice or 0),
+                    "total_amount": float(transaction.total_amount or 0),
+                    "payment_status": transaction.payment_status,
+                    "remaining_balance": float(transaction.remaining_balance or 0),
+                    "notes": transaction.notes,
+                    "feecode_used": transaction.feecode_used,
+                    "created_on": (
+                        transaction.created_on.isoformat()
+                        if transaction.created_on
+                        else None
+                    ),
+                    "modified_on": (
+                        transaction.modified_on.isoformat()
+                        if transaction.modified_on
+                        else None
+                    ),
+                }
+            )
+
+        return {
+            "items": items,
+            "count": total_count,
+            "status": "success",
+            "api_version": "1.0",
+        }
+
+    except Exception as e:
+        import traceback
+
+        return {
+            "items": [],
+            "count": 0,
+            "status": "error",
+            "message": str(e),
+            "traceback": (
+                traceback.format_exc() if hasattr(traceback, "format_exc") else str(e)
+            ),
+        }
+
+
 # always commit your models to avoid problems later
