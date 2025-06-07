@@ -1,4 +1,14 @@
 [[extend 'baseof.html']]
+
+[[ block css_styles ]]
+<link href="[[=URL('static', 'js/bootstrap-table_1.22/bootstrap-table.min.css')]]" rel="stylesheet">
+[[ end ]]
+
+[[ block js_scripts ]]
+<script src="[[=URL('static', 'js/bootstrap-table_1.22/bootstrap-table.min.js')]]"></script>
+<script src="[[=URL('static', 'js/daily_transactions.js')]]"></script>
+[[ end ]]
+
 [[ block left_nav ]]
 [[ include 'partials/nav.html' ]]
 [[ end]]
@@ -15,7 +25,7 @@
                     </h2>
                     <p class="text-muted mb-0">
                         <i class="fas fa-calendar-day me-1"></i>
-                        [[=summary['date'] ]]
+                        <span id="currentDateDisplay">[[=summary['date'] if 'summary' in locals() else '' ]]</span>
                     </p>
                 </div>
                 <div class="btn-group shadow-sm" role="group">
@@ -31,6 +41,35 @@
                 </div>
             </div>
 
+            <!-- Filter Controls -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="form-floating">
+                        <input type="date" class="form-control" id="filterDate" value="">
+                        <label for="filterDate">Transaction Date</label>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="form-floating">
+                        <select class="form-select" id="selectSenior">
+                            <option value="">All Seniors</option>
+                            [[ if 'seniorOptions' in locals(): ]]
+                            [[=seniorOptions ]]
+                            [[ pass ]]
+                        </select>
+                        <label for="selectSenior">Select Senior</label>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <div class="btn-group" role="group">
+                        <button type="button" id="btnTodayTransactions" class="btn btn-dark">Today's
+                            Transactions</button>
+                        <button type="button" id="btnAllTransactions" class="btn btn-outline-dark">All
+                            Transactions</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Summary Cards -->
             <div class="row mb-4">
                 <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
@@ -40,7 +79,7 @@
                                 <div class="flex-grow-1">
                                     <h6 class="card-title text-white-50 mb-1 text-uppercase fw-light">Total Transactions
                                     </h6>
-                                    <h2 class="mb-0 fw-bold">[[=summary['total_transactions'] ]]</h2>
+                                    <h2 class="mb-0 fw-bold" id="totalTransactions">0</h2>
                                 </div>
                                 <div class="flex-shrink-0">
                                     <i class="fas fa-list-ol fa-2x opacity-75"></i>
@@ -56,7 +95,7 @@
                             <div class="d-flex align-items-center">
                                 <div class="flex-grow-1">
                                     <h6 class="card-title text-white-50 mb-1 text-uppercase fw-light">Total Amount</h6>
-                                    <h2 class="mb-0 fw-bold">€[[="{:.2f}".format(summary['total_amount']) ]]</h2>
+                                    <h2 class="mb-0 fw-bold" id="totalAmount">€0.00</h2>
                                 </div>
                                 <div class="flex-shrink-0">
                                     <i class="fas fa-euro-sign fa-2x opacity-75"></i>
@@ -72,7 +111,7 @@
                             <div class="d-flex align-items-center">
                                 <div class="flex-grow-1">
                                     <h6 class="card-title text-white-50 mb-1 text-uppercase fw-light">Card Payments</h6>
-                                    <h2 class="mb-0 fw-bold">€[[="{:.2f}".format(summary['total_card']) ]]</h2>
+                                    <h2 class="mb-0 fw-bold" id="totalCard">€0.00</h2>
                                 </div>
                                 <div class="flex-shrink-0">
                                     <i class="fas fa-credit-card fa-2x opacity-75"></i>
@@ -88,7 +127,7 @@
                             <div class="d-flex align-items-center">
                                 <div class="flex-grow-1">
                                     <h6 class="card-title text-dark-50 mb-1 text-uppercase fw-light">Cash Payments</h6>
-                                    <h2 class="mb-0 fw-bold">€[[="{:.2f}".format(summary['total_cash']) ]]</h2>
+                                    <h2 class="mb-0 fw-bold" id="totalCash">€0.00</h2>
                                 </div>
                                 <div class="flex-shrink-0">
                                     <i class="fas fa-money-bill-wave fa-2x opacity-75"></i>
@@ -117,8 +156,7 @@
                                         </div>
                                         <div>
                                             <small class="text-muted d-block">Card</small>
-                                            <strong class="text-info">€[[="{:.2f}".format(summary['total_card'])
-                                                ]]</strong>
+                                            <strong class="text-info" id="cardBreakdown">€0.00</strong>
                                         </div>
                                     </div>
                                 </div>
@@ -128,8 +166,7 @@
                                         </div>
                                         <div>
                                             <small class="text-muted d-block">Cash</small>
-                                            <strong class="text-warning">€[[="{:.2f}".format(summary['total_cash'])
-                                                ]]</strong>
+                                            <strong class="text-warning" id="cashBreakdown">€0.00</strong>
                                         </div>
                                     </div>
                                 </div>
@@ -139,8 +176,7 @@
                                             style="width: 12px; height: 12px;"></div>
                                         <div>
                                             <small class="text-muted d-block">Invoice</small>
-                                            <strong class="text-secondary">€[[="{:.2f}".format(summary['total_invoice'])
-                                                ]]</strong>
+                                            <strong class="text-secondary" id="invoiceBreakdown">€0.00</strong>
                                         </div>
                                     </div>
                                 </div>
@@ -158,31 +194,12 @@
                             </h5>
                         </div>
                         <div class="card-body">
-                            [[ if summary['status_counts']: ]]
-                            <div class="row g-2">
-                                [[ for status, count in summary['status_counts'].items(): ]]
-                                <div class="col-12">
-                                    <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                                        <span class="text-capitalize fw-medium">[[=status ]]</span>
-                                        [[ if status == 'complete': ]]
-                                        <span class="badge bg-success">[[=count ]]</span>
-                                        [[ elif status == 'partial': ]]
-                                        <span class="badge bg-warning">[[=count ]]</span>
-                                        [[ elif status == 'overpaid': ]]
-                                        <span class="badge bg-info">[[=count ]]</span>
-                                        [[ else: ]]
-                                        <span class="badge bg-secondary">[[=count ]]</span>
-                                        [[ pass ]]
-                                    </div>
+                            <div id="statusBreakdown">
+                                <div class="text-center py-3">
+                                    <i class="fas fa-info-circle text-muted me-2"></i>
+                                    <span class="text-muted">Loading status information...</span>
                                 </div>
-                                [[ pass ]]
                             </div>
-                            [[ else: ]]
-                            <div class="text-center py-3">
-                                <i class="fas fa-info-circle text-muted me-2"></i>
-                                <span class="text-muted">No transactions today</span>
-                            </div>
-                            [[ pass ]]
                         </div>
                     </div>
                 </div>
@@ -197,135 +214,34 @@
                     </h5>
                 </div>
                 <div class="card-body p-0">
-                    [[ if formatted_transactions: ]]
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="transactionsTable">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="fw-semibold">Time</th>
-                                    <th class="fw-semibold">Patient</th>
-                                    <th class="fw-semibold">Procedure</th>
-                                    <th class="fw-semibold">Laterality</th>
-                                    <th class="fw-semibold text-center">Card</th>
-                                    <th class="fw-semibold text-center">Cash</th>
-                                    <th class="fw-semibold text-center">Invoice</th>
-                                    <th class="fw-semibold text-center">Total</th>
-                                    <th class="fw-semibold text-center">Status</th>
-                                    <th class="fw-semibold text-center">Balance</th>
-                                    <th class="fw-semibold">Notes</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                [[ for transaction in formatted_transactions: ]]
-                                <tr class="align-middle">
-                                    <td class="text-nowrap">
-                                        [[ if transaction['transaction_date']: ]]
-                                        <small class="fw-medium">[[=transaction['transaction_date'].strftime('%H:%M:%S')
-                                            ]]</small>
-                                        [[ else: ]]
-                                        <small class="text-muted">N/A</small>
-                                        [[ pass ]]
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <div class="fw-semibold text-dark">[[=transaction['patient_name'] ]]</div>
-                                            [[ if transaction['patient_email']: ]]
-                                            <small class="text-muted">[[=transaction['patient_email'] ]]</small>
-                                            [[ pass ]]
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="fw-medium">[[=transaction['procedure_name'] ]]</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-secondary bg-opacity-10 text-dark border">
-                                            [[=transaction['laterality'].title() ]]
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        [[ if transaction['amount_card'] > 0: ]]
-                                        <span
-                                            class="fw-semibold text-info">€[[="{:.2f}".format(transaction['amount_card'])
-                                            ]]</span>
-                                        [[ else: ]]
-                                        <span class="text-muted">-</span>
-                                        [[ pass ]]
-                                    </td>
-                                    <td class="text-center">
-                                        [[ if transaction['amount_cash'] > 0: ]]
-                                        <span
-                                            class="fw-semibold text-warning">€[[="{:.2f}".format(transaction['amount_cash'])
-                                            ]]</span>
-                                        [[ else: ]]
-                                        <span class="text-muted">-</span>
-                                        [[ pass ]]
-                                    </td>
-                                    <td class="text-center">
-                                        [[ if transaction['amount_invoice'] > 0: ]]
-                                        <span
-                                            class="fw-semibold text-secondary">€[[="{:.2f}".format(transaction['amount_invoice'])
-                                            ]]</span>
-                                        [[ else: ]]
-                                        <span class="text-muted">-</span>
-                                        [[ pass ]]
-                                    </td>
-                                    <td class="text-center">
-                                        <strong
-                                            class="text-success fs-6">€[[="{:.2f}".format(transaction['total_amount'])
-                                            ]]</strong>
-                                    </td>
-                                    <td class="text-center">
-                                        [[ if transaction['payment_status'] == 'complete': ]]
-                                        <span class="badge bg-success">Complete</span>
-                                        [[ elif transaction['payment_status'] == 'partial': ]]
-                                        <span class="badge bg-warning">Partial</span>
-                                        [[ elif transaction['payment_status'] == 'overpaid': ]]
-                                        <span class="badge bg-info">Overpaid</span>
-                                        [[ else: ]]
-                                        <span class="badge bg-secondary">[[=transaction['payment_status'].title()
-                                            ]]</span>
-                                        [[ pass ]]
-                                    </td>
-                                    <td class="text-center">
-                                        [[ if transaction['remaining_balance'] > 0: ]]
-                                        <span
-                                            class="fw-semibold text-danger">€[[="{:.2f}".format(transaction['remaining_balance'])
-                                            ]]</span>
-                                        [[ elif transaction['remaining_balance'] < 0: ]] <span
-                                            class="fw-semibold text-info">
-                                            €[[="{:.2f}".format(abs(transaction['remaining_balance'])) ]] credit</span>
-                                            [[ else: ]]
-                                            <span class="fw-semibold text-success">€0.00</span>
-                                            [[ pass ]]
-                                    </td>
-                                    <td>
-                                        [[ if transaction['notes']: ]]
-                                        <span class="text-truncate d-inline-block" style="max-width: 150px;"
-                                            title="[[=transaction['notes'] ]]">
-                                            [[ if len(transaction['notes']) > 30: ]]
-                                            [[=transaction['notes'][:30] + '...' ]]
-                                            [[ else: ]]
-                                            [[=transaction['notes'] ]]
-                                            [[ pass ]]
-                                        </span>
-                                        [[ else: ]]
-                                        <span class="text-muted">-</span>
-                                        [[ pass ]]
-                                    </td>
-                                </tr>
-                                [[ pass ]]
-                            </tbody>
-                        </table>
+                    <div id="toolbar-transactions">
+                        <!-- Bootstrap table toolbar will be inserted here -->
                     </div>
-                    [[ else: ]]
-                    <div class="text-center py-5">
-                        <div class="mb-3">
-                            <i class="fas fa-receipt fa-3x text-muted opacity-50"></i>
-                        </div>
-                        <h5 class="text-muted mb-2">No transactions found for today</h5>
-                        <p class="text-muted">Transactions will appear here as they are processed.</p>
-                    </div>
-                    [[ pass ]]
+                    <table id="table-transactions" data-toolbar="#toolbar-transactions" data-side-pagination="server"
+                        data-show-refresh="true" data-pagination="true" data-page-size="25" data-show-columns="true"
+                        data-search="true" data-search-accent-neutralise="true" data-visible-search="false"
+                        data-query-params="queryParams_transactions"
+                        data-response-handler="responseHandler_transactions" data-row-style="rowStyle_transactions"
+                        data-url="">
+                        <thead class="table-light">
+                            <tr>
+                                <th data-field="id" data-sortable="true">ID</th>
+                                <th data-field="transaction_time" data-sortable="true">Time</th>
+                                <th data-field="patient_name" data-sortable="true" data-searchable="true">Patient</th>
+                                <th data-field="procedure_name" data-sortable="true" data-searchable="true">Procedure
+                                </th>
+                                <th data-field="senior_name" data-sortable="true" data-searchable="true">Senior</th>
+                                <th data-field="laterality" data-sortable="true">Laterality</th>
+                                <th data-field="amount_card" data-sortable="true" class="text-center">Card</th>
+                                <th data-field="amount_cash" data-sortable="true" class="text-center">Cash</th>
+                                <th data-field="amount_invoice" data-sortable="true" class="text-center">Invoice</th>
+                                <th data-field="total_amount" data-sortable="true" class="text-center">Total</th>
+                                <th data-field="payment_status" data-sortable="true" class="text-center">Status</th>
+                                <th data-field="remaining_balance" data-sortable="true" class="text-center">Balance</th>
+                                <th data-field="notes" data-sortable="false">Notes</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
@@ -374,9 +290,21 @@
 </style>
 
 <script>
+    // Global variables for daily transactions
+    window.HOSTURL = "[[= hosturl ]]";
+    window.APP_NAME = "[[= app_name ]]";
+    window.TODAY_DATE = new Date().toISOString().slice(0, 10);
+
+    // API URLs
+    window.API_TRANSACTIONS_BASE = window.HOSTURL + '/oph4py/api/worklist_transactions';
+
+    // Set default date to today
+    document.getElementById('filterDate').value = window.TODAY_DATE;
+    document.getElementById('currentDateDisplay').textContent = window.TODAY_DATE;
+
     // Export to CSV functionality
     function exportToCSV() {
-        const table = document.getElementById('transactionsTable');
+        const table = document.getElementById('table-transactions');
         if (!table) {
             alert('No data to export');
             return;
@@ -398,16 +326,12 @@
 
         const csvFile = new Blob([csv.join('\n')], { type: 'text/csv' });
         const downloadLink = document.createElement('a');
-        downloadLink.download = 'daily_transactions_[[=summary["date"] ]].csv';
+        const selectedDate = document.getElementById('filterDate').value || 'all';
+        downloadLink.download = `daily_transactions_${selectedDate}.csv`;
         downloadLink.href = window.URL.createObjectURL(csvFile);
         downloadLink.style.display = 'none';
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
     }
-
-    // Auto-refresh every 5 minutes
-    setTimeout(() => {
-        location.reload();
-    }, 300000);
 </script>
