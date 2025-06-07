@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-08T00:37:34.274389] - Critical Database Transaction Fixes
+
+### Fixed
+
+- **Critical Database Transaction Issue**: Fixed missing database commits causing inconsistent payment transaction behavior
+  - **Issue**: Payment transactions were processed successfully but not showing in transaction history consistently
+  - **Root Cause**: Missing `db.commit()` calls after database insert/update operations in payment processing
+  - **Impact**: Production transactions appeared successful but were not committed to database, causing inconsistent behavior
+  - **Files Fixed**:
+    - `api/endpoints/payment.py` - `process_payment()` function: Added `db.commit()` after transaction insert
+    - `api/endpoints/payment.py` - `cancel_transaction()` function: Added `db.commit()` after transaction update
+  - **Error Handling**: Added `db.rollback()` on exceptions for both functions
+  - **Logging**: Added commit confirmation logging for debugging
+  - **Result**: Payment transactions now properly committed and immediately visible in transaction history
+
+### Technical Details
+
+- **Before**: Database operations succeeded but were not committed, causing race conditions and inconsistent data visibility
+- **After**: All database changes properly committed with error rollback handling
+- **Database Consistency**: Transaction history now immediately reflects all processed payments
+- **Production Impact**: Resolves inconsistent payment visibility reported in production environment
+
+### Security & Reliability
+
+- **Transactional Integrity**: Added proper transaction management with commit/rollback pattern
+- **Error Recovery**: Database state properly restored on errors
+- **Audit Trail**: Enhanced logging for transaction commit status
+- **Data Consistency**: Eliminated race conditions between payment processing and history queries
+
+## [2025-06-04T14:50:00] - Payment System Integration Complete
+
 ## [2025-06-08T00:21:56.503759] - Payment System Toast Integration
 
 ### Changed

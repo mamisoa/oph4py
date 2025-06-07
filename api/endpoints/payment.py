@@ -349,6 +349,10 @@ def process_payment(worklist_id: int):
             created_by=auth.current_user.get("id") if auth.current_user else None,
         )
 
+        # CRITICAL FIX: Commit the transaction to database
+        db.commit()
+        logger.info(f"Transaction {transaction_id} committed to database successfully")
+
         result = {
             "success": True,
             "transaction_id": transaction_id,
@@ -361,6 +365,8 @@ def process_payment(worklist_id: int):
         return APIResponse.success(data=result)
 
     except Exception as e:
+        # CRITICAL FIX: Rollback on error
+        db.rollback()
         logger.error(f"Error in process_payment: {str(e)}")
         return APIResponse.error(
             message=f"Server error: {str(e)}",
@@ -566,6 +572,12 @@ def cancel_transaction(worklist_id: int, transaction_id: int):
             modified_by=current_user_id,
         )
 
+        # CRITICAL FIX: Commit the transaction cancellation to database
+        db.commit()
+        logger.info(
+            f"Transaction {transaction_id} cancellation committed to database successfully"
+        )
+
         # Recalculate balance after cancellation
         billing_rows = db(db.billing_codes.id_worklist == worklist_id).select()
         total_fee = Decimal("0.00")
@@ -610,6 +622,8 @@ def cancel_transaction(worklist_id: int, transaction_id: int):
         return APIResponse.success(data=result)
 
     except Exception as e:
+        # CRITICAL FIX: Rollback on error
+        db.rollback()
         logger.error(f"Error in cancel_transaction: {str(e)}")
         return APIResponse.error(
             message=f"Server error: {str(e)}",
