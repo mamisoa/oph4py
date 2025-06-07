@@ -17,16 +17,18 @@ function queryParams_transactions(params) {
 	let query = "";
 
 	// Get filter values
-	const selectedDate = document.getElementById("filterDate").value;
+	const selectedStartDate = document.getElementById("filterStartDate").value;
+	const selectedEndDate = document.getElementById("filterEndDate").value;
 	const selectedSenior = document.getElementById("selectSenior").value;
 
-	// Date filtering - use custom parameter format
-	if (selectedDate) {
-		const startDate = selectedDate + " 00:00:00";
-		const endDate = selectedDate + " 23:59:59";
-		query += `&date_start=${encodeURIComponent(
-			startDate
-		)}&date_end=${encodeURIComponent(endDate)}`;
+	// Date range filtering - use custom parameter format
+	if (selectedStartDate) {
+		const startDate = selectedStartDate + " 00:00:00";
+		query += `&date_start=${encodeURIComponent(startDate)}`;
+	}
+	if (selectedEndDate) {
+		const endDate = selectedEndDate + " 23:59:59";
+		query += `&date_end=${encodeURIComponent(endDate)}`;
 	}
 
 	// Senior filtering - now properly supported server-side
@@ -572,9 +574,23 @@ function initDailyTransactions() {
 		},
 	});
 
+	// Initialize date range inputs to today by default
+	const today = window.TODAY_DATE || new Date().toISOString().split("T")[0];
+	document.getElementById("filterStartDate").value = today;
+	document.getElementById("filterEndDate").value = today;
+
 	// Set up filter event handlers with debouncing for performance
-	$("#filterDate, #selectSenior").change(function () {
+	$("#filterStartDate, #filterEndDate, #selectSenior").change(function () {
 		console.log("Filter changed");
+
+		// Validate date range
+		const startDate = document.getElementById("filterStartDate").value;
+		const endDate = document.getElementById("filterEndDate").value;
+
+		if (startDate && endDate && startDate > endDate) {
+			// If start date is after end date, set end date to start date
+			document.getElementById("filterEndDate").value = startDate;
+		}
 
 		// Clear previous timeout
 		if (filterTimeout) {
@@ -585,15 +601,32 @@ function initDailyTransactions() {
 		showLoadingState();
 
 		// Update current date display immediately
-		const selectedDate = document.getElementById("filterDate").value;
+		const selectedStartDate = document.getElementById("filterStartDate").value;
+		const selectedEndDate = document.getElementById("filterEndDate").value;
 		const selectedSenior = document.getElementById("selectSenior").value;
 		const seniorText = selectedSenior
 			? $("#selectSenior option:selected").text()
 			: "All seniors";
 
-		document.getElementById("currentDateDisplay").textContent = selectedDate
-			? `${selectedDate} (${seniorText})`
-			: `All dates (${seniorText})`;
+		// Create date range display text
+		let dateRangeText = "";
+		if (selectedStartDate && selectedEndDate) {
+			if (selectedStartDate === selectedEndDate) {
+				dateRangeText = `${selectedStartDate}`;
+			} else {
+				dateRangeText = `${selectedStartDate} to ${selectedEndDate}`;
+			}
+		} else if (selectedStartDate) {
+			dateRangeText = `From: ${selectedStartDate}`;
+		} else if (selectedEndDate) {
+			dateRangeText = `Until: ${selectedEndDate}`;
+		} else {
+			dateRangeText = "All dates";
+		}
+
+		document.getElementById(
+			"currentDateDisplay"
+		).textContent = `${dateRangeText} (${seniorText})`;
 
 		// Debounce the actual API call to avoid excessive requests
 		filterTimeout = setTimeout(function () {
@@ -601,46 +634,35 @@ function initDailyTransactions() {
 		}, 300); // 300ms delay
 	});
 
-	// Today's transactions button
-	$("#btnTodayTransactions").click(function () {
-		document.getElementById("filterDate").value = window.TODAY_DATE;
-		$("#filterDate").trigger("change");
-
-		// Update button states
-		$(this).removeClass("btn-outline-dark").addClass("btn-dark");
-		$("#btnAllTransactions")
-			.removeClass("btn-dark")
-			.addClass("btn-outline-dark");
-	});
-
-	// All transactions button
-	$("#btnAllTransactions").click(function () {
-		document.getElementById("filterDate").value = "";
-		$("#filterDate").trigger("change");
-
-		// Update button states
-		$(this).removeClass("btn-outline-dark").addClass("btn-dark");
-		$("#btnTodayTransactions")
-			.removeClass("btn-dark")
-			.addClass("btn-outline-dark");
-	});
-
-	// Load today's transactions by default
-	$("#btnTodayTransactions").click();
+	// Trigger initial load with today's date range
+	$("#filterStartDate").trigger("change");
 }
 
 /**
  * Export filtered transactions to CSV
  */
 function exportToCSV() {
-	const selectedDate = document.getElementById("filterDate").value;
+	const selectedStartDate = document.getElementById("filterStartDate").value;
+	const selectedEndDate = document.getElementById("filterEndDate").value;
 	const selectedSenior = document.getElementById("selectSenior").value;
 	const seniorText = selectedSenior
 		? $("#selectSenior option:selected").text()
 		: "all-seniors";
 
 	// Build filename based on filters
-	const dateText = selectedDate || "all-dates";
+	let dateText = "all-dates";
+	if (selectedStartDate && selectedEndDate) {
+		if (selectedStartDate === selectedEndDate) {
+			dateText = selectedStartDate;
+		} else {
+			dateText = `${selectedStartDate}-to-${selectedEndDate}`;
+		}
+	} else if (selectedStartDate) {
+		dateText = `from-${selectedStartDate}`;
+	} else if (selectedEndDate) {
+		dateText = `until-${selectedEndDate}`;
+	}
+
 	const filename = `daily-transactions-${dateText}-${seniorText
 		.replace(/\s+/g, "-")
 		.toLowerCase()}.csv`;

@@ -1215,3 +1215,304 @@ graph TD
    - Maintaining referential integrity in UI
 
 This pattern ensures robust data handling when transitioning from simple to complex API responses while maintaining frontend functionality and user experience.
+
+### Date Range Filter Enhancement Pattern
+
+#### Overview
+
+A pattern for enhancing user interfaces by replacing binary toggle controls with flexible date range selection. This pattern demonstrates how to evolve from simple on/off filtering to sophisticated range-based filtering while maintaining backward compatibility and improving user experience.
+
+#### Problem Context
+
+Traditional toggle-based filtering (e.g., "Today's Transactions" vs "All Transactions") provides limited flexibility and forces users into binary choices. Users often need to filter data for specific date ranges, custom periods, or partial ranges that don't fit the toggle model.
+
+#### Implementation Pattern
+
+##### 1. Template Enhancement
+
+**Before (Toggle Buttons):**
+
+```html
+<div class="col-lg-6 col-md-12 mb-3">
+    <div class="btn-group" role="group">
+        <button type="button" id="btnTodayTransactions" class="btn btn-dark">Today's Transactions</button>
+        <button type="button" id="btnAllTransactions" class="btn btn-outline-dark">All Transactions</button>
+    </div>
+</div>
+```
+
+**After (Date Range Inputs):**
+
+```html
+<div class="col-lg-3 col-md-6 mb-3">
+    <div class="form-floating">
+        <input type="date" class="form-control" id="filterStartDate" value="">
+        <label for="filterStartDate">Start Date</label>
+    </div>
+</div>
+<div class="col-lg-3 col-md-6 mb-3">
+    <div class="form-floating">
+        <input type="date" class="form-control" id="filterEndDate" value="">
+        <label for="filterEndDate">End Date</label>
+    </div>
+</div>
+```
+
+##### 2. JavaScript Logic Enhancement
+
+**Before (Toggle Logic):**
+
+```javascript
+// Binary toggle approach
+$("#btnTodayTransactions").click(function () {
+    document.getElementById("filterDate").value = window.TODAY_DATE;
+    $("#filterDate").trigger("change");
+    // Update button states...
+});
+
+$("#btnAllTransactions").click(function () {
+    document.getElementById("filterDate").value = "";
+    $("#filterDate").trigger("change");
+    // Update button states...
+});
+```
+
+**After (Date Range Logic):**
+
+```javascript
+// Flexible date range approach
+function initDailyTransactions() {
+    // Initialize date range to today by default
+    const today = window.TODAY_DATE || new Date().toISOString().split('T')[0];
+    document.getElementById("filterStartDate").value = today;
+    document.getElementById("filterEndDate").value = today;
+
+    // Set up filter event handlers with date validation
+    $("#filterStartDate, #filterEndDate, #selectSenior").change(function () {
+        // Validate date range
+        const startDate = document.getElementById("filterStartDate").value;
+        const endDate = document.getElementById("filterEndDate").value;
+        
+        if (startDate && endDate && startDate > endDate) {
+            document.getElementById("filterEndDate").value = startDate;
+        }
+
+        // Update display and trigger API call...
+    });
+}
+```
+
+##### 3. API Parameter Enhancement
+
+**Before (Single Date):**
+
+```javascript
+function queryParams_transactions(params) {
+    const selectedDate = document.getElementById("filterDate").value;
+    
+    if (selectedDate) {
+        const startDate = selectedDate + " 00:00:00";
+        const endDate = selectedDate + " 23:59:59";
+        query += `&date_start=${encodeURIComponent(startDate)}&date_end=${encodeURIComponent(endDate)}`;
+    }
+}
+```
+
+**After (Date Range):**
+
+```javascript
+function queryParams_transactions(params) {
+    const selectedStartDate = document.getElementById("filterStartDate").value;
+    const selectedEndDate = document.getElementById("filterEndDate").value;
+    
+    if (selectedStartDate) {
+        const startDate = selectedStartDate + " 00:00:00";
+        query += `&date_start=${encodeURIComponent(startDate)}`;
+    }
+    if (selectedEndDate) {
+        const endDate = selectedEndDate + " 23:59:59";
+        query += `&date_end=${encodeURIComponent(endDate)}`;
+    }
+}
+```
+
+##### 4. Smart Display Logic
+
+```javascript
+// Create intelligent date range display text
+function updateDateRangeDisplay() {
+    const selectedStartDate = document.getElementById("filterStartDate").value;
+    const selectedEndDate = document.getElementById("filterEndDate").value;
+    
+    let dateRangeText = "";
+    if (selectedStartDate && selectedEndDate) {
+        if (selectedStartDate === selectedEndDate) {
+            dateRangeText = `${selectedStartDate}`;  // Single day
+        } else {
+            dateRangeText = `${selectedStartDate} to ${selectedEndDate}`;  // Range
+        }
+    } else if (selectedStartDate) {
+        dateRangeText = `From: ${selectedStartDate}`;  // Open-ended start
+    } else if (selectedEndDate) {
+        dateRangeText = `Until: ${selectedEndDate}`;  // Open-ended end
+    } else {
+        dateRangeText = "All dates";  // No filter
+    }
+    
+    document.getElementById("currentDateDisplay").textContent = dateRangeText;
+}
+```
+
+##### 5. Export Enhancement
+
+```javascript
+function exportToCSV() {
+    const selectedStartDate = document.getElementById("filterStartDate").value;
+    const selectedEndDate = document.getElementById("filterEndDate").value;
+    
+    // Smart filename generation based on date range
+    let dateText = "all-dates";
+    if (selectedStartDate && selectedEndDate) {
+        if (selectedStartDate === selectedEndDate) {
+            dateText = selectedStartDate;
+        } else {
+            dateText = `${selectedStartDate}-to-${selectedEndDate}`;
+        }
+    } else if (selectedStartDate) {
+        dateText = `from-${selectedStartDate}`;
+    } else if (selectedEndDate) {
+        dateText = `until-${selectedEndDate}`;
+    }
+    
+    const filename = `daily-transactions-${dateText}-${seniorText}.csv`;
+    // Export with dynamic filename...
+}
+```
+
+#### Enhanced User Experience Features
+
+##### 1. Date Range Validation
+
+```javascript
+// Automatic correction of invalid date ranges
+if (startDate && endDate && startDate > endDate) {
+    // If start date is after end date, set end date to start date
+    document.getElementById("filterEndDate").value = startDate;
+}
+```
+
+##### 2. Smart Defaults
+
+```javascript
+// Initialize to today's date range (equivalent to previous "Today's Transactions")
+const today = window.TODAY_DATE || new Date().toISOString().split('T')[0];
+document.getElementById("filterStartDate").value = today;
+document.getElementById("filterEndDate").value = today;
+```
+
+##### 3. Responsive Layout
+
+```html
+<!-- Bootstrap responsive grid for date inputs -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3"><!-- Start Date --></div>
+    <div class="col-lg-3 col-md-6 mb-3"><!-- End Date --></div>
+    <div class="col-lg-6 col-md-12 mb-3"><!-- Other filters --></div>
+</div>
+```
+
+#### Migration Strategy
+
+##### 1. Backward Compatibility
+
+- **Default Behavior**: Maintain equivalent functionality to previous toggle behavior
+- **API Compatibility**: Leverage existing backend API that already supports date ranges
+- **User Experience**: No learning curve - more intuitive than toggle buttons
+
+##### 2. Gradual Enhancement
+
+```javascript
+// Phase 1: Replace toggle with single date input
+// Phase 2: Add second date input for range selection
+// Phase 3: Add validation and smart defaults
+// Phase 4: Enhance export and display logic
+```
+
+##### 3. Testing Approach
+
+- **Default State**: Verify page loads with today's transactions (same as before)
+- **Single Day**: Test same start and end date
+- **Date Range**: Test different start and end dates
+- **Validation**: Test invalid date combinations
+- **Export**: Verify filename generation for all scenarios
+
+#### Benefits
+
+1. **Enhanced Flexibility**
+   - Users can select any date range instead of binary choices
+   - Supports single days, ranges, or open-ended periods
+   - More granular control over data filtering
+
+2. **Improved User Experience**
+   - More intuitive than toggle buttons
+   - Visual validation prevents invalid selections
+   - Smart defaults maintain familiar behavior
+
+3. **Technical Advantages**
+   - Leverages existing API infrastructure
+   - Maintains all performance optimizations (debouncing, pagination)
+   - Clean, maintainable code structure
+
+4. **Future-Proof Design**
+   - Easy to extend with additional date-related features
+   - Scalable pattern for other range-based filters
+   - Consistent with modern UI/UX principles
+
+#### When to Use This Pattern
+
+1. **Temporal Data Filtering**
+   - Any interface with date-based filtering needs
+   - Reports and analytics dashboards
+   - Transaction or event management systems
+
+2. **Binary to Range Evolution**
+   - Existing toggle-based filters that limit user flexibility
+   - Simple on/off filters that users want to customize
+   - Legacy interfaces needing modernization
+
+3. **User-Driven Requirements**
+   - Users requesting more flexible date selection
+   - Business requirements for custom reporting periods
+   - Compliance needs for specific date range reporting
+
+#### Implementation Checklist
+
+1. **Planning Phase**
+   - [ ] Identify current toggle limitations
+   - [ ] Verify backend API supports date ranges
+   - [ ] Plan responsive layout for date inputs
+
+2. **Template Updates**
+   - [ ] Replace toggle buttons with date inputs
+   - [ ] Use Bootstrap form-floating for consistency
+   - [ ] Implement responsive grid layout
+
+3. **JavaScript Enhancement**
+   - [ ] Remove toggle button logic
+   - [ ] Add date range initialization
+   - [ ] Implement date validation
+   - [ ] Update API parameter generation
+   - [ ] Enhance display logic
+
+4. **Validation & Testing**
+   - [ ] Test default behavior (today-today)
+   - [ ] Verify date range filtering works
+   - [ ] Test edge cases and validation
+   - [ ] Confirm export functionality
+
+5. **Documentation**
+   - [ ] Update user documentation
+   - [ ] Document technical changes
+   - [ ] Add to system patterns
+
+This pattern provides a systematic approach to evolving simple binary filters into sophisticated, user-friendly range selection interfaces while maintaining system performance and backward compatibility.

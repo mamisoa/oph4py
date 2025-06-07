@@ -2,6 +2,68 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-07T23:09:50.687767] - Daily Transactions Date Range Filter Enhancement
+
+### Changed
+
+- **Filter Control Enhancement**: Replaced single date + toggle buttons with flexible date range selection
+  - **Removed**: "Today's Transactions" and "All Transactions" toggle buttons
+  - **Added**: Start Date and End Date picker inputs for precise date range selection
+  - **Default Behavior**: Both dates default to today (equivalent to previous "Today's Transactions" mode)
+  - **Layout Optimization**: Reorganized filter controls using responsive Bootstrap grid
+
+### Enhanced
+
+- **Date Range Functionality**: Complete date range filtering system
+  - **Flexible Selection**: Users can select any start and end date combination
+  - **Smart Validation**: Automatically adjusts end date if user selects start date after end date
+  - **Intelligent Display**: Shows "2025-01-15" for single day, "2025-01-15 to 2025-01-20" for ranges
+  - **Fallback Text**: Displays "From: date" or "Until: date" for partial ranges
+
+- **Export Enhancement**: Updated CSV export filename generation for date ranges
+  - **Single Date**: `daily-transactions-2025-01-15-dr-smith.csv`
+  - **Date Range**: `daily-transactions-2025-01-15-to-2025-01-20-dr-smith.csv`
+  - **Partial Range**: `daily-transactions-from-2025-01-15-dr-smith.csv`
+
+### Technical Details
+
+- **Template Changes**: `templates/billing/daily_transactions.html`
+  - **Replaced**: Single `filterDate` input with `filterStartDate` and `filterEndDate`
+  - **Removed**: Toggle button group (`btnTodayTransactions`, `btnAllTransactions`)
+  - **Enhanced Layout**: Senior dropdown moved to fill the space previously used by toggle buttons
+
+- **JavaScript Updates**: `static/js/daily_transactions.js`
+  - **API Parameters**: Modified `queryParams_transactions()` to send separate `date_start` and `date_end`
+  - **Initialization**: Both date inputs automatically set to today on page load
+  - **Event Handlers**: Updated to listen for changes on both date inputs plus senior dropdown
+  - **Date Validation**: Added logic to prevent end date before start date
+  - **Display Logic**: Enhanced filter status display to show current date range
+
+- **Backend Compatibility**: No changes required
+  - **Existing API**: Custom endpoint `/api/daily_transactions_filtered` already supports `date_start` and `date_end`
+  - **Parameter Format**: API already designed for date range filtering
+
+### Benefits
+
+- **Enhanced Flexibility**: Users can select any date range instead of being limited to "today" vs "all"
+- **Better User Experience**: More intuitive date selection with visual validation
+- **Maintained Performance**: All existing optimizations (debouncing, server-side pagination) preserved
+- **Smart Defaults**: Maintains equivalent behavior to previous "Today's Transactions" default
+- **Professional UX**: Clean, modern interface with intelligent feedback
+
+### Migration Notes
+
+- **User Impact**: No learning curve - interface is more intuitive than toggle buttons
+- **Default Behavior**: Page loads with today's transactions (same as before)
+- **API Compatibility**: Leverages existing backend infrastructure without changes
+- **Export Files**: Filename format enhanced but remains descriptive and organized
+
+**Files Modified**:
+- `templates/billing/daily_transactions.html` - Filter controls replacement
+- `static/js/daily_transactions.js` - Date range logic implementation
+
+**Impact**: More flexible and intuitive date filtering for daily transactions with improved user experience
+
 ## [2025-06-07T22:57:09.111678] - Daily Transactions Worklist ID Display Fix
 
 ### Fixed
