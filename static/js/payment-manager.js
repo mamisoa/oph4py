@@ -192,27 +192,56 @@ class PaymentManager {
 	}
 
 	/**
-	 * Load transaction history
+	 * Load transaction history with pagination support
+	 * @param {number} limit - Number of transactions per page (default: 10)
+	 * @param {number} offset - Number of transactions to skip (default: 0)
+	 * @param {boolean} append - Whether to append results to existing table (default: false)
 	 */
-	async loadTransactionHistory() {
+	async loadTransactionHistory(limit = 10, offset = 0, append = false) {
 		try {
-			const response = await fetch(
+			const url = new URL(
 				`${this.baseUrl}/api/worklist/${this.worklistId}/transactions`
 			);
+			url.searchParams.set("limit", limit.toString());
+			url.searchParams.set("offset", offset.toString());
+
+			const response = await fetch(url);
 
 			if (!response.ok) {
 				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 			}
 
 			const result = await response.json();
+			console.log("Raw API response for transactions:", result);
 
 			if (result.status === "success" && result.data) {
-				this.displayTransactionHistory(result.data);
+				// Handle both old and new API response formats
+				let transactions, pagination;
+
+				if (Array.isArray(result.data)) {
+					// Old format: result.data is directly the transactions array
+					transactions = result.data;
+					pagination = null;
+				} else if (result.data.transactions) {
+					// New format: result.data contains {transactions: [...], pagination: {...}}
+					transactions = result.data.transactions;
+					pagination = result.data.pagination;
+				} else {
+					console.error("Unexpected API response format:", result.data);
+					throw new Error("Invalid API response format");
+				}
+
+				this.displayTransactionHistory(transactions, pagination, append);
 			} else {
 				throw new Error(result.message || "Failed to load transaction history");
 			}
 		} catch (error) {
 			console.error("Error loading transaction history:", error);
+			console.error("Error details:", {
+				url: url.toString(),
+				error: error,
+				stack: error.stack,
+			});
 			this.showTransactionHistoryError(
 				"Error loading transactions: " + error.message
 			);
@@ -311,11 +340,22 @@ class PaymentManager {
 	}
 
 	/**
-	 * Display transaction history with cancel options
+	 * Display transaction history with cancel options and pagination
+	 * @param {Array} transactions - Array of transaction objects
+	 * @param {Object} pagination - Pagination metadata
+	 * @param {boolean} append - Whether to append to existing table content
 	 */
-	displayTransactionHistory(transactions) {
+	displayTransactionHistory(transactions, pagination = null, append = false) {
 		const tbody = document.getElementById("transaction-history-body");
 		if (!tbody) return;
+
+		// Handle null, undefined, or empty transactions
+		if (!transactions || !Array.isArray(transactions)) {
+			console.error("Invalid transactions data:", transactions);
+			tbody.innerHTML =
+				'<tr><td colspan="8" class="text-center text-danger">Error: Invalid transaction data format</td></tr>';
+			return;
+		}
 
 		if (transactions.length === 0) {
 			tbody.innerHTML =
@@ -405,10 +445,103 @@ class PaymentManager {
             `;
 		});
 
-		tbody.innerHTML = html;
+		// Remove optimistic transactions before updating with real data
+		if (!append) {
+			const optimisticRows = tbody.querySelectorAll(".optimistic-transaction");
+			optimisticRows.forEach((row) => row.remove());
+		}
+
+		// Update table content - append or replace
+		if (append && tbody.innerHTML.trim() !== "") {
+			tbody.insertAdjacentHTML("beforeend", html);
+		} else {
+			tbody.innerHTML = html;
+		}
+
+		// Update pagination controls if pagination metadata is provided
+		if (pagination) {
+			this.updatePaginationControls(pagination);
+		}
 
 		// Bind cancel button events
 		this.bindCancelButtonEvents();
+	}
+
+	/**
+	 * Update pagination controls for transaction history
+	 * @param {Object} pagination - Pagination metadata from API
+	 */
+	updatePaginationControls(pagination) {
+		const paginationContainer = document.getElementById(
+			"transaction-pagination"
+		);
+		if (!paginationContainer) return;
+
+		const { total, limit, offset, has_more, current_page, total_pages } =
+			pagination;
+
+		let html = "";
+		if (total > limit) {
+			html = `
+				<div class="d-flex justify-content-between align-items-center mt-3">
+					<span class="text-muted">
+						Showing ${offset + 1}-${Math.min(
+				offset + limit,
+				total
+			)} of ${total} transactions
+					</span>
+					<div>
+						${
+							has_more
+								? `
+							<button class="btn btn-sm btn-outline-primary load-more-transactions" 
+									data-offset="${offset + limit}" data-limit="${limit}">
+								<i class="fas fa-plus me-1"></i>Load More
+							</button>
+						`
+								: ""
+						}
+						${
+							total_pages > 1
+								? `
+							<span class="text-muted ms-2">Page ${current_page} of ${total_pages}</span>
+						`
+								: ""
+						}
+					</div>
+				</div>
+			`;
+		}
+
+		paginationContainer.innerHTML = html;
+
+		// Bind load more button
+		const loadMoreBtn = paginationContainer.querySelector(
+			".load-more-transactions"
+		);
+		if (loadMoreBtn) {
+			loadMoreBtn.addEventListener("click", async (e) => {
+				const offset = parseInt(e.target.dataset.offset);
+				const limit = parseInt(e.target.dataset.limit);
+
+				e.target.disabled = true;
+				e.target.innerHTML =
+					'<i class="fas fa-spinner fa-spin me-1"></i>Loading...';
+
+				try {
+					await this.loadTransactionHistory(limit, offset, true); // append = true
+				} catch (error) {
+					console.error("Error loading more transactions:", error);
+					this.showAlert(
+						"Failed to load more transactions: " + error.message,
+						"warning"
+					);
+				} finally {
+					e.target.disabled = false;
+					e.target.innerHTML = '<i class="fas fa-plus me-1"></i>Load More';
+				}
+			});
+		}
 	}
 
 	/**
@@ -694,10 +827,28 @@ class PaymentManager {
 					"success"
 				);
 
-				// Refresh data
-				await this.loadPaymentSummary();
-				await this.refreshTransactionHistory();
-				this.updatePaymentButton();
+				// Add optimistic transaction to UI immediately
+				this.addOptimisticTransaction(paymentData, result.data);
+
+				// Refresh data in parallel (no await - don't block UI)
+				Promise.allSettled([
+					this.loadPaymentSummary(),
+					this.refreshTransactionHistory(),
+				]).then(([summaryResult, historyResult]) => {
+					if (summaryResult.status === "rejected") {
+						console.error(
+							"Failed to refresh payment summary:",
+							summaryResult.reason
+						);
+					}
+					if (historyResult.status === "rejected") {
+						console.error(
+							"Failed to refresh transaction history:",
+							historyResult.reason
+						);
+					}
+					this.updatePaymentButton();
+				});
 			} else {
 				throw new Error(result.message || "Failed to process payment");
 			}
@@ -709,6 +860,60 @@ class PaymentManager {
 			const confirmBtn = document.getElementById("confirm-payment-btn");
 			confirmBtn.disabled = false;
 			confirmBtn.innerHTML = '<i class="fas fa-check me-1"></i>Confirm Payment';
+		}
+	}
+
+	/**
+	 * Add optimistic transaction to UI before API refresh
+	 * @param {Object} paymentData - The original payment data submitted
+	 * @param {Object} responseData - The response data from payment API
+	 */
+	addOptimisticTransaction(paymentData, responseData) {
+		const tbody = document.getElementById("transaction-history-body");
+		if (!tbody) return;
+
+		// Remove "no transactions" message if present
+		const noTransactionsRow = tbody.querySelector('tr td[colspan="8"]');
+		if (noTransactionsRow) {
+			noTransactionsRow.parentElement.remove();
+		}
+
+		// Create optimistic transaction row
+		const now = new Date();
+		const totalAmount =
+			paymentData.amount_card +
+			paymentData.amount_cash +
+			paymentData.amount_invoice;
+
+		const optimisticRow = `
+			<tr class="table-info optimistic-transaction">
+				<td>${now.toLocaleDateString()}</td>
+				<td>€${paymentData.amount_card.toFixed(2)}</td>
+				<td>€${paymentData.amount_cash.toFixed(2)}</td>
+				<td>€${paymentData.amount_invoice.toFixed(2)}</td>
+				<td class="fw-bold">€${totalAmount.toFixed(2)}</td>
+				<td>
+					<span class="badge bg-info">Processing...</span>
+					<br><small class="text-muted">Balance: €${(
+						responseData.remaining_balance || 0
+					).toFixed(2)}</small>
+				</td>
+				<td><small class="text-muted">Processing...</small></td>
+				<td><small class="text-muted">Just processed</small></td>
+			</tr>
+		`;
+
+		// Prepend to table (newest first)
+		tbody.insertAdjacentHTML("afterbegin", optimisticRow);
+
+		// Update payment summary optimistically
+		if (this.paymentSummary) {
+			this.paymentSummary.total_paid += totalAmount;
+			this.paymentSummary.remaining_balance =
+				responseData.remaining_balance || 0;
+			this.paymentSummary.payment_status =
+				responseData.payment_status || "partial";
+			this.updateSummaryDisplay();
 		}
 	}
 

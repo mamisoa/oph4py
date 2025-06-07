@@ -372,9 +372,13 @@ def process_payment(worklist_id: int):
 @action("api/worklist/<worklist_id:int>/transactions", method=["GET"])
 def transaction_history(worklist_id: int):
     """
-    Get transaction history for a worklist
+    Get transaction history for a worklist with pagination support
 
-    Returns both active and cancelled transactions with their status.
+    Query parameters:
+        limit: Number of transactions per page (default: 10, max: 50)
+        offset: Number of transactions to skip (default: 0)
+
+    Returns both active and cancelled transactions with their status and pagination info.
     """
     try:
         logger.info(f"Transaction history request for worklist {worklist_id}")
@@ -385,7 +389,14 @@ def transaction_history(worklist_id: int):
                 message="Worklist not found", status_code=404, error_type="not_found"
             )
 
-        # Get ALL transactions for the worklist (both active and cancelled)
+        # Get pagination parameters from query string
+        limit = min(int(request.query.get("limit") or 10), 50)  # Max 50 per page
+        offset = max(int(request.query.get("offset") or 0), 0)
+
+        # Get total count first for pagination metadata
+        total_count = db(db.worklist_transactions.id_worklist == worklist_id).count()
+
+        # Get paginated transactions for the worklist (both active and cancelled)
         transactions = db(db.worklist_transactions.id_worklist == worklist_id).select(
             db.worklist_transactions.ALL,
             db.auth_user.first_name,
@@ -394,6 +405,7 @@ def transaction_history(worklist_id: int):
                 db.worklist_transactions.created_by == db.auth_user.id
             ),
             orderby=~db.worklist_transactions.transaction_date,
+            limitby=(offset, offset + limit),
         )
 
         history = []
@@ -452,7 +464,20 @@ def transaction_history(worklist_id: int):
                 }
             )
 
-        return APIResponse.success(data=history)
+        # Calculate pagination metadata
+        has_more = (offset + limit) < total_count
+        pagination = {
+            "total": total_count,
+            "limit": limit,
+            "offset": offset,
+            "has_more": has_more,
+            "current_page": (offset // limit) + 1,
+            "total_pages": (total_count + limit - 1) // limit,  # Ceiling division
+        }
+
+        return APIResponse.success(
+            data={"transactions": history, "pagination": pagination}
+        )
 
     except Exception as e:
         logger.error(f"Error in transaction_history: {str(e)}")
