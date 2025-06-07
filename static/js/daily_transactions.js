@@ -145,11 +145,10 @@ function formatTransactionRow(transaction) {
 		_raw_total_amount: transaction.total_amount || 0,
 		_raw_payment_status: transaction.payment_status || "unknown",
 		// Store detail data (removed from main table view)
-		_detail_procedure_name:
-			procedure.exam_name || `WL-${transaction.id_worklist || "N/A"}`,
+		_detail_procedure_name: procedure.exam_name || `WL-${worklist.id || "N/A"}`,
 		_detail_laterality: formatLaterality(worklist.laterality),
-		_detail_worklist_id: transaction.id_worklist,
-		_detail_patient_auth_id: patient.id || transaction.id_auth_user || "N/A",
+		_detail_worklist_id: worklist.id || "N/A",
+		_detail_patient_auth_id: patient.id || "N/A",
 		_detail_procedure_raw: procedure,
 		_detail_worklist_raw: worklist,
 	};

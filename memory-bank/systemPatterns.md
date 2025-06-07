@@ -217,6 +217,7 @@ The API modularization project was completed in several phases:
    - Shared utilities centralized in core modules
 
 2. **Standardized Response Handling**
+
    ```python
    class APIResponse:
        @staticmethod
@@ -241,6 +242,7 @@ The API modularization project was completed in several phases:
    ```
 
 3. **Consistent Error Handling**
+
    ```python
    def handle_rest_api_request(tablename, rec_id=None):
        try:
@@ -271,6 +273,7 @@ The API migration has been completed following this pattern:
    - All utility functions are now properly located in api/core/utils.py
 
 2. **Compatibility Layer**
+
    ```python
    # Old file (rest.py)
    # COMPATIBILITY NOTICE:
@@ -291,6 +294,7 @@ The API migration has been completed following this pattern:
    ```
 
 3. **Import Strategy**
+
    ```python
    # Import modular endpoints in main init file
    from .api import beid, email, endpoint_utils
@@ -569,6 +573,7 @@ graph TD
 ##### 1. Query Optimization Pattern
 
 **Before (Inefficient):**
+
 ```python
 # Step 1: Subquery to get worklist IDs
 worklist_ids = db(db.worklist.senior == senior_id).select(db.worklist.id)
@@ -579,6 +584,7 @@ query &= db.worklist_transactions.id_worklist.belongs(worklist_id_list)
 ```
 
 **After (Optimized):**
+
 ```python
 # Direct JOIN - single query
 if senior_id:
@@ -953,3 +959,259 @@ def api_daily_transactions_filtered():
    - Maintain focus management
 
 This pattern significantly improves user experience in data-heavy interfaces while maintaining comprehensive data access and system performance.
+
+### API-Frontend Data Structure Alignment Pattern
+
+#### Overview
+
+A critical pattern for maintaining consistency between API responses and frontend data consumption, particularly when enhancing APIs with complex relationship lookups. This pattern ensures that changes to API data structures are properly reflected in frontend processing logic.
+
+#### Problem Context
+
+When enhancing APIs to include complete relationship lookups (moving from simple foreign key IDs to nested objects), frontend code that expects simple values can break. This commonly occurs when:
+
+1. API returns `id_worklist: 123` (number)
+2. API is enhanced to return `id_worklist: {id: 123, laterality: "both", procedure: {...}}` (object)
+3. Frontend code still tries to use `id_worklist` as a simple ID
+
+#### Implementation Pattern
+
+##### 1. API Enhancement with Nested Lookups
+
+```python
+@action("api/daily_transactions_filtered")
+@action.uses(session, auth.user, db)
+def api_daily_transactions_filtered():
+    """Enhanced API with complete relationship lookups"""
+    
+    # Always join with worklist to get laterality and procedure info
+    final_query = (
+        (db.worklist_transactions.id_worklist == db.worklist.id) &
+        (db.worklist_transactions.id_auth_user == db.auth_user.id) &
+        base_query
+    )
+    
+    # Execute comprehensive query with all required lookups
+    senior_user = db.auth_user.with_alias('senior_user')
+    results = db(final_query).select(
+        db.worklist_transactions.ALL,
+        db.auth_user.id,
+        db.auth_user.first_name,
+        db.auth_user.last_name,
+        db.auth_user.email,
+        db.worklist.id,
+        db.worklist.procedure,
+        db.worklist.laterality,
+        db.worklist.senior,
+        db.procedure.id,
+        db.procedure.exam_name,
+        senior_user.id,
+        senior_user.first_name,
+        senior_user.last_name,
+        left=[
+            db.procedure.on(db.worklist.procedure == db.procedure.id),
+            senior_user.on(db.worklist.senior == senior_user.id)
+        ],
+        orderby=orderby,
+        limitby=(offset, offset + limit),
+    )
+    
+    # Build complete data structure expected by JavaScript
+    for row in results:
+        transaction = row.worklist_transactions
+        patient = row.auth_user
+        worklist = row.worklist
+        procedure = row.procedure
+        senior = row.senior_user
+
+        items.append({
+            "id": transaction.id,
+            "id_worklist": {  # Nested object instead of simple ID
+                "id": worklist.id if worklist else transaction.id_worklist,
+                "laterality": worklist.laterality if worklist else None,
+                "procedure": {
+                    "id": procedure.id if procedure else None,
+                    "exam_name": procedure.exam_name if procedure else None,
+                } if procedure else None,
+                "senior": {
+                    "id": senior.id if senior else None,
+                    "first_name": senior.first_name if senior else None,
+                    "last_name": senior.last_name if senior else None,
+                } if senior else None,
+            },
+            "id_auth_user": {
+                "id": patient.id,
+                "first_name": patient.first_name,
+                "last_name": patient.last_name,
+                "email": patient.email,
+            },
+            # ... other transaction data
+        })
+```
+
+##### 2. Frontend Data Structure Adaptation
+
+```javascript
+function formatTransactionRow(transaction) {
+    console.log("Formatting transaction:", transaction);
+
+    // Handle different response structures - extract from nested objects
+    const worklist = transaction.id_worklist || {};  // Now an object!
+    const patient = transaction.id_auth_user || {};
+    const procedure = worklist.procedure || {};
+    const senior = worklist.senior || {};
+
+    return {
+        id: transaction.id,
+        patient_name: formatPatientName(patient),
+        senior_name: formatSeniorName(senior),
+        
+        // CRITICAL: Extract IDs from nested structures
+        _detail_procedure_name: procedure.exam_name || `WL-${worklist.id || "N/A"}`,
+        _detail_laterality: formatLaterality(worklist.laterality),
+        _detail_worklist_id: worklist.id || "N/A",  // Extract ID, not the object!
+        _detail_patient_auth_id: patient.id || "N/A",
+        
+        // Store raw values for summary calculations
+        _raw_total_amount: transaction.total_amount || 0,
+    };
+}
+```
+
+#### Common Pitfalls and Solutions
+
+##### 1. Object Reference vs Value Error
+
+**Problem:**
+
+```javascript
+// Before enhancement: id_worklist was 123
+_detail_worklist_id: transaction.id_worklist,  // Works with number
+
+// After enhancement: id_worklist is {id: 123, laterality: "both", ...}
+_detail_worklist_id: transaction.id_worklist,  // Shows "[object Object]"
+```
+
+**Solution:**
+
+```javascript
+// Extract the actual ID from the nested structure
+_detail_worklist_id: worklist.id || "N/A",
+```
+
+##### 2. Fallback Value Construction
+
+**Problem:**
+
+```javascript
+// Using nested object in string interpolation
+`WL-${transaction.id_worklist || "N/A"}`  // Results in "WL-[object Object]"
+```
+
+**Solution:**
+
+```javascript
+// Extract ID before using in string construction
+`WL-${worklist.id || "N/A"}`  // Results in "WL-324609"
+```
+
+##### 3. Data Extraction Consistency
+
+**Problem:**
+
+```javascript
+// Inconsistent data extraction methods
+const patient = getattr(row, 'auth_user', None)  // Python-style
+const senior = row.senior_user                   // Direct access
+```
+
+**Solution:**
+
+```javascript
+// Consistent extraction pattern
+const patient = row.auth_user
+const senior = row.senior_user
+const worklist = row.worklist
+const procedure = row.procedure
+```
+
+#### Data Flow Diagram
+
+```mermaid
+graph TD
+    A["🗄️ Database Tables<br/>Separate entities"] --> B["🔗 API LEFT JOINs<br/>Relationship lookups"]
+    B --> C["🏗️ Nested Object Construction<br/>Complete data structure"]
+    C --> D["📡 API Response<br/>Hierarchical JSON"]
+    D --> E["📱 Frontend Processing<br/>Extract from nested objects"]
+    E --> F["📊 Table Display<br/>Formatted data"]
+    
+    G["⚠️ Data Structure Mismatch"] --> H["🔧 Frontend Adaptation<br/>Extract IDs properly"]
+    H --> I["✅ Correct Display<br/>WL-324609 instead of [object Object]"]
+    
+    style A fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style C fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    style G fill:#ffebee,stroke:#f44336,stroke-width:2px
+    style I fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+```
+
+#### Implementation Checklist
+
+1. **API Enhancement Phase**
+   - [ ] Design nested object structure
+   - [ ] Implement comprehensive LEFT JOINs
+   - [ ] Test response structure with sample data
+   - [ ] Document new response format
+
+2. **Frontend Adaptation Phase**
+   - [ ] Identify all places using simple ID values
+   - [ ] Update extraction logic for nested objects
+   - [ ] Test display of all derived values
+   - [ ] Verify summary calculations still work
+
+3. **Validation Phase**
+   - [ ] Check for "[object Object]" displays
+   - [ ] Verify all IDs display correctly
+   - [ ] Test edge cases (missing data)
+   - [ ] Confirm backward compatibility if needed
+
+4. **Documentation Phase**
+   - [ ] Update API documentation
+   - [ ] Document data structure changes
+   - [ ] Add migration notes to changelog
+   - [ ] Update frontend code comments
+
+#### Benefits
+
+1. **Complete Data Access**
+   - All relationship data available in single API call
+   - Eliminates need for multiple API requests
+   - Provides comprehensive context for display
+
+2. **Performance Optimization**
+   - Reduced API calls through complete lookups
+   - Efficient database queries with proper JOINs
+   - Single source of truth for related data
+
+3. **Enhanced User Experience**
+   - Rich information display (procedure names, laterality)
+   - Contextual details without additional loading
+   - Consistent data presentation
+
+#### When to Use This Pattern
+
+1. **Complex Relationship Display**
+   - Tables showing data from multiple related entities
+   - Need for both IDs and descriptive information
+   - User interfaces requiring rich context
+
+2. **Performance-Critical Interfaces**
+   - Avoiding N+1 query problems
+   - Reducing API call overhead
+   - Optimizing database query patterns
+
+3. **Data Consistency Requirements**
+   - Ensuring related data is always in sync
+   - Preventing partial data display issues
+   - Maintaining referential integrity in UI
+
+This pattern ensures robust data handling when transitioning from simple to complex API responses while maintaining frontend functionality and user experience.

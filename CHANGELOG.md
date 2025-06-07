@@ -2,6 +2,110 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-07T22:57:09.111678] - Daily Transactions Worklist ID Display Fix
+
+### Fixed
+
+- **Worklist ID Display Issue**: Resolved "WL-[object Object]" display in transaction detail view
+  - **Root Cause**: JavaScript trying to use nested object as ID after API enhancement
+  - **Data Structure Issue**: API now returns `id_worklist` as object instead of number
+  - **Field Access Fix**: Updated JavaScript to properly extract ID from nested worklist object
+
+### Changed
+
+- **JavaScript Data Extraction**: Updated `formatTransactionRow()` in `static/js/daily_transactions.js`
+  - **Before**: `_detail_worklist_id: transaction.id_worklist` (used object as ID)
+  - **After**: `_detail_worklist_id: worklist.id` (extracts actual ID number)
+  - **Procedure Fallback**: Updated fallback to use `worklist.id` instead of `transaction.id_worklist`
+  - **Patient ID**: Simplified to use `patient.id` directly
+
+### Technical Details
+
+- **Data Structure Change Impact**: 
+  - **Before API Enhancement**: `transaction.id_worklist = 123` (number)
+  - **After API Enhancement**: `transaction.id_worklist = {id: 123, laterality: "both", ...}` (object)
+  - **JavaScript Adaptation**: Updated to extract `worklist.id` from the nested structure
+
+- **Field Mappings Updated**:
+  - **Worklist ID**: `worklist.id` → displays "WL-324609"
+  - **Laterality**: `worklist.laterality` → displays "Both" 
+  - **Procedure**: `procedure.exam_name` → displays "Routine consultation"
+  - **Patient ID**: `patient.id` → displays actual patient ID number
+
+### Benefits
+
+- **Correct ID Display**: Worklist ID now shows "WL-324609" instead of "[object Object]"
+- **Complete Information**: All transaction detail fields now display properly
+- **Data Consistency**: JavaScript properly handles the enhanced API response structure
+- **User Experience**: Detail view shows all relevant information correctly
+
+**Files Modified**:
+- `static/js/daily_transactions.js` - Fixed data extraction from nested API response
+
+**Impact**: Transaction detail view now displays all information correctly including worklist ID
+
+## [2025-06-07T22:54:52.303016] - Daily Transactions Laterality Display Fix
+
+### Fixed
+
+- **Laterality Not Showing**: Resolved missing laterality display in daily transactions table
+  - **Root Cause**: Custom API endpoint was not including worklist, procedure, and senior lookup data
+  - **API Enhancement**: Modified `api_daily_transactions_filtered()` to include complete relationship lookups
+  - **Data Structure**: Added comprehensive nested object structure matching JavaScript expectations
+
+### Changed
+
+- **API Query Enhancement**: Updated custom daily transactions API endpoint
+  - **Always Join Worklist**: Modified to always join with worklist table for laterality and procedure data
+  - **LEFT JOIN Relationships**: Added LEFT JOINs for procedure and senior_user tables
+  - **Complete Data Structure**: API now returns nested objects for worklist, procedure, and senior information
+
+### Added
+
+- **Complete Lookup Chain**: Enhanced API response with all required relationship data
+  - **Worklist Data**: `id_worklist` now contains laterality, procedure, and senior information
+  - **Procedure Information**: Nested procedure object with exam_name for display
+  - **Senior Doctor Data**: Nested senior object with first_name and last_name
+  - **Patient Email**: Added email field to patient information
+
+### Technical Details
+
+- **Controllers.py Changes**: `api_daily_transactions_filtered()` function
+  - **Modified Query Structure**: Changed from conditional joins to always-join worklist table
+  - **Added LEFT JOINs**: Included procedure and senior_user table relationships
+  - **Enhanced SELECT**: Added all required fields for nested object construction
+  - **Response Formatting**: Updated item construction to build nested data structure
+
+- **Database Relationships Used**:
+  - `worklist_transactions.id_worklist → worklist.id` (INNER JOIN)
+  - `worklist.procedure → procedure.id` (LEFT JOIN) 
+  - `worklist.senior → auth_user.id` (LEFT JOIN as senior_user)
+  - `worklist_transactions.id_auth_user → auth_user.id` (INNER JOIN)
+
+- **API Response Structure**:
+  ```json
+  {
+    "id_worklist": {
+      "id": 123,
+      "laterality": "right", 
+      "procedure": {"id": 45, "exam_name": "Fundus Photography"},
+      "senior": {"id": 67, "first_name": "Dr. John", "last_name": "Smith"}
+    }
+  }
+  ```
+
+### Benefits
+
+- **Laterality Now Visible**: Laterality information properly displays in transaction detail views
+- **Complete Data Display**: Procedure names and senior doctor names now show correctly
+- **Proper Lookups**: All relationship data available for JavaScript processing
+- **Enhanced Details**: Expandable detail view shows complete transaction context
+
+**Files Modified**:
+- `controllers.py` - Enhanced API endpoint with complete lookups
+
+**Impact**: Laterality, procedure names, and senior information now display correctly in daily transactions
+
 ## [2025-06-07T22:42:50.185626] - Daily Transactions API Patient ID Fix
 
 ### Fixed

@@ -487,10 +487,13 @@ def api_daily_transactions_filtered():
             except ValueError:
                 pass
 
-        # Always join with auth_user for patient information
+        # Build comprehensive query with all required joins
+        # Always join with worklist to get laterality and procedure info
         final_query = (
-            db.worklist_transactions.id_auth_user == db.auth_user.id
-        ) & base_query
+            (db.worklist_transactions.id_worklist == db.worklist.id)
+            & (db.worklist_transactions.id_auth_user == db.auth_user.id)
+            & base_query
+        )
 
         # Search filtering (patient names) - apply to the joined query
         if search:
@@ -515,7 +518,7 @@ def api_daily_transactions_filtered():
         logger.info(f"Query Analysis:")
         logger.info(f"  - Total matching transactions: {total_count}")
         logger.info(f"  - Count query time: {(count_time - start_time):.3f}s")
-        logger.info(f"  - Uses worklist join: {'Yes' if senior_id else 'No'}")
+        logger.info(f"  - Uses worklist join: Yes (always)")
         logger.info(f"  - Uses search filter: {'Yes' if search else 'No'}")
 
         # Build orderby
@@ -532,30 +535,70 @@ def api_daily_transactions_filtered():
 
         orderby = ~orderby_field if order_dir.lower() == "desc" else orderby_field
 
-        # Execute query with pagination
+        # Execute comprehensive query with all required lookups
+        senior_user = db.auth_user.with_alias("senior_user")
         results = db(final_query).select(
             db.worklist_transactions.ALL,
             db.auth_user.id,
             db.auth_user.first_name,
             db.auth_user.last_name,
+            db.auth_user.email,
+            db.worklist.id,
+            db.worklist.procedure,
+            db.worklist.laterality,
+            db.worklist.senior,
+            db.procedure.id,
+            db.procedure.exam_name,
+            senior_user.id,
+            senior_user.first_name,
+            senior_user.last_name,
+            left=[
+                db.procedure.on(db.worklist.procedure == db.procedure.id),
+                senior_user.on(db.worklist.senior == senior_user.id),
+            ],
             orderby=orderby,
             limitby=(offset, offset + limit),
         )
 
-        # Format results for bootstrap table
+        # Format results for bootstrap table with complete lookup data
         items = []
         for row in results:
             transaction = row.worklist_transactions
             patient = row.auth_user
+            worklist = row.worklist
+            procedure = row.procedure
+            senior = row.senior_user
 
+            # Build complete data structure expected by JavaScript
             items.append(
                 {
                     "id": transaction.id,
-                    "id_worklist": transaction.id_worklist,
+                    "id_worklist": {
+                        "id": worklist.id if worklist else transaction.id_worklist,
+                        "laterality": worklist.laterality if worklist else None,
+                        "procedure": (
+                            {
+                                "id": procedure.id if procedure else None,
+                                "exam_name": procedure.exam_name if procedure else None,
+                            }
+                            if procedure
+                            else None
+                        ),
+                        "senior": (
+                            {
+                                "id": senior.id if senior else None,
+                                "first_name": senior.first_name if senior else None,
+                                "last_name": senior.last_name if senior else None,
+                            }
+                            if senior
+                            else None
+                        ),
+                    },
                     "id_auth_user": {
                         "id": patient.id,
                         "first_name": patient.first_name,
                         "last_name": patient.last_name,
+                        "email": patient.email,
                     },
                     "transaction_date": (
                         transaction.transaction_date.isoformat()
