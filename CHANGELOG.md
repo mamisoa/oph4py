@@ -2,6 +2,152 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-07T22:42:50.185626] - Daily Transactions API Patient ID Fix
+
+### Fixed
+
+- **Patient ID Display Issue**: Resolved "[object Object]" display in transaction details
+  - **API Data Structure**: Modified `api_daily_transactions_filtered()` to include patient ID in response
+  - **Backend Changes**: Updated SQL SELECT to include `auth_user.id` field
+  - **Data Format**: Changed API response to include patient ID alongside first_name and last_name
+  - **Removed Email**: Eliminated email field from API response as no longer needed
+
+### Changed
+
+- **API Response Structure**: Updated custom daily transactions API endpoint
+  - **Added**: `id_auth_user.id` to SELECT statement for proper patient identification
+  - **Removed**: `email` field from SELECT and response structure  
+  - **Simplified**: Patient data structure now contains only essential fields (id, first_name, last_name)
+
+### Technical Details
+
+- **Controllers.py Changes**: `api_daily_transactions_filtered()` function
+  - **SELECT Query**: Added `db.auth_user.id` to the select fields
+  - **Response Format**: Updated `id_auth_user` object structure to include patient ID
+  - **Data Cleanup**: Removed email field to match frontend requirements
+
+- **JavaScript Cleanup**: `static/js/daily_transactions.js`
+  - **Debug Removal**: Cleaned up console.log statements used for debugging
+  - **Patient ID Access**: Now properly accesses `patient.id` from API response
+
+### Benefits
+
+- **Correct Patient ID Display**: Detail view now shows actual patient ID numbers
+- **Cleaner API Response**: Removed unnecessary email field reduces data transfer
+- **Better Data Structure**: Simplified patient object with only required fields
+- **Resolved Display Issue**: Fixed "[object Object]" error in patient ID card
+
+**Files Modified**:
+- `controllers.py` - API endpoint data structure update
+- `static/js/daily_transactions.js` - Debug cleanup
+
+**Impact**: Patient ID now displays correctly in transaction detail view
+
+## [2025-06-07T22:35:01.315636] - Daily Transactions Patient Display Cleanup
+
+### Changed
+
+- **Patient Information Display**: Cleaned up patient column for better readability
+  - **Removed Email**: Eliminated email display from patient name column as it was cluttering the view
+  - **Simplified Patient Name**: Now shows only the patient's first and last name in clean format
+  - **Enhanced Details View**: Moved patient identification to expandable details section
+
+- **Detail View Enhancement**: Expanded detail view with patient identification
+  - **Added Patient ID**: Included patient's auth_id in detail view for system reference
+  - **Four-Column Layout**: Updated detail cards to accommodate patient ID information
+  - **Improved Organization**: Better distribution of information across detail cards
+
+### Added
+
+- **Patient ID in Details**: Added patient auth_id display in expandable details section
+  - **User Icon**: Added FontAwesome user-circle icon for patient ID card
+  - **System Reference**: Provides technical reference for patient identification
+  - **Data Structure**: Added `_detail_patient_auth_id` field to transaction row data
+
+### Technical Details
+
+- **JavaScript Changes**: `static/js/daily_transactions.js`
+  - **Modified `formatPatientName()`**: Removed email formatting and simplified to name-only display
+  - **Enhanced `formatTransactionRow()`**: Added `_detail_patient_auth_id` to detail data storage
+  - **Updated `detailFormatter_transactions()`**: Changed to 4-column layout (col-md-3) to include patient ID
+
+- **User Experience Improvements**:
+  - **Cleaner Main Table**: Patient column now shows only essential name information
+  - **Reduced Visual Clutter**: Elimination of email addresses improves table readability
+  - **Organized Details**: Patient ID available in detail view for technical reference when needed
+  - **Responsive Layout**: Four-column detail layout maintains responsiveness on smaller screens
+
+### Benefits
+
+- **Improved Readability**: Main table is less cluttered without email addresses
+- **Better Information Architecture**: Technical details (patient ID) moved to appropriate detail section
+- **Enhanced Usability**: Users focus on names in main view, access IDs when needed for reference
+- **Consistent Design**: Maintains professional appearance with proper information hierarchy
+
+**Files Modified**:
+- `static/js/daily_transactions.js` - Patient display cleanup and detail view enhancement
+
+**Impact**: Cleaner patient information display with better organization of technical details
+
+## [2025-06-07T22:32:21.946663] - Daily Transactions Table UX Enhancement - Expandable Details View
+
+### Changed
+
+- **Table Column Optimization**: Improved daily transactions table readability by removing clutter
+  - **Removed Main Columns**: Moved "Procedure" and "Laterality" columns from main table view
+  - **Added Detail View**: Implemented Bootstrap Table expandable details with "+" button functionality
+  - **Enhanced UX**: Users can now focus on essential payment information while accessing detailed data on-demand
+
+- **Detail View Implementation**: Added comprehensive expandable details section
+  - **Procedure Information**: Display exam name and procedure details in detail card
+  - **Laterality Display**: Show eye examination laterality (left, right, both) in dedicated card
+  - **Worklist Reference**: Include worklist ID for cross-reference with other modules
+  - **Professional Design**: Clean card layout with icons and proper typography
+
+### Added
+
+- **Bootstrap Table Detail View**: Implemented expandable row details functionality
+  - **Template Configuration**: Added `data-detail-view="true"` and `data-detail-formatter` attributes
+  - **Detail Formatter Function**: Created `detailFormatter_transactions()` for custom detail rendering
+  - **Responsive Cards**: Three-column card layout showing procedure, laterality, and worklist ID
+  - **Icon Integration**: FontAwesome icons for visual clarity (stethoscope, eye, list)
+
+- **Enhanced Data Storage**: Modified transaction row data structure for detail view support
+  - **Detail Data Fields**: Added `_detail_procedure_name`, `_detail_laterality`, `_detail_worklist_id`
+  - **Raw Data Preservation**: Stored `_detail_procedure_raw` and `_detail_worklist_raw` for future enhancements
+  - **Backward Compatibility**: Maintained all existing functionality and summary calculations
+
+### Technical Details
+
+- **Template Changes**: `templates/billing/daily_transactions.html`
+  - Removed `procedure_name` and `laterality` column headers from main table
+  - Added Bootstrap Table detail view configuration attributes
+  - Maintained all existing export and filtering functionality
+
+- **JavaScript Enhancements**: `static/js/daily_transactions.js`
+  - **New Function**: `detailFormatter_transactions(index, row)` for custom detail rendering
+  - **Modified Data Structure**: Updated `formatTransactionRow()` to include detail data fields
+  - **Enhanced Display**: Proper formatting and fallback values for missing data
+
+- **User Experience Improvements**:
+  - **Cleaner Main View**: Less cluttered table with focus on financial information
+  - **On-Demand Details**: Expandable sections reduce cognitive load while preserving data access
+  - **Visual Hierarchy**: Card-based detail layout with proper spacing and typography
+  - **Mobile Friendly**: Responsive design maintains usability across device sizes
+
+### Benefits
+
+- **Improved Readability**: Main table focuses on essential payment and patient information
+- **Better Performance**: Reduced initial column rendering improves page load and scroll performance
+- **Enhanced Navigation**: Users can quickly scan payment information and expand details as needed
+- **Consistent Design**: Detail cards match overall application styling and icon usage
+
+**Files Modified**:
+- `templates/billing/daily_transactions.html` - Table configuration and column removal
+- `static/js/daily_transactions.js` - Detail formatter and data structure enhancements
+
+**Impact**: Improved user experience with cleaner table layout and accessible detailed information
+
 ## [2025-06-07T22:17:10.403748] - Daily Transactions Performance Optimization - Simplified Senior Filter Query
 
 ### Fixed

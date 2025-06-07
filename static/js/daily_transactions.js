@@ -130,9 +130,7 @@ function formatTransactionRow(transaction) {
 			? formatTime(transaction.transaction_date)
 			: "N/A",
 		patient_name: formatPatientName(patient),
-		procedure_name: `WL-${transaction.id_worklist || "N/A"}`, // Show worklist ID for now
-		senior_name: "N/A", // Will be populated later if needed
-		laterality: "N/A", // Will be populated later if needed
+		senior_name: formatSeniorName(senior),
 		amount_card: formatCurrency(transaction.amount_card),
 		amount_cash: formatCurrency(transaction.amount_cash),
 		amount_invoice: formatCurrency(transaction.amount_invoice),
@@ -146,6 +144,14 @@ function formatTransactionRow(transaction) {
 		_raw_amount_invoice: transaction.amount_invoice || 0,
 		_raw_total_amount: transaction.total_amount || 0,
 		_raw_payment_status: transaction.payment_status || "unknown",
+		// Store detail data (removed from main table view)
+		_detail_procedure_name:
+			procedure.exam_name || `WL-${transaction.id_worklist || "N/A"}`,
+		_detail_laterality: formatLaterality(worklist.laterality),
+		_detail_worklist_id: transaction.id_worklist,
+		_detail_patient_auth_id: patient.id || transaction.id_auth_user || "N/A",
+		_detail_procedure_raw: procedure,
+		_detail_worklist_raw: worklist,
 	};
 }
 
@@ -171,7 +177,7 @@ function formatTime(datetime) {
 /**
  * Format patient name
  * @param {Object} patient - Patient object
- * @returns {String} Formatted patient name with email
+ * @returns {String} Formatted patient name
  */
 function formatPatientName(patient) {
 	if (!patient || (!patient.first_name && !patient.last_name)) {
@@ -179,11 +185,8 @@ function formatPatientName(patient) {
 	}
 
 	const name = `${patient.first_name || ""} ${patient.last_name || ""}`.trim();
-	const email = patient.email
-		? `<br><small class="text-muted">${patient.email}</small>`
-		: "";
 
-	return `<div class="fw-semibold text-dark">${name}</div>${email}`;
+	return `<div class="fw-semibold text-dark">${name}</div>`;
 }
 
 /**
@@ -298,6 +301,80 @@ function rowStyle_transactions(row, index) {
 	return {
 		classes: "align-middle",
 	};
+}
+
+/**
+ * Detail formatter for transaction rows
+ * Shows procedure and laterality information in expandable section
+ * @param {Number} index - Row index
+ * @param {Object} row - Row data
+ * @returns {String} HTML content for detail view
+ */
+function detailFormatter_transactions(index, row) {
+	// Create detail content with procedure, laterality, and patient information
+	const procedureName = row._detail_procedure_name || "Not specified";
+	const laterality = row._detail_laterality || "Not specified";
+	const worklistId = row._detail_worklist_id || "N/A";
+	const patientAuthId = row._detail_patient_auth_id || "N/A";
+
+	return `
+		<div class="container-fluid p-3 bg-light">
+			<div class="row">
+				<div class="col-md-12">
+					<h6 class="text-primary mb-3">
+						<i class="fas fa-info-circle me-2"></i>
+						Additional Transaction Details
+					</h6>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-3 mb-3">
+					<div class="card border-light shadow-sm">
+						<div class="card-body p-3">
+							<h6 class="card-title text-muted mb-2">
+								<i class="fas fa-stethoscope me-2"></i>
+								Procedure
+							</h6>
+							<p class="card-text fw-semibold text-dark mb-0">${procedureName}</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mb-3">
+					<div class="card border-light shadow-sm">
+						<div class="card-body p-3">
+							<h6 class="card-title text-muted mb-2">
+								<i class="fas fa-eye me-2"></i>
+								Laterality
+							</h6>
+							<p class="card-text fw-semibold text-dark mb-0">${laterality}</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mb-3">
+					<div class="card border-light shadow-sm">
+						<div class="card-body p-3">
+							<h6 class="card-title text-muted mb-2">
+								<i class="fas fa-list-alt me-2"></i>
+								Worklist ID
+							</h6>
+							<p class="card-text fw-semibold text-dark mb-0">WL-${worklistId}</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mb-3">
+					<div class="card border-light shadow-sm">
+						<div class="card-body p-3">
+							<h6 class="card-title text-muted mb-2">
+								<i class="fas fa-user-circle me-2"></i>
+								Patient ID
+							</h6>
+							<p class="card-text fw-semibold text-dark mb-0">${patientAuthId}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	`;
 }
 
 /**

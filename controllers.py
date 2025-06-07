@@ -535,9 +535,9 @@ def api_daily_transactions_filtered():
         # Execute query with pagination
         results = db(final_query).select(
             db.worklist_transactions.ALL,
+            db.auth_user.id,
             db.auth_user.first_name,
             db.auth_user.last_name,
-            db.auth_user.email,
             orderby=orderby,
             limitby=(offset, offset + limit),
         )
@@ -553,9 +553,9 @@ def api_daily_transactions_filtered():
                     "id": transaction.id,
                     "id_worklist": transaction.id_worklist,
                     "id_auth_user": {
+                        "id": patient.id,
                         "first_name": patient.first_name,
                         "last_name": patient.last_name,
-                        "email": patient.email,
                     },
                     "transaction_date": (
                         transaction.transaction_date.isoformat()

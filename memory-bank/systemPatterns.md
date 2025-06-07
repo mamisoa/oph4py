@@ -726,3 +726,230 @@ return {
    - Clear separation of concerns
 
 This pattern demonstrates how to build efficient, well-monitored filtering systems that can handle large datasets while providing excellent user experience and maintainability.
+
+### Progressive Information Disclosure Pattern
+
+#### Overview
+
+The Progressive Information Disclosure pattern enhances user experience by presenting essential information in the main view while making detailed information available through expandable sections. This pattern reduces cognitive load and visual clutter while maintaining access to comprehensive data.
+
+#### Implementation: Bootstrap Table Detail View
+
+The daily transactions interface demonstrates this pattern through Bootstrap Table's detail view functionality, where primary transaction information is shown in the main table, and detailed information (procedure, laterality, patient ID) is revealed in expandable sections.
+
+#### Architecture Components
+
+1. **Main Table Display**
+   - Essential information for quick scanning
+   - Key financial data (amounts, status)
+   - Patient and senior doctor identification
+   - Sortable and filterable columns
+
+2. **Detail View Expansion**
+   - Triggered by "+" button on each row
+   - Professional card-based layout
+   - Additional technical information
+   - Contextual icons for visual clarity
+
+3. **Data Structure Optimization**
+   - Dual-purpose data storage (main + detail fields)
+   - Raw values for calculations
+   - Formatted values for display
+   - Efficient API response structure
+
+#### Workflow Diagram
+
+```mermaid
+graph TD
+    A["📊 Main Table Display<br/>Essential Information"] --> B["👆 User Clicks + Button"]
+    B --> C["🔄 detailFormatter_transactions()"]
+    C --> D["🏗️ Generate Detail Cards"]
+    D --> E["📋 Display Detail Information"]
+    E --> F["✅ User Reviews Details"]
+    F --> G["📝 User Takes Action or Closes"]
+    
+    H["💾 API Response"] --> I["🔄 formatTransactionRow()"]
+    I --> J["📊 Store Main Data"]
+    J --> K["🗃️ Store Detail Data"]
+    K --> L["🔄 Render Main Table"]
+    
+    style A fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style E fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    style H fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+```
+
+#### Implementation Pattern
+
+##### 1. Template Configuration
+
+```html
+<!-- Bootstrap Table with Detail View -->
+<table id="table-transactions" 
+       data-detail-view="true" 
+       data-detail-formatter="detailFormatter_transactions"
+       data-side-pagination="server">
+    <thead class="table-light">
+        <tr>
+            <!-- Essential columns only -->
+            <th data-field="patient_name">Patient</th>
+            <th data-field="senior_name">Senior</th>
+            <th data-field="total_amount">Total</th>
+            <!-- Procedure and Laterality removed from main view -->
+        </tr>
+    </thead>
+</table>
+```
+
+##### 2. Data Structure Pattern
+
+```javascript
+function formatTransactionRow(transaction) {
+    return {
+        // Main table data (visible by default)
+        id: transaction.id,
+        patient_name: formatPatientName(patient),
+        senior_name: formatSeniorName(senior),
+        total_amount: formatCurrency(transaction.total_amount, "success"),
+        
+        // Detail data (shown in expandable section)
+        _detail_procedure_name: procedure.exam_name || `WL-${transaction.id_worklist}`,
+        _detail_laterality: formatLaterality(worklist.laterality),
+        _detail_patient_auth_id: patient.id || "N/A",
+        _detail_worklist_id: transaction.id_worklist,
+        
+        // Raw values for calculations
+        _raw_total_amount: transaction.total_amount || 0,
+    };
+}
+```
+
+##### 3. Detail Formatter Pattern
+
+```javascript
+function detailFormatter_transactions(index, row) {
+    const procedureName = row._detail_procedure_name || "Not specified";
+    const laterality = row._detail_laterality || "Not specified";
+    const worklistId = row._detail_worklist_id || "N/A";
+    const patientAuthId = row._detail_patient_auth_id || "N/A";
+
+    return `
+        <div class="container-fluid p-3 bg-light">
+            <div class="row">
+                <div class="col-md-12">
+                    <h6 class="text-primary mb-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Additional Transaction Details
+                    </h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="card border-light shadow-sm">
+                        <div class="card-body p-3">
+                            <h6 class="card-title text-muted mb-2">
+                                <i class="fas fa-stethoscope me-2"></i>
+                                Procedure
+                            </h6>
+                            <p class="card-text fw-semibold text-dark mb-0">${procedureName}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Additional cards for laterality, worklist ID, patient ID -->
+            </div>
+        </div>
+    `;
+}
+```
+
+##### 4. API Response Optimization Pattern
+
+```python
+# Backend API optimization for dual-purpose data
+def api_daily_transactions_filtered():
+    results = db(final_query).select(
+        db.worklist_transactions.ALL,
+        db.auth_user.id,              # Include ID for detail view
+        db.auth_user.first_name,      # Essential for main view
+        db.auth_user.last_name,       # Essential for main view
+        # Email removed - not needed
+        orderby=orderby,
+        limitby=(offset, offset + limit),
+    )
+    
+    for row in results:
+        transaction = row.worklist_transactions
+        patient = row.auth_user
+        
+        items.append({
+            "id": transaction.id,
+            "id_auth_user": {
+                "id": patient.id,           # For detail view
+                "first_name": patient.first_name,  # For main view
+                "last_name": patient.last_name,    # For main view
+            },
+            # ... other transaction data
+        })
+```
+
+#### Design Benefits
+
+1. **Improved Usability**
+   - Reduced visual clutter in main table
+   - Essential information immediately visible
+   - Details available on-demand without navigation
+
+2. **Better Performance**
+   - Fewer columns in initial render
+   - Faster table sorting and filtering
+   - Reduced DOM complexity
+
+3. **Enhanced Scanning**
+   - Users can quickly scan essential information
+   - Focus on key decision-making data
+   - Progressive drill-down capability
+
+4. **Responsive Design**
+   - Main table works well on mobile devices
+   - Detail cards adapt to screen size
+   - Information hierarchy maintained across devices
+
+#### When to Use This Pattern
+
+1. **Data-Heavy Tables**
+   - Tables with many columns
+   - Mix of essential and supplementary information
+   - Large datasets requiring quick scanning
+
+2. **Mixed User Needs**
+   - Some users need overview information
+   - Others require detailed data
+   - Workflow-specific information needs
+
+3. **Performance Considerations**
+   - Large tables with render performance issues
+   - Mobile-first responsive requirements
+   - Complex data relationships
+
+#### Implementation Considerations
+
+1. **Information Architecture**
+   - Carefully categorize essential vs. detail information
+   - Consider user workflow and decision-making needs
+   - Balance between overview and detail
+
+2. **Visual Design**
+   - Use consistent card layouts for detail sections
+   - Implement clear visual hierarchy
+   - Provide contextual icons and typography
+
+3. **Performance Optimization**
+   - Store both formatted and raw data
+   - Optimize API responses for dual purposes
+   - Consider lazy loading for complex details
+
+4. **Accessibility**
+   - Ensure keyboard navigation works
+   - Provide screen reader support
+   - Maintain focus management
+
+This pattern significantly improves user experience in data-heavy interfaces while maintaining comprehensive data access and system performance.
