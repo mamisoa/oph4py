@@ -3,122 +3,241 @@
 [[ block left_nav ]]
 [[ end]]
 
-<div class="container-fluid my-3 py-2 patient-id" id="patientTitle">
-    <div class="row mb-3 d-flex justify-content-center align-items-center">
-        <div id="patientIdDiv" class="col-4 text-end">
-            <h3 class="patientName"></h3>
-            <h5 class="patientDob text-muted"></h5>
-            <h5 class="patientGender fst-italic"></h5>
-        </div>
-        <div class="col-2 photoDiv visually-hidden text-center">
-            <img class="photoId" src="" alt="Photo from EID">
-        </div>
-        <div class="col-4 text-start">
-            <h5 class="patientId fst-italic"></h5>
-            <h5 class="patientSsn fst-italic"></h5>
-            <h6 class="patientCard fst-italic"></h6>
-            <h6 class="patientEmail fst-italic"></h6>
+<div class="container-fluid my-4" id="patientTitle">
+    <!-- Enhanced Patient Information Card -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body bg-light">
+            <div class="row align-items-center">
+                <!-- Patient Photo Section -->
+                <div class="col-md-2 text-center">
+                    <div class="position-relative">
+                        <img class="photoId rounded shadow-sm" src="static/images/assets/avatar/mini-man.svg"
+                            alt="Patient Photo" style="max-width: 120px; max-height: 120px; object-fit: contain;">
+                    </div>
+                </div>
+
+                <!-- Patient Basic Info -->
+                <div class="col-md-4">
+                    <div class="patient-info">
+                        <h4 class="patientName text-primary fw-bold mb-1">
+                            <i class="fas fa-user me-2"></i>Loading...
+                        </h4>
+                        <div class="patient-details">
+                            <p class="mb-1">
+                                <i class="fas fa-birthday-cake text-muted me-2"></i>
+                                <span class="patientDob text-muted">--</span>
+                                <span class="patientAge badge bg-info ms-2">-- years</span>
+                            </p>
+                            <p class="mb-1">
+                                <i class="fas fa-venus-mars text-muted me-2"></i>
+                                <span class="patientGender text-muted">--</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient Identifiers -->
+                <div class="col-md-3">
+                    <div class="patient-ids">
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Patient ID</small>
+                            <span class="patientId fw-bold text-dark">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Social Security</small>
+                            <span class="patientSsn fw-bold text-dark">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Card Number</small>
+                            <span class="patientCard fw-bold text-dark">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient Contact & Status -->
+                <div class="col-md-3">
+                    <div class="patient-contact">
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Email</small>
+                            <span class="patientEmail text-primary">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Status</small>
+                            <span class="badge bg-success">Active Patient</span>
+                        </div>
+                        <div class="mb-0">
+                            <small class="text-muted d-block">Last Visit</small>
+                            <span class="lastVisit text-dark fw-bold">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Bar -->
+            <div class="row mt-3 pt-3 border-top">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="patient-summary-stats">
+                            <span class="badge bg-primary me-2">
+                                <i class="fas fa-file-medical me-1"></i>
+                                <span id="total-consultations">0</span> Consultations
+                            </span>
+                            <span class="badge bg-info me-2">
+                                <i class="fas fa-calendar me-1"></i>
+                                Patient since <span class="patient-since">--</span>
+                            </span>
+                        </div>
+                        <div class="patient-actions">
+                            <button type="button" class="btn btn-outline-info btn-sm" title="Print Summary">
+                                <i class="fas fa-print me-1"></i>Print
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col">
-            <h2>Full History</h2>
-            <table class="table table-striped" id="combinedRecordsTable">
-                <thead>
-                    <tr>
-                        <!-- Headers will be added dynamically here -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Data rows will be added dynamically here -->
-                </tbody>
-            </table>
+    <!-- MD Summary Table -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-file-medical me-2"></i>Consultation History Summary</h5>
+                    <button class="btn btn-outline-light btn-sm" id="view-more-md-summary-btn" style="display: none;">
+                        <i class="fas fa-eye me-1"></i>View More
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="md-summary-loading" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading consultation history...</p>
+                    </div>
+                    <div id="md-summary-error" class="alert alert-warning" style="display: none;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> Unable to load consultation history.
+                        <button class="btn btn-sm btn-outline-warning ms-2" id="retry-md-summary-btn">
+                            <i class="fas fa-redo me-1"></i>Retry
+                        </button>
+                    </div>
+                    <div id="md-summary-content" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover table-sm" id="md-summary-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="width: 12%;">Date/Time</th>
+                                        <th style="width: 12%;">Procedure</th>
+                                        <th style="width: 18%;">History</th>
+                                        <th style="width: 18%;">Conclusion</th>
+                                        <th style="width: 15%;">Follow-up</th>
+                                        <th style="width: 12%;">Billing</th>
+                                        <th style="width: 13%;">Billing Codes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="md-summary-body">
+                                    <!-- Content will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="md-summary-stats" class="mt-3">
+                            <small class="text-muted">
+                                Showing <span id="md-summary-showing">0</span> of <span id="md-summary-total">0</span>
+                                consultations
+                            </small>
+                        </div>
+                        <div id="md-summary-empty" class="text-center py-4 text-muted" style="display: none;">
+                            <i class="fas fa-clipboard me-2"></i>
+                            No consultation history found for this patient.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MD Summary Modal -->
+<div class="modal fade" id="md-summary-modal" tabindex="-1" aria-labelledby="mdSummaryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable mt-5">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="mdSummaryModalLabel">
+                    <i class="fas fa-file-medical me-2"></i>Complete Consultation History
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="md-summary-modal-loading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Loading complete consultation history...</p>
+                </div>
+                <div id="md-summary-modal-error" class="alert alert-danger" style="display: none;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error:</strong> Unable to load complete consultation history.
+                    <button class="btn btn-sm btn-outline-danger ms-2" id="retry-md-summary-modal-btn">
+                        <i class="fas fa-redo me-1"></i>Retry
+                    </button>
+                </div>
+                <div id="md-summary-modal-content" style="display: none;">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-sm" id="md-summary-modal-table">
+                            <thead class="table-dark sticky-top">
+                                <tr>
+                                    <th style="width: 12%;">Date/Time</th>
+                                    <th style="width: 12%;">Procedure</th>
+                                    <th style="width: 18%;">History</th>
+                                    <th style="width: 18%;">Conclusion</th>
+                                    <th style="width: 15%;">Follow-up</th>
+                                    <th style="width: 12%;">Billing</th>
+                                    <th style="width: 13%;">Billing Codes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="md-summary-modal-body">
+                                <!-- Content will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="md-summary-modal-stats" class="mt-3">
+                        <small class="text-muted">
+                            Total: <span id="md-summary-modal-total">0</span> consultations
+                        </small>
+                    </div>
+                    <div id="md-summary-modal-empty" class="text-center py-4 text-muted" style="display: none;">
+                        <i class="fas fa-clipboard me-2"></i>
+                        No additional consultation history found for this patient.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Close
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 [[ block js_scripts ]]
 <script type="text/javascript">
-    // globals
-    const id = [[ =rec_id]]
-    const membership = [[=membership]];
-    const HOSTURL = "[[ = hosturl ]]";
+    // globals - expose to window object for SummaryManager
+    window.id = [[=rec_id]];
+    window.HOSTURL = "[[=hosturl]]";
+    window.APP_NAME = "[[=app_name]]";
 
-    const API_USER = HOSTURL + '[[=URL('api','auth_user')]]' + '?id.eq=' + id + '&@lookup=gender,marital,membership,ethny&@count=true';
-    const API_CHXUSER = HOSTURL + '[[=URL('api','current_hx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
-    const API_CCXUSER = HOSTURL + '[[=URL('api','ccx')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
-    const API_FOLUSER = HOSTURL + '[[=URL('api','followup')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
-    const API_BILUSER = HOSTURL + '[[=URL('api','billing')]]' + '?@count=true&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&id_auth_user.eq=' + id
-
+    console.log("Summary interface globals set:", {
+        HOSTURL: window.HOSTURL,
+        APP_NAME: window.APP_NAME,
+        patientId: window.id
+    });
 </script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/utils/useful.js"></script>
-<script type="text/javascript">
-
-    const endpoints = [
-        { 'name': 'History', 'api': API_CHXUSER },
-        { 'name': 'Conclusion', 'api': API_CCXUSER },
-        { 'name': 'Follow-up', 'api': API_FOLUSER },
-        { 'name': 'Billing', 'api': API_BILUSER }
-        // ... add more endpoints as needed
-    ];
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-
-        const combinedTable = document.getElementById('combinedRecordsTable');
-        const combinedTableHead = combinedTable.querySelector('thead tr');
-        const combinedTableBody = combinedTable.querySelector('tbody');
-
-        // Dynamically create headers
-        endpoints.forEach(endpoint => {
-            combinedTableHead.innerHTML += `<th scope="col">Timestamp</th>`;
-            combinedTableHead.innerHTML += `<th scope="col">${endpoint.name}</th>`;
-        });
-
-        // Create a promise for each API endpoint
-        const promises = endpoints.map(endpoint =>
-            fetch(endpoint.api).then(response => response.json())
-        );
-
-        Promise.all(promises)
-            .then(allData => {
-                // Initialize an array for combined rows
-                let combinedRows = [];
-
-                // Combine data from all endpoints, aligning by index
-                const maxLength = Math.max(...allData.map(data => data.items.length));
-                for (let i = 0; i < maxLength; i++) {
-                    combinedRows[i] = allData.map(data => data.items[i] || {});
-                }
-
-                // Sort combined rows by the first timestamp in descending order
-                combinedRows.sort((a, b) => {
-                    const dateA = new Date(a[0].created_on);
-                    const dateB = new Date(b[0].created_on);
-                    return dateB - dateA;
-                });
-
-                // Populate the table rows
-                combinedRows.forEach(rowItems => {
-                    const row = document.createElement('tr');
-                    rowItems.forEach((item, index) => {
-                        const isFirstColumn = index === 0;
-                        const isLastColumn = index === rowItems.length - 1;
-                        row.innerHTML += `
-                        <td class="${isFirstColumn ? 'fw-bold' : ''}">${item.created_on || ''}</td>
-                        <td class="${isLastColumn ? 'fw-bold' : ''}">${item.description || ''}</td>
-                    `;
-                    });
-                    combinedTableBody.appendChild(row);
-                });
-            })
-            .catch(error => console.error('Error:', error));
-    });
-
-</script>
-<script src="js/md/summary.js"></script>
+<script src="js/billing/summary-manager.js"></script>
 [[ end ]]

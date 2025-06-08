@@ -2,11 +2,111 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2025-06-09T00:05:29] - Patient Consultation History Summary Implementation
 
-NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
+### Added
 
+- **Patient-based MD Summary API Endpoints**:
+  - `GET /api/patient/{patient_id}/md_summary[/{offset}]` - Paginated consultation history (5 per page)
+  - `GET /api/patient/{patient_id}/md_summary_modal` - Complete modal view (up to 50 records)
+  - pyDAL LEFT JOINs with worklist, phistory, ccx, followup, billing, billing_codes tables
+  - MD/GP modality filtering for relevant consultations only
+  - Billing code aggregation with totals in "CODE1, CODE2 (€total)" format
+  - History field combines phistory.title and phistory.note with proper null handling
+
+- **Complete Template Replacement**: `templates/billing/summary.html`
+  - Patient information bar preserved exactly
+  - Entire table section replaced with 7-column MD Summary structure
+  - Bootstrap responsive table with proper column widths (Date: 12%, Procedure: 12%, History: 18%, Conclusion: 18%, Follow-up: 15%, Billing: 12%, Billing Codes: 13%)
+  - Loading, error, empty, and success states with user-friendly messages
+  - "View More" button for modal access when additional records exist
+  - Bootstrap XL modal with sticky header and scrollable content
+
+- **JavaScript Manager**: `static/js/billing/summary-manager.js`
+  - SummaryManager class adapted from PaymentManager for patient context
+  - Patient-based API integration using template variable `rec_id`
+  - Modal functionality with dedicated loading/error states
+  - Date formatting utilities (DD/MM/YY HH:MM format)
+  - Text truncation for responsive display (varying lengths per column)
+  - Event handlers for "View More" and retry buttons
+  - Bootstrap modal integration with proper show/hide management
+
+### Changed
+
+- **Summary Page Functionality**: Complete paradigm shift from basic endpoint tables to comprehensive consultation history
+- **Data Source**: Changed from manual API endpoint arrays to structured patient-based queries
+- **User Experience**: Replaced simple tabular display with professional medical record interface matching payment view styling
+- **Responsive Design**: Improved mobile compatibility with appropriate text truncation
+
+### Technical Details
+
+- **Database Integration**: Patient-based queries with `id_auth_user` filtering instead of worklist-specific lookups
+- **Performance**: Efficient pagination (5 main records, up to 50 in modal) with proper `has_more` indicators
+- **Error Handling**: Comprehensive error states with retry functionality
+- **Styling**: Exact match with payment view using Bootstrap cards, primary color scheme, and Font Awesome icons
+- **Compatibility**: Maintains existing patient bar functionality and template structure
+
+### Fixed
+
+- **pyDAL Field Access**: Proper use of aliases for LEFT JOIN queries
+- **History Field Combination**: Correctly combines phistory.title and phistory.note fields
+- **Template Syntax**: Fixed py4web template variable syntax for patient ID and host URL
+- **Linter Compliance**: Resolved JavaScript template syntax issues
+
+### Architecture
+
+This implementation follows py4web MVC patterns with:
+
+- **Model**: Patient-based API endpoints in `api/endpoints/payment.py`
+- **View**: Bootstrap template with responsive design in `templates/billing/summary.html`
+- **Controller**: JavaScript class managing interactions in `static/js/billing/summary-manager.js`
+
+**Impact**: Transforms basic summary page into comprehensive consultation history interface, providing medical professionals with immediate access to patient's complete MD/GP consultation timeline with billing details.
+
+## [2025-06-08T23:54:47.963687] - MD Summary History Field Data Source Migration
+
+### Changed
+
+- **MD Summary History Data Source**: Migrated history field from `phistory` table to `current_hx` table for improved data consistency
+  - **Data Source Update**: History field now displays `current_hx.description` instead of `phistory.title` + `phistory.note`
+  - **API Enhancement**: Added LEFT JOIN to `current_hx` table in both main and modal MD summary endpoints
+  - **Field Aliasing**: Added `current_hx_desc` alias for proper pyDAL field access patterns
+  - **Fallback Handling**: Display "-" when `current_hx.description` is empty or null
+
+### Fixed
+
+- **MD Summary 500 Error**: Resolved server error caused by code referencing removed `phistory` fields
+  - **Root Cause**: Code still attempted to access `history_title` and `history_note` fields after `phistory` table references were removed
+  - **Solution**: Removed all fallback logic references to `phistory` fields and simplified history display logic
+  - **Error Prevention**: Streamlined history field processing to use only `current_hx_desc` or "-" placeholder
+  - **API Stability**: Both `/api/worklist/{id}/md_summary` and `/api/worklist/{id}/md_summary_modal` endpoints now function reliably
+
+### Removed
+
+- **phistory Table References**: Completely removed all references to `phistory` table from MD summary endpoints
+  - **Database Joins**: Removed LEFT JOIN to `phistory` table from both API endpoints
+  - **Field Selection**: Removed `history_title` and `history_note` field aliases
+  - **Processing Logic**: Eliminated complex fallback logic that combined `phistory.title` and `phistory.note`
+  - **Code Simplification**: Streamlined field processing to focus solely on `current_hx` data source
+
+### Technical Details
+
+- **API Changes** (`api/endpoints/payment.py`):
+  - Added `db.current_hx.description.with_alias("current_hx_desc")` to field selection
+  - Added `LEFT JOIN` to `current_hx` table in both endpoints
+  - Simplified history field logic: `row.current_hx_desc or "-"`
+  - Removed all `phistory` table joins and field references
+
+- **Data Consistency**: History field now shows unified data from single source (`current_hx` table)
+- **Error Recovery**: Proper null handling ensures no display errors for missing history data
+- **Performance**: Simplified queries with fewer table joins improve response times
+
+### Benefits
+
+- **Data Consistency**: History information now comes from single authoritative source
+- **Improved Reliability**: Elimination of complex fallback logic reduces potential error points
+- **Better Performance**: Simpler database queries with fewer table joins
+- **User Experience**: History field displays consistently across all consultation records
 
 ## [2025-06-08T23:32:54.362491] - Bootbox Confirmation Dialog Overlapped by Navbar
 
@@ -14,8 +114,6 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 - **Issue**: Bootbox confirmation dialogs (e.g., delete confirmation in worklist view) were partially hidden behind the fixed top navbar, making the dialog header and buttons inaccessible.
 - **Fix**: Added custom CSS to `templates/worklist.html` to ensure `.bootbox.modal` has a sufficient top margin (`margin-top: 70px !important;`) and a responsive adjustment for small screens, ensuring all confirmation dialogs are fully visible and accessible regardless of screen size or Bootstrap updates.
-
-All notable changes to this project will be documented in this file.
 
 ## [2025-06-08T23:23:36.366519] - MD Summary Modal Overlapped by Navbar
 
@@ -1535,7 +1633,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Files Modified**:
 
 - `controllers.py` - Enhanced chart_data() API with MD filtering and moving averages
-- `static/js/wl/dashboard-charts.js` - Multi-chart and multi-dataset support
+- `static/js/dashboard/dashboard-charts.js` - Multi-chart and multi-dataset support
 - `templates/index.html` - Added MD worklists chart section and CSS
 
 **Impact**: Dashboard now provides comprehensive analytics with trend analysis for all major data types in the ophthalmology system
@@ -1617,7 +1715,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `window.APP_NAME = "[[= app_name ]]";` for app name from settings.py
   - Consistent with established pattern from payment system and files management
 
-- **JavaScript URL Construction**: Enhanced `loadChartData()` method in `static/js/wl/dashboard-charts.js`
+- **JavaScript URL Construction**: Enhanced `loadChartData()` method in `static/js/dashboard/dashboard-charts.js`
   - **Before**: `fetch('/api/chart_data/${chartType}/${period}')`
   - **After**: `fetch('${baseUrl}/${appName}/api/chart_data/${chartType}/${period}')`
   - Added fallback values for missing global variables
@@ -1633,7 +1731,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Files Modified**:
 
 - `templates/index.html` - Added global variables for API access
-- `static/js/wl/dashboard-charts.js` - Fixed URL construction with app name
+- `static/js/dashboard/dashboard-charts.js` - Fixed URL construction with app name
 
 **Impact**: Dashboard charts now load correctly regardless of app name configuration in settings.py
 
@@ -1702,7 +1800,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `controllers.py` - Added `/api/chart_data/<table>/<period>` endpoint with data aggregation
 - `templates/index.html` - Complete dashboard redesign with charts and enhanced UI
-- `static/js/wl/dashboard-charts.js` - New Chart.js integration and chart management
+- `static/js/dashboard/dashboard-charts.js` - New Chart.js integration and chart management
 - `requirements.txt` - Added python-dateutil dependency
 
 ### User Experience Impact
@@ -1764,3 +1862,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Input Validation**: Comprehensive validation of uploaded JSON files
 - **Safe Parsing**: Use of `ast.literal_eval` instead of unsafe string manipulation
 - **User Authentication**: All endpoints require proper user authentication via `@action.uses(auth.user)`
+
+## [2025-06-09T00:29:11] - Critical History Field and Patient Navbar Fixes
+
+### Fixed
+- **CRITICAL: Fixed history field in patient MD summary endpoints** 
+  - Changed from incorrect `phistory.title + phistory.note` to correct `current_hx.description`
+  - Updated both `patient_md_summary` and `patient_md_summary_modal` endpoints
+  - Now matches the worklist-based endpoints implementation exactly
+  - Removed all phistory references from patient-based endpoints
+
+- **Fixed patient navbar display issues**
+  - Updated API call from `/api/auth_user/{id}` to `/api/auth_user?id.eq={id}`
+  - Fixed response parsing from `result.data` to `result.items[0]`
+  - Corrected field mappings: `dob` (not `date_of_birth`), `ssn` (not `social_security_number`), `idc_num` (not `card_number`)
+  - Fixed gender display: API returns numbers (1=Male, 2=Female) not strings
+  - Updated gender-based avatar selection to use numeric values
+
+### Technical Details
+- Patient-based MD summary now uses identical LEFT JOIN structure as worklist-based endpoints
+- History field correctly shows `current_hx.description` instead of combined phistory fields
+- Patient information card now properly populates with correct API response structure
+- Gender-based default avatars work correctly with numeric gender codes

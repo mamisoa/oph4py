@@ -3069,3 +3069,220 @@ graph TD
    - Systems with strict JSON compliance requirements
 
 This pattern ensures reliable user ownership tracking and JSON serialization in py4web applications while avoiding common implementation pitfalls that can lead to NULL audit fields and runtime serialization errors.
+
+### Patient Summary View Pattern
+
+#### Overview
+
+The Patient Summary View pattern provides a standardized approach for creating comprehensive, read-only summary views for patients. This pattern is essential for clinical workflows where practitioners need a quick but thorough overview of a patient's history. It combines a patient-centric API with a composite frontend component that includes a detailed patient information card and a paginated data table.
+
+#### Problem Context
+
+Clinical systems often require views that aggregate data from numerous database tables to present a coherent patient summary. Key challenges include:
+
+1.  **Data Aggregation**: Efficiently querying and joining multiple tables (`worklist`, `current_hx`, `billing`, etc.) to gather all relevant historical data.
+2.  **Patient-Centricity**: Many existing APIs are action-based (e.g., worklist-centric). New, patient-based endpoints are needed to fetch data based on `patient_id`.
+3.  **UI Complexity**: Presenting a large amount of information without overwhelming the user. This requires a well-organized UI with features like pagination and modals.
+4.  **Component Reusability**: The patient information card is a common element that should be reusable across different views.
+
+#### Implementation Pattern
+
+##### 1. Backend: Patient-Centric API Endpoint
+
+A dedicated, patient-based API endpoint is the cornerstone of this pattern.
+
+```python
+# Location: api/endpoints/payment.py
+
+@action("api/patient/<patient_id:int>/md_summary", method=["GET"])
+@action("api/patient/<patient_id:int>/md_summary/<offset:int>", method=["GET"])
+def patient_md_summary(patient_id: int, offset: int = 0):
+    """
+    Get patient's consultation history summary for summary view.
+    Returns paginated historical consultation data.
+    """
+    try:
+        # 1. Verify patient exists
+        patient = db.auth_user[patient_id]
+        if not patient:
+            return APIResponse.error("Patient not found", 404)
+
+        # 2. Build base query on patient_id
+        query = db.worklist.id_auth_user == patient_id
+        # (Optional) Filter by modality, etc.
+        query &= db.worklist.modality_dest.belongs(mode_ids)
+
+        # 3. Perform complex LEFT JOIN across multiple tables
+        rows = db(query).select(
+            db.worklist.ALL,
+            db.procedure.exam_name,
+            db.current_hx.description,
+            db.ccx.description,
+            db.followup.description,
+            left=[
+                db.procedure.on(db.worklist.procedure == db.procedure.id),
+                db.current_hx.on(db.worklist.id == db.current_hx.id_worklist),
+                db.ccx.on(db.worklist.id == db.ccx.id_worklist),
+                db.followup.on(db.worklist.id == db.followup.id_worklist),
+            ],
+            orderby=~db.worklist.requested_time,
+            limitby=(offset, offset + 5) # 4. Paginate results
+        )
+
+        # 5. Process and aggregate data (e.g., billing codes)
+        summary_data = []
+        for row in rows:
+            # ... process and format each record ...
+            summary_data.append(consultation_record)
+
+        # 6. Return paginated response
+        return APIResponse.success(data={
+            "items": summary_data,
+            "has_more": (offset + 5) < total_count,
+            # ... other pagination metadata
+        })
+
+    except Exception as e:
+        logger.error(f"Error in patient_md_summary: {str(e)}")
+        return APIResponse.error(f"Server error: {str(e)}", 500)
+
+```
+
+##### 2. Frontend: Composite View Template
+
+The view is composed of two main parts: the patient info card and the data table.
+
+```html
+<!-- Location: templates/billing/summary.html -->
+
+<!-- 1. Include the reusable patient information card -->
+[[include 'partials/enhanced_patient_card.html']]
+
+<!-- 2. Consultation History Section -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Consultation History Summary</h5>
+    </div>
+    <div class="card-body">
+        <!-- Table container for loading/error/empty states -->
+        <div id="summary-table-container">
+            <table id="summary-table" class="table table-striped table-hover">
+                <!-- Table headers for 7 columns: Date, Procedure, History, etc. -->
+            </table>
+        </div>
+        <!-- "View More" button for pagination -->
+        <div id="view-more-container" class="text-center mt-3" style="display: none;">
+            <button id="btn-view-more" class="btn btn-primary">View More</button>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Modal for "View More" functionality -->
+[[include 'partials/summary_modal.html']]
+```
+
+##### 3. JavaScript: The `SummaryManager`
+
+A dedicated JavaScript class manages the component's state and interaction.
+
+```javascript
+// Location: static/js/billing/summary-manager.js
+
+class SummaryManager {
+    constructor(patientId) {
+        this.patientId = patientId;
+        this.offset = 0;
+        // ... other properties for DOM elements
+    }
+
+    // A. Initialize all components
+    init() {
+        this.loadPatientInfo();
+        this.loadSummary();
+        this.setupEventListeners();
+    }
+
+    // B. Load patient data for the info card
+    async loadPatientInfo() {
+        // Fetch from /api/auth_user?id.eq={id}
+        // Populate the patient card fields
+        // Handle photo logic (base64, fallbacks)
+    }
+
+    // C. Load consultation history (initial and paginated)
+    async loadSummary(loadMore = false) {
+        if (!loadMore) {
+            this.offset = 0;
+            // Show loading spinner
+        }
+        // Fetch from /api/patient/{id}/md_summary/{offset}
+        // Render table rows
+        // Show/hide "View More" button based on `has_more`
+        // Handle error and empty states
+        this.offset += 5;
+    }
+    
+    // D. Load all records for the modal
+    async loadModalSummary() {
+        // Fetch from /api/patient/{id}/md_summary_modal
+        // Populate the modal table
+    }
+
+    // E. Handle all user interactions
+    setupEventListeners() {
+        // Click handler for "View More" button
+        // Click handler for opening the modal
+    }
+}
+
+// Instantiate and initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const patientId = /* get from template */;
+    const summaryManager = new SummaryManager(patientId);
+    summaryManager.init();
+});
+```
+
+#### Workflow Diagram
+
+```mermaid
+graph TD
+    A["Page Load"] --> B["JS: new SummaryManager(patientId)"];
+    B --> C["JS: init()"];
+    C --> D["⚡ Parallel API Calls"];
+    
+    D --> E["📡 GET /api/auth_user?id.eq={id}"];
+    D --> F["📡 GET /api/patient/{id}/md_summary"];
+
+    subgraph "Patient Info Card"
+        E --> G["JS: loadPatientInfo()"];
+        G --> H["DOM: Populate Patient Card & Photo"];
+    end
+
+    subgraph "Consultation History Table"
+        F --> I["JS: loadSummary()"];
+        I --> J["DOM: Render Table Rows"];
+        J --> K{"Has More?"};
+        K -->|Yes| L["DOM: Show 'View More' Button"];
+        K -->|No| M["DOM: Hide 'View More' Button"];
+    end
+
+    L --> N["👆 User Clicks 'View More'"];
+    N --> O["JS: loadSummary(true)"];
+    O --> F;
+    
+    style A fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style D fill:#fff3e0,stroke:#ff9800,stroke-width:3px
+```
+
+#### Benefits
+
+1.  **Patient-Centric Design**: Aligns the system's data retrieval with the clinical workflow, which is inherently patient-focused.
+2.  **Scalability**: The paginated approach ensures the view remains performant even for patients with extensive histories.
+3.  **Improved User Experience**: Presents a clear, comprehensive overview while hiding complexity. The "View More" and modal features follow a progressive disclosure pattern.
+4.  **Reusability**: The patient info card can be extracted into a partial template and reused in other contexts. The overall pattern is a repeatable solution for building complex summary views.
+5.  **Maintainability**: Encapsulating the logic within a dedicated JavaScript class and using a specific API endpoint makes the feature easier to debug and maintain.
+
+### Dashboard Analytics Enhancement Pattern
+
+// ... existing code ...
