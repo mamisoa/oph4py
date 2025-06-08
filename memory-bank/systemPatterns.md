@@ -2436,3 +2436,347 @@ graph TD
    - Responsive visualization requirements
 
 This pattern provides a comprehensive approach to building sophisticated analytics dashboards that scale from short-term tactical views to long-term strategic analysis while maintaining performance and usability.
+
+### Billing Combo Fee Preservation Import/Export Pattern
+
+#### Overview
+
+The Billing Combo Fee Preservation Import/Export Pattern demonstrates how to evolve basic import/export functionality from simple code-only transfers to comprehensive fee preservation with robust null value handling. This pattern addresses the critical business requirement of maintaining exact billing information across system migrations while handling real-world data inconsistencies.
+
+#### Problem Context
+
+Traditional import/export systems for billing combinations face several challenges:
+
+1. **Fee Data Loss**: Exporting only nomenclature codes loses current fee structure for auditing
+2. **API Dependency**: Code-only imports require live API access during import
+3. **Historical Accuracy**: Billing consistency requires preserving fees from specific time periods
+4. **Null Value Handling**: Real-world data contains "N/A", null, and undefined values that break validation
+
+#### Implementation Pattern
+
+##### 1. Versioned Export Format Evolution
+
+**Version 1.0 (Code-Only):**
+
+```json
+{
+  "export_info": {
+    "version": "1.0",
+    "export_type": "single_combo"
+  },
+  "combo_data": {
+    "combo_codes": [
+      {
+        "nomen_code": 105755,
+        "secondary_nomen_code": 102030
+      }
+    ]
+  }
+}
+```
+
+**Version 1.1 (Fee Preservation):**
+
+```json
+{
+  "export_info": {
+    "version": "1.1",
+    "export_type": "single_combo"
+  },
+  "combo_data": {
+    "combo_codes": [
+      {
+        "nomen_code": 105755,
+        "nomen_desc_fr": "Consultation ophthalmologique",
+        "feecode": 123,
+        "fee": "45.50",
+        "secondary_nomen_code": 102030,
+        "secondary_nomen_desc_fr": "Examen complementaire",
+        "secondary_feecode": 456,
+        "secondary_fee": "12.30"
+      }
+    ]
+  }
+}
+```
+
+##### 2. Export Enhancement with "N/A" Filtering
+
+```python
+def export_billing_combo(combo_id: int) -> Dict:
+    """Enhanced export with fee preservation and null value filtering"""
+    
+    def convert_legacy_code_to_full_format(code_entry):
+        """Convert legacy integer codes to complete format with null filtering"""
+        formatted_entry = {"nomen_code": code_entry}
+        
+        # Add fields only if they have valid values (not "N/A", null, etc.)
+        for field_name, value in [
+            ("feecode", feecode),
+            ("fee", fee),
+            ("nomen_desc_fr", nomen_desc_fr),
+            ("secondary_feecode", secondary_feecode),
+            ("secondary_fee", secondary_fee),
+            ("secondary_nomen_desc_fr", secondary_nomen_desc_fr)
+        ]:
+            # Filter out "N/A" and equivalent values
+            if value and str(value).strip() not in ("N/A", "null", "None", ""):
+                formatted_entry[field_name] = value
+                
+        return formatted_entry
+    
+    # Build v1.1 export format
+    export_data = {
+        "export_info": {
+            "version": "1.1",  # Enhanced version
+            "export_type": "single_combo",
+            "exported_at": datetime.now().isoformat() + "Z",
+            "exported_by": auth.get_user()["email"] if auth.get_user() else "system",
+        },
+        "combo_data": {
+            "combo_name": combo.combo_name,
+            "combo_description": combo.combo_description,
+            "specialty": combo.specialty,
+            "combo_codes": enhanced_codes,  # With complete fee data
+        },
+    }
+```
+
+##### 3. Version-Aware Import Processing
+
+```python
+def detect_import_format(json_data: Dict) -> Tuple[str, str]:
+    """Detect import format and version"""
+    
+    # Detect version from export_info
+    export_info = json_data.get("export_info", {})
+    version = export_info.get("version", "1.0")  # Default to v1.0
+    
+    # Detect format type
+    if "combo_data" in json_data:
+        format_type = "single"
+    elif "combos" in json_data:
+        format_type = "multi"
+    else:
+        format_type = "unknown"
+    
+    return format_type, version
+
+async def billing_combo_import():
+    """Version-aware import processing"""
+    
+    format_type, version = detect_import_format(json_data)
+    
+    if version == "1.0":
+        # Legacy processing: fetch fees from NomenclatureClient
+        return await process_v1_0_import(json_data, format_type)
+    elif version == "1.1":
+        # Enhanced processing: use provided fee data
+        return await process_v1_1_import(json_data, format_type)
+    else:
+        raise ValueError(f"Unsupported export version: {version}")
+```
+
+##### 4. Robust Validation with Null Handling
+
+```python
+def validate_single_combo(combo_data: Dict, version: str = "1.0") -> Dict:
+    """Version-aware validation with null value support"""
+    
+    for i, code_entry in enumerate(combo_codes, 1):
+        if version == "1.1":
+            # Enhanced validation for fee preservation
+            for field_name, field_type in [
+                ("fee", "number"),
+                ("feecode", "integer"),
+                ("secondary_fee", "number"),
+                ("secondary_feecode", "integer")
+            ]:
+                if field_name in code_entry:
+                    value = code_entry[field_name]
+                    
+                    # Skip validation for "N/A" values
+                    if value and str(value).strip() not in ("N/A", "null", "None", ""):
+                        if field_type == "number":
+                            try:
+                                float_val = float(value)
+                                if float_val < 0 or float_val > 10000:
+                                    errors.append(f"Code entry {i}: {field_name} must be between 0 and 10000")
+                            except (ValueError, TypeError):
+                                errors.append(f"Code entry {i}: {field_name} must be a valid number")
+                        
+                        elif field_type == "integer":
+                            try:
+                                int_val = int(value)
+                                if int_val <= 0:
+                                    errors.append(f"Code entry {i}: {field_name} must be a positive integer")
+                            except (ValueError, TypeError):
+                                errors.append(f"Code entry {i}: {field_name} must be a valid integer")
+```
+
+##### 5. Dual Processing Logic
+
+```python
+def process_single_combo_import(combo_data: Dict, final_name: str, version: str = "1.0") -> Dict:
+    """Process import with version-specific logic"""
+    
+    if version == "1.0":
+        # Legacy processing: fetch current fees
+        nomenclature_codes = [entry["nomen_code"] for entry in combo_codes]
+        validation_result = await validate_nomenclature_codes_batch([combo_codes])
+        
+        # Build combo_codes with fetched fees
+        enhanced_codes = []
+        for entry in combo_codes:
+            code_details = validation_result["codes"].get(str(entry["nomen_code"]), {})
+            enhanced_entry = {
+                "nomen_code": entry["nomen_code"],
+                "feecode": code_details.get("feecode"),
+                "fee": code_details.get("fee"),
+                # ... other fetched data
+            }
+            enhanced_codes.append(enhanced_entry)
+    
+    elif version == "1.1":
+        # Enhanced processing: use provided fee data directly
+        enhanced_codes = []
+        for entry in combo_codes:
+            # Use provided fee data, filter out "N/A" values
+            enhanced_entry = {"nomen_code": entry["nomen_code"]}
+            
+            for field in ["feecode", "fee", "nomen_desc_fr", "secondary_feecode", "secondary_fee"]:
+                if field in entry:
+                    value = entry[field]
+                    if value and str(value).strip() not in ("N/A", "null", "None", ""):
+                        enhanced_entry[field] = value
+            
+            enhanced_codes.append(enhanced_entry)
+```
+
+#### Architecture Diagram
+
+```mermaid
+graph TD
+    A["📊 Export Request"] --> B{"🔍 Data Analysis<br/>Check for null values"}
+    B --> C["🧹 Filter 'N/A' Values<br/>feecode, fee validation"]
+    C --> D["📦 Build v1.1 Format<br/>Complete fee data"]
+    D --> E["💾 Generate JSON File<br/>billing_combo_[name]_[date].json"]
+    
+    F["📤 Import Request"] --> G["🔍 Version Detection<br/>export_info.version"]
+    G --> H{"📋 Processing Route"}
+    
+    H -->|v1.0| I["🌐 NomenclatureClient<br/>Fetch current fees"]
+    H -->|v1.1| J["✅ Use Provided Fees<br/>Skip 'N/A' values"]
+    
+    I --> K["💾 Store with Current Data"]
+    J --> L["💾 Store with Preserved Data"]
+    
+    M["⚠️ Validation Layer"] --> N["🔢 Numeric Validation<br/>Skip 'N/A' values"]
+    N --> O["✅ Range Checking<br/>0 ≤ fee ≤ 10000"]
+    O --> P["📋 Business Rules<br/>Name uniqueness, etc."]
+    
+    style C fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    style G fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style J fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    style N fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+```
+
+#### Benefits
+
+1. **Business Value**
+   - **Fee Preservation**: Maintains exact billing structure for compliance and auditing
+   - **Historical Accuracy**: Preserves fee data from specific time periods
+   - **Reduced API Dependency**: v1.1 imports work without live nomenclature API
+
+2. **Technical Robustness**
+   - **Null Value Handling**: Graceful handling of "N/A", null, and undefined values
+   - **Backward Compatibility**: v1.0 imports continue to work unchanged
+   - **Version Detection**: Automatic routing to appropriate processing logic
+
+3. **User Experience**
+   - **Seamless Migration**: No user intervention required for format differences
+   - **Error Prevention**: No more validation failures on null fee values
+   - **Complete Data Transfer**: All relevant billing information preserved
+
+#### Implementation Checklist
+
+1. **Export Enhancement**
+   - [ ] Implement "N/A" value filtering logic
+   - [ ] Add complete fee data to export format
+   - [ ] Update version to "1.1" in export metadata
+   - [ ] Test with combos containing null/undefined fees
+
+2. **Import Enhancement**
+   - [ ] Add version detection in import processing
+   - [ ] Implement dual processing logic (v1.0 vs v1.1)
+   - [ ] Update validation to handle "N/A" values
+   - [ ] Test both legacy and enhanced import formats
+
+3. **Validation Updates**
+   - [ ] Add null value skip logic in numeric validation
+   - [ ] Maintain strict validation for actual numeric values
+   - [ ] Test edge cases with various null representations
+   - [ ] Ensure error messages are user-friendly
+
+4. **Testing & Validation**
+   - [ ] Test export with null fee values
+   - [ ] Verify v1.0 imports still work
+   - [ ] Test v1.1 imports with preserved fees
+   - [ ] Validate error handling for invalid fee values
+
+#### When to Use This Pattern
+
+1. **Billing and Financial Systems**
+   - Medical billing combinations
+   - Financial data migration
+   - Audit trail preservation
+   - Compliance reporting
+
+2. **Data Migration Projects**
+   - Legacy system migrations
+   - Cross-system data transfers
+   - Historical data preservation
+   - Business continuity requirements
+
+3. **Robust Data Handling**
+   - Systems with inconsistent data quality
+   - Real-world null value scenarios
+   - Multi-version data format support
+   - Backward compatibility requirements
+
+#### Common Pitfalls and Solutions
+
+1. **Null Value Validation Errors**
+
+**Problem**: Validation fails on "N/A" strings as invalid numbers
+
+**Solution**: Skip validation for recognized null representations:
+
+```python
+if value and str(value).strip() not in ("N/A", "null", "None", ""):
+    # Perform numeric validation
+```
+
+2. **Version Detection Failures**
+
+**Problem**: Missing version field causes incorrect processing
+
+**Solution**: Default to legacy version with fallback logic:
+
+```python
+version = export_info.get("version", "1.0")  # Safe default
+```
+
+3. **Data Consistency Issues**
+
+**Problem**: Mixed null representations across different sources
+
+**Solution**: Standardize null value filtering:
+
+```python
+NULL_VALUES = ("N/A", "null", "None", "", "undefined", "0")
+if value and str(value).strip() not in NULL_VALUES:
+    # Process valid value
+```
+
+This pattern provides a comprehensive approach to implementing fee preservation in billing systems while maintaining backward compatibility and robust error handling for real-world data scenarios.

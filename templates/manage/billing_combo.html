@@ -2,6 +2,57 @@
 
 [[ block page_head]]
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
+<style>
+    /* Position bootbox confirmation dialogs below the fixed navbar and above all other elements */
+    .bootbox.modal {
+        margin-top: 70px !important;
+        z-index: 99999 !important;
+        /* Very high z-index to ensure it's on top */
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        pointer-events: auto !important;
+    }
+
+    /* Specific styling for delete confirmation modal */
+    .bootbox-confirm-delete.modal {
+        z-index: 99999 !important;
+        position: fixed !important;
+        display: flex !important;
+        align-items: flex-start !important;
+        padding-top: 70px !important;
+    }
+
+    .bootbox-confirm-delete .modal-dialog {
+        z-index: 100000 !important;
+        position: relative !important;
+        margin: 70px auto 0 auto !important;
+        max-width: 500px !important;
+    }
+
+    .bootbox-confirm-delete .modal-content {
+        z-index: 100001 !important;
+        position: relative !important;
+        border: 2px solid #dee2e6 !important;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Ensure buttons are clickable - absolute highest z-index */
+    .bootbox .btn {
+        z-index: 100001 !important;
+        position: relative !important;
+        pointer-events: auto !important;
+    }
+
+    /* Force display and prevent hidden state */
+    .bootbox.modal.show {
+        display: flex !important;
+        align-items: flex-start !important;
+        padding-top: 70px !important;
+    }
+</style>
 [[ end ]]
 
 <!-- Toast Container for Notifications -->

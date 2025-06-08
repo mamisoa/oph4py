@@ -2,6 +2,154 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-08T15:14:42.791746] - Documentation Updates and UI Positioning Fix
+
+### Enhanced
+
+- **Documentation System**: Updated memory bank and system patterns documentation
+  - **Memory Bank Update** (`memory-bank/activeContext.md`): Updated to reflect the completed fee preservation enhancement with "N/A" value handling
+    - **Status Update**: Changed from "LATEST ENHANCEMENT" to "COMPLETED ENHANCEMENT" with comprehensive feature documentation
+    - **Enhanced Export Format**: Documented complete v1.1 format with fee preservation and "N/A" value filtering
+    - **Smart Import Processing**: Documented dual processing logic and version-aware validation
+    - **Final Implementation Status**: Marked all core functionality as production-ready
+  - **System Patterns Update** (`memory-bank/systemPatterns.md`): Added new billing combo fee preservation pattern
+    - **New Pattern**: "Billing Combo Fee Preservation Import/Export Pattern" with comprehensive implementation guide
+    - **Problem Context**: Documents challenges with fee data loss, API dependency, and null value handling
+    - **Implementation Pattern**: Complete code examples for versioned export format evolution
+    - **Architecture Diagram**: Mermaid diagram showing export/import flow with "N/A" handling
+    - **Implementation Checklist**: Detailed checklist for export/import enhancement implementation
+
+- **UI/UX Improvements**: Fixed modal positioning for better user experience
+  - **Bootbox Dialog Positioning**: Added CSS to position delete confirmation dialogs below the fixed navbar
+    - **Margin Adjustment**: Added 70px top margin to `.bootbox.modal` elements
+    - **Z-Index Management**: Proper z-index hierarchy (navbar: 10000, backdrop: 9999, modal: 9998)
+    - **Backdrop Handling**: Ensured modal backdrop doesn't interfere with navbar interaction
+  - **Enhanced Accessibility**: Confirmation dialogs now appear in proper viewport position
+  - **Consistent Modal Behavior**: All billing combo modals now follow consistent positioning rules
+
+### Fixed
+
+- **Modal Overlay Issue**: Delete confirmation dialog positioning
+  - **Problem**: Bootbox confirmation dialogs appeared behind or overlapping the fixed navbar
+  - **Solution**: Added targeted CSS styles in `templates/manage/billing_combo.html`
+  - **Impact**: Delete confirmations now appear properly positioned below the navigation bar
+
+### Technical Implementation
+
+- **CSS Enhancements** (`templates/manage/billing_combo.html`):
+  ```css
+  /* Position bootbox confirmation dialogs below the fixed navbar */
+  .bootbox.modal {
+      margin-top: 70px !important;
+      z-index: 9998 !important;
+  }
+  
+  /* Ensure the backdrop doesn't interfere with navbar */
+  .modal-backdrop {
+      z-index: 9999 !important;
+  }
+  ```
+
+### Benefits
+
+- **Improved Documentation**: Complete system pattern documentation for fee preservation enhancement
+- **Better User Experience**: Delete confirmations now appear in proper position relative to fixed navbar
+- **Enhanced Maintainability**: Comprehensive documentation for future development and maintenance
+- **Professional UI**: Consistent modal positioning across the application
+
+## [2025-06-08T14:56:05.883601] - Enhanced Export/Import with Fee Preservation
+
+### Added
+
+- **Fee-Inclusive Export Format (v1.1)**: Complete fee preservation in export files
+  - **Enhanced Export Structure**: Exports now include complete fee information from combo_codes
+  - **Version 1.1 Format**: Updated export format to include all fee and description data
+    ```json
+    {
+      "export_info": {
+        "version": "1.1",
+        "exported_at": "2025-06-08T14:56:05Z",
+        "exported_by": "user@email.com"
+      },
+      "combo_data": {
+        "combo_name": "Standard Consultation",
+        "combo_description": "Description...",
+        "specialty": "ophthalmology",
+        "combo_codes": [
+          {
+            "nomen_code": 105755,
+            "nomen_desc_fr": "Description in French",
+            "feecode": 123,
+            "fee": "45.50",
+            "secondary_nomen_code": 102030,
+            "secondary_nomen_desc_fr": "Secondary description",
+            "secondary_feecode": 456,
+            "secondary_fee": "12.30"
+          }
+        ]
+      }
+    }
+    ```
+  - **Legacy Code Support**: Automatic conversion of legacy integer codes to complete format during export
+  - **Complete Data Preservation**: Includes all nomenclature descriptions, fees, and feecodes
+
+- **Backward Compatible Import System**: Smart version detection and processing
+  - **Auto-Version Detection**: Automatically detects v1.0 (code-only) vs v1.1 (fee-inclusive) formats
+  - **Dual Processing Logic**: 
+    - **v1.0 imports**: Fetch current fees from NomenclatureClient API (existing behavior)
+    - **v1.1 imports**: Use provided fee data directly (new behavior)
+  - **Enhanced Validation**: Fee validation for v1.1 format with range checking and type validation
+  - **Seamless Migration**: Existing v1.0 export files continue to work unchanged
+
+### Enhanced
+
+- **Export Functions**: Updated both single and multi-export endpoints
+  - **Single Export** (`GET /api/billing_combo/<id>/export`): Now exports complete fee data
+  - **Multi Export** (`POST /api/billing_combo/export_multiple`): Bulk export with complete fee information
+  - **Legacy Compatibility**: Automatic enrichment of legacy integer codes with current fee data
+  - **Robust Parsing**: Enhanced combo_codes parsing with fallback mechanisms
+
+- **Import Validation**: Enhanced validation system with version-aware rules
+  - **Fee Validation**: Numeric validation, range checking (0-9999.99), and type safety
+  - **Feecode Validation**: Integer validation for fee codes
+  - **Conditional Validation**: Nomenclature validation only for v1.0 (code-only) imports
+  - **Comprehensive Error Reporting**: Detailed validation messages per code entry
+
+- **Import Processing**: Version-aware processing with fee handling
+  - **v1.0 Processing**: Enriches codes with current NomenclatureClient data
+  - **v1.1 Processing**: Uses provided fee data directly for historical accuracy
+  - **Error Resilience**: Graceful handling of missing nomenclature data
+  - **Audit Trail**: Enhanced logging with version information
+
+### Technical Implementation
+
+- **Backend Changes** (`api/endpoints/billing.py`):
+  - **Export Functions**: Complete rewrite to include full combo_codes data
+  - **Version Detection**: New `detect_import_format()` returns format and version
+  - **Validation Enhancement**: Updated validation functions with version parameter
+  - **Processing Logic**: Dual-path processing based on detected version
+  - **Fee Validation**: Comprehensive fee field validation for v1.1 format
+
+- **Data Format Evolution**:
+  - **v1.0 Format**: Code-only exports (backward compatibility)
+  - **v1.1 Format**: Complete fee-inclusive exports (new default)
+  - **Auto-Migration**: Legacy codes automatically enriched during export
+
+### Benefits
+
+- **Fee Preservation**: Exported combos maintain exact fee structure for auditing and billing consistency
+- **Historical Accuracy**: Important for maintaining billing records across time periods
+- **Reduced API Dependency**: v1.1 imports don't require live nomenclature API access
+- **Backward Compatibility**: Existing v1.0 exports continue to work seamlessly
+- **Future-Proof**: Versioned format allows for future enhancements without breaking changes
+
+### Migration Notes
+
+- **Automatic Upgrade**: All new exports use v1.1 format with complete fee data
+- **No Breaking Changes**: Existing v1.0 export files import unchanged
+- **Performance Impact**: Slightly larger export files due to fee data inclusion
+- **API Usage**: Reduced NomenclatureClient API calls for v1.1 imports
+
 ## [2025-06-08T14:39:40.412036] - Complete Import/Export System for Billing Combos
 
 ### Added

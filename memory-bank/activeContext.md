@@ -4,12 +4,12 @@
 
 **Project**: Ophthalmology Electronic Medical Records (oph4py)  
 **Framework**: Py4web with MVC architecture  
-**Active Task**: ✅ **COMPLETED** - Import/export functionality for billing combos  
-**Date**: 2025-01-09 (Updated: 2025-06-08)  
+**Active Task**: ✅ **COMPLETED** - Enhanced import/export functionality with fee preservation  
+**Date**: 2025-01-09 (Updated: 2025-01-10)  
 
 ## Context Overview
 
-✅ **COMPLETED**: Enhanced the existing billing combo management system with comprehensive import/export capabilities. The system now supports creating reusable combinations of nomenclature codes for medical procedures, with full import/export functionality including automatic conflict resolution.
+✅ **COMPLETED**: Enhanced the existing billing combo management system with comprehensive import/export capabilities including complete fee preservation with "N/A" value handling. The system now supports creating reusable combinations of nomenclature codes for medical procedures, with full import/export functionality including automatic conflict resolution, backward-compatible fee handling, and robust validation that properly handles null/undefined fee values.
 
 ## Current System Architecture
 
@@ -43,37 +43,43 @@
 - **API Endpoints**:
   - `/api/billing_combo` (CRUD operations)
   - `/api/billing_combo/export_multiple` (multi-export)
-  - ✅ `/api/billing_combo/import` (NEW: import with auto-detection)
+  - ✅ `/api/billing_combo/import` (import with auto-detection)
 - **NomenclatureClient**: Handles external API integration (`api/core/nomenclature.py`)
 - **Frontend**: `templates/manage/billing_combo.html` + `static/js/billing-combo-manager.js`
 
-## ✅ COMPLETED Implementation with Multi-Selection
+## ✅ COMPLETED ENHANCEMENT: Fee Preservation with "N/A" Handling (v1.1 Format)
 
-### Key Features Implemented
+### Key Changes Implemented
 
-**✅ Simplified Code-Only Export + Multi-Selection**:
+**✅ Enhanced Export Format (v1.1)**:
+- **Complete Fee Data**: Exports now include all fee information (fees, feecodes, descriptions)
+- **"N/A" Value Filtering**: Export functions filter out "N/A", "null", "None", and empty string values
+- **Legacy Support**: Automatic conversion of legacy integer codes to complete format during export
+- **Version Tracking**: Export format versioned (v1.1) for backward compatibility
 
-- Export only nomenclature codes, fetch all other data from NomenclatureClient during import
-- Always current nomenclature data, smaller export files, simpler validation
-- **Multi-selection support** for bulk operations and efficient combo set migration
+**✅ Smart Import Processing**:
+- **Auto-Version Detection**: Automatically detects v1.0 vs v1.1 format from export_info
+- **"N/A" Value Handling**: Validation treats "N/A" values as optional while maintaining strict validation for actual numeric values
+- **Dual Processing Logic**:
+  - v1.0 imports: Fetch current fees from NomenclatureClient (existing behavior)
+  - v1.1 imports: Use provided fee data directly when valid, skip "N/A" values (new behavior)
+- **Enhanced Validation**: Fee validation for v1.1 with range checking and type safety
 
-**✅ Smart Import with Auto-Detection**:
-
-- **Auto-detects** single vs multi-combo format from JSON structure
-- **Automatic naming conflict resolution** by appending '(copy)' pattern
-- **Three-layer validation**: JSON structure, nomenclature codes, business rules
-- **Batch processing** for efficient multi-combo imports
+**✅ Robust "N/A" Value Management**:
+- **Export Filtering**: `if feecode and str(feecode).strip() not in ("N/A", "null", "None", "")`
+- **Import Validation**: Skip validation for "N/A" values while enforcing numeric validation for actual values
+- **Error Prevention**: Prevents "Code entry X: fee must be a valid number" errors for null values
 
 ### Export Formats
 
-#### Single Combo Export (✅ COMPLETE)
+#### Single Combo Export (✅ COMPLETE with Fee Preservation)
 
 ```json
 {
   "export_info": {
-    "version": "1.0",
+    "version": "1.1",
     "export_type": "single_combo",
-    "exported_at": "2025-01-09T10:30:00Z",
+    "exported_at": "2025-01-10T10:30:00Z",
     "exported_by": "user_email@domain.com"
   },
   "combo_data": {
@@ -83,24 +89,33 @@
     "combo_codes": [
       {
         "nomen_code": 105755,
-        "secondary_nomen_code": 102030
+        "nomen_desc_fr": "Consultation ophthalmologique",
+        "feecode": 123,
+        "fee": "45.50",
+        "secondary_nomen_code": 102030,
+        "secondary_nomen_desc_fr": "Examen complementaire",
+        "secondary_feecode": 456,
+        "secondary_fee": "12.30"
       },
       {
-        "nomen_code": 108820
+        "nomen_code": 108820,
+        "nomen_desc_fr": "Prescription lunettes",
+        "feecode": 789,
+        "fee": "25.00"
       }
     ]
   }
 }
 ```
 
-#### Multi-Combo Export (✅ COMPLETE)
+#### Multi-Combo Export (✅ COMPLETE with Fee Preservation)
 
 ```json
 {
   "export_info": {
-    "version": "1.0",
+    "version": "1.1",
     "export_type": "multi_combo",
-    "exported_at": "2025-01-09T10:30:00Z", 
+    "exported_at": "2025-01-10T10:30:00Z", 
     "exported_by": "user_email@domain.com",
     "combo_count": 3
   },
@@ -110,8 +125,12 @@
       "combo_description": "Standard ophthalmology consultation",
       "specialty": "ophthalmology",
       "combo_codes": [
-        {"nomen_code": 105755, "secondary_nomen_code": 102030},
-        {"nomen_code": 108820}
+        {
+          "nomen_code": 105755,
+          "nomen_desc_fr": "Consultation ophthalmologique",
+          "feecode": 123,
+          "fee": "45.50"
+        }
       ]
     }
   ]
@@ -124,9 +143,10 @@
 
 **Backend**: `GET /api/billing_combo/<id>/export`
 
-- Extract only codes from existing combo_codes JSON
-- Add export metadata (timestamp, user, version)  
-- Generate downloadable JSON file
+- Extract complete fee data from existing combo_codes JSON
+- Filter out "N/A" values during export
+- Add export metadata (timestamp, user, version v1.1)  
+- Generate downloadable JSON file with complete fee structure
 
 **Frontend**: Individual export buttons per combo row
 
@@ -152,28 +172,34 @@
 **Backend**: `POST /api/billing_combo/export_multiple` endpoint
 
 - ✅ Accept array of combo IDs in request body
-- ✅ Generate multi-combo JSON with new schema format
+- ✅ Generate multi-combo JSON with v1.1 schema format including complete fees
 - ✅ Handle partial failures gracefully
 - ✅ Return appropriate filename: `billing_combos_multi_[count]_[date].json`
 - ✅ **FIXED**: Robust JSON/Python literal parsing using `ast.literal_eval`
+- ✅ **ENHANCED**: "N/A" value filtering during export
 
 ### ✅ Phase 3: Import Functionality - COMPLETE ✅
 
 **✅ Smart Import Detection**: `POST /api/billing_combo/import`
 
-- ✅ Auto-detect export format based on JSON structure:
+- ✅ Auto-detect export format and version based on JSON structure:
   - Single: presence of `combo_data` object
   - Multi: presence of `combos` array
-- ✅ Backward compatibility with existing single-combo exports
-- ✅ Route to appropriate processing logic based on detected format
+  - Version: `export_info.version` field ("1.0" vs "1.1")
+- ✅ Backward compatibility with existing v1.0 single-combo exports
+- ✅ Route to appropriate processing logic based on detected format and version
 
-**✅ Multi-Combo Import Processing**:
+**✅ Enhanced Import Processing with Fee Preservation**:
 
 - ✅ Validate each combo individually within the array
+- ✅ Version-aware processing:
+  - v1.0: Fetch current fees from NomenclatureClient
+  - v1.1: Use provided fee data directly, skip "N/A" values
 - ✅ Collect validation results (success/warning/error per combo)
 - ✅ Handle naming conflicts with automatic resolution using '(copy)' pattern
 - ✅ Provide detailed import summary
 - ✅ Support partial imports (continue processing even if some combos fail)
+- ✅ **ENHANCED**: Proper "N/A" value handling in validation
 
 **✅ Automatic Conflict Resolution**:
 
@@ -181,11 +207,20 @@
 - ✅ Automatically append '(copy)', '(copy 2)', etc. for unique names
 - ✅ No user intervention required for naming conflicts
 
-**✅ Comprehensive Validation**:
+**✅ Comprehensive Validation with "N/A" Support**:
 
 - ✅ **JSON Schema Validation**: Required fields, data types, array structure
-- ✅ **Nomenclature Code Validation**: Batch validation via NomenclatureClient.get_code_details()
+- ✅ **Fee Validation**: Numeric validation for actual values, skip "N/A" values
+- ✅ **Nomenclature Code Validation**: Batch validation via NomenclatureClient.get_code_details() (v1.0 only)
 - ✅ **Business Logic Validation**: Combo name uniqueness, specialty consistency, reasonable limits
+
+### ✅ Phase 4: Frontend Import UI - COMPLETE ✅
+
+1. ✅ User clicks "Import Combo(s)" button → opens import modal
+2. ✅ File upload modal with drag-and-drop support → visual feedback and validation
+3. ✅ Import preview showing detected format, version, and conflicts → detailed preview for single/multi formats
+4. ✅ User confirms import → "Start Import" button with progress tracking
+5. ✅ Progress indication and detailed results display → animated progress bar and comprehensive results
 
 ## Technical Implementation Details
 
@@ -193,180 +228,77 @@
 
 **Backend** (`api/endpoints/billing.py`):
 
-- ✅ `billing_combo_export(combo_id)` - Single export endpoint
-- ✅ `billing_combo_export_multiple()` - Multi-export endpoint  
-- ✅ `billing_combo_import()` - **NEW**: Enhanced import with format auto-detection
-- ✅ `detect_import_format()` - **NEW**: Auto-detect single vs multi format
-- ✅ `generate_unique_combo_name()` - **NEW**: Handle naming conflicts with '(copy)' pattern
-- ✅ `validate_nomenclature_codes_batch()` - **NEW**: Batch validation via NomenclatureClient
-- ✅ `validate_single_combo()` - **NEW**: Validate single combo structure and business rules
-- ✅ `validate_multi_combo()` - **NEW**: Validate multiple combos structure and business rules
-- ✅ `process_single_combo_import()` - **NEW**: Import single combo into database
-- ✅ `process_multi_combo_import()` - **NEW**: Handle multi-combo imports with conflict resolution
+- ✅ `export_billing_combo(combo_id)` - Single export with v1.1 fee preservation
+- ✅ `export_multiple_billing_combos(combo_ids)` - Multi-export with v1.1 fee preservation
+- ✅ `billing_combo_import()` - Enhanced import with version detection and "N/A" handling
+- ✅ `detect_import_format()` - Auto-detect format and version
+- ✅ `generate_unique_combo_name()` - Handle naming conflicts
+- ✅ `validate_nomenclature_codes_batch()` - Batch validation via NomenclatureClient
+- ✅ `validate_single_combo()` - Version-aware validation with "N/A" support
+- ✅ `validate_multi_combo()` - Version-aware validation with "N/A" support
+- ✅ `process_single_combo_import()` - Import single combo with fee preservation
+- ✅ `process_multi_combo_import()` - Handle multi-combo imports with fee preservation
 
 **Frontend**:
 
-- ✅ `templates/manage/billing_combo.html` - Add checkbox column & multi-export button
-- ✅ `static/js/billing-combo-manager.js` - Multi-selection & bulk export methods
-- 🔄 **NEXT**: Import modal template with conflict resolution UI
-- 🔄 **NEXT**: Enhanced import preview for multi-combo files
-
-**Bootstrap Table Configuration**:
-
-- ✅ Add checkbox column with proper data attributes
-- ✅ Enable multi-selection capabilities (ctrl+click, shift+click)
-- ✅ Add selection event handlers
-- ✅ Integrate with existing table formatters and events
-
-**Validation**:
-
-- ✅ Enhanced JSON schema definition (single + multi formats)
-- ✅ Batch validation helper functions  
-- ✅ Conflict detection and resolution logic
-- ✅ Detailed error handling and reporting per combo
-
-### ✅ Key Functions Implemented
-
-```python
-# Export Functions (✅ COMPLETE)
-def export_billing_combo(combo_id: int) -> Dict
-def export_multiple_billing_combos(combo_ids: List[int]) -> Dict
-
-# Import Functions (✅ COMPLETE)
-def detect_import_format(json_data: Dict) -> str  # "single" or "multi"
-def generate_unique_combo_name(base_name: str, existing_names: Optional[set]) -> str
-async def validate_nomenclature_codes_batch(combo_codes_list: List[Dict]) -> Dict
-def validate_single_combo(combo_data: Dict) -> Dict
-def validate_multi_combo(combos_data: List[Dict]) -> Dict
-def process_single_combo_import(combo_data: Dict, final_name: str) -> Dict
-def process_multi_combo_import(combos_data: List[Dict]) -> Dict
-async def billing_combo_import() -> APIResponse  # Main import endpoint
-
-# Frontend Functions (✅ COMPLETE)
-class BillingComboManager:
-    async exportCombo(comboId: int)
-    getSelectedCombos() -> Array
-    async exportSelectedCombos(comboIds: Array)
-    updateExportButtonState()
-    handleSelectionChange()
-    
-    # ✅ COMPLETE: Import Functions  
-    showImportModal()
-    resetImportModal()
-    processFile(file: File)
-    detectImportFormat(jsonData: Object) -> String
-    showImportPreview()
-    startImport()
-    showImportResults(result: Object)
-```
-
-## User Experience Flows
-
-### ✅ Single Export Flow - COMPLETE
-
-1. User clicks individual "Export" button on combo row
-2. System generates JSON with codes only
-3. File downloads: `billing_combo_[name]_[date].json`
-4. Success confirmation toast
-
-### ✅ Multi-Selection Export Flow - COMPLETE
-
-1. User sees checkbox column with select-all option in table header
-2. User selects multiple combos using checkboxes, Ctrl+click, Shift+click
-3. "Export Selected" button becomes enabled, shows count: "Export Selected (3)"
-4. User clicks "Export Selected"
-5. System generates multi-combo JSON file
-6. File downloads: `billing_combos_multi_[count]_[date].json`
-7. Success confirmation with exported combo count
-
-### ✅ Enhanced Import Flow - COMPLETE (Backend)
-
-1. User uploads JSON file via `POST /api/billing_combo/import`
-2. **Auto-Format Detection**: System automatically detects single vs multi-combo format
-3. **Three-Layer Validation**: JSON structure, nomenclature codes, business rules
-4. **Automatic Conflict Resolution**: Appends '(copy)' for duplicate names
-5. **Batch Import**: Processes multiple combos efficiently
-6. **Detailed Results**: Success/failure feedback per combo with conflict resolution details
-
-### ✅ Frontend Import Flow - COMPLETE ✅
-
-1. ✅ User clicks "Import Combo(s)" button → opens import modal
-2. ✅ File upload modal with drag-and-drop support → visual feedback and validation
-3. ✅ Import preview showing detected format and conflicts → detailed preview for single/multi formats
-4. ✅ User confirms import → "Start Import" button with progress tracking
-5. ✅ Progress indication and detailed results display → animated progress bar and comprehensive results
+- ✅ `templates/manage/billing_combo.html` - Complete multi-selection interface
+- ✅ `static/js/billing-combo-manager.js` - Full import/export functionality
 
 ## ✅ Success Criteria - ACHIEVED
 
 ### Core Functionality (✅ COMPLETE)
 
-- ✅ Export generates lightweight, portable JSON files
-- ✅ Import validates codes against live nomenclature API
-- ✅ Imported combos have current fee/description data
+- ✅ Export generates comprehensive JSON files with complete fee data
+- ✅ Import validates codes and handles fee preservation correctly
+- ✅ "N/A" values are properly filtered and handled throughout the process
+- ✅ Imported combos maintain fee structure for v1.1 imports
 - ✅ Clear error messages for validation failures
 - ✅ No data loss or corruption during import/export
 - ✅ Consistent UI/UX with existing combo management
 
+### Fee Preservation Enhancement (✅ COMPLETE)
+
+- ✅ **Complete Fee Data Export**: v1.1 format includes all fee information
+- ✅ **"N/A" Value Management**: Proper filtering and validation handling
+- ✅ **Backward Compatibility**: v1.0 imports continue to work unchanged
+- ✅ **Version Detection**: Automatic detection and appropriate processing
+- ✅ **Enhanced Validation**: Robust fee validation with type checking and range validation
+- ✅ **Error Prevention**: No more "fee must be a valid number" errors for null values
+
 ### Multi-Selection Enhancement (✅ COMPLETE)
 
 - ✅ **Table Multi-Selection**: Bootstrap table with checkboxes, ctrl+click, shift+click support
-- ✅ **Bulk Export**: Export multiple combos in single operation with multi-combo JSON format
-- ✅ **Smart Import**: Auto-detect single vs multi-combo formats, handle both seamlessly
-- ✅ **Automatic Conflict Resolution**: Detect and resolve naming conflicts with '(copy)' pattern
-- ✅ **Batch Validation**: Validate multiple combos efficiently with detailed per-combo feedback
-- ✅ **Enhanced Backend**: Complete import processing with comprehensive error handling
-- ✅ **Backward Compatibility**: Existing single-combo exports/imports work unchanged
+- ✅ **Bulk Export**: Export multiple combos with v1.1 fee preservation
+- ✅ **Smart Import**: Auto-detect formats and versions, handle seamlessly
+- ✅ **Automatic Conflict Resolution**: Detect and resolve naming conflicts
+- ✅ **Batch Validation**: Validate multiple combos efficiently with detailed feedback
+- ✅ **Enhanced Backend**: Complete processing with comprehensive error handling
+- ✅ **Frontend Integration**: Complete import modal with progress tracking
 
 ### Performance & Usability (✅ COMPLETE)
 
-- ✅ **Efficient Operations**: Handle large multi-combo exports/imports without timeouts
-- ✅ **Error Recovery**: Graceful handling of partial failures in multi-operations
+- ✅ **Efficient Operations**: Handle large multi-combo exports/imports
+- ✅ **Error Recovery**: Graceful handling of partial failures and "N/A" values
 - ✅ **Transaction Safety**: Proper py4web patterns with automatic commit/rollback
-- ✅ **Async Processing**: Async endpoint for handling batch operations
+- ✅ **User Experience**: Professional interface with immediate feedback
 
-## Implementation Progress
+## Final Implementation Status
 
-### ✅ COMPLETED PHASES
+**✅ ALL CORE FUNCTIONALITY COMPLETE**
 
-1. ✅ **Phase 1: Single Export** - Individual combo export with simplified JSON format
-2. ✅ **Phase 2: Multi-Selection Export** - Bulk export with checkbox selection and multi-combo format
-3. ✅ **Phase 3: Import Functionality** - Complete import system with auto-detection and conflict resolution
+The billing combo import/export system is now fully implemented with:
 
-### ✅ COMPLETED PHASES - ALL CORE FUNCTIONALITY COMPLETE
+1. **Fee Preservation (v1.1)**: Complete fee data export and import with robust "N/A" handling
+2. **Multi-Selection**: Bulk operations with checkbox selection
+3. **Smart Import**: Auto-detection of format and version with appropriate processing
+4. **Enhanced Validation**: Comprehensive validation with proper null value handling
+5. **Professional UI**: Complete import modal with progress tracking and detailed results
 
-1. ✅ **Phase 1: Single Export** - Individual combo export with simplified JSON format
-2. ✅ **Phase 2: Multi-Selection Export** - Bulk export with checkbox selection and multi-combo format
-3. ✅ **Phase 3: Import Functionality** - Complete import system with auto-detection and conflict resolution
-4. ✅ **Phase 4: Frontend Import UI** - Complete import modal with drag-and-drop and progress tracking
-
-### 🔄 OPTIONAL FUTURE ENHANCEMENTS
-
-5. **Advanced Features** - Enhanced validation preview, detailed conflict resolution UI
-6. **Performance Optimization** - Large batch handling optimizations  
-7. **Documentation** - User guides and API documentation
-
-## Issues Encountered & Fixes Applied
-
-### ✅ Critical Issue: JSON Parsing Failure - RESOLVED
-
-**Problem**: Multi-export failed for combos with complex descriptions containing special characters
-**Solution**: Replaced manual string replacement with `ast.literal_eval()` for robust Python literal parsing
-**Result**: All combo types now export successfully
-
-### ✅ Implementation Challenges - RESOLVED
-
-**Challenge**: Async function requirements for nomenclature validation
-**Solution**: Made main import endpoint async with proper await handling
-
-**Challenge**: API parameter naming consistency  
-**Solution**: Used `details` parameter instead of `data` for APIResponse.error calls
-
-**Challenge**: Type safety for optional parameters
-**Solution**: Proper Optional[set] type annotations for existing_names parameter
+**🔄 SYSTEM STATUS**: Production-ready with comprehensive fee preservation and robust error handling.
 
 ## Dependencies
 
-- ✅ **NomenclatureClient**: Core dependency for code validation
+- ✅ **NomenclatureClient**: Core dependency for code validation (v1.0 imports)
 - ✅ **Bootstrap Table**: For UI integration  
 - ✅ **py4web REST API**: For endpoint consistency
 - ✅ **JSON Schema**: For validation rules
@@ -377,7 +309,8 @@ class BillingComboManager:
 - ✅ Follows py4web patterns (auth.user, db decorators, automatic transactions)
 - ✅ Uses existing APIResponse patterns for consistency
 - ✅ Comprehensive docstrings per project rules
-- ✅ Tested with various combo configurations including secondary codes
+- ✅ Tested with various combo configurations including null fee values
 - ✅ **Critical**: Uses `ast.literal_eval` for parsing Python-formatted combo_codes data
 - ✅ **Performance**: Batch validation reduces API calls for large imports
 - ✅ **User Experience**: Automatic conflict resolution requires no user intervention
+- ✅ **Robustness**: Proper "N/A" value handling prevents validation errors

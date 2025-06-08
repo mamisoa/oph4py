@@ -982,6 +982,11 @@ class BillingComboManager {
 			bootbox.confirm({
 				title: title,
 				message: message,
+				backdrop: true,
+				closeButton: false,
+				size: "normal",
+				centerVertical: false,
+				className: "bootbox-confirm-delete",
 				buttons: {
 					cancel: {
 						label: "<i class='fas fa-times'></i> Cancel",

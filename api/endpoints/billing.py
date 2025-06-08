@@ -625,20 +625,20 @@ def apply_billing_combo(combo_id: int):
 @action.uses(db, auth.user)
 def export_billing_combo(combo_id: int):
     """
-    Export a billing combo in simplified JSON format with only nomenclature codes.
+    Export a billing combo in JSON format with complete fee information.
 
-    This endpoint generates a portable export file containing only the essential
-    nomenclature codes. All other data (descriptions, fees, etc.) will be retrieved
-    from the NomenclatureClient API during import to ensure current information.
+    This endpoint generates a portable export file containing the complete
+    combo data including nomenclature codes, descriptions, and fees as they
+    are stored in the combo.
 
     Args:
         combo_id (int): The billing combo ID to export
 
     Returns:
-        JSON response with exported combo data in simplified format:
+        JSON response with exported combo data including fees:
         {
             "export_info": {
-                "version": "1.0",
+                "version": "1.1",
                 "exported_at": "2025-01-09T10:30:00Z",
                 "exported_by": "user@email.com"
             },
@@ -649,7 +649,13 @@ def export_billing_combo(combo_id: int):
                 "combo_codes": [
                     {
                         "nomen_code": 105755,
-                        "secondary_nomen_code": 102030  // optional
+                        "nomen_desc_fr": "Description in French",
+                        "feecode": 123,
+                        "fee": "45.50",
+                        "secondary_nomen_code": 102030,
+                        "secondary_nomen_desc_fr": "Secondary description",
+                        "secondary_feecode": 456,
+                        "secondary_fee": "12.30"
                     }
                 ]
             }
@@ -718,30 +724,110 @@ def export_billing_combo(combo_id: int):
                 error_type="validation_error",
             )
 
-        # Extract only the nomenclature codes (simplified format)
-        simplified_codes = []
+        # Extract complete combo codes including fee information (v1.1 format)
+        complete_codes = []
         for code_entry in stored_codes:
             if isinstance(code_entry, dict):
-                # New format with secondary code support
-                simplified_code = {"nomen_code": code_entry.get("nomen_code")}
+                # New format with complete data including fees
+                complete_code = {}
 
-                # Include secondary code if present
+                # Required fields
+                if code_entry.get("nomen_code"):
+                    complete_code["nomen_code"] = code_entry.get("nomen_code")
+                else:
+                    logger.warning(
+                        f"Skipping code entry without nomen_code in combo {combo_id}: {code_entry}"
+                    )
+                    continue
+
+                # Optional descriptive and fee fields
+                if code_entry.get("nomen_desc_fr"):
+                    complete_code["nomen_desc_fr"] = code_entry.get("nomen_desc_fr")
+                if code_entry.get("nomen_desc_nl"):
+                    complete_code["nomen_desc_nl"] = code_entry.get("nomen_desc_nl")
+
+                # Only include feecode if it's a valid value (not N/A)
+                feecode = code_entry.get("feecode")
+                if feecode and str(feecode).strip() not in ("N/A", "null", "None", ""):
+                    complete_code["feecode"] = feecode
+
+                # Only include fee if it's a valid value (not N/A)
+                fee = code_entry.get("fee")
+                if fee and str(fee).strip() not in ("N/A", "null", "None", ""):
+                    complete_code["fee"] = str(fee)  # Ensure string format
+
+                # Secondary code fields
                 if code_entry.get("secondary_nomen_code"):
-                    simplified_code["secondary_nomen_code"] = code_entry.get(
+                    complete_code["secondary_nomen_code"] = code_entry.get(
                         "secondary_nomen_code"
                     )
+                    if code_entry.get("secondary_nomen_desc_fr"):
+                        complete_code["secondary_nomen_desc_fr"] = code_entry.get(
+                            "secondary_nomen_desc_fr"
+                        )
+                    if code_entry.get("secondary_nomen_desc_nl"):
+                        complete_code["secondary_nomen_desc_nl"] = code_entry.get(
+                            "secondary_nomen_desc_nl"
+                        )
 
-                simplified_codes.append(simplified_code)
+                    # Only include secondary feecode if it's a valid value (not N/A)
+                    secondary_feecode = code_entry.get("secondary_feecode")
+                    if secondary_feecode and str(secondary_feecode).strip() not in (
+                        "N/A",
+                        "null",
+                        "None",
+                        "",
+                    ):
+                        complete_code["secondary_feecode"] = secondary_feecode
+
+                    # Only include secondary fee if it's a valid value (not N/A)
+                    secondary_fee = code_entry.get("secondary_fee")
+                    if secondary_fee and str(secondary_fee).strip() not in (
+                        "N/A",
+                        "null",
+                        "None",
+                        "",
+                    ):
+                        complete_code["secondary_fee"] = str(
+                            secondary_fee
+                        )  # Ensure string format
+
+                complete_codes.append(complete_code)
 
             elif isinstance(code_entry, int):
-                # Legacy format - simple integer code
-                simplified_codes.append({"nomen_code": code_entry})
+                # Legacy format - simple integer code (need to fetch fee data for backward compatibility)
+                logger.info(
+                    f"Converting legacy integer code {code_entry} to complete format"
+                )
+                try:
+                    nomenclature = NomenclatureClient()
+                    code_details = nomenclature.get_code_details(code_entry)
+                    if code_details:
+                        complete_code = {
+                            "nomen_code": code_entry,
+                            "nomen_desc_fr": code_details.get("description_fr", ""),
+                            "feecode": code_details.get("feecode"),
+                            "fee": str(code_details.get("fee", "0.00")),
+                        }
+                        if code_details.get("description_nl"):
+                            complete_code["nomen_desc_nl"] = code_details.get(
+                                "description_nl"
+                            )
+                        complete_codes.append(complete_code)
+                    else:
+                        # If can't fetch details, include just the code
+                        complete_codes.append({"nomen_code": code_entry})
+                except Exception as e:
+                    logger.warning(
+                        f"Could not fetch details for legacy code {code_entry}: {str(e)}"
+                    )
+                    complete_codes.append({"nomen_code": code_entry})
             else:
                 logger.warning(
                     f"Skipping invalid code entry in combo {combo_id}: {code_entry}"
                 )
 
-        if not simplified_codes:
+        if not complete_codes:
             return APIResponse.error(
                 message="No valid nomenclature codes found in combo",
                 status_code=400,
@@ -751,7 +837,7 @@ def export_billing_combo(combo_id: int):
         # Build export data structure
         export_data = {
             "export_info": {
-                "version": "1.0",
+                "version": "1.1",
                 "exported_at": datetime.datetime.now().isoformat() + "Z",
                 "exported_by": user.get("email", "unknown"),
             },
@@ -759,7 +845,7 @@ def export_billing_combo(combo_id: int):
                 "combo_name": combo.combo_name,
                 "combo_description": combo.combo_description or "",
                 "specialty": combo.specialty,
-                "combo_codes": simplified_codes,
+                "combo_codes": complete_codes,
             },
         }
 
@@ -772,7 +858,7 @@ def export_billing_combo(combo_id: int):
         filename = f"billing_combo_{safe_name}_{date_str}.json"
 
         logger.info(
-            f"Successfully exported combo '{combo.combo_name}' with {len(simplified_codes)} codes"
+            f"Successfully exported combo '{combo.combo_name}' with {len(complete_codes)} codes"
         )
 
         return APIResponse.success(
@@ -781,10 +867,10 @@ def export_billing_combo(combo_id: int):
                 "filename": filename,
                 "combo_id": combo_id,
                 "combo_name": combo.combo_name,
-                "codes_count": len(simplified_codes),
-                "export_type": "simplified_codes_only",
+                "codes_count": len(complete_codes),
+                "export_type": "complete_with_fees",
             },
-            message=f"Successfully exported combo '{combo.combo_name}' with {len(simplified_codes)} codes",
+            message=f"Successfully exported combo '{combo.combo_name}' with {len(complete_codes)} codes",
         )
 
     except Exception as e:
@@ -801,12 +887,11 @@ def export_billing_combo(combo_id: int):
 @action.uses(db, auth.user)
 def export_multiple_billing_combos():
     """
-    Export multiple billing combos in batch as a single JSON file.
+    Export multiple billing combos in batch as a single JSON file with complete fee information.
 
     This endpoint accepts an array of combo IDs and generates a multi-combo
-    export file containing only the essential nomenclature codes. All other
-    data (descriptions, fees, etc.) will be retrieved from the NomenclatureClient
-    API during import to ensure current information.
+    export file containing the complete combo data including nomenclature codes,
+    descriptions, and fees as they are stored in the combos.
 
     Request Body:
         {
@@ -817,7 +902,7 @@ def export_multiple_billing_combos():
         JSON response with exported combos data in multi-combo format:
         {
             "export_info": {
-                "version": "1.0",
+                "version": "1.1",
                 "export_type": "multi_combo",
                 "exported_at": "2025-01-09T10:30:00Z",
                 "exported_by": "user@email.com",
@@ -831,7 +916,13 @@ def export_multiple_billing_combos():
                     "combo_codes": [
                         {
                             "nomen_code": 105755,
-                            "secondary_nomen_code": 102030  // optional
+                            "nomen_desc_fr": "Description in French",
+                            "feecode": 123,
+                            "fee": "45.50",
+                            "secondary_nomen_code": 102030,
+                            "secondary_nomen_desc_fr": "Secondary description",
+                            "secondary_feecode": 456,
+                            "secondary_fee": "12.30"
                         }
                     ]
                 },
@@ -943,23 +1034,48 @@ def export_multiple_billing_combos():
                         )
                         stored_codes = []
 
-            # Extract only the nomenclature codes (simplified format)
-            simplified_codes = []
+            # Extract complete combo codes including fee information (v1.1 format)
+            complete_codes = []
             logger.debug(
                 f"Combo {combo['id']}: stored_codes type: {type(stored_codes)}, length: {len(stored_codes) if stored_codes else 0}"
             )
             for code_entry in stored_codes:
                 if isinstance(code_entry, dict):
-                    # New format with secondary code support
+                    # New format with complete data including fees
                     nomen_code = code_entry.get("nomen_code")
                     logger.debug(
                         f"Combo {combo['id']}: processing code_entry {nomen_code}, type: {type(nomen_code)}"
                     )
 
                     if nomen_code is not None:
-                        simplified_code = {"nomen_code": nomen_code}
+                        complete_code = {"nomen_code": nomen_code}
 
-                        # Include secondary code if present
+                        # Optional descriptive and fee fields
+                        if code_entry.get("nomen_desc_fr"):
+                            complete_code["nomen_desc_fr"] = code_entry.get(
+                                "nomen_desc_fr"
+                            )
+                        if code_entry.get("nomen_desc_nl"):
+                            complete_code["nomen_desc_nl"] = code_entry.get(
+                                "nomen_desc_nl"
+                            )
+
+                        # Only include feecode if it's a valid value (not N/A)
+                        feecode = code_entry.get("feecode")
+                        if feecode and str(feecode).strip() not in (
+                            "N/A",
+                            "null",
+                            "None",
+                            "",
+                        ):
+                            complete_code["feecode"] = feecode
+
+                        # Only include fee if it's a valid value (not N/A)
+                        fee = code_entry.get("fee")
+                        if fee and str(fee).strip() not in ("N/A", "null", "None", ""):
+                            complete_code["fee"] = str(fee)
+
+                        # Secondary code fields
                         secondary_code = code_entry.get("secondary_nomen_code")
                         if secondary_code is not None and str(
                             secondary_code
@@ -968,7 +1084,37 @@ def export_multiple_billing_combos():
                             try:
                                 if isinstance(secondary_code, str):
                                     secondary_code = int(secondary_code)
-                                simplified_code["secondary_nomen_code"] = secondary_code
+                                complete_code["secondary_nomen_code"] = secondary_code
+
+                                # Include secondary descriptive and fee fields
+                                if code_entry.get("secondary_nomen_desc_fr"):
+                                    complete_code["secondary_nomen_desc_fr"] = (
+                                        code_entry.get("secondary_nomen_desc_fr")
+                                    )
+                                if code_entry.get("secondary_nomen_desc_nl"):
+                                    complete_code["secondary_nomen_desc_nl"] = (
+                                        code_entry.get("secondary_nomen_desc_nl")
+                                    )
+
+                                # Only include secondary feecode if it's a valid value (not N/A)
+                                secondary_feecode = code_entry.get("secondary_feecode")
+                                if secondary_feecode and str(
+                                    secondary_feecode
+                                ).strip() not in ("N/A", "null", "None", ""):
+                                    complete_code["secondary_feecode"] = (
+                                        secondary_feecode
+                                    )
+
+                                # Only include secondary fee if it's a valid value (not N/A)
+                                secondary_fee = code_entry.get("secondary_fee")
+                                if secondary_fee and str(secondary_fee).strip() not in (
+                                    "N/A",
+                                    "null",
+                                    "None",
+                                    "",
+                                ):
+                                    complete_code["secondary_fee"] = str(secondary_fee)
+
                                 logger.debug(
                                     f"Combo {combo['id']}: added secondary code {secondary_code}"
                                 )
@@ -977,9 +1123,9 @@ def export_multiple_billing_combos():
                                     f"Combo {combo['id']}: invalid secondary code '{secondary_code}', skipping"
                                 )
 
-                        simplified_codes.append(simplified_code)
+                        complete_codes.append(complete_code)
                         logger.debug(
-                            f"Combo {combo['id']}: added simplified_code: {simplified_code}"
+                            f"Combo {combo['id']}: added complete_code: {complete_code}"
                         )
                     else:
                         logger.warning(
@@ -987,8 +1133,34 @@ def export_multiple_billing_combos():
                         )
 
                 elif isinstance(code_entry, int):
-                    # Legacy format - simple integer code
-                    simplified_codes.append({"nomen_code": code_entry})
+                    # Legacy format - simple integer code (need to fetch fee data for backward compatibility)
+                    logger.info(
+                        f"Combo {combo['id']}: converting legacy integer code {code_entry} to complete format"
+                    )
+                    try:
+                        nomenclature = NomenclatureClient()
+                        code_details = nomenclature.get_code_details(code_entry)
+                        if code_details:
+                            complete_code = {
+                                "nomen_code": code_entry,
+                                "nomen_desc_fr": code_details.get("description_fr", ""),
+                                "feecode": code_details.get("feecode"),
+                                "fee": str(code_details.get("fee", "0.00")),
+                            }
+                            if code_details.get("description_nl"):
+                                complete_code["nomen_desc_nl"] = code_details.get(
+                                    "description_nl"
+                                )
+                            complete_codes.append(complete_code)
+                        else:
+                            # If can't fetch details, include just the code
+                            complete_codes.append({"nomen_code": code_entry})
+                    except Exception as e:
+                        logger.warning(
+                            f"Combo {combo['id']}: could not fetch details for legacy code {code_entry}: {str(e)}"
+                        )
+                        complete_codes.append({"nomen_code": code_entry})
+
                     logger.debug(
                         f"Combo {combo['id']}: added legacy integer code: {code_entry}"
                     )
@@ -998,20 +1170,20 @@ def export_multiple_billing_combos():
                     )
 
             logger.debug(
-                f"Combo {combo['id']}: final simplified_codes count: {len(simplified_codes)}"
+                f"Combo {combo['id']}: final complete_codes count: {len(complete_codes)}"
             )
-            if simplified_codes:
+            if complete_codes:
                 exported_combos.append(
                     {
                         "combo_name": combo["combo_name"],
                         "combo_description": combo["combo_description"] or "",
                         "specialty": combo["specialty"],
-                        "combo_codes": simplified_codes,
+                        "combo_codes": complete_codes,
                     }
                 )
-                total_codes += len(simplified_codes)
+                total_codes += len(complete_codes)
                 logger.debug(
-                    f"Combo {combo['id']} ({combo['combo_name']}) exported with {len(simplified_codes)} codes"
+                    f"Combo {combo['id']} ({combo['combo_name']}) exported with {len(complete_codes)} codes"
                 )
             else:
                 logger.warning(
@@ -1028,7 +1200,7 @@ def export_multiple_billing_combos():
         # Build multi-combo export data structure
         export_data = {
             "export_info": {
-                "version": "1.0",
+                "version": "1.1",
                 "export_type": "multi_combo",
                 "exported_at": datetime.datetime.now().isoformat() + "Z",
                 "exported_by": user.get("email", "unknown"),
@@ -1223,25 +1395,38 @@ def nomenclature_code_details(nomen_code: int):
 # =============================================================================
 
 
-def detect_import_format(json_data: Dict) -> str:
+def detect_import_format(json_data: Dict) -> Dict[str, str]:
     """
-    Auto-detect the import format from JSON structure.
+    Auto-detect the import format and version from JSON structure.
 
     Args:
         json_data (Dict): The parsed JSON data
 
     Returns:
-        str: "single" or "multi"
+        Dict[str, str]: {"format": "single"|"multi", "version": "1.0"|"1.1"}
 
     Raises:
         ValueError: If format cannot be determined
     """
+    # Determine format type
     if "combo_data" in json_data:
-        return "single"
+        format_type = "single"
     elif "combos" in json_data:
-        return "multi"
+        format_type = "multi"
     else:
         raise ValueError("Invalid import format: missing 'combo_data' or 'combos' key")
+
+    # Determine version from export_info
+    version = "1.0"  # Default to v1.0 for backward compatibility
+    if "export_info" in json_data and "version" in json_data["export_info"]:
+        version = json_data["export_info"]["version"]
+
+    # Validate version
+    if version not in ["1.0", "1.1"]:
+        # Unknown version - assume latest format
+        version = "1.1"
+
+    return {"format": format_type, "version": version}
 
 
 def generate_unique_combo_name(
@@ -1330,7 +1515,7 @@ def validate_nomenclature_codes_batch(combo_codes_list: List[Dict]) -> Dict:
     return validation_results
 
 
-def validate_single_combo(combo_data: Dict) -> Dict:
+def validate_single_combo(combo_data: Dict, version: str = "1.0") -> Dict:
     """
     Validate a single combo's structure and business rules.
 
@@ -1411,10 +1596,84 @@ def validate_single_combo(combo_data: Dict) -> Dict:
                     f"Code entry {i+1}: secondary code cannot be same as main code"
                 )
 
+        # Validate fees if v1.1 format
+        if version == "1.1":
+            # Main fee validation
+            fee = code_entry.get("fee")
+            if fee is not None and str(fee).strip() not in ("", "N/A", "null", "None"):
+                try:
+                    fee_value = float(fee)
+                    if fee_value < 0:
+                        validation_result["valid"] = False
+                        validation_result["errors"].append(
+                            f"Code entry {i+1}: fee must be non-negative"
+                        )
+                    elif fee_value > 9999.99:
+                        validation_result["warnings"].append(
+                            f"Code entry {i+1}: unusually high fee ({fee_value})"
+                        )
+                except (ValueError, TypeError):
+                    validation_result["valid"] = False
+                    validation_result["errors"].append(
+                        f"Code entry {i+1}: fee must be a valid number (got: {fee})"
+                    )
+
+            # Secondary fee validation
+            secondary_fee = code_entry.get("secondary_fee")
+            if secondary_fee is not None and str(secondary_fee).strip() not in (
+                "",
+                "N/A",
+                "null",
+                "None",
+            ):
+                try:
+                    secondary_fee_value = float(secondary_fee)
+                    if secondary_fee_value < 0:
+                        validation_result["valid"] = False
+                        validation_result["errors"].append(
+                            f"Code entry {i+1}: secondary_fee must be non-negative"
+                        )
+                    elif secondary_fee_value > 9999.99:
+                        validation_result["warnings"].append(
+                            f"Code entry {i+1}: unusually high secondary fee ({secondary_fee_value})"
+                        )
+                except (ValueError, TypeError):
+                    validation_result["valid"] = False
+                    validation_result["errors"].append(
+                        f"Code entry {i+1}: secondary_fee must be a valid number (got: {secondary_fee})"
+                    )
+
+            # Feecode validation - allow N/A values
+            feecode = code_entry.get("feecode")
+            if feecode is not None and str(feecode).strip() not in (
+                "",
+                "N/A",
+                "null",
+                "None",
+            ):
+                if not isinstance(feecode, int) or feecode <= 0:
+                    validation_result["valid"] = False
+                    validation_result["errors"].append(
+                        f"Code entry {i+1}: feecode must be a positive integer (got: {feecode})"
+                    )
+
+            secondary_feecode = code_entry.get("secondary_feecode")
+            if secondary_feecode is not None and str(secondary_feecode).strip() not in (
+                "",
+                "N/A",
+                "null",
+                "None",
+            ):
+                if not isinstance(secondary_feecode, int) or secondary_feecode <= 0:
+                    validation_result["valid"] = False
+                    validation_result["errors"].append(
+                        f"Code entry {i+1}: secondary_feecode must be a positive integer (got: {secondary_feecode})"
+                    )
+
     return validation_result
 
 
-def validate_multi_combo(combos_data: List[Dict]) -> Dict:
+def validate_multi_combo(combos_data: List[Dict], version: str = "1.0") -> Dict:
     """
     Validate multiple combos structure and business rules.
 
@@ -1446,7 +1705,7 @@ def validate_multi_combo(combos_data: List[Dict]) -> Dict:
 
     # Validate each combo individually
     for i, combo_data in enumerate(combos_data):
-        combo_result = validate_single_combo(combo_data)
+        combo_result = validate_single_combo(combo_data, version)
         combo_result["index"] = i
         combo_result["combo_name"] = combo_data.get("combo_name", f"Combo {i+1}")
 
@@ -1467,7 +1726,9 @@ def validate_multi_combo(combos_data: List[Dict]) -> Dict:
     return overall_result
 
 
-def process_single_combo_import(combo_data: Dict, final_name: str) -> Dict:
+def process_single_combo_import(
+    combo_data: Dict, final_name: str, version: str = "1.0"
+) -> Dict:
     """
     Import a single combo into the database.
 
@@ -1481,8 +1742,75 @@ def process_single_combo_import(combo_data: Dict, final_name: str) -> Dict:
     try:
         user = auth.get_user()
 
-        # Prepare combo codes for storage
-        combo_codes_json = json.dumps(combo_data["combo_codes"])
+        # Process combo codes based on version
+        if version == "1.0":
+            # v1.0: Code-only format - fetch current fees from NomenclatureClient
+            enriched_codes = []
+            nomenclature = NomenclatureClient()
+
+            for code_entry in combo_data["combo_codes"]:
+                enriched_code = code_entry.copy()
+
+                # Fetch main code details
+                main_code = code_entry.get("nomen_code")
+                if main_code:
+                    try:
+                        code_details = nomenclature.get_code_details(main_code)
+                        if code_details:
+                            enriched_code.update(
+                                {
+                                    "nomen_desc_fr": code_details.get(
+                                        "description_fr", ""
+                                    ),
+                                    "feecode": code_details.get("feecode"),
+                                    "fee": str(code_details.get("fee", "0.00")),
+                                }
+                            )
+                            if code_details.get("description_nl"):
+                                enriched_code["nomen_desc_nl"] = code_details.get(
+                                    "description_nl"
+                                )
+                    except Exception as e:
+                        logger.warning(
+                            f"Could not fetch details for code {main_code}: {str(e)}"
+                        )
+
+                # Fetch secondary code details if present
+                secondary_code = code_entry.get("secondary_nomen_code")
+                if secondary_code:
+                    try:
+                        secondary_details = nomenclature.get_code_details(
+                            secondary_code
+                        )
+                        if secondary_details:
+                            enriched_code.update(
+                                {
+                                    "secondary_nomen_desc_fr": secondary_details.get(
+                                        "description_fr", ""
+                                    ),
+                                    "secondary_feecode": secondary_details.get(
+                                        "feecode"
+                                    ),
+                                    "secondary_fee": str(
+                                        secondary_details.get("fee", "0.00")
+                                    ),
+                                }
+                            )
+                            if secondary_details.get("description_nl"):
+                                enriched_code["secondary_nomen_desc_nl"] = (
+                                    secondary_details.get("description_nl")
+                                )
+                    except Exception as e:
+                        logger.warning(
+                            f"Could not fetch details for secondary code {secondary_code}: {str(e)}"
+                        )
+
+                enriched_codes.append(enriched_code)
+
+            combo_codes_json = json.dumps(enriched_codes)
+        else:
+            # v1.1: Complete format - use provided fee data
+            combo_codes_json = json.dumps(combo_data["combo_codes"])
 
         # Insert the combo
         combo_id = db.billing_combo.insert(
@@ -1494,7 +1822,9 @@ def process_single_combo_import(combo_data: Dict, final_name: str) -> Dict:
             is_active=True,
         )
 
-        logger.info(f"Successfully imported combo '{final_name}' with ID {combo_id}")
+        logger.info(
+            f"Successfully imported combo '{final_name}' with ID {combo_id} (format v{version})"
+        )
 
         return {
             "success": True,
@@ -1502,6 +1832,7 @@ def process_single_combo_import(combo_data: Dict, final_name: str) -> Dict:
             "original_name": combo_data["combo_name"],
             "final_name": final_name,
             "codes_count": len(combo_data["combo_codes"]),
+            "version": version,
         }
 
     except Exception as e:
@@ -1514,7 +1845,7 @@ def process_single_combo_import(combo_data: Dict, final_name: str) -> Dict:
         }
 
 
-def process_multi_combo_import(combos_data: List[Dict]) -> Dict:
+def process_multi_combo_import(combos_data: List[Dict], version: str = "1.0") -> Dict:
     """
     Import multiple combos into the database with conflict resolution.
 
@@ -1542,7 +1873,7 @@ def process_multi_combo_import(combos_data: List[Dict]) -> Dict:
         names_in_batch.add(final_name)
 
         # Import the combo
-        result = process_single_combo_import(combo_data, final_name)
+        result = process_single_combo_import(combo_data, final_name, version)
         result["status"] = "imported" if result["success"] else "failed"
 
         if result["success"]:
@@ -1619,10 +1950,14 @@ def billing_combo_import():
                 error_type="request_error",
             )
 
-        # Auto-detect import format
+        # Auto-detect import format and version
         try:
-            format_detected = detect_import_format(json_data)
-            logger.info(f"Detected import format: {format_detected}")
+            format_info = detect_import_format(json_data)
+            format_detected = format_info["format"]
+            version_detected = format_info["version"]
+            logger.info(
+                f"Detected import format: {format_detected} v{version_detected}"
+            )
         except ValueError as e:
             return APIResponse.error(
                 message=str(e), status_code=400, error_type="format_error"
@@ -1634,7 +1969,7 @@ def billing_combo_import():
             combo_data = json_data["combo_data"]
 
             # Validate combo structure
-            validation_result = validate_single_combo(combo_data)
+            validation_result = validate_single_combo(combo_data, version_detected)
             if not validation_result["valid"]:
                 return APIResponse.error(
                     message="Combo validation failed",
@@ -1643,30 +1978,34 @@ def billing_combo_import():
                     error_type="validation_error",
                 )
 
-            # Validate nomenclature codes
-            nomenclature_validation = validate_nomenclature_codes_batch(
-                combo_data["combo_codes"]
-            )
-            if nomenclature_validation["invalid_codes"]:
-                return APIResponse.error(
-                    message="Invalid nomenclature codes found",
-                    details={
-                        "invalid_codes": nomenclature_validation["invalid_codes"],
-                        "errors": nomenclature_validation["errors"],
-                    },
-                    status_code=400,
-                    error_type="nomenclature_error",
+            # Validate nomenclature codes (only for v1.0 - v1.1 may have codes not in current nomenclature)
+            if version_detected == "1.0":
+                nomenclature_validation = validate_nomenclature_codes_batch(
+                    combo_data["combo_codes"]
                 )
+                if nomenclature_validation["invalid_codes"]:
+                    return APIResponse.error(
+                        message="Invalid nomenclature codes found",
+                        details={
+                            "invalid_codes": nomenclature_validation["invalid_codes"],
+                            "errors": nomenclature_validation["errors"],
+                        },
+                        status_code=400,
+                        error_type="nomenclature_error",
+                    )
 
             # Generate unique name and import
             original_name = combo_data["combo_name"]
             final_name = generate_unique_combo_name(original_name)
 
-            import_result = process_single_combo_import(combo_data, final_name)
+            import_result = process_single_combo_import(
+                combo_data, final_name, version_detected
+            )
 
             if import_result["success"]:
                 response_data = {
                     "format_detected": "single",
+                    "version_detected": version_detected,
                     "imported_count": 1,
                     "total_count": 1,
                     "results": [
@@ -1676,6 +2015,7 @@ def billing_combo_import():
                             "status": "imported",
                             "combo_id": import_result["combo_id"],
                             "codes_count": import_result["codes_count"],
+                            "version": version_detected,
                         }
                     ],
                 }
@@ -1699,11 +2039,15 @@ def billing_combo_import():
             combos_data = json_data["combos"]
 
             # Validate all combos structure
-            validation_result = validate_multi_combo(combos_data)
+            validation_result = validate_multi_combo(combos_data, version_detected)
             if not validation_result["valid"]:
                 invalid_combos = [
                     r for r in validation_result["combo_results"] if not r["valid"]
                 ]
+                logger.error(
+                    f"Multi-combo validation failed. Global errors: {validation_result['global_errors']}"
+                )
+                logger.error(f"Invalid combos: {invalid_combos}")
                 return APIResponse.error(
                     message="Some combos failed validation",
                     details={
@@ -1714,29 +2058,31 @@ def billing_combo_import():
                     error_type="validation_error",
                 )
 
-            # Collect all codes for batch validation
-            all_codes = []
-            for combo_data in combos_data:
-                all_codes.extend(combo_data["combo_codes"])
+            # Validate nomenclature codes (only for v1.0 - v1.1 may have codes not in current nomenclature)
+            if version_detected == "1.0":
+                # Collect all codes for batch validation
+                all_codes = []
+                for combo_data in combos_data:
+                    all_codes.extend(combo_data["combo_codes"])
 
-            # Validate nomenclature codes
-            nomenclature_validation = validate_nomenclature_codes_batch(all_codes)
-            if nomenclature_validation["invalid_codes"]:
-                return APIResponse.error(
-                    message="Invalid nomenclature codes found",
-                    details={
-                        "invalid_codes": nomenclature_validation["invalid_codes"],
-                        "errors": nomenclature_validation["errors"],
-                    },
-                    status_code=400,
-                    error_type="nomenclature_error",
-                )
+                nomenclature_validation = validate_nomenclature_codes_batch(all_codes)
+                if nomenclature_validation["invalid_codes"]:
+                    return APIResponse.error(
+                        message="Invalid nomenclature codes found",
+                        details={
+                            "invalid_codes": nomenclature_validation["invalid_codes"],
+                            "errors": nomenclature_validation["errors"],
+                        },
+                        status_code=400,
+                        error_type="nomenclature_error",
+                    )
 
             # Import all combos
-            import_results = process_multi_combo_import(combos_data)
+            import_results = process_multi_combo_import(combos_data, version_detected)
 
             response_data = {
                 "format_detected": "multi",
+                "version_detected": version_detected,
                 "imported_count": import_results["imported_count"],
                 "failed_count": import_results["failed_count"],
                 "total_count": len(combos_data),
