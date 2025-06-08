@@ -318,15 +318,21 @@ def billing_codes_by_worklist(worklist_id: int):
 
 @action("api/billing_combo", method=["GET", "POST"])
 @action("api/billing_combo/<rec_id:int>", method=["GET", "PUT", "DELETE"])
+@action.uses(auth.user)
 def billing_combo(rec_id: Optional[int] = None):
     """
-    CRUD operations for billing combos.
+    CRUD operations for billing combos with ownership-based access control.
 
-    GET /api/billing_combo - List all billing combos with optional filters
-    GET /api/billing_combo/123 - Get specific billing combo
-    POST /api/billing_combo - Create new billing combo
-    PUT /api/billing_combo/123 - Update billing combo
-    DELETE /api/billing_combo/123 - Delete billing combo
+    GET /api/billing_combo - List user's billing combos + legacy combos (without creators)
+    GET /api/billing_combo/123 - Get specific billing combo (if owned by user or legacy)
+    POST /api/billing_combo - Create new billing combo (automatically assigned to user)
+    PUT /api/billing_combo/123 - Update billing combo (if owned by user or legacy)
+    DELETE /api/billing_combo/123 - Delete billing combo (if owned by user or legacy)
+
+    Access Control:
+    - Users can only see/modify their own combos + combos without creators (legacy)
+    - Combos created before access control implementation remain accessible to everyone
+    - New combos are automatically assigned to their creator
 
     Query parameters for GET:
     - specialty.eq=ophthalmology: Filter by specialty
@@ -337,9 +343,16 @@ def billing_combo(rec_id: Optional[int] = None):
         JSON response with billing combo data
     """
     try:
-        logger.info(f"Billing combo request - Method: {request.method}, ID: {rec_id}")
+        logger.info(
+            f"Billing combo request - Method: {request.method}, ID: {rec_id}, User: {auth.user_id}"
+        )
 
-        # Handle GET requests with custom query processing
+        # Build ownership filter: user's combos OR legacy combos (created_by IS NULL)
+        ownership_filter = (db.billing_combo.created_by == auth.user_id) | (
+            db.billing_combo.created_by == None
+        )
+
+        # Handle GET requests with ownership filtering
         if request.method == "GET":
             # Get query parameters and filter out Bootstrap Table specific ones
             query_params = dict(request.GET)
@@ -350,22 +363,162 @@ def billing_combo(rec_id: Optional[int] = None):
                 k: v for k, v in query_params.items() if k not in bootstrap_params
             }
 
+            # Build query conditions
+            query_conditions = ownership_filter
+
+            # Apply additional filters from query parameters
+            for key, value in filtered_query.items():
+                if "." in key:
+                    # Handle operators like combo_name.contains
+                    field_name, operator = key.split(".", 1)
+                    if hasattr(db.billing_combo, field_name):
+                        field = getattr(db.billing_combo, field_name)
+                        if operator == "contains":
+                            query_conditions &= field.contains(value)
+                        elif operator == "eq":
+                            query_conditions &= field == value
+                        elif operator == "like":
+                            query_conditions &= field.like(f"%{value}%")
+                else:
+                    # Handle direct field filters
+                    if hasattr(db.billing_combo, key):
+                        field = getattr(db.billing_combo, key)
+                        query_conditions &= field == value
+
             # Handle search functionality manually if search parameter exists
             if "search" in query_params and query_params["search"]:
                 search_term = query_params["search"]
-                # Add search condition for combo_name
-                filtered_query["combo_name.contains"] = search_term
+                # Search in combo_name and combo_description
+                search_condition = db.billing_combo.combo_name.contains(
+                    search_term
+                ) | db.billing_combo.combo_description.contains(search_term)
+                query_conditions &= search_condition
 
-            return handle_rest_api_request(
-                "billing_combo", str(rec_id) if rec_id else None, filtered_query
+            # Execute query based on whether we're getting a specific record or list
+            if rec_id:
+                # Get specific record with ownership check
+                record = (
+                    db(query_conditions & (db.billing_combo.id == rec_id))
+                    .select()
+                    .first()
+                )
+                if not record:
+                    return APIResponse.error(
+                        message=f"Billing combo not found or access denied for ID: {rec_id}",
+                        status_code=404,
+                        error_type="not_found",
+                    )
+
+                # Convert record to dict and return
+                result_data = record.as_dict()
+                return APIResponse.success(data=result_data)
+            else:
+                # Get list of accessible records
+                records = db(query_conditions).select(orderby=~db.billing_combo.id)
+
+                # Convert to list of dicts
+                result_data = [record.as_dict() for record in records]
+
+                # Return in format expected by frontend
+                return json.dumps(
+                    {
+                        "status": "success",
+                        "items": result_data,
+                        "count": len(result_data),
+                    }
+                )
+
+        # Handle PUT and DELETE requests with ownership check
+        elif request.method in ["PUT", "DELETE"]:
+            if not rec_id:
+                return APIResponse.error(
+                    message="Record ID required for PUT/DELETE operations",
+                    status_code=400,
+                    error_type="validation_error",
+                )
+
+            # Check if user can modify this record
+            record = (
+                db(ownership_filter & (db.billing_combo.id == rec_id)).select().first()
             )
+            if not record:
+                return APIResponse.error(
+                    message=f"Billing combo not found or access denied for ID: {rec_id}",
+                    status_code=403,
+                    error_type="access_denied",
+                )
 
-        # For POST/PUT requests, validate combo_codes format
-        if request.method in ["POST", "PUT"] and request.json:
+            if request.method == "DELETE":
+                # Delete the record
+                db(db.billing_combo.id == rec_id).delete()
+                db.commit()
+                return APIResponse.success(
+                    message=f"Billing combo {rec_id} deleted successfully"
+                )
+
+            elif request.method == "PUT":
+                # Validate and update the record
+                if not request.json:
+                    return APIResponse.error(
+                        message="Request body required for PUT operation",
+                        status_code=400,
+                        error_type="validation_error",
+                    )
+
+                data = request.json.copy()
+
+                # Validate combo_codes format if provided
+                if "combo_codes" in data:
+                    if isinstance(data["combo_codes"], str):
+                        try:
+                            combo_codes = json.loads(data["combo_codes"])
+                            if not isinstance(combo_codes, list):
+                                raise ValueError("combo_codes must be an array")
+                        except json.JSONDecodeError:
+                            return APIResponse.error(
+                                message="combo_codes must be valid JSON array",
+                                status_code=400,
+                                error_type="validation_error",
+                            )
+                    elif isinstance(data["combo_codes"], list):
+                        # Convert list to JSON string for storage
+                        data["combo_codes"] = json.dumps(data["combo_codes"])
+                    else:
+                        return APIResponse.error(
+                            message="combo_codes must be an array or JSON string",
+                            status_code=400,
+                            error_type="validation_error",
+                        )
+
+                # Remove fields that shouldn't be updated
+                data.pop("id", None)
+                data.pop("created_by", None)
+                data.pop("created_on", None)
+
+                # Update the record
+                db(db.billing_combo.id == rec_id).update(**data)
+                db.commit()
+
+                # Return updated record
+                updated_record = db(db.billing_combo.id == rec_id).select().first()
+                return APIResponse.success(
+                    data=updated_record.as_dict(),
+                    message=f"Billing combo {rec_id} updated successfully",
+                )
+
+        # Handle POST requests (create new combo)
+        elif request.method == "POST":
+            if not request.json:
+                return APIResponse.error(
+                    message="Request body required for POST operation",
+                    status_code=400,
+                    error_type="validation_error",
+                )
+
             data = request.json.copy()
 
+            # Validate combo_codes format
             if "combo_codes" in data:
-                # Ensure combo_codes is a valid JSON array
                 if isinstance(data["combo_codes"], str):
                     try:
                         combo_codes = json.loads(data["combo_codes"])
@@ -391,9 +544,23 @@ def billing_combo(rec_id: Optional[int] = None):
             data.setdefault("is_active", True)
             data.setdefault("specialty", "ophthalmology")
 
-            request.json = data
+            # Remove any fields that might interfere with auth.signature
+            data.pop("id", None)
+            data.pop("created_by", None)
+            data.pop("created_on", None)
+            data.pop("modified_by", None)
+            data.pop("modified_on", None)
 
-        return handle_rest_api_request("billing_combo", str(rec_id) if rec_id else None)
+            # Create new record (auth.signature will automatically set created_by)
+            new_id = db.billing_combo.insert(**data)
+            db.commit()
+
+            # Return created record
+            new_record = db(db.billing_combo.id == new_id).select().first()
+            return APIResponse.success(
+                data=new_record.as_dict(),
+                message=f"Billing combo created successfully with ID: {new_id}",
+            )
 
     except Exception as e:
         logger.error(f"Error in billing_combo endpoint: {str(e)}")

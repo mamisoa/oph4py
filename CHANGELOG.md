@@ -2,6 +2,118 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-08T15:57:53.836863] - Billing Combo Access Control Implementation
+
+### Added
+
+- **Ownership-Based Access Control**: Billing combos are now accessible only to their creators
+  - **User Isolation**: Each user can only see and modify their own billing combos
+  - **Legacy Compatibility**: Combos created before this update (without creators) remain accessible to everyone
+  - **Automatic Creator Assignment**: New combos are automatically assigned to their creator via auth.signature
+  - **Security Enhancement**: Prevents unauthorized access to other users' combo configurations
+
+- **Enhanced API Security**: Comprehensive access control for all billing combo operations
+  - **Authentication Required**: All endpoints now require user authentication via `@action.uses(auth.user)`
+  - **Ownership Filtering**: GET requests automatically filter to show only accessible combos
+  - **Access Validation**: PUT/DELETE operations verify ownership before allowing modifications
+  - **Proper Error Handling**: 403 Forbidden responses for unauthorized access attempts
+
+### Enhanced
+
+- **Billing Combo Endpoint** (`api/endpoints/billing.py`):
+  - **Custom Query Logic**: Replaced generic `handle_rest_api_request` with ownership-aware implementation
+  - **Smart Filtering**: `(db.billing_combo.created_by == auth.user_id) | (db.billing_combo.created_by == None)`
+  - **Maintained Functionality**: All existing search, filtering, and sorting capabilities preserved
+  - **Response Compatibility**: Returns data in same format expected by frontend
+
+- **Database Query Patterns**: Efficient ownership-based filtering
+  - **User Combos**: `db.billing_combo.created_by == auth.user_id`
+  - **Legacy Combos**: `db.billing_combo.created_by == None`
+  - **Combined Filter**: Logical OR operation for both user and legacy access
+  - **Search Integration**: Ownership filtering combined with existing search functionality
+
+### Technical Implementation
+
+- **API Changes** (`api/endpoints/billing.py`):
+  ```python
+  @action("api/billing_combo", method=["GET", "POST"])
+  @action("api/billing_combo/<rec_id:int>", method=["GET", "PUT", "DELETE"])
+  @action.uses(auth.user)  # NEW: Authentication required
+  def billing_combo(rec_id: Optional[int] = None):
+  ```
+
+- **Ownership Filter Logic**:
+  ```python
+  # Build ownership filter: user's combos OR legacy combos (created_by IS NULL)
+  ownership_filter = (db.billing_combo.created_by == auth.user_id) | (db.billing_combo.created_by == None)
+  ```
+
+- **Access Control Implementation**:
+  ```python
+  # GET: Apply ownership filter to query
+  query_conditions = ownership_filter & additional_filters
+  
+  # PUT/DELETE: Verify ownership before operation
+  record = db(ownership_filter & (db.billing_combo.id == rec_id)).select().first()
+  if not record:
+      return APIResponse.error(message="Access denied", status_code=403)
+  ```
+
+- **Response Format Compatibility**:
+  ```python
+  # Maintains existing frontend compatibility
+  return json.dumps({
+      "status": "success", 
+      "items": result_data, 
+      "count": len(result_data)
+  })
+  ```
+
+### Security Features
+
+- **Access Control Matrix**:
+  - **User's Own Combos**: Full CRUD access (Create, Read, Update, Delete)
+  - **Legacy Combos (no creator)**: Full CRUD access (backward compatibility)
+  - **Other Users' Combos**: No access (404/403 responses)
+
+- **Error Handling**:
+  - **404 Not Found**: When combo doesn't exist or user has no access
+  - **403 Forbidden**: When user attempts unauthorized modification
+  - **Authentication Required**: 401 if user not logged in (handled by py4web)
+
+- **Data Protection**:
+  - **Creator Assignment**: New combos automatically get created_by field populated
+  - **Immutable Creator**: created_by field cannot be modified via API
+  - **Audit Trail**: Full auth.signature tracking (created_by, created_on, modified_by, modified_on)
+
+### Backward Compatibility
+
+- **Legacy Combo Support**: Zero breaking changes for existing users
+  - **Shared Access**: Combos without creators remain accessible to all users
+  - **Seamless Transition**: No migration required for existing data
+  - **Gradual Adoption**: New combos get access control, old ones remain shared
+
+- **Frontend Compatibility**: No changes required to existing JavaScript
+  - **Same API Interface**: Endpoints accept same parameters and return same format
+  - **Error Handling**: Frontend will receive appropriate error responses for denied access
+  - **Feature Preservation**: All search, filtering, and CRUD operations work as before
+
+### Benefits
+
+- **Enhanced Security**: Users cannot accidentally modify or delete other users' combo configurations
+- **Data Privacy**: Each user's billing preferences and workflows are protected
+- **Multi-User Support**: Clean separation for practices with multiple practitioners
+- **Audit Capability**: Clear tracking of who created and modified each combo
+- **Compliance Ready**: Supports medical practice compliance requirements for data access control
+
+### Database Schema
+
+- **No Changes Required**: Leverages existing `auth.signature` fields in `billing_combo` table
+  - **created_by**: References auth_user.id (creator identification)
+  - **created_on**: Timestamp of creation
+  - **modified_by**: References auth_user.id (last modifier)
+  - **modified_on**: Timestamp of last modification
+
 ## [2025-06-08T15:41:15.396937] - Real-Time Combo Total Display
 
 ### Added
