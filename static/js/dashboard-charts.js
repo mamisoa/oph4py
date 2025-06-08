@@ -260,6 +260,11 @@ class DashboardCharts {
 		}
 
 		chart.update("resize");
+
+		// Update insights if available
+		if (data.insights && data.insights.length > 0) {
+			this.updateInsights(chartType, data.insights);
+		}
 	}
 
 	formatChartLabel(chartType) {
@@ -285,6 +290,28 @@ class DashboardCharts {
                     <span class="period-text">new ${chartType} in the last ${periodText}</span>
                 </div>
             `;
+		}
+	}
+
+	updateInsights(chartType, insights) {
+		const insightsContainer = document.getElementById(`${chartType}Insights`);
+		if (insightsContainer && insights.length > 0) {
+			insightsContainer.innerHTML = `
+                <div class="alert alert-light border">
+                    <h6 class="mb-2"><i class="fas fa-chart-line me-2 text-primary"></i>Trend Analysis</h6>
+                    <ul class="list-unstyled mb-0 small">
+                        ${insights
+													.map(
+														(insight) =>
+															`<li class="mb-1"><i class="fas fa-angle-right me-1 text-muted"></i>${insight}</li>`
+													)
+													.join("")}
+                    </ul>
+                </div>
+            `;
+			insightsContainer.style.display = "block";
+		} else if (insightsContainer) {
+			insightsContainer.style.display = "none";
 		}
 	}
 

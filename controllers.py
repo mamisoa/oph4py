@@ -756,6 +756,185 @@ def get_moving_average_days(period_months):
     return moving_avg_days.get(period_months, 15)  # default to 15 days
 
 
+def analyze_chart_trends(data, labels, ma_data, period, table):
+    """Analyze chart trends and generate automated insights"""
+    insights = []
+
+    if not data or len(data) < 2:
+        insights.append("📊 Insufficient data for trend analysis")
+        return insights
+
+    # Calculate trend direction using linear regression
+    def calculate_trend():
+        if len(data) < 3:
+            return "stable", 0
+
+        x_vals = list(range(len(data)))
+        y_vals = data
+        n = len(data)
+
+        if n == 0 or sum(x * x for x in x_vals) == 0:
+            return "stable", 0
+
+        # Simple linear regression
+        sum_x = sum(x_vals)
+        sum_y = sum(y_vals)
+        sum_xy = sum(x_vals[i] * y_vals[i] for i in range(n))
+        sum_x2 = sum(x * x for x in x_vals)
+
+        try:
+            slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x * sum_x)
+            return (
+                "increasing"
+                if slope > 0.05
+                else "decreasing" if slope < -0.05 else "stable"
+            ), slope
+        except ZeroDivisionError:
+            return "stable", 0
+
+    # Calculate volatility
+    def calculate_volatility():
+        if len(data) < 2:
+            return "unknown", 0
+
+        mean_val = sum(data) / len(data)
+        if mean_val == 0:
+            return "unknown", 0
+
+        variance = sum((x - mean_val) ** 2 for x in data) / len(data)
+        std_dev = variance**0.5
+        cv = (std_dev / mean_val) * 100
+
+        if cv < 15:
+            return "low", cv
+        elif cv < 30:
+            return "moderate", cv
+        else:
+            return "high", cv
+
+    # Find peaks and lows
+    def find_peak_low_info():
+        if len(data) < 2:
+            return None
+
+        max_val = max(data)
+        min_val = min(data)
+        max_idx = data.index(max_val)
+        min_idx = data.index(min_val)
+
+        return {
+            "peak": {
+                "value": max_val,
+                "date": labels[max_idx] if max_idx < len(labels) else "N/A",
+            },
+            "low": {
+                "value": min_val,
+                "date": labels[min_idx] if min_idx < len(labels) else "N/A",
+            },
+        }
+
+    # Calculate recent performance (last 25% vs first 25%)
+    def calculate_recent_performance():
+        if len(data) < 4:
+            return 0
+
+        quarter_size = max(1, len(data) // 4)
+        early_avg = sum(data[:quarter_size]) / quarter_size
+        recent_avg = sum(data[-quarter_size:]) / quarter_size
+
+        if early_avg == 0:
+            return 0
+
+        return ((recent_avg - early_avg) / early_avg) * 100
+
+    # Generate insights
+    trend_direction, slope = calculate_trend()
+    volatility_level, cv = calculate_volatility()
+    peak_low_info = find_peak_low_info()
+    recent_change = calculate_recent_performance()
+
+    # Chart type specific naming
+    entity_name = {
+        "patients": "new patients",
+        "worklists": "new worklists",
+        "md_worklists": "MD worklists",
+    }.get(table, table)
+
+    period_text = {
+        3: "3 months",
+        6: "6 months",
+        12: "1 year",
+        24: "2 years",
+        60: "5 years",
+        84: "7 years",
+        120: "10 years",
+    }.get(period, f"{period} months")
+
+    # Trend direction insight
+    if trend_direction == "increasing":
+        insights.append(
+            f"📈 Growing trend: {entity_name} showing upward trajectory over {period_text}"
+        )
+    elif trend_direction == "decreasing":
+        insights.append(
+            f"📉 Declining trend: {entity_name} decreasing over {period_text}"
+        )
+    else:
+        insights.append(
+            f"➡️ Stable pattern: {entity_name} maintaining steady levels over {period_text}"
+        )
+
+    # Recent performance insight
+    if abs(recent_change) > 10:
+        if recent_change > 0:
+            insights.append(
+                f"🚀 Recent acceleration: {recent_change:.1f}% increase in latest quarter"
+            )
+        else:
+            insights.append(
+                f"🐌 Recent slowdown: {abs(recent_change):.1f}% decrease in latest quarter"
+            )
+
+    # Volatility insight
+    if volatility_level == "low":
+        insights.append(
+            f"🎯 Stable pattern: Low volatility ({cv:.1f}%) indicates predictable {entity_name}"
+        )
+    elif volatility_level == "high":
+        insights.append(
+            f"⚡ High variability: Significant fluctuations ({cv:.1f}%) in {entity_name}"
+        )
+
+    # Peak/Low insight
+    if peak_low_info and len(data) >= 7:  # Only for meaningful datasets
+        peak_date = (
+            peak_low_info["peak"]["date"][:10]
+            if len(peak_low_info["peak"]["date"]) > 10
+            else peak_low_info["peak"]["date"]
+        )
+        insights.append(
+            f"📊 Peak activity: Highest count ({peak_low_info['peak']['value']}) on {peak_date}"
+        )
+
+    # Moving average insight
+    if len(ma_data) >= 2:
+        ma_start = ma_data[len(ma_data) // 4] if len(ma_data) >= 4 else ma_data[0]
+        ma_end = ma_data[-1]
+        if ma_start > 0:
+            ma_change = ((ma_end - ma_start) / ma_start) * 100
+            if abs(ma_change) > 5:
+                if ma_change > 0:
+                    insights.append(
+                        f"📈 Moving average trend: {ma_change:.1f}% upward trajectory"
+                    )
+                else:
+                    insights.append(
+                        f"📉 Moving average trend: {abs(ma_change):.1f}% downward trajectory"
+                    )
+
+    return insights[:4]  # Limit to 4 insights to avoid clutter
+
+
 @action("api/chart_data/<table>/<period:int>")
 @action.uses(session, auth.user, db)
 def chart_data(table, period):
@@ -882,7 +1061,10 @@ def chart_data(table, period):
         },
     ]
 
-    # Return JSON response with multiple datasets
+    # Generate automated trend insights
+    insights = analyze_chart_trends(data, labels, moving_average, period, table)
+
+    # Return JSON response with multiple datasets and insights
     response.headers["Content-Type"] = "application/json"
     return dict(
         labels=labels,
@@ -891,6 +1073,7 @@ def chart_data(table, period):
         period=period,
         table=table,
         total_count=sum(data),
+        insights=insights,  # New automated trend analysis
     )
 
 
