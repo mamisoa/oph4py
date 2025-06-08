@@ -10,44 +10,12 @@
 </li>
 <li class="nav-item">
     <a href="[[=URL('daily_transactions')]]" class="nav-link">
-        <i class="fas fa-receipt me-1"></i>Daily Transactions
+        <i class="fas fa-receipt me-1"></i>Transactions
     </a>
 </li>
 [[ pass ]]
-[[ if userHierarchy < 3 :]] <li class="nav-item dropdown">
-    <a href="" class="nav-link dropdown-toggle" id="dd-manage" role="button" data-bs-toggle="dropdown"
-        aria-expanded="false">Manage</a>
-    <ul class="dropdown-menu" aria-labelledby="dd-manage">
-        <li><a class="dropdown-item" href="[[=URL('manage/users')]]/Doctor">Doctors<i
-                    class="fas fa-user-md ms-1"></i></a></li>
-        <li><a class="dropdown-item" href="[[=URL('manage/users')]]/Nurse">Nurses<i
-                    class="fas fa-user-nurse ms-1"></i></a></li>
-        <li><a class="dropdown-item" href="[[=URL('manage/users')]]/Medical%20assistant">Medical Assistant<i
-                    class="fas fa-user-nurse ms-1"></i></a></li>
-        <li><a class="dropdown-item" href="[[=URL('manage/users')]]/Administrative">Administrative<i
-                    class="fas fa-user-edit ms-1"></i></a></li>
-        <li><a class="dropdown-item" href="[[=URL('manage/users')]]/Admin">Admins<i
-                    class="fas fa-user-cog ms-1"></i></a></li>
-    </ul>
-    </li>
-    <li class="nav-item dropdown">
-        <a href="" class="nav-link dropdown-toggle" id="dd-settings" role="button" data-bs-toggle="dropdown"
-            aria-expanded="false">Settings</a>
-        <ul class="dropdown-menu" aria-labelledby="dd-manage">
-            <li><a class="dropdown-item" href="[[=URL('manage/medications')]]">Medications DB</a></li>
-            <li><a class="dropdown-item" href="[[=URL('manage/diseases')]]">Diseases DB</a></li>
-            <li><a class="dropdown-item" href="[[=URL('manage/allergy')]]">Allergy DB</a></li>
-            <li><a class="dropdown-item" href="[[=URL('manage/lenses')]]">Lenses DB</a></li>
-            <li><a class="dropdown-item" href="[[=URL('manage/combo')]]">Combo management</a></li>
-            <li><a class="dropdown-item" href="[[=URL('manage/billing_combo')]]">Billing Combo management</a></li>
-            <li><a class="dropdown-item" href="[[=URL('manage/db')]]">DB management</a></li>
-            <li><a class="dropdown-item" href="[[=URL('import_users')]]">Import auth_user CSV</a></li>
-        </ul>
-    </li>
-    [[ pass ]]
-    <li class="nav-item">
-        <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasCache" role="button"
-            aria-controls="offcanvasCache">
-            Cache
-        </a>
-    </li>
+<!--<li class="nav-item">
+    <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasCache" role="button" aria-controls="offcanvasCache">
+        Cache
+    </a>
+</li> -->

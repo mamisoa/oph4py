@@ -34,7 +34,6 @@ from dateutil.relativedelta import relativedelta
 from py4web import (  # add response to throw http error 400
     URL,
     Field,
-    abort,
     action,
     redirect,
     request,
@@ -43,24 +42,11 @@ from py4web import (  # add response to throw http error 400
 from py4web.utils.form import (  # added import Field Form and FormStyleBulma to get form working
     Form,
     FormStyleBootstrap4,
-    FormStyleBulma,
 )
 from py4web.utils.grid import Grid
-from pydal.tools.tags import Tags
-from pydal.validators import CRYPT  # to encrypt passwords
 from yatl.helpers import CAT, OPTION, XML, A
 
-from .common import (
-    T,
-    auth,
-    authenticated,
-    cache,
-    db,
-    flash,
-    logger,
-    session,
-    unauthenticated,
-)
+from .common import T, auth, db, flash, logger, session
 
 # import settings
 from .settings import (  # DB_OCTOPUS
@@ -73,7 +59,7 @@ from .settings import (  # DB_OCTOPUS
 )
 
 # useful
-from .useful import check_duplicate, dropdownSelect, getMembershipId
+from .useful import dropdownSelect, getMembershipId
 
 
 # @unauthenticated("index", "index.html")
@@ -393,10 +379,10 @@ def daily_transactions():
         }
 
         return dict(
-            env_status=ENV_STATUS,
-            timeOffset=TIMEOFFSET,
-            app_name=APP_NAME,
-            hosturl=LOCAL_URL,
+            env_status=env_status,
+            timeOffset=timeOffset,
+            app_name=app_name,
+            hosturl=hosturl,
             user=auth.get_user(),
             seniorOptions="",
             summary=summary,

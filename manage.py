@@ -411,6 +411,11 @@ def worklist():
         .select(db.membership.membership)
         .first()["membership"]
     )
+    userHierarchy = (
+        db(db.membership.id == user["membership"])
+        .select(db.membership.hierarchy)
+        .first()["hierarchy"]
+    )
     test = "Test OK"
     membership = 6
     class_icon = "fa-user"
