@@ -96,8 +96,13 @@ function responseHandler_transactions(res) {
 			formattedData = res || { total: 0, rows: [] };
 		}
 
-		// Update summary cards with current data
-		updateSummaryCards(formattedData.rows);
+		// ENHANCEMENT: Update summary cards from backend summary (not visible rows)
+		if (res.summary) {
+			updateSummaryCardsFromBackend(res.summary);
+		} else {
+			// Fallback: Use client-side calculation if backend summary not available
+			updateSummaryCards(formattedData.rows);
+		}
 
 		// Show empty state if no data
 		if (formattedData.rows.length === 0) {
@@ -379,7 +384,53 @@ function detailFormatter_transactions(index, row) {
 }
 
 /**
- * Update summary cards with current data
+ * ENHANCEMENT: Update summary cards from backend-calculated summary data
+ * This function uses server-calculated totals for ALL filtered records, not just visible rows
+ * @param {Object} summary - Backend summary object with pre-calculated totals
+ */
+function updateSummaryCardsFromBackend(summary) {
+	console.log("Updating summary cards from backend data:", summary);
+
+	// Update summary card values using backend totals
+	document.getElementById("totalTransactions").textContent =
+		summary.count_total || 0;
+	document.getElementById("totalAmount").textContent = `€${(
+		summary.total_amount || 0
+	).toFixed(2)}`;
+	document.getElementById("totalCard").textContent = `€${(
+		summary.total_amount_card || 0
+	).toFixed(2)}`;
+	document.getElementById("totalCash").textContent = `€${(
+		summary.total_amount_cash || 0
+	).toFixed(2)}`;
+
+	// Update breakdown values
+	document.getElementById("cardBreakdown").textContent = `€${(
+		summary.total_amount_card || 0
+	).toFixed(2)}`;
+	document.getElementById("cashBreakdown").textContent = `€${(
+		summary.total_amount_cash || 0
+	).toFixed(2)}`;
+	document.getElementById("invoiceBreakdown").textContent = `€${(
+		summary.total_amount_invoice || 0
+	).toFixed(2)}`;
+
+	// Update status breakdown using backend counts
+	const statusCounts = {
+		complete: summary.count_paid || 0,
+		pending: summary.count_pending || 0,
+		cancelled: summary.count_cancelled || 0,
+		partial: summary.count_partial || 0,
+		overpaid: summary.count_overpaid || 0,
+		refunded: summary.count_refunded || 0,
+	};
+
+	updateStatusBreakdown(statusCounts);
+}
+
+/**
+ * Update summary cards with current data (FALLBACK METHOD)
+ * This is the original client-side calculation method used as fallback
  * @param {Array} transactions - Array of transaction data
  */
 function updateSummaryCards(transactions) {

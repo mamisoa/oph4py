@@ -513,11 +513,63 @@ def api_daily_transactions_filtered():
         # Count total results
         total_count = db(final_query).count()
 
+        # ENHANCEMENT: Calculate summary totals for all filtered records (not just paginated ones)
+        summary_query = db(final_query).select(
+            db.worklist_transactions.amount_card.sum().with_alias("total_card"),
+            db.worklist_transactions.amount_cash.sum().with_alias("total_cash"),
+            db.worklist_transactions.amount_invoice.sum().with_alias("total_invoice"),
+            db.worklist_transactions.total_amount.sum().with_alias("total_amount"),
+            db.worklist_transactions.payment_status,
+            db.worklist_transactions.payment_status.count().with_alias("status_count"),
+            groupby=db.worklist_transactions.payment_status,
+        )
+
+        # Calculate aggregated summary totals
+        summary_totals = {
+            "total_amount_card": 0.0,
+            "total_amount_cash": 0.0,
+            "total_amount_invoice": 0.0,
+            "total_amount": 0.0,
+            "count_paid": 0,
+            "count_pending": 0,
+            "count_cancelled": 0,
+            "count_partial": 0,
+            "count_overpaid": 0,
+            "count_refunded": 0,
+            "count_total": total_count,
+        }
+
+        # Process summary query results
+        for row in summary_query:
+            # Add to totals (handle None values)
+            summary_totals["total_amount_card"] += float(row.total_card or 0)
+            summary_totals["total_amount_cash"] += float(row.total_cash or 0)
+            summary_totals["total_amount_invoice"] += float(row.total_invoice or 0)
+            summary_totals["total_amount"] += float(row.total_amount or 0)
+
+            # Count payment statuses
+            status = (row.worklist_transactions.payment_status or "unknown").lower()
+            status_count = row.status_count or 0
+
+            if status in ["complete", "paid"]:
+                summary_totals["count_paid"] += status_count
+            elif status in ["pending", "partial"]:
+                summary_totals["count_pending"] += status_count
+            elif status in ["cancelled", "void"]:
+                summary_totals["count_cancelled"] += status_count
+            elif status == "partial":
+                summary_totals["count_partial"] += status_count
+            elif status == "overpaid":
+                summary_totals["count_overpaid"] += status_count
+            elif status == "refunded":
+                summary_totals["count_refunded"] += status_count
+
         # Log query performance metrics
         count_time = time.time()
         logger.info(f"Query Analysis:")
         logger.info(f"  - Total matching transactions: {total_count}")
         logger.info(f"  - Count query time: {(count_time - start_time):.3f}s")
+        logger.info(f"  - Summary totals: €{summary_totals['total_amount']:.2f}")
         logger.info(f"  - Uses worklist join: Yes (always)")
         logger.info(f"  - Uses search filter: {'Yes' if search else 'No'}")
 
@@ -655,6 +707,7 @@ def api_daily_transactions_filtered():
             "count": total_count,
             "status": "success",
             "api_version": "1.0",
+            "summary": summary_totals,  # ENHANCEMENT: Include summary data for all filtered records
             "performance": {
                 "execution_time": round(total_execution_time, 3),
                 "items_returned": len(items),
