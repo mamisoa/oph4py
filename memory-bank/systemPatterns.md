@@ -2780,3 +2780,292 @@ if value and str(value).strip() not in NULL_VALUES:
 ```
 
 This pattern provides a comprehensive approach to implementing fee preservation in billing systems while maintaining backward compatibility and robust error handling for real-world data scenarios.
+
+### Auth.Signature Integration and JSON Serialization Pattern
+
+#### Overview
+
+The Auth.Signature Integration and JSON Serialization pattern addresses common issues when implementing user ownership features in py4web applications. This pattern demonstrates the critical importance of proper decorator usage and datetime serialization handling when working with py4web's automatic audit trail features.
+
+#### Problem Context
+
+When implementing user ownership and access control features using py4web's `auth.signature`, developers often encounter two primary issues:
+
+1. **Missing `auth.signature` Population**: The `created_by`, `created_on`, `modified_by`, and `modified_on` fields remain `NULL` despite having the table structure
+2. **JSON Serialization Errors**: Datetime objects from `auth.signature` fields cause "Object of type datetime is not JSON serializable" errors
+
+#### Root Causes and Solutions
+
+##### 1. Missing Database Decorator Issue
+
+**❌ Problem: Incomplete Action Decorators**
+
+```python
+@action("api/billing_combo", method=["GET", "POST"])
+@action("api/billing_combo/<rec_id:int>", method=["GET", "PUT", "DELETE"])
+@action.uses(auth.user)  # ← Missing 'db'!
+def billing_combo(rec_id: Optional[int] = None):
+    # auth.signature fields remain NULL
+```
+
+**✅ Solution: Complete Decorator Chain**
+
+```python
+@action("api/billing_combo", method=["GET", "POST"])
+@action("api/billing_combo/<rec_id:int>", method=["GET", "PUT", "DELETE"])
+@action.uses(db, auth.user)  # ← Both 'db' and 'auth.user' required
+def billing_combo(rec_id: Optional[int] = None):
+    # auth.signature fields automatically populated
+```
+
+**Why This Happens:**
+- py4web's `auth.signature` functionality is triggered by the `@action.uses(db)` decorator
+- Without the `db` decorator, py4web doesn't activate the automatic audit trail population
+- The `auth.user` decorator alone only provides user authentication, not database integration
+
+##### 2. Datetime Serialization Issue
+
+**❌ Problem: Direct `as_dict()` Usage**
+
+```python
+# This fails with datetime serialization error
+return APIResponse.success(data=record.as_dict())
+```
+
+**✅ Solution: Serialization Helper Function**
+
+```python
+def serialize_datetime_fields(data_dict):
+    """
+    Convert datetime objects in a dictionary to ISO format strings for JSON serialization.
+    
+    Args:
+        data_dict (dict): Dictionary that may contain datetime objects
+        
+    Returns:
+        dict: Dictionary with datetime objects converted to strings
+    """
+    result = data_dict.copy()
+    for key, value in result.items():
+        if hasattr(value, 'isoformat'):  # datetime objects
+            result[key] = value.isoformat()
+    return result
+
+# Usage in API responses
+return APIResponse.success(data=serialize_datetime_fields(record.as_dict()))
+```
+
+#### Implementation Patterns
+
+##### 1. Database Query Optimization for Lists
+
+**For List Queries (Multiple Records):**
+
+```python
+# Use manual serialization instead of rows.as_list()
+result_data = []
+for record in records:
+    record_dict = serialize_datetime_fields(record.as_dict())
+    result_data.append(record_dict)
+
+return json.dumps({
+    "status": "success",
+    "items": result_data,
+    "count": len(result_data),
+})
+```
+
+**Why `rows.as_list()` Fails:**
+- Some py4web versions don't handle datetime serialization correctly in `as_list()`
+- Manual iteration with `serialize_datetime_fields()` provides consistent behavior
+
+##### 2. Comprehensive Error Handling
+
+```python
+@action("api/billing_combo", method=["GET", "POST"])
+@action("api/billing_combo/<rec_id:int>", method=["GET", "PUT", "DELETE"])
+@action.uses(db, auth.user)
+def billing_combo(rec_id: Optional[int] = None):
+    try:
+        logger.info(f"Billing combo request - Method: {request.method}, ID: {rec_id}, User: {auth.user_id}")
+        
+        if request.method == "POST":
+            # Log auth context for debugging
+            logger.info(f"POST: User authenticated: {bool(auth.user)}")
+            logger.info(f"POST: User ID: {auth.user_id}")
+            
+            # Insert with automatic auth.signature population
+            new_id = db.billing_combo.insert(**data)
+            
+            # Retrieve and serialize the new record
+            new_record = db(db.billing_combo.id == new_id).select().first()
+            logger.info(f"POST: created_by = {new_record.created_by}")
+            logger.info(f"POST: created_on = {new_record.created_on} (type: {type(new_record.created_on)})")
+            
+            return APIResponse.success(
+                data=serialize_datetime_fields(new_record.as_dict()),
+                message=f"Billing combo created successfully with ID: {new_id}",
+            )
+            
+    except Exception as e:
+        logger.error(f"Error in billing_combo endpoint: {str(e)}")
+        return APIResponse.error(
+            message=f"Server error: {str(e)}", 
+            status_code=500, 
+            error_type="server_error"
+        )
+```
+
+##### 3. Ownership-Based Access Control
+
+```python
+# Build ownership filter for access control
+ownership_filter = (db.billing_combo.created_by == auth.user_id) | (
+    db.billing_combo.created_by == None  # Legacy records accessible to all
+)
+
+# Apply filter to queries
+accessible_records = db(ownership_filter).select()
+```
+
+#### Debugging Patterns
+
+##### 1. Auth.Signature Debug Logging
+
+```python
+logger.info(f"POST: User authenticated: {bool(auth.user)}")
+logger.info(f"POST: User ID: {auth.user_id}")
+logger.info(f"POST: Auth user available: {auth.get_user() is not None}")
+
+# After insert
+logger.info(f"POST: created_by = {new_record.created_by}")
+logger.info(f"POST: created_on = {new_record.created_on}")
+```
+
+##### 2. Serialization Debug Logging
+
+```python
+logger.info(f"POST: Raw record data: {new_record.as_dict()}")
+serialized_data = serialize_datetime_fields(new_record.as_dict())
+logger.info(f"POST: Serialized data: {serialized_data}")
+```
+
+#### Database Schema Requirements
+
+```python
+# Table definition with auth.signature
+db.define_table(
+    "billing_combo",
+    Field("combo_name", "string", length=255, required=True),
+    Field("combo_description", "text"),
+    Field("specialty", "string", length=50),
+    Field("combo_codes", "text"),  # JSON data
+    auth.signature,  # Adds created_by, created_on, modified_by, modified_on
+    format="%(combo_name)s",
+)
+```
+
+#### Workflow Diagram
+
+```mermaid
+graph TD
+    A["🌐 API Request"] --> B["🔍 Check Decorators<br/>@action.uses(db, auth.user)"]
+    B --> C{"✅ Both Decorators?"}
+    
+    C -->|No| D["❌ auth.signature NOT populated<br/>created_by = NULL"]
+    C -->|Yes| E["✅ auth.signature populated<br/>created_by = user_id"]
+    
+    E --> F["💾 Database Insert/Update"]
+    F --> G["📤 Prepare API Response"]
+    G --> H{"🕒 Contains Datetime?"}
+    
+    H -->|Yes| I["🔧 serialize_datetime_fields()"]
+    H -->|No| J["✅ Direct JSON serialization"]
+    
+    I --> K["✅ Successful Response"]
+    J --> K
+    
+    D --> L["🐛 Debug: Check decorators"]
+    H -->|Raw datetime| M["❌ JSON Serialization Error"]
+    M --> N["🔧 Add datetime serialization"]
+    N --> I
+    
+    style C fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style E fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    style D fill:#ffebee,stroke:#f44336,stroke-width:2px
+    style M fill:#ffebee,stroke:#f44336,stroke-width:2px
+```
+
+#### Benefits
+
+1. **Automatic Audit Trails**
+   - User ownership automatically tracked
+   - Creation and modification timestamps
+   - No manual field population required
+
+2. **Robust JSON Handling**
+   - Consistent datetime serialization
+   - No runtime serialization errors
+   - Reusable helper function
+
+3. **Access Control Foundation**
+   - User-specific data filtering
+   - Legacy data backward compatibility
+   - Scalable ownership patterns
+
+#### Implementation Checklist
+
+1. **Decorator Verification**
+   - [ ] Ensure `@action.uses(db, auth.user)` includes both decorators
+   - [ ] Verify `auth.signature` is defined in table schema
+   - [ ] Test that `created_by` field is populated after insert
+
+2. **Serialization Implementation**
+   - [ ] Create `serialize_datetime_fields()` helper function
+   - [ ] Apply to all API response data containing datetime fields
+   - [ ] Test both single records and list responses
+
+3. **Error Handling**
+   - [ ] Add comprehensive logging for auth context
+   - [ ] Include serialization debugging information
+   - [ ] Implement proper exception handling with rollback
+
+4. **Access Control**
+   - [ ] Implement ownership-based filtering
+   - [ ] Handle legacy records (created_by = NULL)
+   - [ ] Test user isolation and data access
+
+#### Common Pitfalls
+
+1. **Forgetting Database Decorator**
+   - Always use `@action.uses(db, auth.user)`, not just `@action.uses(auth.user)`
+   - Missing `db` decorator is the most common cause of NULL `created_by` fields
+
+2. **Datetime Serialization Oversight**
+   - `auth.signature` fields contain datetime objects that need special handling
+   - `rows.as_list()` doesn't always handle datetime serialization correctly
+   - Always use explicit datetime conversion for API responses
+
+3. **Incomplete Error Handling**
+   - JSON serialization errors can be cryptic without proper logging
+   - Always test API responses with actual datetime data
+   - Include serialization debugging in development environments
+
+#### When to Use This Pattern
+
+1. **User Ownership Features**
+   - Any application requiring user-specific data access
+   - Audit trail requirements
+   - Multi-tenant data isolation
+
+2. **API Development with Auth.Signature**
+   - REST APIs returning database records with audit fields
+   - Applications using py4web's built-in authentication
+   - Systems requiring automatic timestamp tracking
+
+3. **JSON API Responses**
+   - Any API returning database records with datetime fields
+   - Applications requiring consistent serialization behavior
+   - Systems with strict JSON compliance requirements
+
+This pattern ensures reliable user ownership tracking and JSON serialization in py4web applications while avoiding common implementation pitfalls that can lead to NULL audit fields and runtime serialization errors.

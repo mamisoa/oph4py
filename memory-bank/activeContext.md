@@ -19,9 +19,11 @@ Implementing access control for billing combos to make them accessible only to t
 
 **Changes Implemented:**
 
-- ✅ Added `@action.uses(auth.user)` to main `billing_combo` endpoint
+- ✅ Added `@action.uses(db, auth.user)` to main `billing_combo` endpoint (FIXED: was missing `db`)
 - ✅ Replaced `handle_rest_api_request` with custom ownership-aware logic
 - ✅ Implemented ownership filtering: `(db.billing_combo.created_by == auth.user_id) | (db.billing_combo.created_by == None)`
+- ✅ Fixed JSON serialization of datetime fields from auth.signature using `serialize_datetime_fields()` helper function for all responses
+- ✅ Added `serialize_datetime_fields()` helper function for consistent datetime handling across all endpoints
 
 **Access Control Logic Implemented:**
 

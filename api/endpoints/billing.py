@@ -26,6 +26,23 @@ from ..core.nomenclature import NomenclatureClient
 # =============================================================================
 
 
+def serialize_datetime_fields(data_dict):
+    """
+    Convert datetime objects in a dictionary to ISO format strings for JSON serialization.
+
+    Args:
+        data_dict (dict): Dictionary that may contain datetime objects
+
+    Returns:
+        dict: Dictionary with datetime objects converted to strings
+    """
+    result = data_dict.copy()
+    for key, value in result.items():
+        if hasattr(value, "isoformat"):  # datetime objects
+            result[key] = value.isoformat()
+    return result
+
+
 @action("api/billing_codes", method=["GET", "POST"])
 @action("api/billing_codes/<rec_id:int>", method=["GET", "PUT", "DELETE"])
 def billing_codes(rec_id: Optional[int] = None):
@@ -318,7 +335,7 @@ def billing_codes_by_worklist(worklist_id: int):
 
 @action("api/billing_combo", method=["GET", "POST"])
 @action("api/billing_combo/<rec_id:int>", method=["GET", "PUT", "DELETE"])
-@action.uses(auth.user)
+@action.uses(db, auth.user)
 def billing_combo(rec_id: Optional[int] = None):
     """
     CRUD operations for billing combos with ownership-based access control.
@@ -350,6 +367,9 @@ def billing_combo(rec_id: Optional[int] = None):
         # Build ownership filter: user's combos OR legacy combos (created_by IS NULL)
         ownership_filter = (db.billing_combo.created_by == auth.user_id) | (
             db.billing_combo.created_by == None
+        )
+        logger.info(
+            f"Built ownership filter for user_id={auth.user_id}: {ownership_filter}"
         )
 
         # Handle GET requests with ownership filtering
@@ -409,15 +429,25 @@ def billing_combo(rec_id: Optional[int] = None):
                         error_type="not_found",
                     )
 
-                # Convert record to dict and return
-                result_data = record.as_dict()
+                # Convert record to dict and return (handling datetime serialization)
+                result_data = serialize_datetime_fields(record.as_dict())
                 return APIResponse.success(data=result_data)
             else:
                 # Get list of accessible records
                 records = db(query_conditions).select(orderby=~db.billing_combo.id)
+                logger.info(
+                    f"GET: Found {len(records)} accessible combos for user {auth.user_id}"
+                )
 
-                # Convert to list of dicts
-                result_data = [record.as_dict() for record in records]
+                # Convert to list of dicts with manual datetime serialization
+                result_data = []
+                for record in records:
+                    record_dict = serialize_datetime_fields(record.as_dict())
+                    result_data.append(record_dict)
+
+                logger.info(
+                    f"GET: Returning {len(result_data)} combos: {[r.get('combo_name') for r in result_data]}"
+                )
 
                 # Return in format expected by frontend
                 return json.dumps(
@@ -499,15 +529,17 @@ def billing_combo(rec_id: Optional[int] = None):
                 db(db.billing_combo.id == rec_id).update(**data)
                 db.commit()
 
-                # Return updated record
+                # Return updated record with datetime serialization
                 updated_record = db(db.billing_combo.id == rec_id).select().first()
                 return APIResponse.success(
-                    data=updated_record.as_dict(),
+                    data=serialize_datetime_fields(updated_record.as_dict()),
                     message=f"Billing combo {rec_id} updated successfully",
                 )
 
         # Handle POST requests (create new combo)
         elif request.method == "POST":
+            logger.info(f"POST: Creating new combo, auth.user_id={auth.user_id}")
+
             if not request.json:
                 return APIResponse.error(
                     message="Request body required for POST operation",
@@ -516,6 +548,7 @@ def billing_combo(rec_id: Optional[int] = None):
                 )
 
             data = request.json.copy()
+            logger.info(f"POST: Received data: {data}")
 
             # Validate combo_codes format
             if "combo_codes" in data:
@@ -551,16 +584,43 @@ def billing_combo(rec_id: Optional[int] = None):
             data.pop("modified_by", None)
             data.pop("modified_on", None)
 
+            logger.info(f"POST: Final data for insert: {data}")
+            logger.info(f"POST: Auth user available: {auth.user is not None}")
+            logger.info(f"POST: Auth user_id: {auth.user_id}")
+
             # Create new record (auth.signature will automatically set created_by)
             new_id = db.billing_combo.insert(**data)
+            logger.info(f"POST: Inserted new combo with ID: {new_id}")
             db.commit()
 
-            # Return created record
+            # Return created record with datetime serialization
             new_record = db(db.billing_combo.id == new_id).select().first()
-            return APIResponse.success(
-                data=new_record.as_dict(),
-                message=f"Billing combo created successfully with ID: {new_id}",
-            )
+            logger.info(f"POST: Retrieved record: {new_record}")
+
+            if new_record:
+                raw_dict = new_record.as_dict()
+                logger.info(f"POST: Raw record dict: {raw_dict}")
+                logger.info(f"POST: created_by = {raw_dict.get('created_by')}")
+                logger.info(
+                    f"POST: created_on = {raw_dict.get('created_on')} (type: {type(raw_dict.get('created_on'))})"
+                )
+
+                serialized_dict = serialize_datetime_fields(raw_dict)
+                logger.info(f"POST: Serialized dict: {serialized_dict}")
+
+                return APIResponse.success(
+                    data=serialized_dict,
+                    message=f"Billing combo created successfully with ID: {new_id}",
+                )
+            else:
+                logger.error(
+                    f"POST: Could not retrieve created record with ID: {new_id}"
+                )
+                return APIResponse.error(
+                    message="Created combo but could not retrieve it",
+                    status_code=500,
+                    error_type="server_error",
+                )
 
     except Exception as e:
         logger.error(f"Error in billing_combo endpoint: {str(e)}")
