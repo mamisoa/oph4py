@@ -2665,6 +2665,7 @@ function loadBillingCombos() {
 	$.ajax({
 		url: HOSTURL + "/" + APP_NAME + "/api/billing_combo",
 		method: "GET",
+		dataType: "json",
 		data: { is_active: true },
 		success: function (response) {
 			displayBillingCombos(response.items || []);
