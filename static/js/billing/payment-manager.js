@@ -76,6 +76,16 @@ class PaymentManager {
 				);
 			}
 
+			// Load MD Summary
+			try {
+				await this.loadMDSummary();
+			} catch (error) {
+				console.error("Error loading MD Summary:", error);
+				this.showMDSummaryError(
+					"Failed to load consultation history: " + error.message
+				);
+			}
+
 			// Set dropdown default value
 			const feecodeSelect = document.getElementById("feecode-select");
 			if (feecodeSelect) {
@@ -151,6 +161,34 @@ class PaymentManager {
 		if (refreshTransactionsBtn) {
 			refreshTransactionsBtn.addEventListener("click", async () => {
 				await this.refreshTransactionHistory();
+			});
+		}
+
+		// MD Summary view more button
+		const viewMoreMDSummaryBtn = document.getElementById(
+			"view-more-md-summary-btn"
+		);
+		if (viewMoreMDSummaryBtn) {
+			viewMoreMDSummaryBtn.addEventListener("click", () => {
+				this.openMDSummaryModal();
+			});
+		}
+
+		// MD Summary retry button
+		const retryMDSummaryBtn = document.getElementById("retry-md-summary-btn");
+		if (retryMDSummaryBtn) {
+			retryMDSummaryBtn.addEventListener("click", async () => {
+				await this.loadMDSummary();
+			});
+		}
+
+		// MD Summary modal retry button
+		const retryMDSummaryModalBtn = document.getElementById(
+			"retry-md-summary-modal-btn"
+		);
+		if (retryMDSummaryModalBtn) {
+			retryMDSummaryModalBtn.addEventListener("click", async () => {
+				await this.loadMDSummaryModal();
 			});
 		}
 	}
@@ -1088,6 +1126,276 @@ class PaymentManager {
 				</tr>
 			`;
 		}
+	}
+
+	/**
+	 * Load MD Summary data (last 5 consultations)
+	 */
+	async loadMDSummary() {
+		try {
+			this.showMDSummaryLoading();
+
+			const response = await fetch(
+				`${this.baseUrl}/api/worklist/${this.worklistId}/md_summary`
+			);
+			const result = await response.json();
+
+			if (result.status === "success" && result.data) {
+				this.displayMDSummary(result.data);
+			} else {
+				throw new Error(
+					result.message || "Failed to load consultation history"
+				);
+			}
+		} catch (error) {
+			console.error("Error loading MD Summary:", error);
+			this.showMDSummaryError(
+				"Failed to load consultation history: " + error.message
+			);
+			throw error;
+		}
+	}
+
+	/**
+	 * Display MD Summary table
+	 */
+	displayMDSummary(data) {
+		const loadingDiv = document.getElementById("md-summary-loading");
+		const errorDiv = document.getElementById("md-summary-error");
+		const contentDiv = document.getElementById("md-summary-content");
+		const emptyDiv = document.getElementById("md-summary-empty");
+		const viewMoreBtn = document.getElementById("view-more-md-summary-btn");
+
+		// Hide loading and error states
+		if (loadingDiv) loadingDiv.style.display = "none";
+		if (errorDiv) errorDiv.style.display = "none";
+
+		if (!data.items || data.items.length === 0) {
+			// Show empty state
+			if (contentDiv) contentDiv.style.display = "none";
+			if (emptyDiv) emptyDiv.style.display = "block";
+			if (viewMoreBtn) viewMoreBtn.style.display = "none";
+			return;
+		}
+
+		// Show content
+		if (contentDiv) contentDiv.style.display = "block";
+		if (emptyDiv) emptyDiv.style.display = "none";
+
+		// Show view more button if there are more records
+		if (viewMoreBtn) {
+			viewMoreBtn.style.display = data.has_more ? "inline-block" : "none";
+		}
+
+		// Update stats
+		const showingSpan = document.getElementById("md-summary-showing");
+		const totalSpan = document.getElementById("md-summary-total");
+		if (showingSpan) showingSpan.textContent = data.items.length;
+		if (totalSpan)
+			totalSpan.textContent = data.total_count || data.items.length;
+
+		// Populate table
+		const tbody = document.getElementById("md-summary-body");
+		if (tbody) {
+			tbody.innerHTML = data.items
+				.map(
+					(item) => `
+				<tr>
+					<td>${this.formatDateTime(item.requested_time)}</td>
+					<td>${this.truncateText(item.procedure || "-", 15)}</td>
+					<td>${this.truncateText(item.history || "-", 25)}</td>
+					<td>${this.truncateText(item.conclusion || "-", 25)}</td>
+					<td>${this.truncateText(item.followup || "-", 20)}</td>
+					<td>${this.truncateText(item.billing_desc || "-", 15)}</td>
+					<td>${item.billing_codes || "-"}</td>
+				</tr>
+			`
+				)
+				.join("");
+		}
+	}
+
+	/**
+	 * Open MD Summary modal with complete history
+	 */
+	async openMDSummaryModal() {
+		const modal = new bootstrap.Modal(
+			document.getElementById("md-summary-modal")
+		);
+		modal.show();
+
+		// Load modal data
+		await this.loadMDSummaryModal();
+	}
+
+	/**
+	 * Load MD Summary modal data (up to 50 consultations)
+	 */
+	async loadMDSummaryModal() {
+		try {
+			this.showMDSummaryModalLoading();
+
+			const response = await fetch(
+				`${this.baseUrl}/api/worklist/${this.worklistId}/md_summary_modal`
+			);
+			const result = await response.json();
+
+			if (result.status === "success" && result.data) {
+				this.displayMDSummaryModal(result.data);
+			} else {
+				throw new Error(
+					result.message || "Failed to load complete consultation history"
+				);
+			}
+		} catch (error) {
+			console.error("Error loading MD Summary modal:", error);
+			this.showMDSummaryModalError(
+				"Failed to load complete consultation history: " + error.message
+			);
+			throw error;
+		}
+	}
+
+	/**
+	 * Display MD Summary modal table
+	 */
+	displayMDSummaryModal(data) {
+		const loadingDiv = document.getElementById("md-summary-modal-loading");
+		const errorDiv = document.getElementById("md-summary-modal-error");
+		const contentDiv = document.getElementById("md-summary-modal-content");
+		const emptyDiv = document.getElementById("md-summary-modal-empty");
+
+		// Hide loading and error states
+		if (loadingDiv) loadingDiv.style.display = "none";
+		if (errorDiv) errorDiv.style.display = "none";
+
+		if (!data.items || data.items.length === 0) {
+			// Show empty state
+			if (contentDiv) contentDiv.style.display = "none";
+			if (emptyDiv) emptyDiv.style.display = "block";
+			return;
+		}
+
+		// Show content
+		if (contentDiv) contentDiv.style.display = "block";
+		if (emptyDiv) emptyDiv.style.display = "none";
+
+		// Update stats
+		const totalSpan = document.getElementById("md-summary-modal-total");
+		if (totalSpan)
+			totalSpan.textContent = data.total_count || data.items.length;
+
+		// Populate table
+		const tbody = document.getElementById("md-summary-modal-body");
+		if (tbody) {
+			tbody.innerHTML = data.items
+				.map(
+					(item) => `
+				<tr>
+					<td>${this.formatDateTime(item.requested_time)}</td>
+					<td>${item.procedure || "-"}</td>
+					<td>${item.history || "-"}</td>
+					<td>${item.conclusion || "-"}</td>
+					<td>${item.followup || "-"}</td>
+					<td>${item.billing_desc || "-"}</td>
+					<td>${item.billing_codes || "-"}</td>
+				</tr>
+			`
+				)
+				.join("");
+		}
+	}
+
+	/**
+	 * Show MD Summary loading state
+	 */
+	showMDSummaryLoading() {
+		const loadingDiv = document.getElementById("md-summary-loading");
+		const errorDiv = document.getElementById("md-summary-error");
+		const contentDiv = document.getElementById("md-summary-content");
+
+		if (loadingDiv) loadingDiv.style.display = "block";
+		if (errorDiv) errorDiv.style.display = "none";
+		if (contentDiv) contentDiv.style.display = "none";
+	}
+
+	/**
+	 * Show MD Summary error state
+	 */
+	showMDSummaryError(message) {
+		const loadingDiv = document.getElementById("md-summary-loading");
+		const errorDiv = document.getElementById("md-summary-error");
+		const contentDiv = document.getElementById("md-summary-content");
+
+		if (loadingDiv) loadingDiv.style.display = "none";
+		if (contentDiv) contentDiv.style.display = "none";
+		if (errorDiv) {
+			errorDiv.style.display = "block";
+			// Update error message if element exists
+			const errorText = errorDiv.querySelector("strong");
+			if (errorText && errorText.nextSibling) {
+				errorText.nextSibling.textContent = " " + message;
+			}
+		}
+	}
+
+	/**
+	 * Show MD Summary modal loading state
+	 */
+	showMDSummaryModalLoading() {
+		const loadingDiv = document.getElementById("md-summary-modal-loading");
+		const errorDiv = document.getElementById("md-summary-modal-error");
+		const contentDiv = document.getElementById("md-summary-modal-content");
+
+		if (loadingDiv) loadingDiv.style.display = "block";
+		if (errorDiv) errorDiv.style.display = "none";
+		if (contentDiv) contentDiv.style.display = "none";
+	}
+
+	/**
+	 * Show MD Summary modal error state
+	 */
+	showMDSummaryModalError(message) {
+		const loadingDiv = document.getElementById("md-summary-modal-loading");
+		const errorDiv = document.getElementById("md-summary-modal-error");
+		const contentDiv = document.getElementById("md-summary-modal-content");
+
+		if (loadingDiv) loadingDiv.style.display = "none";
+		if (contentDiv) contentDiv.style.display = "none";
+		if (errorDiv) {
+			errorDiv.style.display = "block";
+			// Update error message if element exists
+			const errorText = errorDiv.querySelector("strong");
+			if (errorText && errorText.nextSibling) {
+				errorText.nextSibling.textContent = " " + message;
+			}
+		}
+	}
+
+	/**
+	 * Format date/time for display
+	 */
+	formatDateTime(dateString) {
+		if (!dateString) return "-";
+		try {
+			const date = new Date(dateString);
+			return (
+				date.toLocaleDateString() +
+				" " +
+				date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+			);
+		} catch (error) {
+			return dateString;
+		}
+	}
+
+	/**
+	 * Truncate text with ellipsis
+	 */
+	truncateText(text, maxLength) {
+		if (!text || text === "-") return text;
+		if (text.length <= maxLength) return text;
+		return text.substring(0, maxLength - 3) + "...";
 	}
 }
 

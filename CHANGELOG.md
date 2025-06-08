@@ -2,6 +2,70 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-08T23:23:36.366519] - MD Summary Modal Overlapped by Navbar
+
+### Fixed
+
+- **Issue**: The MD Summary modal was partially hidden behind the fixed top navbar, making the modal header and close button inaccessible.
+- **Fix**: Added custom CSS to the payment view template to ensure `.modal.show .modal-dialog` has a sufficient top margin (`margin-top: 70px !important;`) and a responsive adjustment for small screens, ensuring the modal is always fully visible and accessible regardless of screen size or Bootstrap updates.
+
+## [2025-06-08T22:49:13] - MD Summary Table Frontend Implementation
+
+### Added
+
+- **MD Summary Table Interface**: Complete frontend implementation for consultation history display in payment interface
+  - 7-column responsive table showing Date/Time, Procedure, History, Conclusion, Follow-up, Billing, and Billing Codes
+  - Located after Patient Summary Card in payment view template
+  - Loading states, error handling, and empty state management
+  - Summary statistics showing "X of Y consultations"
+  
+- **MD Summary Modal**: Bootstrap XL modal for viewing complete consultation history
+  - Displays up to 50 historical records using dedicated API endpoint
+  - Sticky header for better navigation in large datasets
+  - Same table structure as main view with full-width text display
+  - Independent loading/error states and retry functionality
+
+- **JavaScript Enhancement**: Extended PaymentManager class with MD Summary functionality
+  - `loadMDSummary()` and `loadMDSummaryModal()` methods for API integration
+  - `displayMDSummary()` and `displayMDSummaryModal()` for table rendering
+  - `formatDateTime()` and `truncateText()` utility functions
+  - Event handlers for "View More" button and retry functionality
+  - Seamless integration with existing payment interface architecture
+
+### Changed
+
+- **Payment View Template**: Enhanced `templates/payment/payment_view.html` with MD Summary section
+- **Payment Manager**: Extended `static/js/billing/payment-manager.js` with consultation history features
+- **Active Context**: Updated Phase 2-4 completion status and implementation details
+- **MD Summary Endpoints**: Restrict consultation history to only MD and GP modalities via `modality_dest` filter
+
+### Fixed
+
+- **MD Summary API Database Field Error**: Fixed "'Table' object has no attribute 'description'" error in API endpoints
+  - Corrected `phistory` table field access from non-existent `description` to proper `title` + `note` fields
+  - Updated both main and modal API endpoints with proper field mapping
+  - Applied string concatenation with null handling for combined history data
+  - Ensured consistent pyDAL LEFT JOIN syntax across all table joins
+
+- **MD Summary API Field Access Error**: Fixed empty error messages and incorrect field access with pyDAL aliases
+  - Corrected field access pattern: `row.table.field` → `row.alias_name` when using `with_alias()`
+  - Fixed all aliased field access: procedure_name, history_title/note, conclusion_desc, followup_desc, billing_desc
+  - Applied consistent field access pattern across both main and modal endpoints
+  - Follows pyDAL documentation best practices for LEFT JOIN field access
+
+- **MD Summary API requested_time & worklist_id aliasing**: Corrected non-aliased `requested_time` and nested `worklist_id` access in MD endpoints
+  - Aliased `requested_time` via `.with_alias("requested_time")` and accessed via `row.requested_time`
+  - Accessed `worklist_id` via `row.worklist_id` instead of `row.worklist.id`
+
+### Technical Details
+
+- Responsive design maintained across all screen sizes
+- Text truncation ensures table readability in constrained spaces
+- Bootstrap modal integration follows existing interface patterns
+- API endpoints from Phase 1 properly consumed and error-handled
+- "View More" button visibility based on data.has_more indicator
+- Database field access corrected for `phistory` table structure
+
 ## [2025-06-08T18:36:43.648841] - Fixed Billing Combo View Selector Bug
 
 ### Fixed
@@ -9,7 +73,7 @@ All notable changes to this project will be documented in this file.
 - **"All Combos" | "My Combos" Switch Not Working**: Resolved critical bug in billing combo view selector functionality
   - **Root Cause**: API endpoint extracted `view` parameter from query string but never used it to modify query conditions
   - **Impact**: Both "My Combos" and "All Combos" options showed identical results (only user's combos + legacy combos)
-  - **Affected API Calls**: 
+  - **Affected API Calls**:
     - `GET /api/billing_combo?view=my` - Should show user's combos + legacy combos
     - `GET /api/billing_combo?view=all` - Should show ALL combos in database
   - **Fix**: Implemented proper view mode logic in query condition building
@@ -17,6 +81,7 @@ All notable changes to this project will be documented in this file.
 ### Enhanced
 
 - **View Mode Implementation** (`api/endpoints/billing.py`):
+
   ```python
   # Build query conditions based on view mode
   if view_mode == "all":
@@ -37,11 +102,13 @@ All notable changes to this project will be documented in this file.
 ### Technical Details
 
 - **Bug Location**: Lines 419-425 in `api/endpoints/billing.py`
-- **Previous Behavior**: 
+- **Previous Behavior**:
+
   ```python
   view_mode = query_params.get("view", "my")  # Extracted but ignored
   query_conditions = ownership_filter  # Always used ownership filter
   ```
+
 - **Fixed Behavior**: View mode parameter now properly controls query filtering
 - **Enhanced Logging**: Added debug logging to track view mode selection and query building
 
@@ -88,6 +155,7 @@ All notable changes to this project will be documented in this file.
 ### Technical Implementation
 
 - **JavaScript Enhancements** (`static/js/billing/billing-combo-manager.js`):
+
   ```javascript
   // Enhanced generateCodeBreakdown() with dual parsing
   try {
@@ -191,6 +259,7 @@ All notable changes to this project will be documented in this file.
   - **Accessibility**: Proper ARIA labels and keyboard navigation support
 
 - **CSS Styling Enhancements**:
+
   ```css
   /* Professional detail view styling */
   .combo-details { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); }
@@ -207,6 +276,7 @@ All notable changes to this project will be documented in this file.
   - **State Management**: Proper tracking of current view mode
 
 - **Backend Enhancements** (`api/endpoints/billing.py`):
+
   ```python
   # View mode parameter handling
   view_mode = query_params.get("view", "my")  # 'my' or 'all'
@@ -217,6 +287,7 @@ All notable changes to this project will be documented in this file.
   ```
 
 - **API Response Format**:
+
   ```json
   {
     "combo_name": "Consultation Package",
@@ -332,6 +403,7 @@ All notable changes to this project will be documented in this file.
 ### Technical Implementation
 
 - **Backend Endpoint** (`manage.py`):
+
   ```python
   @action("change_password", method=["POST"])
   @action.uses(session, auth.user, db)
@@ -349,6 +421,7 @@ All notable changes to this project will be documented in this file.
   - **API Integration**: AJAX calls to password change endpoint with proper error handling
 
 - **Security Features**:
+
   ```javascript
   // Password strength calculation (5 criteria, 20 points each)
   if (password.length >= 8) strength += 20;
@@ -359,6 +432,7 @@ All notable changes to this project will be documented in this file.
   ```
 
 - **API Security**:
+
   ```python
   # Current password verification with CRYPT
   current_password_hash = user_record.password
@@ -404,6 +478,7 @@ All notable changes to this project will be documented in this file.
 ### Backend Validation
 
 - **Comprehensive Server Checks**:
+
   ```python
   # Current password verification
   # New password complexity validation (8+ chars, mixed case, numbers, symbols)
@@ -459,6 +534,7 @@ All notable changes to this project will be documented in this file.
 ### Technical Implementation
 
 - **API Changes** (`api/endpoints/billing.py`):
+
   ```python
   @action("api/billing_combo", method=["GET", "POST"])
   @action("api/billing_combo/<rec_id:int>", method=["GET", "PUT", "DELETE"])
@@ -467,12 +543,14 @@ All notable changes to this project will be documented in this file.
   ```
 
 - **Ownership Filter Logic**:
+
   ```python
   # Build ownership filter: user's combos OR legacy combos (created_by IS NULL)
   ownership_filter = (db.billing_combo.created_by == auth.user_id) | (db.billing_combo.created_by == None)
   ```
 
 - **Access Control Implementation**:
+
   ```python
   # GET: Apply ownership filter to query
   query_conditions = ownership_filter & additional_filters
@@ -484,6 +562,7 @@ All notable changes to this project will be documented in this file.
   ```
 
 - **Response Format Compatibility**:
+
   ```python
   # Maintains existing frontend compatibility
   return json.dumps({
@@ -573,6 +652,7 @@ All notable changes to this project will be documented in this file.
 ### Technical Implementation
 
 - **Frontend Changes** (`templates/manage/billing_combo.html`):
+
   ```html
   <div class="d-flex justify-content-between align-items-center mb-2">
       <label class="form-label mb-0">Selected Codes</label>
@@ -589,6 +669,7 @@ All notable changes to this project will be documented in this file.
   - **CSS Animations**: Enhanced styling with smooth transitions and visual feedback
 
 - **Calculation Logic**:
+
   ```javascript
   calculateComboTotal() {
       let totalFees = 0;
@@ -602,6 +683,7 @@ All notable changes to this project will be documented in this file.
   ```
 
 - **Visual Feedback System**:
+
   ```css
   #comboTotalDisplay {
       transition: all 0.3s ease;
@@ -662,6 +744,7 @@ All notable changes to this project will be documented in this file.
 ### Technical Implementation
 
 - **Frontend Changes** (`templates/manage/billing_combo.html`):
+
   ```html
   <th data-field="combo_codes" data-formatter="priceFormatter" data-sortable="true">Price</th>
   ```
@@ -673,6 +756,7 @@ All notable changes to this project will be documented in this file.
   - **Safe Math Operations**: Protection against NaN and undefined values in calculations
 
 - **Price Calculation Logic**:
+
   ```javascript
   codes.forEach((code) => {
       if (typeof code === "object" && code.nomen_code) {
@@ -735,6 +819,7 @@ All notable changes to this project will be documented in this file.
 ### Technical Implementation
 
 - **Frontend Changes** (`templates/manage/billing_combo.html`):
+
   ```html
   <button type="button" id="btnCreateNewCombo" class="btn btn-success" disabled style="display: none;">
       <i class="fas fa-copy"></i> Create New Combo
@@ -749,6 +834,7 @@ All notable changes to this project will be documented in this file.
   - **Event Handler**: Added click handler for "Create New Combo" button
 
 - **Smart Naming Logic**:
+
   ```javascript
   // If name hasn't been changed, append "(copy)"
   if (comboName === originalName) {
@@ -830,6 +916,7 @@ All notable changes to this project will be documented in this file.
   - **CSS Injection**: Added dynamic CSS styles for visual feedback and animations
 
 - **Visual Feedback System**:
+
   ```css
   .fee-modified {
       background-color: #fff3cd !important;
@@ -843,7 +930,7 @@ All notable changes to this project will be documented in this file.
   }
   ```
 
-- **Data Structure Preservation**: 
+- **Data Structure Preservation**:
   - **Backward Compatibility**: Existing combo data structure maintained
   - **Live Updates**: Modified fees immediately reflected in `selectedCodes` array
   - **API Integration**: Changes automatically included in save/update operations
@@ -902,6 +989,7 @@ All notable changes to this project will be documented in this file.
 ### Technical Implementation
 
 - **CSS Enhancements** (`templates/manage/billing_combo.html`):
+
   ```css
   /* Position bootbox confirmation dialogs below the fixed navbar */
   .bootbox.modal {
@@ -929,6 +1017,7 @@ All notable changes to this project will be documented in this file.
 - **Fee-Inclusive Export Format (v1.1)**: Complete fee preservation in export files
   - **Enhanced Export Structure**: Exports now include complete fee information from combo_codes
   - **Version 1.1 Format**: Updated export format to include all fee and description data
+
     ```json
     {
       "export_info": {
@@ -955,12 +1044,13 @@ All notable changes to this project will be documented in this file.
       }
     }
     ```
+
   - **Legacy Code Support**: Automatic conversion of legacy integer codes to complete format during export
   - **Complete Data Preservation**: Includes all nomenclature descriptions, fees, and feecodes
 
 - **Backward Compatible Import System**: Smart version detection and processing
   - **Auto-Version Detection**: Automatically detects v1.0 (code-only) vs v1.1 (fee-inclusive) formats
-  - **Dual Processing Logic**: 
+  - **Dual Processing Logic**:
     - **v1.0 imports**: Fetch current fees from NomenclatureClient API (existing behavior)
     - **v1.1 imports**: Use provided fee data directly (new behavior)
   - **Enhanced Validation**: Fee validation for v1.1 format with range checking and type validation
@@ -1075,6 +1165,7 @@ All notable changes to this project will be documented in this file.
 - **Multi-Export Backend API**: New `POST /api/billing_combo/export_multiple` endpoint
   - **Batch Processing**: Accepts array of combo IDs for bulk export
   - **Multi-Combo JSON Format**: Enhanced export structure for multiple combos
+
     ```json
     {
       "export_info": {
@@ -1096,6 +1187,7 @@ All notable changes to this project will be documented in this file.
       ]
     }
     ```
+
   - **Robust Error Handling**: Graceful handling of partial failures and missing combos
   - **Performance Optimized**: Single database query for batch operations
   - **Smart Filename Generation**: `billing_combos_multi_[count]_[date].json`
@@ -1176,6 +1268,7 @@ All notable changes to this project will be documented in this file.
   - Progress indication during export process
 
 - **Export Data Format**: Simplified, portable JSON structure
+
   ```json
   {
     "export_info": {
