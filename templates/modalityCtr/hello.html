@@ -16,27 +16,27 @@ hello2 = [[ = string]]
 
 [[ block js_scripts]]
 <script type="text/javascript">
-// Global variables
-// const HOSTURL = 'http://localhost:8000';
-const HOSTURL = "[[ =hosturl ]]";
-const userId = [[ = userId ]];
-const btnArr = [];
+    // Global variables
+    // const HOSTURL = 'http://localhost:8000';
+    const HOSTURL = "[[ =hosturl ]]";
+    const userId = [[ = userId]];
+    const btnArr = [];
 
-// fetch('https://192.168.10.130/beid/api/beid')
-//     .then(response => response.json())
-//     .then(data => {
-//         let base64_encoded_string = data['photo'];
+    // fetch('https://192.168.10.130/beid/api/beid')
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         let base64_encoded_string = data['photo'];
 
-//         let imgElement = document.createElement('img');
-//         imgElement.src = 'data:image/jpeg;base64,' + base64_encoded_string;
-//         document.body.appendChild(imgElement);
-//     })
-//     .catch(error => console.error('Error:', error));
+    //         let imgElement = document.createElement('img');
+    //         imgElement.src = 'data:image/jpeg;base64,' + base64_encoded_string;
+    //         document.body.appendChild(imgElement);
+    //     })
+    //     .catch(error => console.error('Error:', error));
 
 
 </script>
 
-<script src="js/useful.js"></script>
+<script src="js/utils/useful.js"></script>
 
 
 <script type="text/javascript">

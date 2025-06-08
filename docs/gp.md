@@ -8,7 +8,7 @@ The GP (General Practitioner) controller is a core component of the ophthalmolog
 
 - `modalityCtr/gp.html`: Main view template
 - `static/js/gp.js`: Core JavaScript functionality
-- `static/js/gp_bt.js`: Bootstrap table configurations and handlers
+- `static/js/md/gp_bt.js`: Bootstrap table configurations and handlers
 
 ## Features
 

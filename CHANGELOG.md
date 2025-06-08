@@ -87,7 +87,7 @@ All notable changes to this project will be documented in this file.
 
 ### Technical Implementation
 
-- **JavaScript Enhancements** (`static/js/billing-combo-manager.js`):
+- **JavaScript Enhancements** (`static/js/billing/billing-combo-manager.js`):
   ```javascript
   // Enhanced generateCodeBreakdown() with dual parsing
   try {
@@ -129,7 +129,7 @@ All notable changes to this project will be documented in this file.
 
 **Files Modified**:
 
-- `static/js/billing-combo-manager.js` - Enhanced `generateCodeBreakdown()` and `calculateComboTotal()` with dual parsing logic
+- `static/js/billing/billing-combo-manager.js` - Enhanced `generateCodeBreakdown()` and `calculateComboTotal()` with dual parsing logic
 
 **Impact**: All billing combos, regardless of creation date or storage format, now display correctly in the enhanced detail view, ensuring complete accessibility to historical combo data.
 
@@ -178,7 +178,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhanced
 
-- **JavaScript Functionality** (`static/js/billing-combo-manager.js`):
+- **JavaScript Functionality** (`static/js/billing/billing-combo-manager.js`):
   - **View Switcher Logic**: Complete toggle functionality with table refresh
   - **Detail Formatter Functions**: Custom rendering for expandable row content
   - **Helper Functions**: Date formatting, price calculation, and code breakdown generation
@@ -342,7 +342,7 @@ All notable changes to this project will be documented in this file.
       # Comprehensive error handling and logging
   ```
 
-- **Frontend Integration** (`static/js/user.js`):
+- **Frontend Integration** (`static/js/manage/user.js`):
   - **Modal Control**: Button click handlers for opening password modal
   - **Password Strength**: Real-time strength calculation and visual updates
   - **Form Validation**: Client-side validation before API submission
@@ -582,7 +582,7 @@ All notable changes to this project will be documented in this file.
   </div>
   ```
 
-- **JavaScript Enhancements** (`static/js/billing-combo-manager.js`):
+- **JavaScript Enhancements** (`static/js/billing/billing-combo-manager.js`):
   - **New Method**: `calculateComboTotal()` - Sums all main and secondary fees
   - **New Method**: `updateComboTotalDisplay()` - Updates UI with calculated total
   - **Integration Points**: Added total updates to all relevant user actions
@@ -666,7 +666,7 @@ All notable changes to this project will be documented in this file.
   <th data-field="combo_codes" data-formatter="priceFormatter" data-sortable="true">Price</th>
   ```
 
-- **JavaScript Enhancements** (`static/js/billing-combo-manager.js`):
+- **JavaScript Enhancements** (`static/js/billing/billing-combo-manager.js`):
   - **New Function**: `priceFormatter(value)` - Dedicated price calculation and display
   - **Enhanced Function**: `enhancedCodesFormatter(value)` - Simplified to focus only on code display
   - **Smart Fee Parsing**: Robust parsing logic that handles various data formats and edge cases
@@ -742,7 +742,7 @@ All notable changes to this project will be documented in this file.
   <input type="hidden" id="originalComboName" value="">
   ```
 
-- **JavaScript Enhancements** (`static/js/billing-combo-manager.js`):
+- **JavaScript Enhancements** (`static/js/billing/billing-combo-manager.js`):
   - **New Method**: `createNewCombo()` - Handles duplication with smart naming
   - **Enhanced State Management**: Updated `updateFormState()`, `enterEditMode()`, `exitEditMode()`
   - **Original Name Tracking**: Stores and compares original combo name for smart "(copy)" appending
@@ -823,7 +823,7 @@ All notable changes to this project will be documented in this file.
 
 ### Technical Implementation
 
-- **JavaScript Enhancements** (`static/js/billing-combo-manager.js`):
+- **JavaScript Enhancements** (`static/js/billing/billing-combo-manager.js`):
   - **New Event Handler**: Added `handleComboFeeChange()` for real-time fee updates
   - **New Helper Method**: Added `updateTotalFeeDisplay()` for live total calculations
   - **Enhanced HTML Generation**: Modified `updateSelectedCodesDisplay()` to include editable inputs
@@ -1124,7 +1124,7 @@ All notable changes to this project will be documented in this file.
   - Missing combo detection and reporting
   - Comprehensive logging and error tracking
 
-- **Frontend Enhancements** (`static/js/billing-combo-manager.js`):
+- **Frontend Enhancements** (`static/js/billing/billing-combo-manager.js`):
   - Table event initialization with proper timing handling
   - Selection state management across table operations
   - Async/await pattern for API communication
@@ -1153,7 +1153,7 @@ All notable changes to this project will be documented in this file.
 **Files Modified**:
 
 - `api/endpoints/billing.py` - Added multi-export endpoint with batch processing
-- `static/js/billing-combo-manager.js` - Enhanced with multi-selection and bulk export methods
+- `static/js/billing/billing-combo-manager.js` - Enhanced with multi-selection and bulk export methods
 - `templates/manage/billing_combo.html` - Added multi-selection controls and checkbox column
 - `memory-bank/activeContext.md` - Updated implementation progress and next steps
 
@@ -1205,7 +1205,7 @@ All notable changes to this project will be documented in this file.
   - JSON parsing error handling for malformed combo_codes
   - Support for both legacy integer codes and enhanced object format
 
-- **Frontend**: Enhanced `static/js/billing-combo-manager.js` with export methods
+- **Frontend**: Enhanced `static/js/billing/billing-combo-manager.js` with export methods
   - Added `exportCombo(id, name)` method to BillingComboManager class
   - Updated `operateFormatter` to include export button
   - Added export event handler to `operateEvents`
@@ -1225,7 +1225,7 @@ All notable changes to this project will be documented in this file.
   - Eliminated dependency on data attributes which were causing undefined values
   - Export now correctly identifies combo ID from table row context
 - **Toast Notification System**: Replaced custom toast implementation with app's standard `displayToast` function
-  - Consistent with app-wide notification system in `static/js/baseof.js`
+  - Consistent with app-wide notification system in `static/js/templates/baseof.js`
   - Proper status types (success, error, info, warning) with standard colors and positioning
   - Auto-dismiss timers matching app patterns (3-6 seconds based on message type)
   - Enhanced user experience with standardized notification behavior
@@ -1427,7 +1427,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Files Modified**:
 
 - `controllers.py` - Enhanced chart_data() API with MD filtering and moving averages
-- `static/js/dashboard-charts.js` - Multi-chart and multi-dataset support
+- `static/js/wl/dashboard-charts.js` - Multi-chart and multi-dataset support
 - `templates/index.html` - Added MD worklists chart section and CSS
 
 **Impact**: Dashboard now provides comprehensive analytics with trend analysis for all major data types in the ophthalmology system
@@ -1509,7 +1509,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `window.APP_NAME = "[[= app_name ]]";` for app name from settings.py
   - Consistent with established pattern from payment system and files management
 
-- **JavaScript URL Construction**: Enhanced `loadChartData()` method in `static/js/dashboard-charts.js`
+- **JavaScript URL Construction**: Enhanced `loadChartData()` method in `static/js/wl/dashboard-charts.js`
   - **Before**: `fetch('/api/chart_data/${chartType}/${period}')`
   - **After**: `fetch('${baseUrl}/${appName}/api/chart_data/${chartType}/${period}')`
   - Added fallback values for missing global variables
@@ -1525,7 +1525,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Files Modified**:
 
 - `templates/index.html` - Added global variables for API access
-- `static/js/dashboard-charts.js` - Fixed URL construction with app name
+- `static/js/wl/dashboard-charts.js` - Fixed URL construction with app name
 
 **Impact**: Dashboard charts now load correctly regardless of app name configuration in settings.py
 
@@ -1594,7 +1594,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `controllers.py` - Added `/api/chart_data/<table>/<period>` endpoint with data aggregation
 - `templates/index.html` - Complete dashboard redesign with charts and enhanced UI
-- `static/js/dashboard-charts.js` - New Chart.js integration and chart management
+- `static/js/wl/dashboard-charts.js` - New Chart.js integration and chart management
 - `requirements.txt` - Added python-dateutil dependency
 
 ### User Experience Impact

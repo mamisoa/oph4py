@@ -7,8 +7,8 @@ The Users module is a core component of the ophthalmology electronic medical rec
 ## File Structure
 
 - `manage/users.html`: Main view template for user listing and management
-- `static/js/users.js`: Core JavaScript functionality for user management
-- `static/js/users_bt.js`: Bootstrap table configurations and handlers
+- `static/js/manage/users.js`: Core JavaScript functionality for user management
+- `static/js/manage/users_bt.js`: Bootstrap table configurations and handlers
 - `manage.py`: Controller functions for user management
 
 ## Features

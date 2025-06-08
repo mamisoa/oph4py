@@ -7,7 +7,7 @@ The Diseases controller manages the disease reference system in the ophthalmolog
 ## File Structure
 
 - `modalityCtr/diseases.html`: Main view template
-- `static/js/diseases.js`: Core JavaScript functionality
+- `static/js/md/diseases.js`: Core JavaScript functionality
 - `static/js/diseases_bt.js`: Bootstrap table configurations and handlers
 
 ## Features

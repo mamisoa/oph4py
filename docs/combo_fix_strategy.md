@@ -35,9 +35,9 @@ When creating a worklist combo (multiple items for different modalities), data c
 ### Frontend
 
 1. Core JavaScript:
-   - `static/js/wl.js`: Main worklist functionality
-   - `static/js/wl_bt.js`: Bootstrap table configurations
-   - `static/js/md_bt.js` & `static/js/gp_bt.js`: Modality specific code
+   - `static/js/wl/wl.js`: Main worklist functionality
+   - `static/js/wl/wl_bt.js`: Bootstrap table configurations
+   - `static/js/md/md_bt.js` & `static/js/md/gp_bt.js`: Modality specific code
 
 2. Templates:
    - `templates/worklist.html`: Main interface

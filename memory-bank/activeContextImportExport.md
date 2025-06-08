@@ -45,7 +45,7 @@
   - `/api/billing_combo/export_multiple` (multi-export)
   - ✅ `/api/billing_combo/import` (import with auto-detection)
 - **NomenclatureClient**: Handles external API integration (`api/core/nomenclature.py`)
-- **Frontend**: `templates/manage/billing_combo.html` + `static/js/billing-combo-manager.js`
+- **Frontend**: `templates/manage/billing_combo.html` + `static/js/billing/billing-combo-manager.js`
 
 ## ✅ COMPLETED ENHANCEMENT: Fee Preservation with "N/A" Handling (v1.1 Format)
 
@@ -242,7 +242,7 @@
 **Frontend**:
 
 - ✅ `templates/manage/billing_combo.html` - Complete multi-selection interface
-- ✅ `static/js/billing-combo-manager.js` - Full import/export functionality
+- ✅ `static/js/billing/billing-combo-manager.js` - Full import/export functionality
 
 ## ✅ Success Criteria - ACHIEVED
 

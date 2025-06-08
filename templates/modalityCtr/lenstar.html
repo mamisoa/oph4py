@@ -4,7 +4,9 @@
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
 <style>
     /* overide when topnavbar is not fixed-top */
-    section#main { margin-top: 50px; }
+    section#main {
+        margin-top: 50px;
+    }
 </style>
 [[ end ]]
 
@@ -25,510 +27,510 @@
         </div>
         <div class="row">
             <div class="col" id="rawBiometry">
-                
+
             </div>
         </div>
     </div>
 </div>
 
 <div class="container-fluid mt-2">
-    <
-</div>
+    < </div>
 
 
-[[ block js_scripts]]
-<script type="text/javascript">
-// Global variables
-const HOSTURL = "[[ = hosturl ]]";
-const btnArr = [];
+        [[ block js_scripts]]
+        <script type="text/javascript">
+            // Global variables
+            const HOSTURL = "[[ = hosturl ]]";
+            const btnArr = [];
 
 
-let url = HOSTURL + "/"+APP_NAME+"/rest/lenstar?lastname="+patientObj['last_name']+"&firstname="+patientObj['first_name'].replace(' ','_')+"&wlId="+wlObj['worklist']['id']+"&id="+patientObj['id'];
-let biometryUrl = HOSTURL + "/"+APP_NAME+"/rest/biometry/"+patientObj['id'];
-let rawBiometryUrl = HOSTURL + "/"+APP_NAME+"/rest/biometry/raw/"+patientObj['id'];
+            let url = HOSTURL + "/" + APP_NAME + "/rest/lenstar?lastname=" + patientObj['last_name'] + "&firstname=" + patientObj['first_name'].replace(' ', '_') + "&wlId=" + wlObj['worklist']['id'] + "&id=" + patientObj['id'];
+            let biometryUrl = HOSTURL + "/" + APP_NAME + "/rest/biometry/" + patientObj['id'];
+            let rawBiometryUrl = HOSTURL + "/" + APP_NAME + "/rest/biometry/raw/" + patientObj['id'];
 
-</script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-<script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
-<script src="js/bootbox/bootbox.all.min.js"></script>
-<script src="js/jquery.serialize-object.min.js"></script>
-<script src="js/useful.js"></script>
-<script src="js/patient-bar.js"></script>
-<script src="js/lenstar.js"></script>
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.1/dist/chart.umd.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+        <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
+        <script src="js/bootbox/bootbox.all.min.js"></script>
+        <script src="static/js/jquery/jquery.serialize-object.min.js"></script>
+        <script src="js/utils/useful.js"></script>
+        <script src="static/js/templates/patient-bar.js"></script>
+        <script src="js/md/lenstar.js"></script>
 
-<script type="text/javascript">
+        <script type="text/javascript">
 
-let dob;
+            let dob;
 
-patientObj['dob'] != null ? dob = patientObj['dob'] : dob= '';
+            patientObj['dob'] != null ? dob = patientObj['dob'] : dob = '';
 
-const normativeData = [
-    {
-        "label": "Percentile 3",
-        "data": [
-            {"x": 4, "y": 21.26},
-            {"x": 5, "y": 21.49},
-            {"x": 6, "y": 21.71},
-            {"x": 7, "y": 21.91},
-            {"x": 8, "y": 22.09},
-            {"x": 9, "y": 22.27},
-            {"x": 10, "y": 22.42},
-            {"x": 11, "y": 22.56},
-            {"x": 12, "y": 22.68},
-            {"x": 13, "y": 22.78},
-            {"x": 14, "y": 22.86},
-            {"x": 15, "y": 22.91},
-            {"x": 16, "y": 22.94},
-            {"x": 17, "y": 22.95},
-            {"x": 18, "y": 22.92}
-        ],
-        "fill": false,
-        "borderColor": "rgb(0, 0, 0)",
-        "borderDash": [5, 5]
-    },
-    {
-        "label": "Percentile 5",
-        "data": [
-            {"x": 4, "y": 21.41},
-            {"x": 5, "y": 21.64},
-            {"x": 6, "y": 21.86},
-            {"x": 7, "y": 22.07},
-            {"x": 8, "y": 22.26},
-            {"x": 9, "y": 22.44},
-            {"x": 10, "y": 22.6},
-            {"x": 11, "y": 22.75},
-            {"x": 12, "y": 22.88},
-            {"x": 13, "y": 22.99},
-            {"x": 14, "y": 23.08},
-            {"x": 15, "y": 23.15},
-            {"x": 16, "y": 23.2},
-            {"x": 17, "y": 23.23},
-            {"x": 18, "y": 23.22}
-        ],
-        "fill": false,
-        "borderColor": "rgb(31, 0, 224)",
-        "borderDash": [5, 5]
-    },
-    {
-        "label": "Percentile 10",
-        "data": [
-            {"x": 4, "y": 21.63},
-            {"x": 5, "y": 21.87},
-            {"x": 6, "y": 22.1},
-            {"x": 7, "y": 22.32},
-            {"x": 8, "y": 22.53},
-            {"x": 9, "y": 22.72},
-            {"x": 10, "y": 22.89},
-            {"x": 11, "y": 23.05},
-            {"x": 12, "y": 23.2},
-            {"x": 13, "y": 23.33},
-            {"x": 14, "y": 23.44},
-            {"x": 15, "y": 23.53},
-            {"x": 16, "y": 23.6},
-            {"x": 17, "y": 23.66},
-            {"x": 18, "y": 23.69}
-        ],
-        "fill": false,
-        "borderColor": "rgb(0, 0, 0)",
-        "borderDash": [5, 5]
-    },
-    {
-        "label": "Percentile 25",
-        "data": [
-            {"x": 4, "y": 21.99},
-            {"x": 5, "y": 22.26},
-            {"x": 6, "y": 22.51},
-            {"x": 7, "y": 22.75},
-            {"x": 8, "y": 22.98},
-            {"x": 9, "y": 23.19},
-            {"x": 10, "y": 23.4},
-            {"x": 11, "y": 23.58},
-            {"x": 12, "y": 23.76},
-            {"x": 13, "y": 23.92},
-            {"x": 14, "y": 24.06},
-            {"x": 15, "y": 24.19},
-            {"x": 16, "y": 24.31},
-            {"x": 17, "y": 24.41},
-            {"x": 18, "y": 24.5}
-        ],
-        "fill": false,
-        "borderColor": "rgb(0, 0, 0)",
-        "borderDash": [5, 5]
-    },
-    {
-        "label": "Percentile 50",
-        "data": [
-            {"x": 4, "y": 22.39},
-            {"x": 5, "y": 22.69},
-            {"x": 6, "y": 22.97},
-            {"x": 7, "y": 23.25},
-            {"x": 8, "y": 23.51},
-            {"x": 9, "y": 23.76},
-            {"x": 10, "y": 23.99},
-            {"x": 11, "y": 24.22},
-            {"x": 12, "y": 24.43},
-            {"x": 13, "y": 24.62},
-            {"x": 14, "y": 24.81},
-            {"x": 15, "y": 24.98},
-            {"x": 16, "y": 25.13},
-            {"x": 17, "y": 25.28},
-            {"x": 18, "y": 25.41}
-        ],
-        "fill": false,
-        "borderColor": "rgb(0, 0, 0)",
-        "borderDash": [5, 5]
-    },
-    {
-        "label": "Percentile 75",
-        "data": [
-            {"x": 4, "y": 22.78},
-            {"x": 5, "y": 23.12},
-            {"x": 6, "y": 23.45},
-            {"x": 7, "y": 23.76},
-            {"x": 8, "y": 24.07},
-            {"x": 9, "y": 24.36},
-            {"x": 10, "y": 24.64},
-            {"x": 11, "y": 24.9},
-            {"x": 12, "y": 25.15},
-            {"x": 13, "y": 25.39},
-            {"x": 14, "y": 25.61},
-            {"x": 15, "y": 25.82},
-            {"x": 16, "y": 26.01},
-            {"x": 17, "y": 26.18},
-            {"x": 18, "y": 26.35}
-        ],
-        "fill": false,
-        "borderColor": "rgb(0, 0, 0)",
-        "borderDash": [5, 5]
-    },
-    {
-        "label": "Percentile 90",
-        "data": [
-            {"x": 4, "y": 23.13},
-            {"x": 5, "y": 23.51},
-            {"x": 6, "y": 23.88},
-            {"x": 7, "y": 24.24},
-            {"x": 8, "y": 24.6},
-            {"x": 9, "y": 24.93},
-            {"x": 10, "y": 25.26},
-            {"x": 11, "y": 25.57},
-            {"x": 12, "y": 25.86},
-            {"x": 13, "y": 26.14},
-            {"x": 14, "y": 26.39},
-            {"x": 15, "y": 26.63},
-            {"x": 16, "y": 26.84},
-            {"x": 17, "y": 27.04},
-            {"x": 18, "y": 27.21}
-        ],
-        "fill": false,
-        "borderColor": "rgb(0, 0, 0)",
-        "borderDash": [5, 5]
-    },
-    {
-        "label": "Percentile 95",
-        "data": [
-            {"x": 4, "y": 23.33},
-            {"x": 5, "y": 23.74},
-            {"x": 6, "y": 24.15},
-            {"x": 7, "y": 24.54},
-            {"x": 8, "y": 24.92},
-            {"x": 9, "y": 25.3},
-            {"x": 10, "y": 25.65},
-            {"x": 11, "y": 25.99},
-            {"x": 12, "y": 26.31},
-            {"x": 13, "y": 26.61},
-            {"x": 14, "y": 26.89},
-            {"x": 15, "y": 27.14},
-            {"x": 16, "y": 27.36},
-            {"x": 17, "y": 27.56},
-            {"x": 18, "y": 27.74}
-        ],
-        "fill": false,
-        "borderColor": "rgb(0, 0, 0)",
-        "borderDash": [5, 5]
-    }];
+            const normativeData = [
+                {
+                    "label": "Percentile 3",
+                    "data": [
+                        { "x": 4, "y": 21.26 },
+                        { "x": 5, "y": 21.49 },
+                        { "x": 6, "y": 21.71 },
+                        { "x": 7, "y": 21.91 },
+                        { "x": 8, "y": 22.09 },
+                        { "x": 9, "y": 22.27 },
+                        { "x": 10, "y": 22.42 },
+                        { "x": 11, "y": 22.56 },
+                        { "x": 12, "y": 22.68 },
+                        { "x": 13, "y": 22.78 },
+                        { "x": 14, "y": 22.86 },
+                        { "x": 15, "y": 22.91 },
+                        { "x": 16, "y": 22.94 },
+                        { "x": 17, "y": 22.95 },
+                        { "x": 18, "y": 22.92 }
+                    ],
+                    "fill": false,
+                    "borderColor": "rgb(0, 0, 0)",
+                    "borderDash": [5, 5]
+                },
+                {
+                    "label": "Percentile 5",
+                    "data": [
+                        { "x": 4, "y": 21.41 },
+                        { "x": 5, "y": 21.64 },
+                        { "x": 6, "y": 21.86 },
+                        { "x": 7, "y": 22.07 },
+                        { "x": 8, "y": 22.26 },
+                        { "x": 9, "y": 22.44 },
+                        { "x": 10, "y": 22.6 },
+                        { "x": 11, "y": 22.75 },
+                        { "x": 12, "y": 22.88 },
+                        { "x": 13, "y": 22.99 },
+                        { "x": 14, "y": 23.08 },
+                        { "x": 15, "y": 23.15 },
+                        { "x": 16, "y": 23.2 },
+                        { "x": 17, "y": 23.23 },
+                        { "x": 18, "y": 23.22 }
+                    ],
+                    "fill": false,
+                    "borderColor": "rgb(31, 0, 224)",
+                    "borderDash": [5, 5]
+                },
+                {
+                    "label": "Percentile 10",
+                    "data": [
+                        { "x": 4, "y": 21.63 },
+                        { "x": 5, "y": 21.87 },
+                        { "x": 6, "y": 22.1 },
+                        { "x": 7, "y": 22.32 },
+                        { "x": 8, "y": 22.53 },
+                        { "x": 9, "y": 22.72 },
+                        { "x": 10, "y": 22.89 },
+                        { "x": 11, "y": 23.05 },
+                        { "x": 12, "y": 23.2 },
+                        { "x": 13, "y": 23.33 },
+                        { "x": 14, "y": 23.44 },
+                        { "x": 15, "y": 23.53 },
+                        { "x": 16, "y": 23.6 },
+                        { "x": 17, "y": 23.66 },
+                        { "x": 18, "y": 23.69 }
+                    ],
+                    "fill": false,
+                    "borderColor": "rgb(0, 0, 0)",
+                    "borderDash": [5, 5]
+                },
+                {
+                    "label": "Percentile 25",
+                    "data": [
+                        { "x": 4, "y": 21.99 },
+                        { "x": 5, "y": 22.26 },
+                        { "x": 6, "y": 22.51 },
+                        { "x": 7, "y": 22.75 },
+                        { "x": 8, "y": 22.98 },
+                        { "x": 9, "y": 23.19 },
+                        { "x": 10, "y": 23.4 },
+                        { "x": 11, "y": 23.58 },
+                        { "x": 12, "y": 23.76 },
+                        { "x": 13, "y": 23.92 },
+                        { "x": 14, "y": 24.06 },
+                        { "x": 15, "y": 24.19 },
+                        { "x": 16, "y": 24.31 },
+                        { "x": 17, "y": 24.41 },
+                        { "x": 18, "y": 24.5 }
+                    ],
+                    "fill": false,
+                    "borderColor": "rgb(0, 0, 0)",
+                    "borderDash": [5, 5]
+                },
+                {
+                    "label": "Percentile 50",
+                    "data": [
+                        { "x": 4, "y": 22.39 },
+                        { "x": 5, "y": 22.69 },
+                        { "x": 6, "y": 22.97 },
+                        { "x": 7, "y": 23.25 },
+                        { "x": 8, "y": 23.51 },
+                        { "x": 9, "y": 23.76 },
+                        { "x": 10, "y": 23.99 },
+                        { "x": 11, "y": 24.22 },
+                        { "x": 12, "y": 24.43 },
+                        { "x": 13, "y": 24.62 },
+                        { "x": 14, "y": 24.81 },
+                        { "x": 15, "y": 24.98 },
+                        { "x": 16, "y": 25.13 },
+                        { "x": 17, "y": 25.28 },
+                        { "x": 18, "y": 25.41 }
+                    ],
+                    "fill": false,
+                    "borderColor": "rgb(0, 0, 0)",
+                    "borderDash": [5, 5]
+                },
+                {
+                    "label": "Percentile 75",
+                    "data": [
+                        { "x": 4, "y": 22.78 },
+                        { "x": 5, "y": 23.12 },
+                        { "x": 6, "y": 23.45 },
+                        { "x": 7, "y": 23.76 },
+                        { "x": 8, "y": 24.07 },
+                        { "x": 9, "y": 24.36 },
+                        { "x": 10, "y": 24.64 },
+                        { "x": 11, "y": 24.9 },
+                        { "x": 12, "y": 25.15 },
+                        { "x": 13, "y": 25.39 },
+                        { "x": 14, "y": 25.61 },
+                        { "x": 15, "y": 25.82 },
+                        { "x": 16, "y": 26.01 },
+                        { "x": 17, "y": 26.18 },
+                        { "x": 18, "y": 26.35 }
+                    ],
+                    "fill": false,
+                    "borderColor": "rgb(0, 0, 0)",
+                    "borderDash": [5, 5]
+                },
+                {
+                    "label": "Percentile 90",
+                    "data": [
+                        { "x": 4, "y": 23.13 },
+                        { "x": 5, "y": 23.51 },
+                        { "x": 6, "y": 23.88 },
+                        { "x": 7, "y": 24.24 },
+                        { "x": 8, "y": 24.6 },
+                        { "x": 9, "y": 24.93 },
+                        { "x": 10, "y": 25.26 },
+                        { "x": 11, "y": 25.57 },
+                        { "x": 12, "y": 25.86 },
+                        { "x": 13, "y": 26.14 },
+                        { "x": 14, "y": 26.39 },
+                        { "x": 15, "y": 26.63 },
+                        { "x": 16, "y": 26.84 },
+                        { "x": 17, "y": 27.04 },
+                        { "x": 18, "y": 27.21 }
+                    ],
+                    "fill": false,
+                    "borderColor": "rgb(0, 0, 0)",
+                    "borderDash": [5, 5]
+                },
+                {
+                    "label": "Percentile 95",
+                    "data": [
+                        { "x": 4, "y": 23.33 },
+                        { "x": 5, "y": 23.74 },
+                        { "x": 6, "y": 24.15 },
+                        { "x": 7, "y": 24.54 },
+                        { "x": 8, "y": 24.92 },
+                        { "x": 9, "y": 25.3 },
+                        { "x": 10, "y": 25.65 },
+                        { "x": 11, "y": 25.99 },
+                        { "x": 12, "y": 26.31 },
+                        { "x": 13, "y": 26.61 },
+                        { "x": 14, "y": 26.89 },
+                        { "x": 15, "y": 27.14 },
+                        { "x": 16, "y": 27.36 },
+                        { "x": 17, "y": 27.56 },
+                        { "x": 18, "y": 27.74 }
+                    ],
+                    "fill": false,
+                    "borderColor": "rgb(0, 0, 0)",
+                    "borderDash": [5, 5]
+                }];
 
-let datasets = normativeData;
+            let datasets = normativeData;
 
-console.log("datasets",datasets);
+            console.log("datasets", datasets);
 
-var blueShades = [
-    'rgb(0, 0, 255,0.5)', // Strong blue
-    'rgb(70, 130, 180,0.5)', // Lighter blue
-    'rgb(135, 206, 235,0.5)', // Even lighter blue
-    'rgb(240, 248, 255,0.5)', // Lightest blue
-];
+            var blueShades = [
+                'rgb(0, 0, 255,0.5)', // Strong blue
+                'rgb(70, 130, 180,0.5)', // Lighter blue
+                'rgb(135, 206, 235,0.5)', // Even lighter blue
+                'rgb(240, 248, 255,0.5)', // Lightest blue
+            ];
 
-var redShades = [
-    'rgb(255, 99, 71,0.5)', // Light red
-    'rgb(255, 0, 0,0.5)', // Strong red
-    'rgb(139, 0, 0,0.5)', // Even stronger red
-];
+            var redShades = [
+                'rgb(255, 99, 71,0.5)', // Light red
+                'rgb(255, 0, 0,0.5)', // Strong red
+                'rgb(139, 0, 0,0.5)', // Even stronger red
+            ];
 
-// Set the colors for percentiles 3 to 25
-for (var i = 0; i < 4; i++) {
-    datasets[i].borderColor = blueShades[i];
-}
+            // Set the colors for percentiles 3 to 25
+            for (var i = 0; i < 4; i++) {
+                datasets[i].borderColor = blueShades[i];
+            }
 
-// Set the color for percentile 50
-datasets[4].borderColor = 'rgb(0, 0, 0, 0.5)'; // Black
-datasets[4].borderDash = []; // Solid line
+            // Set the color for percentile 50
+            datasets[4].borderColor = 'rgb(0, 0, 0, 0.5)'; // Black
+            datasets[4].borderDash = []; // Solid line
 
-// Set the colors for percentiles 75 to 95
-for (var i = 0; i < 3; i++) {
-    datasets[i + 5].borderColor = redShades[i];
-}
+            // Set the colors for percentiles 75 to 95
+            for (var i = 0; i < 3; i++) {
+                datasets[i + 5].borderColor = redShades[i];
+            }
 
 
-fetch(url)
-    .then(response => response.json())
-    .then(data => {
-            console.log(data);
-            console.log('firstname', url);
-            fetch(biometryUrl)
+            fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    let ages = { 'od' : [] , 'os' : [] };
-                    let axial_lengths = { 'od' : [] , 'os' : [] };
                     console.log(data);
-                    // console.log("database", data.database);
-                    dob = new Date(dob);
-                    for(filePath in data.data.exams) {
-                        let eyes = data.data['exams'][filePath];
-                        // console.log('eyes',eyes);
-                        for (let eye in eyes) {
-                            let examDate = new Date(eyes[eye]['EXAMINATION']['DATE'].replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
-                            let ageInMilliseconds = examDate - dob;
-                            let ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);  // Convert from milliseconds to years
-                            ages[eye].push(ageInYears.toFixed(2));
-                            axial_lengths[eye].push(eyes[eye]['A-SCAN']['AXIAL_LENGTH']);
-                        };
-                    }
-                    console.log("ages",ages);
-                    console.log("al",axial_lengths);
+                    console.log('firstname', url);
+                    fetch(biometryUrl)
+                        .then(response => response.json())
+                        .then(data => {
+                            let ages = { 'od': [], 'os': [] };
+                            let axial_lengths = { 'od': [], 'os': [] };
+                            console.log(data);
+                            // console.log("database", data.database);
+                            dob = new Date(dob);
+                            for (filePath in data.data.exams) {
+                                let eyes = data.data['exams'][filePath];
+                                // console.log('eyes',eyes);
+                                for (let eye in eyes) {
+                                    let examDate = new Date(eyes[eye]['EXAMINATION']['DATE'].replace(/(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3"));
+                                    let ageInMilliseconds = examDate - dob;
+                                    let ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);  // Convert from milliseconds to years
+                                    ages[eye].push(ageInYears.toFixed(2));
+                                    axial_lengths[eye].push(eyes[eye]['A-SCAN']['AXIAL_LENGTH']);
+                                };
+                            }
+                            console.log("ages", ages);
+                            console.log("al", axial_lengths);
 
-                    const combineDatasets = (ages, axial_lengths) => {
-                        const odDS = {
-                            label: "od",
-                            data: ages.od.map((x, index) => ({ x: parseFloat(x), y: parseFloat(axial_lengths.od[index]) }))
-                        };
+                            const combineDatasets = (ages, axial_lengths) => {
+                                const odDS = {
+                                    label: "od",
+                                    data: ages.od.map((x, index) => ({ x: parseFloat(x), y: parseFloat(axial_lengths.od[index]) }))
+                                };
 
-                        const osDS = {
-                            label: "os",
-                            data: ages.os.map((x, index) => ({ x: parseFloat(x), y: parseFloat(axial_lengths.os[index]) }))
-                        };
+                                const osDS = {
+                                    label: "os",
+                                    data: ages.os.map((x, index) => ({ x: parseFloat(x), y: parseFloat(axial_lengths.os[index]) }))
+                                };
 
-                        return [odDS, osDS];
-                    };
+                                return [odDS, osDS];
+                            };
 
-                    const combined = combineDatasets(ages, axial_lengths);
-                    console.log("combined",combined);
+                            const combined = combineDatasets(ages, axial_lengths);
+                            console.log("combined", combined);
 
-                    datasets.push({
+                            datasets.push({
                                 label: 'OD',
                                 data: combined[0].data,
                                 borderColor: 'rgba(0, 204, 255, 0.7)',
                                 backgroundColor: 'rgba(0,0,0,0)'
                             });
-                    
-                    datasets.push({
+
+                            datasets.push({
                                 label: 'OS',
                                 data: combined[1].data,
                                 borderColor: 'rgba(255, 87, 51, 0.7)',
                                 backgroundColor: 'rgba(0,0,0,0)'
                             });
 
-                    console.log("datasets",datasets);
-                    // Trouver les valeurs maximales et minimales pour 'od' et 'os'
-                    let xMax = Number.MIN_VALUE;
-                    let xMin = Number.MAX_VALUE;
-                    let yMax = Number.MIN_VALUE;
-                    let yMin = Number.MAX_VALUE;
+                            console.log("datasets", datasets);
+                            // Trouver les valeurs maximales et minimales pour 'od' et 'os'
+                            let xMax = Number.MIN_VALUE;
+                            let xMin = Number.MAX_VALUE;
+                            let yMax = Number.MIN_VALUE;
+                            let yMin = Number.MAX_VALUE;
 
-                    datasets.forEach((dataset) => {
-                    if (dataset.label === 'OD' || dataset.label === 'OG') {
-                            dataset.data.forEach((point) => {
-                            xMax = Math.max(xMax, point.x);
-                            xMin = Math.min(xMin, point.x);
-                            yMax = Math.max(yMax, point.y);
-                            yMin = Math.min(yMin, point.y);
-                            });
-                        }
-                    });
-
-                    console.log('xMin:', xMin, 'yMin:', yMin, 'xMax:', xMax, 'yMax:', yMax);
-
-                    let ctx = document.getElementById('myChart').getContext('2d');
-                    let myChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            datasets: datasets
-                        },
-                        options: {
-                            scales: {
-                                x: {
-                                    type: 'linear',
-                                    title: {
-                                        display: true,
-                                        text: 'Age (years)'
-                                    },
-                                    suggestedMin: xMin,
-                                    suggestedMax: xMax,
-                                },
-                                y: {
-                                    type: 'linear',
-                                    title: {
-                                        display: true,
-                                        text: 'Axial Length (mm)'
-                                    },
-                                    suggestedMin: yMin,
-                                    suggestedMax: yMax,
+                            datasets.forEach((dataset) => {
+                                if (dataset.label === 'OD' || dataset.label === 'OG') {
+                                    dataset.data.forEach((point) => {
+                                        xMax = Math.max(xMax, point.x);
+                                        xMin = Math.min(xMin, point.x);
+                                        yMax = Math.max(yMax, point.y);
+                                        yMin = Math.min(yMin, point.y);
+                                    });
                                 }
-                            }
-                        },
-                        plugins: {
-                        zoom: {
-                            pan: {
-                            enabled: true,
-                            mode: 'xy', // Vous pouvez spécifier 'x', 'y' ou 'xy' pour autoriser le zoom sur les axes x, y ou les deux.
-                            },
-                            zoom: {
-                            enabled: true,
-                            mode: 'xy', // Vous pouvez spécifier 'x', 'y' ou 'xy' pour autoriser le zoom sur les axes x, y ou les deux.
-                            },
-                        },
-                        },
-                    });
+                            });
+
+                            console.log('xMin:', xMin, 'yMin:', yMin, 'xMax:', xMax, 'yMax:', yMax);
+
+                            let ctx = document.getElementById('myChart').getContext('2d');
+                            let myChart = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    datasets: datasets
+                                },
+                                options: {
+                                    scales: {
+                                        x: {
+                                            type: 'linear',
+                                            title: {
+                                                display: true,
+                                                text: 'Age (years)'
+                                            },
+                                            suggestedMin: xMin,
+                                            suggestedMax: xMax,
+                                        },
+                                        y: {
+                                            type: 'linear',
+                                            title: {
+                                                display: true,
+                                                text: 'Axial Length (mm)'
+                                            },
+                                            suggestedMin: yMin,
+                                            suggestedMax: yMax,
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    zoom: {
+                                        pan: {
+                                            enabled: true,
+                                            mode: 'xy', // Vous pouvez spécifier 'x', 'y' ou 'xy' pour autoriser le zoom sur les axes x, y ou les deux.
+                                        },
+                                        zoom: {
+                                            enabled: true,
+                                            mode: 'xy', // Vous pouvez spécifier 'x', 'y' ou 'xy' pour autoriser le zoom sur les axes x, y ou les deux.
+                                        },
+                                    },
+                                },
+                            });
+                        })
+                        .catch(error => console.error('Error:', error));
                 })
-                .catch(error => console.error('Error:', error));
-            })
-    .catch(error => console.error('Error:', error))
+                .catch(error => console.error('Error:', error))
 
-fetch(rawBiometryUrl)
-    .then(response => response.json())
-    .then(data => {
-        // Create a row for the columns
-        const row = document.createElement('div');
-        row.className = 'row';
+            fetch(rawBiometryUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Create a row for the columns
+                    const row = document.createElement('div');
+                    row.className = 'row';
 
-        // We will create two columns, one for 'od' and one for 'os'
-        ['od', 'os'].forEach((side, index) => {
-            const column = document.createElement('div');
-            column.className = 'col';
+                    // We will create two columns, one for 'od' and one for 'os'
+                    ['od', 'os'].forEach((side, index) => {
+                        const column = document.createElement('div');
+                        column.className = 'col';
 
-            // Create a header for the column
-            const columnHeader = document.createElement('h1');
-            columnHeader.innerText = side.toUpperCase();  // 'od' becomes 'OD', 'os' becomes 'OS'
-            column.appendChild(columnHeader);
+                        // Create a header for the column
+                        const columnHeader = document.createElement('h1');
+                        columnHeader.innerText = side.toUpperCase();  // 'od' becomes 'OD', 'os' becomes 'OS'
+                        column.appendChild(columnHeader);
 
-            // Create an accordion
-            const accordion = document.createElement('div');
-            accordion.className = 'accordion';
-            accordion.id = `${side}-accordion`;
+                        // Create an accordion
+                        const accordion = document.createElement('div');
+                        accordion.className = 'accordion';
+                        accordion.id = `${side}-accordion`;
 
-            // Sort the dates in descending order
-            const sortedDates = Object.keys(data[side]).sort((a, b) => new Date(b) - new Date(a));
+                        // Sort the dates in descending order
+                        const sortedDates = Object.keys(data[side]).sort((a, b) => new Date(b) - new Date(a));
 
-            // For each date under each side
-            sortedDates.forEach((date, dateIndex) => {
-                // Create an accordion item
-                const item = document.createElement('div');
-                item.className = 'accordion-item';
+                        // For each date under each side
+                        sortedDates.forEach((date, dateIndex) => {
+                            // Create an accordion item
+                            const item = document.createElement('div');
+                            item.className = 'accordion-item';
 
-                // Create a header for the accordion item
-                const header = document.createElement('h2');
-                header.className = 'accordion-header';
-                header.id = `${side}-heading-${dateIndex}`;
+                            // Create a header for the accordion item
+                            const header = document.createElement('h2');
+                            header.className = 'accordion-header';
+                            header.id = `${side}-heading-${dateIndex}`;
 
-                const button = document.createElement('button');
-                button.className = 'accordion-button';
-                button.type = 'button';
-                button.dataset.bsToggle = 'collapse';
-                button.dataset.bsTarget = `#${side}-collapse-${dateIndex}`;
-                button.setAttribute('aria-expanded', 'false');
-                button.setAttribute('aria-controls', `${side}-collapse-${dateIndex}`);
-                button.innerText = date;
+                            const button = document.createElement('button');
+                            button.className = 'accordion-button';
+                            button.type = 'button';
+                            button.dataset.bsToggle = 'collapse';
+                            button.dataset.bsTarget = `#${side}-collapse-${dateIndex}`;
+                            button.setAttribute('aria-expanded', 'false');
+                            button.setAttribute('aria-controls', `${side}-collapse-${dateIndex}`);
+                            button.innerText = date;
 
-                // Open the first panel by default
-                if (dateIndex === 0) {
-                    button.classList.remove('collapsed');
-                    button.setAttribute('aria-expanded', 'true');
-                }
+                            // Open the first panel by default
+                            if (dateIndex === 0) {
+                                button.classList.remove('collapsed');
+                                button.setAttribute('aria-expanded', 'true');
+                            }
 
-                header.appendChild(button);
+                            header.appendChild(button);
 
-                // Create a collapse for the accordion item
-                const collapse = document.createElement('div');
-                collapse.className = 'accordion-collapse collapse';
-                collapse.id = `${side}-collapse-${dateIndex}`;
-                collapse.setAttribute('aria-labelledby', `${side}-heading-${dateIndex}`);
-                collapse.dataset.bsParent = `#${side}-accordion`;
+                            // Create a collapse for the accordion item
+                            const collapse = document.createElement('div');
+                            collapse.className = 'accordion-collapse collapse';
+                            collapse.id = `${side}-collapse-${dateIndex}`;
+                            collapse.setAttribute('aria-labelledby', `${side}-heading-${dateIndex}`);
+                            collapse.dataset.bsParent = `#${side}-accordion`;
 
-                // Open the first panel by default
-                if (dateIndex === 0) {
-                    collapse.classList.add('show');
-                }
+                            // Open the first panel by default
+                            if (dateIndex === 0) {
+                                collapse.classList.add('show');
+                            }
 
-                const body = document.createElement('div');
-                body.className = 'accordion-body';
+                            const body = document.createElement('div');
+                            body.className = 'accordion-body';
 
-                // Create a table for the measurements
-                const table = document.createElement('table');
-                table.className = 'table';
+                            // Create a table for the measurements
+                            const table = document.createElement('table');
+                            table.className = 'table';
 
-                const thead = document.createElement('thead');
-                const trHead = document.createElement('tr');
-                const thMeasurement = document.createElement('th');
-                thMeasurement.innerText = 'Measurement';
-                const thValue = document.createElement('th');
-                thValue.innerText = 'Value';
-                trHead.appendChild(thMeasurement);
-                trHead.appendChild(thValue);
-                thead.appendChild(trHead);
-                table.appendChild(thead);
+                            const thead = document.createElement('thead');
+                            const trHead = document.createElement('tr');
+                            const thMeasurement = document.createElement('th');
+                            thMeasurement.innerText = 'Measurement';
+                            const thValue = document.createElement('th');
+                            thValue.innerText = 'Value';
+                            trHead.appendChild(thMeasurement);
+                            trHead.appendChild(thValue);
+                            thead.appendChild(trHead);
+                            table.appendChild(thead);
 
-                const tbody = document.createElement('tbody');
+                            const tbody = document.createElement('tbody');
 
-                // For each exam under this date
-                data[side][date].forEach(exam => {
-                    // Create a row for each measure
-                    Object.keys(exam).forEach(key => {
-                        // We will ignore these specific keys and 'laterality'
-                        if (['created_by', 'created_on', 'exam_date', 'id', 'id_auth_user', 'id_modality', 'id_worklist', 'is_active', 'modified_by', 'modified_on', 'laterality'].includes(key)) {
-                            return;
-                        }
+                            // For each exam under this date
+                            data[side][date].forEach(exam => {
+                                // Create a row for each measure
+                                Object.keys(exam).forEach(key => {
+                                    // We will ignore these specific keys and 'laterality'
+                                    if (['created_by', 'created_on', 'exam_date', 'id', 'id_auth_user', 'id_modality', 'id_worklist', 'is_active', 'modified_by', 'modified_on', 'laterality'].includes(key)) {
+                                        return;
+                                    }
 
-                        const trBody = document.createElement('tr');
-                        const tdMeasurement = document.createElement('td');
-                        tdMeasurement.innerText = key;
-                        const tdValue = document.createElement('td');
-                        tdValue.innerText = exam[key];
-                        trBody.appendChild(tdMeasurement);
-                        trBody.appendChild(tdValue);
-                        tbody.appendChild(trBody);
+                                    const trBody = document.createElement('tr');
+                                    const tdMeasurement = document.createElement('td');
+                                    tdMeasurement.innerText = key;
+                                    const tdValue = document.createElement('td');
+                                    tdValue.innerText = exam[key];
+                                    trBody.appendChild(tdMeasurement);
+                                    trBody.appendChild(tdValue);
+                                    tbody.appendChild(trBody);
+                                });
+                            });
+
+                            table.appendChild(tbody);
+                            body.appendChild(table);
+
+                            collapse.appendChild(body);
+                            item.appendChild(header);
+                            item.appendChild(collapse);
+                            accordion.appendChild(item);
+                        });
+
+                        column.appendChild(accordion);
+                        row.appendChild(column);
                     });
+
+                    // Add the row to your document
+                    // Assume you have an element with the ID 'rawBiometry' in your HTML
+                    document.getElementById('rawBiometry').appendChild(row);
                 });
 
-                table.appendChild(tbody);
-                body.appendChild(table);
-
-                collapse.appendChild(body);
-                item.appendChild(header);
-                item.appendChild(collapse);
-                accordion.appendChild(item);
-            });
-
-            column.appendChild(accordion);
-            row.appendChild(column);
-        });
-
-        // Add the row to your document
-        // Assume you have an element with the ID 'rawBiometry' in your HTML
-        document.getElementById('rawBiometry').appendChild(row);
-    });
 
 
-
-</script>
+        </script>

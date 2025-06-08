@@ -41,10 +41,10 @@
 - **JavaScript Manager**: PaymentManager class handling all frontend functionality
 - **Styling**: Custom CSS for payment interface
 - **Worklist Integration**: '$' Payment action button added to all worklist interfaces
-  - Main worklist view (`static/js/wl_bt.js`)
-  - Medical Doctor modality (`static/js/md_bt.js`)
-  - General Practitioner modality (`static/js/gp_bt.js`)
-  - Files management modality (`static/js/files_bt.js`)
+  - Main worklist view (`static/js/wl/wl_bt.js`)
+  - Medical Doctor modality (`static/js/md/md_bt.js`)
+  - General Practitioner modality (`static/js/md/gp_bt.js`)
+  - Files management modality (`static/js/manage/files_bt.js`)
 
 ### 🛠 Technical Implementation
 

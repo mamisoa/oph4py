@@ -19,13 +19,14 @@
 <div class="container">
     <form id="searchForm">
         <div class="form-group">
-          <label for="searchText">Search</label>
-          <input type="text" name="searchStr" class="form-control" id="searchText" aria-describedby="search" placeholder="Lastname,firstname">
-          <small id="searchHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-          <select class="form-select" name="machine" aria-label="Default select example">
-            <option selected value="l80">L80</option>
-            <option value="vx100">VX100</option>
-          </select>
+            <label for="searchText">Search</label>
+            <input type="text" name="searchStr" class="form-control" id="searchText" aria-describedby="search"
+                placeholder="Lastname,firstname">
+            <small id="searchHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            <select class="form-select" name="machine" aria-label="Default select example">
+                <option selected value="l80">L80</option>
+                <option value="vx100">VX100</option>
+            </select>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
@@ -34,16 +35,16 @@
 <div id="list" class="container">
     <table class="table tablewf">
         <thead>
-          <tr>
-            <th scope="col">Last</th>
-            <th scope="col">First</th>
-            <th scope="col">Datetime</th>
-            <th scope="col">Side</th>
-            <th scope="col">Sph</th>
-            <th scope="col">Cyl</th>
-            <th scope="col">Axis</th>
-            <th scope="col">Export</th>
-          </tr>
+            <tr>
+                <th scope="col">Last</th>
+                <th scope="col">First</th>
+                <th scope="col">Datetime</th>
+                <th scope="col">Side</th>
+                <th scope="col">Sph</th>
+                <th scope="col">Cyl</th>
+                <th scope="col">Axis</th>
+                <th scope="col">Export</th>
+            </tr>
         </thead>
         <tbody id="table-data-wf">
         </tbody>
@@ -53,17 +54,17 @@
 <div id="list" class="container">
     <table class="table tablewf">
         <thead>
-          <tr>
-            <th scope="col">Last</th>
-            <th scope="col">First</th>
-            <th scope="col">Datetime</th>
-            <th scope="col">Side</th>
-            <th scope="col">k1</th>
-            <th scope="col">k1_axis</th>
-            <th scope="col">k2</th>
-            <th scope="col">k2_axis</th>
-            <th scope="col">Export</th>
-          </tr>
+            <tr>
+                <th scope="col">Last</th>
+                <th scope="col">First</th>
+                <th scope="col">Datetime</th>
+                <th scope="col">Side</th>
+                <th scope="col">k1</th>
+                <th scope="col">k1_axis</th>
+                <th scope="col">k2</th>
+                <th scope="col">k2_axis</th>
+                <th scope="col">Export</th>
+            </tr>
         </thead>
         <tbody id="table-data-topo">
         </tbody>
@@ -74,13 +75,8 @@
     <div class="row right_eye">
         <div class="col">
             <div>RIGHT EYE</div>
-            <table
-                id="visionixRight_tbl"
-                data-pagination="true"
-                data-page-size="10"
-                data-search="false"
-                data-response-handler="responseHandler_vx"
-                >
+            <table id="visionixRight_tbl" data-pagination="true" data-page-size="10" data-search="false"
+                data-response-handler="responseHandler_vx">
                 <thead>
                     <tr>
                         <th data-field="date" data-sortable="true">Datetime</th>
@@ -89,7 +85,8 @@
                         <th data-field="rx" data-sortable="false">Rx</th>
                         <th data-field="k1str" data-sortable="false">K1</th>
                         <th data-field="k2str" data-sortable="false">K2</th>
-                        <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                        <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action
+                        </th>
                         </th>
                     </tr>
                 </thead>
@@ -97,13 +94,8 @@
         </div>
         <div class="col">
             <div>LEFT EYE</div>
-            <table
-                id="visionixLeft_tbl"
-                data-pagination="true"
-                data-page-size="10"
-                data-search="false"
-                data-response-handler="responseHandler_vx"
-                >
+            <table id="visionixLeft_tbl" data-pagination="true" data-page-size="10" data-search="false"
+                data-response-handler="responseHandler_vx">
                 <thead>
                     <tr>
                         <th data-field="date" data-sortable="true">Datetime</th>
@@ -112,7 +104,8 @@
                         <th data-field="rx" data-sortable="false">Rx</th>
                         <th data-field="k1str" data-sortable="false">K1</th>
                         <th data-field="k2str" data-sortable="false">K2</th>
-                        <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                        <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action
+                        </th>
                     </tr>
                 </thead>
             </table>
@@ -129,8 +122,8 @@
         <label for="formFileMultiple" class="form-label">Multiple files input example</label>
         <input class="form-control" type="file" id="formFileMultiple" multiple>
     </div>
-        <label for="formFileLg" class="form-label">Large file input example</label>
-        <input class="form-control form-control-lg" id="formFileLg" type="file">
+    <label for="formFileLg" class="form-label">Large file input example</label>
+    <input class="form-control form-control-lg" id="formFileLg" type="file">
     </div>
     <label for="exampleColorInput" class="form-label">Color picker</label>
     <input type="color" class="form-control form-control-color" id="exampleColorInput" value="#563d7c"
@@ -147,32 +140,32 @@
 [[ block js_scripts]]
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 
-<script src="js/jquery.serialize-object.min.js"></script>
-<script src="js/useful.js"></script>
-<script src="js/listdir-bt.js"></script>
+<script src="static/js/jquery/jquery.serialize-object.min.js"></script>
+<script src="js/utils/useful.js"></script>
+<script src="js/md/listdir-bt.js"></script>
 <script type="text/javascript">
-const HOSTURL = "[[ = hosturl ]]";
-let patient = {};
-patient['lastname']='abes';
-patient['firstname']='';
+    const HOSTURL = "[[ = hosturl ]]";
+    let patient = {};
+    patient['lastname'] = 'abes';
+    patient['firstname'] = '';
 
-// table listing right measurement for patient in visionix
-const API_VISIONIX_R = HOSTURL + '/'+APP_NAME+'/rest/machines/l80?lastname='+patient['lastname'] +'&firstname='+patient['firstname']+'&side=right'
-var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
-    url: API_VISIONIX_R
-});
+    // table listing right measurement for patient in visionix
+    const API_VISIONIX_R = HOSTURL + '/' + APP_NAME + '/rest/machines/l80?lastname=' + patient['lastname'] + '&firstname=' + patient['firstname'] + '&side=right'
+    var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
+        url: API_VISIONIX_R
+    });
 
-// table listing left measurement for patient in visionix
-const API_VISIONIX_L = HOSTURL + '/'+APP_NAME+'/rest/machines/l80?lastname='+patient['lastname'] +'&firstname='+patient['firstname']+'&side=left'
-var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
-    url: API_VISIONIX_L,
-    onLoadSuccess: function(data) {
-        console.log('data',data);
-    },
-    onLoadError: function(status) {
-        console.log('status',status);
-    }
-});
+    // table listing left measurement for patient in visionix
+    const API_VISIONIX_L = HOSTURL + '/' + APP_NAME + '/rest/machines/l80?lastname=' + patient['lastname'] + '&firstname=' + patient['firstname'] + '&side=left'
+    var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
+        url: API_VISIONIX_L,
+        onLoadSuccess: function (data) {
+            console.log('data', data);
+        },
+        onLoadError: function (status) {
+            console.log('status', status);
+        }
+    });
 
 </script>
 

@@ -7,7 +7,7 @@ The User controller is a core component of the ophthalmology electronic medical 
 ## File Structure
 
 - `manage/user.html`: Main view template
-- `static/js/user.js`: Core JavaScript functionality
+- `static/js/manage/user.js`: Core JavaScript functionality
 - `manage.py`: Server-side controller logic
 
 ## Features

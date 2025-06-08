@@ -7,7 +7,7 @@ The Lenses controller manages the lens catalog and prescription system in the op
 ## File Structure
 
 - `modalityCtr/lenses.html`: Main view template
-- `static/js/lenses.js`: Core JavaScript functionality
+- `static/js/md/lenses.js`: Core JavaScript functionality
 - `static/js/lenses_bt.js`: Bootstrap table configurations and handlers
 
 ## Features

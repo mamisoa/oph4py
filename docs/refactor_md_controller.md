@@ -26,30 +26,30 @@ The current `templates/modalityCtr/md.html` file is 3,086 lines long and contain
 
 <!-- UI Enhancement Libraries -->
 <script src="js/bootbox/bootbox.all.min.js"></script>
-<script src="js/jquery.serialize-object.min.js"></script>
-<script src="js/bootstrap-autocomplete.min.js"></script>
+<script src="static/js/jquery/jquery.serialize-object.min.js"></script>
+<script src="js/utils/bootstrap-autocomplete.min.js"></script>
 <script src="js/timer.jquery.min.js"></script>
 
 <!-- Custom Utility Scripts -->
-<script src="js/useful.js"></script>
-<script src="js/patient-bar.js"></script>
-<script src="js/md_bt.js"></script>
+<script src="js/utils/useful.js"></script>
+<script src="static/js/templates/patient-bar.js"></script>
+<script src="js/md/md_bt.js"></script>
 
 <!-- PDF Generation Libraries -->
 <script src="js/pdfmake/pdfmake.min.js"></script>
 <script src="js/pdfmake/vfs_fonts.js"></script>
 <script src="js/jsbarcode/JsBarcode.itf.min.js"></script>
-<script src="js/html-to-pdfmake.js"></script>
+<script src="js/utils/html-to-pdfmake.js"></script>
 
 <!-- Rich Text Editor -->
 <script src="js/tinymce/tinymce.min.js"></script>
 
 <!-- Custom Medical Examination Scripts -->
-<script src="js/md.js"></script>
-<script src="js/prescription.js"></script>
-<script src="js/glasses.js"></script>
-<script src="js/contacts.js"></script>
-<script src="js/certificates.js"></script>
+<script src="js/md/md.js"></script>
+<script src="js/md/prescription.js"></script>
+<script src="js/md/glasses.js"></script>
+<script src="js/md/contacts.js"></script>
+<script src="js/md/certificates.js"></script>
 ```
 
 #### Bootstrap Table Instances and Dependencies

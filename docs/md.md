@@ -7,8 +7,8 @@ The MD (Medical Doctor) controller is a core component of the ophthalmology elec
 ## File Structure
 
 - `modalityCtr/md.html`: Main view template
-- `static/js/md.js`: Core JavaScript functionality
-- `static/js/md_bt.js`: Bootstrap table configurations and handlers
+- `static/js/md/md.js`: Core JavaScript functionality
+- `static/js/md/md_bt.js`: Bootstrap table configurations and handlers
 
 ## Features
 

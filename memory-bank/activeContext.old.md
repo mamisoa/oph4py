@@ -87,7 +87,7 @@ Significant progress has been made on the secondary nomenclature code enhancemen
 - ✅ Created table formatters: `secondaryCodeFormatter()`, `secondaryDescFormatter()`, `secondaryFeeFormatter()`
 - ✅ Enhanced `totalFeeFormatter()` to include secondary fees
 
-**Files modified**: `static/js/md_bt.js`
+**Files modified**: `static/js/md/md_bt.js`
 
 #### **Phase 5: Backend API Enhancement** ⏱️ 2-3 days
 
@@ -117,7 +117,7 @@ Significant progress has been made on the secondary nomenclature code enhancemen
 - ✅ Mobile responsiveness optimized with automatic column hiding on smaller screens
 - ✅ Improved table formatters with tooltips and enhanced visual styling
 
-**Files modified**: `static/js/md_bt.js`, `templates/modalityCtr/md.html`
+**Files modified**: `static/js/md/md_bt.js`, `templates/modalityCtr/md.html`
 
 #### **Phase 7: Combo System Integration** ⏱️ 3-4 days
 
@@ -134,7 +134,7 @@ Significant progress has been made on the secondary nomenclature code enhancemen
 - ✅ Added comprehensive validation preventing code conflicts
 - ✅ Enhanced user experience with visual feedback and structured display
 
-**Files modified**: `templates/manage/billing_combo.html`, `static/js/billing-combo-manager.js`
+**Files modified**: `templates/manage/billing_combo.html`, `static/js/billing/billing-combo-manager.js`
 
 #### **Phase 8: Testing & Validation** ⏱️ 2-3 days
 
@@ -412,4 +412,4 @@ The following 6 attempts failed because they tried to work around the fundamenta
   - Removed duplicate function definition inside document ready block
 - **Status**: ✅ COMPLETE - Edit modal now correctly shows both main and secondary codes with proper fee calculation
 
-**Files modified**: `static/js/md_bt.js`
+**Files modified**: `static/js/md/md_bt.js`

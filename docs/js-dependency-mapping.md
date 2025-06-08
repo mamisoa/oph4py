@@ -26,22 +26,22 @@ Any disruption to the dependency chain will break all table functionality and me
 // 1. External Libraries (Bootstrap, jQuery, etc.)
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
-<script src="js/jquery.serialize-object.min.js"></script>
-<script src="js/bootstrap-autocomplete.min.js"></script>
+<script src="static/js/jquery/jquery.serialize-object.min.js"></script>
+<script src="js/utils/bootstrap-autocomplete.min.js"></script>
 <script src="js/timer.jquery.min.js"></script>
 
 // 2. Core Utility Libraries
-<script src="js/useful.js"></script>              // Global utilities, refreshTables()
-<script src="js/patient-bar.js"></script>         // Patient bar functionality
+<script src="js/utils/useful.js"></script>              // Global utilities, refreshTables()
+<script src="static/js/templates/patient-bar.js"></script>         // Patient bar functionality
 
 // 3. Bootstrap Table Configuration
-<script src="js/md_bt.js"></script>               // Table configs, formatters, handlers
+<script src="js/md/md_bt.js"></script>               // Table configs, formatters, handlers
 
 // 4. PDF and Rich Text Libraries
 <script src="js/pdfmake/pdfmake.min.js"></script>
 <script src="js/pdfmake/vfs_fonts.js"></script>
 <script src="js/jsbarcode/JsBarcode.itf.min.js"></script>
-<script src="js/html-to-pdfmake.js"></script>
+<script src="js/utils/html-to-pdfmake.js"></script>
 <script src="js/tinymce/tinymce.min.js"></script>
 
 // 5. Inline JavaScript Sections (in md.html)
@@ -52,11 +52,11 @@ Any disruption to the dependency chain will break all table functionality and me
 // 5e. Document Ready Handlers
 
 // 6. Medical Examination Logic
-<script src="js/md.js"></script>                  // Core medical logic
-<script src="js/prescription.js"></script>        // Prescription handling
-<script src="js/glasses.js"></script>             // Glasses prescriptions
-<script src="js/contacts.js"></script>            // Contact lens prescriptions
-<script src="js/certificates.js"></script>        // Certificate generation
+<script src="js/md/md.js"></script>                  // Core medical logic
+<script src="js/md/prescription.js"></script>        // Prescription handling
+<script src="js/md/glasses.js"></script>             // Glasses prescriptions
+<script src="js/md/contacts.js"></script>            // Contact lens prescriptions
+<script src="js/md/certificates.js"></script>        // Certificate generation
 ```
 
 ## Global Variables Dependencies

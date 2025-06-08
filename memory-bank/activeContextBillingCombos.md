@@ -46,7 +46,7 @@ Implementing access control for billing combos to make them accessible only to t
 **Files Modified:**
 
 - `templates/manage/billing_combo.html` - **DONE**
-- `static/js/billing-combo-manager.js` - **DONE**
+- `static/js/billing/billing-combo-manager.js` - **DONE**
 
 **Features Implemented:**
 
@@ -115,7 +115,7 @@ Implementing access control for billing combos to make them accessible only to t
 
 **Files Modified:**
 
-- `static/js/billing-combo-manager.js` - Enhanced `generateCodeBreakdown()` and `calculateComboTotal()` functions
+- `static/js/billing/billing-combo-manager.js` - Enhanced `generateCodeBreakdown()` and `calculateComboTotal()` functions
 
 **Backward Compatibility:** ✅ All legacy combos now display correctly in detail view
 

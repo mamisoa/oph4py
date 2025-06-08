@@ -7,8 +7,8 @@ The Allergy controller manages allergic agent references and patient allergy rec
 ## File Structure
 
 - `modalityCtr/allergy.html`: Main view template
-- `static/js/allergy.js`: Core JavaScript functionality
-- `static/js/allergy_bt.js`: Bootstrap table configurations and handlers
+- `static/js/controller/allergy.js`: Core JavaScript functionality
+- `static/js/controller/allergy_bt.js`: Bootstrap table configurations and handlers
 
 ## Features
 

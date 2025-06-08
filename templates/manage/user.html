@@ -577,9 +577,9 @@
 
 [[ block js_scripts ]]
 <script src="js/bootbox/bootbox.all.min.js"></script>
-<script src="js/jquery.serialize-object.min.js"></script>
-<script src="js/useful.js"></script>
-<!-- <script src="js/user_validation.js"></script> -->
+<script src="static/js/jquery/jquery.serialize-object.min.js"></script>
+<script src="js/utils/useful.js"></script>
+<!-- <script src="js/utils/user_validation.js"></script> -->
 <script type="text/javascript">
     const id = [[ =rec_id]]
     const membership = [[=membership]];
@@ -592,5 +592,5 @@
     const API_MDPARAM = HOSTURL + '[[=URL('api','md_params')]]' + '?id_auth_user.eq=' + id;
     const API_CHANGE_PASSWORD = HOSTURL + '[[=URL('change_password')]]';
 </script>
-<script src="js/user.js"></script>
+<script src="js/manage/user.js"></script>
 [[ end ]]

@@ -7,9 +7,9 @@ The Worklist controller is a critical component of the ophthalmology electronic 
 ## File Structure
 
 - `worklist.html`: Main view template
-- `static/js/wl.js`: Core JavaScript functionality
-- `static/js/wl_bt.js`: Bootstrap table configurations and handlers
-- `static/js/wl-state-manager.js`: State management for worklist operations
+- `static/js/wl/wl.js`: Core JavaScript functionality
+- `static/js/wl/wl_bt.js`: Bootstrap table configurations and handlers
+- `static/js/wl/wl-state-manager.js`: State management for worklist operations
 
 ## Key Workflows
 

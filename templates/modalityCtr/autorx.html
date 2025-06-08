@@ -4,7 +4,9 @@
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
 <style>
     /* overide when topnavbar is not fixed-top */
-    section#main { margin-top: 0px; }
+    section#main {
+        margin-top: 0px;
+    }
 </style>
 [[ end ]]
 
@@ -41,21 +43,30 @@
             <div class="row"> <!-- row right form -->
                 <div class="col">
                     <form id="idRightRx" enctype="multipart/form-data" method="POST">
-                        <div class="container-fluid bg-right" >
+                        <div class="container-fluid bg-right">
                             <div class="row mb-3">
                                 <div class="col">
                                     <span class="form-label">From:</span>
                                     <div class="input-group">
                                         <div class="btn-group rx_origin_right">
-                                            <input type="radio" id="rx_origin_autorx_right" name="rx_origin" class="btn-check" value="autorx" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="rx_origin_autorx_right">AutoRx</label>
-                                            <input type="radio" id="rx_origin_glass_right" name="rx_origin" class="btn-check" value="glass" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="rx_origin_glass_right">Glass</label>
-                                            <input type="radio" id="rx_origin_trial_right" name="rx_origin" class="btn-check" value="trial" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="rx_origin_trial_right">Trial</label>
-                                            <input type="radio" id="rx_origin_cyclo_right" name="rx_origin" class="btn-check" value="cyclo" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="rx_origin_cyclo_right">Cyclo</label>
-                                            <input type="radio" id="rx_origin_dil" name="rx_origin" class="btn-check" value="dil" autocomplete="off">
+                                            <input type="radio" id="rx_origin_autorx_right" name="rx_origin"
+                                                class="btn-check" value="autorx" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="rx_origin_autorx_right">AutoRx</label>
+                                            <input type="radio" id="rx_origin_glass_right" name="rx_origin"
+                                                class="btn-check" value="glass" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="rx_origin_glass_right">Glass</label>
+                                            <input type="radio" id="rx_origin_trial_right" name="rx_origin"
+                                                class="btn-check" value="trial" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="rx_origin_trial_right">Trial</label>
+                                            <input type="radio" id="rx_origin_cyclo_right" name="rx_origin"
+                                                class="btn-check" value="cyclo" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="rx_origin_cyclo_right">Cyclo</label>
+                                            <input type="radio" id="rx_origin_dil" name="rx_origin" class="btn-check"
+                                                value="dil" autocomplete="off">
                                             <label class="btn btn-outline-primary" for="rx_origin_dil">Dil</label>
                                         </div>
                                     </div>
@@ -64,15 +75,24 @@
                                     <span for="glass_type" class="form-label">Type:</span>
                                     <div class="input-group">
                                         <div class="btn-group glass_type_right">
-                                            <input type="radio" id="glass_type_mono_right" name="glass_type" class="btn-check" value="monofocal" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="glass_type_mono_right">Monofocal</label>
-                                            <input type="radio" id="glass_type_prog_right" name="glass_type" class="btn-check" value="progressive" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="glass_type_prog_right">Progressive</label>
-                                            <input type="radio" id="glass_type_bif_right" name="glass_type" class="btn-check" value="bifocal" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="glass_type_bif_right">Bifocal</label>
-                                            <input type="radio" id="glass_type_deg_right" name="glass_type" class="btn-check" value="degressive" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="glass_type_deg_right">Degressive</label>
-                                            <input type="radio" id="glass_type_na" name="glass_type" class="btn-check visually-hidden" value="na" autocomplete="off">
+                                            <input type="radio" id="glass_type_mono_right" name="glass_type"
+                                                class="btn-check" value="monofocal" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="glass_type_mono_right">Monofocal</label>
+                                            <input type="radio" id="glass_type_prog_right" name="glass_type"
+                                                class="btn-check" value="progressive" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="glass_type_prog_right">Progressive</label>
+                                            <input type="radio" id="glass_type_bif_right" name="glass_type"
+                                                class="btn-check" value="bifocal" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="glass_type_bif_right">Bifocal</label>
+                                            <input type="radio" id="glass_type_deg_right" name="glass_type"
+                                                class="btn-check" value="degressive" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="glass_type_deg_right">Degressive</label>
+                                            <input type="radio" id="glass_type_na" name="glass_type"
+                                                class="btn-check visually-hidden" value="na" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -82,89 +102,129 @@
                                 <div class="col-2">
                                     <label for="sph_far_right" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_sph_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_far counter_sph_far text-center" value ="+0.00" aria-label="Sphere right" name="sph_far" id="sph_far_right">
-                                        <button class="btn btn-outline-secondary counter_up_sph_far" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_sph_far"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm sph_far counter_sph_far text-center"
+                                            value="+0.00" aria-label="Sphere right" name="sph_far" id="sph_far_right">
+                                        <button class="btn btn-outline-secondary counter_up_sph_far"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="cyl_far_right" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_cyl_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_far counter_cyl_far text-center" value ="+0.00" aria-label="Cylinder right" name="cyl_far" id="cyl_far_right" >
-                                        <button class="btn btn-outline-secondary counter_up_cyl_far" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_cyl_far"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm cyl_far counter_cyl_far text-center"
+                                            value="+0.00" aria-label="Cylinder right" name="cyl_far" id="cyl_far_right">
+                                        <button class="btn btn-outline-secondary counter_up_cyl_far"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="axis_far_right" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_axis_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_far counter_axis_far text-center" value ="180" aria-label="Cylinder right" name="axis_far" id="axis_far_right">
-                                        <button class="btn btn-outline-secondary counter_up_axis_far" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_axis_far"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm axis_far counter_axis_far text-center"
+                                            value="180" aria-label="Cylinder right" name="axis_far" id="axis_far_right">
+                                        <button class="btn btn-outline-secondary counter_up_axis_far"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="va_far_right" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_va_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_far counter_va_far text-center" value ="" aria-label="Visual acuity" name="va_far" id="va_far_right">
-                                        <button class="btn btn-outline-secondary counter_up_va_far" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_va_far"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm va_far counter_va_far text-center"
+                                            value="" aria-label="Visual acuity" name="va_far" id="va_far_right">
+                                        <button class="btn btn-outline-secondary counter_up_va_far"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="opto_far_right" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Default select example" name="opto_far" id="opto_far_right">
+                                        <select class="form-select form-select-sm" aria-label="Default select example"
+                                            name="opto_far" id="opto_far_right">
                                             [[ = optoFarOptions]]
                                         </select>
                                     </div>
                                 </div>
-                            </div>                    
+                            </div>
                             <div class="row mb-3 rxDiv" id="intRight">
                                 <div class="col-2">
                                     <label for="add_int_right" class="form-label">Add for int:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_add_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm add_int counter_add_int text-center" value ="+0.00" aria-label="Intermediate addition" name="add_int" id="add_int_right">
-                                        <button class="btn btn-outline-secondary counter_up_add_int" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_add_int"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm add_int counter_add_int text-center"
+                                            value="+0.00" aria-label="Intermediate addition" name="add_int"
+                                            id="add_int_right">
+                                        <button class="btn btn-outline-secondary counter_up_add_int"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="sph_int_right" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_sph_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere right" name="sph_int" id="sph_int_right">
-                                        <button class="btn btn-outline-secondary counter_up_sph_int" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_sph_int"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm sph_int counter_sph_int text-center"
+                                            value="+0.00" aria-label="Sphere right" name="sph_int" id="sph_int_right">
+                                        <button class="btn btn-outline-secondary counter_up_sph_int"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="cyl_int_right" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_cyl_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_int counter_cyl_int text-center" value ="+0.00" aria-label="Cylinder right" name="cyl_int" id="cyl_int_right">
-                                        <button class="btn btn-outline-secondary counter_up_cyl_int" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_cyl_int"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm cyl_int counter_cyl_int text-center"
+                                            value="+0.00" aria-label="Cylinder right" name="cyl_int" id="cyl_int_right">
+                                        <button class="btn btn-outline-secondary counter_up_cyl_int"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="axis_int_right" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_axis_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="180" aria-label="Axis right" name="axis_int" id="axis_int_right">
-                                        <button class="btn btn-outline-secondary counter_up_axis_int" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_axis_int"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm axis_int counter_axis_int text-center"
+                                            value="180" aria-label="Axis right" name="axis_int" id="axis_int_right">
+                                        <button class="btn btn-outline-secondary counter_up_axis_int"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="va_int_right" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_va_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_int counter_va_int text-center" value ="1.00" aria-label="Visual acuity" name="va_int" id="va_int_right">
-                                        <button class="btn btn-outline-secondary counter_up_va_int" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_va_int"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm va_int counter_va_int text-center"
+                                            value="1.00" aria-label="Visual acuity" name="va_int" id="va_int_right">
+                                        <button class="btn btn-outline-secondary counter_up_va_int"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="opto_int_right" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Optotype used for intermediate distance" name="opto_int" id="opto_int_right">
+                                        <select class="form-select form-select-sm"
+                                            aria-label="Optotype used for intermediate distance" name="opto_int"
+                                            id="opto_int_right">
                                             [[ = optoFarOptions]]
                                         </select>
                                     </div>
@@ -174,47 +234,71 @@
                                 <div class="col-2">
                                     <label for="add_close_right" class="form-label">Add for close:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_add_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm add_close counter_add_close text-center" value ="+0.00" aria-label="Close addition" name="add_close" id="add_close_right">
-                                        <button class="btn btn-outline-secondary counter_up_add_close" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_add_close"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm add_close counter_add_close text-center"
+                                            value="+0.00" aria-label="Close addition" name="add_close"
+                                            id="add_close_right">
+                                        <button class="btn btn-outline-secondary counter_up_add_close"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="sph_close_right" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_sph_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere right" name="sph_close" id="sph_close_right">
-                                        <button class="btn btn-outline-secondary counter_up_sph_close" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_sph_close"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm sph_close counter_sph_close text-center"
+                                            value="+0.00" aria-label="Sphere right" name="sph_close"
+                                            id="sph_close_right">
+                                        <button class="btn btn-outline-secondary counter_up_sph_close"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="cyl_close_right" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_cyl_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_close counter_cyl_close text-center" value ="+0.00" aria-label="Cylinder right" name="cyl_close" id="cyl_close_right">
-                                        <button class="btn btn-outline-secondary counter_up_cyl_close" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_cyl_close"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm cyl_close counter_cyl_close text-center"
+                                            value="+0.00" aria-label="Cylinder right" name="cyl_close"
+                                            id="cyl_close_right">
+                                        <button class="btn btn-outline-secondary counter_up_cyl_close"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="axis_close_right" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_axis_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_close counter_axis_close text-center" value ="180" aria-label="Axis right" name="axis_close" id="axis_close_right">
-                                        <button class="btn btn-outline-secondary counter_up_axis_close" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_axis_close"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm axis_close counter_axis_close text-center"
+                                            value="180" aria-label="Axis right" name="axis_close" id="axis_close_right">
+                                        <button class="btn btn-outline-secondary counter_up_axis_close"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="va_close_right" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_va_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_close counter_va_close text-center" value ="2" aria-label="Visual acuity" name="va_close" id="va_close_right">
-                                        <button class="btn btn-outline-secondary counter_up_va_close" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_va_close"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm va_close counter_va_close text-center"
+                                            value="2" aria-label="Visual acuity" name="va_close" id="va_close_right">
+                                        <button class="btn btn-outline-secondary counter_up_va_close"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="opto_close_right" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Optotype used for close" name="opto_close" id="opto_close_right">
+                                        <select class="form-select form-select-sm" aria-label="Optotype used for close"
+                                            name="opto_close" id="opto_close_right">
                                             [[ = optoCloseOptions]]
                                         </select>
                                     </div>
@@ -234,17 +318,20 @@
                             <div class="row justify-content-center text-center mb-3">
                                 <div class="col">
                                     <label for="ColorInputRight" class="form-label">Color picker</label>
-                                    <input type="color" class="form-control form-control-color text-center" id="ColorInputRight" value="#FFFFFF" title="Choose glass color" name="color">
+                                    <input type="color" class="form-control form-control-color text-center"
+                                        id="ColorInputRight" value="#FFFFFF" title="Choose glass color" name="color">
                                 </div>
                                 <div class="col">
                                     <label for="pd05Right" class="form-label">0.50PD:</label>
-                                    <input id="pd05Right" type="text" class="form-control text-center" name="pd05" value="32">
+                                    <input id="pd05Right" type="text" class="form-control text-center" name="pd05"
+                                        value="32">
                                     <div id="pd05RightHelp" class="form-text">Half pupils distance</div>
                                 </div>
                                 <div class="col">
                                     <label for="statusRxRight" class="form-label">Status:</label>
                                     <div class="input-group">
-                                        <select id="statusRxRight" class="form-select text-center" aria-label="Choose status for rx" name="status">
+                                        <select id="statusRxRight" class="form-select text-center"
+                                            aria-label="Choose status for rx" name="status">
                                             [[ = statusRxOptions]]
                                         </select>
                                     </div>
@@ -253,7 +340,8 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <label for="timestampRight" class="form-label">Timestamp:</label>
-                                    <input id="timestampRight" type="datetime-local" step="1" class="form-control" name="timestamp">
+                                    <input id="timestampRight" type="datetime-local" step="1" class="form-control"
+                                        name="timestamp">
                                     <div id="requestTimeHelpRight" class="form-text">Adjust timestamp</div>
                                 </div>
                                 <div class="col">
@@ -265,17 +353,19 @@
                             <div class="row mb-3 text-center">
                                 <div class="row mb-3" id="rxRightSubmit">
                                     <div class="col">
-                                        <button id="btnAddRxRight" class="btn btn-primary" type="submit">Submit right Rx<i class=" mx-2 fas fa-plus"></i></button>
+                                        <button id="btnAddRxRight" class="btn btn-primary" type="submit">Submit right
+                                            Rx<i class=" mx-2 fas fa-plus"></i></button>
                                     </div>
-                                    <input id="idPatientWlRxRight" type="text" class="visually-hidden" name="id_auth_user"/>
-                                    <input id="idWlRxRight" type="text" class="visually-hidden" name="id_worklist"/>
+                                    <input id="idPatientWlRxRight" type="text" class="visually-hidden"
+                                        name="id_auth_user" />
+                                    <input id="idWlRxRight" type="text" class="visually-hidden" name="id_worklist" />
                                 </div>
                             </div>
                         </div> <!--end container div-->
                     </form>
-                </div>                
+                </div>
             </div>
-        </div>  <!-- end col right-->
+        </div> <!-- end col right-->
         <div class="col"> <!-- col left-->
             <div class="row"> <!-- row left title -->
                 <div class="col title-left">
@@ -291,15 +381,24 @@
                                     <span class="form-label">From:</span>
                                     <div class="input-group">
                                         <div class="btn-group rx_origin_left">
-                                            <input type="radio" id="rx_origin_autorx_left" name="rx_origin" class="btn-check" value="autorx" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="rx_origin_autorx_left">AutoRx</label>
-                                            <input type="radio" id="rx_origin_glass_left" name="rx_origin" class="btn-check" value="glass" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="rx_origin_glass_left">Glass</label>
-                                            <input type="radio" id="rx_origin_trial_left" name="rx_origin" class="btn-check" value="trial" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="rx_origin_trial_left">Trial</label>
-                                            <input type="radio" id="rx_origin_cyclo_left" name="rx_origin" class="btn-check" value="cyclo" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="rx_origin_cyclo_left">Cyclo</label>
-                                            <input type="radio" id="rx_origin_dil_left" name="rx_origin" class="btn-check" value="dil" autocomplete="off">
+                                            <input type="radio" id="rx_origin_autorx_left" name="rx_origin"
+                                                class="btn-check" value="autorx" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="rx_origin_autorx_left">AutoRx</label>
+                                            <input type="radio" id="rx_origin_glass_left" name="rx_origin"
+                                                class="btn-check" value="glass" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="rx_origin_glass_left">Glass</label>
+                                            <input type="radio" id="rx_origin_trial_left" name="rx_origin"
+                                                class="btn-check" value="trial" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="rx_origin_trial_left">Trial</label>
+                                            <input type="radio" id="rx_origin_cyclo_left" name="rx_origin"
+                                                class="btn-check" value="cyclo" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="rx_origin_cyclo_left">Cyclo</label>
+                                            <input type="radio" id="rx_origin_dil_left" name="rx_origin"
+                                                class="btn-check" value="dil" autocomplete="off">
                                             <label class="btn btn-outline-primary" for="rx_origin_dil_left">Dil</label>
                                         </div>
                                     </div>
@@ -308,15 +407,24 @@
                                     <span class="form-label">Type:</span>
                                     <div class="input-group">
                                         <div class="btn-group glass_type_left">
-                                            <input type="radio" id="glass_type_mono_left" name="glass_type" class="btn-check" value="monofocal" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="glass_type_mono_left">Monofocal</label>
-                                            <input type="radio" id="glass_type_prog_left" name="glass_type" class="btn-check" value="progressive" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="glass_type_prog_left">Progressive</label>
-                                            <input type="radio" id="glass_type_bif_left" name="glass_type" class="btn-check" value="bifocal" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="glass_type_bif_left">Bifocal</label>
-                                            <input type="radio" id="glass_type_deg_left" name="glass_type" class="btn-check" value="degressive" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="glass_type_deg_left">Degressive</label>
-                                            <input type="radio" id="glass_type_na" name="glass_type" class="btn-check visually-hidden" value="na" autocomplete="off">
+                                            <input type="radio" id="glass_type_mono_left" name="glass_type"
+                                                class="btn-check" value="monofocal" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="glass_type_mono_left">Monofocal</label>
+                                            <input type="radio" id="glass_type_prog_left" name="glass_type"
+                                                class="btn-check" value="progressive" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="glass_type_prog_left">Progressive</label>
+                                            <input type="radio" id="glass_type_bif_left" name="glass_type"
+                                                class="btn-check" value="bifocal" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="glass_type_bif_left">Bifocal</label>
+                                            <input type="radio" id="glass_type_deg_left" name="glass_type"
+                                                class="btn-check" value="degressive" autocomplete="off">
+                                            <label class="btn btn-outline-primary"
+                                                for="glass_type_deg_left">Degressive</label>
+                                            <input type="radio" id="glass_type_na" name="glass_type"
+                                                class="btn-check visually-hidden" value="na" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -326,39 +434,56 @@
                                 <div class="col-2">
                                     <label for="sph_far_left" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_sph_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_far counter_sph_far text-center" value ="+0.00" aria-label="Sphere left" name="sph_far" id="sph_far_left">
-                                        <button class="btn btn-outline-secondary counter_up_sph_far" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_sph_far"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm sph_far counter_sph_far text-center"
+                                            value="+0.00" aria-label="Sphere left" name="sph_far" id="sph_far_left">
+                                        <button class="btn btn-outline-secondary counter_up_sph_far"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="cyl_far_left" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_cyl_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_far counter_cyl_far text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_far" id="cyl_far_left">
-                                        <button class="btn btn-outline-secondary counter_up_cyl_far" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_cyl_far"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm cyl_far counter_cyl_far text-center"
+                                            value="+0.00" aria-label="Cylinder left" name="cyl_far" id="cyl_far_left">
+                                        <button class="btn btn-outline-secondary counter_up_cyl_far"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="axis_far_left" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_axis_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_far counter_axis_far text-center" value ="180" aria-label="Axis left" name="axis_far" id="axis_far_left">
-                                        <button class="btn btn-outline-secondary counter_up_axis_far" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_axis_far"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm axis_far counter_axis_far text-center"
+                                            value="180" aria-label="Axis left" name="axis_far" id="axis_far_left">
+                                        <button class="btn btn-outline-secondary counter_up_axis_far"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="va_far_left" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_va_far" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_far counter_va_far text-center" value ="" aria-label="Visual acuity" name="va_far" id="va_far_left">
-                                        <button class="btn btn-outline-secondary counter_up_va_far" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_va_far"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm va_far counter_va_far text-center"
+                                            value="" aria-label="Visual acuity" name="va_far" id="va_far_left">
+                                        <button class="btn btn-outline-secondary counter_up_va_far"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="opto_far_left" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Optotype for far" name="opto_far" id="opto_far_left">
+                                        <select class="form-select form-select-sm" aria-label="Optotype for far"
+                                            name="opto_far" id="opto_far_left">
                                             [[ = optoFarOptions]]
                                         </select>
                                     </div>
@@ -368,47 +493,70 @@
                                 <div class="col-2">
                                     <label for="add_int_left" class="form-label">Add for int:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_add_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm add_int counter_add_int text-center" value ="+0.00" aria-label="Intermediate addition" name="add_int" id="add_int_left">
-                                        <button class="btn btn-outline-secondary counter_up_add_int" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_add_int"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm add_int counter_add_int text-center"
+                                            value="+0.00" aria-label="Intermediate addition" name="add_int"
+                                            id="add_int_left">
+                                        <button class="btn btn-outline-secondary counter_up_add_int"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="sph_int_left" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_sph_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere left" name="sph_int" id="sph_int_left">
-                                        <button class="btn btn-outline-secondary counter_up_sph_int" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_sph_int"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm sph_int counter_sph_int text-center"
+                                            value="+0.00" aria-label="Sphere left" name="sph_int" id="sph_int_left">
+                                        <button class="btn btn-outline-secondary counter_up_sph_int"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="cyl_int_left" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_cyl_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_int counter_cyl_int text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_int" id="cyl_int_left">
-                                        <button class="btn btn-outline-secondary counter_up_cyl_int" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_cyl_int"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm cyl_int counter_cyl_int text-center"
+                                            value="+0.00" aria-label="Cylinder left" name="cyl_int" id="cyl_int_left">
+                                        <button class="btn btn-outline-secondary counter_up_cyl_int"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="axis_int_left" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_axis_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="180" aria-label="Axis left" name="axis_int" id="axis_int_left">
-                                        <button class="btn btn-outline-secondary counter_up_axis_int" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_axis_int"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm axis_int counter_axis_int text-center"
+                                            value="180" aria-label="Axis left" name="axis_int" id="axis_int_left">
+                                        <button class="btn btn-outline-secondary counter_up_axis_int"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="va_int_left" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_va_int" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_int counter_va_int text-center" value ="1.00" aria-label="Visual acuity" name="va_int" id="va_int_left">
-                                        <button class="btn btn-outline-secondary counter_up_va_int" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_va_int"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm va_int counter_va_int text-center"
+                                            value="1.00" aria-label="Visual acuity" name="va_int" id="va_int_left">
+                                        <button class="btn btn-outline-secondary counter_up_va_int"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="opto_int_left" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Optotype used for intermediate distance" name="opto_int" id="opto_int_left">
+                                        <select class="form-select form-select-sm"
+                                            aria-label="Optotype used for intermediate distance" name="opto_int"
+                                            id="opto_int_left">
                                             [[ = optoFarOptions]]
                                         </select>
                                     </div>
@@ -418,47 +566,70 @@
                                 <div class="col-2">
                                     <label for="add_close_left" class="form-label">Add for close:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_add_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm add_close counter_add_close text-center" value ="+0.00" aria-label="Close addition" name="add_close" id="add_close_left">
-                                        <button class="btn btn-outline-secondary counter_up_add_close" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_add_close"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm add_close counter_add_close text-center"
+                                            value="+0.00" aria-label="Close addition" name="add_close"
+                                            id="add_close_left">
+                                        <button class="btn btn-outline-secondary counter_up_add_close"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="sph_close_left" class="form-label">Sph:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_sph_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere left" name="sph_close" id="sph_close_left">
-                                        <button class="btn btn-outline-secondary counter_up_sph_close" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_sph_close"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm sph_close counter_sph_close text-center"
+                                            value="+0.00" aria-label="Sphere left" name="sph_close" id="sph_close_left">
+                                        <button class="btn btn-outline-secondary counter_up_sph_close"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="cyl_close_left" class="form-label">Cyl:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_cyl_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm cyl_close counter_cyl_close text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_close" id="cyl_close_left">
-                                        <button class="btn btn-outline-secondary counter_up_cyl_close" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_cyl_close"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm cyl_close counter_cyl_close text-center"
+                                            value="+0.00" aria-label="Cylinder left" name="cyl_close"
+                                            id="cyl_close_left">
+                                        <button class="btn btn-outline-secondary counter_up_cyl_close"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="axis_close_left" class="form-label">Axis:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_axis_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm axis_close counter_axis_close text-center" value ="180" aria-label="Axis left" name="axis_close" id="axis_close_left">
-                                        <button class="btn btn-outline-secondary counter_up_axis_close" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_axis_close"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm axis_close counter_axis_close text-center"
+                                            value="180" aria-label="Axis left" name="axis_close" id="axis_close_left">
+                                        <button class="btn btn-outline-secondary counter_up_axis_close"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="va_close_left" class="form-label">VA:</label>
                                     <div class="input-group mb-3">
-                                        <button class="btn btn-outline-secondary counter_down_va_close" type="button">-</button>
-                                        <input type="text" class="form-control form-control-sm va_close counter_va_close text-center" value ="2" aria-label="Visual acuity" name="va_close" id="va_close_left">
-                                        <button class="btn btn-outline-secondary counter_up_va_close" type="button">+</button>
+                                        <button class="btn btn-outline-secondary counter_down_va_close"
+                                            type="button">-</button>
+                                        <input type="text"
+                                            class="form-control form-control-sm va_close counter_va_close text-center"
+                                            value="2" aria-label="Visual acuity" name="va_close" id="va_close_left">
+                                        <button class="btn btn-outline-secondary counter_up_va_close"
+                                            type="button">+</button>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <label for="opto_close_left" class="form-label">Opto:</label>
                                     <div class="input-group">
-                                        <select class="form-select form-select-sm" aria-label="Optotype used for close" name="opto_close" id="opto_close_left">
+                                        <select class="form-select form-select-sm" aria-label="Optotype used for close"
+                                            name="opto_close" id="opto_close_left">
                                             [[ = optoCloseOptions]]
                                         </select>
                                     </div>
@@ -478,17 +649,20 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <label for="ColorInputLeft" class="form-label">Color picker</label>
-                                    <input type="color" class="form-control form-control-color text-center" id="ColorInputLeft" value="#FFFFFF" title="Choose glass color" name="color">
+                                    <input type="color" class="form-control form-control-color text-center"
+                                        id="ColorInputLeft" value="#FFFFFF" title="Choose glass color" name="color">
                                 </div>
                                 <div class="col">
                                     <label for="pd05Left" class="form-label">0.50PD:</label>
-                                    <input id="pd05Left" type="text" class="form-control text-center" name="pd05" value="32">
+                                    <input id="pd05Left" type="text" class="form-control text-center" name="pd05"
+                                        value="32">
                                     <div id="pd05LeftHelp" class="form-text">Half pupils distance</div>
                                 </div>
                                 <div class="col">
                                     <label for="statusRxLeft" class="form-label">Status:</label>
                                     <div class="input-group">
-                                        <select id="statusRxLeft" class="form-select text-center" aria-label="Choose status for rx" name="status">
+                                        <select id="statusRxLeft" class="form-select text-center"
+                                            aria-label="Choose status for rx" name="status">
                                             [[ = statusRxOptions]]
                                         </select>
                                     </div>
@@ -497,7 +671,8 @@
                             <div class="row mb-3">
                                 <div class="col-4">
                                     <label for="timestampLeft" class="form-label">Timestamp:</label>
-                                    <input id="timestampLeft" type="datetime-local" step="1" class="form-control" name="timestamp">
+                                    <input id="timestampLeft" type="datetime-local" step="1" class="form-control"
+                                        name="timestamp">
                                     <div id="requestTimeHelpLeft" class="form-text">Adjust timestamp</div>
                                 </div>
                                 <div class="col-8">
@@ -509,40 +684,34 @@
                             <div class="row mb-3 text-center">
                                 <div class="row mb-3" id="rxLeftSubmit">
                                     <div class="col">
-                                        <button id="btnAddRxLeft" class="btn btn-primary " type="submit">Submit left Rx<i class=" mx-2 fas fa-plus"></i></button>
+                                        <button id="btnAddRxLeft" class="btn btn-primary " type="submit">Submit left
+                                            Rx<i class=" mx-2 fas fa-plus"></i></button>
                                     </div>
-                                    <input id="idPatientWlRxLeft" type="text" class="visually-hidden" name="id_auth_user"/>
-                                    <input id="idWlRxLeft" type="text" class="visually-hidden" name="id_worklist"/>
+                                    <input id="idPatientWlRxLeft" type="text" class="visually-hidden"
+                                        name="id_auth_user" />
+                                    <input id="idWlRxLeft" type="text" class="visually-hidden" name="id_worklist" />
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>  <!-- end col left-->
+        </div> <!-- end col left-->
     </div> <!-- end main row -->
     <div class="row text-center mx-2">
         <div class="col">
-            <button id="btnAddBothRx" class="btn btn-primary my-2" type="button">Submit Rx<i class=" mx-2 fas fa-plus"></i></button>
+            <button id="btnAddBothRx" class="btn btn-primary my-2" type="button">Submit Rx<i
+                    class=" mx-2 fas fa-plus"></i></button>
         </div>
     </div>
     <div class="row mt-3 text-center refraction">
         <div class="col"> <!-- col right-->
             <div class="row">
                 <div class="col"> <!-- col table right -->
-                    <table
-                    id="rxRight_tbl"
-                    data-side-pagination="server"
-                    data-pagination="true"
-                    data-page-size="5"
-                    data-search="false"
-                    data-query-params="queryParams"
-                    data-response-handler="responseHandler"
-                    data-detail-formatter="detailFormatter"
-                    data-row-style="rowStyle_type"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    >
+                    <table id="rxRight_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
+                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler"
+                        data-detail-formatter="detailFormatter" data-row-style="rowStyle_type" data-detail-view="true"
+                        data-detail-view-icon="true">
                         <thead>
                             <tr>
                                 <th data-field="timestamp" data-sortable="true">Timestamp</th>
@@ -550,33 +719,27 @@
                                 <th data-field="rx_origin" data-sortable="true">Type</th>
                                 <th data-field="note" data-sortable="false">Note</th>
                                 <th data-field="va_far" data-sortable="true">VA far</th>
-                                <th data-field="rx_far" data-cell-style="cellStyle_formula" data-sortable="false">Rx far</th>
-                                <th data-field="se_far" data-cell-style="cellStyle_formula" data-sortable="false">SE</th>
+                                <th data-field="rx_far" data-cell-style="cellStyle_formula" data-sortable="false">Rx far
+                                </th>
+                                <th data-field="se_far" data-cell-style="cellStyle_formula" data-sortable="false">SE
+                                </th>
                                 <th data-field="add" data-cell-style="cellStyle_add" data-sortable="false">Add</th>
                                 <th data-field="va_close" data-sortable="true">VA close</th>
-                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">
+                                    Action</th>
                             </tr>
                         </thead>
                     </table>
                 </div> <!-- end col table right -->
             </div>
-        </div>  <!-- end col left-->
+        </div> <!-- end col left-->
         <div class="col"> <!-- col left-->
             <div class="row">
                 <div class="col"> <!-- col table left -->
-                    <table
-                    id="rxLeft_tbl"
-                    data-side-pagination="server"
-                    data-pagination="true"
-                    data-page-size="5"
-                    data-search="false"
-                    data-query-params="queryParams"
-                    data-response-handler="responseHandler"
-                    data-detail-formatter="detailFormatter"
-                    data-row-style="rowStyle_type"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    >
+                    <table id="rxLeft_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
+                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler"
+                        data-detail-formatter="detailFormatter" data-row-style="rowStyle_type" data-detail-view="true"
+                        data-detail-view-icon="true">
                         <thead>
                             <tr>
                                 <th data-field="timestamp" data-sortable="true">Timestamp</th>
@@ -584,17 +747,20 @@
                                 <th data-field="rx_origin" data-sortable="true">Type</th>
                                 <th data-field="note" data-sortable="false">Note</th>
                                 <th data-field="va_far" data-sortable="true">VA far</th>
-                                <th data-field="rx_far" data-cell-style="cellStyle_formula" data-sortable="false">Rx far</th>
-                                <th data-field="se_far" data-cell-style="cellStyle_formula" data-sortable="false">SE</th>
+                                <th data-field="rx_far" data-cell-style="cellStyle_formula" data-sortable="false">Rx far
+                                </th>
+                                <th data-field="se_far" data-cell-style="cellStyle_formula" data-sortable="false">SE
+                                </th>
                                 <th data-field="add" data-cell-style="cellStyle_add" data-sortable="false">Add</th>
                                 <th data-field="va_close" data-sortable="true">VA close</th>
-                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Action</th>
+                                <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">
+                                    Action</th>
                             </tr>
                         </thead>
                     </table>
                 </div> <!-- end col table right -->
             </div>
-        </div>  <!-- end col right-->
+        </div> <!-- end col right-->
     </div>
 </div>
 
@@ -617,13 +783,18 @@
                                 <label for="k1_right" class="form-label">K1:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_km1" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k1_right counter_km1 text-center" value ="43.00" aria-label="K1 right" name="k1" id="k1_right">
+                                    <input type="text"
+                                        class="form-control form-control-sm k1_right counter_km1 text-center"
+                                        value="43.00" aria-label="K1 right" name="k1" id="k1_right">
                                     <button class="btn btn-outline-secondary counter_up_km1" type="button">+</button>
                                 </div>
                                 <label for="a1_right" class="form-label">Axis 1:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_axis1" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a1_right counter_axis1 text-center" value ="180" aria-label="Axis 1 right" name="axis1" id="a1_right">
+                                    <button class="btn btn-outline-secondary counter_down_axis1"
+                                        type="button">-</button>
+                                    <input type="text"
+                                        class="form-control form-control-sm a1_right counter_axis1 text-center"
+                                        value="180" aria-label="Axis 1 right" name="axis1" id="a1_right">
                                     <button class="btn btn-outline-secondary counter_up_axis1" type="button">+</button>
                                 </div>
                             </div>
@@ -631,16 +802,21 @@
                                 <label for="k2_right" class="form-label">K2:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_km2" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k2_right counter_km2 text-center" value ="43.00" aria-label="K2 right" name="k2" id="k2_right">
+                                    <input type="text"
+                                        class="form-control form-control-sm k2_right counter_km2 text-center"
+                                        value="43.00" aria-label="K2 right" name="k2" id="k2_right">
                                     <button class="btn btn-outline-secondary counter_up_km2" type="button">+</button>
                                 </div>
                                 <label for="a2_right" class="form-label">Axis 2:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_axis2" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a2_right counter_axis2 text-center" value ="180" aria-label="Axis 2 right" name="axis2" id="a2_right">
+                                    <button class="btn btn-outline-secondary counter_down_axis2"
+                                        type="button">-</button>
+                                    <input type="text"
+                                        class="form-control form-control-sm a2_right counter_axis2 text-center"
+                                        value="180" aria-label="Axis 2 right" name="axis2" id="a2_right">
                                     <button class="btn btn-outline-secondary counter_up_axis2" type="button">+</button>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col">
@@ -662,28 +838,20 @@
                         </div>
                         <div class="row pb-3" id="kmRightSubmit">
                             <div class="col">
-                                <button id="btnAddKmRight" class="btn btn-primary" type="submit">Submit right Km<i class="mx-2 fas fa-plus"></i></button>
+                                <button id="btnAddKmRight" class="btn btn-primary" type="submit">Submit right Km<i
+                                        class="mx-2 fas fa-plus"></i></button>
                             </div>
-                            <input id="idPatientWlKmRight" type="text" class="visually-hidden" name="id_auth_user"/>
-                            <input id="idWlKmRight" type="text" class="visually-hidden" name="id_worklist"/>
+                            <input id="idPatientWlKmRight" type="text" class="visually-hidden" name="id_auth_user" />
+                            <input id="idWlKmRight" type="text" class="visually-hidden" name="id_worklist" />
                         </div>
                     </div>
                 </form>
             </div>
             <div class="row mt-3"> <!-- table right km -->
                 <div class="col">
-                    <table
-                    id="kmRight_tbl"
-                    data-side-pagination="server"
-                    data-pagination="true"
-                    data-page-size="5"
-                    data-search="false"
-                    data-query-params="queryParams"
-                    data-response-handler="responseHandler_km"
-                    data-detail-formatter="detailFormatter_km"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    >
+                    <table id="kmRight_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
+                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_km"
+                        data-detail-formatter="detailFormatter_km" data-detail-view="true" data-detail-view-icon="true">
                         <thead>
                             <tr>
                                 <th data-field="timestamp" data-sortable="false">Timestamp</th>
@@ -691,7 +859,8 @@
                                 <th data-field="axis1" data-sortable="false" data-cell-style="cellStyle_k1">Axis 1</th>
                                 <th data-field="k2" data-sortable="false" data-cell-style="cellStyle_k2">K2</th>
                                 <th data-field="axis2" data-sortable="false" data-cell-style="cellStyle_k2">Axis 2</th>
-                                <th data-field="operate" data-formatter="operateFormatter_km" data-events="operateEvents_km">Action</th>
+                                <th data-field="operate" data-formatter="operateFormatter_km"
+                                    data-events="operateEvents_km">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -712,13 +881,18 @@
                                 <label for="k1_left" class="form-label">K1:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_km1" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k1_left counter_km1 text-center" value ="43.00" aria-label="K1 left" name="k1" id="k1_left">
+                                    <input type="text"
+                                        class="form-control form-control-sm k1_left counter_km1 text-center"
+                                        value="43.00" aria-label="K1 left" name="k1" id="k1_left">
                                     <button class="btn btn-outline-secondary counter_up_km1" type="button">+</button>
                                 </div>
                                 <label for="a1_left" class="form-label">Axis 1:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_axis1" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a1_left counter_axis1 text-center" value ="180" aria-label="Axis 1 left" name="axis1" id="a1_left">
+                                    <button class="btn btn-outline-secondary counter_down_axis1"
+                                        type="button">-</button>
+                                    <input type="text"
+                                        class="form-control form-control-sm a1_left counter_axis1 text-center"
+                                        value="180" aria-label="Axis 1 left" name="axis1" id="a1_left">
                                     <button class="btn btn-outline-secondary counter_up_axis1" type="button">+</button>
                                 </div>
                             </div>
@@ -726,16 +900,21 @@
                                 <label for="k2_left" class="form-label">K2:</label>
                                 <div class="input-group mb-3">
                                     <button class="btn btn-outline-secondary counter_down_km2" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm k2_left counter_km2 text-center" value ="43.00" aria-label="K2 left" name="k2" id="k2_left">
+                                    <input type="text"
+                                        class="form-control form-control-sm k2_left counter_km2 text-center"
+                                        value="43.00" aria-label="K2 left" name="k2" id="k2_left">
                                     <button class="btn btn-outline-secondary counter_up_km2" type="button">+</button>
                                 </div>
                                 <label for="a2_left" class="form-label">Axis 2:</label>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-outline-secondary counter_down_axis2" type="button">-</button>
-                                    <input type="text" class="form-control form-control-sm a2_left counter_axis2 text-center" value ="180" aria-label="Axis 2 left" name="axis2" id="a2_left">
+                                    <button class="btn btn-outline-secondary counter_down_axis2"
+                                        type="button">-</button>
+                                    <input type="text"
+                                        class="form-control form-control-sm a2_left counter_axis2 text-center"
+                                        value="180" aria-label="Axis 2 left" name="axis2" id="a2_left">
                                     <button class="btn btn-outline-secondary counter_up_axis2" type="button">+</button>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col">
@@ -749,7 +928,7 @@
                                 <h4>Km= <span class="kmCalculated">43.00D</span></h4>
                             </div>
                             <div class="col">
-                                <h4>K1= <span class="k1Calculated">7.85mm</span></h4> 
+                                <h4>K1= <span class="k1Calculated">7.85mm</span></h4>
                             </div>
                             <div class="col">
                                 <h4>K1= <span class="k2Calculated">7.85mm</span></h4>
@@ -757,28 +936,20 @@
                         </div>
                         <div class="row pb-3" id="kmLeftSubmit">
                             <div class="col">
-                                <button id="btnAddKmLeft" class="btn btn-primary" type="submit">Submit left Km<i class="mx-2 fas fa-plus"></i></button>
+                                <button id="btnAddKmLeft" class="btn btn-primary" type="submit">Submit left Km<i
+                                        class="mx-2 fas fa-plus"></i></button>
                             </div>
-                            <input id="idPatientWlKmLeft" type="text" class="visually-hidden" name="id_auth_user"/>
-                            <input id="idWlKmLeft" type="text" class="visually-hidden" name="id_worklist"/>
+                            <input id="idPatientWlKmLeft" type="text" class="visually-hidden" name="id_auth_user" />
+                            <input id="idWlKmLeft" type="text" class="visually-hidden" name="id_worklist" />
                         </div>
                     </div>
                 </form>
             </div>
             <div class="row"> <!-- table left -->
                 <div class="col">
-                    <table
-                    id="kmLeft_tbl"
-                    data-side-pagination="server"
-                    data-pagination="true"
-                    data-page-size="5"
-                    data-search="false"
-                    data-query-params="queryParams"
-                    data-response-handler="responseHandler_km"
-                    data-detail-formatter="detailFormatter_km"
-                    data-detail-view="true"
-                    data-detail-view-icon="true"
-                    >
+                    <table id="kmLeft_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
+                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_km"
+                        data-detail-formatter="detailFormatter_km" data-detail-view="true" data-detail-view-icon="true">
                         <thead>
                             <tr>
                                 <th data-field="timestamp" data-sortable="false">Timestamp</th>
@@ -786,7 +957,8 @@
                                 <th data-field="axis1" data-sortable="false" data-cell-style="cellStyle_k1">Axis 1</th>
                                 <th data-field="k2" data-sortable="false" data-cell-style="cellStyle_k2">K2</th>
                                 <th data-field="axis2" data-sortable="false" data-cell-style="cellStyle_k2">Axis 2</th>
-                                <th data-field="operate" data-formatter="operateFormatter_km" data-events="operateEvents_km">Action</th>
+                                <th data-field="operate" data-formatter="operateFormatter_km"
+                                    data-events="operateEvents_km">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -808,16 +980,20 @@
                 <div class="container">
                     <div class="row">
                         <div class="col">
-                            <form id="rxFormModal" enctype="multipart/form-data" method="POST"> 
+                            <form id="rxFormModal" enctype="multipart/form-data" method="POST">
                                 <div class="row mb-3">
                                     <div class="col">
                                         <span class="form-label">Side:</span>
                                         <div class="input-group">
                                             <div class="btn-group laterality_modal">
-                                                <input type="radio" id="laterality_right_modal" name="laterality" class="btn-check" value="right" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="laterality_right_modal">Right</label>
-                                                <input type="radio" id="laterality_left_modal" name="laterality" class="btn-check" value="left" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="laterality_left_modal">Left</label>
+                                                <input type="radio" id="laterality_right_modal" name="laterality"
+                                                    class="btn-check" value="right" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="laterality_right_modal">Right</label>
+                                                <input type="radio" id="laterality_left_modal" name="laterality"
+                                                    class="btn-check" value="left" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="laterality_left_modal">Left</label>
                                             </div>
                                         </div>
                                     </div>
@@ -825,16 +1001,26 @@
                                         <span class="form-label">From:</span>
                                         <div class="input-group">
                                             <div class="btn-group rx_origin_modal">
-                                                <input type="radio" id="rx_origin_autorx_modal" name="rx_origin" class="btn-check" value="autorx" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="rx_origin_autorx_modal">AutoRx</label>
-                                                <input type="radio" id="rx_origin_glass_modal" name="rx_origin" class="btn-check" value="glass" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="rx_origin_glass_modal">Glass</label>
-                                                <input type="radio" id="rx_origin_trial_modal" name="rx_origin" class="btn-check" value="trial" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="rx_origin_trial_modal">Trial</label>
-                                                <input type="radio" id="rx_origin_cyclo_modal" name="rx_origin" class="btn-check" value="cyclo" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="rx_origin_cyclo_modal">Cyclo</label>
-                                                <input type="radio" id="rx_origin_dil_modal" name="rx_origin" class="btn-check" value="dil" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="rx_origin_dil_modal">Dil</label>
+                                                <input type="radio" id="rx_origin_autorx_modal" name="rx_origin"
+                                                    class="btn-check" value="autorx" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="rx_origin_autorx_modal">AutoRx</label>
+                                                <input type="radio" id="rx_origin_glass_modal" name="rx_origin"
+                                                    class="btn-check" value="glass" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="rx_origin_glass_modal">Glass</label>
+                                                <input type="radio" id="rx_origin_trial_modal" name="rx_origin"
+                                                    class="btn-check" value="trial" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="rx_origin_trial_modal">Trial</label>
+                                                <input type="radio" id="rx_origin_cyclo_modal" name="rx_origin"
+                                                    class="btn-check" value="cyclo" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="rx_origin_cyclo_modal">Cyclo</label>
+                                                <input type="radio" id="rx_origin_dil_modal" name="rx_origin"
+                                                    class="btn-check" value="dil" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="rx_origin_dil_modal">Dil</label>
                                             </div>
                                         </div>
                                     </div>
@@ -842,15 +1028,24 @@
                                         <span class="form-label">Type:</span>
                                         <div class="input-group">
                                             <div class="btn-group glass_type_modal">
-                                                <input type="radio" id="glass_type_mono_modal" name="glass_type" class="btn-check" value="monofocal" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="glass_type_mono_modal">Monofocal</label>
-                                                <input type="radio" id="glass_type_prog_modal" name="glass_type" class="btn-check" value="progressive" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="glass_type_prog_modal">Progressive</label>
-                                                <input type="radio" id="glass_type_bif_modal" name="glass_type" class="btn-check" value="bifocal" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="glass_type_bif_modal">Bifocal</label>
-                                                <input type="radio" id="glass_type_deg_modal" name="glass_type" class="btn-check" value="degressive" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="glass_type_deg_modal">Degressive</label>
-                                                <input type="radio" id="glass_type_na" name="glass_type" class="btn-check visually-hidden" value="na" autocomplete="off">
+                                                <input type="radio" id="glass_type_mono_modal" name="glass_type"
+                                                    class="btn-check" value="monofocal" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="glass_type_mono_modal">Monofocal</label>
+                                                <input type="radio" id="glass_type_prog_modal" name="glass_type"
+                                                    class="btn-check" value="progressive" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="glass_type_prog_modal">Progressive</label>
+                                                <input type="radio" id="glass_type_bif_modal" name="glass_type"
+                                                    class="btn-check" value="bifocal" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="glass_type_bif_modal">Bifocal</label>
+                                                <input type="radio" id="glass_type_deg_modal" name="glass_type"
+                                                    class="btn-check" value="degressive" autocomplete="off">
+                                                <label class="btn btn-outline-primary"
+                                                    for="glass_type_deg_modal">Degressive</label>
+                                                <input type="radio" id="glass_type_na" name="glass_type"
+                                                    class="btn-check visually-hidden" value="na" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -860,39 +1055,58 @@
                                     <div class="col-2">
                                         <label for="sph_far_modal" class="form-label">Sph:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_sph_far" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm sph_far counter_sph_far text-center" value ="+0.00" aria-label="Sphere left" name="sph_far" id="sph_far_modal">
-                                            <button class="btn btn-outline-secondary counter_up_sph_far" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_sph_far"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm sph_far counter_sph_far text-center"
+                                                value="+0.00" aria-label="Sphere left" name="sph_far"
+                                                id="sph_far_modal">
+                                            <button class="btn btn-outline-secondary counter_up_sph_far"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="cyl_far_modal" class="form-label">Cyl:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_cyl_far" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm cyl_far counter_cyl_far text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_far" id="cyl_far_modal">
-                                            <button class="btn btn-outline-secondary counter_up_cyl_far" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_cyl_far"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm cyl_far counter_cyl_far text-center"
+                                                value="+0.00" aria-label="Cylinder left" name="cyl_far"
+                                                id="cyl_far_modal">
+                                            <button class="btn btn-outline-secondary counter_up_cyl_far"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="axis_far_modal" class="form-label">Axis:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_axis_far" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm axis_far counter_axis_far text-center" value ="180" aria-label="Axis left" name="axis_far" id="axis_far_modal">
-                                            <button class="btn btn-outline-secondary counter_up_axis_far" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_axis_far"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm axis_far counter_axis_far text-center"
+                                                value="180" aria-label="Axis left" name="axis_far" id="axis_far_modal">
+                                            <button class="btn btn-outline-secondary counter_up_axis_far"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="va_far_modal" class="form-label">VA:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_va_far" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm va_far counter_va_far text-center" value ="1.00" aria-label="Visual acuity" name="va_far" id="va_far_modal">
-                                            <button class="btn btn-outline-secondary counter_up_va_far" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_va_far"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm va_far counter_va_far text-center"
+                                                value="1.00" aria-label="Visual acuity" name="va_far" id="va_far_modal">
+                                            <button class="btn btn-outline-secondary counter_up_va_far"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="opto_far_modal" class="form-label">Opto:</label>
                                         <div class="input-group">
-                                            <select class="form-select form-select-sm" aria-label="Optotype for far" name="opto_far" id="opto_far_modal">
+                                            <select class="form-select form-select-sm" aria-label="Optotype for far"
+                                                name="opto_far" id="opto_far_modal">
                                                 [[ = optoFarOptions]]
                                             </select>
                                         </div>
@@ -902,47 +1116,72 @@
                                     <div class="col-2">
                                         <label for="add_int_modal" class="form-label">Add for int:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_add_int" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm add_int counter_add_int text-center" value ="+0.00" aria-label="Intermediate addition" name="add_int" id="add_int_modal">
-                                            <button class="btn btn-outline-secondary counter_up_add_int" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_add_int"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm add_int counter_add_int text-center"
+                                                value="+0.00" aria-label="Intermediate addition" name="add_int"
+                                                id="add_int_modal">
+                                            <button class="btn btn-outline-secondary counter_up_add_int"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="sph_int_modal" class="form-label">Sph:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_sph_int" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm sph_int counter_sph_int text-center" value ="+0.00" aria-label="Sphere left" name="sph_int" id="sph_int_modal">
-                                            <button class="btn btn-outline-secondary counter_up_sph_int" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_sph_int"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm sph_int counter_sph_int text-center"
+                                                value="+0.00" aria-label="Sphere left" name="sph_int"
+                                                id="sph_int_modal">
+                                            <button class="btn btn-outline-secondary counter_up_sph_int"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="cyl_int_modal" class="form-label">Cyl:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_cyl_int" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm cyl_int counter_cyl_int text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_int" id="cyl_int_modal">
-                                            <button class="btn btn-outline-secondary counter_up_cyl_int" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_cyl_int"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm cyl_int counter_cyl_int text-center"
+                                                value="+0.00" aria-label="Cylinder left" name="cyl_int"
+                                                id="cyl_int_modal">
+                                            <button class="btn btn-outline-secondary counter_up_cyl_int"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="axis_int_modal" class="form-label">Axis:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_axis_int" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm axis_int counter_axis_int text-center" value ="180" aria-label="Axis left" name="axis_int" id="axis_int_modal">
-                                            <button class="btn btn-outline-secondary counter_up_axis_int" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_axis_int"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm axis_int counter_axis_int text-center"
+                                                value="180" aria-label="Axis left" name="axis_int" id="axis_int_modal">
+                                            <button class="btn btn-outline-secondary counter_up_axis_int"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="va_int_modal" class="form-label">VA:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_va_int" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm va_int counter_va_int text-center" value ="1.00" aria-label="Visual acuity" name="va_int" id="va_int_modal">
-                                            <button class="btn btn-outline-secondary counter_up_va_int" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_va_int"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm va_int counter_va_int text-center"
+                                                value="1.00" aria-label="Visual acuity" name="va_int" id="va_int_modal">
+                                            <button class="btn btn-outline-secondary counter_up_va_int"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="opto_int_modal" class="form-label">Opto:</label>
                                         <div class="input-group">
-                                            <select class="form-select form-select-sm" aria-label="Optotype used for intermediate distance" name="opto_int" id="opto_int_modal">
+                                            <select class="form-select form-select-sm"
+                                                aria-label="Optotype used for intermediate distance" name="opto_int"
+                                                id="opto_int_modal">
                                                 [[ = optoFarOptions]]
                                             </select>
                                         </div>
@@ -952,47 +1191,74 @@
                                     <div class="col-2">
                                         <label for="add_close_modal" class="form-label">Add for close:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_add_close" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm add_close counter_add_close text-center" value ="+0.00" aria-label="Close addition" name="add_close" id="add_close_modal">
-                                            <button class="btn btn-outline-secondary counter_up_add_close" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_add_close"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm add_close counter_add_close text-center"
+                                                value="+0.00" aria-label="Close addition" name="add_close"
+                                                id="add_close_modal">
+                                            <button class="btn btn-outline-secondary counter_up_add_close"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="sph_close_modal" class="form-label">Sph:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_sph_close" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm sph_close counter_sph_close text-center" value ="+0.00" aria-label="Sphere left" name="sph_close" id="sph_close_modal">
-                                            <button class="btn btn-outline-secondary counter_up_sph_close" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_sph_close"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm sph_close counter_sph_close text-center"
+                                                value="+0.00" aria-label="Sphere left" name="sph_close"
+                                                id="sph_close_modal">
+                                            <button class="btn btn-outline-secondary counter_up_sph_close"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="cyl_close_modal" class="form-label">Cyl:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_cyl_close" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm cyl_close counter_cyl_close text-center" value ="+0.00" aria-label="Cylinder left" name="cyl_close" id="cyl_close_modal">
-                                            <button class="btn btn-outline-secondary counter_up_cyl_close" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_cyl_close"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm cyl_close counter_cyl_close text-center"
+                                                value="+0.00" aria-label="Cylinder left" name="cyl_close"
+                                                id="cyl_close_modal">
+                                            <button class="btn btn-outline-secondary counter_up_cyl_close"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="axis_close_modal" class="form-label">Axis:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_axis_close" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm axis_close counter_axis_close text-center" value ="180" aria-label="Axis left" name="axis_close" id="axis_close_modal">
-                                            <button class="btn btn-outline-secondary counter_up_axis_close" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_axis_close"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm axis_close counter_axis_close text-center"
+                                                value="180" aria-label="Axis left" name="axis_close"
+                                                id="axis_close_modal">
+                                            <button class="btn btn-outline-secondary counter_up_axis_close"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="va_close_modal" class="form-label">VA:</label>
                                         <div class="input-group mb-3">
-                                            <button class="btn btn-outline-secondary counter_down_va_close" type="button">-</button>
-                                            <input type="text" class="form-control form-control-sm va_close counter_va_close text-center" value ="2" aria-label="Visual acuity" name="va_close" id="va_close_modal">
-                                            <button class="btn btn-outline-secondary counter_up_va_close" type="button">+</button>
+                                            <button class="btn btn-outline-secondary counter_down_va_close"
+                                                type="button">-</button>
+                                            <input type="text"
+                                                class="form-control form-control-sm va_close counter_va_close text-center"
+                                                value="2" aria-label="Visual acuity" name="va_close"
+                                                id="va_close_modal">
+                                            <button class="btn btn-outline-secondary counter_up_va_close"
+                                                type="button">+</button>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="opto_close_modal" class="form-label">Opto:</label>
                                         <div class="input-group">
-                                            <select class="form-select form-select-sm" aria-label="Optotype used for close" name="opto_close" id="opto_close_modal">
+                                            <select class="form-select form-select-sm"
+                                                aria-label="Optotype used for close" name="opto_close"
+                                                id="opto_close_modal">
                                                 [[ = optoCloseOptions]]
                                             </select>
                                         </div>
@@ -1015,35 +1281,40 @@
                                         <input id="noteModal" type="text" class="form-control" name="note">
                                         <div id="noteModalHelp" class="form-text">Note</div>
                                     </div>
-                                </div>                                                               
+                                </div>
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="ColorInput" class="form-label">Color picker</label>
-                                        <input type="color" class="form-control form-control-color text-center" id="ColorInput" title="Choose glass color" name="color">
+                                        <input type="color" class="form-control form-control-color text-center"
+                                            id="ColorInput" title="Choose glass color" name="color">
                                     </div>
                                     <div class="col">
                                         <label for="pd05" class="form-label">0.50PD:</label>
-                                        <input id="pd05" type="text" class="form-control text-center" name="pd05" value="32">
+                                        <input id="pd05" type="text" class="form-control text-center" name="pd05"
+                                            value="32">
                                         <div id="pd05RightHelp" class="form-text">Half pupils distance</div>
                                     </div>
                                     <div class="col">
                                         <label for="timestamp" class="form-label">Timestamp:</label>
-                                        <input id="timestamp" type="datetime-local" step="1" class="form-control" name="timestamp">
+                                        <input id="timestamp" type="datetime-local" step="1" class="form-control"
+                                            name="timestamp">
                                         <div id="requestTimeHelp" class="form-text">Adjust timestamp</div>
-                                    </div> 
+                                    </div>
                                     <div class="col">
                                         <label for="statusRx" class="form-label">Status:</label>
                                         <div class="input-group">
-                                            <select id="statusRx" class="form-select form-select-sm" aria-label="Choose status for rx" name="status">
+                                            <select id="statusRx" class="form-select form-select-sm"
+                                                aria-label="Choose status for rx" name="status">
                                                 [[ = statusRxOptions]]
                                             </select>
                                         </div>
-                                    </div>                               
+                                    </div>
                                 </div>
-                                <input id="idRx" type="text" class="visually-hidden" name="id"/>
-                                <input id="idPatient" type="text" class="visually-hidden" name="id_auth_user"/>
-                                <input id="idWl" type="text" class="visually-hidden" name="id_worklist"/>
-                                <input id="methodRxModalSubmit" type="text" class="visually-hidden" name="methodRxModalSubmit" value="POST"/>
+                                <input id="idRx" type="text" class="visually-hidden" name="id" />
+                                <input id="idPatient" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="idWl" type="text" class="visually-hidden" name="id_worklist" />
+                                <input id="methodRxModalSubmit" type="text" class="visually-hidden"
+                                    name="methodRxModalSubmit" value="POST" />
                                 <input id="btnRxModalSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -1052,7 +1323,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="rxModalSubmit"for="btnRxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="rxModalSubmit" for="btnRxModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>
@@ -1070,55 +1341,76 @@
                 <div class="container">
                     <div class="row">
                         <div class="col">
-                            <form id="kmFormModal" enctype="multipart/form-data" method="POST"> 
+                            <form id="kmFormModal" enctype="multipart/form-data" method="POST">
                                 <div class="container-fluid">
                                     <div class="row mb-3">
                                         <div class="col">
                                             <span class="form-label">Side:</span>
                                             <div class="input-group">
                                                 <div class="btn-group klaterality_modal">
-                                                    <input type="radio" id="klaterality_right_modal" name="laterality" class="btn-check" value="right" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="klaterality_right_modal">Right</label>
-                                                    <input type="radio" id="klaterality_left_modal" name="laterality" class="btn-check" value="left" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="klaterality_left_modal">Left</label>
+                                                    <input type="radio" id="klaterality_right_modal" name="laterality"
+                                                        class="btn-check" value="right" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="klaterality_right_modal">Right</label>
+                                                    <input type="radio" id="klaterality_left_modal" name="laterality"
+                                                        class="btn-check" value="left" autocomplete="off">
+                                                    <label class="btn btn-outline-primary"
+                                                        for="klaterality_left_modal">Left</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col">
                                             <label for="ktimestamp" class="form-label">Timestamp:</label>
-                                            <input id="ktimestamp" type="datetime-local" step="1" class="form-control" name="timestamp">
+                                            <input id="ktimestamp" type="datetime-local" step="1" class="form-control"
+                                                name="timestamp">
                                             <div id="ktimestampHelp" class="form-text">Adjust timestamp</div>
-                                        </div> 
+                                        </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
                                             <label for="k1_modal" class="form-label">K1:</label>
                                             <div class="input-group mb-3">
-                                                <button class="btn btn-outline-secondary counter_down_km1" type="button">-</button>
-                                                <input type="text" class="form-control form-control-sm k1_modal counter_km1 text-center" value ="43.00" aria-label="K1" name="k1" id="k1_modal">
-                                                <button class="btn btn-outline-secondary counter_up_km1" type="button">+</button>
+                                                <button class="btn btn-outline-secondary counter_down_km1"
+                                                    type="button">-</button>
+                                                <input type="text"
+                                                    class="form-control form-control-sm k1_modal counter_km1 text-center"
+                                                    value="43.00" aria-label="K1" name="k1" id="k1_modal">
+                                                <button class="btn btn-outline-secondary counter_up_km1"
+                                                    type="button">+</button>
                                             </div>
                                             <label for="a1_modal" class="form-label">Axis 1:</label>
                                             <div class="input-group mb-3">
-                                                <button class="btn btn-outline-secondary counter_down_axis1" type="button">-</button>
-                                                <input type="text" class="form-control form-control-sm a1_modal counter_axis1 text-center" value ="180" aria-label="Axis 1" name="axis1" id="a1_modal">
-                                                <button class="btn btn-outline-secondary counter_up_axis1" type="button">+</button>
+                                                <button class="btn btn-outline-secondary counter_down_axis1"
+                                                    type="button">-</button>
+                                                <input type="text"
+                                                    class="form-control form-control-sm a1_modal counter_axis1 text-center"
+                                                    value="180" aria-label="Axis 1" name="axis1" id="a1_modal">
+                                                <button class="btn btn-outline-secondary counter_up_axis1"
+                                                    type="button">+</button>
                                             </div>
                                         </div>
                                         <div class="col">
                                             <label for="k2_modal" class="form-label">K2:</label>
                                             <div class="input-group mb-3">
-                                                <button class="btn btn-outline-secondary counter_down_km2" type="button">-</button>
-                                                <input type="text" class="form-control form-control-sm k2_modal counter_km2 text-center" value ="43.00" aria-label="K2" name="k2" id="k2_modal">
-                                                <button class="btn btn-outline-secondary counter_up_km2" type="button">+</button>
+                                                <button class="btn btn-outline-secondary counter_down_km2"
+                                                    type="button">-</button>
+                                                <input type="text"
+                                                    class="form-control form-control-sm k2_modal counter_km2 text-center"
+                                                    value="43.00" aria-label="K2" name="k2" id="k2_modal">
+                                                <button class="btn btn-outline-secondary counter_up_km2"
+                                                    type="button">+</button>
                                             </div>
                                             <label for="a2_modal" class="form-label">Axis 2:</label>
                                             <div class="input-group mb-3">
-                                                <button class="btn btn-outline-secondary counter_down_axis2" type="button">-</button>
-                                                <input type="text" class="form-control form-control-sm a2_modal counter_axis2 text-center" value ="180" aria-label="Axis 2" name="axis2" id="a2_modal">
-                                                <button class="btn btn-outline-secondary counter_up_axis2" type="button">+</button>
+                                                <button class="btn btn-outline-secondary counter_down_axis2"
+                                                    type="button">-</button>
+                                                <input type="text"
+                                                    class="form-control form-control-sm a2_modal counter_axis2 text-center"
+                                                    value="180" aria-label="Axis 2" name="axis2" id="a2_modal">
+                                                <button class="btn btn-outline-secondary counter_up_axis2"
+                                                    type="button">+</button>
                                             </div>
-                                        </div>                            
+                                        </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
@@ -1139,10 +1431,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <input id="idKm" type="text" class="visually-hidden" name="id"/>
-                                <input id="idPatientKm" type="text" class="visually-hidden" name="id_auth_user"/>
-                                <input id="idWlKm" type="text" class="visually-hidden" name="id_worklist"/>
-                                <input id="methodKmModalSubmit" type="text" class="visually-hidden" name="methodKmModalSubmit" value="PUT"/>
+                                <input id="idKm" type="text" class="visually-hidden" name="id" />
+                                <input id="idPatientKm" type="text" class="visually-hidden" name="id_auth_user" />
+                                <input id="idWlKm" type="text" class="visually-hidden" name="id_worklist" />
+                                <input id="methodKmModalSubmit" type="text" class="visually-hidden"
+                                    name="methodKmModalSubmit" value="PUT" />
                                 <input id="btnKmModalSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -1151,7 +1444,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <label id="kmModalSubmit"for="btnKmModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+                <label id="kmModalSubmit" for="btnKmModalSubmit" class="btn btn-primary" tabindex="0">Submit</label>
             </div>
         </div>
     </div>
@@ -1172,13 +1465,8 @@
                             <div class="row"> <!-- table row div-->
                                 <div class="col">
                                     <div class="title-right">RIGHT EYE</div>
-                                    <table
-                                        id="visionixRight_tbl"
-                                        data-pagination="true"
-                                        data-page-size="10"
-                                        data-search="false"
-                                        data-response-handler="responseHandler_vx"
-                                        >
+                                    <table id="visionixRight_tbl" data-pagination="true" data-page-size="10"
+                                        data-search="false" data-response-handler="responseHandler_vx">
                                         <thead>
                                             <tr>
                                                 <th data-field="date" data-sortable="true">Datetime</th>
@@ -1187,7 +1475,8 @@
                                                 <th data-field="rx" data-sortable="false">Rx</th>
                                                 <th data-field="k1str" data-sortable="false">K1</th>
                                                 <th data-field="k2str" data-sortable="false">K2</th>
-                                                <th data-field="operate" data-formatter="operateFormatter_vx" data-events="operateEvents_vx">Action</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_vx"
+                                                    data-events="operateEvents_vx">Action</th>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -1195,13 +1484,8 @@
                                 </div>
                                 <div class="col">
                                     <div class="title-left">LEFT EYE</div>
-                                    <table
-                                        id="visionixLeft_tbl"
-                                        data-pagination="true"
-                                        data-page-size="10"
-                                        data-search="false"
-                                        data-response-handler="responseHandler_vx"
-                                        >
+                                    <table id="visionixLeft_tbl" data-pagination="true" data-page-size="10"
+                                        data-search="false" data-response-handler="responseHandler_vx">
                                         <thead>
                                             <tr>
                                                 <th data-field="date" data-sortable="true">Datetime</th>
@@ -1210,7 +1494,8 @@
                                                 <th data-field="rx" data-sortable="false">Rx</th>
                                                 <th data-field="k1str" data-sortable="false">K1</th>
                                                 <th data-field="k2str" data-sortable="false">K2</th>
-                                                <th data-field="operate" data-formatter="operateFormatter_vx" data-events="operateEvents_vx">Action</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_vx"
+                                                    data-events="operateEvents_vx">Action</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -1242,14 +1527,8 @@
                             <div class="row"> <!-- table row div-->
                                 <div class="col">
                                     <div class="title-right">Refractions</div>
-                                    <table
-                                        id="cvRx_tbl"
-                                        data-pagination="true"
-                                        data-page-size="10"
-                                        data-search="false"
-                                        data-row-style="rowStyle_rx"
-                                        data-response-handler="responseHandler_cvrx"
-                                        >
+                                    <table id="cvRx_tbl" data-pagination="true" data-page-size="10" data-search="false"
+                                        data-row-style="rowStyle_rx" data-response-handler="responseHandler_cvrx">
                                         <thead>
                                             <tr>
                                                 <th data-field="TypeName" data-sortable="true">Type</th>
@@ -1257,7 +1536,8 @@
                                                 <th data-field="rxleft" data-sortable="true">Left Rx</th>
                                                 <th data-field="Distance" data-sortable="false">distance</th>
                                                 <th data-field="pupilsd" data-sortable="false">Pupils distance</th>
-                                                <th data-field="operate" data-formatter="operateFormatter_cvrx" data-events="operateEvents_cvrx">Action</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_cvrx"
+                                                    data-events="operateEvents_cvrx">Action</th>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -1265,19 +1545,14 @@
                                 </div>
                                 <div class="col">
                                     <div class="title-left">Keratometry</div>
-                                    <table
-                                        id="cvKm_tbl"
-                                        data-pagination="true"
-                                        data-page-size="10"
-                                        data-search="false"
-                                        data-row-style="rowStyle_km"
-                                        data-response-handler="responseHandler_cvkm"
-                                        >
+                                    <table id="cvKm_tbl" data-pagination="true" data-page-size="10" data-search="false"
+                                        data-row-style="rowStyle_km" data-response-handler="responseHandler_cvkm">
                                         <thead>
                                             <tr>
                                                 <th data-field="kmformula" data-sortable="false">Kx</th>
                                                 <th data-field="side" data-sortable="false">Side</th>
-                                                <th data-field="operate" data-formatter="operateFormatter_cvkm" data-events="operateEvents_cvkm">Action</th>
+                                                <th data-field="operate" data-formatter="operateFormatter_cvkm"
+                                                    data-events="operateEvents_cvkm">Action</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -1296,7 +1571,7 @@
                                 </tr>
                             </thead>
                             <tbody id="cvtblBody">
-                
+
                             </tbody>
                         </table>
                     </div>
@@ -1315,72 +1590,72 @@
 [[ block js_scripts]]
 
 <script type="text/javascript">
-// Global variables
-const HOSTURL = "[[ = hosturl ]]";
-const statusRxIndex = [[ =XML(statusRxIndex)]];
-// submit btn to disable when done
-const btnArr = ['#btnAddKmRight','#btnAddKmLeft', '#btnAddRxRight', '#btnAddRxLeft','#btnTaskDone', '#btnAddBothRx'];
+    // Global variables
+    const HOSTURL = "[[ = hosturl ]]";
+    const statusRxIndex = [[ =XML(statusRxIndex)]];
+    // submit btn to disable when done
+    const btnArr = ['#btnAddKmRight', '#btnAddKmLeft', '#btnAddRxRight', '#btnAddRxLeft', '#btnTaskDone', '#btnAddBothRx'];
 </script>
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
-<script src="js/jquery.serialize-object.min.js"></script>
-<script src="js/useful.js"></script>
-<script src="js/patient-bar.js"></script>
-<script src="js/autorx_bt.js"></script>
+<script src="static/js/jquery/jquery.serialize-object.min.js"></script>
+<script src="js/utils/useful.js"></script>
+<script src="static/js/templates/patient-bar.js"></script>
+<script src="jsjs/controller/autorx_bt.js"></script>
 <script type="text/javascript">
 
-// init tables
-const API_RXRIGHT = HOSTURL + "/"+APP_NAME+"/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-const API_RXLEFT = HOSTURL + "/"+APP_NAME+"/api/rx?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-const API_KMRIGHT = HOSTURL + "/"+APP_NAME+"/api/km?id_auth_user.eq="+patientId+"&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
-const API_KMLEFT = HOSTURL + "/"+APP_NAME+"/api/km?id_auth_user.eq="+patientId+"&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+    // init tables
+    const API_RXRIGHT = HOSTURL + "/" + APP_NAME + "/api/rx?id_auth_user.eq=" + patientId + "&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+    const API_RXLEFT = HOSTURL + "/" + APP_NAME + "/api/rx?id_auth_user.eq=" + patientId + "&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+    const API_KMRIGHT = HOSTURL + "/" + APP_NAME + "/api/km?id_auth_user.eq=" + patientId + "&laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
+    const API_KMLEFT = HOSTURL + "/" + APP_NAME + "/api/km?id_auth_user.eq=" + patientId + "&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 
-var $rxRight = $('#rxRight_tbl').bootstrapTable({
-    url: API_RXRIGHT
-});
+    var $rxRight = $('#rxRight_tbl').bootstrapTable({
+        url: API_RXRIGHT
+    });
 
-var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
-    url: API_RXLEFT
-});
+    var $rxLeft = $('#rxLeft_tbl').bootstrapTable({
+        url: API_RXLEFT
+    });
 
-var $kmRight = $('#kmRight_tbl').bootstrapTable({
-    url: API_KMRIGHT
-});
+    var $kmRight = $('#kmRight_tbl').bootstrapTable({
+        url: API_KMRIGHT
+    });
 
-var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
-    url: API_KMLEFT
-});
+    var $kmLeft = $('#kmLeft_tbl').bootstrapTable({
+        url: API_KMLEFT
+    });
 
-const tablesArr = ['#rxRight_tbl','#rxLeft_tbl','#kmRight_tbl','#kmLeft_tbl'];
+    const tablesArr = ['#rxRight_tbl', '#rxLeft_tbl', '#kmRight_tbl', '#kmLeft_tbl'];
 
-// Fires after the table body is rendered and available in the DOM, the parameters contain data
-$('#rxRight_tbl').on('post-body.bs.table', function () {
-    // $('#rxLeft_tbl').bootstrapTable('refresh');
-    // $('.loading-wrap').addClass('visually-hidden'); // loading bug?
-});
+    // Fires after the table body is rendered and available in the DOM, the parameters contain data
+    $('#rxRight_tbl').on('post-body.bs.table', function () {
+        // $('#rxLeft_tbl').bootstrapTable('refresh');
+        // $('.loading-wrap').addClass('visually-hidden'); // loading bug?
+    });
 
-// table listing right and left measurements for patient from visionix l80/vx100
-const API_L80_R = HOSTURL + '/'+APP_NAME+'/rest/machines/l80?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=right'
-const API_L80_L = HOSTURL + '/'+APP_NAME+'/rest/machines/l80?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=left'
-const API_VX100_R = HOSTURL + '/'+APP_NAME+'/rest/machines/vx100?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=right'
-const API_VX100_L = HOSTURL + '/'+APP_NAME+'/rest/machines/vx100?lastname='+removeAccent(patientObj['last_name']) +'&firstname='+removeAccent(patientObj['first_name'])+'&side=left'
-var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
-    url: API_L80_R
-});
-var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
-    url: API_L80_L
-});
+    // table listing right and left measurements for patient from visionix l80/vx100
+    const API_L80_R = HOSTURL + '/' + APP_NAME + '/rest/machines/l80?lastname=' + removeAccent(patientObj['last_name']) + '&firstname=' + removeAccent(patientObj['first_name']) + '&side=right'
+    const API_L80_L = HOSTURL + '/' + APP_NAME + '/rest/machines/l80?lastname=' + removeAccent(patientObj['last_name']) + '&firstname=' + removeAccent(patientObj['first_name']) + '&side=left'
+    const API_VX100_R = HOSTURL + '/' + APP_NAME + '/rest/machines/vx100?lastname=' + removeAccent(patientObj['last_name']) + '&firstname=' + removeAccent(patientObj['first_name']) + '&side=right'
+    const API_VX100_L = HOSTURL + '/' + APP_NAME + '/rest/machines/vx100?lastname=' + removeAccent(patientObj['last_name']) + '&firstname=' + removeAccent(patientObj['first_name']) + '&side=left'
+    var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
+        url: API_L80_R
+    });
+    var $visionixleft_tbl = $('#visionixLeft_tbl').bootstrapTable({
+        url: API_L80_L
+    });
 
-// table listing right measurement for patient from topcon cv5000
-const CV5000lst = ['cv-iris', 'cv-cornea', 'cv-crist']
-const API_CV5000 = HOSTURL + '/'+APP_NAME+'/rest/getCV5000'
-var $cvRx_tbl = $('#cvRx_tbl').bootstrapTable({
-    url: API_CV5000
-});
-var $cvKm_tbl = $('#cvKm_tbl').bootstrapTable({
-    url: API_CV5000
-});
+    // table listing right measurement for patient from topcon cv5000
+    const CV5000lst = ['cv-iris', 'cv-cornea', 'cv-crist']
+    const API_CV5000 = HOSTURL + '/' + APP_NAME + '/rest/getCV5000'
+    var $cvRx_tbl = $('#cvRx_tbl').bootstrapTable({
+        url: API_CV5000
+    });
+    var $cvKm_tbl = $('#cvKm_tbl').bootstrapTable({
+        url: API_CV5000
+    });
 
 </script>
-<script src="js/autorx.js"></script>
+<script src="jsjs/controller/autorx.js"></script>
 [[ end ]]

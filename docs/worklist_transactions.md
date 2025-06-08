@@ -426,7 +426,7 @@ def api_process_payment(worklist_id):
 #### Add '$' Action Button
 
 ```javascript
-// In static/js/md_bt.js, add to action buttons:
+// In static/js/md/md_bt.js, add to action buttons:
 function addPaymentAction(worklistId) {
     return `<button class="btn btn-success btn-sm" 
                     onclick="openPaymentView(${worklistId})" 

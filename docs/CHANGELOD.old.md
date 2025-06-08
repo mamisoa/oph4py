@@ -74,7 +74,7 @@
   - update to bootbox v6.0.3
 
 - 2025-04-13T19:56:22.991906: Modernized worklist JavaScript with vanilla JS conversion
-  - Refactored `appendWlItem` function in static/js/wl.js to remove jQuery dependencies
+  - Refactored `appendWlItem` function in static/js/wl/wl.js to remove jQuery dependencies
   - Converted DOM manipulation to use native JavaScript methods
   - Added proper JSDoc documentation to improve code maintainability
   - Fixed JSON parsing error in PACS integration
@@ -86,7 +86,7 @@
 - 2025-04-18T10:45:00.000000: Eliminated duplicate notifications in worklist operations
   - Created `crudpWithoutToast` function that performs API operations silently
   - Created `setWlItemStatusWithoutToast` as a silent version of the status update function
-  - Modified all event handlers in `static/js/wl_bt.js` to use silent API operations
+  - Modified all event handlers in `static/js/wl/wl_bt.js` to use silent API operations
   - Enhanced feedback messages to include worklist ID in notifications
   - Consolidated all UI feedback through WorklistState.UI interface
   - Improved user experience by preventing duplicate notifications
@@ -105,11 +105,11 @@
   - Improved error handling for failed API requests
 
 - 2025-04-13T13:01:16.998036: Implemented Phase 1 of worklist combo fix
-  - Created new state manager module in static/js/wl-state-manager.js:
+  - Created new state manager module in static/js/wl/wl-state-manager.js:
     - Added WorklistStateManager class for tracking item states
     - Implemented RequestQueue class to prevent race conditions
     - Created UIManager class for UI protection and feedback
-  - Modified static/js/wl.js to use the state manager:
+  - Modified static/js/wl/wl.js to use the state manager:
     - Replaced global variables with structured state management
     - Added data cleaning to prevent validation errors
     - Implemented patient consistency validation
@@ -218,7 +218,7 @@
   - Improved function parameter naming for clarity
 
 - 2025-04-18T11:30:00.000000: Fixed worklist item validation error in PUT requests
-  - Modified `static/js/wl.js` to properly handle ID field in worklist updates
+  - Modified `static/js/wl/wl.js` to properly handle ID field in worklist updates
   - Removed ID from request payload to prevent validation conflicts
   - Ensured ID is only sent in URL path for PUT requests
   - Follows RESTful API best practices and py4web validation requirements
@@ -262,7 +262,7 @@
   - Fixed Bootstrap 5 modal closing issue by updating data-dismiss to data-bs-dismiss
 
 - 2025-04-15T00:32:44.367575: Fixed crudp function in useful.js to properly handle PUT requests
-  - Modified `static/js/useful.js` to correctly handle RESTful API validation:
+  - Modified `static/js/utils/useful.js` to correctly handle RESTful API validation:
     - Fixed issue where ID was being sent in both URL and request payload
     - Added ability to extract ID from data when id parameter is "0"
     - Properly sets API URL with ID in the path for PUT requests
@@ -351,7 +351,7 @@
 
 - 2025-03-30T17:42:43: Fixed email sending in certificates module
   - Identified and fixed the root cause of why certificate emails weren't being sent
-  - Modified `static/js/certificates.js` to fix asynchronous execution flow problems:
+  - Modified `static/js/md/certificates.js` to fix asynchronous execution flow problems:
     - Moved modal closing into appropriate callback locations to prevent premature closing
     - Made certificate database save and email sending sequential
     - Ensured modal only closes after operations are complete
@@ -361,7 +361,7 @@
   - Fixed email data formatting and content structure
 
 - 2025-03-30T17:35:48: Added comprehensive logging for email functionality
-  - Enhanced `static/js/certificates.js` with detailed client-side logging for email operations
+  - Enhanced `static/js/md/certificates.js` with detailed client-side logging for email operations
   - Added logging to certificate email submission process to track form data and API responses
   - Enhanced regular email information form with diagnostic logging
   - Added server-side logging in `rest.py` for both email endpoints:
@@ -379,10 +379,10 @@
   - Fixed linter error: "total_seconds is not a known attribute of None"
 
 - 2025-03-29T22:58:00: Fixed worklist status update functionality
-  - Modified `static/js/useful.js`: Updated `setWlItemStatus` function to remove ID from request payload
+  - Modified `static/js/utils/useful.js`: Updated `setWlItemStatus` function to remove ID from request payload
     - ID is now correctly passed in the URL instead of the payload
     - Ensures proper validation in py4web's RestAPI
-  - Modified `static/js/patient-bar.js`: Fixed status update in patient bar
+  - Modified `static/static/js/templates/patient-bar.js`: Fixed status update in patient bar
     - Updated `btnUnlockTask` click handler to use correct API endpoint format
     - Updated `btnTaskDone` click handler to match the same pattern
     - Both buttons now correctly update task status without validation errors
@@ -397,7 +397,7 @@
     - The fix ensures compatibility with all py4web versions by following best practices
 
 - 2025-03-30T17:15:09.650400: Fixed auth_user validation issue in user management forms
-  - Modified `static/js/user.js`: Updated form submission functions to handle ID field correctly
+  - Modified `static/js/manage/user.js`: Updated form submission functions to handle ID field correctly
     - Removed ID from payload for all PUT requests in userAuth_userForm submit handler
     - Updated userMd_paramForm submit handler to use ID only in URL
     - Updated userFormSubmit function to prevent sending ID in payload
@@ -479,7 +479,7 @@
   - Email feature matches existing functionality in glasses prescription module
 
 - 2025-03-30T13:30:42: Added email functionality to certificates module
-  - Modified `static/js/certificates.js` to allow sending certificates as email attachments
+  - Modified `static/js/md/certificates.js` to allow sending certificates as email attachments
   - Added radio button UI in the certificateModal for selecting between print and email actions
   - Created new API endpoint `api/email/send_with_attachment` in `rest.py` for handling PDF attachments
   - Updated both GP and MD modality templates to include the new UI options
@@ -619,7 +619,7 @@
   - Added comprehensive docstring to combo() function in manage.py
 
 - 2025-03-30T19:24:55.558996: Added email functionality to glasses prescription module
-  - Modified `static/js/glasses.js` to allow sending glasses prescriptions as email attachments
+  - Modified `static/js/md/glasses.js` to allow sending glasses prescriptions as email attachments
   - Added "Send by email" button to GxRxModal interface
   - Implemented check for valid patient email before submission
   - Added PDF to base64 conversion for email attachment

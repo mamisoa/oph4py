@@ -85,7 +85,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 ### Technical Details
 
-- Updated 12 notification calls in `static/js/payment-manager.js` to use `displayToast(status, heading, text, duration)`
+- Updated 12 notification calls in `static/js/billing/payment-manager.js` to use `displayToast(status, heading, text, duration)`
 - Removed 32 lines of custom alert code and HTML container
 - Toast notifications auto-dismiss after appropriate durations (5-8 seconds based on message type)
 - Maintained all error handling and user feedback functionality
@@ -144,7 +144,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 **Files Modified**:
 
-- `static/js/payment-manager.js` - Fixed payment processing workflow and optimistic updates
+- `static/js/billing/payment-manager.js` - Fixed payment processing workflow and optimistic updates
 
 ## [2025-06-08T00:00:31.866496] - Transaction History Performance Optimization
 
@@ -202,7 +202,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 **Files Modified**:
 
 - `api/endpoints/payment.py` - Added pagination support to transaction history endpoint
-- `static/js/payment-manager.js` - Enhanced with pagination, parallel calls, and optimistic updates
+- `static/js/billing/payment-manager.js` - Enhanced with pagination, parallel calls, and optimistic updates
 - `templates/payment/payment_view.html` - Added pagination container for transaction history
 
 ## [2025-06-07T23:09:50.687767] - Daily Transactions Date Range Filter Enhancement
@@ -235,7 +235,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - **Removed**: Toggle button group (`btnTodayTransactions`, `btnAllTransactions`)
   - **Enhanced Layout**: Senior dropdown moved to fill the space previously used by toggle buttons
 
-- **JavaScript Updates**: `static/js/daily_transactions.js`
+- **JavaScript Updates**: `static/js/billing/daily_transactions.js`
   - **API Parameters**: Modified `queryParams_transactions()` to send separate `date_start` and `date_end`
   - **Initialization**: Both date inputs automatically set to today on page load
   - **Event Handlers**: Updated to listen for changes on both date inputs plus senior dropdown
@@ -264,7 +264,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 **Files Modified**:
 
 - `templates/billing/daily_transactions.html` - Filter controls replacement
-- `static/js/daily_transactions.js` - Date range logic implementation
+- `static/js/billing/daily_transactions.js` - Date range logic implementation
 
 **Impact**: More flexible and intuitive date filtering for daily transactions with improved user experience
 
@@ -279,7 +279,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 ### Changed
 
-- **JavaScript Data Extraction**: Updated `formatTransactionRow()` in `static/js/daily_transactions.js`
+- **JavaScript Data Extraction**: Updated `formatTransactionRow()` in `static/js/billing/daily_transactions.js`
   - **Before**: `_detail_worklist_id: transaction.id_worklist` (used object as ID)
   - **After**: `_detail_worklist_id: worklist.id` (extracts actual ID number)
   - **Procedure Fallback**: Updated fallback to use `worklist.id` instead of `transaction.id_worklist`
@@ -307,7 +307,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 **Files Modified**:
 
-- `static/js/daily_transactions.js` - Fixed data extraction from nested API response
+- `static/js/billing/daily_transactions.js` - Fixed data extraction from nested API response
 
 **Impact**: Transaction detail view now displays all information correctly including worklist ID
 
@@ -399,7 +399,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - **Response Format**: Updated `id_auth_user` object structure to include patient ID
   - **Data Cleanup**: Removed email field to match frontend requirements
 
-- **JavaScript Cleanup**: `static/js/daily_transactions.js`
+- **JavaScript Cleanup**: `static/js/billing/daily_transactions.js`
   - **Debug Removal**: Cleaned up console.log statements used for debugging
   - **Patient ID Access**: Now properly accesses `patient.id` from API response
 
@@ -413,7 +413,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 **Files Modified**:
 
 - `controllers.py` - API endpoint data structure update
-- `static/js/daily_transactions.js` - Debug cleanup
+- `static/js/billing/daily_transactions.js` - Debug cleanup
 
 **Impact**: Patient ID now displays correctly in transaction detail view
 
@@ -440,7 +440,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 ### Technical Details
 
-- **JavaScript Changes**: `static/js/daily_transactions.js`
+- **JavaScript Changes**: `static/js/billing/daily_transactions.js`
   - **Modified `formatPatientName()`**: Removed email formatting and simplified to name-only display
   - **Enhanced `formatTransactionRow()`**: Added `_detail_patient_auth_id` to detail data storage
   - **Updated `detailFormatter_transactions()`**: Changed to 4-column layout (col-md-3) to include patient ID
@@ -460,7 +460,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 **Files Modified**:
 
-- `static/js/daily_transactions.js` - Patient display cleanup and detail view enhancement
+- `static/js/billing/daily_transactions.js` - Patient display cleanup and detail view enhancement
 
 **Impact**: Cleaner patient information display with better organization of technical details
 
@@ -499,7 +499,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - Added Bootstrap Table detail view configuration attributes
   - Maintained all existing export and filtering functionality
 
-- **JavaScript Enhancements**: `static/js/daily_transactions.js`
+- **JavaScript Enhancements**: `static/js/billing/daily_transactions.js`
   - **New Function**: `detailFormatter_transactions(index, row)` for custom detail rendering
   - **Modified Data Structure**: Updated `formatTransactionRow()` to include detail data fields
   - **Enhanced Display**: Proper formatting and fallback values for missing data
@@ -520,7 +520,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 **Files Modified**:
 
 - `templates/billing/daily_transactions.html` - Table configuration and column removal
-- `static/js/daily_transactions.js` - Detail formatter and data structure enhancements
+- `static/js/billing/daily_transactions.js` - Detail formatter and data structure enhancements
 
 **Impact**: Improved user experience with cleaner table layout and accessible detailed information
 
@@ -611,7 +611,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - Enhanced summary cards with dynamic IDs for JavaScript updates
   - Added export functionality with bootstrap-table integration
 
-- **static/js/daily_transactions.js**: Comprehensive JavaScript implementation (700+ lines)
+- **static/js/billing/daily_transactions.js**: Comprehensive JavaScript implementation (700+ lines)
   - `queryParams_transactions()`: Advanced query parameter building with complete lookup chains
   - `responseHandler_transactions()`: Robust API response handling with error management
   - `formatTransactionRow()`: Enhanced row formatting with raw value storage for calculations
@@ -703,7 +703,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ### Changed
 
 - **Files Module Payment Integration**: Extended payment button functionality to Files management interface
-  - Applied same enhanced payment button behavior from main worklist to `static/js/files_bt.js`
+  - Applied same enhanced payment button behavior from main worklist to `static/js/manage/files_bt.js`
   - Payment button ("$") shows ONLY when `status_flag == "done"` AND `modality == "MD"`
   - Consistent color coding across both interfaces: Bright RED (#dc143c), Gold (#ffd700), Orange (#ff8c00)
 
@@ -715,7 +715,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ### Technical Details
 
 - **Files Modified**:
-  - `static/js/files_bt.js` - Payment button enhancement with color detection
+  - `static/js/manage/files_bt.js` - Payment button enhancement with color detection
   - `templates/manage/files.html` - Global variables and event handler integration
 - **Global Variables**: Added `window.HOSTURL` and `window.APP_NAME` for API consistency
 - **Event Integration**: Bootstrap Table events (`post-body.bs.table`, `load-success.bs.table`)
@@ -763,7 +763,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 ### Technical Details
 
-- **File Modified**: `static/js/wl_bt.js` - Complete payment button enhancement
+- **File Modified**: `static/js/wl/wl_bt.js` - Complete payment button enhancement
 - **API Integration**: Leverages existing payment summary endpoint for status detection
 - **Performance Optimization**: Uses Promise.allSettled() for concurrent status checks
 - **Error Handling**: Graceful fallback to default red color if API calls fail
@@ -793,7 +793,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - Table styling improvements with responsive font sizes and padding
   - Empty state styling with centered layout and visual feedback
 
-- **JavaScript Improvements**: Enhanced table population logic in `static/js/wl.js`
+- **JavaScript Improvements**: Enhanced table population logic in `static/js/wl/wl.js`
   - `getStatusBadgeClass()` function for consistent status badge styling (requested: warning, processing: info, done: success, cancelled: secondary)
   - Updated `appendWlItem()` function to work with fixed table structure and proper column ordering
   - Enhanced `delWlItemModal()` function to show/hide empty state appropriately
@@ -805,7 +805,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 - **Table Overflow**: Preview table no longer overflows modal boundaries and scrolls properly within allocated space
 - **Empty State Management**: Table correctly shows/hides empty state when items are added or removed
 - **Responsive Behavior**: Modal adapts properly to different screen sizes with appropriate sizing constraints
-- **Toast Auto-Hide**: Fixed `displayToast` function in `static/js/baseof.js` to automatically hide notifications after 5 seconds instead of staying permanently visible
+- **Toast Auto-Hide**: Fixed `displayToast` function in `static/js/templates/baseof.js` to automatically hide notifications after 5 seconds instead of staying permanently visible
 
 ### Technical Details
 
@@ -1189,7 +1189,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - **Root Cause**: Mismatch between database values ("T"/"F" strings) and py4web boolean expectations (True/False)
   - **Solution**: Updated all `is_active` comparisons and assignments to use boolean values (True/False) instead of strings
   - **Impact**: Cancel buttons now properly appear for active transactions, "Cancelled" text shows only for actually cancelled transactions
-  - **Files Modified**: `api/endpoints/payment.py`, `models.py`, `static/js/payment-manager.js`
+  - **Files Modified**: `api/endpoints/payment.py`, `models.py`, `static/js/billing/payment-manager.js`
 
 ### Technical Details
 
@@ -1272,10 +1272,10 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
   - Located in the action column alongside existing buttons (edit, delete, summary, etc.)
   - Provides direct access to payment processing interface
 - **Worklist Integration**: Payment button implemented across all modality interfaces:
-  - Main worklist view (`static/js/wl_bt.js`)
-  - Medical Doctor modality (`static/js/md_bt.js`)
-  - General Practitioner modality (`static/js/gp_bt.js`)
-  - Files management modality (`static/js/files_bt.js`)
+  - Main worklist view (`static/js/wl/wl_bt.js`)
+  - Medical Doctor modality (`static/js/md/md_bt.js`)
+  - General Practitioner modality (`static/js/md/gp_bt.js`)
+  - Files management modality (`static/js/manage/files_bt.js`)
 - **Navigation Integration**: Payment button redirects to `/payment/{worklist_id}` URL pattern
 - **Consistent UI**: Payment button uses Font Awesome dollar-sign icon with tooltip "Process payment"
 
@@ -1579,7 +1579,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 ### Technical Details
 
-- **Dual Location Fix**: Updated both `displayBillingCombos()` function and combo selection click handler in `static/js/md_bt.js`
+- **Dual Location Fix**: Updated both `displayBillingCombos()` function and combo selection click handler in `static/js/md/md_bt.js`
 - **Parsing Enhancement**: Applied sophisticated JSON parsing with multiple fallback strategies
 - **Format Support**: Handles both old format (integer arrays) and new format (objects with secondary codes)
 - **Enhanced Display**: Secondary codes now show as "main (+secondary)" format in preview for clarity
@@ -1594,7 +1594,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 ### Files Modified
 
-- `static/js/md_bt.js`: Enhanced `displayBillingCombos()` function and combo selection click handler
+- `static/js/md/md_bt.js`: Enhanced `displayBillingCombos()` function and combo selection click handler
 - Applied same robust parsing logic successfully used in billing combo management interface
 - Enhanced code display formatting for both simple and complex combo structures
 
@@ -1634,7 +1634,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 ### Files Modified
 
-- `static/js/billing-combo-manager.js`: Enhanced `editCombo` function with robust JSON parsing
+- `static/js/billing/billing-combo-manager.js`: Enhanced `editCombo` function with robust JSON parsing
 - Applied same parsing logic used successfully in `enhancedCodesFormatter` function
 - Added comprehensive error handling and debug logging for parsing operations
 
@@ -1687,7 +1687,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 ### Files Modified
 
-- `static/js/billing-combo-manager.js`: Enhanced fee editing functionality for both main and secondary code selection
+- `static/js/billing/billing-combo-manager.js`: Enhanced fee editing functionality for both main and secondary code selection
 - Enhanced search result display functions with editable fee inputs
 - Improved fee handling and validation throughout the code selection workflow
 
@@ -1776,9 +1776,9 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 - **Payment System API Response Format Fix**: Fixed JavaScript API response parsing
   - **Issue**: PaymentManager was checking for `result.success` but API returns `result.status`
   - **Root Cause**: Mismatch between API response format (`status: "success"`) and JavaScript expectations
-  - **Solution**: Updated all API response checks in `static/js/payment-manager.js` to use `result.status === "success"`
+  - **Solution**: Updated all API response checks in `static/js/billing/payment-manager.js` to use `result.status === "success"`
   - **Impact**: Fee codes and billing codes now load correctly in payment interface
-  - **Files Modified**: `static/js/payment-manager.js`
+  - **Files Modified**: `static/js/billing/payment-manager.js`
 
 ## [1.0.0] - 2025-06-01T23:38:43
 
@@ -1868,7 +1868,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ### Files Modified
 
 - `templates/manage/billing_combo.html`: Added secondary code selection modal with comprehensive interface
-- `static/js/billing-combo-manager.js`: Enhanced with modal functionality, search capabilities, and safe fee parsing
+- `static/js/billing/billing-combo-manager.js`: Enhanced with modal functionality, search capabilities, and safe fee parsing
 - Complete replacement of prompt-based workflow with professional modal interface
 - Enhanced fee calculation system with robust error handling
 
@@ -1942,7 +1942,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ### Technical Details
 
 - **Root Cause**: `$(form).serializeJSON()` was converting empty main fee field to empty string (`""`)
-- **Solution**: Added data cleaning in `#billCodeForm` submission handler in `static/js/md_bt.js` for main fee fields
+- **Solution**: Added data cleaning in `#billCodeForm` submission handler in `static/js/md/md_bt.js` for main fee fields
 - **Data Types**: Proper conversion of fee to float and feecode to integer, with null fallback for empty values
 - **Validation**: Empty strings and undefined values now properly converted to null for optional main fee fields
 - **Consistency**: Main fee field cleaning now matches the secondary fee field cleaning logic already in place
@@ -1967,7 +1967,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ### Technical Details
 
 - **Root Cause**: `$(form).serializeJSON()` was converting empty form fields to empty strings (`""`)
-- **Solution**: Added data cleaning in `#billCodeForm` submission handler in `static/js/md_bt.js`
+- **Solution**: Added data cleaning in `#billCodeForm` submission handler in `static/js/md/md_bt.js`
 - **Data Types**: Proper conversion of secondary_nomen_code to integer, secondary_fee to float, secondary_feecode to integer
 - **Validation**: Empty strings and undefined values now properly converted to null for optional secondary fields
 
@@ -2044,7 +2044,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ### Files Modified
 
 - `templates/manage/billing_combo.html`: Enhanced template with secondary code support and toast container
-- `static/js/billing-combo-manager.js`: Complete enhancement for secondary code management
+- `static/js/billing/billing-combo-manager.js`: Complete enhancement for secondary code management
 - Enhanced combo creation, editing, display, and validation functionality
 - Improved user experience with visual feedback and structured data display
 
@@ -2116,7 +2116,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 ### Files Modified
 
-- `static/js/md_bt.js`: Enhanced response handler, formatters, and export functions
+- `static/js/md/md_bt.js`: Enhanced response handler, formatters, and export functions
 - `templates/modalityCtr/md.html`: Added responsive CSS styling and improved layout
 - Enhanced billing summary with dynamic content generation
 - Improved table display with better mobile responsiveness
@@ -2412,7 +2412,7 @@ If specialty dropdown is still empty:
 
 - **Root Cause**: `$("#newBillingComboForm")[0].reset()` was clearing all form values including the server-side default selection
 - **Solution**: Added `$("#comboSpecialty").val("ophthalmology");` after form reset to restore default
-- **JavaScript Fix**: Modified `resetForm()` method in `static/js/billing-combo-manager.js` line 314
+- **JavaScript Fix**: Modified `resetForm()` method in `static/js/billing/billing-combo-manager.js` line 314
 - **User Experience**: Specialty dropdown now maintains logical default throughout the form lifecycle
 
 ### Testing
@@ -2513,7 +2513,7 @@ If specialty dropdown is still empty:
   - Created new administrative interface at `/manage/billing_combo` for creating and managing billing code combinations
   - Added controller `billing_combo()` in `manage.py` with authentication and specialty dropdown options
   - Comprehensive HTML template `templates/manage/billing_combo.html` with modern UI design
-  - Advanced JavaScript functionality in `static/js/billing-combo-manager.js` with full CRUD operations
+  - Advanced JavaScript functionality in `static/js/billing/billing-combo-manager.js` with full CRUD operations
   - Added "Billing Combo management" link to the Settings dropdown in the main navigation
   - Integrated with existing nomenclature API for real-time code search and validation
 
@@ -2608,7 +2608,7 @@ If specialty dropdown is still empty:
 ### Fixed
 
 - **Critical Issue: Billing Codes Not Appearing in Table**
-  - Fixed `responseHandler_billing()` function in `static/js/md_bt.js` to handle FastAPI response format
+  - Fixed `responseHandler_billing()` function in `static/js/md/md_bt.js` to handle FastAPI response format
   - The billing table was expecting py4web format (`res.items`) but receiving FastAPI format (`res.data`)
   - Added robust response format detection to handle both FastAPI and py4web formats
   - Enhanced debugging with comprehensive console logging for troubleshooting
@@ -2636,7 +2636,7 @@ If specialty dropdown is still empty:
 ### Fixed
 
 - **Critical Issue: Nomenclature Search Data Extraction Failure**
-  - Updated `searchNomenclature()` function in `static/js/md_bt.js` to properly handle the exact API response format
+  - Updated `searchNomenclature()` function in `static/js/md/md_bt.js` to properly handle the exact API response format
   - Enhanced data extraction logic to correctly parse `{"status": "success", "message": "...", "code": 200, "data": [...], "meta": {...}}` format
   - Added more robust error handling and debugging for API response processing
   - Added `dataType: "json"` to AJAX call to ensure proper JSON parsing
@@ -2659,7 +2659,7 @@ If specialty dropdown is still empty:
 ### Fixed
 
 - **Critical Issue: Nomenclature Search Data Extraction Failure**
-  - Updated `searchNomenclature()` function in `static/js/md_bt.js` to properly handle the exact API response format
+  - Updated `searchNomenclature()` function in `static/js/md/md_bt.js` to properly handle the exact API response format
   - Enhanced data extraction logic to correctly parse `{"status": "success", "message": "...", "code": 200, "data": [...], "meta": {...}}` format
   - Added more robust error handling and debugging for API response processing
   - Added `dataType: "json"` to AJAX call to ensure proper JSON parsing
