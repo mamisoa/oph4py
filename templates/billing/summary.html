@@ -11,7 +11,7 @@
                 <!-- Patient Photo Section -->
                 <div class="col-md-2 text-center">
                     <div class="position-relative">
-                        <img class="photoId rounded shadow-sm" src="static/images/assets/avatar/mini-man.svg"
+                        <img class="photoId rounded shadow-sm" src="images/assets/avatar/mini-man.svg"
                             alt="Patient Photo" style="max-width: 120px; max-height: 120px; object-fit: contain;">
                     </div>
                 </div>
@@ -106,9 +106,6 @@
             <div class="card">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-file-medical me-2"></i>Consultation History Summary</h5>
-                    <button class="btn btn-outline-light btn-sm" id="view-more-md-summary-btn" style="display: none;">
-                        <i class="fas fa-eye me-1"></i>View More
-                    </button>
                 </div>
                 <div class="card-body">
                     <div id="md-summary-loading" class="text-center py-4">
@@ -149,6 +146,11 @@
                                 consultations
                             </small>
                         </div>
+                        <div id="md-summary-view-more-container" class="text-center mt-3" style="display: none;">
+                            <button class="btn btn-primary" id="btn-md-summary-view-more">
+                                <i class="fas fa-plus me-1"></i>View More
+                            </button>
+                        </div>
                         <div id="md-summary-empty" class="text-center py-4 text-muted" style="display: none;">
                             <i class="fas fa-clipboard me-2"></i>
                             No consultation history found for this patient.
@@ -160,74 +162,10 @@
     </div>
 </div>
 
-<!-- MD Summary Modal -->
-<div class="modal fade" id="md-summary-modal" tabindex="-1" aria-labelledby="mdSummaryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable mt-5">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="mdSummaryModalLabel">
-                    <i class="fas fa-file-medical me-2"></i>Complete Consultation History
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="md-summary-modal-loading" class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-2 text-muted">Loading complete consultation history...</p>
-                </div>
-                <div id="md-summary-modal-error" class="alert alert-danger" style="display: none;">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Error:</strong> Unable to load complete consultation history.
-                    <button class="btn btn-sm btn-outline-danger ms-2" id="retry-md-summary-modal-btn">
-                        <i class="fas fa-redo me-1"></i>Retry
-                    </button>
-                </div>
-                <div id="md-summary-modal-content" style="display: none;">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover table-sm" id="md-summary-modal-table">
-                            <thead class="table-dark sticky-top">
-                                <tr>
-                                    <th style="width: 12%;">Date/Time</th>
-                                    <th style="width: 12%;">Procedure</th>
-                                    <th style="width: 18%;">History</th>
-                                    <th style="width: 18%;">Conclusion</th>
-                                    <th style="width: 15%;">Follow-up</th>
-                                    <th style="width: 12%;">Billing</th>
-                                    <th style="width: 13%;">Billing Codes</th>
-                                </tr>
-                            </thead>
-                            <tbody id="md-summary-modal-body">
-                                <!-- Content will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="md-summary-modal-stats" class="mt-3">
-                        <small class="text-muted">
-                            Total: <span id="md-summary-modal-total">0</span> consultations
-                        </small>
-                    </div>
-                    <div id="md-summary-modal-empty" class="text-center py-4 text-muted" style="display: none;">
-                        <i class="fas fa-clipboard me-2"></i>
-                        No additional consultation history found for this patient.
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-1"></i>Close
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 [[ block js_scripts ]]
 <script type="text/javascript">
     // globals - expose to window object for SummaryManager
-    window.id = [[=rec_id]];
+    window.id = Number("[[=rec_id]]") || null;
     window.HOSTURL = "[[=hosturl]]";
     window.APP_NAME = "[[=app_name]]";
 

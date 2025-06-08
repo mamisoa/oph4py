@@ -5,7 +5,7 @@
 **Project**: Patient Consultation History Summary Implementation
 
 - **Goal**: Display a patient's complete MD/GP consultation history in a dedicated summary view, replacing the previous content.
-- **Scope**: The implementation included new patient-based API endpoints, a redesigned patient information card, a 7-column data table for consultation history, and a "View More" modal for complete history access.
+- **Scope**: The implementation included new patient-based API endpoints, a redesigned patient information card, a 7-column data table for consultation history, and an append-based pagination system.
 - **Final Outcome**: A fully functional, visually refined patient summary page that correctly fetches and displays all required data, including patient photos and a detailed consultation history sourced from the correct database fields.
 
 ---
@@ -17,8 +17,7 @@
 **Location**: `api/endpoints/payment.py`
 **Endpoints Implemented**:
 
--   `GET /api/patient/{patient_id}/md_summary[/{offset}]`: Paginated (5 per page) history.
--   `GET /api/patient/{patient_id}/md_summary_modal`: Full history (up to 50 records) for the modal.
+-   `GET /api/patient/{patient_id}/md_summary[/{offset}]`: Paginated (10 per page) history.
 
 **CRITICAL FIXES APPLIED**:
 
@@ -39,41 +38,48 @@
 
 **CRITICAL FIXES APPLIED**:
 
--   ✅ **Patient Data Loading**: The patient information bar was initially empty. `loadPatientInfo()` was implemented, but required further fixes.
--   ✅ **API Call Format Corrected**: The API call to fetch user data was corrected from `/api/auth_user/{id}` to the proper query format: `/api/auth_user?id.eq={id}`.
--   ✅ **Response Parsing Fixed**: The JS was updated to parse the patient object from `result.items[0]` instead of the incorrect `result.data`.
--   ✅ **Field Mappings Corrected**: Fields like `dob`, `ssn`, and `idc_num` were correctly mapped from the API response.
--   ✅ **Gender Handling Fixed**: Logic was added to handle numeric gender values (1=Male, 2=Female) for avatar selection.
+-   ✅ **Patient Data Loading**: The patient information bar was initially empty. `loadPatientInfo()` was implemented and corrected.
+-   ✅ **API Call Format Corrected**: The API call to fetch user data was corrected to use the proper query format: `/{appName}/api/auth_user?id.eq={id}`.
+-   ✅ **Response Parsing Fixed**: The JS was updated to parse the patient object from `result.items[0]`.
+-   ✅ **Field Mappings Corrected**: Fields like `dob`, `ssn`, `idc_num`, and `gender` were correctly mapped from the API response, including handling the nested `gender` object from the `@lookup` parameter.
 
 #### ✅ Phase 3: UI/UX Enhancements & Photo Handling - COMPLETE
 
 This phase focused on refining the UI based on user feedback for a polished, professional look.
 
--   ✅ **Enhanced Patient Information Card**: A visually appealing, multi-column card replaced the simple patient bar. It includes a patient photo, calculated age, and other key details.
--   ✅ **Base64 Photo Support**: The `loadPatientPhoto` function was updated to prioritize the `photob64` field from the API, allowing direct display of base64 images.
--   ✅ **Photo Display Adjustments**:
-    -   The `rounded-circle` class was removed to show the full, uncropped patient photo.
-    -   A blue border around the photo was removed for a cleaner look.
--   ✅ **Fallback Image Path Correction**:
-    -   `404 Not Found` errors for fallback avatars were resolved by prepending the application's base URL to the SVG paths.
-    -   Proactive (and failing) requests for non-existent `.jpg` and `.png` files were removed.
--   ✅ **Final UI Cleanup**:
-    -   A static green checkmark icon next to the photo was removed.
-    -   The "Profile" and "New Visit" buttons were removed from the patient card, along with their corresponding event listeners, to simplify the interface as requested.
+-   ✅ **Enhanced Patient Information Card**: A visually appealing, multi-column card replaced the simple patient bar.
+-   ✅ **Base64 Photo Support**: The `loadPatientPhoto` function was updated to correctly handle `base64` strings that already included a data URI prefix.
+-   ✅ **Final UI Cleanup**: The UI was simplified by removing unnecessary borders and buttons as requested.
 
 ---
+### Post-Implementation Refinements
 
+Following the initial completion, several user experience (UX) and data-handling refinements were made:
+
+-   **Pagination Rework**: The "View More" modal was replaced with a more streamlined, append-based pagination system. The view now initially loads 10 consultations, and a "View More" button at the bottom of the list allows users to progressively load and append the next 10 records without leaving the page.
+-   **API Adjustments**:
+    -   The backend endpoint (`/api/patient/{patient_id}/md_summary`) was updated to return 10 items per page.
+    -   The now-redundant `patient_md_summary_modal` endpoint was removed.
+    -   The patient info endpoint (`/api/auth_user`) was updated to use the `@lookup=gender` parameter, fetching the gender text directly from the database and making the frontend more robust.
+-   **Bug Fixes & Data Integrity**:
+    -   **Photo Display**: Corrected the handling of `base64` image strings to properly display patient photos. Also fixed broken fallback avatar paths.
+    -   **Last Visit Date**: Fixed a regression where the "Last Visit" date was missing. It is now correctly populated from the most recent consultation record.
+    -   **Gender Field**: The JavaScript was corrected to use the right key (`sex`) when parsing the gender object from the API response.
+    -   **Tooltips**: Restored missing tooltips on truncated text fields in the consultation history table.
+
+**Final Status**: The feature is stable and incorporates all user feedback for an improved, seamless experience.
+---
 ### 🗄️ Database Schema & UI/UX
 
-**Tables Involved**: `worklist`, `current_hx`, `ccx`, `followup`, `billing`, `billing_codes`, `procedure`, `modality`.
+**Tables Involved**: `worklist`, `current_hx`, `ccx`, `followup`, `billing`, `billing_codes`, `procedure`, `modality`, `auth_user`, `gender`.
 
 **UI/UX Design**:
 -   **Patient Card**: A professional, card-based layout with a 4-column responsive grid.
 -   **Main Table**: A 7-column Bootstrap table with responsive column widths and text truncation for long content.
--   **Modal**: A large (`modal-xl`) Bootstrap modal with a sticky header for displaying the complete consultation history.
+-   **Pagination**: A "View More" button at the bottom of the table to progressively load more data.
 
 ---
 
 ### 🎉 Project Status: COMPLETE & ARCHIVED
 
-The patient consultation history summary was successfully implemented, and all critical issues were resolved. The feature is ready for production use.
+The patient consultation history summary was successfully implemented, and all critical issues and refinements have been addressed. The feature is ready for production use.

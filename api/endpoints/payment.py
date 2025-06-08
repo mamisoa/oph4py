@@ -912,8 +912,8 @@ def patient_md_summary(patient_id: int, offset: int = 0):
     Get patient's consultation history summary for summary view
 
     Returns historical consultation data with pagination support.
-    Default: Returns last 5 consultations
-    With offset: Returns next 5 consultations for "view more" functionality
+    Default: Returns last 10 consultations
+    With offset: Returns next 10 consultations for "view more" functionality
 
     Args:
         patient_id: The patient ID to get consultation history for
@@ -965,7 +965,7 @@ def patient_md_summary(patient_id: int, offset: int = 0):
                 db.billing.on(db.worklist.id == db.billing.id_worklist),
             ],
             orderby=~db.worklist.requested_time,  # Most recent first
-            limitby=(offset, offset + 5),  # Pagination: 5 records at a time
+            limitby=(offset, offset + 10),  # Pagination: 10 records at a time
         )
 
         # Process each consultation record
@@ -1015,140 +1015,20 @@ def patient_md_summary(patient_id: int, offset: int = 0):
             summary_data.append(consultation_record)
 
         # Check if more records exist
-        has_more = (offset + 5) < total_count
+        has_more = (offset + 10) < total_count
 
         result = {
             "items": summary_data,
             "has_more": has_more,
             "total_count": total_count,
             "current_offset": offset,
-            "limit": 5,
+            "limit": 10,
         }
 
         return APIResponse.success(data=result)
 
     except Exception as e:
         logger.error(f"Error in patient_md_summary: {str(e)}")
-        return APIResponse.error(
-            message=f"Server error: {str(e)}",
-            status_code=500,
-            error_type="server_error",
-        )
-
-
-@action("api/patient/<patient_id:int>/md_summary_modal", method=["GET"])
-def patient_md_summary_modal(patient_id: int):
-    """
-    Get all consultation history for patient modal display
-
-    Returns complete consultation history for modal "View More" functionality.
-    Used when user wants to see all historical records beyond the initial 5.
-
-    Args:
-        patient_id: The patient ID to get consultation history for
-
-    Returns:
-        dict: Complete consultation history for modal display
-    """
-    try:
-        logger.info(f"Patient MD summary modal request for patient {patient_id}")
-
-        # Verify patient exists
-        patient = db.auth_user[patient_id]
-        if not patient:
-            return APIResponse.error(
-                message="Patient not found", status_code=404, error_type="not_found"
-            )
-
-        # Query for all patient's worklists
-        query = db.worklist.id_auth_user == patient_id
-        # Filter to only MD or GP modalities
-        mode_ids = [
-            m.id
-            for m in db(db.modality.modality_name.belongs(["MD", "GP"])).select(
-                db.modality.id
-            )
-        ]
-        query &= db.worklist.modality_dest.belongs(mode_ids)
-
-        # Get total count
-        total_count = db(query).count()
-
-        # Get all consultation records (no pagination for modal)
-        rows = db(query).select(
-            db.worklist.requested_time.with_alias("requested_time"),
-            db.worklist.id.with_alias("worklist_id"),
-            db.procedure.exam_name.with_alias("procedure_name"),
-            db.current_hx.description.with_alias("current_hx_desc"),
-            db.ccx.description.with_alias("conclusion_desc"),
-            db.followup.description.with_alias("followup_desc"),
-            db.billing.description.with_alias("billing_desc"),
-            left=[
-                db.procedure.on(db.worklist.procedure == db.procedure.id),
-                db.current_hx.on(db.worklist.id == db.current_hx.id_worklist),
-                db.ccx.on(db.worklist.id == db.ccx.id_worklist),
-                db.followup.on(db.worklist.id == db.followup.id_worklist),
-                db.billing.on(db.worklist.id == db.billing.id_worklist),
-            ],
-            orderby=~db.worklist.requested_time,  # Most recent first
-            limitby=(0, 50),  # Reasonable limit for modal display
-        )
-
-        # Process consultation records (same logic as main endpoint)
-        summary_data = []
-        for row in rows:
-            worklist_row_id = row.worklist_id
-
-            # Get billing codes for this worklist
-            billing_codes = db(db.billing_codes.id_worklist == worklist_row_id).select()
-
-            # Aggregate billing codes
-            codes_summary = []
-            total_billing = Decimal("0.00")
-
-            for code in billing_codes:
-                if code.nomen_code:
-                    codes_summary.append(str(code.nomen_code))
-                    if code.fee:
-                        total_billing += Decimal(str(code.fee)) * (code.quantity or 1)
-                    if code.secondary_fee:
-                        total_billing += Decimal(str(code.secondary_fee)) * (
-                            code.quantity or 1
-                        )
-
-            # Format billing codes
-            billing_codes_text = (
-                f"{', '.join(codes_summary)} (€{total_billing:.2f})"
-                if codes_summary
-                else "-"
-            )
-
-            # Build consultation record
-            consultation_record = {
-                "requested_time": (
-                    row.requested_time.isoformat() if row.requested_time else None
-                ),
-                "worklist_id": worklist_row_id,
-                "procedure": (row.procedure_name if row.procedure_name else "-"),
-                "history": (row.current_hx_desc if row.current_hx_desc else "-"),
-                "conclusion": (row.conclusion_desc if row.conclusion_desc else "-"),
-                "followup": (row.followup_desc if row.followup_desc else "-"),
-                "billing_desc": (row.billing_desc if row.billing_desc else "-"),
-                "billing_codes": billing_codes_text,
-            }
-
-            summary_data.append(consultation_record)
-
-        result = {
-            "items": summary_data,
-            "total_count": total_count,
-            "limited_to": min(50, total_count),  # Inform about any limitation
-        }
-
-        return APIResponse.success(data=result)
-
-    except Exception as e:
-        logger.error(f"Error in patient_md_summary_modal: {str(e)}")
         return APIResponse.error(
             message=f"Server error: {str(e)}",
             status_code=500,

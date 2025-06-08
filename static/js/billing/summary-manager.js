@@ -1,499 +1,363 @@
 /**
- * Summary Manager for Patient Consultation History
- * Handles patient info display and MD consultation history summary
+ * Manages the patient summary page, including loading patient information
+ * and their consultation history with "load more" functionality.
+ *
+ * This class handles:
+ * - Fetching patient details for the information card.
+ * - Loading the initial set of 10 consultation history records.
+ * - Appending subsequent sets of 10 records when the user clicks "View More".
+ * - Displaying loading, error, and empty states for the consultation history.
  */
+
+// Helper function to calculate age
+function calculateAge(dob) {
+	if (!dob) return null;
+	const birthDate = new Date(dob);
+	const today = new Date();
+	let age = today.getFullYear() - birthDate.getFullYear();
+	const m = today.getMonth() - birthDate.getMonth();
+	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+		age--;
+	}
+	return age;
+}
+
+// Helper function to escape HTML for use in attributes
+function escapeHtml(text) {
+	if (!text) return "";
+	return text
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
+}
+
+// Helper function to truncate text
+function truncateText(text, maxLength) {
+	if (!text) return "-";
+	return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+}
+
 class SummaryManager {
-	constructor() {
-		this.patientId = window.id;
-		this.hostUrl = window.HOSTURL;
-		this.appName = window.APP_NAME;
-		this.baseUrl = `${this.hostUrl}/${this.appName}`;
+	/**
+	 * @param {number} patientId - The ID of the patient.
+	 * @param {object} options - Configuration options.
+	 * @param {string} options.hostUrl - The base URL of the application.
+	 * @param {string} options.appName - The name of the py4web application.
+	 */
+	constructor(patientId, options = {}) {
+		this.patientId = patientId;
+		this.options = options;
+		this.offset = 0;
+		this.limit = 10;
+		this.totalConsultations = 0;
+		this.currentConsultations = 0;
+		this.isLoading = false;
 
-		console.log("SummaryManager initialized:", {
-			patientId: this.patientId,
-			baseUrl: this.baseUrl,
-		});
+		this.elements = {
+			// Patient card elements
+			patientName: document.querySelector(".patientName"),
+			patientDob: document.querySelector(".patientDob"),
+			patientAge: document.querySelector(".patientAge"),
+			patientGender: document.querySelector(".patientGender"),
+			patientId: document.querySelector(".patientId"),
+			patientSsn: document.querySelector(".patientSsn"),
+			patientCard: document.querySelector(".patientCard"),
+			patientEmail: document.querySelector(".patientEmail"),
+			lastVisit: document.querySelector(".lastVisit"),
+			totalConsultations: document.getElementById("total-consultations"),
+			patientSince: document.querySelector(".patient-since"),
+			photoId: document.querySelector(".photoId"),
 
-		this.init();
+			// MD Summary elements
+			summaryContent: document.getElementById("md-summary-content"),
+			summaryBody: document.getElementById("md-summary-body"),
+			summaryLoading: document.getElementById("md-summary-loading"),
+			summaryError: document.getElementById("md-summary-error"),
+			summaryEmpty: document.getElementById("md-summary-empty"),
+			summaryStats: document.getElementById("md-summary-stats"),
+			summaryShowing: document.getElementById("md-summary-showing"),
+			summaryTotal: document.getElementById("md-summary-total"),
+			viewMoreContainer: document.getElementById(
+				"md-summary-view-more-container"
+			),
+			viewMoreButton: document.getElementById("btn-md-summary-view-more"),
+			retryButton: document.getElementById("retry-md-summary-btn"),
+		};
 	}
 
+	/**
+	 * Initializes the summary manager by loading data and setting up event listeners.
+	 */
 	init() {
+		console.log("SummaryManager initialized for patient:", this.patientId);
 		this.loadPatientInfo();
-		this.loadMDSummary();
-		this.attachEventListeners();
+		this.loadSummary();
+		this.setupEventListeners();
 	}
 
-	attachEventListeners() {
-		// View More button
-		document
-			.getElementById("view-more-md-summary-btn")
-			?.addEventListener("click", () => {
-				this.showMDSummaryModal();
-			});
-
-		// Retry buttons
-		document
-			.getElementById("retry-md-summary-btn")
-			?.addEventListener("click", () => {
-				this.loadMDSummary();
-			});
-
-		document
-			.getElementById("retry-md-summary-modal-btn")
-			?.addEventListener("click", () => {
-				this.loadMDSummaryModal();
-			});
-
-		// Quick action buttons
-		document
-			.querySelector(".patient-actions .btn-outline-info")
-			?.addEventListener("click", () => {
-				this.printSummary();
-			});
-	}
-
+	/**
+	 * Fetches and displays the main patient information in the top card.
+	 */
 	async loadPatientInfo() {
+		if (!this.patientId) return;
+
 		try {
-			console.log("Loading patient info for ID:", this.patientId);
-
+			// Add @lookup=gender to fetch the gender text representation directly.
 			const response = await fetch(
-				`${this.baseUrl}/api/auth_user?id.eq=${this.patientId}`
+				`/${this.options.appName}/api/auth_user?id.eq=${this.patientId}&@lookup=gender`
 			);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
 			const result = await response.json();
+			const patient =
+				result.items && result.items.length > 0 ? result.items[0] : null;
 
-			if (
-				result.status === "success" &&
-				result.items &&
-				result.items.length > 0
-			) {
-				this.populatePatientInfo(result.items[0]);
+			if (patient) {
+				this.displayPatientInfo(patient);
+				this.loadPatientPhoto(patient);
 			} else {
-				console.error(
-					"Failed to load patient info:",
-					result.message || "Unknown error"
-				);
-				this.showPatientInfoError();
+				this.handlePatientInfoError("Patient not found.");
 			}
 		} catch (error) {
 			console.error("Error loading patient info:", error);
-			this.showPatientInfoError();
+			this.handlePatientInfoError(error.message);
 		}
 	}
 
-	populatePatientInfo(patient) {
-		// Basic patient info
-		const nameElement = document.querySelector(".patientName");
-		if (nameElement) {
-			nameElement.innerHTML = `<i class="fas fa-user me-2"></i>${
-				patient.first_name || ""
-			} ${patient.last_name || ""}`;
-		}
-
-		// Date of birth and age
-		const dobElement = document.querySelector(".patientDob");
-		const ageElement = document.querySelector(".patientAge");
-		if (patient.dob) {
-			const dob = new Date(patient.dob);
-			const formattedDob = dob.toLocaleDateString("en-GB");
-			if (dobElement) dobElement.textContent = formattedDob;
-
-			// Calculate age
-			const age = this.calculateAge(dob);
-			if (ageElement) ageElement.textContent = `${age} years`;
-		} else {
-			if (dobElement) dobElement.textContent = "--";
-			if (ageElement) ageElement.textContent = "-- years";
-		}
-
-		// Gender (API returns number: 1=M, 2=F)
-		const genderElement = document.querySelector(".patientGender");
-		if (genderElement) {
-			const genderText =
-				patient.gender === 1 ? "Male" : patient.gender === 2 ? "Female" : "--";
-			genderElement.textContent = genderText;
-		}
-
-		// Patient identifiers
-		const idElement = document.querySelector(".patientId");
-		if (idElement) {
-			idElement.textContent = patient.id || "--";
-		}
-
-		const ssnElement = document.querySelector(".patientSsn");
-		if (ssnElement) {
-			ssnElement.textContent = patient.ssn || "--";
-		}
-
-		const cardElement = document.querySelector(".patientCard");
-		if (cardElement) {
-			cardElement.textContent = patient.idc_num || "--";
-		}
-
-		// Contact info
-		const emailElement = document.querySelector(".patientEmail");
-		if (emailElement) {
-			emailElement.textContent = patient.email || "--";
-		}
-
-		// Patient photo
-		this.loadPatientPhoto(patient);
-
-		// Patient since date
-		const patientSinceElement = document.querySelector(".patient-since");
-		if (patient.created_on && patientSinceElement) {
-			const createdDate = new Date(patient.created_on);
-			patientSinceElement.textContent = createdDate.getFullYear();
-		}
-
-		console.log("Patient info populated successfully");
+	/**
+	 * Populates the patient information card with data from the API.
+	 * @param {object} patient - The patient data object.
+	 */
+	displayPatientInfo(patient) {
+		this.elements.patientName.textContent = `${patient.first_name || ""} ${
+			patient.last_name || ""
+		}`;
+		this.elements.patientDob.textContent = patient.dob
+			? new Date(patient.dob).toLocaleDateString()
+			: "--";
+		this.elements.patientAge.textContent = patient.dob
+			? `${calculateAge(patient.dob)} years`
+			: "-- years";
+		// Handle gender object from @lookup parameter, using the correct 'sex' key.
+		this.elements.patientGender.textContent =
+			patient.gender && typeof patient.gender === "object" && patient.gender.sex
+				? patient.gender.sex
+				: "--";
+		this.elements.patientId.textContent = patient.id || "--";
+		this.elements.patientSsn.textContent = patient.ssn || "--";
+		this.elements.patientCard.textContent = patient.idc_num || "--"; // Correct field for card number
+		this.elements.patientEmail.textContent = patient.email || "--";
+		this.elements.patientSince.textContent = patient.created_on
+			? new Date(patient.created_on).getFullYear()
+			: "--";
 	}
 
+	/**
+	 * Displays an error state in the patient information card.
+	 * @param {string} message - The error message to display.
+	 */
+	handlePatientInfoError(message) {
+		this.elements.patientName.textContent = "Error";
+		this.elements.patientName.classList.add("text-danger");
+		console.error("Failed to load patient info:", message);
+	}
+
+	/**
+	 * Loads the patient's photo, handling base64 data and gender-based fallbacks.
+	 * @param {object} patient - The patient data object.
+	 */
 	loadPatientPhoto(patient) {
-		const photoElement = document.querySelector(".photoId");
-		if (!photoElement) return;
+		const baseUrl = `${this.options.hostUrl}/${this.options.appName}`;
+		// The gender property is now an object from the lookup, so we access its ID for the fallback logic.
+		const genderId =
+			patient.gender && patient.gender.id ? patient.gender.id : null;
+		const defaultAvatar =
+			genderId === 1
+				? `${baseUrl}/images/assets/avatar/mini-man.svg`
+				: `${baseUrl}/images/assets/avatar/mini-woman.svg`;
 
-		// Prioritize base64 photo if available
-		if (patient.photob64 && patient.photob64.startsWith("data:image")) {
-			photoElement.src = patient.photob64;
-			console.log("Patient photo loaded from base64 data.");
-			return;
-		}
-
-		console.log("Base64 photo not found, falling back to URL sources.");
-		// Fallback to trying different URL sources
-		const photoSources = [
-			patient.photo_url, // If there's a photo URL field, assuming it's a full URL or correct relative path
-			patient.gender === 2
-				? `${this.baseUrl}/static/images/assets/avatar/mini-woman.svg`
-				: `${this.baseUrl}/static/images/assets/avatar/mini-man.svg`, // Gender-based default (1=M, 2=F)
-		].filter(Boolean);
-
-		this.tryLoadPhoto(photoElement, photoSources, 0);
-	}
-
-	tryLoadPhoto(imgElement, sources, index) {
-		if (index >= sources.length) {
-			// All sources failed, use default
-			imgElement.src = `${this.baseUrl}/static/images/assets/avatar/mini-man.svg`;
-			return;
-		}
-
-		const img = new Image();
-		img.onload = () => {
-			imgElement.src = sources[index];
-		};
-		img.onerror = () => {
-			this.tryLoadPhoto(imgElement, sources, index + 1);
-		};
-		img.src = sources[index];
-	}
-
-	calculateAge(birthDate) {
-		const today = new Date();
-		let age = today.getFullYear() - birthDate.getFullYear();
-		const monthDiff = today.getMonth() - birthDate.getMonth();
-
-		if (
-			monthDiff < 0 ||
-			(monthDiff === 0 && today.getDate() < birthDate.getDate())
-		) {
-			age--;
-		}
-
-		return age;
-	}
-
-	showPatientInfoError() {
-		const nameElement = document.querySelector(".patientName");
-		if (nameElement) {
-			nameElement.innerHTML =
-				'<i class="fas fa-exclamation-triangle me-2"></i>Error loading patient info';
-			nameElement.classList.add("text-danger");
-		}
-	}
-
-	async loadMDSummary() {
-		try {
-			this.showLoading();
-
-			console.log("Loading MD summary for patient:", this.patientId);
-
-			const response = await fetch(
-				`${this.baseUrl}/api/patient/${this.patientId}/md_summary`
-			);
-			const result = await response.json();
-
-			if (result.status === "success") {
-				this.populateMDSummary(result.data);
-				this.updateConsultationStats(result.data.total_count);
+		if (patient.photob64) {
+			// Check if the base64 string already includes the data URI prefix.
+			if (patient.photob64.startsWith("data:image")) {
+				this.elements.photoId.src = patient.photob64;
 			} else {
-				this.showError(result.message || "Failed to load consultation history");
+				// If not, add the prefix.
+				this.elements.photoId.src = `data:image/jpeg;base64,${patient.photob64}`;
+			}
+		} else {
+			this.elements.photoId.src = defaultAvatar;
+		}
+
+		this.elements.photoId.onerror = () => {
+			this.elements.photoId.src = defaultAvatar;
+		};
+	}
+
+	/**
+	 * Loads the consultation history from the API.
+	 * Handles both the initial load and subsequent "View More" clicks.
+	 * @param {boolean} loadMore - If true, appends data; otherwise, clears and loads.
+	 */
+	async loadSummary(loadMore = false) {
+		if (this.isLoading) return;
+		this.isLoading = true;
+
+		if (!loadMore) {
+			this.offset = 0;
+			this.currentConsultations = 0;
+			this.elements.summaryBody.innerHTML = ""; // Clear existing data for initial load
+			this.elements.summaryLoading.style.display = "block";
+			this.elements.summaryContent.style.display = "none";
+			this.elements.summaryError.style.display = "none";
+			this.elements.viewMoreContainer.style.display = "none";
+		} else {
+			this.elements.viewMoreButton.disabled = true;
+			this.elements.viewMoreButton.innerHTML =
+				'<i class="fas fa-spinner fa-spin me-1"></i>Loading...';
+		}
+
+		try {
+			const url = `/${this.options.appName}/api/patient/${this.patientId}/md_summary/${this.offset}`;
+			const response = await fetch(url);
+			if (!response.ok)
+				throw new Error(`HTTP error! status: ${response.status}`);
+
+			const result = await response.json();
+			const data = result.data;
+
+			if (data && data.items) {
+				// On initial load, set the last visit date from the most recent consultation.
+				if (!loadMore) {
+					if (data.items.length > 0 && data.items[0].requested_time) {
+						this.elements.lastVisit.textContent = new Date(
+							data.items[0].requested_time
+						).toLocaleDateString();
+					} else {
+						this.elements.lastVisit.textContent = "N/A";
+					}
+				}
+
+				this.renderSummary(data.items);
+				this.totalConsultations = data.total_count;
+				this.currentConsultations += data.items.length;
+				this.updateSummaryStats();
+
+				if (data.has_more) {
+					this.elements.viewMoreContainer.style.display = "block";
+				} else {
+					this.elements.viewMoreContainer.style.display = "none";
+				}
+
+				if (this.totalConsultations === 0) {
+					this.elements.summaryEmpty.style.display = "block";
+				}
+			} else {
+				throw new Error("Invalid data structure from API");
 			}
 		} catch (error) {
 			console.error("Error loading MD summary:", error);
-			this.showError("Network error loading consultation history");
-		}
-	}
+			this.elements.summaryError.style.display = "block";
+		} finally {
+			this.isLoading = false;
+			this.elements.summaryLoading.style.display = "none";
+			this.elements.summaryContent.style.display = "block";
 
-	updateConsultationStats(totalCount) {
-		const totalElement = document.getElementById("total-consultations");
-		if (totalElement) {
-			totalElement.textContent = totalCount || 0;
-		}
-
-		// Update last visit date if we have consultations
-		if (totalCount > 0) {
-			// This would be populated from the first item in the summary
-			// For now, we'll leave it as is since we'd need the actual data
-		}
-	}
-
-	populateMDSummary(data) {
-		console.log("Populating MD summary with data:", data);
-
-		if (!data.items || data.items.length === 0) {
-			this.showEmpty();
-			return;
-		}
-
-		const tbody = document.getElementById("md-summary-body");
-		if (!tbody) {
-			console.error("MD summary table body not found");
-			return;
-		}
-
-		tbody.innerHTML = "";
-
-		data.items.forEach((item) => {
-			const row = this.createSummaryRow(item);
-			tbody.appendChild(row);
-		});
-
-		// Update stats
-		const showingElement = document.getElementById("md-summary-showing");
-		const totalElement = document.getElementById("md-summary-total");
-
-		if (showingElement) showingElement.textContent = data.items.length;
-		if (totalElement) totalElement.textContent = data.total_count;
-
-		// Show/hide "View More" button
-		const viewMoreBtn = document.getElementById("view-more-md-summary-btn");
-		if (viewMoreBtn) {
-			viewMoreBtn.style.display = data.has_more ? "inline-block" : "none";
-		}
-
-		// Update last visit in patient bar
-		if (data.items.length > 0) {
-			const lastVisitElement = document.querySelector(".lastVisit");
-			if (lastVisitElement && data.items[0].requested_time) {
-				const lastVisitDate = new Date(data.items[0].requested_time);
-				lastVisitElement.textContent = this.formatDate(lastVisitDate);
+			if (loadMore) {
+				this.elements.viewMoreButton.disabled = false;
+				this.elements.viewMoreButton.innerHTML =
+					'<i class="fas fa-plus me-1"></i>View More';
 			}
 		}
-
-		this.showContent();
 	}
 
-	createSummaryRow(item) {
-		const row = document.createElement("tr");
-
-		// Format date
-		const dateCell = document.createElement("td");
-		dateCell.textContent = item.requested_time
-			? this.formatDateTime(new Date(item.requested_time))
-			: "--";
-		row.appendChild(dateCell);
-
-		// Procedure
-		const procedureCell = document.createElement("td");
-		procedureCell.textContent = this.truncateText(item.procedure || "--", 25);
-		procedureCell.title = item.procedure || "--";
-		row.appendChild(procedureCell);
-
-		// History
-		const historyCell = document.createElement("td");
-		historyCell.textContent = this.truncateText(item.history || "--", 40);
-		historyCell.title = item.history || "--";
-		row.appendChild(historyCell);
-
-		// Conclusion
-		const conclusionCell = document.createElement("td");
-		conclusionCell.textContent = this.truncateText(item.conclusion || "--", 40);
-		conclusionCell.title = item.conclusion || "--";
-		row.appendChild(conclusionCell);
-
-		// Follow-up
-		const followupCell = document.createElement("td");
-		followupCell.textContent = this.truncateText(item.followup || "--", 35);
-		followupCell.title = item.followup || "--";
-		row.appendChild(followupCell);
-
-		// Billing description
-		const billingCell = document.createElement("td");
-		billingCell.textContent = this.truncateText(item.billing_desc || "--", 25);
-		billingCell.title = item.billing_desc || "--";
-		row.appendChild(billingCell);
-
-		// Billing codes
-		const codesCell = document.createElement("td");
-		codesCell.textContent = this.truncateText(item.billing_codes || "--", 30);
-		codesCell.title = item.billing_codes || "--";
-		if (item.billing_codes && item.billing_codes !== "--") {
-			codesCell.classList.add("fw-bold", "text-success");
-		}
-		row.appendChild(codesCell);
-
-		return row;
-	}
-
-	formatDateTime(date) {
-		return (
-			date.toLocaleDateString("en-GB", {
-				day: "2-digit",
-				month: "2-digit",
-				year: "2-digit",
-			}) +
-			", " +
-			date.toLocaleTimeString("en-GB", {
-				hour: "2-digit",
-				minute: "2-digit",
-			})
-		);
-	}
-
-	formatDate(date) {
-		return date.toLocaleDateString("en-GB", {
-			day: "2-digit",
-			month: "2-digit",
-			year: "numeric",
-		});
-	}
-
-	truncateText(text, maxLength) {
-		if (!text || text.length <= maxLength) return text;
-		return text.substring(0, maxLength - 3) + "...";
-	}
-
-	showMDSummaryModal() {
-		const modal = new bootstrap.Modal(
-			document.getElementById("md-summary-modal")
-		);
-		modal.show();
-		this.loadMDSummaryModal();
-	}
-
-	async loadMDSummaryModal() {
-		try {
-			this.showModalLoading();
-
-			const response = await fetch(
-				`${this.baseUrl}/api/patient/${this.patientId}/md_summary_modal`
-			);
-			const result = await response.json();
-
-			if (result.status === "success") {
-				this.populateMDSummaryModal(result.data);
-			} else {
-				this.showModalError(
-					result.message || "Failed to load complete consultation history"
-				);
-			}
-		} catch (error) {
-			console.error("Error loading MD summary modal:", error);
-			this.showModalError("Network error loading consultation history");
-		}
-	}
-
-	populateMDSummaryModal(data) {
-		if (!data.items || data.items.length === 0) {
-			this.showModalEmpty();
+	/**
+	 * Renders the fetched consultation history into the table.
+	 * @param {Array<object>} items - An array of consultation records.
+	 */
+	renderSummary(items) {
+		if (items.length === 0 && this.offset === 0) {
+			this.elements.summaryEmpty.style.display = "block";
+			this.elements.summaryStats.style.display = "none";
 			return;
 		}
 
-		const tbody = document.getElementById("md-summary-modal-body");
-		if (!tbody) return;
-
-		tbody.innerHTML = "";
-
-		data.items.forEach((item) => {
-			const row = this.createSummaryRow(item);
-			tbody.appendChild(row);
+		const fragment = document.createDocumentFragment();
+		items.forEach((item) => {
+			const row = document.createElement("tr");
+			row.innerHTML = `
+				<td>${
+					item.requested_time
+						? new Date(item.requested_time).toLocaleString()
+						: "-"
+				}</td>
+				<td title="${escapeHtml(item.procedure)}">${truncateText(
+				item.procedure,
+				50
+			)}</td>
+				<td title="${escapeHtml(item.history)}">${truncateText(item.history, 80)}</td>
+				<td title="${escapeHtml(item.conclusion)}">${truncateText(
+				item.conclusion,
+				80
+			)}</td>
+				<td title="${escapeHtml(item.followup)}">${truncateText(item.followup, 70)}</td>
+				<td title="${escapeHtml(item.billing_desc)}">${truncateText(
+				item.billing_desc,
+				50
+			)}</td>
+				<td title="${escapeHtml(item.billing_codes)}">${item.billing_codes || "-"}</td>
+			`;
+			fragment.appendChild(row);
 		});
-
-		const totalElement = document.getElementById("md-summary-modal-total");
-		if (totalElement) totalElement.textContent = data.total_count;
-
-		this.showModalContent();
+		this.elements.summaryBody.appendChild(fragment);
+		this.offset += items.length; // Increment offset
 	}
 
-	// UI State Management
-	showLoading() {
-		document.getElementById("md-summary-loading").style.display = "block";
-		document.getElementById("md-summary-error").style.display = "none";
-		document.getElementById("md-summary-content").style.display = "none";
+	/**
+	 * Updates the summary statistics display.
+	 */
+	updateSummaryStats() {
+		this.elements.summaryStats.style.display = "block";
+		this.elements.summaryShowing.textContent = this.currentConsultations;
+		this.elements.summaryTotal.textContent = this.totalConsultations;
+		this.elements.totalConsultations.textContent = this.totalConsultations;
 	}
 
-	showError(message) {
-		document.getElementById("md-summary-loading").style.display = "none";
-		document.getElementById("md-summary-error").style.display = "block";
-		document.getElementById("md-summary-content").style.display = "none";
-
-		const errorElement = document.getElementById("md-summary-error");
-		if (errorElement && message) {
-			const messageElement = errorElement.querySelector("strong").nextSibling;
-			if (messageElement) messageElement.textContent = " " + message;
-		}
-	}
-
-	showContent() {
-		document.getElementById("md-summary-loading").style.display = "none";
-		document.getElementById("md-summary-error").style.display = "none";
-		document.getElementById("md-summary-content").style.display = "block";
-	}
-
-	showEmpty() {
-		document.getElementById("md-summary-loading").style.display = "none";
-		document.getElementById("md-summary-error").style.display = "none";
-		document.getElementById("md-summary-content").style.display = "block";
-		document.getElementById("md-summary-empty").style.display = "block";
-	}
-
-	// Modal state management
-	showModalLoading() {
-		document.getElementById("md-summary-modal-loading").style.display = "block";
-		document.getElementById("md-summary-modal-error").style.display = "none";
-		document.getElementById("md-summary-modal-content").style.display = "none";
-	}
-
-	showModalError(message) {
-		document.getElementById("md-summary-modal-loading").style.display = "none";
-		document.getElementById("md-summary-modal-error").style.display = "block";
-		document.getElementById("md-summary-modal-content").style.display = "none";
-	}
-
-	showModalContent() {
-		document.getElementById("md-summary-modal-loading").style.display = "none";
-		document.getElementById("md-summary-modal-error").style.display = "none";
-		document.getElementById("md-summary-modal-content").style.display = "block";
-	}
-
-	showModalEmpty() {
-		document.getElementById("md-summary-modal-loading").style.display = "none";
-		document.getElementById("md-summary-modal-error").style.display = "none";
-		document.getElementById("md-summary-modal-content").style.display = "block";
-		document.getElementById("md-summary-modal-empty").style.display = "block";
-	}
-
-	// Quick action handlers
-	printSummary() {
-		console.log("Print summary clicked");
-		// TODO: Print consultation summary
-		window.print();
+	/**
+	 * Sets up event listeners for interactive elements.
+	 */
+	setupEventListeners() {
+		this.elements.viewMoreButton.addEventListener("click", () =>
+			this.loadSummary(true)
+		);
+		this.elements.retryButton.addEventListener("click", () =>
+			this.loadSummary()
+		);
 	}
 }
 
-// Initialize when DOM is ready
-document.addEventListener("DOMContentLoaded", function () {
-	console.log("DOM loaded, initializing SummaryManager");
-	new SummaryManager();
+document.addEventListener("DOMContentLoaded", () => {
+	// Retrieve globals from window object
+	const patientId = window.id;
+	const hostUrl = window.HOSTURL;
+	const appName = window.APP_NAME;
+
+	if (patientId) {
+		const summaryManager = new SummaryManager(patientId, { hostUrl, appName });
+		summaryManager.init();
+	} else {
+		console.error(
+			"Patient ID not found. SummaryManager cannot be initialized."
+		);
+		// Optionally, display an error message to the user on the page
+		const errorDiv = document.getElementById("md-summary-error");
+		if (errorDiv) {
+			errorDiv.innerHTML =
+				"<strong>Error:</strong> No patient ID provided. Cannot load summary.";
+			errorDiv.style.display = "block";
+			document.getElementById("md-summary-loading").style.display = "none";
+		}
+	}
 });

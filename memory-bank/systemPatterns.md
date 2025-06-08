@@ -3126,7 +3126,7 @@ def patient_md_summary(patient_id: int, offset: int = 0):
                 db.followup.on(db.worklist.id == db.followup.id_worklist),
             ],
             orderby=~db.worklist.requested_time,
-            limitby=(offset, offset + 5) # 4. Paginate results
+            limitby=(offset, offset + 10) # 4. Paginate results
         )
 
         # 5. Process and aggregate data (e.g., billing codes)
@@ -3138,7 +3138,7 @@ def patient_md_summary(patient_id: int, offset: int = 0):
         # 6. Return paginated response
         return APIResponse.success(data={
             "items": summary_data,
-            "has_more": (offset + 5) < total_count,
+            "has_more": (offset + 10) < total_count,
             # ... other pagination metadata
         })
 
@@ -3146,6 +3146,13 @@ def patient_md_summary(patient_id: int, offset: int = 0):
         logger.error(f"Error in patient_md_summary: {str(e)}")
         return APIResponse.error(f"Server error: {str(e)}", 500)
 
+```
+
+A separate endpoint should provide the main patient details. Use py4web's `@lookup` parameter to efficiently pre-fetch data from referenced tables, such as gender.
+
+```javascript
+// Example API call from frontend JavaScript
+const response = await fetch(`/${appName}/api/auth_user?id.eq=${patientId}&@lookup=gender`);
 ```
 
 ##### 2. Frontend: Composite View Template
@@ -3172,13 +3179,10 @@ The view is composed of two main parts: the patient info card and the data table
         </div>
         <!-- "View More" button for pagination -->
         <div id="view-more-container" class="text-center mt-3" style="display: none;">
-            <button id="btn-view-more" class="btn btn-primary">View More</button>
+            <button id="btn-md-summary-view-more" class.bind="btn-md-summary-view-more" class="btn btn-primary">View More</button>
         </div>
     </div>
 </div>
-
-<!-- 3. Modal for "View More" functionality -->
-[[include 'partials/summary_modal.html']]
 ```
 
 ##### 3. JavaScript: The `SummaryManager`
@@ -3204,7 +3208,7 @@ class SummaryManager {
 
     // B. Load patient data for the info card
     async loadPatientInfo() {
-        // Fetch from /api/auth_user?id.eq={id}
+        // Fetch from /api/auth_user?id.eq={id}&@lookup=gender
         // Populate the patient card fields
         // Handle photo logic (base64, fallbacks)
     }
@@ -3213,76 +3217,19 @@ class SummaryManager {
     async loadSummary(loadMore = false) {
         if (!loadMore) {
             this.offset = 0;
-            // Show loading spinner
         }
         // Fetch from /api/patient/{id}/md_summary/{offset}
-        // Render table rows
-        // Show/hide "View More" button based on `has_more`
-        // Handle error and empty states
-        this.offset += 5;
-    }
-    
-    // D. Load all records for the modal
-    async loadModalSummary() {
-        // Fetch from /api/patient/{id}/md_summary_modal
-        // Populate the modal table
+        // On success, append rows and update pagination state
+        this.offset += 10;
     }
 
     // E. Handle all user interactions
     setupEventListeners() {
-        // Click handler for "View More" button
-        // Click handler for opening the modal
+        // Click handler for "View More" button to call loadSummary(true)
     }
 }
 
 // Instantiate and initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    const patientId = /* get from template */;
-    const summaryManager = new SummaryManager(patientId);
-    summaryManager.init();
-});
-```
-
-#### Workflow Diagram
-
-```mermaid
-graph TD
-    A["Page Load"] --> B["JS: new SummaryManager(patientId)"];
-    B --> C["JS: init()"];
-    C --> D["⚡ Parallel API Calls"];
-    
-    D --> E["📡 GET /api/auth_user?id.eq={id}"];
-    D --> F["📡 GET /api/patient/{id}/md_summary"];
-
-    subgraph "Patient Info Card"
-        E --> G["JS: loadPatientInfo()"];
-        G --> H["DOM: Populate Patient Card & Photo"];
-    end
-
-    subgraph "Consultation History Table"
-        F --> I["JS: loadSummary()"];
-        I --> J["DOM: Render Table Rows"];
-        J --> K{"Has More?"};
-        K -->|Yes| L["DOM: Show 'View More' Button"];
-        K -->|No| M["DOM: Hide 'View More' Button"];
-    end
-
-    L --> N["👆 User Clicks 'View More'"];
-    N --> O["JS: loadSummary(true)"];
-    O --> F;
-    
-    style A fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    style D fill:#fff3e0,stroke:#ff9800,stroke-width:3px
-```
-
-#### Benefits
-
-1.  **Patient-Centric Design**: Aligns the system's data retrieval with the clinical workflow, which is inherently patient-focused.
-2.  **Scalability**: The paginated approach ensures the view remains performant even for patients with extensive histories.
-3.  **Improved User Experience**: Presents a clear, comprehensive overview while hiding complexity. The "View More" and modal features follow a progressive disclosure pattern.
-4.  **Reusability**: The patient info card can be extracted into a partial template and reused in other contexts. The overall pattern is a repeatable solution for building complex summary views.
-5.  **Maintainability**: Encapsulating the logic within a dedicated JavaScript class and using a specific API endpoint makes the feature easier to debug and maintain.
-
-### Dashboard Analytics Enhancement Pattern
-
 // ... existing code ...
+
+</code_block_to_apply_changes_from>
