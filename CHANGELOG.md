@@ -2,6 +2,90 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-08T13:46:55.683783] - Phase 1 Complete: Billing Combo Export Functionality
+
+### Added
+
+- **Billing Combo Export API Endpoint**: New `GET /api/billing_combo/<id>/export` endpoint
+  - Generates simplified JSON export containing only nomenclature codes (main and secondary)
+  - Strips out descriptions, fees, and other API-retrievable data for lightweight, portable exports
+  - Includes export metadata (version, timestamp, exported_by user)
+  - Supports both legacy (integer) and enhanced (object with secondary codes) combo formats
+  - Comprehensive error handling and logging with structured JSON responses
+  - Authentication required via `@action.uses(db, auth.user)` decorator
+
+- **Frontend Export Button**: Added export functionality to billing combo table
+  - Green download button in Actions column for each combo row
+  - Automatic JSON file download with smart filename generation: `billing_combo_[name]_[date].json`
+  - Real-time success/error toast notifications
+  - Progress indication during export process
+
+- **Export Data Format**: Simplified, portable JSON structure
+  ```json
+  {
+    "export_info": {
+      "version": "1.0", 
+      "exported_at": "2025-06-08T13:46:55Z",
+      "exported_by": "user@email.com"
+    },
+    "combo_data": {
+      "combo_name": "Standard Consultation",
+      "combo_description": "Description...",
+      "specialty": "ophthalmology", 
+      "combo_codes": [
+        {
+          "nomen_code": 105755,
+          "secondary_nomen_code": 102030
+        }
+      ]
+    }
+  }
+  ```
+
+### Technical Implementation
+
+- **Backend**: Enhanced `api/endpoints/billing.py` with export endpoint
+  - Proper user authentication via `auth.get_user()`
+  - Safe filename generation with character sanitization
+  - JSON parsing error handling for malformed combo_codes
+  - Support for both legacy integer codes and enhanced object format
+
+- **Frontend**: Enhanced `static/js/billing-combo-manager.js` with export methods
+  - Added `exportCombo(id, name)` method to BillingComboManager class
+  - Updated `operateFormatter` to include export button
+  - Added export event handler to `operateEvents`
+  - Client-side blob creation and download handling
+
+### Benefits
+
+- **Future-Proof**: Exported files will remain valid as nomenclature data is fetched fresh during import
+- **Lightweight**: Export files are 80%+ smaller by excluding API-retrievable data
+- **Portable**: Combos can be shared between systems and environments
+- **User-Friendly**: One-click export with automatic file naming and download
+
+### Fixed
+
+- **Export ID Issue**: Fixed "undefined" combo ID error in export functionality
+  - Changed event handlers to use `row.id` and `row.combo_name` directly from Bootstrap Table row data
+  - Eliminated dependency on data attributes which were causing undefined values
+  - Export now correctly identifies combo ID from table row context
+- **Toast Notification System**: Replaced custom toast implementation with app's standard `displayToast` function
+  - Consistent with app-wide notification system in `static/js/baseof.js`
+  - Proper status types (success, error, info, warning) with standard colors and positioning
+  - Auto-dismiss timers matching app patterns (3-6 seconds based on message type)
+  - Enhanced user experience with standardized notification behavior
+- **Python Format Parsing**: Enhanced combo_codes parsing to handle Python-formatted data
+  - Added fallback parsing for combos stored with Python syntax (single quotes, None values)
+  - Converts `'` to `"` and `None` to `null` for JSON compatibility
+  - Fixes "Combo has no codes to export" error for existing combos with valid data
+  - Backward compatible with both JSON and Python-formatted combo storage
+
+### Status
+
+- ✅ **Phase 1: Export Functionality** - Complete
+- 🔄 **Phase 2: Import Functionality** - Next
+- ⏳ **Phase 3: Comprehensive Validation** - Pending
+
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 

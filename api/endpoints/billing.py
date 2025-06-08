@@ -15,7 +15,7 @@ from typing import Dict, List, Optional
 
 from py4web import action, request
 
-from ...common import db, logger, session
+from ...common import auth, db, logger, session
 from ...models import str_uuid
 from ..core.base import APIResponse, handle_rest_api_request
 from ..core.nomenclature import NomenclatureClient
@@ -617,6 +617,182 @@ def apply_billing_combo(combo_id: int):
         logger.error(f"Error applying enhanced billing combo: {str(e)}")
         return APIResponse.error(
             message=str(e), status_code=500, error_type="server_error"
+        )
+
+
+@action("api/billing_combo/<combo_id:int>/export", method=["GET"])
+@action.uses(db, auth.user)
+def export_billing_combo(combo_id: int):
+    """
+    Export a billing combo in simplified JSON format with only nomenclature codes.
+
+    This endpoint generates a portable export file containing only the essential
+    nomenclature codes. All other data (descriptions, fees, etc.) will be retrieved
+    from the NomenclatureClient API during import to ensure current information.
+
+    Args:
+        combo_id (int): The billing combo ID to export
+
+    Returns:
+        JSON response with exported combo data in simplified format:
+        {
+            "export_info": {
+                "version": "1.0",
+                "exported_at": "2025-01-09T10:30:00Z",
+                "exported_by": "user@email.com"
+            },
+            "combo_data": {
+                "combo_name": "Standard Consultation",
+                "combo_description": "Description...",
+                "specialty": "ophthalmology",
+                "combo_codes": [
+                    {
+                        "nomen_code": 105755,
+                        "secondary_nomen_code": 102030  // optional
+                    }
+                ]
+            }
+        }
+
+    Raises:
+        404: If combo not found
+        500: If export fails
+        403: If user not authorized
+    """
+    try:
+        user = auth.get_user()
+        logger.info(
+            f"Exporting billing combo {combo_id} for user {user.get('email', 'unknown')}"
+        )
+
+        # Get the combo record
+        combo = (
+            db((db.billing_combo.id == combo_id) & (db.billing_combo.is_active == True))
+            .select()
+            .first()
+        )
+
+        if not combo:
+            return APIResponse.error(
+                message=f"Billing combo not found with ID: {combo_id}",
+                status_code=404,
+                error_type="not_found",
+            )
+
+        # Parse existing combo codes with enhanced parsing logic
+        stored_codes = []
+        if combo.combo_codes:
+            try:
+                # Try JSON parsing first
+                stored_codes = json.loads(combo.combo_codes)
+                logger.debug(
+                    f"Successfully parsed combo_codes as JSON for combo {combo_id}"
+                )
+            except json.JSONDecodeError:
+                logger.info(
+                    f"JSON parsing failed for combo {combo_id}, attempting Python format parsing"
+                )
+                try:
+                    # Handle Python format: replace Python literals with JSON equivalents
+                    python_str = combo.combo_codes
+                    # Replace Python None with JSON null
+                    json_str = python_str.replace("None", "null")
+                    # Replace Python single quotes with double quotes for JSON
+                    json_str = json_str.replace("'", '"')
+                    # Parse as JSON
+                    stored_codes = json.loads(json_str)
+                    logger.info(
+                        f"Successfully parsed combo_codes as Python format for combo {combo_id}"
+                    )
+                except (json.JSONDecodeError, Exception) as e:
+                    logger.warning(
+                        f"Failed to parse combo_codes for combo {combo_id}: {str(e)}"
+                    )
+                    stored_codes = []
+
+        if not stored_codes:
+            return APIResponse.error(
+                message="Combo has no codes to export",
+                status_code=400,
+                error_type="validation_error",
+            )
+
+        # Extract only the nomenclature codes (simplified format)
+        simplified_codes = []
+        for code_entry in stored_codes:
+            if isinstance(code_entry, dict):
+                # New format with secondary code support
+                simplified_code = {"nomen_code": code_entry.get("nomen_code")}
+
+                # Include secondary code if present
+                if code_entry.get("secondary_nomen_code"):
+                    simplified_code["secondary_nomen_code"] = code_entry.get(
+                        "secondary_nomen_code"
+                    )
+
+                simplified_codes.append(simplified_code)
+
+            elif isinstance(code_entry, int):
+                # Legacy format - simple integer code
+                simplified_codes.append({"nomen_code": code_entry})
+            else:
+                logger.warning(
+                    f"Skipping invalid code entry in combo {combo_id}: {code_entry}"
+                )
+
+        if not simplified_codes:
+            return APIResponse.error(
+                message="No valid nomenclature codes found in combo",
+                status_code=400,
+                error_type="validation_error",
+            )
+
+        # Build export data structure
+        export_data = {
+            "export_info": {
+                "version": "1.0",
+                "exported_at": datetime.datetime.now().isoformat() + "Z",
+                "exported_by": user.get("email", "unknown"),
+            },
+            "combo_data": {
+                "combo_name": combo.combo_name,
+                "combo_description": combo.combo_description or "",
+                "specialty": combo.specialty,
+                "combo_codes": simplified_codes,
+            },
+        }
+
+        # Generate filename
+        safe_name = "".join(
+            c for c in combo.combo_name if c.isalnum() or c in (" ", "-", "_")
+        ).strip()
+        safe_name = safe_name.replace(" ", "_")[:30]  # Limit length
+        date_str = datetime.datetime.now().strftime("%Y%m%d")
+        filename = f"billing_combo_{safe_name}_{date_str}.json"
+
+        logger.info(
+            f"Successfully exported combo '{combo.combo_name}' with {len(simplified_codes)} codes"
+        )
+
+        return APIResponse.success(
+            data=export_data,
+            meta={
+                "filename": filename,
+                "combo_id": combo_id,
+                "combo_name": combo.combo_name,
+                "codes_count": len(simplified_codes),
+                "export_type": "simplified_codes_only",
+            },
+            message=f"Successfully exported combo '{combo.combo_name}' with {len(simplified_codes)} codes",
+        )
+
+    except Exception as e:
+        logger.error(f"Error exporting billing combo {combo_id}: {str(e)}")
+        logger.error(traceback.format_exc())
+        return APIResponse.error(
+            message=f"Failed to export combo: {str(e)}",
+            status_code=500,
+            error_type="export_error",
         )
 
 

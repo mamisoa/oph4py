@@ -124,7 +124,12 @@ class BillingComboManager {
 			}
 		} catch (error) {
 			console.error("Nomenclature search failed:", error);
-			this.showToast("Search failed. Please try again.", "error");
+			displayToast(
+				"error",
+				"Search Failed",
+				"Search failed. Please try again.",
+				5000
+			);
 			this.displayNomenclatureResults([]);
 		}
 	}
@@ -494,7 +499,12 @@ class BillingComboManager {
 		event.preventDefault();
 
 		if (this.selectedCodes.length === 0) {
-			this.showToast("Please add at least one nomenclature code", "error");
+			displayToast(
+				"error",
+				"Validation Error",
+				"Please add at least one nomenclature code",
+				5000
+			);
 			return;
 		}
 
@@ -536,7 +546,7 @@ class BillingComboManager {
 			const result = await response.json();
 
 			if (response.ok && result.status === "success") {
-				this.showToast(successMessage, "success");
+				displayToast("success", "Save Success", successMessage, 5000);
 				this.resetForm();
 				$("#billingComboTable").bootstrapTable("refresh");
 			} else {
@@ -544,7 +554,7 @@ class BillingComboManager {
 			}
 		} catch (error) {
 			console.error("Error saving combo:", error);
-			this.showToast(`Error: ${error.message}`, "error");
+			displayToast("error", "Save Failed", `Error: ${error.message}`, 6000);
 		}
 	}
 
@@ -703,6 +713,56 @@ class BillingComboManager {
 		this.showToast("Edit cancelled", "info");
 	}
 
+	async exportCombo(id, name) {
+		try {
+			displayToast(
+				"info",
+				"Export Started",
+				`Exporting combo "${name}"...`,
+				3000
+			);
+
+			const response = await fetch(`${API_BASE}/billing_combo/${id}/export`);
+			const result = await response.json();
+
+			if (response.ok && result.status === "success") {
+				// Create and download the JSON file
+				const dataStr = JSON.stringify(result.data, null, 2);
+				const dataBlob = new Blob([dataStr], { type: "application/json" });
+
+				// Create download link
+				const downloadLink = document.createElement("a");
+				downloadLink.href = window.URL.createObjectURL(dataBlob);
+				downloadLink.download = result.meta.filename;
+
+				// Trigger download
+				document.body.appendChild(downloadLink);
+				downloadLink.click();
+				document.body.removeChild(downloadLink);
+
+				// Clean up object URL
+				window.URL.revokeObjectURL(downloadLink.href);
+
+				displayToast(
+					"success",
+					"Export Complete",
+					`Successfully exported "${name}" with ${result.meta.codes_count} codes`,
+					5000
+				);
+			} else {
+				throw new Error(result.message || "Failed to export combo");
+			}
+		} catch (error) {
+			console.error("Error exporting combo:", error);
+			displayToast(
+				"error",
+				"Export Failed",
+				`Export failed: ${error.message}`,
+				6000
+			);
+		}
+	}
+
 	async deleteCombo(id, name) {
 		const confirmed = await this.showConfirmDialog(
 			"Delete Billing Combo",
@@ -718,14 +778,19 @@ class BillingComboManager {
 				const result = await response.json();
 
 				if (response.ok && result.status === "success") {
-					this.showToast("Billing combo deleted successfully!", "success");
+					displayToast(
+						"success",
+						"Delete Success",
+						"Billing combo deleted successfully!",
+						5000
+					);
 					$("#billingComboTable").bootstrapTable("refresh");
 				} else {
 					throw new Error(result.message || "Failed to delete combo");
 				}
 			} catch (error) {
 				console.error("Error deleting combo:", error);
-				this.showToast(`Error: ${error.message}`, "error");
+				displayToast("error", "Delete Failed", `Error: ${error.message}`, 6000);
 			}
 		}
 	}
@@ -1167,6 +1232,10 @@ function enhancedCodesFormatter(value) {
 function operateFormatter(value, row, index) {
 	return `
         <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-success export-combo" 
+                    data-id="${row.id}" data-name="${row.combo_name}" title="Export">
+                <i class="fas fa-download"></i>
+            </button>
             <button type="button" class="btn btn-sm btn-outline-primary edit-combo" 
                     data-id="${row.id}" title="Edit">
                 <i class="fas fa-edit"></i>
@@ -1181,13 +1250,14 @@ function operateFormatter(value, row, index) {
 
 // Global event handlers for table operations
 window.operateEvents = {
+	"click .export-combo": function (e, value, row, index) {
+		window.billingComboManager.exportCombo(row.id, row.combo_name);
+	},
 	"click .edit-combo": function (e, value, row, index) {
 		window.billingComboManager.editCombo(row.id, row);
 	},
 	"click .delete-combo": function (e, value, row, index) {
-		const id = $(this).data("id");
-		const name = $(this).data("name");
-		window.billingComboManager.deleteCombo(id, name);
+		window.billingComboManager.deleteCombo(row.id, row.combo_name);
 	},
 };
 
