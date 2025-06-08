@@ -1,14 +1,14 @@
 // Patient bar JavaScript
-(function() {
+(function () {
 	// Initialize patient information display
 	$("input[name=id_auth_user]").val(patientObj["id"]); // set patient id in forms
 	$("input[name=id_worklist]").val(wlObj["worklist"]["id"]); // set worklist id in forms
-	
+
 	// Set patient details
 	$("#wlItemDetails .patientName").html(
 		patientObj["last_name"].toUpperCase() + " " + patientObj["first_name"]
 	);
-	
+
 	// Handle DOB display with age calculation
 	if (patientObj["dob"] != null) {
 		$("#wlItemDetails .patientDob").html(
@@ -20,7 +20,7 @@
 	} else {
 		$("#wlItemDetails .patientDob").html("DOB: n/a");
 	}
-	
+
 	// Set other patient details
 	$("#wlItemDetails .patientGender").html(
 		"Gender: " + genderIdObj[patientObj["gender"]]
@@ -50,14 +50,14 @@
 	$("#wlItemDetails .timeslot").html(
 		datetime2eu(wlObj["worklist"]["requested_time"])
 	);
-	
+
 	// Display user notes if available
 	if (patientObj["user_notes"] != null) {
 		$("#wlItemDetails .user_notes").html(patientObj["user_notes"]);
 	} else {
 		$("#wlItemDetails .user_notes").removeClass("whitebg");
 	}
-	
+
 	// Set worklist details
 	$("#wlItemDetails .modality").html(wlObj["modality"]["modality_name"]);
 	$("#wlItemDetails .laterality").html(wlObj["worklist"]["laterality"]);
@@ -68,17 +68,19 @@
 		seniorObj["first_name"] + " " + seniorObj["last_name"]
 	);
 	$("#wlItemDetails .status").html(wlObj["worklist"]["status_flag"]);
-	
+
 	// Handle task status controls
 	if (wlObj["worklist"]["status_flag"] == "done") {
 		$("#btnTaskDone").addClass("visually-hidden");
 		// Define buttons to disable only when needed
-		const buttonsToDisable = document.querySelectorAll(".btn-action, .form-control");
+		const buttonsToDisable = document.querySelectorAll(
+			".btn-action, .form-control"
+		);
 		disableTaskButtons(buttonsToDisable);
 	} else {
 		$("#btnUnlockTask").addClass("visually-hidden");
 	}
-	
+
 	// Display warning if available
 	if (wlObj["worklist"]["warning"] != null) {
 		$("#wlItemDetails .warning").html(
@@ -88,16 +90,20 @@
 	} else {
 		$("#wlItemDetails .warning").html("").removeClass("bg-danger text-wrap");
 	}
-	
+
 	// Handle patient photo display
 	if (patientObj["photob64"] == null) {
 		const photoEl = document.getElementById("photoId");
 		photoEl.setAttribute("height", 200);
 		photoEl.setAttribute("width", 150);
-		
+
 		// Set default avatar based on gender
-		const avatarPath = HOSTURL + "/" + APP_NAME + "/static/images/assets/avatar/";
-		const avatarFile = genderIdObj[patientObj["gender"]] == "Male" ? "mini-man.svg" : "mini-woman.svg";
+		const avatarPath =
+			HOSTURL + "/" + APP_NAME + "/static/images/assets/avatar/";
+		const avatarFile =
+			genderIdObj[patientObj["gender"]] == "Male"
+				? "mini-man.svg"
+				: "mini-woman.svg";
 		photoEl.setAttribute("src", avatarPath + avatarFile);
 	} else {
 		document
@@ -111,15 +117,20 @@
 	 */
 	function disableTaskButtons(elements) {
 		if (!elements) return;
-		
+
 		// Convert input to array regardless of type
-		const elementsArray = elements instanceof NodeList ? Array.from(elements) : 
-							elements instanceof HTMLElement ? [elements] : 
-							Array.isArray(elements) ? elements : [];
-		
+		const elementsArray =
+			elements instanceof NodeList
+				? Array.from(elements)
+				: elements instanceof HTMLElement
+				? [elements]
+				: Array.isArray(elements)
+				? elements
+				: [];
+
 		// Disable each element
-		elementsArray.forEach(el => {
-			if (el && typeof el.disabled !== 'undefined') {
+		elementsArray.forEach((el) => {
+			if (el && typeof el.disabled !== "undefined") {
 				el.disabled = true;
 			}
 		});
@@ -141,7 +152,7 @@
 					APP_NAME +
 					"/api/worklist/" +
 					wlId +
-					"?@lookup=patient!:id_auth_user[id,last_name,first_name,dob,photob64],modality!:modality_dest[id,modality_name],provider!:provider[id,last_name,first_name,dob],senior!:senior[id,last_name,first_name,dob]",
+					"?@lookup=patient!:id_auth_user[id,last_name,first_name,dob,photob64].gender[gender_name],modality!:modality_dest[id,modality_name],provider!:provider[id,last_name,first_name,dob],senior!:senior[id,last_name,first_name,dob]",
 				success: function (data) {
 					if (data.status != "error" && data.count) {
 						displayToast(
@@ -159,7 +170,7 @@
 				},
 				error: function (er) {
 					console.log(er);
-				}
+				},
 			})
 		);
 	}
@@ -177,11 +188,14 @@
 				cancel: {
 					label: "No",
 					className: "btn-danger",
-				}
+				},
 			},
 			callback: function (result) {
 				if (result == true) {
-					let dataObj = { laterality: wlObj["worklist"]["laterality"], id: wlId };
+					let dataObj = {
+						laterality: wlObj["worklist"]["laterality"],
+						id: wlId,
+					};
 					let dataStr;
 					if (wlObj["status_flag"] != "done") {
 						dataObj["status_flag"] = "done";
@@ -190,14 +204,18 @@
 						const id = wlId; // Using wlId directly since it's already available
 						delete dataObj.id;
 						dataStr = JSON.stringify(dataObj);
-						crudp("worklist", id.toString(), "PUT", dataStr).then(function (data) {
+						crudp("worklist", id.toString(), "PUT", dataStr).then(function (
+							data
+						) {
 							console.log("update result:", data);
 							getWlDetails(wlId) // check if set to done successful and disable forms
 								.then(function (itemObj) {
 									wlObj["worklist"] = Object.assign({}, itemObj.items[0]); // update wlObj worklist
 									if (wlObj["status_flag"] == "done") {
 										$("#wlItemDetails .status").html(wlObj["status_flag"]);
-										const buttonsToDisable = document.querySelectorAll(".btn-action, .form-control");
+										const buttonsToDisable = document.querySelectorAll(
+											".btn-action, .form-control"
+										);
 										disableTaskButtons(buttonsToDisable);
 									}
 									window.location.href = "/" + APP_NAME + "/worklist";
@@ -205,7 +223,7 @@
 						});
 					}
 				}
-			}
+			},
 		});
 	});
 
@@ -215,7 +233,7 @@
 			laterality: wlObj["worklist"]["laterality"],
 			id: wlObj["worklist"]["id"],
 		};
-		
+
 		if (wlObj["worklist"]["status_flag"] == "done") {
 			dataObj["status_flag"] = "processing";
 			dataObj["counter"] = 1;
@@ -233,31 +251,41 @@
 		const id = arrayItem.id;
 		const ts = arrayItem.requested_time;
 		const setbtnclass = id == wlId ? "disabled" : "";
-		
+
 		document.getElementById("mdHistory").innerHTML +=
-			'<button class="btn btn-primary btn-sm ' + setbtnclass + 
-			' mx-2 my-1 btnmdHistory" data-mdId="' + id + '" type="button">' +
-			ts + "</button>";
+			'<button class="btn btn-primary btn-sm ' +
+			setbtnclass +
+			' mx-2 my-1 btnmdHistory" data-mdId="' +
+			id +
+			'" type="button">' +
+			ts +
+			"</button>";
 	});
 
 	// MD history button click handler
 	$(".btnmdHistory").click(function () {
-		window.location.href = "/" + APP_NAME + "/modalityCtr/" + 
-			modalityController + "/" + this.dataset.mdid + "/#cHxDiv";
+		window.location.href =
+			"/" +
+			APP_NAME +
+			"/modalityCtr/" +
+			modalityController +
+			"/" +
+			this.dataset.mdid +
+			"/#cHxDiv";
 	});
-	
+
 	// Make the disableTaskButtons function available globally if it's used by other scripts
 	// This is safer than exposing a variable
-	if (typeof window.patientBarUtils === 'undefined') {
+	if (typeof window.patientBarUtils === "undefined") {
 		window.patientBarUtils = {
-			disableButtons: disableTaskButtons
+			disableButtons: disableTaskButtons,
 		};
 	}
-	
+
 	// If there's an existing disableBtn function that other code relies on, map it to our new function
-	if (typeof window.disableBtn === 'function') {
+	if (typeof window.disableBtn === "function") {
 		const originalDisableBtn = window.disableBtn;
-		window.disableBtn = function(elements) {
+		window.disableBtn = function (elements) {
 			// Try our safer implementation first
 			try {
 				disableTaskButtons(elements);

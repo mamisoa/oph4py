@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-09T01:25:53.851559] - Image Fallback Infinite Loop Fix
+
+### Fixed
+
+- **Patient Photo Fallback Loop**: Resolved an issue where a missing patient photo and a missing fallback avatar would cause an infinite loop of 404 errors.
+  - **Root Cause**: The `onerror` event handler for the patient's photo was re-setting the `src` to the same failing fallback URL, re-triggering the error.
+  - **Fix 1 (Path Correction)**: Corrected the path for the default SVG avatars to include `/static/`, resolving the immediate 404 error (e.g., `/oph4py/static/images/assets/avatar/mini-woman.svg`).
+  - **Fix 2 (Loop Prevention)**: Made the `onerror` handler more robust by having it remove itself (`onerror = null`) after the first attempt to load the fallback image. This prevents any possibility of an infinite loop if the fallback avatar is also unavailable for any reason.
+
 ## [2025-06-09T00:05:29] - Patient Consultation History Summary Implementation
 
 ### Added
