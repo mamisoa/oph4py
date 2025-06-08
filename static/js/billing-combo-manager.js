@@ -4,6 +4,38 @@
  * Handles the creation, editing, and management of billing code combinations
  */
 
+// Add CSS styles for fee editing
+if (!document.querySelector("#billing-combo-fee-styles")) {
+	const style = document.createElement("style");
+	style.id = "billing-combo-fee-styles";
+	style.textContent = `
+		.editable-combo-fee {
+			transition: all 0.3s ease;
+		}
+		
+		.editable-combo-fee:focus {
+			border-color: #007bff;
+			box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+		}
+		
+		.fee-modified {
+			background-color: #fff3cd !important;
+			border-color: #ffc107 !important;
+			animation: fee-highlight 1s ease-out;
+		}
+		
+		@keyframes fee-highlight {
+			0% { background-color: #d4edda; border-color: #28a745; }
+			100% { background-color: #fff3cd; border-color: #ffc107; }
+		}
+		
+		.total-fee-display {
+			transition: color 0.5s ease;
+		}
+	`;
+	document.head.appendChild(style);
+}
+
 // Fallback API_BASE definition if not already defined
 if (typeof API_BASE === "undefined") {
 	window.API_BASE =
@@ -44,6 +76,7 @@ class BillingComboManager {
 		$("#newBillingComboForm").on("submit", (e) => this.handleFormSubmit(e));
 		$("#btnResetForm").on("click", () => this.resetForm());
 		$("#btnCancelEdit").on("click", () => this.cancelEdit());
+		$("#btnCreateNewCombo").on("click", () => this.createNewCombo());
 
 		// Dynamic events for results and secondary code management
 		$(document).on("click", ".add-nomen-code", (e) =>
@@ -57,6 +90,11 @@ class BillingComboManager {
 		);
 		$(document).on("click", ".remove-secondary-code", (e) =>
 			this.removeSecondaryCode(e)
+		);
+
+		// Fee editing handlers
+		$(document).on("input change", ".editable-combo-fee", (e) =>
+			this.handleComboFeeChange(e)
 		);
 
 		// Secondary code modal handlers
@@ -389,6 +427,66 @@ class BillingComboManager {
 		}
 	}
 
+	handleComboFeeChange(event) {
+		const input = $(event.currentTarget);
+		const codeIndex = parseInt(input.data("code-index"));
+		const feeType = input.data("fee-type");
+		const newFee = parseFloat(input.val()) || 0;
+
+		// Validate fee
+		if (newFee < 0) {
+			input.val("0.00");
+			this.showToast("Fee cannot be negative", "warning");
+			return;
+		}
+
+		// Update the selected code data
+		if (this.selectedCodes[codeIndex]) {
+			if (feeType === "main") {
+				this.selectedCodes[codeIndex].fee = newFee;
+			} else if (feeType === "secondary") {
+				this.selectedCodes[codeIndex].secondary_fee = newFee;
+			}
+
+			// Update totals display
+			this.updateTotalFeeDisplay(codeIndex);
+
+			// Update hidden field for form submission
+			$("#comboCodes").val(JSON.stringify(this.selectedCodes));
+
+			// Show visual feedback
+			input.addClass("fee-modified");
+			setTimeout(() => {
+				input.removeClass("fee-modified");
+			}, 1000);
+		}
+	}
+
+	updateTotalFeeDisplay(codeIndex) {
+		const code = this.selectedCodes[codeIndex];
+		if (!code) return;
+
+		const mainFee = this.safeParseFloat(code.fee, 0);
+		const secondaryFee = this.safeParseFloat(code.secondary_fee, 0);
+		const totalFee = mainFee + secondaryFee;
+
+		// Find the total display element for this code and update it
+		const codeCard = $(
+			`.editable-combo-fee[data-code-index="${codeIndex}"]`
+		).closest(".card");
+		const totalDisplay = codeCard.find(".total-fee-display");
+
+		if (totalDisplay.length) {
+			totalDisplay.text(`€${totalFee.toFixed(2)}`);
+
+			// Add visual feedback for total change
+			totalDisplay.addClass("text-warning").removeClass("text-success");
+			setTimeout(() => {
+				totalDisplay.removeClass("text-warning").addClass("text-success");
+			}, 500);
+		}
+	}
+
 	updateSelectedCodesDisplay() {
 		const container = $("#selectedCodesList");
 		const noCodesMessage = $("#noCodesMessage");
@@ -429,9 +527,19 @@ class BillingComboManager {
                                             </div>
                                             <div class="col-md-4">
                                                 <small class="text-muted">Fee:</small>
-                                                <strong>€${mainFee.toFixed(
-																									2
-																								)}</strong>
+                                                <div class="input-group input-group-sm" style="max-width: 120px;">
+                                                    <span class="input-group-text">€</span>
+                                                    <input type="number" 
+                                                           class="form-control editable-combo-fee" 
+                                                           value="${mainFee.toFixed(
+																															2
+																														)}" 
+                                                           step="0.01" 
+                                                           min="0" 
+                                                           data-code-index="${index}"
+                                                           data-fee-type="main"
+                                                           title="Click to edit fee">
+                                                </div>
                                             </div>
                                             <div class="col-md-4">
                                                 ${
@@ -472,13 +580,23 @@ class BillingComboManager {
                                                     </div>
                                                     <div class="col-md-3">
                                                         <small class="text-muted">Fee:</small>
-                                                        <strong>€${secondaryFee.toFixed(
-																													2
-																												)}</strong>
+                                                        <div class="input-group input-group-sm" style="max-width: 120px;">
+                                                            <span class="input-group-text">€</span>
+                                                            <input type="number" 
+                                                                   class="form-control editable-combo-fee" 
+                                                                   value="${secondaryFee.toFixed(
+																																			2
+																																		)}" 
+                                                                   step="0.01" 
+                                                                   min="0" 
+                                                                   data-code-index="${index}"
+                                                                   data-fee-type="secondary"
+                                                                   title="Click to edit secondary fee">
+                                                        </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <small class="text-muted">Total:</small>
-                                                        <strong class="text-success">€${totalFee.toFixed(
+                                                        <strong class="text-success total-fee-display">€${totalFee.toFixed(
 																													2
 																												)}</strong>
                                                     </div>
@@ -518,6 +636,14 @@ class BillingComboManager {
 		const hasCodes = this.selectedCodes.length > 0;
 
 		$("#btnSaveCombo").prop("disabled", !(hasName && hasSpecialty && hasCodes));
+
+		// Enable "Create New Combo" button only in edit mode with valid data
+		if (this.isEditMode) {
+			$("#btnCreateNewCombo").prop(
+				"disabled",
+				!(hasName && hasSpecialty && hasCodes)
+			);
+		}
 	}
 
 	async handleFormSubmit(event) {
@@ -610,6 +736,7 @@ class BillingComboManager {
 		$("#comboDescription").val(row.combo_description || "");
 		$("#comboSpecialty").val(row.specialty);
 		$("#editComboId").val(id);
+		$("#originalComboName").val(row.combo_name);
 
 		// Parse and load selected codes with enhanced structure support
 		// Use the same robust parsing logic as the enhancedCodesFormatter
@@ -720,6 +847,7 @@ class BillingComboManager {
 		$("#formTitle").text("Edit Billing Combo");
 		$("#saveButtonText").text("Update Combo");
 		$("#btnSaveCombo").removeClass("btn-primary").addClass("btn-warning");
+		$("#btnCreateNewCombo").show();
 		$("#editModeAlert").show();
 	}
 
@@ -729,13 +857,75 @@ class BillingComboManager {
 		$("#formTitle").text("Create New Billing Combo");
 		$("#saveButtonText").text("Save Billing Combo");
 		$("#btnSaveCombo").removeClass("btn-warning").addClass("btn-primary");
+		$("#btnCreateNewCombo").hide();
 		$("#editModeAlert").hide();
 		$("#editComboId").val("");
+		$("#originalComboName").val("");
 	}
 
 	cancelEdit() {
 		this.resetForm();
 		this.showToast("Edit cancelled", "info");
+	}
+
+	async createNewCombo() {
+		if (this.selectedCodes.length === 0) {
+			displayToast(
+				"error",
+				"Validation Error",
+				"Please add at least one nomenclature code",
+				5000
+			);
+			return;
+		}
+
+		// Get current form values
+		let comboName = $("#comboName").val().trim();
+		const originalName = $("#originalComboName").val();
+		const comboDescription = $("#comboDescription").val().trim();
+		const specialty = $("#comboSpecialty").val();
+
+		// If name hasn't been changed, append "(copy)"
+		if (comboName === originalName) {
+			comboName = comboName + " (copy)";
+			$("#comboName").val(comboName);
+		}
+
+		const formData = {
+			combo_name: comboName,
+			combo_description: comboDescription,
+			specialty: specialty,
+			combo_codes: this.selectedCodes, // Send enhanced structure directly
+		};
+
+		try {
+			// Always create new combo (not update)
+			const response = await fetch(`${API_BASE}/billing_combo`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(formData),
+			});
+
+			const result = await response.json();
+
+			if (response.ok && result.status === "success") {
+				displayToast(
+					"success",
+					"Create Success",
+					`New billing combo "${comboName}" created successfully!`,
+					5000
+				);
+				this.resetForm();
+				$("#billingComboTable").bootstrapTable("refresh");
+			} else {
+				throw new Error(result.message || "Failed to create new combo");
+			}
+		} catch (error) {
+			console.error("Error creating new combo:", error);
+			displayToast("error", "Create Failed", `Error: ${error.message}`, 6000);
+		}
 	}
 
 	async exportCombo(id, name) {

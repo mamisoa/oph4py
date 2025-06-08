@@ -2,6 +2,172 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-08T15:31:31.860206] - Create New Combo from Existing Combo
+
+### Added
+
+- **"Create New Combo" Functionality**: Users can now duplicate existing combos with modifications
+  - **Smart Button Display**: "Create New Combo" button appears only when editing existing combos
+  - **Automatic Name Handling**: If combo name is unchanged, automatically appends "(copy)" to prevent conflicts
+  - **Independent Creation**: Creates a completely new combo without affecting the original
+  - **Form Validation**: Same validation rules as regular combo creation (name, specialty, codes required)
+  - **Real-Time Updates**: Table refreshes automatically to show the newly created combo
+
+- **Enhanced Edit Mode UI**: Improved user experience during combo editing
+  - **Dual Action Buttons**: Both "Update Combo" and "Create New Combo" available in edit mode
+  - **Visual Distinction**: "Create New Combo" uses success styling (green) to differentiate from update
+  - **Context-Aware Display**: Button only appears when editing, hidden during new combo creation
+  - **Proper State Management**: Button enabled/disabled based on form validation state
+
+### Enhanced
+
+- **Form State Management**: Extended validation and state handling
+  - **Original Name Tracking**: New hidden field `originalComboName` stores initial combo name
+  - **Smart Name Validation**: Detects if user modified the name or kept it unchanged
+  - **Button State Control**: "Create New Combo" button follows same validation rules as save button
+  - **Mode-Aware Validation**: Different button states for edit vs create modes
+
+- **Edit Mode Workflow**: Improved editing experience with multiple action options
+  - **Enhanced Enter Edit Mode**: Shows "Create New Combo" button and stores original name
+  - **Enhanced Exit Edit Mode**: Hides button and clears original name tracking
+  - **Preserved Edit Functionality**: Original update functionality remains unchanged
+  - **Form Reset Integration**: Proper cleanup when canceling or resetting edit mode
+
+### Technical Implementation
+
+- **Frontend Changes** (`templates/manage/billing_combo.html`):
+  ```html
+  <button type="button" id="btnCreateNewCombo" class="btn btn-success" disabled style="display: none;">
+      <i class="fas fa-copy"></i> Create New Combo
+  </button>
+  <input type="hidden" id="originalComboName" value="">
+  ```
+
+- **JavaScript Enhancements** (`static/js/billing-combo-manager.js`):
+  - **New Method**: `createNewCombo()` - Handles duplication with smart naming
+  - **Enhanced State Management**: Updated `updateFormState()`, `enterEditMode()`, `exitEditMode()`
+  - **Original Name Tracking**: Stores and compares original combo name for smart "(copy)" appending
+  - **Event Handler**: Added click handler for "Create New Combo" button
+
+- **Smart Naming Logic**:
+  ```javascript
+  // If name hasn't been changed, append "(copy)"
+  if (comboName === originalName) {
+      comboName = comboName + " (copy)";
+      $("#comboName").val(comboName);
+  }
+  ```
+
+### User Workflow
+
+1. **Edit Existing Combo**: Click edit button on any combo in the table
+2. **Modify as Needed**: Change fees, add/remove codes, modify description
+3. **Choose Action**:
+   - **Update Combo**: Saves changes to original combo (existing behavior)
+   - **Create New Combo**: Creates new combo with current settings
+4. **Automatic Naming**: If name unchanged, system appends "(copy)" automatically
+5. **Immediate Feedback**: Success message and table refresh show new combo
+
+### Benefits
+
+- **Workflow Efficiency**: Easy duplication of similar combos without starting from scratch
+- **Data Safety**: Original combos remain unchanged when creating new ones
+- **Naming Intelligence**: Automatic conflict prevention with "(copy)" suffix
+- **User Choice**: Clear options to either update existing or create new combo
+- **Consistent UX**: Same validation and feedback patterns as existing functionality
+
+### Use Cases
+
+- **Procedure Variations**: Create similar combos for different procedure variations
+- **Template Creation**: Duplicate standard combos to create specialized versions  
+- **Testing**: Create test versions of existing combos without affecting originals
+- **Backup Creation**: Duplicate combos before making significant changes
+
+## [2025-06-08T15:26:23.173142] - Editable Fees in Billing Combos
+
+### Added
+
+- **Always-Editable Fee Inputs**: Users can now modify fees directly in selected billing combo codes
+  - **Main Code Fees**: Editable input fields for primary nomenclature code fees
+  - **Secondary Code Fees**: Editable input fields for secondary nomenclature code fees
+  - **Real-Time Validation**: Automatic validation to prevent negative fees (minimum 0)
+  - **Live Total Updates**: Total fee calculations update immediately when individual fees change
+  - **Visual Feedback**: Animated highlighting when fees are modified with temporary color changes
+  - **Persistent Changes**: Modified fees are automatically saved when combo is updated
+
+- **Enhanced User Experience**: Modern UX patterns for fee editing
+  - **Input Groups**: Professional styling with Euro (€) symbol prefix for all fee inputs
+  - **Tooltips**: Helpful tooltips indicating fees are editable ("Click to edit fee")
+  - **Visual Transitions**: Smooth CSS transitions for focus states and modifications
+  - **Keyboard Support**: Full keyboard navigation and editing support
+  - **Form Integration**: Modified fees are automatically included in form submissions
+
+### Enhanced
+
+- **Selected Codes Display**: Complete redesign of fee presentation
+  - **Replaced Static Text**: Changed from read-only fee display (`<strong>€XX.XX</strong>`) to editable inputs
+  - **Input Styling**: Bootstrap input groups with consistent styling and Euro symbol prefix
+  - **Data Attributes**: Added `data-code-index` and `data-fee-type` for precise fee tracking
+  - **Max Width Control**: Compact input fields (120px max-width) for optimal layout
+
+- **Real-Time Fee Management**: Dynamic fee updates without page refresh
+  - **Event Handling**: Added `handleComboFeeChange()` method for input change detection
+  - **Data Synchronization**: Automatic updates to internal `selectedCodes` array
+  - **Total Recalculation**: Live updates to total fee display with visual feedback
+  - **Form State**: Hidden field automatically updated for backend submission
+
+- **Fee Validation System**: Comprehensive validation with user feedback
+  - **Negative Fee Prevention**: Automatic reset to 0.00 for negative values
+  - **Numeric Validation**: Proper parsing and fallback for invalid inputs
+  - **Step Control**: 0.01 step increment for precise euro cent handling
+  - **Range Validation**: Minimum value enforcement with user notifications
+
+### Technical Implementation
+
+- **JavaScript Enhancements** (`static/js/billing-combo-manager.js`):
+  - **New Event Handler**: Added `handleComboFeeChange()` for real-time fee updates
+  - **New Helper Method**: Added `updateTotalFeeDisplay()` for live total calculations
+  - **Enhanced HTML Generation**: Modified `updateSelectedCodesDisplay()` to include editable inputs
+  - **CSS Injection**: Added dynamic CSS styles for visual feedback and animations
+
+- **Visual Feedback System**:
+  ```css
+  .fee-modified {
+      background-color: #fff3cd !important;
+      border-color: #ffc107 !important;
+      animation: fee-highlight 1s ease-out;
+  }
+  
+  @keyframes fee-highlight {
+      0% { background-color: #d4edda; border-color: #28a745; }
+      100% { background-color: #fff3cd; border-color: #ffc107; }
+  }
+  ```
+
+- **Data Structure Preservation**: 
+  - **Backward Compatibility**: Existing combo data structure maintained
+  - **Live Updates**: Modified fees immediately reflected in `selectedCodes` array
+  - **API Integration**: Changes automatically included in save/update operations
+
+### User Interface Changes
+
+- **Before**: Static fee display: `€45.50`
+- **After**: Editable input with Euro prefix: `[€] [45.50]`
+- **Visual Elements**:
+  - Input groups with Euro symbol prefix
+  - Hover effects and focus states
+  - Temporary highlighting for modified values
+  - Live total updates with color transitions
+
+### Benefits
+
+- **Immediate Fee Customization**: Users can adjust fees instantly without multiple form steps
+- **Enhanced Workflow**: No need to search and re-add codes just to change fees
+- **Real-Time Feedback**: Instant total calculations show impact of fee changes
+- **Professional UX**: Modern interface patterns with smooth visual feedback
+- **Data Integrity**: All modifications properly validated and persisted
+- **Accessibility**: Full keyboard support and screen reader compatibility
+
 ## [2025-06-08T15:14:42.791746] - Documentation Updates and UI Positioning Fix
 
 ### Enhanced
