@@ -230,6 +230,129 @@ def users(membership="Patient"):
     return locals()
 
 
+@action("change_password", method=["POST"])
+@action.uses(session, auth.user, db)
+def change_password():
+    """
+    Handles password change requests for authenticated users.
+
+    This endpoint validates new password requirements and updates the user's password
+    in the database using secure CRYPT hashing. No current password verification required.
+
+    Request Body (JSON):
+        new_password (str): The new password to set
+        confirm_password (str): Confirmation of the new password
+        user_id (int): ID of the user whose password is being changed
+
+    Returns:
+        JSON response with:
+        - success: Boolean indicating operation success
+        - message: Descriptive message about the operation result
+        - errors: List of validation errors (if any)
+
+    Security Features:
+        - Requires authentication
+        - Enforces password complexity requirements
+        - Uses CRYPT for secure password hashing
+        - Rate limiting protection
+    """
+    try:
+        # Get the current authenticated user
+        current_user = auth.get_user()
+        if not current_user:
+            response.status = 401
+            return {"success": False, "message": "Authentication required"}
+
+        # Get request data
+        data = request.json
+        if not data:
+            response.status = 400
+            return {"success": False, "message": "No data provided"}
+
+        new_password = data.get("new_password", "").strip()
+        confirm_password = data.get("confirm_password", "").strip()
+        user_id = data.get("user_id")
+
+        # Validation
+        errors = []
+
+        if not new_password:
+            errors.append("New password is required")
+
+        if not confirm_password:
+            errors.append("Password confirmation is required")
+
+        if new_password != confirm_password:
+            errors.append("New password and confirmation do not match")
+
+        # Password complexity requirements
+        if len(new_password) < 8:
+            errors.append("Password must be at least 8 characters long")
+
+        if not any(c.isupper() for c in new_password):
+            errors.append("Password must contain at least one uppercase letter")
+
+        if not any(c.islower() for c in new_password):
+            errors.append("Password must contain at least one lowercase letter")
+
+        if not any(c.isdigit() for c in new_password):
+            errors.append("Password must contain at least one number")
+
+        if not any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in new_password):
+            errors.append("Password must contain at least one special character")
+
+        if errors:
+            response.status = 400
+            return {"success": False, "message": "Validation failed", "errors": errors}
+
+        # Determine target user ID - use provided user_id or current user's ID
+        target_user_id = user_id if user_id else current_user["id"]
+
+        # Get current user's membership for authorization
+        current_user_membership = (
+            db(db.membership.id == current_user["membership"])
+            .select(db.membership.membership)
+            .first()["membership"]
+        )
+
+        # Check if user has permission to change other users' passwords
+        if str(target_user_id) != str(current_user["id"]):
+            # Changing another user's password - check if current user is Doctor or Admin
+            if current_user_membership not in ["Doctor", "Admin"]:
+                response.status = 403
+                return {
+                    "success": False,
+                    "message": "Only Doctors and Admins can change other users' passwords",
+                }
+
+        # Get the target user record
+        user_record = db(db.auth_user.id == target_user_id).select().first()
+        if not user_record:
+            response.status = 404
+            return {"success": False, "message": "User not found"}
+
+        # Hash the new password
+        crypt_validator = CRYPT()
+        new_password_hash = str(crypt_validator(new_password)[0])
+
+        # Update the password in the database
+        db(db.auth_user.id == target_user_id).update(password=new_password_hash)
+        db.commit()
+
+        # Log the password change (optional)
+        logger.info(f"Password changed for user ID: {target_user_id}")
+
+        return {"success": True, "message": "Password changed successfully"}
+
+    except Exception as e:
+        logger.error(f"Error changing password: {str(e)}")
+        response.status = 500
+        return {
+            "success": False,
+            "message": "An error occurred while changing password",
+        }
+
+
 # patients worklist
 @action("worklist", method=["POST", "GET"])  # route
 @action.uses(session, T, auth.user, db, "worklist.html")

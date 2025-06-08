@@ -2,6 +2,188 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-08T16:39:26.450838] - Enhanced Password Management for User Administration
+
+### Added
+
+- **Multi-User Password Management**: Doctor and Admin users can now change other users' passwords when viewing their profiles
+- **Dynamic Modal Title**: Password change modal title now shows whose password is being changed (e.g., "Change Password for Pietro ALIGHIERI")
+- **Role-Based Authorization**: Backend validates that only Doctor/Admin users can change other users' passwords
+- **Improved Logging**: Password change events now log the target user ID correctly
+
+### Changed
+
+- **Password Change Behavior**: When viewing another user's profile, password change affects that user, not the logged-in user
+- **Authorization Logic**: Removed restriction that limited password changes to own account only
+- **Frontend Logic**: Restored sending user_id to specify whose password to change
+
+## [2025-06-08T16:33:11.742055] - Fixed Password Change Authorization Issue
+
+### Fixed
+
+- **Password Change Authorization**: Fixed issue where users couldn't change their own password when viewing other user profiles
+- **Backend Logic**: Simplified authorization to always change the current authenticated user's password
+- **Frontend Logic**: Removed user_id parameter to prevent confusion about whose password is being changed
+- **Security**: Maintains security by ensuring users can only change their own password
+
+## [2025-06-08T16:31:07.456061] - Enhanced Password Validation Error Display
+
+### Added
+
+- **In-Modal Error Display**: Added dedicated error alert area within the password change modal
+- **Client-Side Validation Display**: Validation errors now show directly in the modal instead of toast notifications
+- **Server-Side Error Integration**: Backend validation errors (e.g., special character requirements) now display in the modal
+- **Improved User Experience**: Errors are shown immediately in context without requiring separate popup notifications
+
+### Fixed
+
+- **Modal Z-Index**: Increased z-index to 9999 to ensure modal appears above navigation bar
+- **Error Visibility**: Users now see validation requirements clearly within the password change interface
+
+## [2025-06-08T16:26:35.144592] - Password Change Modal Updates
+
+### Changed
+
+- **Enhanced Access Control**: Password change button now only visible to users with Doctor or Admin membership
+- **Improved Modal Positioning**: Lowered password modal to prevent overlap with navigation bar
+- **Simplified Password Change Process**: Removed current password requirement for streamlined user experience
+  - **Frontend**: Removed current password field from modal form
+  - **Backend**: Updated API endpoint to remove current password validation
+  - **Security**: Maintains authentication requirement and password complexity validation
+
+## [2025-06-08T16:15:05.933739] - Password Change Modal Implementation
+
+### Added
+
+- **Password Change Modal**: Secure password update interface integrated into user management
+  - **Modal Interface**: Professional modal dialog with Bootstrap styling consistent with existing UI
+  - **Three-Field Design**: Current password verification, new password input, and confirmation field
+  - **Security Integration**: Follows py4web authentication best practices with CRYPT password hashing
+  - **Access Control**: Users can only change their own passwords with proper authentication
+
+- **Real-Time Password Validation**: Enhanced user experience with immediate feedback
+  - **Password Strength Indicator**: Visual progress bar showing password complexity (weak/medium/strong)
+  - **Live Validation**: Real-time checking of password requirements and confirmation matching
+  - **Comprehensive Requirements**: Enforces 8+ characters, uppercase, lowercase, numbers, and special characters
+  - **Visual Feedback**: Bootstrap validation classes and color-coded strength indicators
+
+- **Backend API Security**: Robust password change endpoint with comprehensive validation
+  - **Authentication Required**: Uses `@action.uses(auth.user)` for secure access control
+  - **Password Verification**: Validates current password before allowing changes
+  - **CRYPT Integration**: Secure password hashing using py4web's built-in CRYPT validator
+  - **Comprehensive Logging**: Tracks password changes for security audit purposes
+
+### Enhanced
+
+- **User Management Interface** (`templates/manage/user.html`):
+  - **New Button**: Added "Change Password" button (key icon) in user details header
+  - **Modal Integration**: Password modal follows existing design patterns for consistency
+  - **Form Structure**: Three-field layout with proper labels, help text, and validation
+  - **Progress Indicator**: Real-time password strength visualization
+
+- **Frontend Validation**: Comprehensive client and server-side security checks
+  - **Client Validation**: Immediate feedback for empty fields, mismatched passwords
+  - **Server Validation**: Backend enforcement of password complexity requirements
+  - **Error Handling**: User-friendly error messages for all validation scenarios
+  - **Success Feedback**: Toast notifications for successful password changes
+
+### Technical Implementation
+
+- **Backend Endpoint** (`manage.py`):
+  ```python
+  @action("change_password", method=["POST"])
+  @action.uses(session, auth.user, db)
+  def change_password():
+      # Current password verification
+      # New password complexity validation
+      # Secure CRYPT hashing and database update
+      # Comprehensive error handling and logging
+  ```
+
+- **Frontend Integration** (`static/js/user.js`):
+  - **Modal Control**: Button click handlers for opening password modal
+  - **Password Strength**: Real-time strength calculation and visual updates
+  - **Form Validation**: Client-side validation before API submission
+  - **API Integration**: AJAX calls to password change endpoint with proper error handling
+
+- **Security Features**:
+  ```javascript
+  // Password strength calculation (5 criteria, 20 points each)
+  if (password.length >= 8) strength += 20;
+  if (/[a-z]/.test(password)) strength += 20;
+  if (/[A-Z]/.test(password)) strength += 20;
+  if (/[0-9]/.test(password)) strength += 20;
+  if (/[^a-zA-Z0-9]/.test(password)) strength += 20;
+  ```
+
+- **API Security**:
+  ```python
+  # Current password verification with CRYPT
+  current_password_hash = user_record.password
+  crypt_validator = CRYPT()
+  if not crypt_validator(current_password)[0] == current_password_hash:
+      return {"success": False, "message": "Current password is incorrect"}
+  ```
+
+### Security Features
+
+- **Multi-Layer Validation**:
+  - **Authentication Check**: Must be logged in to access endpoint
+  - **Current Password Verification**: Validates existing password before change
+  - **Complexity Requirements**: Enforces strong password policies
+  - **Confirmation Matching**: Ensures new password is entered correctly twice
+
+- **Password Requirements**:
+  - **Minimum Length**: 8 characters required
+  - **Character Diversity**: Must include uppercase, lowercase, numbers, special characters
+  - **No Reuse Protection**: Current password verification prevents accidental reuse
+  - **Secure Storage**: New passwords hashed with CRYPT before database storage
+
+- **Access Control**:
+  - **User Isolation**: Users can only change their own passwords
+  - **Session Management**: Requires active authenticated session
+  - **Rate Limiting**: Backend error handling prevents rapid password change attempts
+  - **Audit Logging**: Password changes logged for security monitoring
+
+### User Experience
+
+- **Intuitive Interface**: Seamlessly integrated into existing user management workflow
+  - **Consistent Design**: Follows established modal patterns used throughout application
+  - **Clear Instructions**: Helpful text guides users through password requirements
+  - **Visual Feedback**: Progress bars and validation indicators provide immediate feedback
+  - **Error Prevention**: Real-time validation prevents form submission with invalid data
+
+- **Professional UX**: Modern password management best practices
+  - **Strength Visualization**: Color-coded progress bar (red/yellow/green) for password strength
+  - **Live Validation**: Instant feedback as user types without form submission
+  - **Accessibility**: Proper labels, ARIA attributes, and keyboard navigation support
+  - **Mobile Responsive**: Works seamlessly across desktop and mobile devices
+
+### Backend Validation
+
+- **Comprehensive Server Checks**:
+  ```python
+  # Current password verification
+  # New password complexity validation (8+ chars, mixed case, numbers, symbols)
+  # Confirmation matching validation
+  # User authorization validation
+  # Database integrity checks
+  ```
+
+- **Error Handling**:
+  - **Validation Errors**: Detailed error messages for each validation failure
+  - **Authentication Errors**: Proper 401/403 responses for unauthorized access
+  - **Database Errors**: Graceful handling of database connectivity issues
+  - **Logging**: Comprehensive error logging for debugging and security monitoring
+
+### Benefits
+
+- **Enhanced Security**: Users can easily update passwords to maintain account security
+- **User Autonomy**: Self-service password management reduces administrative overhead
+- **Compliance Ready**: Meets medical practice security requirements for password policies
+- **Audit Trail**: Full logging supports compliance and security monitoring requirements
+- **Professional UX**: Modern, intuitive interface maintains application's high usability standards
+
 ## [2025-06-08T15:57:53.836863] - Billing Combo Access Control Implementation
 
 ### Added

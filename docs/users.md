@@ -16,12 +16,14 @@ The Users module is a core component of the ophthalmology electronic medical rec
 ### 1. User Management
 
 #### User Listing
+
 - Filtered views by membership role (Patient, Doctor, Nurse, etc.)
 - Sortable and searchable user tables
 - Quick access to user profiles
 - Role-based access control
 
 #### User Creation
+
 - Comprehensive user registration form
 - Role-specific field requirements
 - Automatic username generation
@@ -31,6 +33,7 @@ The Users module is a core component of the ophthalmology electronic medical rec
 ### 2. Role Management
 
 #### Membership Roles
+
 - Admin
 - Doctor
 - Nurse
@@ -39,6 +42,7 @@ The Users module is a core component of the ophthalmology electronic medical rec
 - Patient
 
 #### Role-specific Features
+
 - Hierarchical access levels
 - Custom icons per role
 - Role-specific permissions
@@ -47,6 +51,7 @@ The Users module is a core component of the ophthalmology electronic medical rec
 ### 3. Profile Information
 
 #### Personal Details
+
 - First and last name
 - Date of birth
 - Gender
@@ -54,6 +59,7 @@ The Users module is a core component of the ophthalmology electronic medical rec
 - Profile photo
 
 #### Contact Information
+
 - Phone numbers with international prefixes
 - Multiple address support
 - Email addresses
@@ -62,12 +68,14 @@ The Users module is a core component of the ophthalmology electronic medical rec
 ### 4. Identity Management
 
 #### eID Card Integration
+
 - Automatic data population from eID cards
 - Photo extraction and storage
 - Address verification
 - National number validation
 
 #### Document Management
+
 - Identity document tracking
 - Medical registration numbers
 - Professional certifications
@@ -100,6 +108,7 @@ const API_USER_LIST = HOSTURL + '/api/auth_user?@lookup=gender:gender[id,sex],me
 ```
 
 Features include:
+
 - Server-side pagination
 - Multi-column sorting
 - Advanced search functionality
@@ -169,6 +178,7 @@ function crudp(table, id, req, data) {
 The module uses several API endpoints:
 
 1. **User Management**
+
 ```javascript
 /api/auth_user
 /api/membership
@@ -176,6 +186,7 @@ The module uses several API endpoints:
 ```
 
 2. **Contact Information**
+
 ```javascript
 /api/address
 /api/phone
@@ -184,6 +195,7 @@ The module uses several API endpoints:
 ## Usage Guidelines
 
 ### 1. User Creation Process
+
 1. Click "New User" button
 2. Fill in required information
 3. Optional: Use eID card for automatic data entry
@@ -191,12 +203,14 @@ The module uses several API endpoints:
 5. Handle additional information (address, phone)
 
 ### 2. User Search
+
 1. Use the search box for filtering
 2. Combine multiple search terms with commas
 3. Sort by clicking column headers
 4. Use column visibility options
 
 ### 3. User Management
+
 1. Edit user profiles
 2. Update contact information
 3. Manage roles and permissions
@@ -263,4 +277,4 @@ The Users module provides a robust and secure user management system with:
 4. Secure data handling
 5. Intuitive interface
 
-Regular updates and maintenance ensure optimal functionality and security compliance. 
+Regular updates and maintenance ensure optimal functionality and security compliance.

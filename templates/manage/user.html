@@ -28,8 +28,14 @@
                     <div class="d-flex w-100 justify-content-between align-items-center">
                         <h5 class="mb-1">Details</h5>
                         <span>
-                            <button id="btnEditUser" type="button" class="btn btn-outline-dark btn-sm m-1"><i class="fas fa-edit"></i></button>
-                            <button id="btnSendPwd" type="button" class="btn btn-outline-dark btn-sm m-1"><i class="fas fa-lock-open"></i></button>
+                            <button id="btnEditUser" type="button" class="btn btn-outline-dark btn-sm m-1"><i
+                                    class="fas fa-edit"></i></button>
+                            [[ if userMembership in ["Admin", "Doctor"]: ]]
+                            <button id="btnChangePassword" type="button" class="btn btn-outline-dark btn-sm m-1"><i
+                                    class="fas fa-key"></i></button>
+                            [[ pass ]]
+                            <button id="btnSendPwd" type="button" class="btn btn-outline-dark btn-sm m-1"><i
+                                    class="fas fa-lock-open"></i></button>
                         </span>
                     </div>
                 </div>
@@ -43,7 +49,8 @@
                 <div class="card-header">
                     <div class="d-flex w-100 justify-content-between align-items-center">
                         <h5 class="mb-1">Addresses</h5>
-                        <button id="btnNewAddress" type="button" class="btn btn-outline-dark btn-sm"><i class="fas fa-plus"></i></button>
+                        <button id="btnNewAddress" type="button" class="btn btn-outline-dark btn-sm"><i
+                                class="fas fa-plus"></i></button>
                     </div>
                 </div>
                 <ul id="ulUserAddresses" class="list-group list-group-flush">
@@ -56,7 +63,8 @@
                 <div class="card-header">
                     <div class="d-flex w-100 justify-content-between align-items-center">
                         <h5 class="mb-1">Phones</h5>
-                        <button id="btnNewPhone" type="button" class="btn btn-outline-dark btn-sm"><i class="fas fa-plus"></i></button>
+                        <button id="btnNewPhone" type="button" class="btn btn-outline-dark btn-sm"><i
+                                class="fas fa-plus"></i></button>
                     </div>
                 </div>
                 <ul id="ulUserPhones" class="list-group list-group-flush">
@@ -76,7 +84,8 @@
                     <div class="d-flex w-100 justify-content-between align-items-center">
                         <h5 class="mb-1">Medical board registration details</h5>
                         <span>
-                            <button id="btnEditmdParam" type="button" class="btn btn-outline-dark btn-sm m-1"><i class="fas fa-edit"></i></button>
+                            <button id="btnEditmdParam" type="button" class="btn btn-outline-dark btn-sm m-1"><i
+                                    class="fas fa-edit"></i></button>
                         </span>
                     </div>
                 </div>
@@ -90,12 +99,14 @@
 
 
 <!-- userModal -->
-<div class="modal fade" id="userDetailsModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+<div class="modal fade" id="userDetailsModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+    aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Edit user details</h5>
-                <button id="btnGetUserId" type="button" class="btn btn-outline-dark btn-sm m-3"><i class="fas fa-id-card"></i></button>
+                <button id="btnGetUserId" type="button" class="btn btn-outline-dark btn-sm m-3"><i
+                        class="fas fa-id-card"></i></button>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -111,24 +122,28 @@
                                 <div class="row mb-3">
                                     <div class="col-3">
                                         <label for="firstName" class="form-label">First name:</label>
-                                        <input id="firstName" type="text" class="form-control" name="first_name" autocomplete="off">
+                                        <input id="firstName" type="text" class="form-control" name="first_name"
+                                            autocomplete="off">
                                         <div id="firstNameHelp" class="form-text">Enter your first name</div>
                                     </div>
                                     <div class="col-5">
                                         <label for="lastName" class="form-label">Last name:</label>
-                                        <input id="lastName" type="text" class="form-control" name="last_name" autocomplete="off">
+                                        <input id="lastName" type="text" class="form-control" name="last_name"
+                                            autocomplete="off">
                                         <div id="lastNameHelp" class="form-text">Enter your last name</div>
                                     </div>
                                     <div class="col-4">
                                         <label for="maidenName" class="form-label">Maiden name:</label>
-                                        <input id="maidenName" type="text" class="form-control" name="maiden_name" autocomplete="off">
+                                        <input id="maidenName" type="text" class="form-control" name="maiden_name"
+                                            autocomplete="off">
                                         <div id="maidenNameHelp" class="form-text">Enter maiden name</div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="email" class="form-label">Email:</label>
-                                        <input id="email" type="email" class="form-control" name="email" autocomplete="off">
+                                        <input id="email" type="email" class="form-control" name="email"
+                                            autocomplete="off">
                                         <div id="emailHelp" class="form-text">Enter your email</div>
                                     </div>
                                     <div class="col">
@@ -194,7 +209,8 @@
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="noblecondition" class="form-label">Noble condition:</label>
-                                        <input id="noblecondition" type="text" class="form-control" name="noblecondition">
+                                        <input id="noblecondition" type="text" class="form-control"
+                                            name="noblecondition">
                                         <div id="nobleconditionHelp" class="form-text">Enter your noble condition</div>
                                     </div>
                                     <div class="col">
@@ -211,16 +227,18 @@
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="user_notes" class="form-label">Notes:</label>
-                                        <input id="user_notes" type="text" class="form-control" name="user_notes" size="255">
+                                        <input id="user_notes" type="text" class="form-control" name="user_notes"
+                                            size="255">
                                         <div id="user_notesHelp" class="form-text">Enter notes</div>
                                     </div>
                                 </div>
-                                <input id="photob64" type="text" class="visually-hidden" name="photob64"/>
-                                <input id="username" type="text" class="visually-hidden" name="username" autocomplete="off"/>
-                                <input id="initials" type="text" class="visually-hidden" name="initials"/>
-                                <input id="chipNumber" type="text" class="visually-hidden" name="chipnumber"/>
-                                <input id="validfrom" type="text" class="visually-hidden" name="validfrom"/>
-                                <input id="validtill" type="text" class="visually-hidden" name="validtill"/>
+                                <input id="photob64" type="text" class="visually-hidden" name="photob64" />
+                                <input id="username" type="text" class="visually-hidden" name="username"
+                                    autocomplete="off" />
+                                <input id="initials" type="text" class="visually-hidden" name="initials" />
+                                <input id="chipNumber" type="text" class="visually-hidden" name="chipnumber" />
+                                <input id="validfrom" type="text" class="visually-hidden" name="validfrom" />
+                                <input id="validtill" type="text" class="visually-hidden" name="validtill" />
                                 <input id="btnDetailsSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -236,7 +254,8 @@
 </div>
 
 <!-- phoneModal -->
-<div class="modal fade" id="userPhoneModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+<div class="modal fade" id="userPhoneModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -262,18 +281,21 @@
                                         <label for="phone_prefix" class="form-label">Prefix:</label>
                                         <div class="input-group">
                                             <span class="input-group-text">+</span>
-                                            <input id="phone_prefix" type="text" class="form-control" name="phone_prefix">
+                                            <input id="phone_prefix" type="text" class="form-control"
+                                                name="phone_prefix">
                                         </div>
                                         <div id="prefixHelp" class="form-text">Enter country's prefix</div>
                                     </div>
                                     <div class="col-8">
                                         <label for="phone" class="form-label">Phone:</label>
-                                        <input id="phone" type="text" class="form-control" name="phone" autocomplete="off">
+                                        <input id="phone" type="text" class="form-control" name="phone"
+                                            autocomplete="off">
                                         <div id="phoneHelp" class="form-text">Enter phone number</div>
                                     </div>
                                 </div>
-                                <input id="idPhoneSubmit" type="text" class="visually-hidden" name="idPhoneSubmit"/>
-                                <input id="methodPhoneSubmit" type="text" class="visually-hidden" name="methodPhoneSubmit" value="POST"/>
+                                <input id="idPhoneSubmit" type="text" class="visually-hidden" name="idPhoneSubmit" />
+                                <input id="methodPhoneSubmit" type="text" class="visually-hidden"
+                                    name="methodPhoneSubmit" value="POST" />
                                 <input id="btnPhoneSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -289,7 +311,8 @@
 </div>
 
 <!-- addressModal -->
-<div class="modal fade" id="userAddressModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+<div class="modal fade" id="userAddressModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+    aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -352,12 +375,15 @@
                                     </div>
                                     <div class="col-6">
                                         <label for="country" class="form-label">Country:</label>
-                                        <input id="country" type="text" class="form-control" name="country" autocomplete="off">
+                                        <input id="country" type="text" class="form-control" name="country"
+                                            autocomplete="off">
                                         <div id="countryHelp" class="form-text">Enter country</div>
                                     </div>
                                 </div>
-                                <input id="idAddressSubmit" type="text" class="visually-hidden" name="idAddressSubmit"/>
-                                <input id="methodAddressSubmit" type="text" class="visually-hidden" name="methodAddressSubmit" value="POST"/>
+                                <input id="idAddressSubmit" type="text" class="visually-hidden"
+                                    name="idAddressSubmit" />
+                                <input id="methodAddressSubmit" type="text" class="visually-hidden"
+                                    name="methodAddressSubmit" value="POST" />
                                 <input id="btnAddressSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -373,7 +399,8 @@
 </div>
 
 <!-- mdParamModal -->
-<div class="modal fade" id="userMd_paramModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+<div class="modal fade" id="userMd_paramModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+    aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -389,13 +416,15 @@
                                     <div class="col">
                                         <label for="numInami" class="form-label">Inami:</label>
                                         <input id="numInami" type="text" class="form-control" name="inami">
-                                        <div id="numInamiHelp" class="form-text">Set INAMI number eg 1-00-000-00-000</div>
+                                        <div id="numInamiHelp" class="form-text">Set INAMI number eg 1-00-000-00-000
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="mdEmail" class="form-label">Email:</label>
-                                        <input id="mdEmail" type="email" class="form-control" name="email" autocomplete="off">
+                                        <input id="mdEmail" type="email" class="form-control" name="email"
+                                            autocomplete="off">
                                         <div id="mdEmailHelp" class="form-text">Set public email</div>
                                     </div>
                                     <div class="col">
@@ -440,17 +469,20 @@
                                     <div class="col">
                                         <label for="companyName" class="form-label">Company name:</label>
                                         <input id="companyName" type="text" class="form-control" name="companyname">
-                                        <div id="companyNameHelp" class="form-text">Enter official registration number</div>
+                                        <div id="companyNameHelp" class="form-text">Enter official registration number
+                                        </div>
                                     </div>
                                     <div class="col">
                                         <label for="companyAddress" class="form-label">Company address:</label>
-                                        <input id="companyAddress" type="text" class="form-control" name="companyaddress">
+                                        <input id="companyAddress" type="text" class="form-control"
+                                            name="companyaddress">
                                         <div id="companyAddressHelp" class="form-text">Enter official address</div>
                                     </div>
                                     <div class="col">
                                         <label for="companyNum" class="form-label">Company number:</label>
                                         <input id="companyNum" type="text" class="form-control" name="companynum">
-                                        <div id="companyNumHelp" class="form-text">Enter official registration number</div>
+                                        <div id="companyNumHelp" class="form-text">Enter official registration number
+                                        </div>
                                     </div>
                                     <div class="col">
                                         <label for="companyIban" class="form-label">Company IBAN:</label>
@@ -458,8 +490,9 @@
                                         <div id="companyIbanHelp" class="form-text">Enter bank account number</div>
                                     </div>
                                 </div>
-                                <input id="idMd_ParamSubmit" type="text" class="visually-hidden" name="id"/>
-                                <input id="methodMd_paramSubmit" type="text" class="visually-hidden" name="methodmdParamSubmit" value="POST"/>
+                                <input id="idMd_ParamSubmit" type="text" class="visually-hidden" name="id" />
+                                <input id="methodMd_paramSubmit" type="text" class="visually-hidden"
+                                    name="methodmdParamSubmit" value="POST" />
                                 <input id="btnmdParamSubmit" type="submit" class="visually-hidden" />
                             </form>
                         </div>
@@ -469,6 +502,65 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <label id="mdParamSubmit" for="btnmdParamSubmit" class="btn btn-primary" tabindex="0">Submit</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- passwordModal -->
+<div class="modal fade" id="userPasswordModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+    aria-hidden="true" style="z-index: 9999;">
+    <div class="modal-dialog" role="document" style="margin-top: 10vh;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <!-- Error Display Area -->
+                    <div id="passwordErrorAlert" class="alert alert-danger" style="display: none;">
+                        <ul id="passwordErrorList" class="mb-0"></ul>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <form id="userPasswordForm" enctype="multipart/form-data" method="POST">
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="newPassword" class="form-label">New Password:</label>
+                                        <input id="newPassword" type="password" class="form-control" name="new_password"
+                                            autocomplete="new-password" required>
+                                        <div id="newPasswordHelp" class="form-text">Enter your new password (min 8
+                                            characters, include uppercase, lowercase, numbers, and special characters)
+                                        </div>
+                                        <div id="passwordStrength" class="progress mt-2" style="height: 5px;">
+                                            <div class="progress-bar" role="progressbar" style="width: 0%"
+                                                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="confirmPassword" class="form-label">Confirm New Password:</label>
+                                        <input id="confirmPassword" type="password" class="form-control"
+                                            name="confirm_password" autocomplete="new-password" required>
+                                        <div id="confirmPasswordHelp" class="form-text">Confirm your new password</div>
+                                    </div>
+                                </div>
+                                <input id="idPasswordSubmit" type="text" class="visually-hidden"
+                                    name="idPasswordSubmit" />
+                                <input id="methodPasswordSubmit" type="text" class="visually-hidden"
+                                    name="methodPasswordSubmit" value="POST" />
+                                <input id="btnPasswordSubmit" type="submit" class="visually-hidden" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <label id="passwordSubmit" for="btnPasswordSubmit" class="btn btn-primary" tabindex="0">Change
+                    Password</label>
             </div>
         </div>
     </div>
@@ -489,15 +581,16 @@
 <script src="js/useful.js"></script>
 <!-- <script src="js/user_validation.js"></script> -->
 <script type="text/javascript">
-const id = [[ =rec_id ]]
-const membership = [[=membership]];
-const HOSTURL = "[[ = hosturl ]]";
-const LOCAL_BEID = "[[=localbeid ]]";
+    const id = [[ =rec_id]]
+    const membership = [[=membership]];
+    const HOSTURL = "[[ = hosturl ]]";
+    const LOCAL_BEID = "[[=localbeid ]]";
 
-const API_USER= HOSTURL+'[[=URL('api','auth_user')]]'+'?id.eq='+id+'&@lookup=gender,marital,membership,ethny&@count=true'; 
-const API_USER_PHONE = HOSTURL + '[[=URL('api','phone')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true'; 
-const API_USER_ADDRESS = HOSTURL + '[[=URL('api','address')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true&@order=address_rank'; 
-const API_MDPARAM = HOSTURL + '[[=URL('api','md_params')]]' + '?id_auth_user.eq=' + id
+    const API_USER = HOSTURL + '[[=URL('api','auth_user')]]' + '?id.eq=' + id + '&@lookup=gender,marital,membership,ethny&@count=true';
+    const API_USER_PHONE = HOSTURL + '[[=URL('api','phone')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true';
+    const API_USER_ADDRESS = HOSTURL + '[[=URL('api','address')]]' + '?id_auth_user.eq=' + id + '&@lookup=id_auth_user&@count=true&@order=address_rank';
+    const API_MDPARAM = HOSTURL + '[[=URL('api','md_params')]]' + '?id_auth_user.eq=' + id;
+    const API_CHANGE_PASSWORD = HOSTURL + '[[=URL('change_password')]]';
 </script>
 <script src="js/user.js"></script>
 [[ end ]]

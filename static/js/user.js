@@ -773,3 +773,184 @@ $("#userMd_paramForm").submit(function (e) {
 	$("#userMd_paramModal").modal("hide");
 	return false;
 });
+
+// Password change functionality
+
+// Button click to open password modal
+$("#btnChangePassword").click(function () {
+	// Update modal title to show whose password is being changed
+	// Get username from the page title or user data
+	const username = $("#username").text() || "User";
+	$("#userPasswordModal .modal-title").text(`Change Password for ${username}`);
+
+	$("#userPasswordModal").modal("show");
+	// Reset form
+	document.getElementById("userPasswordForm").reset();
+	// Reset password strength indicator
+	updatePasswordStrength("");
+	// Hide any previous error messages
+	hidePasswordErrors();
+});
+
+// Function to show password validation errors
+function showPasswordErrors(errors) {
+	const errorList = $("#passwordErrorList");
+	const errorAlert = $("#passwordErrorAlert");
+
+	// Clear previous errors
+	errorList.empty();
+
+	// Add each error as a list item
+	errors.forEach((error) => {
+		errorList.append(`<li>${error}</li>`);
+	});
+
+	// Show the error alert
+	errorAlert.show();
+
+	// Scroll to top of modal to show errors
+	$("#userPasswordModal .modal-body").scrollTop(0);
+}
+
+// Function to hide password validation errors
+function hidePasswordErrors() {
+	$("#passwordErrorAlert").hide();
+	$("#passwordErrorList").empty();
+}
+
+// Password strength checker
+function updatePasswordStrength(password) {
+	let strength = 0;
+	let strengthText = "";
+	let strengthColor = "";
+
+	if (password.length >= 8) strength += 20;
+	if (/[a-z]/.test(password)) strength += 20;
+	if (/[A-Z]/.test(password)) strength += 20;
+	if (/[0-9]/.test(password)) strength += 20;
+	if (/[^a-zA-Z0-9]/.test(password)) strength += 20;
+
+	if (strength < 40) {
+		strengthText = "Weak";
+		strengthColor = "bg-danger";
+	} else if (strength < 80) {
+		strengthText = "Medium";
+		strengthColor = "bg-warning";
+	} else {
+		strengthText = "Strong";
+		strengthColor = "bg-success";
+	}
+
+	$("#passwordStrength .progress-bar")
+		.css("width", strength + "%")
+		.attr("aria-valuenow", strength)
+		.removeClass("bg-danger bg-warning bg-success")
+		.addClass(strengthColor);
+}
+
+// Real-time password strength indicator
+$("#newPassword").on("input", function () {
+	updatePasswordStrength($(this).val());
+});
+
+// Real-time password confirmation validation
+$("#confirmPassword").on("input", function () {
+	const newPassword = $("#newPassword").val();
+	const confirmPassword = $(this).val();
+
+	if (confirmPassword && newPassword !== confirmPassword) {
+		$(this).addClass("is-invalid");
+		$("#confirmPasswordHelp")
+			.text("Passwords do not match")
+			.addClass("text-danger");
+	} else {
+		$(this).removeClass("is-invalid");
+		$("#confirmPasswordHelp")
+			.text("Confirm your new password")
+			.removeClass("text-danger");
+	}
+});
+
+// Handle password form submission
+$("#userPasswordForm").submit(function (e) {
+	e.preventDefault();
+
+	const newPassword = $("#newPassword").val();
+	const confirmPassword = $("#confirmPassword").val();
+
+	// Hide any previous errors
+	hidePasswordErrors();
+
+	// Client-side validation
+	const clientErrors = [];
+
+	if (!newPassword || !confirmPassword) {
+		clientErrors.push("All fields are required");
+	}
+
+	if (newPassword !== confirmPassword) {
+		clientErrors.push("New password and confirmation do not match");
+	}
+
+	if (newPassword.length < 8) {
+		clientErrors.push("Password must be at least 8 characters long");
+	}
+
+	// Show client-side validation errors
+	if (clientErrors.length > 0) {
+		showPasswordErrors(clientErrors);
+		return;
+	}
+
+	// Prepare data for API call
+	const passwordData = {
+		new_password: newPassword,
+		confirm_password: confirmPassword,
+		user_id: id, // Send the viewed user's ID to change their password
+	};
+
+	// Disable submit button to prevent double submission
+	$("#passwordSubmit").prop("disabled", true).text("Changing...");
+
+	// Make API call to change password
+	$.ajax({
+		url: API_CHANGE_PASSWORD,
+		type: "POST",
+		contentType: "application/json",
+		data: JSON.stringify(passwordData),
+		success: function (response) {
+			if (response.success) {
+				displayToast("success", "Success", response.message, "5000");
+				$("#userPasswordModal").modal("hide");
+				document.getElementById("userPasswordForm").reset();
+				updatePasswordStrength("");
+				hidePasswordErrors();
+			} else {
+				// Show validation errors in the modal
+				if (response.errors && response.errors.length > 0) {
+					showPasswordErrors(response.errors);
+				} else {
+					showPasswordErrors([response.message || "Password change failed"]);
+				}
+			}
+		},
+		error: function (xhr, status, error) {
+			let errorMessages = ["An error occurred while changing password"];
+
+			// Try to get error details from response
+			if (xhr.responseJSON) {
+				if (xhr.responseJSON.errors && xhr.responseJSON.errors.length > 0) {
+					errorMessages = xhr.responseJSON.errors;
+				} else if (xhr.responseJSON.message) {
+					errorMessages = [xhr.responseJSON.message];
+				}
+			}
+
+			showPasswordErrors(errorMessages);
+		},
+		complete: function () {
+			// Re-enable submit button
+			$("#passwordSubmit").prop("disabled", false).text("Change Password");
+		},
+	});
+});
