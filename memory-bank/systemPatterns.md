@@ -330,6 +330,205 @@ The API migration has been completed following this pattern:
 
 This migration pattern ensured smooth transition with minimal disruption, maintained backward compatibility, and improved code organization and maintainability. The migration is now complete, with all endpoints and utility functions properly organized in the modular structure.
 
+### Practitioner Selector Pattern
+
+The practitioner selector pattern provides consistent filtering capabilities across modules with intelligent defaults for improved user workflow.
+
+#### Pattern Implementation
+
+1. **Backend Data Generation Pattern**
+
+```python
+# Controller pattern for practitioner/provider data
+def controller_with_practitioner_selectors():
+    # Generate practitioner dictionary (doctors only)
+    practitionerDict = {}
+    practitionerSelect = ["Doctor"]
+    rows = db(db.membership.membership.contains(practitionerSelect, all=False)).select(
+        join=db.auth_user.on(db.auth_user.membership == db.membership.id)
+    )
+    for row in rows:
+        practitionerDict[
+            "Dr. " + row.auth_user.first_name + " " + row.auth_user.last_name
+        ] = row.auth_user.id
+
+    # Generate provider dictionary (all medical staff)
+    providerDict = {}
+    providerSelect = ["Doctor", "Provider", "Technician", "Nurse", "Student"]
+    rows = db(db.membership.membership.contains(providerSelect, all=False)).select(
+        join=db.auth_user.on(db.auth_user.membership == db.membership.id)
+    )
+    for row in rows:
+        providerDict[
+            row.auth_user.first_name + " " + row.auth_user.last_name
+        ] = row.auth_user.id
+
+    # Get current user membership for smart defaults
+    userMembership = ""
+    if auth.get_user():
+        user_membership_row = db(db.membership.id == auth.get_user()["membership"]).select().first()
+        if user_membership_row:
+            userMembership = user_membership_row.membership
+
+    return locals()  # Returns all variables to template
+```
+
+2. **Frontend Smart Selection Pattern**
+
+```javascript
+// Template data integration
+const currentUserId = [[ = user["id"] ]];
+const currentUserMembership = "[[ = userMembership ]]";
+let practitionerDict = [[ = XML(practitionerDict)]]
+let providerDict = [[ = XML(providerDict)]]
+
+function fillSelect() {
+    let select = document.getElementById("selectPractitioner");
+    let userFoundInDropdown = false;
+    let currentUserKey = "";
+
+    // Populate practitioner dropdown
+    for (let value in practitionerDict) {
+        let option = document.createElement("option");
+        option.value = practitionerDict[value];
+        option.text = value;
+        select.add(option);
+
+        // Check if current user exists in dropdown
+        if (practitionerDict[value] == currentUserId) {
+            userFoundInDropdown = true;
+            currentUserKey = value;
+        }
+    }
+
+    // Smart default: auto-select current user if doctor
+    if (currentUserMembership === "Doctor" && userFoundInDropdown) {
+        select.value = currentUserId;
+        console.log("Auto-selected current doctor:", currentUserKey);
+    }
+
+    // Populate provider dropdown
+    select = document.getElementById("selectProvider");
+    for (let value in providerDict) {
+        let option = document.createElement("option");
+        option.value = providerDict[value];
+        option.text = value;
+        select.add(option);
+    }
+}
+```
+
+3. **Filter Integration Pattern**
+
+```javascript
+// Event handlers for real-time filtering
+$('#selectPractitioner').change(function () {
+    console.log('select practitioner change:', $(this).val());
+    let key = getFilterStatus();
+    console.log("filter key: ", key);
+    $('#table-files').bootstrapTable('refreshOptions', {
+        url: API_FILES_LIST + key
+    })
+});
+
+$('#selectProvider').change(function () {
+    console.log('select provider change:', $(this).val());
+    let key = getFilterStatus();
+    console.log("filter key: ", key);
+    $('#table-files').bootstrapTable('refreshOptions', {
+        url: API_FILES_LIST + key
+    })
+});
+
+// Filter status generation
+function getFilterStatus() {
+    let key = "";
+    if (document.getElementById("selectPractitioner").value != "") {
+        if (document.getElementById("selectProvider").value != "") {
+            // Both practitioner AND provider selected
+            key = "&senior.id=" + document.getElementById("selectPractitioner").value + 
+                  "&provider.id=" + document.getElementById("selectProvider").value
+        } else {
+            // ONLY practitioner selected
+            key = "&senior.id=" + document.getElementById("selectPractitioner").value
+        }
+    } else {
+        if (document.getElementById("selectProvider").value != "") {
+            // ONLY provider selected
+            key = "&provider.id=" + document.getElementById("selectProvider").value
+        }
+        // else NO selection - no filter applied
+    }
+    return key;
+}
+```
+
+4. **Template Integration Pattern**
+
+```html
+<!-- HTML structure for practitioner selectors -->
+<div class="col form-floating">
+    <select class="form-select" id="selectProvider" class="form-control">
+        <option value="">No filter</option>
+    </select>
+    <label for="selectProvider">Select provider</label>
+</div>
+<div class="col form-floating">
+    <select class="form-select" id="selectPractitioner" class="form-control">
+        <option value="">No filter</option>
+    </select>
+    <label for="selectPractitioner">Select practitioner</label>
+</div>
+
+<!-- JavaScript initialization -->
+<script>
+document.addEventListener("DOMContentLoaded", function (event) {
+    fillSelect();  // Populate selectors and apply smart defaults
+});
+</script>
+```
+
+#### Pattern Benefits
+
+1. **Intelligent Workflow Optimization**
+   - Doctors automatically see their own cases by default
+   - Non-doctors see all cases for administrative oversight
+   - Reduces manual filtering steps for common use cases
+
+2. **Consistent User Experience**
+   - Same selector behavior across Worklist and Files modules
+   - Familiar interface reduces learning curve
+   - Standardized filter logic and API integration
+
+3. **Performance Benefits**
+   - Reduced data load through intelligent filtering
+   - Real-time table updates without full page refresh
+   - Efficient API calls with proper parameter passing
+
+4. **Scalability**
+   - Pattern easily extensible to other modules
+   - Supports adding new user roles and permissions
+   - Maintains data structure consistency
+
+#### Implementation Guidelines
+
+1. **Backend Requirements**
+   - Generate both practitionerDict and providerDict in controller
+   - Include current user membership information
+   - Use consistent data structure across modules
+
+2. **Frontend Requirements**
+   - Implement fillSelect() function for dropdown population
+   - Add smart default selection logic for doctors
+   - Include real-time filter event handlers
+
+3. **API Integration**
+   - Support senior.id and provider.id filter parameters
+   - Maintain existing API endpoint structure
+   - Use consistent filter parameter format
+
+This pattern has been successfully implemented in both Worklist and Files modules, providing a reusable template for future module enhancements.
+
 ### Worklist Management System
 
 #### Current Pattern

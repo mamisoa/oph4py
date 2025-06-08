@@ -5,6 +5,65 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2025-06-08T04:05:00.583732] - Files Module Practitioner Selector Implementation
+
+### Added
+
+- **Practitioner and Provider Selectors**: Extended Files module with filtering capabilities similar to Worklist
+  - **Practitioner Dropdown**: Select and filter by senior doctor with automatic default selection for logged doctors
+  - **Provider Dropdown**: Filter by medical staff/providers with comprehensive provider options
+  - **Smart Defaults**: Automatically selects logged user if they are a doctor and exist in practitioner list, otherwise defaults to "No filter" (all)
+  - **Real-time Filtering**: Immediate table updates when practitioner or provider selection changes
+  - **Consistent UX**: Same design pattern and behavior as Worklist module for familiar user experience
+
+### Enhanced
+
+- **Files Controller**: Extended `files()` function in `manage.py` with practitioner and provider data
+  - **Practitioner Dictionary**: Added generation of `practitionerDict` with all users having "Doctor" membership
+  - **Provider Dictionary**: Added generation of `providerDict` with medical staff and providers
+  - **User Context**: Added current user membership information for smart default selection
+  - **Data Consistency**: Uses same data structure and filtering logic as Worklist module
+
+- **Files Template**: Enhanced `templates/manage/files.html` with selector interface
+  - **Floating Label Selectors**: Added Bootstrap floating label select elements for practitioner and provider
+  - **Responsive Layout**: Integrated selectors into existing toolbar layout without disrupting current functionality
+  - **JavaScript Integration**: Added `fillSelect()` function and filter event handlers for dynamic population and filtering
+
+### Technical Implementation
+
+- **JavaScript Enhancement**: Added comprehensive selector logic to Files module
+  - **Auto-population**: `fillSelect()` function populates dropdowns with practitioner and provider data
+  - **Smart Selection**: Automatically selects current user if they are a doctor and exist in dropdown
+  - **Filter Integration**: Enhanced existing filter functions to include practitioner/provider parameters
+  - **Event Handling**: Added change event listeners for real-time table filtering
+  - **API Integration**: Extended existing API calls with new filter parameters
+
+- **Backend Enhancement**: Extended Files API filtering capabilities
+  - **Filter Parameters**: Added support for senior.id and provider.id filtering in existing API endpoints
+  - **Data Lookup**: Enhanced data retrieval to include practitioner and provider relationship data
+  - **Consistent Pattern**: Uses same filtering logic and parameter structure as Worklist module
+
+### User Experience Improvements
+
+- **Intelligent Defaults**: Doctors automatically see their own cases by default, improving workflow efficiency
+- **Universal Access**: Non-doctors see all cases by default, maintaining administrative oversight capabilities
+- **Familiar Interface**: Identical design and behavior to Worklist module reduces learning curve
+- **Real-time Updates**: Immediate visual feedback when changing filters improves user interaction
+
+### Benefits
+
+- **Enhanced Workflow**: Doctors can quickly focus on their own cases without manual filtering
+- **Administrative Flexibility**: Administrators can still access all cases through "No filter" option
+- **Consistent UX**: Same filtering pattern across Worklist and Files modules for coherent user experience
+- **Scalability**: Filtering reduces data load and improves performance for large case volumes
+
+**Files Modified**:
+
+- `manage.py` - Enhanced files controller with practitioner/provider data generation
+- `templates/manage/files.html` - Added practitioner and provider selector interface with JavaScript integration
+
+**Impact**: Files module now provides the same intelligent filtering capabilities as Worklist, improving workflow efficiency for medical professionals while maintaining administrative oversight
+
 ## [2025-06-08T03:50:18.949162] - Automated Trend Analysis Comments
 
 ### Added

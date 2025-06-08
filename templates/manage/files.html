@@ -23,11 +23,23 @@
         <div class="col-md-12 mt-3">
             <div class="row">
                 <div class="col">
-                    <div class="col">
-                        <button type="button" id="btnFullList" class="btn btn-dark mx-2">Full list</button>
-                        <button type="button" id="btnMdList" class="btn btn-dark mx-2">MD list</button>
-                        <button type="button" id="btnGpList" class="btn btn-dark mx-2">GP list</button>
-                    </div>
+                    <button type="button" id="btnFullList" class="btn btn-dark mx-2">Full list</button>
+                    <button type="button" id="btnMdList" class="btn btn-dark mx-2">MD list</button>
+                    <button type="button" id="btnGpList" class="btn btn-dark mx-2">GP list</button>
+                </div>
+                <div class="col form-floating">
+                    <select class="form-select" id="selectProvider" class="form-control">
+                        <option value="">No filter</option>"
+                    </select>
+                    <label for="selectProvider">Select provider</label>
+                </div>
+                <div class="col form-floating">
+                    <select class="form-select" id="selectPractitioner" class="form-control">
+                        <option value="">No filter</option>"
+                    </select>
+                    <label for="selectPractitioner">Select practitioner</label>
+                </div>
+                <div class="col">
                     <div id="toolbar-wl">
                         <h2><span class=""><i class="fas fa-list me-2"></i>Files<span></h2>
                     </div>
@@ -79,6 +91,57 @@
 
     // modality controllers
     var modalityDict = [[ = XML(modalityDict)]];
+
+    // Fill the select options
+    let practitionerDict = [[ = XML(practitionerDict)]]
+    let providerDict = [[ = XML(providerDict)]]
+
+    // Current user information
+    const currentUserId = [[ = user["id"]]];
+    const currentUserMembership = "[[ = userMembership ]]";
+
+    function fillSelect() {
+        let select = document.getElementById("selectPractitioner");
+        let userFoundInDropdown = false;
+        let currentUserKey = "";
+
+        for (let value in practitionerDict) {
+            let option = document.createElement("option");
+            option.value = practitionerDict[value];
+            option.text = value;
+            select.add(option);
+
+            // Check if this entry matches the current user
+            if (practitionerDict[value] == currentUserId) {
+                userFoundInDropdown = true;
+                currentUserKey = value;
+            }
+        }
+
+        // Auto-select current user if they are a doctor and exist in dropdown
+        if (currentUserMembership === "Doctor" && userFoundInDropdown) {
+            select.value = currentUserId;
+            console.log("Auto-selected current doctor:", currentUserKey);
+            // Trigger filtering for the selected doctor
+            applyFilters();
+        } else if (currentUserMembership !== "Doctor") {
+            // If not a doctor, show all by default (no filter)
+            console.log("User is not a doctor, showing all records");
+        }
+
+        select = document.getElementById("selectProvider");
+        for (let value in providerDict) {
+            let option = document.createElement("option");
+            option.value = providerDict[value];
+            option.text = value;
+            select.add(option);
+        }
+    }
+
+    // Load when DOM is loaded
+    document.addEventListener("DOMContentLoaded", function (event) {
+        fillSelect();
+    });
 
     // init bootstrat-tables
     const membership = [[=membership]];
@@ -146,6 +209,45 @@
         $('#table-wl').bootstrapTable('refreshOptions', {
             url: API_PROCEDURE_LIST_GP
         });
+    });
+
+    function getFilterStatus() {
+        let key = "";
+        if (document.getElementById("selectPractitioner").value != "") {
+            if (document.getElementById("selectProvider").value != "") {
+                // provider AND senior selected
+                key = "&senior.id=" + document.getElementById("selectPractitioner").value + "&provider.id=" + document.getElementById("selectProvider").value
+            } else {
+                // ONLY senior selected
+                key = "&senior.id=" + document.getElementById("selectPractitioner").value
+            }
+        } else {
+            // no senior selected
+            if (document.getElementById("selectProvider").value != "") {
+                // ONLY provider selected
+                key = "&provider.id=" + document.getElementById("selectProvider").value
+            } else {
+                // NO selection
+            }
+        }
+        return key;
+    }
+
+    function applyFilters() {
+        let key = getFilterStatus();
+        $('#table-wl').bootstrapTable('refreshOptions', {
+            url: API_PROCEDURE_LIST_MD + key
+        });
+    }
+
+    $('#selectPractitioner').change(function () {
+        console.log('select practitioner change:', $(this).val());
+        applyFilters();
+    });
+
+    $('#selectProvider').change(function () {
+        console.log('select provider change:', $(this).val());
+        applyFilters();
     });
 
 
