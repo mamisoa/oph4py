@@ -76,6 +76,12 @@ class BillingComboManager {
 
 		// Multi-selection export handlers
 		$("#btnExportSelected").on("click", () => this.exportSelectedCombos());
+
+		// Import handlers
+		$("#btnImportCombo").on("click", () => this.showImportModal());
+		$("#importFileInput").on("change", (e) => this.handleFileSelection(e));
+		$("#btnStartImport").on("click", () => this.startImport());
+		$("#btnNewImport").on("click", () => this.resetImportModal());
 	}
 
 	initializeTableEvents() {
@@ -1203,6 +1209,373 @@ class BillingComboManager {
 		}
 		const parsed = parseFloat(value);
 		return isNaN(parsed) ? defaultValue : parsed;
+	}
+
+	// =============================================================================
+	// Import Functionality
+	// =============================================================================
+
+	showImportModal() {
+		this.resetImportModal();
+		$("#importComboModal").modal("show");
+		this.setupDragAndDrop();
+	}
+
+	resetImportModal() {
+		// Reset all sections to initial state
+		$("#fileUploadSection").show();
+		$("#importPreviewSection").hide();
+		$("#importProgressSection").hide();
+		$("#importResultsSection").hide();
+
+		// Reset form elements
+		$("#importFileInput").val("");
+		$("#btnStartImport").hide();
+		$("#btnNewImport").hide();
+
+		// Clear any stored data
+		this.importData = null;
+		this.importFormat = null;
+	}
+
+	setupDragAndDrop() {
+		const dropZone = $("#dropZone")[0];
+
+		// Prevent default drag behaviors
+		["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+			dropZone.addEventListener(eventName, this.preventDefaults, false);
+			document.body.addEventListener(eventName, this.preventDefaults, false);
+		});
+
+		// Highlight drop zone when item is dragged over it
+		["dragenter", "dragover"].forEach((eventName) => {
+			dropZone.addEventListener(
+				eventName,
+				() => this.highlight(dropZone),
+				false
+			);
+		});
+
+		["dragleave", "drop"].forEach((eventName) => {
+			dropZone.addEventListener(
+				eventName,
+				() => this.unhighlight(dropZone),
+				false
+			);
+		});
+
+		// Handle dropped files
+		dropZone.addEventListener("drop", (e) => this.handleDrop(e), false);
+	}
+
+	preventDefaults(e) {
+		e.preventDefault();
+		e.stopPropagation();
+	}
+
+	highlight(element) {
+		element.style.borderColor = "#007bff";
+		element.style.backgroundColor = "#f8f9fa";
+	}
+
+	unhighlight(element) {
+		element.style.borderColor = "#dee2e6";
+		element.style.backgroundColor = "transparent";
+	}
+
+	handleDrop(e) {
+		const dt = e.dataTransfer;
+		const files = dt.files;
+
+		if (files.length > 0) {
+			this.processFile(files[0]);
+		}
+	}
+
+	handleFileSelection(e) {
+		const file = e.target.files[0];
+		if (file) {
+			this.processFile(file);
+		}
+	}
+
+	async processFile(file) {
+		// Validate file type
+		if (!file.name.toLowerCase().endsWith(".json")) {
+			this.showToast("Please select a JSON file", "error");
+			return;
+		}
+
+		// Validate file size (max 10MB)
+		if (file.size > 10 * 1024 * 1024) {
+			this.showToast("File size too large. Maximum 10MB allowed.", "error");
+			return;
+		}
+
+		try {
+			const content = await this.readFileAsText(file);
+			const jsonData = JSON.parse(content);
+
+			this.importData = jsonData;
+			this.detectImportFormat(jsonData);
+			this.showImportPreview();
+		} catch (error) {
+			console.error("File processing error:", error);
+			this.showToast(
+				"Invalid JSON file. Please check the file format.",
+				"error"
+			);
+		}
+	}
+
+	readFileAsText(file) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = (e) => resolve(e.target.result);
+			reader.onerror = (e) => reject(e);
+			reader.readAsText(file);
+		});
+	}
+
+	detectImportFormat(jsonData) {
+		// Detect format based on JSON structure
+		if (jsonData.combo_data) {
+			this.importFormat = "single";
+		} else if (jsonData.combos && Array.isArray(jsonData.combos)) {
+			this.importFormat = "multi";
+		} else {
+			throw new Error("Unknown import format");
+		}
+	}
+
+	showImportPreview() {
+		$("#fileUploadSection").hide();
+		$("#importPreviewSection").show();
+		$("#btnStartImport").show();
+
+		// Show format info
+		const formatText =
+			this.importFormat === "single" ? "Single Combo" : "Multiple Combos";
+		const comboCount =
+			this.importFormat === "single" ? 1 : this.importData.combos.length;
+
+		$("#importInfo").html(`
+			<i class="fas fa-info-circle"></i>
+			<strong>Format:</strong> ${formatText} 
+			<strong>Count:</strong> ${comboCount} combo(s)
+		`);
+
+		if (this.importFormat === "single") {
+			this.showSingleComboPreview();
+		} else {
+			this.showMultiComboPreview();
+		}
+	}
+
+	showSingleComboPreview() {
+		const combo = this.importData.combo_data;
+
+		$("#previewComboName").text(combo.combo_name);
+		$("#previewSpecialty").text(combo.specialty);
+		$("#previewDescription").text(combo.combo_description || "No description");
+		$("#previewCodeCount").text(`${combo.combo_codes.length} codes`);
+
+		$("#singleComboPreview").show();
+		$("#multiComboPreview").hide();
+	}
+
+	showMultiComboPreview() {
+		const tbody = $("#multiComboPreviewBody");
+		tbody.empty();
+
+		this.importData.combos.forEach((combo) => {
+			const codeCount = combo.combo_codes.length;
+			const row = $(`
+				<tr>
+					<td>${combo.combo_name}</td>
+					<td><span class="badge bg-secondary">${combo.specialty}</span></td>
+					<td>${codeCount} codes</td>
+					<td><span class="badge bg-info">Ready</span></td>
+				</tr>
+			`);
+			tbody.append(row);
+		});
+
+		$("#singleComboPreview").hide();
+		$("#multiComboPreview").show();
+	}
+
+	async startImport() {
+		$("#importPreviewSection").hide();
+		$("#importProgressSection").show();
+		$("#btnStartImport").hide();
+
+		try {
+			this.updateProgress(10, "Preparing import...");
+
+			// Prepare import data
+			const importPayload = {
+				import_data: this.importData,
+			};
+
+			this.updateProgress(30, "Validating data...");
+
+			// Send import request
+			const response = await fetch(`${API_BASE}/billing_combo/import`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(importPayload),
+			});
+
+			this.updateProgress(70, "Processing import...");
+
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			}
+
+			const result = await response.json();
+
+			this.updateProgress(100, "Import complete!");
+
+			// Show results
+			setTimeout(() => {
+				this.showImportResults(result);
+			}, 500);
+		} catch (error) {
+			console.error("Import error:", error);
+			this.showImportError(error.message);
+		}
+	}
+
+	updateProgress(percentage, status) {
+		$("#importProgressBar")
+			.css("width", `${percentage}%`)
+			.attr("aria-valuenow", percentage)
+			.text(`${percentage}%`);
+
+		$("#importStatus").text(status);
+	}
+
+	showImportResults(result) {
+		$("#importProgressSection").hide();
+		$("#importResultsSection").show();
+		$("#btnNewImport").show();
+
+		if (result.status === "success") {
+			this.showSuccessResults(result);
+		} else {
+			this.showErrorResults(result);
+		}
+
+		// Refresh the main table to show new combos
+		$("#billingComboTable").bootstrapTable("refresh");
+	}
+
+	showSuccessResults(result) {
+		const data = result.data;
+		let summaryClass = "alert-success";
+		let summaryText = "";
+
+		if (data.format_detected === "single") {
+			const importedCombo = data.results[0];
+			summaryText = `<i class="fas fa-check-circle"></i> Successfully imported: <strong>${importedCombo.final_name}</strong>`;
+			if (importedCombo.final_name !== importedCombo.original_name) {
+				summaryText += `<br><small class="text-muted">Original name was modified to avoid conflicts</small>`;
+			}
+		} else {
+			const successCount = data.imported_count;
+			const totalCount = data.total_count;
+
+			if (successCount === totalCount) {
+				summaryText = `<i class="fas fa-check-circle"></i> Successfully imported all <strong>${successCount}</strong> combos`;
+			} else {
+				summaryClass = "alert-warning";
+				summaryText = `<i class="fas fa-exclamation-triangle"></i> Imported <strong>${successCount}/${totalCount}</strong> combos`;
+			}
+		}
+
+		$("#importSummary")
+			.removeClass()
+			.addClass(`alert ${summaryClass}`)
+			.html(summaryText);
+
+		// Show detailed results
+		this.showDetailedResults(data);
+	}
+
+	showErrorResults(result) {
+		$("#importSummary")
+			.removeClass()
+			.addClass("alert alert-danger")
+			.html(
+				`<i class="fas fa-times-circle"></i> Import failed: ${result.message}`
+			);
+
+		if (result.details) {
+			$("#importDetails").html(
+				`<pre class="text-danger">${JSON.stringify(
+					result.details,
+					null,
+					2
+				)}</pre>`
+			);
+		}
+	}
+
+	showDetailedResults(data) {
+		let detailsHtml = "";
+
+		if (data.format_detected === "single") {
+			const importedCombo = data.results[0];
+			detailsHtml = `
+				<div class="list-group">
+					<div class="list-group-item">
+						<div class="d-flex w-100 justify-content-between">
+							<h6 class="mb-1">${importedCombo.final_name}</h6>
+							<span class="badge bg-success">Imported</span>
+						</div>
+						<small>Codes: ${importedCombo.codes_count}</small>
+					</div>
+				</div>
+			`;
+		} else {
+			detailsHtml = "<div class='list-group'>";
+
+			// Show all results
+			data.results.forEach((result) => {
+				const badgeClass =
+					result.status === "imported" ? "bg-success" : "bg-danger";
+				const statusText = result.status === "imported" ? "Imported" : "Failed";
+
+				detailsHtml += `
+					<div class="list-group-item">
+						<div class="d-flex w-100 justify-content-between">
+							<h6 class="mb-1">${result.final_name || result.original_name}</h6>
+							<span class="badge ${badgeClass}">${statusText}</span>
+						</div>
+						${result.message ? `<p class="mb-1 text-muted">${result.message}</p>` : ""}
+						${result.codes_count ? `<small>Codes: ${result.codes_count}</small>` : ""}
+					</div>
+				`;
+			});
+
+			detailsHtml += "</div>";
+		}
+
+		$("#importDetails").html(detailsHtml);
+	}
+
+	showImportError(message) {
+		$("#importProgressSection").hide();
+		$("#importResultsSection").show();
+		$("#btnNewImport").show();
+
+		$("#importSummary")
+			.removeClass()
+			.addClass("alert alert-danger")
+			.html(`<i class="fas fa-times-circle"></i> Import failed: ${message}`);
 	}
 }
 

@@ -1216,3 +1216,552 @@ def nomenclature_code_details(nomen_code: int):
         return APIResponse.error(
             message=str(e), status_code=500, error_type="server_error"
         )
+
+
+# =============================================================================
+# Billing Combo Import Endpoints
+# =============================================================================
+
+
+def detect_import_format(json_data: Dict) -> str:
+    """
+    Auto-detect the import format from JSON structure.
+
+    Args:
+        json_data (Dict): The parsed JSON data
+
+    Returns:
+        str: "single" or "multi"
+
+    Raises:
+        ValueError: If format cannot be determined
+    """
+    if "combo_data" in json_data:
+        return "single"
+    elif "combos" in json_data:
+        return "multi"
+    else:
+        raise ValueError("Invalid import format: missing 'combo_data' or 'combos' key")
+
+
+def generate_unique_combo_name(
+    base_name: str, existing_names: Optional[set] = None
+) -> str:
+    """
+    Generate a unique combo name by appending '(copy)' if conflicts exist.
+
+    Args:
+        base_name (str): The original combo name
+        existing_names (set): Set of names to check against (for batch imports)
+
+    Returns:
+        str: Unique combo name
+    """
+    if existing_names is None:
+        existing_names = set()
+
+    # Check database for existing names
+    def name_exists_in_db(name: str) -> bool:
+        return (
+            db(
+                (db.billing_combo.combo_name == name)
+                & (db.billing_combo.is_active == True)
+            ).count()
+            > 0
+        )
+
+    # Check if original name is available
+    if not name_exists_in_db(base_name) and base_name not in existing_names:
+        return base_name
+
+    # Try "Name (copy)"
+    copy_name = f"{base_name} (copy)"
+    if not name_exists_in_db(copy_name) and copy_name not in existing_names:
+        return copy_name
+
+    # Try "Name (copy 2)", "Name (copy 3)", etc.
+    counter = 2
+    while True:
+        numbered_name = f"{base_name} (copy {counter})"
+        if not name_exists_in_db(numbered_name) and numbered_name not in existing_names:
+            return numbered_name
+        counter += 1
+
+
+def validate_nomenclature_codes_batch(combo_codes_list: List[Dict]) -> Dict:
+    """
+    Batch validate nomenclature codes via NomenclatureClient API.
+
+    Args:
+        combo_codes_list (List[Dict]): List of combo codes to validate
+
+    Returns:
+        Dict: Validation results with valid/invalid codes
+    """
+    nomenclature = NomenclatureClient()
+    validation_results = {"valid_codes": [], "invalid_codes": [], "errors": []}
+
+    # Collect all unique codes to validate
+    codes_to_validate = set()
+    for code_entry in combo_codes_list:
+        if isinstance(code_entry, dict):
+            if "nomen_code" in code_entry:
+                codes_to_validate.add(code_entry["nomen_code"])
+            if "secondary_nomen_code" in code_entry:
+                codes_to_validate.add(code_entry["secondary_nomen_code"])
+
+    # Validate each unique code
+    for code in codes_to_validate:
+        try:
+            code_details = nomenclature.get_code_details(code)
+            if code_details is not None:
+                validation_results["valid_codes"].append(code)
+            else:
+                validation_results["invalid_codes"].append(code)
+                validation_results["errors"].append(
+                    f"Nomenclature code {code} not found"
+                )
+        except Exception as e:
+            validation_results["invalid_codes"].append(code)
+            validation_results["errors"].append(
+                f"Error validating code {code}: {str(e)}"
+            )
+
+    return validation_results
+
+
+def validate_single_combo(combo_data: Dict) -> Dict:
+    """
+    Validate a single combo's structure and business rules.
+
+    Args:
+        combo_data (Dict): Single combo data to validate
+
+    Returns:
+        Dict: Validation result with success/errors
+    """
+    validation_result = {"valid": True, "errors": [], "warnings": []}
+
+    # Required fields validation
+    required_fields = ["combo_name", "specialty", "combo_codes"]
+    for field in required_fields:
+        if field not in combo_data or not combo_data[field]:
+            validation_result["valid"] = False
+            validation_result["errors"].append(f"Missing required field: {field}")
+
+    # Combo name validation
+    combo_name = combo_data.get("combo_name", "")
+    if len(combo_name) > 200:  # Assuming field length limit
+        validation_result["valid"] = False
+        validation_result["errors"].append("Combo name too long (max 200 characters)")
+
+    # Specialty validation
+    valid_specialties = ["ophthalmology", "general", "consultation"]
+    specialty = combo_data.get("specialty", "")
+    if specialty not in valid_specialties:
+        validation_result["valid"] = False
+        validation_result["errors"].append(
+            f"Invalid specialty: {specialty}. Must be one of: {', '.join(valid_specialties)}"
+        )
+
+    # Combo codes validation
+    combo_codes = combo_data.get("combo_codes", [])
+    if not isinstance(combo_codes, list):
+        validation_result["valid"] = False
+        validation_result["errors"].append("combo_codes must be an array")
+    elif len(combo_codes) == 0:
+        validation_result["valid"] = False
+        validation_result["errors"].append("combo_codes cannot be empty")
+    elif len(combo_codes) > 20:  # Reasonable limit
+        validation_result["warnings"].append(
+            f"Many codes ({len(combo_codes)}), consider splitting combo"
+        )
+
+    # Validate individual codes structure
+    for i, code_entry in enumerate(combo_codes):
+        if not isinstance(code_entry, dict):
+            validation_result["valid"] = False
+            validation_result["errors"].append(f"Code entry {i+1} must be an object")
+            continue
+
+        if "nomen_code" not in code_entry:
+            validation_result["valid"] = False
+            validation_result["errors"].append(f"Code entry {i+1} missing 'nomen_code'")
+            continue
+
+        # Validate code is integer
+        nomen_code = code_entry["nomen_code"]
+        if not isinstance(nomen_code, int) or nomen_code <= 0:
+            validation_result["valid"] = False
+            validation_result["errors"].append(
+                f"Code entry {i+1}: nomen_code must be a positive integer"
+            )
+
+        # Validate secondary code if present
+        secondary_code = code_entry.get("secondary_nomen_code")
+        if secondary_code is not None:
+            if not isinstance(secondary_code, int) or secondary_code <= 0:
+                validation_result["valid"] = False
+                validation_result["errors"].append(
+                    f"Code entry {i+1}: secondary_nomen_code must be a positive integer"
+                )
+            elif secondary_code == nomen_code:
+                validation_result["valid"] = False
+                validation_result["errors"].append(
+                    f"Code entry {i+1}: secondary code cannot be same as main code"
+                )
+
+    return validation_result
+
+
+def validate_multi_combo(combos_data: List[Dict]) -> Dict:
+    """
+    Validate multiple combos structure and business rules.
+
+    Args:
+        combos_data (List[Dict]): List of combo data to validate
+
+    Returns:
+        Dict: Validation results for all combos
+    """
+    overall_result = {"valid": True, "combo_results": [], "global_errors": []}
+
+    if not isinstance(combos_data, list):
+        overall_result["valid"] = False
+        overall_result["global_errors"].append("combos must be an array")
+        return overall_result
+
+    if len(combos_data) == 0:
+        overall_result["valid"] = False
+        overall_result["global_errors"].append("combos array cannot be empty")
+        return overall_result
+
+    if len(combos_data) > 50:  # Reasonable batch limit
+        overall_result["global_errors"].append(
+            f"Large batch ({len(combos_data)} combos), consider smaller batches"
+        )
+
+    # Track combo names for duplicate detection within batch
+    combo_names_in_batch = set()
+
+    # Validate each combo individually
+    for i, combo_data in enumerate(combos_data):
+        combo_result = validate_single_combo(combo_data)
+        combo_result["index"] = i
+        combo_result["combo_name"] = combo_data.get("combo_name", f"Combo {i+1}")
+
+        # Check for duplicate names within batch
+        combo_name = combo_data.get("combo_name", "")
+        if combo_name in combo_names_in_batch:
+            combo_result["valid"] = False
+            combo_result["errors"].append("Duplicate combo name within import batch")
+        else:
+            combo_names_in_batch.add(combo_name)
+
+        overall_result["combo_results"].append(combo_result)
+
+        # Overall validity depends on all combos being valid
+        if not combo_result["valid"]:
+            overall_result["valid"] = False
+
+    return overall_result
+
+
+def process_single_combo_import(combo_data: Dict, final_name: str) -> Dict:
+    """
+    Import a single combo into the database.
+
+    Args:
+        combo_data (Dict): Validated combo data
+        final_name (str): Unique name for the combo
+
+    Returns:
+        Dict: Import result
+    """
+    try:
+        user = auth.get_user()
+
+        # Prepare combo codes for storage
+        combo_codes_json = json.dumps(combo_data["combo_codes"])
+
+        # Insert the combo
+        combo_id = db.billing_combo.insert(
+            combo_name=final_name,
+            combo_description=combo_data.get("combo_description", ""),
+            specialty=combo_data["specialty"],
+            combo_codes=combo_codes_json,
+            created_by=user.get("id"),
+            is_active=True,
+        )
+
+        logger.info(f"Successfully imported combo '{final_name}' with ID {combo_id}")
+
+        return {
+            "success": True,
+            "combo_id": combo_id,
+            "original_name": combo_data["combo_name"],
+            "final_name": final_name,
+            "codes_count": len(combo_data["combo_codes"]),
+        }
+
+    except Exception as e:
+        logger.error(f"Error importing combo '{final_name}': {str(e)}")
+        return {
+            "success": False,
+            "original_name": combo_data.get("combo_name", "Unknown"),
+            "final_name": final_name,
+            "error": str(e),
+        }
+
+
+def process_multi_combo_import(combos_data: List[Dict]) -> Dict:
+    """
+    Import multiple combos into the database with conflict resolution.
+
+    Args:
+        combos_data (List[Dict]): List of validated combo data
+
+    Returns:
+        Dict: Batch import results
+    """
+    import_results = {
+        "success": True,
+        "imported_count": 0,
+        "failed_count": 0,
+        "results": [],
+    }
+
+    # Track names being imported to avoid conflicts within the batch
+    names_in_batch = set()
+
+    for combo_data in combos_data:
+        original_name = combo_data["combo_name"]
+
+        # Generate unique name considering both DB and current batch
+        final_name = generate_unique_combo_name(original_name, names_in_batch)
+        names_in_batch.add(final_name)
+
+        # Import the combo
+        result = process_single_combo_import(combo_data, final_name)
+        result["status"] = "imported" if result["success"] else "failed"
+
+        if result["success"]:
+            import_results["imported_count"] += 1
+            if final_name != original_name:
+                result["message"] = "Name conflict resolved"
+        else:
+            import_results["failed_count"] += 1
+            import_results["success"] = False
+
+        import_results["results"].append(result)
+
+    return import_results
+
+
+@action("api/billing_combo/import", method=["POST"])
+@action.uses(db, auth.user)
+def billing_combo_import():
+    """
+    Import billing combo(s) with automatic format detection and conflict resolution.
+
+    This endpoint accepts JSON files exported from the system and imports them
+    with the following features:
+    - Auto-detects single vs multi-combo format
+    - Validates nomenclature codes via NomenclatureClient API
+    - Automatically resolves naming conflicts by appending '(copy)'
+    - Validates business rules and data integrity
+    - Provides detailed import results
+
+    Request:
+        JSON body with 'import_data' containing exported combo data
+
+    Returns:
+        JSON response with import results:
+        {
+            "success": true,
+            "format_detected": "multi",
+            "imported_count": 2,
+            "total_count": 3,
+            "results": [
+                {
+                    "original_name": "Standard Consult",
+                    "final_name": "Standard Consult (copy)",
+                    "status": "imported",
+                    "message": "Name conflict resolved"
+                }
+            ]
+        }
+
+    Raises:
+        400: If file invalid or validation fails
+        500: If import processing fails
+        403: If user not authorized
+    """
+    try:
+        user = auth.get_user()
+        logger.info(f"Import request from user {user.get('email', 'unknown')}")
+
+        # Get JSON data from request body
+        try:
+            request_data = request.json
+            if not request_data or "import_data" not in request_data:
+                return APIResponse.error(
+                    message="No import data provided",
+                    status_code=400,
+                    error_type="validation_error",
+                )
+
+            json_data = request_data["import_data"]
+        except Exception as e:
+            return APIResponse.error(
+                message=f"Error reading request data: {str(e)}",
+                status_code=400,
+                error_type="request_error",
+            )
+
+        # Auto-detect import format
+        try:
+            format_detected = detect_import_format(json_data)
+            logger.info(f"Detected import format: {format_detected}")
+        except ValueError as e:
+            return APIResponse.error(
+                message=str(e), status_code=400, error_type="format_error"
+            )
+
+        # Process based on detected format
+        if format_detected == "single":
+            # Single combo import
+            combo_data = json_data["combo_data"]
+
+            # Validate combo structure
+            validation_result = validate_single_combo(combo_data)
+            if not validation_result["valid"]:
+                return APIResponse.error(
+                    message="Combo validation failed",
+                    details={"validation_errors": validation_result["errors"]},
+                    status_code=400,
+                    error_type="validation_error",
+                )
+
+            # Validate nomenclature codes
+            nomenclature_validation = validate_nomenclature_codes_batch(
+                combo_data["combo_codes"]
+            )
+            if nomenclature_validation["invalid_codes"]:
+                return APIResponse.error(
+                    message="Invalid nomenclature codes found",
+                    details={
+                        "invalid_codes": nomenclature_validation["invalid_codes"],
+                        "errors": nomenclature_validation["errors"],
+                    },
+                    status_code=400,
+                    error_type="nomenclature_error",
+                )
+
+            # Generate unique name and import
+            original_name = combo_data["combo_name"]
+            final_name = generate_unique_combo_name(original_name)
+
+            import_result = process_single_combo_import(combo_data, final_name)
+
+            if import_result["success"]:
+                response_data = {
+                    "format_detected": "single",
+                    "imported_count": 1,
+                    "total_count": 1,
+                    "results": [
+                        {
+                            "original_name": original_name,
+                            "final_name": final_name,
+                            "status": "imported",
+                            "combo_id": import_result["combo_id"],
+                            "codes_count": import_result["codes_count"],
+                        }
+                    ],
+                }
+
+                if final_name != original_name:
+                    response_data["results"][0]["message"] = "Name conflict resolved"
+
+                return APIResponse.success(
+                    data=response_data,
+                    message=f"Successfully imported combo '{final_name}'",
+                )
+            else:
+                return APIResponse.error(
+                    message=f"Failed to import combo: {import_result['error']}",
+                    status_code=500,
+                    error_type="import_error",
+                )
+
+        elif format_detected == "multi":
+            # Multi-combo import
+            combos_data = json_data["combos"]
+
+            # Validate all combos structure
+            validation_result = validate_multi_combo(combos_data)
+            if not validation_result["valid"]:
+                invalid_combos = [
+                    r for r in validation_result["combo_results"] if not r["valid"]
+                ]
+                return APIResponse.error(
+                    message="Some combos failed validation",
+                    details={
+                        "validation_errors": validation_result["global_errors"],
+                        "invalid_combos": invalid_combos,
+                    },
+                    status_code=400,
+                    error_type="validation_error",
+                )
+
+            # Collect all codes for batch validation
+            all_codes = []
+            for combo_data in combos_data:
+                all_codes.extend(combo_data["combo_codes"])
+
+            # Validate nomenclature codes
+            nomenclature_validation = validate_nomenclature_codes_batch(all_codes)
+            if nomenclature_validation["invalid_codes"]:
+                return APIResponse.error(
+                    message="Invalid nomenclature codes found",
+                    details={
+                        "invalid_codes": nomenclature_validation["invalid_codes"],
+                        "errors": nomenclature_validation["errors"],
+                    },
+                    status_code=400,
+                    error_type="nomenclature_error",
+                )
+
+            # Import all combos
+            import_results = process_multi_combo_import(combos_data)
+
+            response_data = {
+                "format_detected": "multi",
+                "imported_count": import_results["imported_count"],
+                "failed_count": import_results["failed_count"],
+                "total_count": len(combos_data),
+                "results": import_results["results"],
+            }
+
+            if import_results["success"]:
+                message = f"Successfully imported {import_results['imported_count']} of {len(combos_data)} combos"
+            else:
+                message = f"Imported {import_results['imported_count']} of {len(combos_data)} combos with {import_results['failed_count']} failures"
+
+            return APIResponse.success(data=response_data, message=message)
+
+        else:
+            return APIResponse.error(
+                message=f"Unsupported format: {format_detected}",
+                status_code=400,
+                error_type="format_error",
+            )
+
+    except Exception as e:
+        logger.error(f"Error in billing combo import: {str(e)}")
+        logger.error(traceback.format_exc())
+        return APIResponse.error(
+            message=f"Import failed: {str(e)}",
+            status_code=500,
+            error_type="import_error",
+        )

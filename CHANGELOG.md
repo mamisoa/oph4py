@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-08T14:39:40.412036] - Complete Import/Export System for Billing Combos
+
+### Added
+
+- **Frontend Import UI Implementation**: Complete import modal with modern UX patterns
+  - **Import Modal**: Full-featured modal (`importComboModal`) with multi-step workflow
+  - **Drag & Drop Support**: Visual drag-and-drop area with hover feedback and file validation
+  - **File Upload**: Standard file input with JSON validation and 10MB size limit
+  - **Format Auto-Detection**: Automatic detection and preview of single vs multi-combo formats
+  - **Import Preview**: Detailed preview showing combo names, specialties, code counts, and potential conflicts
+  - **Progress Tracking**: Animated progress bar with real-time status updates during import process
+  - **Results Display**: Comprehensive results showing successful imports, failures, and naming conflicts
+  - **Conflict Resolution**: Visual indication of automatic '(copy)' naming resolution
+  - **Table Refresh**: Automatic table refresh after successful imports to show new combos
+
+- **[2025-06-08T14:44:50.211771] Backend Import Compatibility Fix**:
+  - Fixed py4web async compatibility issue by making import endpoint synchronous
+  - Changed import API to accept JSON data in request body instead of file uploads
+  - Removed async/await patterns for py4web compatibility
+  - Enhanced error handling for HTTP response validation
+  - Updated frontend to send parsed JSON data directly to API
+  - Fixed import results display to match backend response format
+  - Improved modal positioning to appear below navigation bar (margin-top: 60px)
+
+- **Enhanced BillingComboManager**: Extended class with complete import functionality
+  - **Modal Management**: `showImportModal()`, `resetImportModal()` for state management
+  - **File Processing**: `processFile()`, `readFileAsText()` with validation and error handling
+  - **Format Detection**: `detectImportFormat()` matching backend detection logic
+  - **UI Controllers**: `showImportPreview()`, `startImport()`, `updateProgress()` for workflow management
+  - **Results Handling**: `showImportResults()`, `showDetailedResults()` with success/error states
+  - **Drag & Drop**: Full drag-and-drop implementation with visual feedback and event handling
+
+### Enhanced
+
+- **Import System Integration**: Complete frontend-backend integration
+  - **API Integration**: Seamless connection to `POST /api/billing_combo/import` endpoint
+  - **Error Handling**: Comprehensive error handling with user-friendly messages
+  - **Validation Feedback**: Display of backend validation results with detailed error information
+  - **Progress Communication**: Real-time progress updates during import processing
+  - **Automatic Refresh**: Table refresh after successful imports to reflect new data
+
 ## [2025-06-08T14:05:14.137363] - Multi-Selection Export for Billing Combos
 
 ### Added
@@ -549,3 +590,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Interactive Exploration**: Users can explore different time periods to understand usage patterns
 - **Professional Appearance**: Enhanced visual design that reflects medical application standards
 - **Performance**: Charts load efficiently with proper loading states and error handling
+
+## [Unreleased]
+
+### Added
+
+- **Billing Combo Import/Export System** - 2025-06-08T14:33:44.496464
+  - **Complete Import Functionality**: New `POST /api/billing_combo/import` endpoint with automatic format detection
+  - **Smart Format Detection**: Auto-detects single vs multi-combo JSON formats from file structure
+  - **Automatic Conflict Resolution**: Resolves naming conflicts by appending '(copy)' pattern without user intervention
+  - **Three-Layer Validation**: JSON structure validation, nomenclature code validation via API, and business rule validation
+  - **Batch Processing**: Efficient handling of multiple combo imports with detailed per-combo results
+  - **Multi-Selection Export**: Enhanced frontend with checkbox selection for bulk export operations
+  - **Robust JSON Parsing**: Fixed critical parsing issues using `ast.literal_eval` for Python literal expressions
+  - **Async Processing**: Async endpoint design for handling large batch operations without timeouts
+  - **Comprehensive Error Handling**: Detailed error reporting with specific error types and validation feedback
+  - **Transaction Safety**: Proper py4web patterns with automatic commit/rollback on success/failure
+  - **Backward Compatibility**: Existing single-combo exports continue to work unchanged
+
+### Technical Implementation
+
+- **New API Functions**:
+  - `detect_import_format()` - Auto-detect single vs multi-combo format
+  - `generate_unique_combo_name()` - Handle naming conflicts with incremental copy numbering
+  - `validate_nomenclature_codes_batch()` - Batch validation via NomenclatureClient API
+  - `validate_single_combo()` / `validate_multi_combo()` - Comprehensive validation functions
+  - `process_single_combo_import()` / `process_multi_combo_import()` - Database import processing
+  - `billing_combo_import()` - Main async import endpoint with format routing
+
+- **Enhanced Export System**:
+  - Multi-selection support with checkbox column in Bootstrap table
+  - Ctrl+click and Shift+click selection capabilities
+  - "Export Selected" button with dynamic count display
+  - Bulk export endpoint `POST /api/billing_combo/export_multiple`
+  - Simplified JSON format with only nomenclature codes for portability
+
+- **Validation Features**:
+  - Required field validation (combo_name, specialty, combo_codes)
+  - Nomenclature code existence verification via external API
+  - Secondary code validation (must differ from main code)
+  - Business rule validation (name length, specialty enum, reasonable limits)
+  - Duplicate detection within import batches
+
+### Fixed
+
+- **JSON Parsing Issues**: Resolved critical parsing failures for combos with special characters in descriptions
+- **Type Safety**: Fixed Optional parameter annotations and API response parameter naming
+- **Async Compatibility**: Made import endpoint async to support await operations for API validation
+
+### Security
+
+- **Input Validation**: Comprehensive validation of uploaded JSON files
+- **Safe Parsing**: Use of `ast.literal_eval` instead of unsafe string manipulation
+- **User Authentication**: All endpoints require proper user authentication via `@action.uses(auth.user)`

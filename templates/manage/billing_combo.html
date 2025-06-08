@@ -178,6 +178,122 @@
     </div>
 </div>
 
+<!-- Import Combo Modal -->
+<div class="modal fade" id="importComboModal" tabindex="-1" aria-labelledby="importComboModalLabel" aria-hidden="true"
+    style="margin-top: 60px;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importComboModalLabel">Import Billing Combo(s)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- File Upload Section -->
+                <div id="fileUploadSection">
+                    <div class="mb-3">
+                        <label for="importFileInput" class="form-label">Select JSON File</label>
+                        <input type="file" id="importFileInput" class="form-control" accept=".json" />
+                        <div class="form-text">
+                            Upload a JSON file containing single or multiple billing combo exports.
+                        </div>
+                    </div>
+
+                    <!-- Drag and Drop Area -->
+                    <div id="dropZone" class="border border-2 border-dashed rounded p-4 text-center"
+                        style="border-color: #dee2e6 !important; transition: all 0.3s ease;">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Drag and drop your JSON file here</h5>
+                        <p class="text-muted mb-0">or click "Choose file" above</p>
+                    </div>
+                </div>
+
+                <!-- Import Preview Section -->
+                <div id="importPreviewSection" style="display: none;">
+                    <hr>
+                    <h6>Import Preview</h6>
+                    <div id="importInfo" class="alert alert-info">
+                        <!-- Format info will be displayed here -->
+                    </div>
+
+                    <!-- Single Combo Preview -->
+                    <div id="singleComboPreview" style="display: none;">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title" id="previewComboName"></h6>
+                                <p class="card-text">
+                                    <strong>Specialty:</strong> <span id="previewSpecialty"></span><br>
+                                    <strong>Description:</strong> <span id="previewDescription"></span><br>
+                                    <strong>Codes:</strong> <span id="previewCodeCount"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multi Combo Preview -->
+                    <div id="multiComboPreview" style="display: none;">
+                        <div class="table-responsive" style="max-height: 300px;">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Combo Name</th>
+                                        <th>Specialty</th>
+                                        <th>Codes</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="multiComboPreviewBody">
+                                    <!-- Multi combo preview will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Validation Messages -->
+                    <div id="validationMessages" class="mt-3">
+                        <!-- Validation results will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div id="importProgressSection" style="display: none;">
+                    <hr>
+                    <h6>Import Progress</h6>
+                    <div class="progress mb-3">
+                        <div id="importProgressBar" class="progress-bar" role="progressbar" style="width: 0%"
+                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            0%
+                        </div>
+                    </div>
+                    <div id="importStatus" class="text-muted">
+                        Preparing import...
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="importResultsSection" style="display: none;">
+                    <hr>
+                    <h6>Import Results</h6>
+                    <div id="importSummary" class="alert">
+                        <!-- Import summary will be displayed here -->
+                    </div>
+                    <div id="importDetails" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Detailed results will be displayed here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="btnStartImport" class="btn btn-primary" style="display: none;">
+                    <i class="fas fa-upload"></i> Start Import
+                </button>
+                <button type="button" id="btnNewImport" class="btn btn-outline-primary" style="display: none;">
+                    <i class="fas fa-plus"></i> Import Another File
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Secondary Code Selection Modal -->
 <div class="modal fade" id="secondaryCodeModal" tabindex="-1" aria-labelledby="secondaryCodeModalLabel"
     aria-hidden="true">
