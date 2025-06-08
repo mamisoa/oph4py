@@ -176,8 +176,8 @@ class SummaryManager {
 			patient.gender && patient.gender.id ? patient.gender.id : null;
 		const defaultAvatar =
 			genderId === 1
-				? `${baseUrl}/images/assets/avatar/mini-man.svg`
-				: `${baseUrl}/images/assets/avatar/mini-woman.svg`;
+				? `${baseUrl}/static/images/assets/avatar/mini-man.svg`
+				: `${baseUrl}/static/images/assets/avatar/mini-woman.svg`;
 
 		if (patient.photob64) {
 			// Check if the base64 string already includes the data URI prefix.
@@ -192,6 +192,9 @@ class SummaryManager {
 		}
 
 		this.elements.photoId.onerror = () => {
+			// To prevent an infinite loop if the default avatar also fails to load,
+			// we set the onerror handler to null after the first attempt.
+			this.elements.photoId.onerror = null;
 			this.elements.photoId.src = defaultAvatar;
 		};
 	}
