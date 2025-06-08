@@ -138,13 +138,30 @@
                     <h5 class="card-title mb-0">Existing Billing Combos</h5>
                 </div>
                 <div class="card-body">
+                    <!-- Multi-Selection Controls -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <button type="button" id="btnExportSelected" class="btn btn-outline-success" disabled>
+                                <i class="fas fa-download"></i> <span id="exportSelectedText">Export Selected</span>
+                            </button>
+                            <small class="text-muted ms-2" id="selectionInfo">No combos selected</small>
+                        </div>
+                        <div>
+                            <button type="button" id="btnImportCombo" class="btn btn-outline-primary">
+                                <i class="fas fa-upload"></i> Import Combo(s)
+                            </button>
+                        </div>
+                    </div>
+
                     <table id="billingComboTable" data-toggle="table" data-url="[[=URL('api/billing_combo')]]"
                         data-side-pagination="server" data-pagination="true" data-page-size="10" data-search="true"
                         data-show-refresh="true" data-show-columns="true" data-sort-name="combo_name"
-                        data-sort-order="asc" data-response-handler="responseHandler_billingCombo"
-                        class="table table-striped">
+                        data-sort-order="asc" data-response-handler="responseHandler_billingCombo" data-checkbox="true"
+                        data-click-to-select="true" data-multiple-select-row="true" data-checkbox-header="true"
+                        data-maintain-meta-data="true" class="table table-striped">
                         <thead>
                             <tr>
+                                <th data-field="state" data-checkbox="true"></th>
                                 <th data-field="combo_name" data-sortable="true">Combo Name</th>
                                 <th data-field="specialty" data-sortable="true" data-formatter="specialtyFormatter">
                                     Specialty</th>

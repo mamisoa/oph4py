@@ -8,6 +8,7 @@ This module contains endpoints for billing operations including:
 - Integration with external nomenclature API
 """
 
+import ast
 import datetime
 import json
 import traceback
@@ -791,6 +792,284 @@ def export_billing_combo(combo_id: int):
         logger.error(traceback.format_exc())
         return APIResponse.error(
             message=f"Failed to export combo: {str(e)}",
+            status_code=500,
+            error_type="export_error",
+        )
+
+
+@action("api/billing_combo/export_multiple", method=["POST"])
+@action.uses(db, auth.user)
+def export_multiple_billing_combos():
+    """
+    Export multiple billing combos in batch as a single JSON file.
+
+    This endpoint accepts an array of combo IDs and generates a multi-combo
+    export file containing only the essential nomenclature codes. All other
+    data (descriptions, fees, etc.) will be retrieved from the NomenclatureClient
+    API during import to ensure current information.
+
+    Request Body:
+        {
+            "combo_ids": [1, 2, 3, ...]
+        }
+
+    Returns:
+        JSON response with exported combos data in multi-combo format:
+        {
+            "export_info": {
+                "version": "1.0",
+                "export_type": "multi_combo",
+                "exported_at": "2025-01-09T10:30:00Z",
+                "exported_by": "user@email.com",
+                "combo_count": 3
+            },
+            "combos": [
+                {
+                    "combo_name": "Standard Consultation",
+                    "combo_description": "Description...",
+                    "specialty": "ophthalmology",
+                    "combo_codes": [
+                        {
+                            "nomen_code": 105755,
+                            "secondary_nomen_code": 102030  // optional
+                        }
+                    ]
+                },
+                ...
+            ]
+        }
+
+    Raises:
+        400: If no combo IDs provided or invalid format
+        404: If some combos not found (partial failure)
+        500: If export fails
+        403: If user not authorized
+    """
+    try:
+        user = auth.get_user()
+
+        if not request.json or "combo_ids" not in request.json:
+            return APIResponse.error(
+                message="Request must contain 'combo_ids' array",
+                status_code=400,
+                error_type="validation_error",
+            )
+
+        combo_ids = request.json["combo_ids"]
+
+        if not isinstance(combo_ids, list) or not combo_ids:
+            return APIResponse.error(
+                message="combo_ids must be a non-empty array",
+                status_code=400,
+                error_type="validation_error",
+            )
+
+        # Convert all IDs to integers and validate
+        try:
+            combo_ids = [int(id) for id in combo_ids]
+        except (ValueError, TypeError):
+            return APIResponse.error(
+                message="All combo_ids must be valid integers",
+                status_code=400,
+                error_type="validation_error",
+            )
+
+        logger.info(
+            f"Exporting multiple billing combos {combo_ids} for user {user.get('email', 'unknown')}"
+        )
+        logger.debug(f"Received combo_ids: {combo_ids} (type: {type(combo_ids)})")
+
+        # Fetch all combos in one query
+        combos = (
+            db(
+                (db.billing_combo.id.belongs(combo_ids))
+                & (db.billing_combo.is_active == True)
+            )
+            .select()
+            .as_list()
+        )
+
+        if not combos:
+            return APIResponse.error(
+                message="No valid combos found with the provided IDs",
+                status_code=404,
+                error_type="not_found",
+            )
+
+        logger.debug(
+            f"Found {len(combos)} combos in database: {[c['id'] for c in combos]}"
+        )
+
+        # Track which combos were found vs requested
+        found_ids = {combo["id"] for combo in combos}
+        missing_ids = set(combo_ids) - found_ids
+
+        if missing_ids:
+            logger.warning(f"Some combos not found: {missing_ids}")
+
+        exported_combos = []
+        total_codes = 0
+
+        for combo in combos:
+            # Parse combo codes with enhanced parsing logic (same as single export)
+            stored_codes = []
+            logger.debug(
+                f"Processing combo {combo['id']} ({combo['combo_name']}) with combo_codes: {combo['combo_codes'][:200]}..."
+            )
+            if combo["combo_codes"]:
+                try:
+                    # Try JSON parsing first
+                    stored_codes = json.loads(combo["combo_codes"])
+                    logger.debug(
+                        f"Successfully parsed combo_codes as JSON for combo {combo['id']}"
+                    )
+                except json.JSONDecodeError as e:
+                    logger.info(
+                        f"JSON parsing failed for combo {combo['id']}: {str(e)}, attempting Python literal parsing"
+                    )
+                    try:
+                        # Use ast.literal_eval for safe Python literal parsing
+                        # This is much more robust than string replacement
+                        stored_codes = ast.literal_eval(combo["combo_codes"])
+                        logger.info(
+                            f"Successfully parsed combo_codes as Python literal for combo {combo['id']}"
+                        )
+                    except (ValueError, SyntaxError, Exception) as e:
+                        logger.error(
+                            f"Failed to parse combo_codes for combo {combo['id']} ({combo['combo_name']}): {str(e)}"
+                        )
+                        logger.error(
+                            f"Raw combo_codes that failed to parse: {combo['combo_codes']}"
+                        )
+                        stored_codes = []
+
+            # Extract only the nomenclature codes (simplified format)
+            simplified_codes = []
+            logger.debug(
+                f"Combo {combo['id']}: stored_codes type: {type(stored_codes)}, length: {len(stored_codes) if stored_codes else 0}"
+            )
+            for code_entry in stored_codes:
+                if isinstance(code_entry, dict):
+                    # New format with secondary code support
+                    nomen_code = code_entry.get("nomen_code")
+                    logger.debug(
+                        f"Combo {combo['id']}: processing code_entry {nomen_code}, type: {type(nomen_code)}"
+                    )
+
+                    if nomen_code is not None:
+                        simplified_code = {"nomen_code": nomen_code}
+
+                        # Include secondary code if present
+                        secondary_code = code_entry.get("secondary_nomen_code")
+                        if secondary_code is not None and str(
+                            secondary_code
+                        ).strip() not in ("", "None", "null"):
+                            # Convert string secondary codes to integers if needed
+                            try:
+                                if isinstance(secondary_code, str):
+                                    secondary_code = int(secondary_code)
+                                simplified_code["secondary_nomen_code"] = secondary_code
+                                logger.debug(
+                                    f"Combo {combo['id']}: added secondary code {secondary_code}"
+                                )
+                            except (ValueError, TypeError):
+                                logger.warning(
+                                    f"Combo {combo['id']}: invalid secondary code '{secondary_code}', skipping"
+                                )
+
+                        simplified_codes.append(simplified_code)
+                        logger.debug(
+                            f"Combo {combo['id']}: added simplified_code: {simplified_code}"
+                        )
+                    else:
+                        logger.warning(
+                            f"Combo {combo['id']}: code_entry missing nomen_code: {code_entry}"
+                        )
+
+                elif isinstance(code_entry, int):
+                    # Legacy format - simple integer code
+                    simplified_codes.append({"nomen_code": code_entry})
+                    logger.debug(
+                        f"Combo {combo['id']}: added legacy integer code: {code_entry}"
+                    )
+                else:
+                    logger.warning(
+                        f"Combo {combo['id']}: skipping invalid code entry type {type(code_entry)}: {code_entry}"
+                    )
+
+            logger.debug(
+                f"Combo {combo['id']}: final simplified_codes count: {len(simplified_codes)}"
+            )
+            if simplified_codes:
+                exported_combos.append(
+                    {
+                        "combo_name": combo["combo_name"],
+                        "combo_description": combo["combo_description"] or "",
+                        "specialty": combo["specialty"],
+                        "combo_codes": simplified_codes,
+                    }
+                )
+                total_codes += len(simplified_codes)
+                logger.debug(
+                    f"Combo {combo['id']} ({combo['combo_name']}) exported with {len(simplified_codes)} codes"
+                )
+            else:
+                logger.warning(
+                    f"Combo {combo['id']} ({combo['combo_name']}) has no valid codes, skipping - combo_codes: {combo['combo_codes']}"
+                )
+
+        if not exported_combos:
+            return APIResponse.error(
+                message="No combos with valid codes found",
+                status_code=400,
+                error_type="validation_error",
+            )
+
+        # Build multi-combo export data structure
+        export_data = {
+            "export_info": {
+                "version": "1.0",
+                "export_type": "multi_combo",
+                "exported_at": datetime.datetime.now().isoformat() + "Z",
+                "exported_by": user.get("email", "unknown"),
+                "combo_count": len(exported_combos),
+            },
+            "combos": exported_combos,
+        }
+
+        # Generate filename for multi-combo export
+        date_str = datetime.datetime.now().strftime("%Y%m%d")
+        filename = f"billing_combos_multi_{len(exported_combos)}_{date_str}.json"
+
+        # Prepare response metadata
+        meta = {
+            "filename": filename,
+            "total_combos_exported": len(exported_combos),
+            "total_codes": total_codes,
+            "requested_count": len(combo_ids),
+            "export_type": "multi_combo",
+        }
+
+        # Add warning about missing combos if any
+        if missing_ids:
+            meta["missing_combo_ids"] = list(missing_ids)
+            meta["missing_count"] = len(missing_ids)
+
+        logger.info(
+            f"Successfully exported {len(exported_combos)} combos with {total_codes} total codes"
+        )
+
+        success_message = f"Successfully exported {len(exported_combos)} combos with {total_codes} total codes"
+        if missing_ids:
+            success_message += f" (Warning: {len(missing_ids)} combos not found)"
+
+        return APIResponse.success(data=export_data, meta=meta, message=success_message)
+
+    except Exception as e:
+        logger.error(f"Error exporting multiple billing combos: {str(e)}")
+        logger.error(traceback.format_exc())
+        return APIResponse.error(
+            message=f"Failed to export combos: {str(e)}",
             status_code=500,
             error_type="export_error",
         )

@@ -30,6 +30,7 @@ class BillingComboManager {
 		}
 
 		this.initializeEventHandlers();
+		this.initializeTableEvents();
 	}
 
 	initializeEventHandlers() {
@@ -72,6 +73,24 @@ class BillingComboManager {
 			this.clearSecondarySelection()
 		);
 		$("#btnSaveSecondaryCode").on("click", () => this.saveSecondaryCode());
+
+		// Multi-selection export handlers
+		$("#btnExportSelected").on("click", () => this.exportSelectedCombos());
+	}
+
+	initializeTableEvents() {
+		// Initialize table events after table is loaded
+		$(document).ready(() => {
+			// Wait for table to initialize, then set up events
+			setTimeout(() => {
+				$("#billingComboTable").on(
+					"check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table",
+					() => {
+						this.updateExportButtonState();
+					}
+				);
+			}, 1000);
+		});
 	}
 
 	handleNomenclatureSearch(event) {
@@ -754,6 +773,135 @@ class BillingComboManager {
 			}
 		} catch (error) {
 			console.error("Error exporting combo:", error);
+			displayToast(
+				"error",
+				"Export Failed",
+				`Export failed: ${error.message}`,
+				6000
+			);
+		}
+	}
+
+	// Multi-selection export methods
+	getSelectedCombos() {
+		return $("#billingComboTable").bootstrapTable("getSelections");
+	}
+
+	updateExportButtonState() {
+		const selectedCombos = this.getSelectedCombos();
+		const selectedCount = selectedCombos.length;
+
+		const exportBtn = $("#btnExportSelected");
+		const exportText = $("#exportSelectedText");
+		const selectionInfo = $("#selectionInfo");
+
+		if (selectedCount > 0) {
+			exportBtn.prop("disabled", false);
+			exportText.text(`Export Selected (${selectedCount})`);
+			selectionInfo.text(
+				`${selectedCount} combo${selectedCount > 1 ? "s" : ""} selected`
+			);
+		} else {
+			exportBtn.prop("disabled", true);
+			exportText.text("Export Selected");
+			selectionInfo.text("No combos selected");
+		}
+	}
+
+	async exportSelectedCombos() {
+		const selectedCombos = this.getSelectedCombos();
+
+		if (selectedCombos.length === 0) {
+			displayToast(
+				"warning",
+				"No Selection",
+				"Please select at least one combo to export",
+				4000
+			);
+			return;
+		}
+
+		// Extract combo IDs from selected rows
+		const comboIds = selectedCombos.map((combo) => combo.id);
+		const comboNames = selectedCombos
+			.map((combo) => combo.combo_name)
+			.join(", ");
+
+		// Debug logging
+		console.log("Selected combos:", selectedCombos);
+		console.log("Combo IDs to export:", comboIds);
+		console.log("Combo names:", comboNames);
+
+		try {
+			displayToast(
+				"info",
+				"Export Started",
+				`Exporting ${selectedCombos.length} combo${
+					selectedCombos.length > 1 ? "s" : ""
+				}: ${
+					comboNames.length > 100
+						? comboNames.substring(0, 100) + "..."
+						: comboNames
+				}`,
+				4000
+			);
+
+			const response = await fetch(
+				`${API_BASE}/billing_combo/export_multiple`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						combo_ids: comboIds,
+					}),
+				}
+			);
+
+			const result = await response.json();
+
+			// Debug logging for response
+			console.log("Export response:", result);
+			console.log("Total combos exported:", result.meta?.total_combos_exported);
+			console.log("Missing combos:", result.meta?.missing_combo_ids);
+
+			if (response.ok && result.status === "success") {
+				// Create and download the JSON file
+				const dataStr = JSON.stringify(result.data, null, 2);
+				const dataBlob = new Blob([dataStr], { type: "application/json" });
+
+				// Create download link
+				const downloadLink = document.createElement("a");
+				downloadLink.href = window.URL.createObjectURL(dataBlob);
+				downloadLink.download = result.meta.filename;
+
+				// Trigger download
+				document.body.appendChild(downloadLink);
+				downloadLink.click();
+				document.body.removeChild(downloadLink);
+
+				// Clean up object URL
+				window.URL.revokeObjectURL(downloadLink.href);
+
+				// Show success message with details
+				let successMessage = `Successfully exported ${result.meta.total_combos_exported} combos with ${result.meta.total_codes} total codes`;
+
+				// Show warning if some combos were missing
+				if (result.meta.missing_count > 0) {
+					successMessage += ` (Warning: ${result.meta.missing_count} combos not found)`;
+				}
+
+				displayToast("success", "Export Complete", successMessage, 6000);
+
+				// Clear selection after successful export
+				$("#billingComboTable").bootstrapTable("uncheckAll");
+				this.updateExportButtonState();
+			} else {
+				throw new Error(result.message || "Failed to export combos");
+			}
+		} catch (error) {
+			console.error("Error exporting selected combos:", error);
 			displayToast(
 				"error",
 				"Export Failed",

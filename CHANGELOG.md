@@ -2,6 +2,107 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-08T14:05:14.137363] - Multi-Selection Export for Billing Combos
+
+### Added
+
+- **Multi-Selection Export Functionality**: Complete implementation of bulk combo export
+  - **Bootstrap Table Multi-Selection**: Added checkbox column with comprehensive selection support
+    - Checkbox header for select-all/unselect-all functionality
+    - Individual row checkboxes with click-to-select behavior
+    - Support for Ctrl+click (individual selection) and Shift+click (range selection)
+    - Maintain selection state across pagination and table operations
+  - **Dynamic Export Button**: Added "Export Selected" button with intelligent state management
+    - Disabled state when no combos selected
+    - Dynamic text showing selection count: "Export Selected (3 combos)"
+    - Real-time selection info display: "3 combos selected"
+    - Clear visual feedback for user actions
+
+- **Multi-Export Backend API**: New `POST /api/billing_combo/export_multiple` endpoint
+  - **Batch Processing**: Accepts array of combo IDs for bulk export
+  - **Multi-Combo JSON Format**: Enhanced export structure for multiple combos
+    ```json
+    {
+      "export_info": {
+        "version": "1.0",
+        "export_type": "multi_combo", 
+        "exported_at": "2025-06-08T14:05:14Z",
+        "exported_by": "user@email.com",
+        "combo_count": 3
+      },
+      "combos": [
+        {
+          "combo_name": "Standard Consultation",
+          "combo_description": "Description...",
+          "specialty": "ophthalmology",
+          "combo_codes": [
+            {"nomen_code": 105755, "secondary_nomen_code": 102030}
+          ]
+        }
+      ]
+    }
+    ```
+  - **Robust Error Handling**: Graceful handling of partial failures and missing combos
+  - **Performance Optimized**: Single database query for batch operations
+  - **Smart Filename Generation**: `billing_combos_multi_[count]_[date].json`
+
+### Enhanced
+
+- **User Experience Improvements**:
+  - **Selection Feedback**: Real-time updates of selection count and button states
+  - **Clear Selection**: Automatic selection clearing after successful export
+  - **Enhanced Toast Messages**: Detailed feedback including combo count and total codes
+  - **Partial Failure Handling**: Warnings when some requested combos are not found
+  - **Progress Indication**: Export start notifications with combo names preview
+
+- **Frontend Multi-Selection Logic**: Enhanced `BillingComboManager` class
+  - **Selection Management**: `getSelectedCombos()` and `updateExportButtonState()` methods
+  - **Event Integration**: Bootstrap Table selection events with proper initialization timing
+  - **Bulk Export Processing**: `exportSelectedCombos()` method with comprehensive error handling
+  - **UI State Management**: Dynamic button text and selection info updates
+
+### Technical Implementation
+
+- **Backend Enhancements** (`api/endpoints/billing.py`):
+  - Input validation for combo ID arrays with type checking
+  - Batch database queries using `.belongs()` for efficiency
+  - Code parsing logic shared with single export (DRY principle)
+  - Missing combo detection and reporting
+  - Comprehensive logging and error tracking
+
+- **Frontend Enhancements** (`static/js/billing-combo-manager.js`):
+  - Table event initialization with proper timing handling
+  - Selection state management across table operations
+  - Async/await pattern for API communication
+  - Blob creation and download handling for large files
+
+- **Template Enhancements** (`templates/manage/billing_combo.html`):
+  - Bootstrap Table configuration with multi-selection attributes
+  - Multi-selection control toolbar with semantic button layout
+  - Responsive design maintaining existing layout integrity
+
+### Benefits
+
+- **Bulk Operations**: Export multiple combos in single operation, improving efficiency for users managing large combo sets
+- **Consistent UI/UX**: Maintains existing single-export functionality while adding bulk capabilities
+- **Scalable Performance**: Optimized database queries and batch processing for large selections
+- **User-Friendly**: Intuitive multi-selection interface with clear visual feedback
+- **Backward Compatible**: All existing single-export functionality preserved unchanged
+
+### Status Update
+
+- ✅ **Phase 1: Single Export Functionality** - Complete
+- ✅ **Phase 2A: Multi-Selection Frontend** - Complete
+- ✅ **Phase 2B: Multi-Export Backend** - Complete  
+- 🔄 **Phase 3: Import Functionality** - Next Priority
+
+**Files Modified**:
+
+- `api/endpoints/billing.py` - Added multi-export endpoint with batch processing
+- `static/js/billing-combo-manager.js` - Enhanced with multi-selection and bulk export methods
+- `templates/manage/billing_combo.html` - Added multi-selection controls and checkbox column
+- `memory-bank/activeContext.md` - Updated implementation progress and next steps
+
 ## [2025-06-08T13:46:55.683783] - Phase 1 Complete: Billing Combo Export Functionality
 
 ### Added
