@@ -2006,3 +2006,234 @@ graph TD
    - Monitor transaction timing and consistency
 
 This pattern provides a systematic approach to implementing reliable database transactions in py4web applications while avoiding common pitfalls and ensuring consistency with framework best practices.
+
+### Dashboard Analytics Enhancement Pattern
+
+#### Overview
+
+The Dashboard Analytics Enhancement pattern demonstrates how to evolve basic time-series charts into sophisticated analytics tools with dynamic periods, adaptive moving averages, and enhanced visualization. This pattern addresses common limitations in dashboard interfaces while maintaining performance and usability.
+
+#### Problem Context
+
+Basic dashboard charts often suffer from:
+
+1. **Limited Time Periods**: Fixed periods that don't meet diverse analytical needs
+2. **Static Moving Averages**: One-size-fits-all moving averages that don't scale with time periods
+3. **Poor Visibility**: Moving average lines that are difficult to distinguish from main data
+4. **Database Query Errors**: Improper field references and join structures
+
+#### Implementation Pattern
+
+##### 1. Dynamic Period Management
+
+**Backend Period Configuration:**
+
+```python
+def get_moving_average_days(period_months):
+    """Get the number of days for moving average based on time period in months"""
+    moving_avg_days = {
+        3: 7,     # 3M: 7 days
+        6: 15,    # 6M: 15 days  
+        12: 30,   # 1Y: 30 days
+        24: 60,   # 2Y: 60 days
+        60: 150,  # 5Y: 150 days
+        84: 210,  # 7Y: 210 days
+        120: 300  # 10Y: 300 days
+    }
+    return moving_avg_days.get(period_months, 15)  # default to 15 days
+
+@action("api/chart_data/<table>/<period:int>")
+@action.uses(session, auth.user, db)
+def chart_data(table, period):
+    """Enhanced chart API with extended periods and dynamic moving averages"""
+    valid_periods = [3, 6, 12, 24, 60, 84, 120]  # Up to 10 years
+    
+    # Calculate dynamic moving average window
+    ma_window = get_moving_average_days(period)
+    moving_average = calculate_moving_average(data, window=ma_window)
+    
+    # Return enhanced dataset structure
+    datasets = [
+        {
+            "label": f"New {table.replace('_', ' ').title()}",
+            "data": data,
+            "type": "line",
+            "fill": True,
+            "tension": 0.1,
+        },
+        {
+            "label": f"{ma_window}-day Moving Average",
+            "data": moving_average,
+            "type": "line",
+            "fill": False,
+            "tension": 0.4,
+            "borderWidth": 3,
+            "pointRadius": 0,
+        },
+    ]
+```
+
+##### 2. Database Query Optimization
+
+**Proper Join Pattern for Related Data:**
+
+```python
+# Before: Incorrect field reference
+query = (db.worklist.created_on >= start_date) & (db.worklist.modality == "MD")
+
+# After: Proper join with correct field references
+query = (
+    (db.worklist.modality_dest == db.modality.id) &
+    (db.modality.modality_name == "MD") &
+    (db.worklist.created_on >= start_date)
+)
+```
+
+##### 3. Enhanced Visualization Configuration
+
+**Chart.js Styling for Moving Averages:**
+
+```javascript
+// Enhanced color schemes for better visibility
+this.colors = {
+    patients: {
+        border: "rgb(75, 192, 192)",
+        background: "rgba(75, 192, 192, 0.2)",
+        movingAvg: "rgb(23, 87, 118)", // Darker blue for contrast
+    },
+    worklists: {
+        border: "rgb(255, 99, 132)",
+        background: "rgba(255, 99, 132, 0.2)",
+        movingAvg: "rgb(185, 24, 63)", // Darker red for contrast
+    },
+    md_worklists: {
+        border: "rgb(255, 193, 7)",
+        background: "rgba(255, 193, 7, 0.2)",
+        movingAvg: "rgb(204, 102, 0)", // Darker amber for contrast
+    },
+};
+
+// Enhanced moving average styling
+{
+    label: "Moving Average",
+    borderWidth: 3,        // Thicker lines
+    pointRadius: 0,        // No dots
+    tension: 0.4,          // Smooth curves
+    fill: false,           // No fill
+}
+```
+
+##### 4. Proportional Moving Average Calculation
+
+**Scaling Logic:**
+
+```javascript
+// Proportional moving average (~8% of time period)
+// 3M (90 days): 7 days = 7.8%
+// 6M (180 days): 15 days = 8.3%
+// 1Y (365 days): 30 days = 8.2%
+// 2Y (730 days): 60 days = 8.2%
+// 5Y (1825 days): 150 days = 8.2%
+// 7Y (2555 days): 210 days = 8.2%
+// 10Y (3650 days): 300 days = 8.2%
+
+getPeriodText(months) {
+    const periodTexts = {
+        3: "3 months",
+        6: "6 months", 
+        12: "1 year",
+        24: "2 years",
+        60: "5 years",
+        84: "7 years",   // New
+        120: "10 years", // New
+    };
+    return periodTexts[months] || `${months} months`;
+}
+```
+
+#### Architecture Diagram
+
+```mermaid
+graph TD
+    A["📊 Dashboard Request"] --> B["🎛️ Period Selector<br/>3M, 6M, 1Y, 2Y, 5Y, 7Y, 10Y"]
+    B --> C["🔢 Calculate Dynamic MA Period<br/>get_moving_average_days()"]
+    C --> D["🗄️ Database Query<br/>Proper joins & field references"]
+    D --> E["📈 Raw Data Processing"]
+    E --> F["📊 Moving Average Calculation<br/>Variable window size"]
+    F --> G["🎨 Enhanced Visualization<br/>Thicker lines, no dots, dark colors"]
+    G --> H["📱 Responsive Display<br/>Professional chart appearance"]
+    
+    I["❌ Query Error"] --> J["🔧 Fix Database Schema<br/>modality_dest vs modality"]
+    J --> K["✅ Proper Join Structure"]
+    K --> D
+    
+    style C fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style G fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    style I fill:#ffebee,stroke:#f44336,stroke-width:2px
+```
+
+#### Benefits
+
+1. **Enhanced Analytics Capability**
+   - Extended time periods for long-term trend analysis
+   - Proportional moving averages that scale appropriately
+   - Professional visualization with improved contrast
+
+2. **Technical Robustness**
+   - Proper database joins and field references
+   - Dynamic calculation based on time scale
+   - Consistent API response structure
+
+3. **User Experience**
+   - More intuitive chart appearance
+   - Smooth curves without distracting dots
+   - Clear distinction between raw data and trends
+
+4. **Maintainability**
+   - Centralized moving average calculation logic
+   - Scalable period configuration
+   - Consistent styling across all chart types
+
+#### Implementation Checklist
+
+1. **Backend Enhancement**
+   - [ ] Add helper function for dynamic moving average periods
+   - [ ] Extend valid periods array to include 7Y and 10Y
+   - [ ] Fix database queries with proper joins
+   - [ ] Update moving average calculation to use variable windows
+
+2. **Frontend Enhancement**
+   - [ ] Add new period buttons to all chart sections
+   - [ ] Update color schemes for better moving average visibility
+   - [ ] Configure Chart.js for enhanced line styling
+   - [ ] Update period text mapping for new periods
+
+3. **Template Updates**
+   - [ ] Add 7Y and 10Y buttons to all three chart sections
+   - [ ] Maintain consistent styling across period selectors
+   - [ ] Ensure responsive layout with additional buttons
+
+4. **Testing & Validation**
+   - [ ] Verify all time periods work correctly
+   - [ ] Test moving average calculations for accuracy
+   - [ ] Confirm enhanced visualization appears as expected
+   - [ ] Validate database queries return correct data
+
+#### When to Use This Pattern
+
+1. **Analytics Dashboards**
+   - Time-series data visualization
+   - Long-term trend analysis requirements
+   - Multiple chart types with consistent behavior
+
+2. **Performance Monitoring**
+   - Business metrics tracking
+   - Operational analytics
+   - User behavior analysis
+
+3. **Complex Data Relationships**
+   - Multi-table joins required for complete context
+   - Dynamic calculations based on user selections
+   - Responsive visualization requirements
+
+This pattern provides a comprehensive approach to building sophisticated analytics dashboards that scale from short-term tactical views to long-term strategic analysis while maintaining performance and usability.

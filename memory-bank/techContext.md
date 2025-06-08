@@ -104,11 +104,15 @@ requests
 ### JavaScript Libraries
 
 ```
-bootstrap
-jquery
-pdfmake
-tinymce
-custom modules
+bootstrap         # UI framework and responsive design
+bootstrap-table   # Advanced data table functionality
+jquery           # DOM manipulation and AJAX
+chart.js         # Dashboard analytics and data visualization
+moment.js        # Date/time handling for charts
+chartjs-adapter-moment  # Chart.js time axis adapter
+pdfmake          # PDF document generation
+tinymce          # Rich text editing
+custom modules   # Business logic and UI interactions
 ```
 
 ### Development Dependencies
@@ -275,16 +279,37 @@ Standard error response:
 
 ### Frontend
 
-- Bootstrap Table for data display
-- jQuery for DOM manipulation and AJAX
-- Custom JavaScript modules for business logic
+- **Bootstrap Table** for data display with advanced filtering
+- **jQuery** for DOM manipulation and AJAX operations  
+- **Chart.js** for dashboard analytics visualization
+- **Custom JavaScript modules** for business logic and UI interactions
+- **Dashboard Charts System** with dynamic time periods and moving averages
 
 ### Backend
 
-- Py4web framework for overall application
-- Modular API architecture for REST endpoints
-- MySQL database for persistence
-- Custom Python modules for business logic
+- **Py4web framework** for overall MVC application architecture
+- **Modular API architecture** for REST endpoints with standardized responses
+- **MySQL database** for persistent data storage with optimized queries
+- **Chart Data API** with dynamic period support and proper database joins
+- **Custom Python modules** for business logic and device integrations
+
+### Dashboard Analytics System
+
+- **Multi-chart Dashboard** supporting:
+  - New Patients analytics
+  - All Worklists analytics  
+  - MD-specific Worklists analytics
+- **Dynamic Time Periods** from 3 months to 10 years (3M, 6M, 1Y, 2Y, 5Y, 7Y, 10Y)
+- **Proportional Moving Averages** scaled to time period (~8% of total period):
+  - 3M: 7-day moving average
+  - 6M: 15-day moving average
+  - 1Y: 30-day moving average
+  - 2Y: 60-day moving average
+  - 5Y: 150-day moving average
+  - 7Y: 210-day moving average
+  - 10Y: 300-day moving average
+- **Enhanced Visualization** with improved contrast, thicker lines, and smooth curves
+- **Database Optimization** with proper joins between worklist and modality tables
 
 ## Technical Challenges
 

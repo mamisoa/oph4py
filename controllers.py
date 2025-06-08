@@ -30,6 +30,7 @@ import datetime
 # grid
 from functools import reduce
 
+from dateutil.relativedelta import relativedelta
 from py4web import (  # add response to throw http error 400
     URL,
     Field,
@@ -82,6 +83,7 @@ def index():
     env_status = ENV_STATUS
     timeOffset = TIMEOFFSET
     app_name = APP_NAME
+    hosturl = LOCAL_URL
     user = auth.get_user()
     userMembership = (
         db(db.membership.id == user["membership"])
@@ -738,6 +740,158 @@ def api_daily_transactions_filtered():
                 traceback.format_exc() if hasattr(traceback, "format_exc") else str(e)
             ),
         }
+
+
+def get_moving_average_days(period_months):
+    """Get the number of days for moving average based on time period in months"""
+    moving_avg_days = {
+        3: 7,  # 3M: 7 days
+        6: 15,  # 6M: 15 days
+        12: 30,  # 1Y: 30 days
+        24: 60,  # 2Y: 60 days
+        60: 150,  # 5Y: 150 days
+        84: 210,  # 7Y: 210 days
+        120: 300,  # 10Y: 300 days
+    }
+    return moving_avg_days.get(period_months, 15)  # default to 15 days
+
+
+@action("api/chart_data/<table>/<period:int>")
+@action.uses(session, auth.user, db)
+def chart_data(table, period):
+    """
+    API endpoint to provide chart data for dashboard
+    Args:
+        table: 'patients' or 'worklists'
+        period: number of months (3, 6, 12, 24, 60, 84, 120)
+    Returns:
+        JSON data suitable for Chart.js consumption
+    """
+
+    # Validate inputs
+    valid_tables = ["patients", "worklists", "md_worklists"]
+    valid_periods = [3, 6, 12, 24, 60, 84, 120]  # Added 84 (7Y) and 120 (10Y)
+
+    if table not in valid_tables:
+        response.status = 400
+        return dict(error="Invalid table parameter")
+
+    if period not in valid_periods:
+        response.status = 400
+        return dict(error="Invalid period parameter")
+
+    # Calculate date range
+    end_date = datetime.datetime.now()
+    start_date = end_date - relativedelta(months=period)
+
+    # Get data based on table type
+    if table == "patients":
+        # Query for new patients (users with membership = Patient)
+        patient_membership_id = getMembershipId("Patient")
+        query = (db.auth_user.membership == patient_membership_id) & (
+            db.auth_user.created_on >= start_date
+        )
+
+        # Select all records within date range
+        rows = db(query).select(
+            db.auth_user.created_on,
+            orderby=db.auth_user.created_on,
+        )
+
+    elif table == "worklists":
+        # Query for new worklists
+        query = db.worklist.created_on >= start_date
+
+        # Select all records within date range
+        rows = db(query).select(
+            db.worklist.created_on,
+            orderby=db.worklist.created_on,
+        )
+
+    elif table == "md_worklists":
+        # Query for new worklists with modality = "MD" (need to join with modality table)
+        query = (
+            (db.worklist.modality_dest == db.modality.id)
+            & (db.modality.modality_name == "MD")
+            & (db.worklist.created_on >= start_date)
+        )
+
+        # Select all records within date range
+        rows = db(query).select(
+            db.worklist.created_on,
+            orderby=db.worklist.created_on,
+        )
+
+    # Group by date in Python and count occurrences
+    from collections import defaultdict
+
+    date_counts = defaultdict(int)
+
+    for row in rows:
+        # Extract date part from datetime using Python
+        if table == "patients":
+            created_date = row.created_on.date() if row.created_on else None
+        elif table in ["worklists", "md_worklists"]:
+            created_date = row.created_on.date() if row.created_on else None
+
+        if created_date:
+            date_counts[created_date] += 1
+
+    # Sort dates and format data for Chart.js
+    sorted_dates = sorted(date_counts.keys())
+    labels = []
+    data = []
+
+    for date_obj in sorted_dates:
+        labels.append(date_obj.strftime("%Y-%m-%d"))
+        data.append(date_counts[date_obj])
+
+    # Calculate moving average with dynamic window based on period
+    def calculate_moving_average(data_points, window=7):
+        """Calculate moving average with specified window size"""
+        moving_avg = []
+        for i in range(len(data_points)):
+            start_idx = max(0, i - window + 1)
+            end_idx = i + 1
+            window_data = data_points[start_idx:end_idx]
+            avg = sum(window_data) / len(window_data) if window_data else 0
+            moving_avg.append(round(avg, 2))
+        return moving_avg
+
+    # Get dynamic moving average period based on time scale
+    ma_window = get_moving_average_days(period)
+    moving_average = calculate_moving_average(data, window=ma_window)
+
+    # Prepare datasets for Chart.js (main data + moving average)
+    datasets = [
+        {
+            "label": f"New {table.replace('_', ' ').title()}",
+            "data": data,
+            "type": "line",
+            "fill": True,
+            "tension": 0.1,
+        },
+        {
+            "label": f"{ma_window}-day Moving Average",
+            "data": moving_average,
+            "type": "line",
+            "fill": False,
+            "tension": 0.4,
+            "borderWidth": 3,
+            "pointRadius": 0,
+        },
+    ]
+
+    # Return JSON response with multiple datasets
+    response.headers["Content-Type"] = "application/json"
+    return dict(
+        labels=labels,
+        datasets=datasets,
+        data=data,  # Keep for backward compatibility
+        period=period,
+        table=table,
+        total_count=sum(data),
+    )
 
 
 # always commit your models to avoid problems later

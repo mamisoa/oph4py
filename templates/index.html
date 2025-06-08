@@ -2,29 +2,260 @@
 [[ block left_nav ]]
 [[ include 'partials/nav-test.html' ]]
 [[ end]]
+
+<!-- Include Chart.js and required dependencies -->
+<script src="[[=URL('static', 'js/chartjs/chart.umd.min.js')]]"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
+
 <div class="container">
     <div class="row">
-        <div class="col"><p>[[=message]]</p></div>
-    </div>
-    <div class="row">
-        <div class="col my-2"><h2>Dashboard</h2></div>
-    </div>
-    <div class="row">
         <div class="col">
-            <ul class="list-group">
-                <li class="list-group-item">Number of patients in DB: [[=db_patients_count]]</li>
-                <li class="list-group-item">Number of doctors in DB: [[=db_doctors_count]]</li>
-                <li class="list-group-item">Number of nurses in DB: [[=db_nurses_count]]</li>
-                <li class="list-group-item">Number of medical assistants in DB: [[=db_massistants_count]]</li>
-                <li class="list-group-item">Number of assistants in DB: [[=db_assistants_count]]</li>
-                <li class="list-group-item">Number of admins in DB: [[=db_admins_count]]</li>
-                <li class="list-group-item"><strong>Total entries in DB: [[=db_entries_count]]</strong></li>
-            </ul>
+            <p>[[=message]]</p>
         </div>
     </div>
     <div class="row">
+        <div class="col my-2">
+            <h2>Dashboard</h2>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3>Analytics Overview</h3>
+        </div>
+    </div>
+
+    <!-- Patients Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">New Patients</h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary" data-chart="patients"
+                            data-period="3">3M</button>
+                        <button type="button" class="btn btn-outline-primary active" data-chart="patients"
+                            data-period="6">6M</button>
+                        <button type="button" class="btn btn-outline-primary" data-chart="patients"
+                            data-period="12">1Y</button>
+                        <button type="button" class="btn btn-outline-primary" data-chart="patients"
+                            data-period="24">2Y</button>
+                        <button type="button" class="btn btn-outline-primary" data-chart="patients"
+                            data-period="60">5Y</button>
+                        <button type="button" class="btn btn-outline-primary" data-chart="patients"
+                            data-period="84">7Y</button>
+                        <button type="button" class="btn btn-outline-primary" data-chart="patients"
+                            data-period="120">10Y</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="patientsSummary" class="mb-3"></div>
+                    <div id="patientsChartContainer" class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="patientsChart"></canvas>
+                        <div class="chart-loading" style="display: none;">Loading...</div>
+                    </div>
+                    <div id="patientsError" class="alert alert-danger mt-2" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Worklists Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">New Worklists</h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-success" data-chart="worklists"
+                            data-period="3">3M</button>
+                        <button type="button" class="btn btn-outline-success active" data-chart="worklists"
+                            data-period="6">6M</button>
+                        <button type="button" class="btn btn-outline-success" data-chart="worklists"
+                            data-period="12">1Y</button>
+                        <button type="button" class="btn btn-outline-success" data-chart="worklists"
+                            data-period="24">2Y</button>
+                        <button type="button" class="btn btn-outline-success" data-chart="worklists"
+                            data-period="60">5Y</button>
+                        <button type="button" class="btn btn-outline-success" data-chart="worklists"
+                            data-period="84">7Y</button>
+                        <button type="button" class="btn btn-outline-success" data-chart="worklists"
+                            data-period="120">10Y</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="worklistsSummary" class="mb-3"></div>
+                    <div id="worklistsChartContainer" class="chart-container"
+                        style="position: relative; height: 300px;">
+                        <canvas id="worklistsChart"></canvas>
+                        <div class="chart-loading" style="display: none;">Loading...</div>
+                    </div>
+                    <div id="worklistsError" class="alert alert-danger mt-2" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MD Worklists Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">New MD Worklists</h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-warning" data-chart="md_worklists"
+                            data-period="3">3M</button>
+                        <button type="button" class="btn btn-outline-warning active" data-chart="md_worklists"
+                            data-period="6">6M</button>
+                        <button type="button" class="btn btn-outline-warning" data-chart="md_worklists"
+                            data-period="12">1Y</button>
+                        <button type="button" class="btn btn-outline-warning" data-chart="md_worklists"
+                            data-period="24">2Y</button>
+                        <button type="button" class="btn btn-outline-warning" data-chart="md_worklists"
+                            data-period="60">5Y</button>
+                        <button type="button" class="btn btn-outline-warning" data-chart="md_worklists"
+                            data-period="84">7Y</button>
+                        <button type="button" class="btn btn-outline-warning" data-chart="md_worklists"
+                            data-period="120">10Y</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="md_worklistsSummary" class="mb-3"></div>
+                    <div id="md_worklistsChartContainer" class="chart-container"
+                        style="position: relative; height: 300px;">
+                        <canvas id="md_worklistsChart"></canvas>
+                        <div class="chart-loading" style="display: none;">Loading...</div>
+                    </div>
+                    <div id="md_worklistsError" class="alert alert-danger mt-2" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="row">
         <div class="col">
-            [[ = userMembership ]]
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Database Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Number of patients in DB
+                            <span class="badge bg-primary rounded-pill">[[=db_patients_count]]</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Number of doctors in DB
+                            <span class="badge bg-success rounded-pill">[[=db_doctors_count]]</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Number of nurses in DB
+                            <span class="badge bg-info rounded-pill">[[=db_nurses_count]]</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Number of medical assistants in DB
+                            <span class="badge bg-warning rounded-pill">[[=db_massistants_count]]</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Number of assistants in DB
+                            <span class="badge bg-secondary rounded-pill">[[=db_assistants_count]]</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Number of admins in DB
+                            <span class="badge bg-danger rounded-pill">[[=db_admins_count]]</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Total entries in DB</strong>
+                            <span class="badge bg-dark rounded-pill">[[=db_entries_count]]</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <p class="text-muted">User Role: [[ = userMembership ]]</p>
         </div>
     </div>
 </div>
+
+<!-- Chart styling -->
+<style>
+    .chart-container {
+        position: relative;
+    }
+
+    .chart-container.loading::after {
+        content: 'Loading...';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        z-index: 1000;
+    }
+
+    .chart-summary {
+        text-align: center;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+    }
+
+    .chart-summary .total-count {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #0d6efd;
+        display: block;
+    }
+
+    .chart-summary .period-text {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .btn-group .btn.active {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+        color: white;
+    }
+
+    .btn-group[role="group"] .btn-outline-success.active {
+        background-color: var(--bs-success);
+        border-color: var(--bs-success);
+        color: white;
+    }
+
+    .btn-group[role="group"] .btn-outline-warning.active {
+        background-color: var(--bs-warning);
+        border-color: var(--bs-warning);
+        color: white;
+    }
+
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border: 1px solid rgba(0, 0, 0, 0.125);
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+</style>
+
+<!-- Global variables for API access -->
+<script>
+    window.HOSTURL = "[[= hosturl ]]";
+    window.APP_NAME = "[[= app_name ]]";
+</script>
+
+<!-- Load dashboard charts script -->
+<script src="[[=URL('static', 'js/dashboard-charts.js')]]"></script>
