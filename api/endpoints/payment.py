@@ -332,11 +332,7 @@ def process_payment(worklist_id: int):
         else:
             payment_status = "partial"
 
-        # CRITICAL FIX: Start explicit database transaction
-        db.commit()  # Commit any pending transactions first
-        db._adapter.connection.begin()  # Begin explicit transaction
-
-        # Create transaction record
+            # Create transaction record
         transaction_id = db.worklist_transactions.insert(
             id_auth_user=worklist.id_auth_user,
             id_worklist=worklist_id,
@@ -349,7 +345,6 @@ def process_payment(worklist_id: int):
             remaining_balance=float(new_balance),
             feecode_used=feecode_used,
             notes=notes,
-            is_active=True,
             created_by=auth.current_user.get("id") if auth.current_user else None,
         )
 
@@ -572,10 +567,6 @@ def cancel_transaction(worklist_id: int, transaction_id: int):
             if transaction.notes
             else cancellation_note
         )
-
-        # CRITICAL FIX: Start explicit database transaction for cancellation
-        db.commit()  # Commit any pending transactions first
-        db._adapter.connection.begin()  # Begin explicit transaction
 
         # Update transaction to cancelled status
         db(db.worklist_transactions.id == transaction_id).update(

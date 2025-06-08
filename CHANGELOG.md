@@ -10,16 +10,15 @@ All notable changes to this project will be documented in this file.
   - **Issue**: Payment transactions were processed successfully but not showing in transaction history consistently
   - **Root Cause**: Missing explicit transaction management following py4web/pyDAL connection pooling patterns
   - **Impact**: Production transactions appeared successful but were not committed to database, causing inconsistent behavior with connection pooling
-  - **Solution**: Implemented py4web explicit transaction pattern from successful operations in billing.py and worklist.py:
-    1. `db.commit()` - Commit any pending transactions first
-    2. `db._adapter.connection.begin()` - Begin explicit transaction
-    3. Perform database operations
-    4. `db.commit()` - Commit transaction
-    5. Enhanced `db.rollback()` in exception handling with proper error logging
+  - **Solution**: Implemented correct py4web transaction pattern based on official documentation:
+    1. Let py4web handle automatic transaction management via `@action.uses(db)`
+    2. Keep explicit `db.commit()` calls after database operations for immediate persistence
+    3. Enhanced `db.rollback()` in exception handling with proper error logging
+    4. **Correction**: Removed incorrect `db._adapter.connection.begin()` calls that are not part of standard py4web patterns
   - **Files Fixed**:
     - `api/endpoints/payment.py` - `process_payment()` function: Added explicit transaction management
     - `api/endpoints/payment.py` - `cancel_transaction()` function: Added explicit transaction management
-  - **Pattern Source**: Based on successful implementation in `api/endpoints/billing.py` and `api/endpoints/worklist.py`
+  - **Pattern Source**: Based on official py4web/pyDAL documentation and corrected understanding of transaction management
   - **Result**: Payment transactions now properly committed and immediately visible in transaction history with connection pooling
 
 ### Technical Details

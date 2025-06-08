@@ -1722,3 +1722,287 @@ return {
    - Minimal perceived latency needs
 
 This pattern demonstrates how to systematically optimize complex payment workflows while maintaining reliability, user experience, and system performance.
+
+### py4web Database Transaction Management Pattern
+
+#### Overview
+
+The py4web Database Transaction Management pattern provides the correct approach for handling database transactions in py4web applications, particularly when dealing with connection pooling environments. This pattern addresses common misconceptions about transaction handling and ensures reliable database operations.
+
+#### Problem Context
+
+In production environments with connection pooling, database operations may appear successful but not be immediately visible to subsequent queries from different connections. This creates race conditions where:
+
+1. **Payment processing succeeds** but returns successful response
+2. **Transaction history queries** return empty results intermittently  
+3. **Payment summary** shows outdated information
+4. **Inconsistent behavior** appears random due to connection pool timing
+
+#### Common Pitfalls
+
+##### 1. Incorrect Transaction Management
+
+**❌ Anti-Pattern: Manual Connection Handling**
+
+```python
+# INCORRECT: Not part of py4web standards
+db.commit()  # Commit any pending transactions first
+db._adapter.connection.begin()  # Begin explicit transaction
+# ... database operations
+db.commit()
+```
+
+**❌ Anti-Pattern: Assuming Web2py Patterns Apply**
+
+```python
+# INCORRECT: Web2py patterns don't always apply to py4web
+# Following patterns from other codebases without verification
+```
+
+##### 2. Misunderstanding py4web Architecture
+
+- **Connection Pooling**: Assuming manual connection management is required
+- **Transaction Boundaries**: Not understanding py4web's automatic transaction handling
+- **Documentation**: Not verifying approaches against official documentation
+
+#### Correct py4web Transaction Pattern
+
+##### 1. Standard Transaction Management
+
+**✅ Correct Pattern: Official py4web Approach**
+
+```python
+@action("api/worklist/<worklist_id:int>/payment", method=["POST"])
+@action.uses(session, auth.user, db)  # py4web handles transactions automatically
+def process_payment(worklist_id: int):
+    try:
+        # Perform database operations
+        transaction_id = db.worklist_transactions.insert(
+            id_auth_user=worklist.id_auth_user,
+            id_worklist=worklist_id,
+            # ... other fields
+        )
+
+        # Explicit commit for immediate persistence (when needed)
+        db.commit()
+        logger.info(f"Transaction {transaction_id} committed successfully")
+
+        return APIResponse.success(data=result)
+
+    except Exception as e:
+        # Standard rollback pattern
+        try:
+            db.rollback()
+            logger.info("Database transaction rolled back due to error")
+        except Exception as rollback_error:
+            logger.error(f"Error during rollback: {str(rollback_error)}")
+        
+        logger.error(f"Error in process_payment: {str(e)}")
+        return APIResponse.error(message=f"Server error: {str(e)}")
+```
+
+##### 2. py4web's Automatic Transaction Management
+
+```python
+# py4web's internal transaction handling (from official docs)
+try:
+    execute models, controller function and view
+except:
+    rollback all connections
+    log the traceback
+    send a ticket to the visitor
+else:
+    commit all connections
+    save cookies, sessions and return the page
+```
+
+##### 3. Manual Transaction Pattern (for special cases)
+
+```python
+def my_task():
+    try:
+        # do something
+        db.commit()
+    except Exception:
+        db.rollback()
+```
+
+#### Implementation Guidelines
+
+##### 1. Use Standard py4web Decorators
+
+```python
+@action.uses(session, auth.user, db)  # Let py4web manage transactions
+```
+
+##### 2. Explicit Commits When Needed
+
+```python
+# Use explicit commits for immediate persistence requirements
+db.commit()
+logger.info("Database changes committed successfully")
+```
+
+##### 3. Proper Error Handling
+
+```python
+try:
+    db.rollback()
+    logger.info("Database transaction rolled back due to error")
+except Exception as rollback_error:
+    logger.error(f"Error during rollback: {str(rollback_error)}")
+```
+
+#### Debugging Database Transaction Issues
+
+##### 1. Identify Transaction Visibility Problems
+
+**Symptoms:**
+
+- Operations succeed but data not immediately visible
+- Intermittent empty query results
+- Race conditions in API responses
+- Inconsistent behavior in production
+
+**Diagnosis:**
+
+```python
+# Add logging to track transaction lifecycle
+logger.info(f"Before insert: checking existing records")
+existing_count = db(db.worklist_transactions.id_worklist == worklist_id).count()
+logger.info(f"Existing transactions: {existing_count}")
+
+transaction_id = db.worklist_transactions.insert(...)
+logger.info(f"Inserted transaction: {transaction_id}")
+
+db.commit()
+logger.info(f"Transaction committed successfully")
+
+new_count = db(db.worklist_transactions.id_worklist == worklist_id).count()
+logger.info(f"New transaction count: {new_count}")
+```
+
+##### 2. Verify Against Official Documentation
+
+**Critical Step: Always verify patterns against official sources**
+
+```python
+# Use Context7 or official documentation to verify approaches
+# Example verification process:
+# 1. Check py4web documentation for transaction patterns
+# 2. Review pyDAL documentation for commit/rollback usage  
+# 3. Test against simple examples from documentation
+# 4. Avoid copying patterns from unverified sources
+```
+
+##### 3. Connection Pooling Considerations
+
+```python
+# py4web handles connection pooling automatically
+# Settings that affect connection pooling:
+DB_POOL_SIZE = 8  # in settings.py
+
+# No manual connection management required
+# py4web/pyDAL handles pool lifecycle automatically
+```
+
+#### Architecture Diagram
+
+```mermaid
+graph TD
+    A["🌐 API Request"] --> B["🔧 @action.uses(db)<br/>py4web auto-transaction"]
+    B --> C["💾 Database Operations<br/>INSERT/UPDATE/DELETE"]
+    C --> D["✅ Explicit db.commit()<br/>For immediate persistence"]
+    D --> E["📊 Return Success Response"]
+    
+    F["❌ Exception Occurs"] --> G["🔄 db.rollback()"]
+    G --> H["📝 Log Error Details"]
+    H --> I["❌ Return Error Response"]
+    
+    C --> F
+    
+    style B fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style D fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    style G fill:#ffebee,stroke:#f44336,stroke-width:2px
+```
+
+#### Benefits
+
+1. **Reliability**
+   - Consistent with py4web framework architecture
+   - Automatic transaction boundary management
+   - Proper error handling and rollback
+
+2. **Performance**
+   - Leverages py4web's optimized connection pooling
+   - No unnecessary manual connection management
+   - Efficient resource utilization
+
+3. **Maintainability**
+   - Follows official framework patterns
+   - Clear separation of concerns
+   - Standard error handling approach
+
+4. **Debugging**
+   - Clear transaction lifecycle logging
+   - Predictable behavior in production
+   - Easy to troubleshoot transaction issues
+
+#### When to Use This Pattern
+
+1. **Database Operations in py4web APIs**
+   - Payment processing systems
+   - Data modification endpoints
+   - Transaction-critical operations
+
+2. **Production Environments with Connection Pooling**
+   - Multi-user applications
+   - High-concurrency systems
+   - Database cluster configurations
+
+3. **Debugging Transaction Issues**
+   - Intermittent data visibility problems
+   - Race condition investigation
+   - Production transaction troubleshooting
+
+#### Implementation Checklist
+
+1. **Framework Compliance**
+   - [ ] Use `@action.uses(db)` decorator
+   - [ ] Let py4web handle automatic transaction management
+   - [ ] Avoid manual connection management
+
+2. **Explicit Persistence**
+   - [ ] Add `db.commit()` after critical database operations
+   - [ ] Include commit confirmation logging
+   - [ ] Handle commit errors appropriately
+
+3. **Error Handling**
+   - [ ] Implement proper `db.rollback()` in exception handlers
+   - [ ] Add detailed error logging
+   - [ ] Handle rollback errors gracefully
+
+4. **Documentation Verification**
+   - [ ] Verify patterns against official py4web documentation
+   - [ ] Check pyDAL documentation for transaction handling
+   - [ ] Test approaches with simple examples first
+   - [ ] Document any deviations from standard patterns
+
+#### Lessons Learned
+
+1. **Official Documentation is Authoritative**
+   - Always verify implementation patterns against official sources
+   - Framework-specific approaches may differ from similar frameworks
+   - Community examples may not always follow best practices
+
+2. **Connection Pooling Requires Special Consideration**
+   - Explicit commits ensure immediate data visibility
+   - py4web handles connection pool lifecycle automatically
+   - Manual connection management is usually unnecessary
+
+3. **Production Debugging Requires Systematic Approach**
+   - Implement comprehensive logging for transaction lifecycle
+   - Test transaction patterns in isolation
+   - Monitor transaction timing and consistency
+
+This pattern provides a systematic approach to implementing reliable database transactions in py4web applications while avoiding common pitfalls and ensuring consistency with framework best practices.
