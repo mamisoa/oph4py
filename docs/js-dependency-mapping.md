@@ -26,13 +26,13 @@ Any disruption to the dependency chain will break all table functionality and me
 // 1. External Libraries (Bootstrap, jQuery, etc.)
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
 <script src="js/bootbox/bootbox.all.min.js"></script>
-<script src="static/js/jquery/jquery.serialize-object.min.js"></script>
+<script src="js/jquery/jquery.serialize-object.min.js"></script>
 <script src="js/utils/bootstrap-autocomplete.min.js"></script>
 <script src="js/timer.jquery.min.js"></script>
 
 // 2. Core Utility Libraries
 <script src="js/utils/useful.js"></script>              // Global utilities, refreshTables()
-<script src="static/js/templates/patient-bar.js"></script>         // Patient bar functionality
+<script src="js/templates/patient-bar.js"></script>         // Patient bar functionality
 
 // 3. Bootstrap Table Configuration
 <script src="js/md/md_bt.js"></script>               // Table configs, formatters, handlers

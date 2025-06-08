@@ -81,7 +81,7 @@ templates/baseof_auth.html (imports CSS/JS)
 
 ```html
 <!-- Remplacer -->
-<script src="static/js/jquery/jquery.toast.min.js"></script>
+<script src="js/jquery/jquery.toast.min.js"></script>
 <link rel="stylesheet" href="css/jquery.toast.min.css">
 
 <!-- Par -->
