@@ -16,6 +16,11 @@
 }
 
 /* Payment Modal Styles */
+.payment-modal-positioned {
+	margin-top: 80px !important; /* Position modal below navbar */
+	margin-bottom: 20px;
+}
+
 .payment-input:focus {
 	border-color: #28a745;
 	box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
@@ -24,6 +29,31 @@
 .input-group-text {
 	background-color: #e9ecef;
 	border-color: #ced4da;
+}
+
+/* Modal appointment details styling */
+.alert-light {
+	background-color: #f8f9fa;
+	border-color: #dee2e6;
+}
+
+.alert-light h6 {
+	color: #495057;
+	margin-bottom: 10px;
+}
+
+.alert-light small {
+	font-size: 0.75rem;
+}
+
+/* Payment datetime input styling */
+#payment-datetime {
+	border-color: #28a745;
+}
+
+#payment-datetime:focus {
+	border-color: #28a745;
+	box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
 
 /* Alert Styles */

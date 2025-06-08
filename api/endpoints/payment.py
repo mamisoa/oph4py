@@ -302,6 +302,20 @@ def process_payment(worklist_id: int):
         feecode_used = payment_data.get("feecode_used", 0)
         notes = payment_data.get("notes", "")
 
+        # Parse payment datetime or use current time
+        payment_datetime_str = payment_data.get("payment_datetime")
+        if payment_datetime_str:
+            try:
+                # Parse ISO format datetime from frontend
+                payment_datetime = datetime.datetime.fromisoformat(
+                    payment_datetime_str.replace("Z", "+00:00")
+                )
+            except ValueError:
+                # Fallback to current time if parsing fails
+                payment_datetime = datetime.datetime.now()
+        else:
+            payment_datetime = datetime.datetime.now()
+
         # Calculate current balance
         billing_rows = db(db.billing_codes.id_worklist == worklist_id).select()
         total_fee = Decimal("0.00")
@@ -336,7 +350,7 @@ def process_payment(worklist_id: int):
         transaction_id = db.worklist_transactions.insert(
             id_auth_user=worklist.id_auth_user,
             id_worklist=worklist_id,
-            transaction_date=datetime.datetime.now(),
+            transaction_date=payment_datetime,
             amount_card=float(amount_card),
             amount_cash=float(amount_cash),
             amount_invoice=float(amount_invoice),

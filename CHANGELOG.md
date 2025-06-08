@@ -2,59 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2025-06-08T02:17:38.433343] - Daily Transactions Summary Fix
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### Fixed
+## [2025-06-08T02:46:09.312253]
 
-- **Critical Summary Calculation Issue**: Fixed daily transactions summary showing totals from visible rows only instead of complete filtered dataset
-  - **Problem**: Summary cards calculated totals from paginated table rows (25-50 records) instead of ALL filtered transactions
-  - **Impact**: When filtering 500 transactions but showing 25 per page, summary only reflected those 25 visible records
-  - **User Confusion**: Summary totals changed when navigating between pages or changing page size
-  - **Solution**: Implemented **dissociated summary architecture** where summary and table data are calculated separately
+### Enhanced
+- **Transaction Details Display**: Improved transaction time display to show both date and time
+  - **Time Column**: Enhanced "Time" column to display both date and time instead of just time
+  - **Format**: Uses DD/MM/YYYY format for date with HH:MM:SS for time, separated by line break
+  - **Column Header**: Updated header from "Time" to "Date & Time" for clarity
+  - **User Experience**: Provides complete temporal context for each transaction without additional columns
+
+### Added
+- **Payment Modal Enhancements**: 
+  - Improved modal positioning to avoid navbar overlap with CSS `margin-top: 80px`
+  - Added worklist date/time and procedure display in payment modal header
+  - Added datetime input field for payment date with current date/time as default
+  - Enhanced modal layout with scrollable content for better UX
 
 ### Changed
+- **Payment Interface**: Updated payment modal to show appointment details including date, time, and procedure name
+- **Database Schema**: Modified payment API to accept and store custom payment datetime
+- **UI Layout**: Improved modal spacing and visual hierarchy with appointment details section
 
-- **Backend Enhancement**: Modified `/oph4py/api/daily_transactions_filtered` endpoint to include comprehensive summary data
-  - **Added**: Server-side aggregation queries for ALL filtered records (not just paginated ones)
-  - **Summary Data**: Added `summary` object to API response with pre-calculated totals:
-    - `total_amount_card`, `total_amount_cash`, `total_amount_invoice`, `total_amount`
-    - `count_paid`, `count_pending`, `count_cancelled`, `count_partial`, `count_overpaid`, `count_refunded`
-    - `count_total` for total transaction count
-  - **Performance**: Single query calculates both table data AND summary totals using SQL aggregation
-  - **Data Consistency**: Summary always reflects exact same filtered dataset as table
+### Fixed
+- **Modal Positioning**: Fixed payment modal overflow under navigation bar
+- **User Experience**: Enhanced payment form with contextual information display
 
-- **Frontend Enhancement**: Updated `static/js/daily_transactions.js` with dissociated summary logic
-  - **New Function**: `updateSummaryCardsFromBackend(summary)` uses server-calculated totals
-  - **Fallback Method**: Original `updateSummaryCards(transactions)` kept for backward compatibility
-  - **Response Handler**: `responseHandler_transactions()` prioritizes backend summary over client calculation
-  - **Architecture**: Complete separation between summary calculation and table display
-
-### Technical Details
-
-- **Dissociated Architecture**: Summary and table data are now completely independent
-  - **Summary Source**: Server-side SQL aggregation from ALL filtered records
-  - **Table Source**: Server-side paginated query for display (25-50 records per page)
-  - **User Experience**: Summary totals remain consistent while navigating table pages
-  - **Data Accuracy**: Summary always reflects complete filtered dataset, not visible rows
-
-- **SQL Implementation**: Added optimized aggregation queries with proper grouping
-  - **SUM Queries**: `amount_card.sum()`, `amount_cash.sum()`, `amount_invoice.sum()`, `total_amount.sum()`
-  - **COUNT Queries**: Payment status counts using `GROUP BY payment_status`
-  - **Filter Consistency**: Same date range and senior filtering applied to both queries
-  - **Performance**: Efficient single database call for both table and summary data
-
-### User Experience Improvements
-
-- **Consistent Summaries**: Summary cards no longer change when navigating pages or changing page size
-- **Accurate Filtering**: Summary totals properly reflect complete filtered dataset (e.g., all 500 transactions, not just 25 visible)
-- **Real-time Updates**: Summary updates immediately when date or senior filters change
-- **Reliable Calculations**: No dependency on client-side calculation accuracy or JavaScript errors
-
-**Files Modified**:
-- `controllers.py` - Enhanced `/api/daily_transactions_filtered` endpoint with summary aggregation
-- `static/js/daily_transactions.js` - Added `updateSummaryCardsFromBackend()` function and updated response handler
-
-## [2025-06-08T00:37:34.274389] - Critical Database Transaction Fixes
+## [2025-06-08T00:37:34.274389] - Production Ready
 
 ### Fixed
 

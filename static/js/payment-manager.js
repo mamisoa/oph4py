@@ -745,6 +745,26 @@ class PaymentManager {
 		// Set amount to pay
 		document.getElementById("amount-to-pay").textContent = balance.toFixed(2);
 
+		// Set procedure name in modal
+		const procedureName = document.getElementById("procedure-name").textContent;
+		const modalProcedureName = document.getElementById("modal-procedure-name");
+		if (modalProcedureName && procedureName && procedureName !== "Loading...") {
+			modalProcedureName.textContent = procedureName;
+		}
+
+		// Set current datetime as default for payment datetime
+		const paymentDatetime = document.getElementById("payment-datetime");
+		if (paymentDatetime) {
+			const now = new Date();
+			// Format as YYYY-MM-DDTHH:MM for datetime-local input
+			const year = now.getFullYear();
+			const month = String(now.getMonth() + 1).padStart(2, "0");
+			const day = String(now.getDate()).padStart(2, "0");
+			const hours = String(now.getHours()).padStart(2, "0");
+			const minutes = String(now.getMinutes()).padStart(2, "0");
+			paymentDatetime.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+		}
+
 		// Clear payment inputs
 		document.getElementById("amount-card").value = "";
 		document.getElementById("amount-cash").value = "";
@@ -808,6 +828,8 @@ class PaymentManager {
 				parseFloat(document.getElementById("amount-invoice").value) || 0,
 			feecode_used: this.currentFeecode,
 			notes: document.getElementById("payment-notes").value.trim(),
+			payment_datetime:
+				document.getElementById("payment-datetime").value || null,
 		};
 
 		if (

@@ -5,6 +5,10 @@ alwaysApply: false
 ---
 # Py4web Optimized Guide
 
+## Use Context7
+
+For up to date best implementation pratices, use context7 to get the lastest documentation for py4web and pydal.
+
 ## Templates
 
 Py4web uses two template languages:

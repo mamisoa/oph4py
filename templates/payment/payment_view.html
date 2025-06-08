@@ -170,8 +170,9 @@
 </div>
 
 <!-- Payment Modal -->
-<div class="modal fade" id="payment-modal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="payment-modal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable payment-modal-positioned">
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title" id="paymentModalLabel">
@@ -181,6 +182,26 @@
                     aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <!-- Worklist Details Section -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="alert alert-light border">
+                            <h6 class="mb-2"><i class="fas fa-calendar-alt me-2"></i>Appointment Details</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted">Date & Time:</small><br>
+                                    <strong id="modal-appointment-datetime">[[=worklist.requested_time]]</strong>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted">Procedure:</small><br>
+                                    <strong id="modal-procedure-name">Loading...</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amount to Pay Section -->
                 <div class="row mb-3">
                     <div class="col-12">
                         <div class="alert alert-info">
@@ -189,6 +210,18 @@
                     </div>
                 </div>
 
+                <!-- Payment Date Section -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="payment-datetime" class="form-label">
+                            <i class="fas fa-clock me-1"></i>Payment Date & Time:
+                        </label>
+                        <input type="datetime-local" class="form-control" id="payment-datetime"
+                            title="Select the date and time for this payment transaction">
+                    </div>
+                </div>
+
+                <!-- Payment Methods Section -->
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label for="amount-card" class="form-label">
@@ -222,6 +255,7 @@
                     </div>
                 </div>
 
+                <!-- Notes Section -->
                 <div class="row mb-3">
                     <div class="col-12">
                         <label for="payment-notes" class="form-label">Notes (Optional):</label>
@@ -230,6 +264,7 @@
                     </div>
                 </div>
 
+                <!-- Payment Total Section -->
                 <div class="row">
                     <div class="col-12">
                         <div class="alert alert-secondary mb-0">

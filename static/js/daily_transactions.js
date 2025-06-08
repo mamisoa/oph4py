@@ -162,19 +162,25 @@ function formatTransactionRow(transaction) {
 }
 
 /**
- * Format time from datetime string
+ * Format datetime to show both date and time
  * @param {String} datetime - Datetime string
- * @returns {String} Formatted time
+ * @returns {String} Formatted date and time
  */
 function formatTime(datetime) {
 	try {
 		const date = new Date(datetime);
-		return date.toLocaleTimeString("en-US", {
+		const dateStr = date.toLocaleDateString("en-GB", {
+			day: "2-digit",
+			month: "2-digit",
+			year: "numeric",
+		});
+		const timeStr = date.toLocaleTimeString("en-US", {
 			hour12: false,
 			hour: "2-digit",
 			minute: "2-digit",
 			second: "2-digit",
 		});
+		return `${dateStr}<br/>${timeStr}`;
 	} catch (e) {
 		return "N/A";
 	}
