@@ -2660,13 +2660,28 @@ function displayNomenclatureResults(results) {
 	console.log("=== displayNomenclatureResults completed ===");
 }
 
+// DEBUGGING: Test if JavaScript file is loaded
+console.log("MD_BT.JS LOADED - billing combo debugging enabled");
+
 // load billing combos
 function loadBillingCombos() {
+	console.log("=== loadBillingCombos CALLED ===");
 	$.ajax({
 		url: HOSTURL + "/" + APP_NAME + "/api/billing_combo",
 		method: "GET",
-		data: { is_active: true },
+		dataType: "json", // Ensure response is parsed as JSON
+		data: {
+			is_active: true,
+			view: "all", // MD view should show all combos for medical usage
+		},
 		success: function (response) {
+			console.log("=== AJAX SUCCESS ===");
+			console.log("Full response:", response);
+			console.log("response.items:", response.items);
+			console.log(
+				"About to call displayBillingCombos with:",
+				response.items || []
+			);
 			displayBillingCombos(response.items || []);
 		},
 		error: function (xhr, status, error) {
@@ -2681,19 +2696,29 @@ let loadedCombos = [];
 
 // display billing combos
 function displayBillingCombos(combos) {
+	console.log("=== displayBillingCombos START ===");
 	console.log("displayBillingCombos called with:", combos);
+	console.log(
+		"Number of combos received:",
+		combos ? combos.length : "undefined"
+	);
 
 	// Store combos in global variable for reliable access
 	loadedCombos = combos;
 
 	let tbody = $("#comboTableBody");
+	console.log("DOM element #comboTableBody found:", tbody.length > 0);
+	console.log("DOM element:", tbody);
+
 	tbody.empty();
 
 	if (combos.length === 0) {
+		console.log("No combos found, adding 'No active combos found' message");
 		tbody.append(
 			'<tr><td colspan="4" class="text-center">No active combos found</td></tr>'
 		);
 	} else {
+		console.log("Processing", combos.length, "combos...");
 		combos.forEach(function (combo) {
 			console.log("Processing combo:", combo);
 			console.log("combo.combo_codes raw:", combo.combo_codes);
@@ -2782,8 +2807,14 @@ function displayBillingCombos(combos) {
 					'">Select</button></td>'
 			);
 			tbody.append(row);
+			console.log("Added row for combo:", combo.combo_name);
 		});
+		console.log(
+			"Finished processing all combos. Final tbody content:",
+			tbody.html()
+		);
 	}
+	console.log("=== displayBillingCombos END ===");
 }
 
 // apply billing combo
@@ -3493,6 +3524,9 @@ $(document).ready(function () {
 
 	// Load combos when modal opens
 	$("#billComboModal").on("show.bs.modal", function () {
+		console.log("=== Modal show.bs.modal event triggered ===");
+		console.log("jQuery version:", $.fn.jquery);
+		console.log("DOM ready:", document.readyState);
 		loadBillingCombos();
 	});
 

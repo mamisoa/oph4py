@@ -151,6 +151,28 @@ else:
 
 - `api/endpoints/billing.py` - Fixed view mode parameter handling
 
+### ✅ MD View Combo Access Fix (COMPLETED)
+
+#### Issue Resolved: MD View Modal Shows No Combos
+
+**Problem:** Billing combo modal in MD view was not showing any combos despite API returning 4 combos correctly.
+
+**Root Cause:** MD view's `loadBillingCombos()` function was not passing the `view` parameter, causing API to default to 'my' view mode which may not show all necessary combos for medical usage.
+
+**Solution Implemented:**
+
+```javascript
+// MD view should show all combos for medical usage
+data: { 
+    is_active: true,
+    view: "all"  // MD view should show all combos for medical usage
+}
+```
+
+**Files Modified:**
+
+- `static/js/md/md_bt.js` - Added `view: "all"` parameter to loadBillingCombos() API call
+
 #### Next Steps (Optional)
 
 3. Monitor performance with larger datasets

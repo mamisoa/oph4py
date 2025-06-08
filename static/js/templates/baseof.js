@@ -1,4 +1,4 @@
-// toast
+// toast - using VanillaToast library (replacement for jQuery Toast)
 function displayToast(
 	status = "info",
 	heading = "Information",
@@ -38,6 +38,7 @@ function displayToast(
 		hideAfter = 5000;
 	}
 
+	// Use VanillaToast with jQuery-compatible API
 	$.toast({
 		icon: status,
 		heading: heading,

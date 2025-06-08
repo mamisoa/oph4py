@@ -382,7 +382,7 @@
   - Modified `static/js/utils/useful.js`: Updated `setWlItemStatus` function to remove ID from request payload
     - ID is now correctly passed in the URL instead of the payload
     - Ensures proper validation in py4web's RestAPI
-  - Modified `static/static/js/templates/patient-bar.js`: Fixed status update in patient bar
+  - Modified `static/js/templates/patient-bar.js`: Fixed status update in patient bar
     - Updated `btnUnlockTask` click handler to use correct API endpoint format
     - Updated `btnTaskDone` click handler to match the same pattern
     - Both buttons now correctly update task status without validation errors
