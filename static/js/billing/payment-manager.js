@@ -1202,12 +1202,27 @@ class PaymentManager {
 					(item) => `
 				<tr>
 					<td>${this.formatDateTime(item.requested_time)}</td>
-					<td>${this.truncateText(item.procedure || "-", 15)}</td>
-					<td>${this.truncateText(item.history || "-", 25)}</td>
-					<td>${this.truncateText(item.conclusion || "-", 25)}</td>
-					<td>${this.truncateText(item.followup || "-", 20)}</td>
-					<td>${this.truncateText(item.billing_desc || "-", 15)}</td>
-					<td>${item.billing_codes || "-"}</td>
+					<td title="${item.procedure || "-"}">${this.truncateText(
+						item.procedure || "-",
+						15
+					)}</td>
+					<td title="${item.history || "-"}">${this.truncateText(
+						item.history || "-",
+						25
+					)}</td>
+					<td title="${item.conclusion || "-"}">${this.truncateText(
+						item.conclusion || "-",
+						25
+					)}</td>
+					<td title="${item.followup || "-"}">${this.truncateText(
+						item.followup || "-",
+						20
+					)}</td>
+					<td title="${item.billing_desc || "-"}">${this.truncateText(
+						item.billing_desc || "-",
+						15
+					)}</td>
+					<td title="${item.billing_codes || "-"}">${item.billing_codes || "-"}</td>
 				</tr>
 			`
 				)
@@ -1293,12 +1308,12 @@ class PaymentManager {
 					(item) => `
 				<tr>
 					<td>${this.formatDateTime(item.requested_time)}</td>
-					<td>${item.procedure || "-"}</td>
-					<td>${item.history || "-"}</td>
-					<td>${item.conclusion || "-"}</td>
-					<td>${item.followup || "-"}</td>
-					<td>${item.billing_desc || "-"}</td>
-					<td>${item.billing_codes || "-"}</td>
+					<td title="${item.procedure || "-"}">${item.procedure || "-"}</td>
+					<td title="${item.history || "-"}">${item.history || "-"}</td>
+					<td title="${item.conclusion || "-"}">${item.conclusion || "-"}</td>
+					<td title="${item.followup || "-"}">${item.followup || "-"}</td>
+					<td title="${item.billing_desc || "-"}">${item.billing_desc || "-"}</td>
+					<td title="${item.billing_codes || "-"}">${item.billing_codes || "-"}</td>
 				</tr>
 			`
 				)

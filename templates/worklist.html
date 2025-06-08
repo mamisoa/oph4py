@@ -53,7 +53,14 @@
     }
 
     .bootbox.modal {
+        margin-top: 70px !important;
         z-index: 1070 !important;
+    }
+
+    @media (max-width: 576px) {
+        .bootbox.modal {
+            margin-top: 30px !important;
+        }
     }
 
     /* Toaster notifications z-index fixes - ensure they appear above everything */

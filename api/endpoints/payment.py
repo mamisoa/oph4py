@@ -698,14 +698,13 @@ def md_summary(worklist_id: int, offset: int = 0):
             db.worklist.requested_time.with_alias("requested_time"),
             db.worklist.id.with_alias("worklist_id"),
             db.procedure.exam_name.with_alias("procedure_name"),
-            db.phistory.title.with_alias("history_title"),
-            db.phistory.note.with_alias("history_note"),
+            db.current_hx.description.with_alias("current_hx_desc"),
             db.ccx.description.with_alias("conclusion_desc"),
             db.followup.description.with_alias("followup_desc"),
             db.billing.description.with_alias("billing_desc"),
             left=[
                 db.procedure.on(db.worklist.procedure == db.procedure.id),
-                db.phistory.on(db.worklist.id == db.phistory.id_worklist),
+                db.current_hx.on(db.worklist.id == db.current_hx.id_worklist),
                 db.ccx.on(db.worklist.id == db.ccx.id_worklist),
                 db.followup.on(db.worklist.id == db.followup.id_worklist),
                 db.billing.on(db.worklist.id == db.billing.id_worklist),
@@ -751,11 +750,7 @@ def md_summary(worklist_id: int, offset: int = 0):
                 ),
                 "worklist_id": worklist_row_id,
                 "procedure": (row.procedure_name if row.procedure_name else "-"),
-                "history": (
-                    f"{row.history_title or ''} {row.history_note or ''}".strip()
-                    if row.history_title or row.history_note
-                    else "-"
-                ),
+                "history": (row.current_hx_desc if row.current_hx_desc else "-"),
                 "conclusion": (row.conclusion_desc if row.conclusion_desc else "-"),
                 "followup": (row.followup_desc if row.followup_desc else "-"),
                 "billing_desc": (row.billing_desc if row.billing_desc else "-"),
@@ -833,14 +828,13 @@ def md_summary_modal(worklist_id: int):
             db.worklist.requested_time.with_alias("requested_time"),
             db.worklist.id.with_alias("worklist_id"),
             db.procedure.exam_name.with_alias("procedure_name"),
-            db.phistory.title.with_alias("history_title"),
-            db.phistory.note.with_alias("history_note"),
+            db.current_hx.description.with_alias("current_hx_desc"),
             db.ccx.description.with_alias("conclusion_desc"),
             db.followup.description.with_alias("followup_desc"),
             db.billing.description.with_alias("billing_desc"),
             left=[
                 db.procedure.on(db.worklist.procedure == db.procedure.id),
-                db.phistory.on(db.worklist.id == db.phistory.id_worklist),
+                db.current_hx.on(db.worklist.id == db.current_hx.id_worklist),
                 db.ccx.on(db.worklist.id == db.ccx.id_worklist),
                 db.followup.on(db.worklist.id == db.followup.id_worklist),
                 db.billing.on(db.worklist.id == db.billing.id_worklist),
@@ -885,11 +879,7 @@ def md_summary_modal(worklist_id: int):
                 ),
                 "worklist_id": worklist_row_id,
                 "procedure": (row.procedure_name if row.procedure_name else "-"),
-                "history": (
-                    f"{row.history_title or ''} {row.history_note or ''}".strip()
-                    if row.history_title or row.history_note
-                    else "-"
-                ),
+                "history": (row.current_hx_desc if row.current_hx_desc else "-"),
                 "conclusion": (row.conclusion_desc if row.conclusion_desc else "-"),
                 "followup": (row.followup_desc if row.followup_desc else "-"),
                 "billing_desc": (row.billing_desc if row.billing_desc else "-"),

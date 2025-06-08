@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
+
+
+## [2025-06-08T23:32:54.362491] - Bootbox Confirmation Dialog Overlapped by Navbar
+
+### Fixed
+
+- **Issue**: Bootbox confirmation dialogs (e.g., delete confirmation in worklist view) were partially hidden behind the fixed top navbar, making the dialog header and buttons inaccessible.
+- **Fix**: Added custom CSS to `templates/worklist.html` to ensure `.bootbox.modal` has a sufficient top margin (`margin-top: 70px !important;`) and a responsive adjustment for small screens, ensuring all confirmation dialogs are fully visible and accessible regardless of screen size or Bootstrap updates.
+
+All notable changes to this project will be documented in this file.
+
 ## [2025-06-08T23:23:36.366519] - MD Summary Modal Overlapped by Navbar
 
 ### Fixed
