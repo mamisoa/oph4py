@@ -47,6 +47,97 @@ if (!document.querySelector("#billing-combo-fee-styles")) {
 		#comboTotalAmount.text-warning {
 			color: #ffc107 !important;
 		}
+
+		/* Combo Detail View Styles */
+		.combo-details {
+			background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+			padding: 1.5rem;
+			border-radius: 0.5rem;
+			margin: 0.5rem 0;
+			border: 1px solid #dee2e6;
+		}
+
+		.detail-section {
+			background-color: white;
+			border-radius: 0.375rem;
+			padding: 1rem;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+		}
+
+		.detail-header {
+			margin-bottom: 1rem;
+			padding-bottom: 0.5rem;
+			border-bottom: 2px solid #e9ecef;
+			font-weight: 600;
+		}
+
+		.detail-list dt {
+			font-weight: 600;
+			color: #495057;
+		}
+
+		.detail-list dd {
+			color: #6c757d;
+		}
+
+		.code-item {
+			background-color: #ffffff;
+			border: 1px solid #e9ecef;
+			transition: all 0.2s ease;
+		}
+
+		.code-item:hover {
+			border-color: #007bff;
+			box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+		}
+
+		.total-section {
+			background: linear-gradient(45deg, #e8f5e8 0%, #f0f8f0 100%);
+			border: 1px solid #d4edda;
+		}
+
+		/* View Switcher Styles */
+		.form-check-switch {
+			padding-left: 2.5em;
+		}
+
+		.form-check-switch .form-check-input {
+			width: 2.5em;
+			margin-left: -2.5em;
+			background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280,0,0,.25%29'/%3e%3c/svg%3e");
+		}
+
+		.form-check-switch .form-check-input:focus {
+			border-color: #0066cc;
+			box-shadow: 0 0 0 0.25rem rgba(0,102,204,0.25);
+		}
+
+		.form-check-switch .form-check-input:checked {
+			background-color: #0066cc;
+			border-color: #0066cc;
+			background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255,255,255,1%29'/%3e%3c/svg%3e");
+		}
+
+		/* Bootstrap Table Detail View Override */
+		.bootstrap-table .fixed-table-container .fixed-table-body table tbody tr.detail-view {
+			background-color: #f8f9fa;
+		}
+
+		.bootstrap-table .fixed-table-container .fixed-table-body table tbody tr.detail-view td {
+			border-top: none;
+			padding: 0;
+		}
+
+		/* Detail View Icon Styling */
+		.detail-icon {
+			color: #007bff;
+			cursor: pointer;
+			transition: color 0.2s ease;
+		}
+
+		.detail-icon:hover {
+			color: #0056b3;
+		}
 	`;
 	document.head.appendChild(style);
 }
@@ -67,6 +158,7 @@ class BillingComboManager {
 		this.secondarySearchTimeout = null;
 		this.currentEditId = null;
 		this.isEditMode = false;
+		this.currentViewMode = "my"; // 'my' or 'all'
 
 		// Ensure API_BASE is defined
 		if (typeof API_BASE === "undefined") {
@@ -78,6 +170,7 @@ class BillingComboManager {
 
 		this.initializeEventHandlers();
 		this.initializeTableEvents();
+		this.initializeViewSwitcher();
 	}
 
 	initializeEventHandlers() {
@@ -149,6 +242,36 @@ class BillingComboManager {
 					}
 				);
 			}, 1000);
+		});
+	}
+
+	initializeViewSwitcher() {
+		// Initialize view switcher
+		$("#comboViewSwitch").on("change", (e) => {
+			const showAll = e.target.checked;
+			this.toggleComboView(showAll);
+		});
+	}
+
+	toggleComboView(showAll) {
+		this.currentViewMode = showAll ? "all" : "my";
+
+		// Update UI labels
+		const label = showAll ? "All Combos" : "My Combos";
+		const info = showAll
+			? "Showing all accessible combos"
+			: "Showing your combos and shared legacy combos";
+
+		$("#comboViewLabel").text(label);
+		$("#viewModeInfo").text(info);
+
+		// Refresh table with new view parameter
+		const currentUrl = $("#billingComboTable").bootstrapTable("getOptions").url;
+		const baseUrl = currentUrl.split("?")[0];
+		const newUrl = `${baseUrl}?view=${this.currentViewMode}`;
+
+		$("#billingComboTable").bootstrapTable("refresh", {
+			url: newUrl,
 		});
 	}
 
@@ -2079,6 +2202,262 @@ window.operateEvents = {
 		window.billingComboManager.deleteCombo(row.id, row.combo_name);
 	},
 };
+
+// =============================================================================
+// Detail View Formatter for Bootstrap Table
+// =============================================================================
+
+// Detail view formatter for billing combos
+function comboDetailFormatter(index, row) {
+	const createdBy =
+		row.created_by_name ||
+		(row.created_by ? "User ID: " + row.created_by : "Legacy Combo");
+	const modifiedBy =
+		row.modified_by_name ||
+		(row.modified_by ? "User ID: " + row.modified_by : "N/A");
+	const createdOn = formatDateTime(row.created_on || row.created_at);
+	const modifiedOn = formatDateTime(row.modified_on || row.modified_at);
+
+	return `
+		<div class="combo-details">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="detail-section">
+						<h6 class="detail-header">
+							<i class="fas fa-info-circle text-info me-2"></i>
+							Creation & Modification Info
+						</h6>
+						<dl class="row detail-list">
+							<dt class="col-sm-5">Created by:</dt>
+							<dd class="col-sm-7">
+								${createdBy}
+								${!row.created_by ? '<span class="badge bg-secondary ms-1">Legacy</span>' : ""}
+							</dd>
+							<dt class="col-sm-5">Created on:</dt>
+							<dd class="col-sm-7">${createdOn}</dd>
+							<dt class="col-sm-5">Last modified:</dt>
+							<dd class="col-sm-7">${modifiedOn}</dd>
+							<dt class="col-sm-5">Modified by:</dt>
+							<dd class="col-sm-7">${modifiedBy}</dd>
+						</dl>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="detail-section">
+						<h6 class="detail-header">
+							<i class="fas fa-tags text-success me-2"></i>
+							Code Breakdown & Pricing
+						</h6>
+						${generateCodeBreakdown(row.combo_codes)}
+						<div class="total-section mt-3 p-2 bg-light rounded">
+							<div class="d-flex justify-content-between align-items-center">
+								<strong class="text-dark">Total Combo Price:</strong>
+								<span class="badge bg-success fs-6">€${calculateComboTotal(
+									row.combo_codes
+								)}</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	`;
+}
+
+// Helper function to format date/time
+function formatDateTime(dateStr) {
+	if (!dateStr) return "N/A";
+
+	try {
+		const date = new Date(dateStr);
+		if (isNaN(date.getTime())) return "N/A";
+
+		return date.toLocaleString("en-US", {
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+	} catch (e) {
+		return "N/A";
+	}
+}
+
+// Helper function to generate code breakdown
+function generateCodeBreakdown(comboCodes) {
+	if (!comboCodes) return '<p class="text-muted">No codes available</p>';
+
+	try {
+		let codes;
+
+		// Handle parsing like the existing formatters do
+		if (typeof comboCodes === "string") {
+			try {
+				// First attempt: direct JSON parse
+				codes = JSON.parse(comboCodes);
+			} catch (e) {
+				console.log(
+					"Direct JSON parse failed, attempting JavaScript evaluation..."
+				);
+
+				// Replace Python literals with JavaScript equivalents
+				let jsCode = comboCodes
+					.replace(/True/g, "true")
+					.replace(/False/g, "false")
+					.replace(/None/g, "null");
+
+				try {
+					// Use eval in a safe way (since this is controlled data from our own database)
+					codes = eval("(" + jsCode + ")");
+					console.log("Successfully parsed with eval:", codes);
+				} catch (evalError) {
+					console.error("Eval parsing failed:", evalError);
+					throw evalError;
+				}
+			}
+		} else {
+			codes = comboCodes;
+		}
+
+		if (!Array.isArray(codes) || codes.length === 0) {
+			return '<p class="text-muted">No codes available</p>';
+		}
+
+		return codes
+			.map(
+				(code, index) => `
+			<div class="code-item mb-2 p-2 border rounded bg-white">
+				<div class="d-flex justify-content-between align-items-start">
+					<div class="flex-grow-1">
+						<div class="fw-bold text-primary">
+							<i class="fas fa-code me-1"></i>
+							${code.nomen_code || "N/A"}
+						</div>
+						<div class="text-dark small">
+							${
+								code.description ||
+								code.nomen_desc_fr ||
+								code.nomen_desc_nl ||
+								"No description"
+							}
+						</div>
+						${
+							code.feecode
+								? `<div class="text-muted small">Fee Code: ${code.feecode}</div>`
+								: ""
+						}
+					</div>
+					<div class="text-end">
+						<span class="badge bg-primary">€${parseFloat(code.fee || 0).toFixed(2)}</span>
+					</div>
+				</div>
+				${
+					code.secondary_nomen_code
+						? `
+					<div class="mt-2 ps-3 border-start border-2 border-secondary">
+						<div class="d-flex justify-content-between align-items-start">
+							<div class="flex-grow-1">
+								<div class="fw-medium text-secondary small">
+									<i class="fas fa-plus me-1"></i>
+									Secondary: ${code.secondary_nomen_code}
+								</div>
+								<div class="text-muted small">
+									${
+										code.secondary_description ||
+										code.secondary_nomen_desc_fr ||
+										code.secondary_nomen_desc_nl ||
+										"No description"
+									}
+								</div>
+								${
+									code.secondary_feecode
+										? `<div class="text-muted small">Fee Code: ${code.secondary_feecode}</div>`
+										: ""
+								}
+							</div>
+							<div class="text-end">
+								<span class="badge bg-secondary">€${parseFloat(code.secondary_fee || 0).toFixed(
+									2
+								)}</span>
+							</div>
+						</div>
+					</div>
+				`
+						: ""
+				}
+			</div>
+		`
+			)
+			.join("");
+	} catch (e) {
+		console.error("Error parsing combo codes:", e);
+		return '<p class="text-danger">Error displaying codes</p>';
+	}
+}
+
+// Helper function to calculate combo total (reuses existing logic from priceFormatter)
+function calculateComboTotal(comboCodes) {
+	if (!comboCodes) return "0.00";
+
+	try {
+		let codes;
+
+		// Handle parsing like the existing formatters do
+		if (typeof comboCodes === "string") {
+			try {
+				// First attempt: direct JSON parse
+				codes = JSON.parse(comboCodes);
+			} catch (e) {
+				// Replace Python literals with JavaScript equivalents
+				let jsCode = comboCodes
+					.replace(/True/g, "true")
+					.replace(/False/g, "false")
+					.replace(/None/g, "null");
+
+				try {
+					// Use eval in a safe way (since this is controlled data from our own database)
+					codes = eval("(" + jsCode + ")");
+				} catch (evalError) {
+					console.error("Eval parsing failed:", evalError);
+					throw evalError;
+				}
+			}
+		} else {
+			codes = comboCodes;
+		}
+
+		if (!Array.isArray(codes)) return "0.00";
+
+		// Helper function to safely parse fees (consistent with existing code)
+		const safeParseFloat = (value, defaultValue = 0) => {
+			if (
+				value === null ||
+				value === undefined ||
+				value === "" ||
+				value === "N/A"
+			) {
+				return defaultValue;
+			}
+			const parsed = parseFloat(value);
+			return isNaN(parsed) ? defaultValue : parsed;
+		};
+
+		const total = codes.reduce((sum, code) => {
+			if (typeof code === "object" && code.nomen_code) {
+				const mainFee = safeParseFloat(code.fee, 0);
+				const secondaryFee = safeParseFloat(code.secondary_fee, 0);
+				return sum + mainFee + secondaryFee;
+			}
+			return sum;
+		}, 0);
+
+		return total.toFixed(2);
+	} catch (e) {
+		console.error("Error calculating combo total:", e);
+		return "0.00";
+	}
+}
 
 // =============================================================================
 // Initialize on Document Ready

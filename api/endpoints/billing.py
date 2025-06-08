@@ -43,6 +43,40 @@ def serialize_datetime_fields(data_dict):
     return result
 
 
+def enhance_combo_response(record):
+    """
+    Add user information to combo records for detail view.
+
+    Args:
+        record (dict): The combo record dictionary
+
+    Returns:
+        dict: Enhanced record with user names
+    """
+    try:
+        # Add created by user name
+        if record.get("created_by"):
+            user = db.auth_user[record["created_by"]]
+            if user:
+                record["created_by_name"] = (
+                    f"{user.first_name} {user.last_name}".strip()
+                )
+
+        # Add modified by user name
+        if record.get("modified_by"):
+            user = db.auth_user[record["modified_by"]]
+            if user:
+                record["modified_by_name"] = (
+                    f"{user.first_name} {user.last_name}".strip()
+                )
+
+    except Exception as e:
+        # Log but don't fail - user names are optional enhancement
+        logger.warning(f"Could not enhance combo response with user info: {str(e)}")
+
+    return record
+
+
 @action("api/billing_codes", method=["GET", "POST"])
 @action("api/billing_codes/<rec_id:int>", method=["GET", "PUT", "DELETE"])
 def billing_codes(rec_id: Optional[int] = None):
@@ -378,13 +412,28 @@ def billing_combo(rec_id: Optional[int] = None):
             query_params = dict(request.GET)
 
             # Remove Bootstrap Table parameters that PyDAL RestAPI doesn't understand
-            bootstrap_params = ["search", "sort", "order", "offset", "limit"]
+            bootstrap_params = ["search", "sort", "order", "offset", "limit", "view"]
             filtered_query = {
                 k: v for k, v in query_params.items() if k not in bootstrap_params
             }
 
-            # Build query conditions
-            query_conditions = ownership_filter
+            # Handle view mode parameter
+            view_mode = query_params.get("view", "my")  # 'my' or 'all'
+            logger.info(f"View mode: {view_mode}")
+
+            # Build query conditions based on view mode
+            if view_mode == "all":
+                # Show all combos (no ownership filtering)
+                query_conditions = (
+                    db.billing_combo.id > 0
+                )  # Base condition to get all records
+                logger.info("Using 'all' view mode - showing all combos")
+            else:
+                # Default to 'my' view mode - show only user's combos + legacy combos
+                query_conditions = ownership_filter
+                logger.info(
+                    "Using 'my' view mode - showing user's combos + legacy combos"
+                )
 
             # Apply additional filters from query parameters
             for key, value in filtered_query.items():
@@ -431,6 +480,7 @@ def billing_combo(rec_id: Optional[int] = None):
 
                 # Convert record to dict and return (handling datetime serialization)
                 result_data = serialize_datetime_fields(record.as_dict())
+                enhance_combo_response(result_data)
                 return APIResponse.success(data=result_data)
             else:
                 # Get list of accessible records
@@ -439,10 +489,11 @@ def billing_combo(rec_id: Optional[int] = None):
                     f"GET: Found {len(records)} accessible combos for user {auth.user_id}"
                 )
 
-                # Convert to list of dicts with manual datetime serialization
+                # Convert to list of dicts with manual datetime serialization and user info
                 result_data = []
                 for record in records:
                     record_dict = serialize_datetime_fields(record.as_dict())
+                    enhance_combo_response(record_dict)
                     result_data.append(record_dict)
 
                 logger.info(
