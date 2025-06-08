@@ -32,6 +32,21 @@ if (!document.querySelector("#billing-combo-fee-styles")) {
 		.total-fee-display {
 			transition: color 0.5s ease;
 		}
+		
+		#comboTotalDisplay {
+			transition: all 0.3s ease;
+			font-size: 1.1rem !important;
+			padding: 8px 12px !important;
+		}
+		
+		#comboTotalAmount {
+			font-weight: bold;
+			transition: color 0.3s ease;
+		}
+		
+		#comboTotalAmount.text-warning {
+			color: #ffc107 !important;
+		}
 	`;
 	document.head.appendChild(style);
 }
@@ -308,6 +323,7 @@ class BillingComboManager {
 
 		// Update UI
 		this.updateSelectedCodesDisplay();
+		this.updateComboTotalDisplay();
 		this.updateFormState();
 
 		// Update button state
@@ -418,6 +434,7 @@ class BillingComboManager {
 
 			// Update UI
 			this.updateSelectedCodesDisplay();
+			this.updateComboTotalDisplay();
 			this.updateFormState();
 
 			this.showToast(
@@ -450,6 +467,7 @@ class BillingComboManager {
 
 			// Update totals display
 			this.updateTotalFeeDisplay(codeIndex);
+			this.updateComboTotalDisplay();
 
 			// Update hidden field for form submission
 			$("#comboCodes").val(JSON.stringify(this.selectedCodes));
@@ -715,6 +733,7 @@ class BillingComboManager {
 		$("#comboSpecialty").val("ophthalmology");
 		this.selectedCodes = [];
 		this.updateSelectedCodesDisplay();
+		this.updateComboTotalDisplay();
 		this.updateFormState();
 		$("#nomenclatureResults").hide();
 		$("#nomenclatureSearch").val("");
@@ -831,6 +850,7 @@ class BillingComboManager {
 
 		// Update displays
 		this.updateSelectedCodesDisplay();
+		this.updateComboTotalDisplay();
 		this.updateFormState();
 
 		// Scroll to form
@@ -1392,6 +1412,7 @@ class BillingComboManager {
 
 		// Update display and hide modal
 		this.updateSelectedCodesDisplay();
+		this.updateComboTotalDisplay();
 		$("#secondaryCodeModal").modal("hide");
 
 		this.showToast(`Added secondary code ${code}`, "success");
@@ -1404,6 +1425,39 @@ class BillingComboManager {
 		}
 		const parsed = parseFloat(value);
 		return isNaN(parsed) ? defaultValue : parsed;
+	}
+
+	// Calculate total fees for all selected codes
+	calculateComboTotal() {
+		let totalFees = 0;
+
+		this.selectedCodes.forEach((code) => {
+			const mainFee = this.safeParseFloat(code.fee, 0);
+			const secondaryFee = this.safeParseFloat(code.secondary_fee, 0);
+			totalFees += mainFee + secondaryFee;
+		});
+
+		return totalFees;
+	}
+
+	// Update the combo total display
+	updateComboTotalDisplay() {
+		const totalFees = this.calculateComboTotal();
+		const totalDisplay = $("#comboTotalDisplay");
+		const totalAmount = $("#comboTotalAmount");
+
+		if (this.selectedCodes.length > 0) {
+			totalAmount.text(`€${totalFees.toFixed(2)}`);
+			totalDisplay.show();
+
+			// Add visual feedback for changes
+			totalAmount.addClass("text-warning");
+			setTimeout(() => {
+				totalAmount.removeClass("text-warning");
+			}, 300);
+		} else {
+			totalDisplay.hide();
+		}
 	}
 
 	// =============================================================================
@@ -1828,7 +1882,7 @@ function specialtyFormatter(value) {
 	return `<span class="badge ${badgeClass}">${label}</span>`;
 }
 
-// Enhanced codes formatter with secondary code support
+// Enhanced codes formatter with secondary code support (simplified - no counts/totals)
 function enhancedCodesFormatter(value) {
 	try {
 		console.log("Formatting codes value:", value); // Debug logging
@@ -1874,23 +1928,6 @@ function enhancedCodesFormatter(value) {
 		}
 
 		let html = '<div class="codes-list">';
-		let totalMainFees = 0;
-		let totalSecondaryFees = 0;
-		let codesWithSecondary = 0;
-
-		// Helper function to safely parse fees
-		const safeParseFloat = (value, defaultValue = 0) => {
-			if (
-				value === null ||
-				value === undefined ||
-				value === "" ||
-				value === "N/A"
-			) {
-				return defaultValue;
-			}
-			const parsed = parseFloat(value);
-			return isNaN(parsed) ? defaultValue : parsed;
-		};
 
 		codes.forEach((code, index) => {
 			if (typeof code === "number") {
@@ -1898,16 +1935,8 @@ function enhancedCodesFormatter(value) {
 				html += `<span class="badge bg-primary me-1 mb-1">${code}</span>`;
 			} else if (typeof code === "object" && code.nomen_code) {
 				// New format: object with potential secondary codes
-				const mainFee = safeParseFloat(code.fee, 0);
 				const hasSecondary =
 					code.secondary_nomen_code && code.secondary_nomen_code !== null;
-				const secondaryFee = safeParseFloat(code.secondary_fee, 0);
-
-				totalMainFees += mainFee;
-				if (hasSecondary) {
-					totalSecondaryFees += secondaryFee;
-					codesWithSecondary++;
-				}
 
 				html += `<div class="mb-1">`;
 				html += `<span class="badge bg-primary">${code.nomen_code}</span>`;
@@ -1928,20 +1957,94 @@ function enhancedCodesFormatter(value) {
 
 		html += "</div>";
 
-		// Add summary if there are secondary codes
-		if (codesWithSecondary > 0) {
-			const totalFees = totalMainFees + totalSecondaryFees;
-			html += `<small class="text-muted d-block mt-1">`;
-			html += `${codes.length} codes (${codesWithSecondary} with secondary)<br>`;
-			html += `Total: €${totalFees.toFixed(2)}`;
-			html += `</small>`;
-		}
-
 		return html;
 	} catch (e) {
 		console.error("Error formatting codes:", e, "Value:", value);
 		// Return a simplified fallback that just shows "Complex format"
 		return '<span class="text-warning">Complex format - Edit to view details</span>';
+	}
+}
+
+// Price formatter - calculates and displays total price for all codes in combo
+function priceFormatter(value) {
+	try {
+		// Handle empty or null values
+		if (!value || value === "[]") {
+			return '<span class="text-muted">€0.00</span>';
+		}
+
+		let codes;
+
+		// Try to parse the value
+		if (typeof value === "string") {
+			try {
+				// First attempt: direct JSON parse
+				codes = JSON.parse(value);
+			} catch (e) {
+				console.log(
+					"Direct JSON parse failed, attempting JavaScript evaluation..."
+				);
+
+				// Replace Python literals with JavaScript equivalents
+				let jsCode = value
+					.replace(/True/g, "true")
+					.replace(/False/g, "false")
+					.replace(/None/g, "null");
+
+				try {
+					// Use eval in a safe way (since this is controlled data from our own database)
+					codes = eval("(" + jsCode + ")");
+				} catch (evalError) {
+					console.error("Eval parsing failed:", evalError);
+					throw evalError;
+				}
+			}
+		} else {
+			codes = value;
+		}
+
+		if (!Array.isArray(codes) || codes.length === 0) {
+			return '<span class="text-muted">€0.00</span>';
+		}
+
+		let totalFees = 0;
+
+		// Helper function to safely parse fees
+		const safeParseFloat = (value, defaultValue = 0) => {
+			if (
+				value === null ||
+				value === undefined ||
+				value === "" ||
+				value === "N/A"
+			) {
+				return defaultValue;
+			}
+			const parsed = parseFloat(value);
+			return isNaN(parsed) ? defaultValue : parsed;
+		};
+
+		codes.forEach((code) => {
+			if (typeof code === "number") {
+				// Old format: simple integer code - no fee information available
+				// This will show as €0.00
+			} else if (typeof code === "object" && code.nomen_code) {
+				// New format: object with fee information
+				const mainFee = safeParseFloat(code.fee, 0);
+				const secondaryFee = safeParseFloat(code.secondary_fee, 0);
+
+				totalFees += mainFee + secondaryFee;
+			}
+		});
+
+		// Format the total with currency symbol and appropriate styling
+		if (totalFees > 0) {
+			return `<strong class="text-success">€${totalFees.toFixed(2)}</strong>`;
+		} else {
+			return '<span class="text-muted">€0.00</span>';
+		}
+	} catch (e) {
+		console.error("Error calculating price:", e, "Value:", value);
+		return '<span class="text-warning">€-.--</span>';
 	}
 }
 

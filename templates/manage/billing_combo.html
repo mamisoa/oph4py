@@ -150,7 +150,12 @@
                         <!-- Selected Codes with Enhanced Secondary Support -->
                         <div class="row mb-3">
                             <div class="col">
-                                <label class="form-label">Selected Codes</label>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label mb-0">Selected Codes</label>
+                                    <div id="comboTotalDisplay" class="badge bg-primary fs-6" style="display: none;">
+                                        Total: <span id="comboTotalAmount">€0.00</span>
+                                    </div>
+                                </div>
                                 <div id="selectedCodes" class="border rounded p-3 bg-light" style="min-height: 150px;">
                                     <div id="noCodesMessage" class="text-muted text-center">
                                         <i class="fas fa-info-circle"></i> No codes selected yet. Search and add codes
@@ -223,6 +228,8 @@
                                     Specialty</th>
                                 <th data-field="combo_description">Description</th>
                                 <th data-field="combo_codes" data-formatter="enhancedCodesFormatter">Codes</th>
+                                <th data-field="combo_codes" data-formatter="priceFormatter" data-sortable="true">Price
+                                </th>
                                 <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">
                                     Actions</th>
                             </tr>

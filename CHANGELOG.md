@@ -2,6 +2,169 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-08T15:41:15.396937] - Real-Time Combo Total Display
+
+### Added
+
+- **Dynamic Total Fee Indicator**: Real-time total calculation for billing combo forms
+  - **Always Visible**: Total appears as soon as codes are added to the combo
+  - **Live Updates**: Automatically recalculates when codes are added, removed, or fees modified
+  - **Professional Styling**: Prominent blue badge display with Euro symbol and formatting
+  - **Visual Feedback**: Temporary color change animation when total updates
+  - **Smart Visibility**: Automatically hides when no codes selected, shows when codes present
+
+- **Enhanced User Experience**: Immediate feedback for combo creation and editing
+  - **Badge Display**: Professional blue badge positioned in top-right of Selected Codes section
+  - **Real-Time Calculation**: Instant updates without page refresh or form submission
+  - **Comprehensive Total**: Includes both main and secondary code fees in calculation
+  - **Animation Effects**: Smooth transitions and temporary highlighting for changes
+
+### Enhanced
+
+- **Form Layout**: Improved Selected Codes section with total display
+  - **Header Row**: Added flex layout with label on left, total badge on right
+  - **Visual Balance**: Clean alignment between "Selected Codes" label and "Total: €XX.XX" badge
+  - **Responsive Design**: Maintains layout integrity across different screen sizes
+  - **Accessibility**: Proper semantic structure for screen readers
+
+- **Real-Time Updates**: Total recalculates automatically for all user actions
+  - **Code Addition**: Total updates when new codes are added via search
+  - **Code Removal**: Total updates when codes are removed from combo
+  - **Fee Editing**: Total updates immediately when individual fees are modified
+  - **Secondary Codes**: Total updates when secondary codes are added or removed
+  - **Form Reset**: Total properly resets when form is cleared
+
+### Technical Implementation
+
+- **Frontend Changes** (`templates/manage/billing_combo.html`):
+  ```html
+  <div class="d-flex justify-content-between align-items-center mb-2">
+      <label class="form-label mb-0">Selected Codes</label>
+      <div id="comboTotalDisplay" class="badge bg-primary fs-6" style="display: none;">
+          Total: <span id="comboTotalAmount">€0.00</span>
+      </div>
+  </div>
+  ```
+
+- **JavaScript Enhancements** (`static/js/billing-combo-manager.js`):
+  - **New Method**: `calculateComboTotal()` - Sums all main and secondary fees
+  - **New Method**: `updateComboTotalDisplay()` - Updates UI with calculated total
+  - **Integration Points**: Added total updates to all relevant user actions
+  - **CSS Animations**: Enhanced styling with smooth transitions and visual feedback
+
+- **Calculation Logic**:
+  ```javascript
+  calculateComboTotal() {
+      let totalFees = 0;
+      this.selectedCodes.forEach((code) => {
+          const mainFee = this.safeParseFloat(code.fee, 0);
+          const secondaryFee = this.safeParseFloat(code.secondary_fee, 0);
+          totalFees += mainFee + secondaryFee;
+      });
+      return totalFees;
+  }
+  ```
+
+- **Visual Feedback System**:
+  ```css
+  #comboTotalDisplay {
+      transition: all 0.3s ease;
+      font-size: 1.1rem !important;
+      padding: 8px 12px !important;
+  }
+  
+  #comboTotalAmount {
+      font-weight: bold;
+      transition: color 0.3s ease;
+  }
+  ```
+
+### Benefits
+
+- **Immediate Feedback**: Users see total cost impact of their selections instantly
+- **Better Decision Making**: Easy to compare and adjust fees to reach target totals
+- **Enhanced Workflow**: No need to manually calculate or wait for form submission
+- **Professional UX**: Modern interface patterns with smooth visual feedback
+- **Error Prevention**: Clear visibility helps users catch pricing inconsistencies
+
+### User Experience
+
+- **Visual Elements**:
+  - Blue badge: `Total: €92.00` (top-right of Selected Codes section)
+  - Temporary amber highlight during updates
+  - Smooth show/hide transitions
+  - Consistent with existing UI patterns
+
+- **Interaction Flow**:
+  1. User adds first code → Total badge appears
+  2. User modifies fees → Total updates with brief highlight
+  3. User adds secondary codes → Total recalculates automatically
+  4. User removes codes → Total updates, hides when no codes remain
+
+## [2025-06-08T15:37:18.738113] - Enhanced Billing Combo Table UI
+
+### Enhanced
+
+- **Billing Combo Table Structure**: Improved table layout for better user experience
+  - **New Price Column**: Added dedicated "Price" column that displays total cost for each combo
+    - **Always Visible**: Total price is now displayed for all combos, not just those with secondary codes
+    - **Professional Styling**: Prices shown with Euro symbol and green text highlighting for positive values
+    - **Sortable**: Price column is sortable for easy comparison of combo costs
+    - **Smart Calculation**: Automatically calculates sum of main and secondary fees for accurate totals
+  - **Simplified Codes Column**: Cleaned up the Codes column display
+    - **Badge-Only Display**: Shows only the nomenclature code badges without additional text
+    - **Removed Summary Information**: No longer shows code counts or price totals in this column
+    - **Clean Layout**: Improved visual clarity by focusing on code identification only
+    - **Secondary Code Support**: Still displays secondary codes with appropriate badges
+
+- **Price Formatter Function**: New dedicated price calculation and display logic
+  - **Comprehensive Parsing**: Handles both old format (integer codes) and new format (object with fees)
+  - **"N/A" Value Handling**: Safely processes null, undefined, and "N/A" fee values
+  - **Error Recovery**: Graceful fallback for parsing errors with appropriate error indicators
+  - **Visual Styling**: Different styles for positive amounts (green/bold) vs. zero amounts (muted)
+
+### Technical Implementation
+
+- **Frontend Changes** (`templates/manage/billing_combo.html`):
+  ```html
+  <th data-field="combo_codes" data-formatter="priceFormatter" data-sortable="true">Price</th>
+  ```
+
+- **JavaScript Enhancements** (`static/js/billing-combo-manager.js`):
+  - **New Function**: `priceFormatter(value)` - Dedicated price calculation and display
+  - **Enhanced Function**: `enhancedCodesFormatter(value)` - Simplified to focus only on code display
+  - **Smart Fee Parsing**: Robust parsing logic that handles various data formats and edge cases
+  - **Safe Math Operations**: Protection against NaN and undefined values in calculations
+
+- **Price Calculation Logic**:
+  ```javascript
+  codes.forEach((code) => {
+      if (typeof code === "object" && code.nomen_code) {
+          const mainFee = safeParseFloat(code.fee, 0);
+          const secondaryFee = safeParseFloat(code.secondary_fee, 0);
+          totalFees += mainFee + secondaryFee;
+      }
+  });
+  ```
+
+### Benefits
+
+- **Improved User Experience**: Users can quickly see total prices without expanding details
+- **Better Data Organization**: Clear separation between code identification and pricing information
+- **Enhanced Usability**: Sortable price column allows easy comparison and selection of combos
+- **Professional Appearance**: Clean, modern table layout with appropriate visual hierarchy
+- **Consistent Pricing**: Always displays total price, regardless of combo complexity
+
+### User Interface Changes
+
+- **Before**: Price information only shown in Codes column summary when secondary codes present
+- **After**: Dedicated Price column always visible with formatted total (e.g., "€82.00")
+- **Visual Elements**:
+  - Green bold text for positive prices: `€82.00`
+  - Muted text for zero prices: `€0.00`
+  - Error indicator for parsing issues: `€-.--`
+  - Clean code badges without pricing clutter
+
 ## [2025-06-08T15:31:31.860206] - Create New Combo from Existing Combo
 
 ### Added
