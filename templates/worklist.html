@@ -741,14 +741,37 @@
     // Fill the select options
     let practitionerDict = [[ = XML(practitionerDict)]]
     let providerDict = [[ = XML(providerDict)]]
+
+    // Current user information
+    const currentUserId = [[ = user["id"]]];
+    const currentUserFirstName = "[[ = user["first_name"] ]]";
+    const currentUserLastName = "[[ = user["last_name"] ]]";
+    const currentUserMembership = "[[ = userMembership ]]";
+
     function fillSelect() {
         let select = document.getElementById("selectPractitioner");
+        let userFoundInDropdown = false;
+        let currentUserKey = "";
+
         for (let value in practitionerDict) {
             let option = document.createElement("option");
             option.value = practitionerDict[value];
             option.text = value;
             select.add(option);
+
+            // Check if this entry matches the current user
+            if (practitionerDict[value] == currentUserId) {
+                userFoundInDropdown = true;
+                currentUserKey = value;
+            }
         }
+
+        // Auto-select current user if they are a doctor and exist in dropdown
+        if (currentUserMembership === "Doctor" && userFoundInDropdown) {
+            select.value = currentUserId;
+            console.log("Auto-selected current doctor:", currentUserKey);
+        }
+
         select = document.getElementById("selectProvider");
         for (let value in providerDict) {
             let option = document.createElement("option");
