@@ -190,33 +190,40 @@ curl "https://nomen.c66.ovh/routes"
 GET /tarifs/search
 ```
 
-Search tariffs based on various criteria.
+Search tariffs based on various criteria, or list all codes if no criteria are provided.
 
 #### Query Parameters
 
-| Parameter               | Type    | Required | Description                                                    |
-| ----------------------- | ------- | -------- | -------------------------------------------------------------- |
-| `nomen_code_prefix`     | string  | No       | Nomenclature code prefix (minimum 3 digits, regex: `^[0-9]+$`) |
-| `description_substring` | string  | No       | Substring to search in descriptions (min 3 chars)              |
-| `feecode`               | integer | No       | Fee code for filtering results                                 |
-| `limit`                 | integer | No       | Max results to return (1-1000, default: 100)                   |
-| `offset`                | integer | No       | Number of results to skip (default: 0)                         |
+| Parameter               | Type    | Required | Description                                              |
+| ----------------------- | ------- | -------- | -------------------------------------------------------- |
+| `nomen_code_prefix`     | string  | No       | Nomenclature code prefix (any length, regex: `^[0-9]+$`) |
+| `description_substring` | string  | No       | Substring to search in descriptions (any length)         |
+| `feecode`               | integer | No       | Fee code for filtering results                           |
+| `limit`                 | integer | No       | Max results to return (1-1000, default: 100)             |
+| `offset`                | integer | No       | Number of results to skip (default: 0)                   |
 
-**Note**: At least one search criterion must be provided.
+**Note**: If no search criteria are provided, all codes will be listed (paginated).
 
 #### Example Requests
 
-Search by nomenclature code prefix (3 digits):
+List all codes (first 100):
 
 ```bash
-curl "https://nomen.c66.ovh/tarifs/search?nomen_code_prefix=105"
+curl "https://nomen.c66.ovh/tarifs/search?limit=100&offset=0"
 ```
 
-Search by longer nomenclature code prefix (4+ digits):
+List all codes (next 100):
 
 ```bash
-curl "https://nomen.c66.ovh/tarifs/search?nomen_code_prefix=1057"
-curl "https://nomen.c66.ovh/tarifs/search?nomen_code_prefix=105755"
+curl "https://nomen.c66.ovh/tarifs/search?limit=100&offset=100"
+```
+
+Search by nomenclature code prefix (any length):
+
+```bash
+curl "https://nomen.c66.ovh/tarifs/search?nomen_code_prefix=10"   # 2 digits
+curl "https://nomen.c66.ovh/tarifs/search?nomen_code_prefix=105"  # 3 digits
+curl "https://nomen.c66.ovh/tarifs/search?nomen_code_prefix=1057" # 4+ digits
 ```
 
 Search by description (case-insensitive):
@@ -346,6 +353,12 @@ Get all fee codes:
 
 ```bash
 curl "https://nomen.c66.ovh/tarifs/feecodes"
+```
+
+Get fee codes with offset and limit:
+
+```bash
+curl "https://nomen.c66.ovh/tarifs/search?limit=100&offset=0"
 ```
 
 Use in web browser:

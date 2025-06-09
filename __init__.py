@@ -5,7 +5,7 @@ assert py4web.check_compatible("0.1.20190709.1")
 
 # Importing the modular API structure instead of rest.py
 # by importing controllers you expose the actions defined in it
-from . import api, controllers, defaults, manage, modalityctr, useful
+from . import api, codes, controllers, defaults, manage, modalityctr, useful
 
 # by importing db you expose it to the _dashboard/dbadmin
 from .models import db

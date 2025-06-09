@@ -9,46 +9,52 @@ Creating a comprehensive CRUD view for managing Belgian healthcare nomenclature 
 - **Bootstrap-table** for advanced table functionality
 - **Vanilla JS** primary, jQuery only where needed for bootstrap-table
 
+## Active context management
+
+- Don't forget to tick **all checkboxes** upon completion in the **implementation plan**.
+- Don't forget to complete the **current focus** at the end of the file
+
 ## Implementation Plan - Logical Steps
 
 ### Step 1: py4web Controller Setup
 
 **File**: `codes.py`
 
-- [ ] Create new controller file with proper py4web imports:
-  - `from py4web import URL, action, redirect, response`
-  - `from .common import auth, db, session`
-  - `from .settings import APP_NAME, ASSETS_FOLDER, ENV_STATUS, LOCAL_URL, NEW_INSTALLATION, TIMEOFFSET`
-- [ ] Create main codes listing action with authentication
-- [ ] Set up route: `/codes` for the main view
-- [ ] Configure template usage and context variables
-- [ ] Add any helper functions needed for the view
+- [x] Create new controller file with proper py4web imports:
+  - [x] `from py4web import URL, action, redirect, response`
+  - [x] `from .common import auth, db, session`
+  - [x] `from .settings import APP_NAME, ASSETS_FOLDER, ENV_STATUS, LOCAL_URL, NEW_INSTALLATION, TIMEOFFSET`
+- [x] Create main codes listing action with authentication
+- [x] Set up route: `/codes` for the main view
+- [x] Configure template usage and context variables
+- [x] Add any helper functions needed for the view
 
 ### Step 2: HTML Template Foundation
 
 **File**: `templates/manage/codes.html`
 
-- [ ] Extend py4web layout: `[[extend 'layout.html']]`
-- [ ] Create page header with title
-- [ ] Add search toolbar section
-- [ ] Create bootstrap-table container with proper data attributes
-- [ ] Include create new code button
-- [ ] Add modal structure for create/edit operations
+- [x] Extend py4web layout: `[[extend 'layout.html']]`
+- [x] Create page header with title
+- [x] Add search toolbar section
+- [x] Create bootstrap-table container with proper data attributes
+- [x] Include create new code button
+- [x] Add modal structure for create/edit operations
 
 ### Step 3: Bootstrap-Table Configuration
 
 **File**: `static/js/manage/codes_bt.js`
 
-- [ ] Configure server-side pagination
-- [ ] Define main columns with formatters:
+- [x] Configure server-side pagination
+- [x] Define main columns with formatters:
   - `nomen_code` - Simple display
   - `nomen_desc_fr` & `nomen_desc_nl` - Truncated with tooltips
   - `fee` - Formatted currency
   - Actions - Edit/Delete buttons
-- [ ] Implement detail view formatter for additional fields
-- [ ] Configure search integration
-- [ ] Set up pagination parameters
-- [ ] Define column events for action buttons
+- [x] Implement detail view formatter for additional fields
+- [x] Configure search integration
+- [x] Set up pagination parameters
+- [x] Define column events for action buttons
+- [x] Step 3 - Bootstrap-Table Configuration completed (2025-06-09T21:10:06.674405)
 
 ### Step 4: Main Application Logic
 
@@ -64,6 +70,15 @@ Creating a comprehensive CRUD view for managing Belgian healthcare nomenclature 
   - `deleteCode()` - DELETE /tarifs/codes/{id}
 - [ ] Implement error handling and user feedback using `displayToast`
 - [ ] Add loading states during operations
+
+### Step 4b: UI/UX Fixes for Codes Table
+
+- [x] Remove custom search bar, use only bootstrap-table's built-in search
+- [x] Integrate 'New Code' button into bootstrap-table toolbar using toolbar option
+- [x] Ensure pagination uses only bootstrap-table's built-in pagination controls
+- [x] Style and align all controls using bootstrap-table best practices
+- [x] Reference context7 for implementation details
+- [x] Step 4b - UI/UX Fixes for Codes Table completed (2025-06-09T23:19:38.015996)
 
 ### Step 5: CRUD Operations Implementation
 
@@ -201,4 +216,9 @@ from .settings import (
 - [x] API documentation reviewed
 - [x] py4web and bootstrap-table documentation researched
 - [x] Implementation plan created with controller integration
-- [ ] **Next**: Begin Step 1 - py4web Controller Setup
+- [x] Step 1 - py4web Controller Setup completed (2025-06-09T21:03:14.076160)
+- [x] Step 2 - HTML Template Foundation completed (2025-06-09T21:06:46.206778)
+- [x] Step 3 - Bootstrap-Table Configuration completed (2025-06-09T21:10:06.674405)
+- [ ] Step 4 - Main Application Logic in progress
+- [x] Step 4b - UI/UX Fixes for Codes Table completed (2025-06-09T23:19:38.015996)
+- [ ] **Next:** Step 5 - CRUD Operations Implementation

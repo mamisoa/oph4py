@@ -1,0 +1,126 @@
+[[extend 'baseof_auth.html']]
+
+<!-- Page Header -->
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 fw-bold">
+                    <i class="bi bi-card-list me-2"></i>Nomenclature Codes Management
+                </h1>
+            </div>
+
+            <!-- Toolbar for New Code button -->
+            <div id="codes-toolbar" class="d-flex justify-content-between align-items-center mb-3">
+                <button id="btn-create-code" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i>New Code
+                </button>
+            </div>
+
+            <!-- Bootstrap-table Container with data attributes configuration -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table id="codes-table" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th data-field="nomen_code" data-sortable="true">Code</th>
+                                    <th data-field="nomen_desc_fr" data-formatter="frDescFormatter">Description (FR)
+                                    </th>
+                                    <th data-field="nomen_desc_nl" data-formatter="nlDescFormatter">Description (NL)
+                                    </th>
+                                    <th data-field="fee" data-formatter="currencyFormatter">Fee</th>
+                                    <th data-field="actions" data-formatter="actionFormatter"
+                                        data-events="actionEvents">Actions</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Create/Edit Code -->
+<div class="modal fade" id="codeModal" tabindex="-1" aria-labelledby="codeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="codeModalLabel">
+                    <i class="bi bi-plus-circle me-2"></i>Create/Edit Nomenclature Code
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="code-form">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nomen_code" class="form-label">Nomenclature Code *</label>
+                            <input type="number" class="form-control" id="nomen_code" name="nomen_code" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="fee" class="form-label">Fee</label>
+                            <div class="input-group">
+                                <span class="input-group-text">€</span>
+                                <input type="number" step="0.01" class="form-control" id="fee" name="fee" value="0.0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nomen_desc_fr" class="form-label">Description (FR)</label>
+                            <textarea class="form-control" id="nomen_desc_fr" name="nomen_desc_fr" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nomen_desc_nl" class="form-label">Description (NL)</label>
+                            <textarea class="form-control" id="nomen_desc_nl" name="nomen_desc_nl" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="fee_code_cat" class="form-label">Fee Code Category</label>
+                            <input type="number" class="form-control" id="fee_code_cat" name="fee_code_cat" value="4">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="feecode" class="form-label">Fee Code</label>
+                            <input type="number" class="form-control" id="feecode" name="feecode" value="1600">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="nomen_grp_n" class="form-label">Nomenclature Group</label>
+                            <input type="text" class="form-control" id="nomen_grp_n" name="nomen_grp_n">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="dbegin_fee" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="dbegin_fee" name="dbegin_fee">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="dend_fee" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="dend_fee" name="dend_fee" value="2099-12-31">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Cancel
+                </button>
+                <button type="submit" form="code-form" class="btn btn-success">
+                    <i class="bi bi-check-circle me-1"></i>Save Code
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+[[ block js_scripts ]]
+{{/*
+<script src="js/jquery/jquery-3.7.0.min.js"></script>
+<script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>
+<script src="js/bootstrap-table_1.22/bootstrap.bundle.min.css"></script> */}}
+<script src="js/manage/codes_bt.js"></script>
+<script src="js/manage/codes.js"></script>
+[[ end ]]
