@@ -2,6 +2,66 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-06-09T15:41:18.687124] - Navigation Menu Architecture Fix
+
+### Fixed
+
+- **Navigation Menu Duplication**: Fixed broken navigation structure caused by duplicate menu includes
+  - **Root Cause**: `nav-settings.html` was included individually in multiple templates instead of centrally in base template
+  - **Solution**: Moved navigation includes to base template (`baseof.html`) for consistent navigation across all pages
+  - **Template Cleanup**: Removed individual `nav-settings.html` includes from nomenclature, index, worklist, test, and facilities templates
+  - **Accessibility Fix**: Corrected `aria-labelledby` attribute in Settings dropdown from "dd-manage" to "dd-settings"
+
+- **Navigation Consistency**: Ensured Settings dropdown with Nomenclature Codes menu item appears on all pages consistently
+  - **Centralized Navigation**: All navigation elements now managed from base template
+  - **Menu Structure**: Settings dropdown includes: Medications DB, Diseases DB, Allergy DB, Lenses DB, **Nomenclature Codes**, Combo management, etc.
+  - **Access Control**: Proper admin-only access control maintained for all settings items
+
+## [2025-06-09T15:33:58.437717] - Nomenclature Table Frontend Integration Fix
+
+### Fixed
+
+- **Nomenclature Table Initialization**: Resolved JavaScript initialization issues preventing table from displaying data
+  - **API Response Format**: Fixed response transformation to properly convert FastAPI format `{"data": [...], "pagination": {...}}` to bootstrap-table format `{"rows": [...], "total": n}`
+  - **Template JavaScript**: Simplified and streamlined template JavaScript to prevent duplicate initialization and conflicting event handlers
+  - **jQuery Availability**: Added jQuery and Bootstrap Table availability checks with proper error handling
+  - **Event Binding**: Fixed refresh button event binding and removed conflicting onclick handlers
+  - **Formatter Functions**: Added missing `feeFormatter` and `actionFormatter` functions for proper column display
+  - **Auto-refresh**: Temporarily disabled auto-refresh to prevent initialization conflicts
+
+- **UI/UX Improvements**: Enhanced table display and functionality
+  - **Console Logging**: Added debugging information for development and troubleshooting
+  - **Error Handling**: Improved error messaging and loading state management
+  - **Action Buttons**: Fixed action column with proper View/Edit/Delete button formatting
+
+### Changed
+
+- **JavaScript Architecture**: Simplified template initialization to rely primarily on `NomenclatureManager` module
+- **Bootstrap Table Configuration**: Removed unnecessary toolbar configuration that was causing conflicts
+- **Event Management**: Streamlined event binding to prevent duplicate listeners
+
+### Technical Details
+
+- **API Integration**: Confirmed working connection to `https://nomen.c66.ovh` FastAPI server returning 546 nomenclature records
+- **Response Handling**: Proper transformation of API responses for bootstrap-table compatibility
+- **Module Pattern**: Enhanced `NomenclatureManager` namespace protection and initialization flow
+
+## [2025-06-09T15:01:55.994057] - FastAPI Server URL Migration
+
+### Changed
+
+- **Nomenclature FastAPI Server**: Migrated from localhost development server to production environment
+  - **URL Updated**: Changed FASTAPI_BASE_URL from `http://localhost:8000` to `https://nomen.c66.ovh`
+  - **Configuration**: Updated in `controllers.py` for all nomenclature management operations
+  - **Documentation**: Updated memory bank and active context with new server URL
+
+### Fixed
+
+- **Production Deployment**: Nomenclature interface now connects to stable production FastAPI server
+  - **Server Stability**: Production server provides reliable access to INAMI/RIZIV nomenclature data
+  - **SSL Security**: HTTPS endpoint ensures secure communication for healthcare data
+  - **Accessibility**: Remote server accessible for team development and testing
+
 ## [2025-06-09T01:25:53.851559] - Image Fallback Infinite Loop Fix
 
 ### Fixed
@@ -1822,6 +1882,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+## [2025-06-09T15:07:18.462761] - Nomenclature Management Phase 3 Complete
+
+### Added
+- **Nomenclature JavaScript Module**: Created dedicated `static/js/nomenclature.js` module for advanced table management
+- **Advanced Search Panel**: Collapsible advanced search form with code prefix, description, fee code, and category filters
+- **Quick Filter Buttons**: One-click filters for common fee codes (K, C, N) and categories (1, 2, 3, 99)
+- **Export Functionality**: CSV, Excel, and PDF export capabilities for nomenclature data
+- **Enhanced Table Configuration**: Server-side pagination with intelligent search detection (numeric = code, text = description)
+- **Auto-refresh**: Configurable automatic table refresh every 30 seconds
+- **Loading States**: Visual feedback for all CRUD operations with spinner indicators
+- **Enhanced Error Handling**: Comprehensive error handling for network issues and API unavailability
+
+### Changed
+- **Template Structure**: Enhanced `nomenclature_list.html` with advanced search panel and quick filters
+- **Bootstrap Table Integration**: Replaced inline JavaScript with modular approach using dedicated nomenclature.js
+- **Search Intelligence**: Automatic detection of search type (code vs description) based on input pattern
+- **UI Improvements**: Added table information panel, filter buttons, and enhanced styling
+
+### Technical Implementation
+- **Module Architecture**: Self-contained JavaScript module with namespace protection
+- **Event Management**: Proper event binding and cleanup for memory management  
+- **State Management**: Centralized filter state with persistent search capabilities
+- **API Integration**: Enhanced integration with FastAPI endpoints for all CRUD operations
+- **Responsive Design**: Bootstrap 5 responsive layouts for all screen sizes
 
 - **Billing Combo Import/Export System** - 2025-06-08T14:33:44.496464
   - **Complete Import Functionality**: New `POST /api/billing_combo/import` endpoint with automatic format detection
