@@ -62,7 +62,7 @@ Creating a comprehensive CRUD view for managing Belgian healthcare nomenclature 
   - `createCode()` - POST /tarifs/codes
   - `updateCode()` - PUT /tarifs/codes/{id}
   - `deleteCode()` - DELETE /tarifs/codes/{id}
-- [ ] Implement error handling and user feedback
+- [ ] Implement error handling and user feedback using `displayToast`
 - [ ] Add loading states during operations
 
 ### Step 5: CRUD Operations Implementation
@@ -73,7 +73,7 @@ Creating a comprehensive CRUD view for managing Belgian healthcare nomenclature 
 - [ ] Form validation (required fields, formats)
 - [ ] API call with error handling
 - [ ] Table refresh after creation
-- [ ] Success/error notifications
+- [ ] Success/error notifications using `displayToast`
 
 **Read/Search Functionality:**
 
@@ -103,8 +103,8 @@ Creating a comprehensive CRUD view for managing Belgian healthcare nomenclature 
 - [ ] Loading spinners during API calls
 - [ ] Form field validation styling
 - [ ] Responsive design considerations
-- [ ] Error message display
-- [ ] Success notifications
+- [ ] Error message display using `displayToast`
+- [ ] Success notifications using `displayToast`
 
 ### Step 7: Integration & Testing
 
