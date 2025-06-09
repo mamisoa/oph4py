@@ -4,9 +4,7 @@ Simple test script for chart API endpoints
 Run this from the py4web directory: python apps/oph4py/test_charts.py
 """
 
-import json
 import sys
-from datetime import datetime
 
 import requests
 

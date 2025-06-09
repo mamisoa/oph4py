@@ -2,33 +2,12 @@
 
 from py4web import (  # add response to throw http error 400
     URL,
-    Field,
-    abort,
     action,
     redirect,
-    request,
     response,
 )
-from py4web.utils.form import (  # added import Field Form and FormStyleBulma to get form working
-    Form,
-    FormStyleBootstrap4,
-    FormStyleBulma,
-)
-from py4web.utils.grid import Grid
-from pydal.validators import CRYPT  # to encrypt passwords
-from yatl.helpers import CAT, OPTION, XML, A
 
-from .common import (
-    T,
-    auth,
-    authenticated,
-    cache,
-    db,
-    flash,
-    logger,
-    session,
-    unauthenticated,
-)
+from .common import auth, db, session
 
 # import settings
 from .settings import (
@@ -36,13 +15,12 @@ from .settings import (
     ASSETS_FOLDER,
     ENV_STATUS,
     LOCAL_URL,
-    MACHINES_FOLDER,
     NEW_INSTALLATION,
     TIMEOFFSET,
 )
 
 # import userful
-from .useful import dropdownSelect, getMembershipId, rows2json
+from .useful import dropdownSelect
 
 # get standard index in db for patient/user profile
 # TODO remove try and check if new installation

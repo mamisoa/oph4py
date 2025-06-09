@@ -1,34 +1,10 @@
 # Management controllers
 
-from py4web import (  # add response to throw http error 400
-    URL,
-    Field,
-    abort,
-    action,
-    redirect,
-    request,
-    response,
-)
-from py4web.utils.form import (  # added import Field Form and FormStyleBulma to get form working
-    Form,
-    FormStyleBootstrap4,
-    FormStyleBulma,
-)
-from py4web.utils.grid import Grid
+from py4web import action, request, response  # add response to throw http error 400
 from pydal.validators import CRYPT  # to encrypt passwords
 from yatl.helpers import CAT, OPTION, XML, A
 
-from .common import (
-    T,
-    auth,
-    authenticated,
-    cache,
-    db,
-    flash,
-    logger,
-    session,
-    unauthenticated,
-)
+from .common import T, auth, db, flash, logger, session
 
 # import settings
 from .settings import (
@@ -38,7 +14,6 @@ from .settings import (
     ENV_STATUS,
     LOCAL_BEID,
     LOCAL_URL,
-    NEW_INSTALLATION,
     TIMEOFFSET,
 )
 
