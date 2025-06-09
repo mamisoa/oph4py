@@ -2,22 +2,106 @@
 
 All notable changes to this project will be documented in this file.
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
+
+## [2025-06-10T01:41:04.553158]
+
+### Changed
+
+- Simplified search functionality to nomenclature code only (2025-06-10T01:41:04.553158)
+  - Removed complex search across descriptions to ensure basic functionality works
+  - Search now only uses `nomen_code_prefix` parameter
+  - Fixed error handling to avoid undefined references
+  - Simplified API integration for better reliability
+
+## [2025-06-10T01:36:26.087676]
+
+### Fixed
+
+- JavaScript dependency loading order issues (2025-06-10T01:36:26.087676)
+  - Fixed script loading order: jQuery now loads before bootstrap-table
+  - Added missing Bootstrap JavaScript bundle for modal and dropdown functionality
+  - Added Bootbox library for delete confirmation dialogs
+  - Enhanced error handling and logging in bootstrap-table initialization
+  - Added robust checks for DOM elements and plugin availability
+
+## [2025-06-10T01:32:38.246206]
+
+### Added
+
+- Enhanced search functionality for nomenclature codes management ()
+  - Comprehensive search across nomenclature code, French description, and Dutch description
+  - Smart search detection: numeric terms search by code prefix AND description substring
+  - Text-only terms search within both French and Dutch descriptions
+  - Reduced minimum search length from 3 to 2 characters for better UX
+  - Proper API integration with FastAPI server at `https://nomen.c66.ovh/tarifs/search`
+  - Real-time search with bootstrap-table integration
+- Complete CRUD operations for nomenclature codes
+  - Create new codes with form validation
+  - Update existing codes with pre-populated forms
+  - Delete codes with confirmation dialog (bootbox integration)
+  - Loading states and error handling for all operations
+- API wrapper functions with proper error handling and toast notifications
+- Form validation for required fields (code and at least one description)
+
+### Changed
+
+- Updated bootstrap-table queryParams function to support enhanced search logic
+- Enhanced codes.js with comprehensive API integration and form handling
+- Improved action button events integration between codes_bt.js and codes.js
+
+## [2025-06-10T01:28:49.315322] - Nomenclature Codes CRUD Table Improvements
+
+### Fixed
+
+- **Template Layout**: Changed extend from `layout.html` to `baseof_auth.html` for proper authentication layout
+- **Bootstrap Table Styling**: Added missing `bootstrap-table.min.css` to fix loading state and table styling issues
+- **Table Display**: Resolved visual rendering problems caused by missing CSS dependencies
+
+### Added
+
+- **Detail View Enhancement**: Implemented comprehensive `detailFormatter` function for nomenclature codes table
+  - **Two-Column Layout**: Left column shows validity dates and categories, right column displays key letters and coefficients
+  - **Comprehensive Fields**: Displays all additional fields including:
+    - Validity dates (`dbegin_fee`, `dend_fee`)
+    - Fee categories (`fee_code_cat`, `feecode`)
+    - Nomenclature group (`nomen_grp_n`)
+    - Key letters 1-3 with coefficients and values
+    - Author document (`AUTHOR_DOC`)
+  - **Bootstrap Styling**: Professional formatting with responsive grid layout and clean table presentation
+  - **Null Safety**: Proper handling of missing or empty fields with "-" placeholders
+  - **Dynamic Content**: Only displays key letter sections when data is present
+
+### Changed
+
+- **Table Configuration**: Enhanced bootstrap-table initialization with `detailFormatter` configuration
+- **User Experience**: Improved detail view accessibility with expandable rows showing complete nomenclature information
+
 ## [2025-06-09T23:06:43.165082]
 
 ### Fixed
+
 - Table now displays data by correcting `responseHandler` to use `res.data` instead of `res.items` in `codes_bt.js`.
 - Bootstrap 5 modal is now properly managed using the JS API (`window.codeModal`), removing all jQuery `.modal()` calls.
 
 ### Added
+
 - Main logic file `codes.js` to handle modal show/hide and event logic, matching the autorx pattern.
 
 ### Changed
+
 - Template loads `codes.js` after `codes_bt.js` for correct event order and modularity.
 - Updated `memory-bank/activeContext.md` with Step 4b plan and current status for UI/UX fixes (toolbar/search/pagination refactor).
 
 ## [2025-06-09T21:03:14.076160]
 
 ### Added
+
 - Created `codes.py` controller for Belgian healthcare nomenclature codes CRUD management. Includes required imports, main listing action with authentication, `/codes` route, and template context setup as per activeContext.md implementation plan.
 - Step 3: Bootstrap-Table Configuration for nomenclature codes CRUD management completed (2025-06-09T21:10:06.674405)
   - Implemented server-side pagination for nomenclature codes table
@@ -272,9 +356,3 @@ This implementation follows py4web MVC patterns with:
 - API endpoints from Phase 1 properly consumed and error-handled
 - "View More" button visibility based on data.has_more indicator
 - Database field access corrected for `phistory` table structure
-
-## [Unreleased]
-
-### Changed
-- (2025-06-09T23:19:38.015996) UI/UX refactor for nomenclature codes CRUD: removed custom search bar, integrated 'New Code' button into bootstrap-table toolbar, ensured only built-in search and pagination controls are used. (Step 4b completed)
-

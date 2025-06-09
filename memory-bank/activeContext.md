@@ -60,16 +60,18 @@ Creating a comprehensive CRUD view for managing Belgian healthcare nomenclature 
 
 **File**: `static/js/manage/codes.js`
 
-- [ ] Initialize API base URL configuration
-- [ ] Create modal management functions (show/hide/reset)
-- [ ] Implement form validation logic
-- [ ] Create API wrapper functions:
-  - `searchCodes()` - GET /tarifs/search
+- [x] Initialize API base URL configuration
+- [x] Create modal management functions (show/hide/reset)
+- [x] Implement form validation logic
+- [x] Create API wrapper functions:
+  - `searchCodes()` - GET /tarifs/search with enhanced search (code + descriptions)
   - `createCode()` - POST /tarifs/codes
   - `updateCode()` - PUT /tarifs/codes/{id}
   - `deleteCode()` - DELETE /tarifs/codes/{id}
-- [ ] Implement error handling and user feedback using `displayToast`
-- [ ] Add loading states during operations
+- [x] Implement error handling and user feedback using `displayToast`
+- [x] Add loading states during operations
+- [x] Enhanced search functionality across nomenclature code, French description, and Dutch description
+- [x] Step 4 - Main Application Logic completed (2025-06-10T01:32:38.246206)
 
 ### Step 4b: UI/UX Fixes for Codes Table
 
@@ -79,6 +81,17 @@ Creating a comprehensive CRUD view for managing Belgian healthcare nomenclature 
 - [x] Style and align all controls using bootstrap-table best practices
 - [x] Reference context7 for implementation details
 - [x] Step 4b - UI/UX Fixes for Codes Table completed (2025-06-09T23:19:38.015996)
+
+### Step 4c: Template and Detail View Enhancements
+
+- [x] Fixed template layout: Changed extend from `layout.html` to `baseof_auth.html`
+- [x] Added missing `bootstrap-table.min.css` for proper styling and loading states
+- [x] Implemented comprehensive `detailFormatter` function with:
+  - Two-column responsive layout (validity/categories | key letters/coefficients)
+  - All additional fields display (dates, categories, key letters, author document)
+  - Bootstrap styling with proper null handling
+  - Dynamic content showing only populated key letter sections
+- [x] Step 4c - Template and Detail View Enhancements completed (2025-06-10T01:28:49.315322)
 
 ### Step 5: CRUD Operations Implementation
 
@@ -219,6 +232,31 @@ from .settings import (
 - [x] Step 1 - py4web Controller Setup completed (2025-06-09T21:03:14.076160)
 - [x] Step 2 - HTML Template Foundation completed (2025-06-09T21:06:46.206778)
 - [x] Step 3 - Bootstrap-Table Configuration completed (2025-06-09T21:10:06.674405)
-- [ ] Step 4 - Main Application Logic in progress
+- [x] Step 4 - Main Application Logic completed (2025-06-10T01:32:38.246206)
 - [x] Step 4b - UI/UX Fixes for Codes Table completed (2025-06-09T23:19:38.015996)
+- [x] Step 4c - Template and Detail View Enhancements completed (2025-06-10T01:28:49.315322)
 - [ ] **Next:** Step 5 - CRUD Operations Implementation
+
+## Search Implementation Summary
+
+The search functionality has been simplified to ensure basic functionality works:
+
+- **Nomenclature Code Only**: Search only by nomenclature code prefix
+- **Minimum Length**: Search activates with 2+ characters
+- **API Integration**: Uses only `nomen_code_prefix` parameter for reliability
+- **Error Handling**: Proper fallbacks for connection issues
+
+### Search Logic
+
+1. **Simple Code Search**: When user types a search term:
+   - Search term is sent as `nomen_code_prefix` to the API
+   - Works for both numeric and text input
+   - Reliable and straightforward implementation
+
+2. **Server-Side Integration**: The search parameters are properly sent to the FastAPI server at `https://nomen.c66.ovh/tarifs/search`
+
+3. **Real-Time Search**: Bootstrap-table handles the search input and triggers API calls automatically
+
+### Future Enhancement
+
+Once basic functionality is confirmed working, search can be expanded to include French and Dutch descriptions.
