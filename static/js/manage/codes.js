@@ -50,6 +50,57 @@ const CodesAPI = {
 	},
 
 	/**
+	 * Get a single code by nomenclature code using the search API
+	 * @param {string} nomenCode - The nomenclature code to fetch
+	 * @returns {Promise} - API response with code data
+	 */
+	async getCode(nomenCode) {
+		try {
+			// Use search API with exact nomenclature code match
+			const queryParams = new URLSearchParams();
+			queryParams.append("limit", 1);
+			queryParams.append("offset", 0);
+			queryParams.append("nomen_code_prefix", nomenCode);
+
+			const url = `${API_BASE_URL}/tarifs/search?${queryParams.toString()}`;
+			console.log("[CodesAPI] Get single code URL:", url);
+
+			const response = await fetch(url);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
+			const data = await response.json();
+			console.log("[CodesAPI] Get single code response:", data);
+
+			// Check if we found the exact code
+			if (!data.data || data.data.length === 0) {
+				throw new Error(`Code ${nomenCode} not found`);
+			}
+
+			// Find exact match (since prefix search might return partial matches)
+			console.log(
+				"[CodesAPI] Looking for exact match of:",
+				nomenCode,
+				"in results:",
+				data.data.map((c) => c.nomen_code)
+			);
+			const exactMatch = data.data.find(
+				(code) => String(code.nomen_code) === String(nomenCode)
+			);
+			if (!exactMatch) {
+				throw new Error(`Code ${nomenCode} not found in search results`);
+			}
+
+			console.log("[CodesAPI] Found exact match:", exactMatch);
+			return exactMatch;
+		} catch (error) {
+			console.error("[CodesAPI] Get code error:", error);
+			throw error;
+		}
+	},
+
+	/**
 	 * Create a new nomenclature code
 	 * @param {object} codeData - Code data object
 	 * @returns {Promise} - API response
@@ -200,6 +251,51 @@ const CodesUtils = {
 	refreshTable() {
 		$("#codes-table").bootstrapTable("refresh");
 	},
+
+	/**
+	 * Populate form with existing code data for editing
+	 * @param {object} codeData - Code data to populate
+	 */
+	populateForm(codeData) {
+		console.log("[CodesUtils] Populating form with data:", codeData);
+
+		$("#nomen_code").val(codeData.nomen_code || "");
+		$("#nomen_desc_fr").val(codeData.nomen_desc_fr || "");
+		$("#nomen_desc_nl").val(codeData.nomen_desc_nl || "");
+		$("#fee").val(codeData.fee || 0.0);
+		$("#fee_code_cat").val(codeData.fee_code_cat || 4);
+		$("#feecode").val(codeData.feecode || 1600);
+		$("#nomen_grp_n").val(codeData.nomen_grp_n || "");
+
+		// Handle date fields properly
+		if (codeData.dbegin_fee) {
+			$("#dbegin_fee").val(codeData.dbegin_fee);
+		}
+		if (codeData.dend_fee) {
+			$("#dend_fee").val(codeData.dend_fee);
+		}
+
+		// Make nomenclature code readonly during edit to prevent confusion
+		$("#nomen_code").prop("readonly", true);
+	},
+
+	/**
+	 * Show loading state on form submit button
+	 * @param {jQuery} $button - Submit button element
+	 * @param {boolean} isLoading - Loading state
+	 */
+	setLoadingState($button, isLoading) {
+		if (isLoading) {
+			$button.data("original-html", $button.html());
+			$button
+				.html('<i class="bi bi-hourglass-split"></i> Saving...')
+				.prop("disabled", true);
+		} else {
+			$button
+				.html($button.data("original-html") || "Save Code")
+				.prop("disabled", false);
+		}
+	},
 };
 
 // Make CodesUtils available globally
@@ -228,6 +324,10 @@ $(function () {
 		// Clear validation errors
 		$(".is-invalid").removeClass("is-invalid");
 		$(".invalid-feedback").remove();
+		// Clear edit mode
+		$("#code-form").removeAttr("data-edit-code");
+		// Make nomenclature code editable again
+		$("#nomen_code").prop("readonly", false);
 	});
 
 	// Listen for create button
@@ -237,6 +337,14 @@ $(function () {
 			'<i class="bi bi-plus-circle me-2"></i>Create New Code'
 		);
 		$("#code-form").removeAttr("data-edit-code");
+		// Set default values
+		$("#fee").val("0.0");
+		$("#fee_code_cat").val("4");
+		$("#feecode").val("1600");
+		$("#dend_fee").val("2099-12-31");
+		const today = new Date().toISOString().split("T")[0];
+		$("#dbegin_fee").val(today);
+
 		window.codeModal.show();
 	});
 
@@ -273,13 +381,11 @@ $(function () {
 			nomen_grp_n: formData.get("nomen_grp_n") || "",
 		};
 
+		const submitBtn = $(this).find('button[type="submit"]');
+
 		try {
 			// Show loading state
-			const submitBtn = $(this).find('button[type="submit"]');
-			const originalText = submitBtn.html();
-			submitBtn
-				.html('<i class="bi bi-hourglass-split"></i> Saving...')
-				.prop("disabled", true);
+			CodesUtils.setLoadingState(submitBtn, true);
 
 			const isEdit = $(this).attr("data-edit-code");
 			let result;
@@ -301,22 +407,50 @@ $(function () {
 			CodesUtils.displayToast(error.message, "error");
 		} finally {
 			// Restore button state
-			const submitBtn = $(this).find('button[type="submit"]');
-			submitBtn.html("Save Code").prop("disabled", false);
+			CodesUtils.setLoadingState(submitBtn, false);
 		}
 	});
 
 	// Listen for edit event from codes_bt.js
-	$(document).on("editCode", function (e, codeId) {
-		// TODO: Load code data by codeId and fill form
-		$("#codeModalLabel").html(
-			'<i class="bi bi-pencil me-2"></i>Edit Code #' + codeId
-		);
-		$("#code-form").attr("data-edit-code", codeId);
-		window.codeModal.show();
+	$(document).on("editCode", async function (e, codeId) {
+		try {
+			console.log("[codes.js] Edit event triggered for code:", codeId);
+
+			// Show loading state in modal title
+			$("#codeModalLabel").html(
+				'<i class="bi bi-hourglass-split me-2"></i>Loading Code...'
+			);
+			$("#code-form").attr("data-edit-code", codeId);
+
+			// Reset form first
+			$("#code-form")[0].reset();
+
+			// Show modal first
+			window.codeModal.show();
+
+			// Fetch code data
+			console.log("[codes.js] Fetching code data for:", codeId);
+			const codeData = await CodesAPI.getCode(codeId);
+			console.log("[codes.js] Received code data:", codeData);
+
+			// Update modal title
+			$("#codeModalLabel").html(
+				'<i class="bi bi-pencil me-2"></i>Edit Code #' + codeId
+			);
+
+			// Populate form
+			CodesUtils.populateForm(codeData);
+		} catch (error) {
+			console.error("[codes.js] Edit error:", error);
+			CodesUtils.displayToast(
+				`Error loading code ${codeId}: ${error.message}`,
+				"error"
+			);
+			window.codeModal.hide();
+		}
 	});
 
-	// Listen for delete event (to be implemented)
+	// Listen for delete event
 	$(document).on("deleteCode", function (e, codeId) {
 		// Implement delete logic with confirmation dialog
 		if (typeof bootbox !== "undefined") {
@@ -340,7 +474,10 @@ $(function () {
 							CodesUtils.displayToast("Code deleted successfully!", "success");
 							CodesUtils.refreshTable();
 						} catch (error) {
-							CodesUtils.displayToast(error.message, "error");
+							CodesUtils.displayToast(
+								`Error deleting code: ${error.message}`,
+								"error"
+							);
 						}
 					}
 				},
@@ -354,13 +491,22 @@ $(function () {
 						CodesUtils.refreshTable();
 					})
 					.catch((error) => {
-						CodesUtils.displayToast(error.message, "error");
+						CodesUtils.displayToast(
+							`Error deleting code: ${error.message}`,
+							"error"
+						);
 					});
 			}
 		}
 	});
+
+	// Initialize Bootstrap tooltips
+	$(document).on("DOMContentLoaded", function () {
+		// Initialize tooltips for any existing elements
+		$('[data-bs-toggle="tooltip"]').tooltip();
+	});
 });
 
 console.log(
-	"[codes.js] Main application logic loaded with enhanced search functionality."
+	"[codes.js] Main application logic loaded with complete CRUD functionality."
 );
