@@ -25,7 +25,7 @@ Creating a comprehensive CRUD view for managing Belgian healthcare nomenclature 
   - [x] `from .common import auth, db, session`
   - [x] `from .settings import APP_NAME, ASSETS_FOLDER, ENV_STATUS, LOCAL_URL, NEW_INSTALLATION, TIMEOFFSET`
 - [x] Create main codes listing action with authentication
-- [x] Set up route: `/codes` for the main view
+- [x] Set up route: `/manage/codes` for the main view
 - [x] Configure template usage and context variables
 - [x] Add any helper functions needed for the view
 
@@ -131,12 +131,12 @@ Creating a comprehensive CRUD view for managing Belgian healthcare nomenclature 
 
 ### Step 6: UI/UX Enhancements
 
-- [ ] Bootstrap tooltips initialization for truncated text
-- [ ] Loading spinners during API calls
-- [ ] Form field validation styling
-- [ ] Responsive design considerations
-- [ ] Error message display using `displayToast`
-- [ ] Success notifications using `displayToast`
+- [x] Bootstrap tooltips initialization for truncated text (already working)
+- [x] Loading spinners during API calls (implemented with hourglass icons)
+- [x] Form field validation styling (Bootstrap `is-invalid` classes for visual feedback)
+- [x] Responsive design considerations (Bootstrap responsive grid system)
+- [x] Error message display using `displayToast` (already working)
+- [x] Success notifications using `displayToast` (already working)
 
 ### Step 7: Integration & Testing
 
@@ -173,7 +173,7 @@ from .settings import (
 
 **Main Action:**
 
-- Route: `@action('codes')`
+- Route: `@action('manage/codes')`
 - Authentication: `@action.uses(auth.user)`
 - Template: `@action.uses('manage/codes.html')`
 - Context: Pass necessary variables to template
@@ -240,7 +240,8 @@ from .settings import (
 - [x] Step 4b - UI/UX Fixes for Codes Table completed (2025-06-09T23:19:38.015996)
 - [x] Step 4c - Template and Detail View Enhancements completed (2025-06-10T01:28:49.315322)
 - [x] Step 5 - CRUD Operations Implementation completed (2025-06-10T01:44:32.512739)
-- [ ] **Next:** Step 6 - UI/UX Enhancements
+- [x] Step 6 - UI/UX Enhancements completed (2025-06-10T02:04:55.459412)
+- [ ] **Next:** Step 7 - Integration & Testing
 
 ## Search Implementation Summary
 

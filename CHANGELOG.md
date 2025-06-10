@@ -9,6 +9,84 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-10T02:07:54.263733] - Nomenclature Codes Date Field Fix
+
+### Fixed
+
+- **Edit Modal Date Population**: Fixed date fields not populating in edit modal for nomenclature codes
+  - **Root Cause**: API returns datetime format (`"2025-01-01 00:00:00"`) but HTML date inputs expect date format (`"2025-01-01"`)
+  - **Solution**: Enhanced `populateForm()` function to extract date part from datetime strings using `.split(' ')[0]`
+  - **Fields Affected**: Both `dbegin_fee` (Start Date) and `dend_fee` (End Date) now populate correctly
+  - **Date Conversion**: Automatic conversion from `YYYY-MM-DD HH:MM:SS` to `YYYY-MM-DD` format
+  - **User Experience**: Date fields now display existing values when editing nomenclature codes
+
+### Changed
+
+- **Form Population Logic**: Updated date field handling in `CodesUtils.populateForm()` function
+  - Added datetime-to-date conversion for both start and end date fields
+  - Enhanced comments to explain the conversion process
+  - Maintained backward compatibility for data that might already be in date format
+
+### Technical Details
+
+- **File Modified**: `static/js/manage/codes.js`
+- **Function Enhanced**: `CodesUtils.populateForm()`
+- **Conversion Logic**: `codeData.dbegin_fee.split(' ')[0]` extracts date part from datetime string
+- **HTML Compatibility**: Ensures date input fields receive proper `YYYY-MM-DD` format as required by HTML5 date inputs
+
+## [2025-06-10T02:00:47.647299] - Nomenclature Codes Route Structure Update
+
+### Changed
+
+- **Route Organization**: Updated nomenclature codes route from `/codes` to `/manage/codes` for better URL structure
+  - **Controller Route**: Modified `@action('codes')` to `@action('manage/codes')` in `codes.py`
+  - **URL Structure**: Improved semantic organization by grouping management features under `/manage/` namespace
+  - **Navigation Consistency**: Aligns with existing management interface patterns in the application
+  - **SEO Benefits**: More descriptive URL structure for better user understanding and search engine optimization
+
+### Technical Details
+
+- **Route Change**: `/codes` → `/manage/codes`
+- **Controller Update**: Updated py4web action decorator in codes controller
+- **Template Path**: Template remains at `templates/manage/codes.html` (unchanged)
+- **Navigation**: Settings dropdown navigation updated to reflect new route structure
+
+## [2025-06-10T01:58:58.399509] - Nomenclature Codes Edit Functionality Fix
+
+### Fixed
+
+- **Edit Modal API Error**: Resolved 405 Method Not Allowed error when editing nomenclature codes
+  - **Root Cause**: Direct GET endpoint `/tarifs/codes/{id}` was not available on the API server
+  - **Solution**: Switched to using search API (`/tarifs/search`) with exact code matching for edit operations
+  - **API Integration**: Modified `CodesAPI.getCode()` to use `nomen_code_prefix` parameter with exact string matching
+  - **Error Handling**: Enhanced error messages and debugging information for better troubleshooting
+
+- **Form Population Issues**: Fixed modal not populating with current values during edit operations
+  - **Field Mapping**: Enhanced `populateForm()` function with proper date field handling and logging
+  - **UX Improvement**: Made nomenclature code field readonly during edit to prevent confusion
+  - **Modal Reset**: Improved modal cleanup to restore field editability when switching between create/edit modes
+  - **Default Values**: Added proper default value handling for new code creation
+
+### Added
+
+- **Enhanced Debugging**: Comprehensive console logging throughout edit workflow for better development experience
+- **Loading States**: Improved loading indicators during code fetch operations with "Loading Code..." message
+- **Field Validation**: Enhanced form validation with better error messaging and user feedback
+- **Exact Matching**: Robust string comparison logic to handle API search results and find exact code matches
+
+### Changed
+
+- **API Strategy**: Migrated from direct code retrieval to search-based approach for better API compatibility
+- **Form Behavior**: Enhanced form state management with proper readonly/editable field transitions
+- **Error Messages**: More descriptive error messages including specific failure reasons and context
+
+### Technical Details
+
+- **API Endpoint**: Changed from `GET /tarifs/codes/{id}` to `GET /tarifs/search?nomen_code_prefix={id}&limit=1`
+- **String Matching**: Implemented exact string comparison (`String(code.nomen_code) === String(nomenCode)`)
+- **Form State**: Added `$("#nomen_code").prop("readonly", true/false)` for edit mode management
+- **Debug Logging**: Added comprehensive logging at key workflow points for development support
+
 ## [2025-06-10T01:41:04.553158]
 
 ### Changed

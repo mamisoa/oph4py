@@ -196,19 +196,25 @@ const CodesAPI = {
  */
 const CodesUtils = {
 	/**
-	 * Validate form data before submission
+	 * Validate form data before submission with visual field feedback
 	 * @param {FormData} formData - Form data to validate
 	 * @returns {object} - {isValid: boolean, errors: array}
 	 */
 	validateForm(formData) {
 		const errors = [];
 
+		// Clear previous validation states
+		$(".is-invalid").removeClass("is-invalid");
+		$(".invalid-feedback").remove();
+
 		// Required: nomenclature code
 		const nomenCode = formData.get("nomen_code");
 		if (!nomenCode || nomenCode.trim() === "") {
 			errors.push("Nomenclature code is required");
+			$("#nomen_code").addClass("is-invalid");
 		} else if (!/^\d+$/.test(nomenCode.trim())) {
 			errors.push("Nomenclature code must be numeric");
+			$("#nomen_code").addClass("is-invalid");
 		}
 
 		// Required: at least one description
@@ -219,6 +225,7 @@ const CodesUtils = {
 			(!descNl || descNl.trim() === "")
 		) {
 			errors.push("At least one description (French or Dutch) is required");
+			$("#nomen_desc_fr, #nomen_desc_nl").addClass("is-invalid");
 		}
 
 		return {
@@ -267,12 +274,16 @@ const CodesUtils = {
 		$("#feecode").val(codeData.feecode || 1600);
 		$("#nomen_grp_n").val(codeData.nomen_grp_n || "");
 
-		// Handle date fields properly
+		// Handle date fields properly - convert datetime to date format
 		if (codeData.dbegin_fee) {
-			$("#dbegin_fee").val(codeData.dbegin_fee);
+			// Extract date part from datetime string (YYYY-MM-DD HH:MM:SS -> YYYY-MM-DD)
+			const beginDate = codeData.dbegin_fee.split(" ")[0];
+			$("#dbegin_fee").val(beginDate);
 		}
 		if (codeData.dend_fee) {
-			$("#dend_fee").val(codeData.dend_fee);
+			// Extract date part from datetime string (YYYY-MM-DD HH:MM:SS -> YYYY-MM-DD)
+			const endDate = codeData.dend_fee.split(" ")[0];
+			$("#dend_fee").val(endDate);
 		}
 
 		// Make nomenclature code readonly during edit to prevent confusion
@@ -354,10 +365,6 @@ $(function () {
 
 		const formData = new FormData(this);
 		const validation = CodesUtils.validateForm(formData);
-
-		// Clear previous validation errors
-		$(".is-invalid").removeClass("is-invalid");
-		$(".invalid-feedback").remove();
 
 		if (!validation.isValid) {
 			// Display validation errors

@@ -6,9 +6,9 @@ Handles the main listing view and integrates with the frontend for CRUD operatio
 
 from typing import Any, Dict
 
-from py4web import URL, action, redirect, response
+from py4web import action
 
-from .common import auth, db, session
+from .common import auth
 from .settings import (
     APP_NAME,
     ASSETS_FOLDER,
@@ -19,7 +19,7 @@ from .settings import (
 )
 
 
-@action("codes")
+@action("manage/codes")
 @action.uses(auth.user, "manage/codes.html")
 def codes() -> Dict[str, Any]:
     """
