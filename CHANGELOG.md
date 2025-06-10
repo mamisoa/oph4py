@@ -1,6 +1,5 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
 
 All notable changes to this project will be documented in this file.
 
@@ -8,6 +7,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
+
+## [2025-06-10T02:24:22.571366] - Patient Bar Done Button JavaScript Fix
+
+### Fixed
+
+- **Done Button Error**: Fixed `Cannot read properties of undefined (reading '0')` error when pressing Done button in patient bar
+  - **Root Cause**: Complex API lookup causing failures and unnecessary secondary API call after task update
+  - **API Simplification**: Removed complex lookup parameters that were causing "Cannot retrieve combo exams" error
+  - **Workflow Optimization**: Eliminated unnecessary `getWlDetails()` call after successful task update
+  - **Direct UI Update**: Task completion now directly updates UI without additional API roundtrip
+
+### Changed
+
+- **API Call Optimization**: Simplified `getWlDetails()` function to use basic worklist endpoint
+  - Removed complex `@lookup` parameters that were causing API failures
+  - Added comprehensive debugging and error logging
+  - Enhanced response structure handling for different API response formats
+- **Task Completion Workflow**: Streamlined "Done" button functionality
+  - Direct UI update after successful task status change instead of additional API call
+  - Immediate visual feedback with success toast notification
+  - Automatic redirect to worklist after 1.5 second delay
+  - Eliminated dependency on secondary API validation call
+- **Error Handling**: Enhanced error messages and debugging capabilities
+  - Added API URL logging for troubleshooting
+  - More descriptive error messages with specific failure context
+  - Better handling of different response structures
+
+### Technical Details
+
+- **File Modified**: `static/js/templates/patient-bar.js`
+- **API Optimization**: Removed complex lookup syntax causing failures
+- **Workflow Simplification**: Direct UI update instead of API re-fetch after task completion
+- **User Experience**: Faster task completion with immediate feedback and auto-redirect
 
 ## [2025-06-10T02:07:54.263733] - Nomenclature Codes Date Field Fix
 

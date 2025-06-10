@@ -142,37 +142,44 @@
 	 * @returns {Promise} - Promise resolving to worklist data
 	 */
 	function getWlDetails(wlId) {
-		return Promise.resolve(
-			$.ajax({
-				type: "GET",
-				dataType: "json",
-				url:
-					HOSTURL +
-					"/" +
-					APP_NAME +
-					"/api/worklist/" +
-					wlId +
-					"?@lookup=patient!:id_auth_user[id,last_name,first_name,dob,photob64].gender[gender_name],modality!:modality_dest[id,modality_name],provider!:provider[id,last_name,first_name,dob],senior!:senior[id,last_name,first_name,dob]",
-				success: function (data) {
-					if (data.status != "error" && data.count) {
-						displayToast(
-							"success",
-							"GET combo exams",
-							"GET" +
-								data.items[0]["patient.first_name"] +
-								" " +
-								data.items[0]["patient.last_name"],
-							3000
-						);
-					} else {
-						displayToast("error", "GET error", "Cannot retrieve combo exams");
-					}
-				},
-				error: function (er) {
-					console.log(er);
-				},
+		const apiUrl = HOSTURL + "/" + APP_NAME + "/api/worklist/" + wlId;
+		console.log("Fetching worklist details from:", apiUrl);
+
+		return $.ajax({
+			type: "GET",
+			dataType: "json",
+			url: apiUrl,
+		})
+			.then(function (data) {
+				console.log("API Response:", data);
+
+				// Handle different possible response structures
+				if (data && !data.error) {
+					displayToast(
+						"success",
+						"Task Status Updated",
+						"Successfully retrieved task details",
+						3000
+					);
+					// Return the data in a consistent format
+					return { items: [data] };
+				} else {
+					console.error("API returned error:", data);
+					displayToast("error", "GET error", "Cannot retrieve task details");
+					throw new Error(
+						"API returned error: " + (data.error || "Unknown error")
+					);
+				}
 			})
-		);
+			.catch(function (er) {
+				console.log("Error fetching worklist details:", er);
+				displayToast(
+					"error",
+					"GET error",
+					"Cannot retrieve worklist details: " + er.message
+				);
+				throw er;
+			});
 	}
 
 	// Set task to done and disable form buttons
@@ -197,30 +204,60 @@
 						id: wlId,
 					};
 					let dataStr;
-					if (wlObj["status_flag"] != "done") {
+					if (wlObj["worklist"]["status_flag"] != "done") {
 						dataObj["status_flag"] = "done";
 						dataObj["counter"] = 0;
 						// Remove id from payload and use it in the URL
 						const id = wlId; // Using wlId directly since it's already available
 						delete dataObj.id;
 						dataStr = JSON.stringify(dataObj);
-						crudp("worklist", id.toString(), "PUT", dataStr).then(function (
-							data
-						) {
-							console.log("update result:", data);
-							getWlDetails(wlId) // check if set to done successful and disable forms
-								.then(function (itemObj) {
-									wlObj["worklist"] = Object.assign({}, itemObj.items[0]); // update wlObj worklist
-									if (wlObj["status_flag"] == "done") {
-										$("#wlItemDetails .status").html(wlObj["status_flag"]);
-										const buttonsToDisable = document.querySelectorAll(
-											".btn-action, .form-control"
-										);
-										disableTaskButtons(buttonsToDisable);
-									}
-									window.location.href = "/" + APP_NAME + "/worklist";
-								});
-						});
+						crudp("worklist", id.toString(), "PUT", dataStr)
+							.then(function (data) {
+								console.log("update result:", data);
+
+								// If the update was successful, directly update the UI
+								if (data && data.api_version) {
+									// Update the local wlObj
+									wlObj["worklist"]["status_flag"] = "done";
+									wlObj["worklist"]["counter"] = 0;
+
+									// Update the UI
+									$("#wlItemDetails .status").html("done");
+
+									// Disable form buttons
+									const buttonsToDisable = document.querySelectorAll(
+										".btn-action, .form-control"
+									);
+									disableTaskButtons(buttonsToDisable);
+
+									displayToast(
+										"success",
+										"Task Complete",
+										"Task has been marked as done",
+										3000
+									);
+
+									// Redirect to worklist after a short delay
+									setTimeout(function () {
+										window.location.href = "/" + APP_NAME + "/worklist";
+									}, 1500);
+								} else {
+									console.error("Unexpected update response:", data);
+									displayToast(
+										"error",
+										"Update error",
+										"Failed to update task status"
+									);
+								}
+							})
+							.catch(function (error) {
+								console.error("Error setting task to done:", error);
+								displayToast(
+									"error",
+									"Update error",
+									"Failed to set task to done"
+								);
+							});
 					}
 				}
 			},
