@@ -16,8 +16,7 @@ from typing import Dict, List, Optional
 
 from py4web import action, request
 
-from ...common import auth, db, logger, session
-from ...models import str_uuid
+from ...common import auth, db, logger
 from ..core.base import APIResponse, handle_rest_api_request
 from ..core.nomenclature import NomenclatureClient
 

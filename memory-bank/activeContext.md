@@ -1,268 +1,70 @@
-# Active Context - Nomenclature Codes CRUD Management
-
-## Project Overview
-
-Creating a comprehensive CRUD view for managing Belgian healthcare nomenclature codes using:
-
-- **py4web framework** with existing template structure
-- **FastAPI server** at `https://nomen.c66.ovh` for data operations
-- **Bootstrap-table** for advanced table functionality
-- **Vanilla JS** primary, jQuery only where needed for bootstrap-table
-
-## Active context management
-
-- Don't forget to tick **all checkboxes** upon completion in the **implementation plan**.
-- Don't forget to complete the **current focus** at the end of the file
+# Current Status: Worklist/MD View Slowness After State Manager Update
 
-## Implementation Plan - Logical Steps
-
-### Step 1: py4web Controller Setup
-
-**File**: `codes.py`
-
-- [x] Create new controller file with proper py4web imports:
-  - [x] `from py4web import URL, action, redirect, response`
-  - [x] `from .common import auth, db, session`
-  - [x] `from .settings import APP_NAME, ASSETS_FOLDER, ENV_STATUS, LOCAL_URL, NEW_INSTALLATION, TIMEOFFSET`
-- [x] Create main codes listing action with authentication
-- [x] Set up route: `/manage/codes` for the main view
-- [x] Configure template usage and context variables
-- [x] Add any helper functions needed for the view
-
-### Step 2: HTML Template Foundation
-
-**File**: `templates/manage/codes.html`
-
-- [x] Extend py4web layout: `[[extend 'layout.html']]`
-- [x] Create page header with title
-- [x] Add search toolbar section
-- [x] Create bootstrap-table container with proper data attributes
-- [x] Include create new code button
-- [x] Add modal structure for create/edit operations
-
-### Step 3: Bootstrap-Table Configuration
-
-**File**: `static/js/manage/codes_bt.js`
-
-- [x] Configure server-side pagination
-- [x] Define main columns with formatters:
-  - `nomen_code` - Simple display
-  - `nomen_desc_fr` & `nomen_desc_nl` - Truncated with tooltips
-  - `fee` - Formatted currency
-  - Actions - Edit/Delete buttons
-- [x] Implement detail view formatter for additional fields
-- [x] Configure search integration
-- [x] Set up pagination parameters
-- [x] Define column events for action buttons
-- [x] Step 3 - Bootstrap-Table Configuration completed (2025-06-09T21:10:06.674405)
-
-### Step 4: Main Application Logic
-
-**File**: `static/js/manage/codes.js`
-
-- [x] Initialize API base URL configuration
-- [x] Create modal management functions (show/hide/reset)
-- [x] Implement form validation logic
-- [x] Create API wrapper functions:
-  - `searchCodes()` - GET /tarifs/search with enhanced search (code + descriptions)
-  - `createCode()` - POST /tarifs/codes
-  - `updateCode()` - PUT /tarifs/codes/{id}
-  - `deleteCode()` - DELETE /tarifs/codes/{id}
-- [x] Implement error handling and user feedback using `displayToast`
-- [x] Add loading states during operations
-- [x] Enhanced search functionality across nomenclature code, French description, and Dutch description
-- [x] Step 4 - Main Application Logic completed (2025-06-10T01:32:38.246206)
-
-### Step 4b: UI/UX Fixes for Codes Table
-
-- [x] Remove custom search bar, use only bootstrap-table's built-in search
-- [x] Integrate 'New Code' button into bootstrap-table toolbar using toolbar option
-- [x] Ensure pagination uses only bootstrap-table's built-in pagination controls
-- [x] Style and align all controls using bootstrap-table best practices
-- [x] Reference context7 for implementation details
-- [x] Step 4b - UI/UX Fixes for Codes Table completed (2025-06-09T23:19:38.015996)
-
-### Step 4c: Template and Detail View Enhancements
-
-- [x] Fixed template layout: Changed extend from `layout.html` to `baseof_auth.html`
-- [x] Added missing `bootstrap-table.min.css` for proper styling and loading states
-- [x] Implemented comprehensive `detailFormatter` function with:
-  - Two-column responsive layout (validity/categories | key letters/coefficients)
-  - All additional fields display (dates, categories, key letters, author document)
-  - Bootstrap styling with proper null handling
-  - Dynamic content showing only populated key letter sections
-- [x] Step 4c - Template and Detail View Enhancements completed (2025-06-10T01:28:49.315322)
-
-### Step 5: CRUD Operations Implementation
-
-**Create Functionality:**
-
-- [x] New code button event handler with default values
-- [x] Form validation (required fields, formats)
-- [x] API call with error handling
-- [x] Table refresh after creation
-- [x] Success/error notifications using `displayToast`
-
-**Read/Search Functionality:**
-
-- [x] Bootstrap-table data loading
-- [x] Search integration with API
-- [x] Pagination handling  
-- [x] Detail view expansion
-- [x] Single code fetch API for editing
+## Context
 
-**Update Functionality:**
+- After updating the worklist state manager and introducing a request queue, operations such as updating a worklist item to 'done', editing fields, or adding medications in the MD view have become noticeably slower.
+- The new system has improved concurrency safety and eliminated transaction corruption, but at the cost of user-perceived performance.
 
-- [x] Edit button event handler
-- [x] Pre-populate modal form with existing data
-- [x] Form validation for updates
-- [x] API call with error handling
-- [x] Table refresh after update
-- [x] Loading states during data fetch
-
-**Delete Functionality:**
+## Main Issues Identified
 
-- [x] Delete button event handler
-- [x] Bootbox confirmation dialog with fallback
-- [x] API call for deletion
-- [x] Table refresh after deletion
-- [x] Enhanced error messages
-- [x] Step 5 - CRUD Operations Implementation completed (2025-06-10T01:44:32.512739)
+- **Serial request queue**: All operations are processed one after another, even when they could be parallel.
+- **Extra tracking and promise overhead**: Every operation is wrapped in additional logic for tracking and state management, even for simple updates.
+- **UI locking and feedback**: Each operation locks UI elements and generates feedback toasts, adding DOM and rendering overhead.
+- **Potential backend/API slowness**: If backend endpoints are slower due to new logging or transaction handling, all AJAX-based updates are affected.
 
-### Step 6: UI/UX Enhancements
+## Goal
 
-- [x] Bootstrap tooltips initialization for truncated text (already working)
-- [x] Loading spinners during API calls (implemented with hourglass icons)
-- [x] Form field validation styling (Bootstrap `is-invalid` classes for visual feedback)
-- [x] Responsive design considerations (Bootstrap responsive grid system)
-- [x] Error message display using `displayToast` (already working)
-- [x] Success notifications using `displayToast` (already working)
-
-### Step 7: Integration & Testing
-
-- [ ] Test all CRUD operations
-- [ ] Verify pagination functionality
-- [ ] Test search functionality
-- [ ] Validate responsive behavior
-- [ ] Error handling testing
-- [ ] Cross-browser compatibility
-
-## File Structure Overview
-
-``` tree
-├── codes.py                          # py4web controller
-├── templates/manage/codes.html       # Main view template
-├── static/js/manage/codes.js         # Main application logic
-└── static/js/manage/codes_bt.js      # Bootstrap-table configuration
-```
-
-## Technical Specifications
-
-### py4web Controller (codes.py)
-
-**Required Imports:**
+- Restore fast, responsive UI for common worklist and MD view operations, while retaining concurrency safety for batch/critical operations.
 
-```python
-from py4web import URL, action, redirect, response
-from .common import auth, db, session
-from .settings import (
-    APP_NAME, ASSETS_FOLDER, ENV_STATUS, 
-    LOCAL_URL, NEW_INSTALLATION, TIMEOFFSET
-)
-```
+---
 
-**Main Action:**
+# Plan to Fix Worklist/MD View Slowness
 
-- Route: `@action('manage/codes')`
-- Authentication: `@action.uses(auth.user)`
-- Template: `@action.uses('manage/codes.html')`
-- Context: Pass necessary variables to template
+## Step 1: Profile Current Performance
 
-### API Endpoints
+- Use browser dev tools to measure time spent in frontend JS (queue, crudp, DOM updates).
+- Use backend logs to measure API response times for single and batch operations.
 
-- **Base URL**: `https://nomen.c66.ovh`
-- **Search**: `GET /tarifs/search?limit={limit}&offset={offset}&nomen_code_prefix={query}&description_substring={query}`
-- **Create**: `POST /tarifs/codes`
-- **Update**: `PUT /tarifs/codes/{nomen_code}`
-- **Delete**: `DELETE /tarifs/codes/{nomen_code}`
+## Step 2: Analyze Which Operations Need Serial Queuing
 
-### Table Columns Configuration
+- Identify which actions truly require serialization (e.g., batch operations on the same patient/item).
+- List actions that can safely be performed in parallel (e.g., single worklist item updates, most MD view edits).
 
-**Main Columns:**
+## Step 3: Refactor Request Queue Usage
 
-- `nomen_code` (sortable)
-- `nomen_desc_fr` (searchable, truncated 30 chars)
-- `nomen_desc_nl` (searchable, truncated 30 chars)
-- `fee` (formatted as currency)
-- `actions` (edit/delete buttons)
+- Allow parallel AJAX requests for independent operations.
+- Restrict the queue to only those actions where concurrency could cause data corruption.
+- For simple updates, bypass the queue and call crudp/ajax directly.
 
-**Detail View Fields:**
+## Step 4: Optimize UI Locking and Feedback
 
-- `dbegin_fee`, `dend_fee` (validity dates)
-- `fee_code_cat`, `feecode` (fee categories)
-- `nomen_grp_n` (nomenclature group)
-- `key_letter1-3` with coefficients and values
-- `AUTHOR_DOC` (author document)
+- Lock only the specific button or row being updated, not the whole UI.
+- Batch or throttle feedback toasts for rapid, repeated actions.
 
-### Form Fields for Create/Edit Modal
+## Step 5: Minimize Tracking/Logging for Simple Actions
 
-**Required:**
+- Only use detailed tracking for batch or critical operations.
+- Reduce or throttle console logging in production.
 
-- `nomen_code` (unique integer)
-- `nomen_desc_nl` or `nomen_desc_fr` (at least one description)
+## Step 6: Backend/API Profiling and Optimization
 
-**Optional with Defaults:**
+- If backend is a bottleneck, optimize endpoint logic and database transactions.
+- Ensure only necessary operations are performed per request.
 
-- `fee` (default: 0.0)
-- `fee_code_cat` (default: 4)
-- `feecode` (default: 1600)
-- `dbegin_fee` (default: current date)
-- `dend_fee` (default: 2099-12-31)
-- `nomen_grp_n` (default: "")
+## Step 7: Test and Validate
 
-## Dependencies & Libraries
+- Test all common workflows for responsiveness and correctness.
+- Ensure concurrency safety is preserved for batch/critical operations.
+- Gather user feedback on perceived performance.
 
-- **Frontend**: Bootstrap 5, Bootstrap-table, Bootbox
-- **JavaScript**: Vanilla JS + jQuery (for bootstrap-table only)
-- **Backend**: py4web framework, FastAPI server
-- **Database**: SQLite via FastAPI endpoints
+---
 
-## Current Status
+# Next Steps
 
-- [x] Requirements analysis completed
-- [x] API documentation reviewed
-- [x] py4web and bootstrap-table documentation researched
-- [x] Implementation plan created with controller integration
-- [x] Step 1 - py4web Controller Setup completed (2025-06-09T21:03:14.076160)
-- [x] Step 2 - HTML Template Foundation completed (2025-06-09T21:06:46.206778)
-- [x] Step 3 - Bootstrap-Table Configuration completed (2025-06-09T21:10:06.674405)
-- [x] Step 4 - Main Application Logic completed (2025-06-10T01:32:38.246206)
-- [x] Step 4b - UI/UX Fixes for Codes Table completed (2025-06-09T23:19:38.015996)
-- [x] Step 4c - Template and Detail View Enhancements completed (2025-06-10T01:28:49.315322)
-- [x] Step 5 - CRUD Operations Implementation completed (2025-06-10T01:44:32.512739)
-- [x] Step 6 - UI/UX Enhancements completed (2025-06-10T02:04:55.459412)
-- [ ] **Next:** Step 7 - Integration & Testing
-
-## Search Implementation Summary
-
-The search functionality has been simplified to ensure basic functionality works:
-
-- **Nomenclature Code Only**: Search only by nomenclature code prefix
-- **Minimum Length**: Search activates with 2+ characters
-- **API Integration**: Uses only `nomen_code_prefix` parameter for reliability
-- **Error Handling**: Proper fallbacks for connection issues
-
-### Search Logic
-
-1. **Simple Code Search**: When user types a search term:
-   - Search term is sent as `nomen_code_prefix` to the API
-   - Works for both numeric and text input
-   - Reliable and straightforward implementation
-
-2. **Server-Side Integration**: The search parameters are properly sent to the FastAPI server at `https://nomen.c66.ovh/tarifs/search`
-
-3. **Real-Time Search**: Bootstrap-table handles the search input and triggers API calls automatically
-
-### Future Enhancement
-
-Once basic functionality is confirmed working, search can be expanded to include French and Dutch descriptions.
+- [ ] Complete Step 1: Profile current performance (frontend and backend)
+- [ ] Complete Step 2: Analyze which operations need queuing
+- [ ] Complete Step 3: Refactor queue usage for parallelism
+- [ ] Complete Step 4: Optimize UI locking/feedback
+- [ ] Complete Step 5: Minimize tracking/logging
+- [ ] Complete Step 6: Backend/API optimization (if needed)
+- [ ] Complete Step 7: Test and validate

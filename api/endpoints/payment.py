@@ -15,7 +15,7 @@ from py4web import action, request
 from py4web.core import Fixture
 
 from ...common import auth, db, logger
-from ..core.base import APIResponse, handle_rest_api_request
+from ..core.base import APIResponse
 from ..core.nomenclature import NomenclatureClient
 
 logger = logging.getLogger(__name__)

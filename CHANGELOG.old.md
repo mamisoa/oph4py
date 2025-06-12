@@ -1641,6 +1641,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2025-06-09T15:07:18.462761] - Nomenclature Management Phase 3 Complete
 
 ### Added
+
 - **Nomenclature JavaScript Module**: Created dedicated `static/js/nomenclature.js` module for advanced table management
 - **Advanced Search Panel**: Collapsible advanced search form with code prefix, description, fee code, and category filters
 - **Quick Filter Buttons**: One-click filters for common fee codes (K, C, N) and categories (1, 2, 3, 99)
@@ -1651,12 +1652,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Enhanced Error Handling**: Comprehensive error handling for network issues and API unavailability
 
 ### Changed
+
 - **Template Structure**: Enhanced `nomenclature_list.html` with advanced search panel and quick filters
 - **Bootstrap Table Integration**: Replaced inline JavaScript with modular approach using dedicated nomenclature.js
 - **Search Intelligence**: Automatic detection of search type (code vs description) based on input pattern
 - **UI Improvements**: Added table information panel, filter buttons, and enhanced styling
 
 ### Technical Implementation
+
 - **Module Architecture**: Self-contained JavaScript module with namespace protection
 - **Event Management**: Proper event binding and cleanup for memory management  
 - **State Management**: Centralized filter state with persistent search capabilities
@@ -1715,7 +1718,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2025-06-09T00:29:11] - Critical History Field and Patient Navbar Fixes
 
 ### Fixed
-- **CRITICAL: Fixed history field in patient MD summary endpoints** 
+
+- **CRITICAL: Fixed history field in patient MD summary endpoints**
   - Changed from incorrect `phistory.title + phistory.note` to correct `current_hx.description`
   - Updated both `patient_md_summary` and `patient_md_summary_modal` endpoints
   - Now matches the worklist-based endpoints implementation exactly
@@ -1729,12 +1733,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated gender-based avatar selection to use numeric values
 
 ### Technical Details
+
 - Patient-based MD summary now uses identical LEFT JOIN structure as worklist-based endpoints
 - History field correctly shows `current_hx.description` instead of combined phistory fields
 - Patient information card now properly populates with correct API response structure
 - Gender-based default avatars work correctly with numeric gender codes
 
 ### Added
+
 - (2025-06-09T21:06:46.206778) Created `templates/manage/codes.html` for nomenclature codes CRUD management. Includes page header, search toolbar, bootstrap-table container, create new code button, and modal for create/edit operations as per activeContext.md implementation plan.
 
 ## [2025-06-08T02:46:09.312253]
