@@ -309,10 +309,9 @@ window.operateEvents_wl = {
 		putWlModal(row.id);
 	},
 	"click .remove": function (e, value, row, index) {
-		// Use request queue for deletion to prevent race conditions
 		WorklistState.UI.lockUI(".remove", "Deleting...");
 
-		// Add to request queue instead of calling directly
+		// This is a complex operation that requires user confirmation and state cleanup
 		WorklistState.Queue.enqueue(
 			function () {
 				return new Promise((resolve, reject) => {
@@ -320,14 +319,8 @@ window.operateEvents_wl = {
 						message: "Are you sure you want to delete this worklist item?",
 						closeButton: false,
 						buttons: {
-							confirm: {
-								label: "Yes",
-								className: "btn-success",
-							},
-							cancel: {
-								label: "No",
-								className: "btn-danger",
-							},
+							confirm: { label: "Yes", className: "btn-success" },
+							cancel: { label: "No", className: "btn-danger" },
 						},
 						callback: function (result) {
 							if (result) {
@@ -336,11 +329,28 @@ window.operateEvents_wl = {
 
 								// Delete through the API
 								crudpWithoutToast("worklist", row.id, "DELETE")
-									.then((data) => {
+									.then(async (data) => {
+										// Critical: Wait a moment for database transaction to complete
+										await new Promise((resolve) => setTimeout(resolve, 100));
+
+										// Atomic cleanup of all state references
+										const cleanupSuccess =
+											WorklistState.Manager.atomicCleanupItem(
+												row.uniqueId,
+												row.id
+											);
+
+										if (!cleanupSuccess) {
+											console.warn(
+												"⚠️  State cleanup had issues, but proceeding with refresh"
+											);
+										}
+
+										// Now safe to refresh table
 										$table_wl.bootstrapTable("refresh");
+
 										resolve({
-											message:
-												"Worklist item ID: " + row.id + " deleted successfully",
+											message: `Worklist item ID: ${row.id} deleted successfully`,
 											data: data,
 										});
 									})
@@ -349,7 +359,6 @@ window.operateEvents_wl = {
 										reject(err);
 									});
 							} else {
-								// User canceled, resolve with no action
 								resolve({ canceled: true });
 							}
 						},
@@ -376,6 +385,11 @@ window.operateEvents_wl = {
 					"feedbackContainer"
 				);
 				WorklistState.UI.unlockUI(".remove");
+			},
+			{
+				operationType: "delete-with-confirmation",
+				itemId: row.id,
+				description: "Delete worklist item with user confirmation",
 			}
 		);
 	},
@@ -396,7 +410,7 @@ window.operateEvents_wl = {
 
 			const dataStr = JSON.stringify(dataObj);
 
-			// Add to request queue instead of calling directly
+			// This is a simple counter update operation - can bypass queue
 			WorklistState.Queue.enqueue(
 				function () {
 					// Track the item being processed
@@ -405,14 +419,24 @@ window.operateEvents_wl = {
 					return setWlItemStatusWithoutToast(dataStr);
 				},
 				function (result) {
-					// Success callback
-					$table_wl.bootstrapTable("refresh");
-					WorklistState.UI.showFeedback(
-						"success",
-						result.message,
-						"feedbackContainer"
-					);
-					WorklistState.UI.unlockUI(".stopwatch");
+					// Success callback with proper state cleanup
+					console.log(`✅ Counter updated for item ${row.id} successfully`);
+
+					// Clean up processing state when item is completed
+					if (dataObj.status_flag === "done") {
+						WorklistState.Manager.clearProcessingItem(row.id);
+					}
+
+					// Wait a moment for database transaction to complete, then refresh
+					setTimeout(() => {
+						$table_wl.bootstrapTable("refresh");
+						WorklistState.UI.showFeedback(
+							"success",
+							result.message,
+							"feedbackContainer"
+						);
+						WorklistState.UI.unlockUI(".stopwatch");
+					}, 100);
 				},
 				function (error) {
 					// Error callback
@@ -423,6 +447,12 @@ window.operateEvents_wl = {
 						"feedbackContainer"
 					);
 					WorklistState.UI.unlockUI(".stopwatch");
+				},
+				{
+					operationType: "counter-update",
+					itemId: row.id,
+					description: "Update counter value",
+					bypassQueue: true, // Force bypass for simple counter update
 				}
 			);
 		} else {
@@ -433,41 +463,86 @@ window.operateEvents_wl = {
 		// Lock UI during processing
 		WorklistState.UI.lockUI(".done", "Processing...");
 
-		let dataObj = { laterality: row.laterality, id: row.id };
+		// CRITICAL FIX: Get fresh table data to avoid "Record not found" errors
+		const currentTableData = $table_wl.bootstrapTable("getData");
+		const freshRow = currentTableData.find((item) => item.id === row.id);
 
-		if (row.status_flag != "done") {
+		if (!freshRow) {
+			console.warn("⚠️ Row data is stale, refreshing table first");
+			WorklistState.UI.showFeedback(
+				"warning",
+				"Refreshing data, please try again",
+				"feedbackContainer"
+			);
+			WorklistState.UI.unlockUI(".done");
+			$table_wl.bootstrapTable("refresh");
+			return;
+		}
+
+		let dataObj = { laterality: freshRow.laterality, id: freshRow.id };
+
+		if (freshRow.status_flag != "done") {
 			dataObj["status_flag"] = "done";
 			dataObj["counter"] = 0;
 
 			const dataStr = JSON.stringify(dataObj);
 
-			// Add to request queue instead of calling directly
+			// This is a simple status update operation - can bypass queue
 			WorklistState.Queue.enqueue(
 				function () {
 					// Track the item being processed
-					WorklistState.Manager.trackProcessingItem(row.id);
+					WorklistState.Manager.trackProcessingItem(freshRow.id);
 
 					return setWlItemStatusWithoutToast(dataStr);
 				},
 				function (result) {
-					// Success callback
-					$table_wl.bootstrapTable("refresh");
-					WorklistState.UI.showFeedback(
-						"success",
-						result.message,
-						"feedbackContainer"
-					);
-					WorklistState.UI.unlockUI(".done");
+					// Success callback with proper state cleanup
+					console.log(`✅ Item ${freshRow.id} marked as done successfully`);
+
+					// Clean up processing state
+					WorklistState.Manager.clearProcessingItem(freshRow.id);
+
+					// Wait a moment for database transaction to complete, then refresh
+					setTimeout(() => {
+						$table_wl.bootstrapTable("refresh");
+						WorklistState.UI.showFeedback(
+							"success",
+							result.message,
+							"feedbackContainer"
+						);
+						WorklistState.UI.unlockUI(".done");
+					}, 100);
 				},
 				function (error) {
-					// Error callback
+					// Enhanced error callback with better handling
 					console.error("Status update failed:", error);
-					WorklistState.UI.showFeedback(
-						"error",
-						"Error updating status: " + error,
-						"feedbackContainer"
-					);
+
+					// Check if it's a "Record not found" error but operation might have succeeded
+					if (error.responseJSON && error.responseJSON.code === 404) {
+						WorklistState.UI.showFeedback(
+							"warning",
+							"Item may have been updated by another user. Refreshing data...",
+							"feedbackContainer"
+						);
+						// Refresh the table to see current state
+						setTimeout(() => {
+							$table_wl.bootstrapTable("refresh");
+						}, 500);
+					} else {
+						WorklistState.UI.showFeedback(
+							"error",
+							"Error updating status: " +
+								(error.responseJSON?.message || error.message || error),
+							"feedbackContainer"
+						);
+					}
 					WorklistState.UI.unlockUI(".done");
+				},
+				{
+					operationType: "status-update",
+					itemId: freshRow.id,
+					description: "Mark item as done",
+					bypassQueue: true, // Force bypass for simple status update
 				}
 			);
 		} else {
@@ -486,7 +561,7 @@ window.operateEvents_wl = {
 
 			const dataStr = JSON.stringify(dataObj);
 
-			// Add to request queue instead of calling directly
+			// This is a simple status update operation - can bypass queue
 			WorklistState.Queue.enqueue(
 				function () {
 					// Track the item being processed
@@ -495,20 +570,28 @@ window.operateEvents_wl = {
 					return setWlItemStatusWithoutToast(dataStr);
 				},
 				function (result) {
-					// Success callback
-					$table_wl.bootstrapTable("refresh");
+					// Success callback with proper state cleanup
+					console.log(`✅ Item ${row.id} started processing successfully`);
 
-					// Navigate to the controller page after status is updated
-					let controller = modalityDict[row.modality];
-					let link =
-						HOSTURL +
-						"/" +
-						APP_NAME +
-						"/modalityCtr/" +
-						controller +
-						"/" +
-						row.id;
-					window.location.href = link;
+					// Item is now in processing state, track it
+					WorklistState.Manager.trackProcessingItem(row.id);
+
+					// Wait a moment for database transaction to complete, then refresh and navigate
+					setTimeout(() => {
+						$table_wl.bootstrapTable("refresh");
+
+						// Navigate to the controller page after status is updated
+						let controller = modalityDict[row.modality];
+						let link =
+							HOSTURL +
+							"/" +
+							APP_NAME +
+							"/modalityCtr/" +
+							controller +
+							"/" +
+							row.id;
+						window.location.href = link;
+					}, 100);
 				},
 				function (error) {
 					// Error callback
@@ -519,6 +602,12 @@ window.operateEvents_wl = {
 						"feedbackContainer"
 					);
 					WorklistState.UI.unlockUI(".modality_ctr");
+				},
+				{
+					operationType: "status-update",
+					itemId: row.id,
+					description: "Start modality processing",
+					bypassQueue: true, // Force bypass for simple status update
 				}
 			);
 		} else {
@@ -546,7 +635,7 @@ window.operateEvents_wl = {
 
 			const dataStr = JSON.stringify(dataObj);
 
-			// Add to request queue instead of calling directly
+			// This is a simple status update operation - can bypass queue
 			WorklistState.Queue.enqueue(
 				function () {
 					// Track the item being processed
@@ -555,14 +644,22 @@ window.operateEvents_wl = {
 					return setWlItemStatusWithoutToast(dataStr);
 				},
 				function (result) {
-					// Success callback
-					$table_wl.bootstrapTable("refresh");
-					WorklistState.UI.showFeedback(
-						"success",
-						result.message,
-						"feedbackContainer"
-					);
-					WorklistState.UI.unlockUI(".unlock");
+					// Success callback with proper state cleanup
+					console.log(`✅ Item ${row.id} unlocked successfully`);
+
+					// Item is now back in processing state, track it
+					WorklistState.Manager.trackProcessingItem(row.id);
+
+					// Wait a moment for database transaction to complete, then refresh
+					setTimeout(() => {
+						$table_wl.bootstrapTable("refresh");
+						WorklistState.UI.showFeedback(
+							"success",
+							result.message,
+							"feedbackContainer"
+						);
+						WorklistState.UI.unlockUI(".unlock");
+					}, 100);
 				},
 				function (error) {
 					// Error callback
@@ -573,6 +670,12 @@ window.operateEvents_wl = {
 						"feedbackContainer"
 					);
 					WorklistState.UI.unlockUI(".unlock");
+				},
+				{
+					operationType: "status-update",
+					itemId: row.id,
+					description: "Unlock completed item",
+					bypassQueue: true, // Force bypass for simple status update
 				}
 			);
 		} else {

@@ -8,6 +8,36 @@
 <script src="[[=URL('static', 'js/bootstrap-table_1.22/bootstrap-table.min.js')]]"></script>
 <script src="[[=URL('static', 'js/bootstrap-table_1.22/extensions/export/bootstrap-table-export.min.js')]]"></script>
 <script src="[[=URL('static', 'js/billing/daily_transactions.js')]]"></script>
+
+<!-- Performance Optimization System - Universal queue system + profiler -->
+<script src="[[=URL('static', 'js/universal/universal-queue-manager.js')]]"></script>
+<script src="[[=URL('static', 'js/billing/transaction-state-manager.js')]]"></script>
+<script src="[[=URL('static', 'js/universal/universal-performance-monitor.js')]]"></script>
+<script src="[[=URL('static', 'js/profiling/performance-profiler.js')]]"></script>
+<script>
+    // Initialize performance optimization for Daily Transactions view
+    $(document).ready(function () {
+        if (typeof PerformanceProfiler !== 'undefined') {
+            // Daily Transactions view specific configuration
+            PerformanceProfiler.config.viewType = 'DailyTransactions';
+            PerformanceProfiler.config.debugMode = false; // Enable for debugging
+
+            console.log('📊 Performance Profiler available for Daily Transactions view');
+            console.log('🎯 Use PerformanceProfiler.startProfiling() to begin monitoring');
+            console.log('🔍 Use PerformanceProfiler.startDebugging() for detailed analysis');
+            console.log('📊 Press Ctrl+Shift+P to view performance report');
+        }
+
+        // Transaction Queue Performance System available
+        if (typeof TransactionState !== 'undefined') {
+            console.log('💰 Transaction Queue Performance System active');
+            console.log('🎯 Use showQueuePerformance("Transaction") for transaction-specific performance');
+            console.log('🎯 Use showTransactionPerformance() for detailed transaction metrics');
+            console.log('🎯 Use transactionApiCall() for optimized API calls');
+            console.log('🎯 Use transactionRefreshTable() for optimized table refreshes');
+        }
+    });
+</script>
 [[ end ]]
 
 [[ block left_nav ]]

@@ -464,7 +464,52 @@
         worklistId: window.worklistId
     });
 </script>
+
+<!-- Universal Queue Performance System -->
+<script src="[[=URL('static/js/universal/universal-queue-manager.js')]]"></script>
+<script src="[[=URL('static/js/universal/universal-performance-monitor.js')]]"></script>
+<script src="[[=URL('static/js/billing/payment-state-manager.js')]]"></script>
+
+<!-- Performance Profiler -->
+<script src="[[=URL('static/js/profiling/performance-profiler.js')]]"></script>
+
+<!-- Payment Manager (Original) -->
 <script src="[[=URL('static/js/billing/payment-manager.js')]]"></script>
+
+<script>
+    // Initialize Performance Profiler for Payment View
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof PerformanceProfiler !== 'undefined') {
+            PerformanceProfiler.config.viewType = 'Payment';
+            PerformanceProfiler.init();
+            console.log('💳 Payment Performance Profiler initialized');
+            console.log('🎯 Use PerformanceProfiler.startProfiling() to begin profiling');
+            console.log('🎯 Use showPaymentPerformance() for payment-specific metrics');
+            console.log('🎯 Use Ctrl+Shift+P to view performance report');
+        }
+
+        // Enhanced transaction refresh button
+        const refreshBtn = document.getElementById('refresh-transactions-btn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function () {
+                console.log('💳 Payment: Manual transaction refresh requested');
+                if (typeof paymentRefreshTransactions === 'function') {
+                    paymentRefreshTransactions('GET-transactions-manual');
+                } else if (typeof PaymentManager !== 'undefined' && PaymentManager.refreshTransactionHistory) {
+                    PaymentManager.refreshTransactionHistory();
+                }
+            });
+        }
+
+        // Enhanced payment processing button
+        const processPaymentBtn = document.getElementById('process-payment-btn');
+        if (processPaymentBtn) {
+            processPaymentBtn.addEventListener('click', function () {
+                console.log('💳 Payment: Payment processing button clicked with optimization');
+            });
+        }
+    });
+</script>
 [[ end]]
 
 <style>

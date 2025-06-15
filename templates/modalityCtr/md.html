@@ -139,4 +139,33 @@
 <script src="js/md/glasses.js"></script>
 <script src="js/md/contacts.js"></script>
 <script src="js/md/certificates.js"></script>
+
+<!-- 7. Performance Optimization System - Universal queue system + profiler -->
+<script src="js/universal/universal-queue-manager.js"></script>
+<script src="js/md/md-state-manager.js"></script>
+<script src="js/universal/universal-performance-monitor.js"></script>
+<script src="js/profiling/performance-profiler.js"></script>
+<script>
+    // Initialize performance optimization for MD view
+    $(document).ready(function () {
+        if (typeof PerformanceProfiler !== 'undefined') {
+            // MD view specific configuration
+            PerformanceProfiler.config.viewType = 'MD';
+            PerformanceProfiler.config.debugMode = false; // Enable for debugging
+
+            console.log('📊 Performance Profiler available for MD view');
+            console.log('🎯 Use PerformanceProfiler.startProfiling() to begin monitoring');
+            console.log('🔍 Use PerformanceProfiler.startDebugging() for detailed analysis');
+            console.log('📊 Press Ctrl+Shift+P to view performance report');
+        }
+
+        // MD Queue Performance System available
+        if (typeof MDState !== 'undefined') {
+            console.log('🏥 MD Queue Performance System active');
+            console.log('🎯 Use showQueuePerformance("MD") for MD-specific performance');
+            console.log('🎯 Use showMDPerformance() for detailed MD metrics');
+            console.log('🎯 Use mdCrudp() instead of crudp() for optimized operations');
+        }
+    });
+</script>
 [[ end ]]
