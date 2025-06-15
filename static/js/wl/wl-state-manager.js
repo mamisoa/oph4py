@@ -16,6 +16,16 @@ class WorklistStateManager {
 		this.patientContext = null; // current patient context
 		this.processingItems = new Map(); // tracking items by their database ID
 		this.currentTransactionId = null; // stores the current transaction ID
+
+		// Auto-refresh management
+		this.autoRefreshTimer = null;
+		this.autoRefreshInterval = 40000; // 40 seconds default
+		this.isRefreshPaused = false;
+		this.lastOperationTime = 0;
+		this.operationCooldownTime = 5000; // 5 seconds after operation before allowing auto-refresh
+		this.pendingAutoRefresh = false;
+
+		console.log("🎯 WorklistStateManager initialized");
 	}
 
 	/**
@@ -169,25 +179,43 @@ class WorklistStateManager {
 	}
 
 	/**
-	 * Track an item being processed by its database ID
-	 * @param {Number|String} id - Database ID of the item
-	 * @param {Object} data - Additional metadata to store
+	 * Track an item being processed (enhanced with auto-refresh coordination)
+	 * @param {String} id - Database ID of the item
+	 * @param {Object} data - Additional data about the processing
 	 */
 	trackProcessingItem(id, data = {}) {
-		this.processingItems.set(id.toString(), {
+		const processingData = {
 			id: id,
-			startTime: new Date(),
-			data: data,
+			timestamp: Date.now(),
+			...data,
+		};
+
+		this.processingItems.set(id, processingData);
+
+		// Pause auto-refresh when operations start
+		this.pauseAutoRefresh(`processing item ${id}`);
+
+		console.log(`🔄 Tracking processing item: ${id}`, {
+			args: arguments.length,
+			pendingItems: this.pendingItems.size,
+			processingItems: this.processingItems.size,
 		});
 	}
 
 	/**
-	 * Remove tracking for a processed item
-	 * @param {Number|String} id - Database ID of the item
-	 * @returns {Boolean} True if item was found and removed
+	 * Clear processing state for an item (enhanced with auto-refresh coordination)
+	 * @param {String} id - Database ID of the item to clear
 	 */
 	clearProcessingItem(id) {
-		return this.processingItems.delete(id.toString());
+		if (this.processingItems.has(id)) {
+			this.processingItems.delete(id);
+			console.log(`✅ Cleared processing state for item: ${id}`);
+
+			// If no more items being processed, resume auto-refresh
+			if (this.processingItems.size === 0) {
+				this.resumeAutoRefresh(false); // Don't immediate refresh, let scheduled refresh handle it
+			}
+		}
 	}
 
 	/**
@@ -498,6 +526,120 @@ class WorklistStateManager {
 			console.error("Error retrieving transaction history:", e);
 			return [];
 		}
+	}
+
+	/**
+	 * Start intelligent auto-refresh with operation coordination
+	 * @param {number} interval - Refresh interval in milliseconds (default: 40000)
+	 */
+	startAutoRefresh(interval = 40000) {
+		this.autoRefreshInterval = interval;
+		this.stopAutoRefresh(); // Stop any existing timer
+
+		this.autoRefreshTimer = setInterval(() => {
+			this.performIntelligentRefresh();
+		}, this.autoRefreshInterval);
+
+		console.log(`🔄 Auto-refresh started with ${interval / 1000}s interval`);
+	}
+
+	/**
+	 * Stop auto-refresh timer
+	 */
+	stopAutoRefresh() {
+		if (this.autoRefreshTimer) {
+			clearInterval(this.autoRefreshTimer);
+			this.autoRefreshTimer = null;
+			console.log("⏹️ Auto-refresh stopped");
+		}
+	}
+
+	/**
+	 * Pause auto-refresh temporarily during operations
+	 * @param {string} reason - Reason for pausing
+	 */
+	pauseAutoRefresh(reason = "operation in progress") {
+		this.isRefreshPaused = true;
+		console.log(`⏸️ Auto-refresh paused: ${reason}`);
+	}
+
+	/**
+	 * Resume auto-refresh after operations complete
+	 * @param {boolean} immediate - Whether to trigger immediate refresh
+	 */
+	resumeAutoRefresh(immediate = false) {
+		this.isRefreshPaused = false;
+		this.lastOperationTime = Date.now();
+
+		if (this.pendingAutoRefresh) {
+			this.pendingAutoRefresh = false;
+			if (immediate) {
+				// Wait a short time for database consistency, then refresh
+				setTimeout(() => {
+					this.performSafeRefresh();
+				}, 1000);
+			}
+		}
+
+		console.log("▶️ Auto-refresh resumed");
+	}
+
+	/**
+	 * Intelligent refresh that respects operation state
+	 */
+	performIntelligentRefresh() {
+		// Don't refresh if explicitly paused
+		if (this.isRefreshPaused) {
+			this.pendingAutoRefresh = true;
+			console.log("🔄 Auto-refresh deferred: operations in progress");
+			return;
+		}
+
+		// Don't refresh if recent operations might not be committed yet
+		const timeSinceLastOperation = Date.now() - this.lastOperationTime;
+		if (timeSinceLastOperation < this.operationCooldownTime) {
+			this.pendingAutoRefresh = true;
+			console.log(
+				`🔄 Auto-refresh deferred: waiting ${
+					this.operationCooldownTime - timeSinceLastOperation
+				}ms for operation cooldown`
+			);
+			return;
+		}
+
+		// Don't refresh if there are items being processed
+		if (this.processingItems.size > 0) {
+			this.pendingAutoRefresh = true;
+			console.log(
+				`🔄 Auto-refresh deferred: ${this.processingItems.size} items being processed`
+			);
+			return;
+		}
+
+		this.performSafeRefresh();
+	}
+
+	/**
+	 * Perform safe table refresh with logging
+	 */
+	performSafeRefresh() {
+		if (typeof $table_wl !== "undefined" && $table_wl) {
+			console.log("🔄 Performing intelligent auto-refresh");
+			$table_wl.bootstrapTable("refresh");
+		}
+	}
+
+	/**
+	 * Schedule a refresh after operation completion
+	 * @param {number} delay - Delay in milliseconds before refresh
+	 */
+	scheduleRefreshAfterOperation(delay = 1500) {
+		console.log(
+			`📅 Scheduling refresh in ${delay}ms after operation completion`
+		);
+		setTimeout(() => {
+			this.performSafeRefresh();
+		}, delay);
 	}
 }
 

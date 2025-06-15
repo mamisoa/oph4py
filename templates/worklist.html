@@ -846,10 +846,7 @@
             });
         });
 
-        var timeoutID = window.setInterval(function () {
-            // console.log("Refreshing wl table!");
-            $('#table-wl').bootstrapTable('refresh');
-        }, 40000);
+        // Auto-refresh will be set up in the initialization section below
     }
 
     $(document).ready(function () {
@@ -927,6 +924,19 @@
         if (typeof WorklistState !== 'undefined') {
             // Initialize the worklist
             initWorklist();
+
+            // Set up intelligent auto-refresh to replace basic timer
+            if (WorklistState.Manager) {
+                WorklistState.Manager.startAutoRefresh(40000); // 40 seconds
+                console.log('🔄 Intelligent auto-refresh initialized');
+            } else {
+                console.warn('WorklistState.Manager not available, using fallback timer');
+                // Fallback to basic timer
+                window.setInterval(function () {
+                    console.log("Refreshing wl table (fallback)!");
+                    $('#table-wl').bootstrapTable('refresh');
+                }, 40000);
+            }
 
             // Start performance profiling if needed
             if (typeof PerformanceProfiler !== 'undefined') {

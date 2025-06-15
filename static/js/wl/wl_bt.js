@@ -502,16 +502,48 @@ window.operateEvents_wl = {
 					// Clean up processing state
 					WorklistState.Manager.clearProcessingItem(freshRow.id);
 
-					// Wait a moment for database transaction to complete, then refresh
-					setTimeout(() => {
-						$table_wl.bootstrapTable("refresh");
-						WorklistState.UI.showFeedback(
-							"success",
-							result.message,
-							"feedbackContainer"
+					// Enhanced refresh coordination to prevent race conditions
+					// 1. Schedule a delayed refresh to ensure database transaction commits
+					if (WorklistState.Manager.scheduleRefreshAfterOperation) {
+						WorklistState.Manager.scheduleRefreshAfterOperation(1500);
+					} else {
+						// Fallback with longer delay for database consistency
+						setTimeout(() => {
+							$table_wl.bootstrapTable("refresh");
+						}, 1500);
+					}
+
+					// 2. Immediate UI feedback without waiting for refresh
+					WorklistState.UI.showFeedback(
+						"success",
+						result.message + " (Updating table...)",
+						"feedbackContainer"
+					);
+					WorklistState.UI.unlockUI(".done");
+
+					// 3. Store operation success in localStorage for persistence check
+					const operationRecord = {
+						itemId: freshRow.id,
+						operation: "mark_done",
+						timestamp: Date.now(),
+						status: "success",
+					};
+					try {
+						const storedOps = JSON.parse(
+							localStorage.getItem("worklistOperations") || "[]"
 						);
-						WorklistState.UI.unlockUI(".done");
-					}, 100);
+						storedOps.push(operationRecord);
+						// Keep only last 20 operations
+						if (storedOps.length > 20) {
+							storedOps.splice(0, storedOps.length - 20);
+						}
+						localStorage.setItem(
+							"worklistOperations",
+							JSON.stringify(storedOps)
+						);
+					} catch (e) {
+						console.warn("Could not store operation record:", e);
+					}
 				},
 				function (error) {
 					// Enhanced error callback with better handling
@@ -650,16 +682,48 @@ window.operateEvents_wl = {
 					// Item is now back in processing state, track it
 					WorklistState.Manager.trackProcessingItem(row.id);
 
-					// Wait a moment for database transaction to complete, then refresh
-					setTimeout(() => {
-						$table_wl.bootstrapTable("refresh");
-						WorklistState.UI.showFeedback(
-							"success",
-							result.message,
-							"feedbackContainer"
+					// Enhanced refresh coordination to prevent race conditions
+					// 1. Schedule a delayed refresh to ensure database transaction commits
+					if (WorklistState.Manager.scheduleRefreshAfterOperation) {
+						WorklistState.Manager.scheduleRefreshAfterOperation(1500);
+					} else {
+						// Fallback with longer delay for database consistency
+						setTimeout(() => {
+							$table_wl.bootstrapTable("refresh");
+						}, 1500);
+					}
+
+					// 2. Immediate UI feedback without waiting for refresh
+					WorklistState.UI.showFeedback(
+						"success",
+						result.message + " (Updating table...)",
+						"feedbackContainer"
+					);
+					WorklistState.UI.unlockUI(".unlock");
+
+					// 3. Store operation success in localStorage for persistence check
+					const operationRecord = {
+						itemId: row.id,
+						operation: "unlock_item",
+						timestamp: Date.now(),
+						status: "success",
+					};
+					try {
+						const storedOps = JSON.parse(
+							localStorage.getItem("worklistOperations") || "[]"
 						);
-						WorklistState.UI.unlockUI(".unlock");
-					}, 100);
+						storedOps.push(operationRecord);
+						// Keep only last 20 operations
+						if (storedOps.length > 20) {
+							storedOps.splice(0, storedOps.length - 20);
+						}
+						localStorage.setItem(
+							"worklistOperations",
+							JSON.stringify(storedOps)
+						);
+					} catch (e) {
+						console.warn("Could not store operation record:", e);
+					}
 				},
 				function (error) {
 					// Error callback
@@ -892,3 +956,142 @@ $(document).ready(function () {
 		}
 	}, 1000);
 });
+
+/**
+ * Enhanced table refresh with operation consistency checking
+ * This prevents items from reverting when auto-refresh occurs
+ */
+function enhancedTableRefresh(source = "manual") {
+	console.log(`🔄 Enhanced table refresh triggered by: ${source}`);
+
+	// Store current table state before refresh
+	const currentData = $table_wl.bootstrapTable("getData");
+	const currentItemStates = new Map();
+	currentData.forEach((item) => {
+		currentItemStates.set(item.id, {
+			status_flag: item.status_flag,
+			counter: item.counter,
+		});
+	});
+
+	// Perform the refresh
+	$table_wl.bootstrapTable("refresh");
+
+	// After refresh, check for inconsistencies
+	setTimeout(() => {
+		validateOperationConsistency(currentItemStates, source);
+	}, 1000);
+}
+
+/**
+ * Validate that recent operations are reflected in the refreshed table
+ * @param {Map} previousStates - Map of item states before refresh
+ * @param {string} source - Source of the refresh (for logging)
+ */
+function validateOperationConsistency(previousStates, source) {
+	try {
+		const storedOps = JSON.parse(
+			localStorage.getItem("worklistOperations") || "[]"
+		);
+		const recentOps = storedOps.filter(
+			(op) => Date.now() - op.timestamp < 30000
+		); // Last 30 seconds
+
+		if (recentOps.length === 0) return;
+
+		const currentData = $table_wl.bootstrapTable("getData");
+		const currentStates = new Map();
+		currentData.forEach((item) => {
+			currentStates.set(item.id, {
+				status_flag: item.status_flag,
+				counter: item.counter,
+			});
+		});
+
+		let inconsistenciesFound = 0;
+
+		recentOps.forEach((op) => {
+			const currentState = currentStates.get(op.itemId);
+			const previousState = previousStates.get(op.itemId);
+
+			if (!currentState) {
+				console.warn(
+					`⚠️ Item ${op.itemId} missing after refresh (operation: ${op.operation})`
+				);
+				return;
+			}
+
+			// Check for operation reversion
+			if (op.operation === "mark_done" && currentState.status_flag !== "done") {
+				console.warn(
+					`⚠️ INCONSISTENCY: Item ${op.itemId} was marked done but shows as ${currentState.status_flag}`
+				);
+				inconsistenciesFound++;
+
+				// Show user notification about inconsistency
+				WorklistState.UI.showFeedback(
+					"warning",
+					`Item ${op.itemId} status may have reverted. Please verify the change was saved.`,
+					"feedbackContainer",
+					5000
+				);
+			}
+
+			if (
+				op.operation === "unlock_item" &&
+				currentState.status_flag === "done"
+			) {
+				console.warn(
+					`⚠️ INCONSISTENCY: Item ${op.itemId} was unlocked but still shows as done`
+				);
+				inconsistenciesFound++;
+
+				WorklistState.UI.showFeedback(
+					"warning",
+					`Item ${op.itemId} unlock may have reverted. Please verify the change was saved.`,
+					"feedbackContainer",
+					5000
+				);
+			}
+		});
+
+		if (inconsistenciesFound > 0) {
+			console.error(
+				`🚨 Found ${inconsistenciesFound} operation inconsistencies after ${source} refresh`
+			);
+		} else {
+			console.log(
+				`✅ All recent operations consistent after ${source} refresh`
+			);
+		}
+	} catch (e) {
+		console.warn("Could not validate operation consistency:", e);
+	}
+}
+
+/**
+ * Setup enhanced table refresh listeners
+ * This replaces basic auto-refresh with intelligent coordination
+ */
+function setupEnhancedRefresh() {
+	// Listen for table refresh events
+	$("#table-wl").on("refresh.bs.table", function () {
+		console.log("📊 Table refresh event detected");
+	});
+
+	// Listen for table load success to validate consistency
+	$("#table-wl").on("load-success.bs.table", function () {
+		console.log("📊 Table load success - data refreshed");
+	});
+
+	// Add navigation state detection
+	$(window).on("focus", function () {
+		console.log("🔍 Window gained focus - checking for navigation return");
+		// User may have returned from payment view, schedule consistency check
+		setTimeout(() => {
+			enhancedTableRefresh("navigation-return");
+		}, 500);
+	});
+
+	console.log("🎯 Enhanced refresh system initialized");
+}
