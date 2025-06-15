@@ -295,33 +295,85 @@ window.PerformanceProfiler = {
 		const originalEnqueue = WorklistState.Queue.enqueue;
 		const originalProcessNext = WorklistState.Queue.processNext;
 
-		WorklistState.Queue.enqueue = (
+		// Fix: Forward ALL parameters including the options parameter
+		WorklistState.Queue.enqueue = function (
 			requestFn,
 			successCallback,
-			errorCallback
-		) => {
+			errorCallback,
+			options = {} // <- Add the missing options parameter
+		) {
 			const startTime = performance.now();
-			const queueSize = WorklistState.Queue.queue.length;
+			const queueSize = this.queue.length;
+			const operationType = options.operationType || "unknown";
 
+			// Check if operation will be bypassed for accurate tracking
+			const willBypass =
+				this.shouldBypassQueue && this.shouldBypassQueue(options);
+			const trackingCategory = willBypass ? "bypass" : "queue";
+			const trackingOperation = willBypass ? "bypass-execute" : "enqueue";
+
+			// Enhanced callback wrapper that ensures original callback is always called
+			const wrappedSuccessCallback = successCallback
+				? function (result) {
+						console.log(
+							`🎯 Profiler: Success callback for ${operationType} (bypassed: ${willBypass})`
+						);
+						try {
+							const duration = performance.now() - startTime;
+							PerformanceProfiler.record(
+								trackingCategory,
+								trackingOperation,
+								duration,
+								{
+									queueSize: queueSize,
+									operationType: operationType,
+									result: result ? "success" : "no-result",
+									bypassed: willBypass,
+								}
+							);
+						} catch (profilerError) {
+							console.warn("⚠️ Profiler recording error:", profilerError);
+						}
+
+						// ALWAYS call the original callback
+						console.log(
+							`📞 Profiler: Calling original success callback for ${operationType}`
+						);
+						successCallback(result);
+				  }
+				: null;
+
+			const wrappedErrorCallback = errorCallback
+				? function (error) {
+						try {
+							const duration = performance.now() - startTime;
+							PerformanceProfiler.record(
+								trackingCategory,
+								`${trackingOperation}-error`,
+								duration,
+								{
+									queueSize: queueSize,
+									operationType: operationType,
+									error: error?.message || "unknown",
+									bypassed: willBypass,
+								}
+							);
+						} catch (profilerError) {
+							console.warn("⚠️ Profiler recording error:", profilerError);
+						}
+
+						// ALWAYS call the original callback
+						errorCallback(error);
+				  }
+				: null;
+
+			// Forward ALL parameters to the original method
 			return originalEnqueue.call(
-				WorklistState.Queue,
+				this, // Use proper 'this' context
 				requestFn,
-				function (result) {
-					const duration = performance.now() - startTime;
-					PerformanceProfiler.record("queue", "enqueue", duration, {
-						queueSize: queueSize,
-						result: result ? "success" : "no-result",
-					});
-					if (successCallback) successCallback(result);
-				},
-				function (error) {
-					const duration = performance.now() - startTime;
-					PerformanceProfiler.record("queue", "enqueue-error", duration, {
-						queueSize: queueSize,
-						error: error?.message || "unknown",
-					});
-					if (errorCallback) errorCallback(error);
-				}
+				wrappedSuccessCallback,
+				wrappedErrorCallback,
+				options // <- Forward the options parameter!
 			);
 		};
 
@@ -340,7 +392,7 @@ window.PerformanceProfiler = {
 			return result;
 		};
 
-		console.log("✅ Queue instrumentation complete");
+		console.log("✅ Queue instrumentation complete (with bypass support)");
 	},
 
 	// Instrument CRUDP operations

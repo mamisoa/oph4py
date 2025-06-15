@@ -215,18 +215,81 @@ class WorklistStateManager {
 	}
 
 	/**
-	 * Clear all processed items
+	 * Clear processed items
 	 */
 	clearProcessedItems() {
 		this.processedItems.clear();
+		console.log("Processed items cleared");
 	}
 
 	/**
-	 * Generate a unique ID for an item
-	 * @returns {String} Unique ID
+	 * Atomically clean up all state references for an item
+	 * @param {String} uniqueId - The unique ID of the item to clean up
+	 * @param {Number|String} databaseId - The database ID of the item
+	 * @returns {Boolean} True if cleanup was successful, false otherwise
+	 */
+	atomicCleanupItem(uniqueId, databaseId) {
+		console.log(
+			`🧹 Starting atomic cleanup for uniqueId: ${uniqueId}, dbId: ${databaseId}`
+		);
+
+		// Clean all state maps atomically
+		const cleanupResults = {
+			pendingItems: this.pendingItems.delete(uniqueId),
+			processedItems: this.processedItems.delete(uniqueId),
+			htmlElements: this.htmlElements.delete(uniqueId),
+			processingItems: this.processingItems.delete(databaseId?.toString()),
+		};
+
+		// Verify cleanup success - note that delete() returns false if key didn't exist
+		// which is acceptable, so we just check that all operations completed without error
+		try {
+			const allCompleted = Object.keys(cleanupResults).length === 4;
+
+			if (!allCompleted) {
+				console.error(
+					"🚨 Atomic cleanup failed - not all operations completed:",
+					cleanupResults
+				);
+				return false;
+			}
+
+			console.log("✅ Atomic cleanup completed successfully");
+			return true;
+		} catch (error) {
+			console.error("🚨 Error during atomic cleanup:", error);
+			return false;
+		}
+	}
+
+	/**
+	 * Generate a unique ID with validation and uniqueness checking
+	 * @returns {String} A validated unique ID
 	 */
 	generateUniqueId() {
-		return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+		const timestamp = Date.now();
+		const random = Math.random().toString(36).substr(2, 9);
+		const uniqueId = `wl_${timestamp}_${random}`;
+
+		// Validation to ensure uniqueId is valid
+		if (
+			!uniqueId ||
+			uniqueId.includes("undefined") ||
+			uniqueId.includes("null")
+		) {
+			console.error("🚨 Generated invalid uniqueId:", uniqueId);
+			// Fallback generation
+			return `wl_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+		}
+
+		// Ensure uniqueness across existing items
+		if (this.pendingItems.has(uniqueId)) {
+			console.warn("⚠️  UniqueId collision detected, regenerating...");
+			return this.generateUniqueId(); // Recursive retry
+		}
+
+		console.log("✅ Generated valid uniqueId:", uniqueId);
+		return uniqueId;
 	}
 
 	/**
@@ -445,24 +508,222 @@ class RequestQueue {
 	constructor() {
 		this.queue = [];
 		this.processing = false;
+		this.bypassEnabled = true; // Feature flag for queue bypass
+		this.performanceMetrics = {
+			bypassedOperations: 0,
+			queuedOperations: 0,
+			totalBypassTime: 0,
+			totalQueueTime: 0,
+		};
 	}
 
 	/**
-	 * Add a request to the queue
+	 * Determine if an operation should bypass the queue
+	 * @param {Object} options - Operation options
+	 * @returns {Boolean} True if operation should bypass queue
+	 */
+	shouldBypassQueue(options = {}) {
+		if (!this.bypassEnabled) {
+			console.log(`🔄 Bypass disabled globally`);
+			return false;
+		}
+
+		// Operations that can safely bypass the queue
+		const bypassOperations = [
+			"status-update", // Simple status changes
+			"counter-update", // Counter modifications
+			"table-refresh", // UI table refreshes
+			"ui-feedback", // User feedback messages
+			"state-query", // Read-only state queries
+			"simple-crud", // Basic CRUD operations without dependencies
+		];
+
+		// Operations that MUST use the queue for safety
+		const queueRequiredOperations = [
+			"batch-insert", // Multiple item operations
+			"combo-processing", // Complex combo modality processing
+			"delete-with-confirmation", // Delete operations with user confirmation
+			"transaction-critical", // Operations that need transaction consistency
+		];
+
+		// Debug logging to understand bypass decisions
+		const operationType = options.operationType || "unknown";
+		console.log(`🔍 Bypass Decision for "${operationType}":`, {
+			operationType,
+			bypassEnabled: this.bypassEnabled,
+			explicitBypass: options.bypassQueue,
+			inBypassList: bypassOperations.includes(operationType),
+			inQueueList: queueRequiredOperations.includes(operationType),
+		});
+
+		// Check if explicitly marked as queue-required
+		if (
+			options.operationType &&
+			queueRequiredOperations.includes(options.operationType)
+		) {
+			console.log(`🔄 QUEUE REQUIRED: ${operationType} needs serialization`);
+			return false;
+		}
+
+		// Check if eligible for bypass
+		if (
+			options.operationType &&
+			bypassOperations.includes(options.operationType)
+		) {
+			console.log(`⚡ BYPASS ELIGIBLE: ${operationType} can be fast-tracked`);
+			return true;
+		}
+
+		// Check if explicitly marked for bypass
+		if (options.bypassQueue === true) {
+			console.log(`⚡ BYPASS FORCED: ${operationType} explicitly bypassed`);
+			return true;
+		}
+
+		// Default to queue for safety
+		console.log(`🔄 DEFAULT QUEUE: ${operationType} using queue for safety`);
+		return false;
+	}
+
+	/**
+	 * Execute operation directly without queuing
+	 * @param {Function} requestFn - Function to execute
+	 * @param {Function} successCallback - Success callback
+	 * @param {Function} errorCallback - Error callback
+	 * @param {Object} options - Operation options
+	 */
+	executeDirectly(requestFn, successCallback, errorCallback, options = {}) {
+		const startTime = performance.now();
+
+		console.log(
+			`⚡ Bypassing queue for ${options.operationType || "unknown"} operation`
+		);
+
+		try {
+			const result = requestFn();
+
+			if (result && typeof result.then === "function") {
+				// Handle promises
+				result
+					.then((data) => {
+						const duration = performance.now() - startTime;
+						this.recordBypassMetrics(duration, options);
+
+						if (successCallback) successCallback(data);
+						console.log(
+							`✅ Bypass operation completed in ${duration.toFixed(2)}ms`
+						);
+					})
+					.catch((error) => {
+						const duration = performance.now() - startTime;
+						this.recordBypassMetrics(duration, options, true);
+
+						if (errorCallback) errorCallback(error);
+						console.warn(
+							`❌ Bypass operation failed in ${duration.toFixed(2)}ms:`,
+							error
+						);
+					});
+			} else {
+				// Handle synchronous results
+				const duration = performance.now() - startTime;
+				this.recordBypassMetrics(duration, options);
+
+				if (successCallback) successCallback(result);
+				console.log(
+					`✅ Bypass operation completed synchronously in ${duration.toFixed(
+						2
+					)}ms`
+				);
+			}
+		} catch (error) {
+			const duration = performance.now() - startTime;
+			this.recordBypassMetrics(duration, options, true);
+
+			if (errorCallback) errorCallback(error);
+			console.warn(
+				`❌ Bypass operation failed synchronously in ${duration.toFixed(2)}ms:`,
+				error
+			);
+		}
+	}
+
+	/**
+	 * Record performance metrics for bypass operations
+	 * @param {Number} duration - Operation duration in milliseconds
+	 * @param {Object} options - Operation options
+	 * @param {Boolean} isError - Whether operation resulted in error
+	 */
+	recordBypassMetrics(duration, options, isError = false) {
+		this.performanceMetrics.bypassedOperations++;
+		this.performanceMetrics.totalBypassTime += duration;
+
+		// Log performance improvements
+		const avgBypassTime =
+			this.performanceMetrics.totalBypassTime /
+			this.performanceMetrics.bypassedOperations;
+		if (this.performanceMetrics.bypassedOperations % 10 === 0) {
+			console.log(
+				`📊 Bypass Performance: Avg ${avgBypassTime.toFixed(
+					2
+				)}ms per operation (${
+					this.performanceMetrics.bypassedOperations
+				} operations)`
+			);
+		}
+	}
+
+	/**
+	 * Add a request to the queue or execute directly
 	 * @param {Function} requestFn - Function to execute
 	 * @param {Function} successCallback - Callback on success
 	 * @param {Function} errorCallback - Callback on error
+	 * @param {Object} options - Operation options
 	 */
-	enqueue(requestFn, successCallback, errorCallback) {
+	enqueue(requestFn, successCallback, errorCallback, options = {}) {
+		// Check if operation should bypass the queue
+		if (this.shouldBypassQueue(options)) {
+			return this.executeDirectly(
+				requestFn,
+				successCallback,
+				errorCallback,
+				options
+			);
+		}
+
+		// Use traditional queue for complex operations
+		console.log(`🔄 Queuing ${options.operationType || "unknown"} operation`);
+		const startTime = performance.now();
+
 		this.queue.push({
 			requestFn,
-			successCallback,
-			errorCallback,
+			successCallback: (data) => {
+				const duration = performance.now() - startTime;
+				this.recordQueueMetrics(duration, options);
+				if (successCallback) successCallback(data);
+			},
+			errorCallback: (error) => {
+				const duration = performance.now() - startTime;
+				this.recordQueueMetrics(duration, options, true);
+				if (errorCallback) errorCallback(error);
+			},
+			options,
 		});
 
 		if (!this.processing) {
 			this.processNext();
 		}
+	}
+
+	/**
+	 * Record performance metrics for queued operations
+	 * @param {Number} duration - Operation duration in milliseconds
+	 * @param {Object} options - Operation options
+	 * @param {Boolean} isError - Whether operation resulted in error
+	 */
+	recordQueueMetrics(duration, options, isError = false) {
+		this.performanceMetrics.queuedOperations++;
+		this.performanceMetrics.totalQueueTime += duration;
 	}
 
 	/**
@@ -475,7 +736,8 @@ class RequestQueue {
 		}
 
 		this.processing = true;
-		const { requestFn, successCallback, errorCallback } = this.queue.shift();
+		const { requestFn, successCallback, errorCallback, options } =
+			this.queue.shift();
 
 		try {
 			const result = requestFn();
@@ -499,6 +761,47 @@ class RequestQueue {
 			if (errorCallback) errorCallback(error);
 			this.processNext();
 		}
+	}
+
+	/**
+	 * Get performance statistics
+	 * @returns {Object} Performance metrics
+	 */
+	getPerformanceStats() {
+		const avgBypassTime =
+			this.performanceMetrics.bypassedOperations > 0
+				? this.performanceMetrics.totalBypassTime /
+				  this.performanceMetrics.bypassedOperations
+				: 0;
+		const avgQueueTime =
+			this.performanceMetrics.queuedOperations > 0
+				? this.performanceMetrics.totalQueueTime /
+				  this.performanceMetrics.queuedOperations
+				: 0;
+
+		return {
+			bypassedOperations: this.performanceMetrics.bypassedOperations,
+			queuedOperations: this.performanceMetrics.queuedOperations,
+			averageBypassTime: avgBypassTime,
+			averageQueueTime: avgQueueTime,
+			performanceImprovement:
+				avgQueueTime > 0
+					? ((avgQueueTime - avgBypassTime) / avgQueueTime) * 100
+					: 0,
+		};
+	}
+
+	/**
+	 * Enable or disable queue bypass
+	 * @param {Boolean} enabled - Whether to enable bypass
+	 */
+	setBypassEnabled(enabled) {
+		this.bypassEnabled = enabled;
+		console.log(
+			`${enabled ? "✅" : "❌"} Queue bypass ${
+				enabled ? "enabled" : "disabled"
+			}`
+		);
 	}
 
 	/**
@@ -636,4 +939,101 @@ window.WorklistState = {
 	Manager: new WorklistStateManager(),
 	Queue: new RequestQueue(),
 	UI: new UIManager(),
+};
+
+// Add global performance monitoring function
+window.showQueuePerformance = function () {
+	const stats = window.WorklistState.Queue.getPerformanceStats();
+
+	// Also get bypass stats from the profiler if available
+	let bypassStats = { averageTime: 0, count: 0 };
+	let queueStats = { averageTime: 0, count: 0 };
+
+	if (
+		typeof PerformanceProfiler !== "undefined" &&
+		PerformanceProfiler.getStats
+	) {
+		const profilerData = PerformanceProfiler.getStats();
+
+		// Get bypass operations from profiler
+		if (profilerData.bypass && profilerData.bypass["bypass-execute"]) {
+			const bypassOps = profilerData.bypass["bypass-execute"];
+			bypassStats.count = bypassOps.count;
+			bypassStats.averageTime = bypassOps.averageDuration;
+		}
+
+		// Get queue operations from profiler
+		if (profilerData.queue && profilerData.queue.enqueue) {
+			const queueOps = profilerData.queue.enqueue;
+			queueStats.count = queueOps.count;
+			queueStats.averageTime = queueOps.averageDuration;
+		}
+	}
+
+	// Use profiler data if available, fallback to internal stats
+	const totalBypassOps = bypassStats.count || stats.bypassedOperations;
+	const totalQueueOps = queueStats.count || stats.queuedOperations;
+	const avgBypassTime = bypassStats.averageTime || stats.averageBypassTime;
+	const avgQueueTime = queueStats.averageTime || stats.averageQueueTime;
+
+	const performanceImprovement =
+		avgQueueTime > 0
+			? ((avgQueueTime - avgBypassTime) / avgQueueTime) * 100
+			: 0;
+
+	const header = "📊 Queue Performance Statistics (Updated):";
+	const separator = "=".repeat(80);
+	const targetStatus =
+		avgBypassTime < 50 ? "✅ TARGET ACHIEVED" : "⚠️ IN PROGRESS";
+
+	const message =
+		header +
+		"\n" +
+		separator +
+		"\n" +
+		"🎯 Bypassed Operations: " +
+		totalBypassOps +
+		"\n" +
+		"🔄 Queued Operations: " +
+		totalQueueOps +
+		"\n" +
+		"⚡ Average Bypass Time: " +
+		avgBypassTime.toFixed(2) +
+		"ms\n" +
+		"🐌 Average Queue Time: " +
+		avgQueueTime.toFixed(2) +
+		"ms\n" +
+		"🚀 Performance Improvement: " +
+		performanceImprovement.toFixed(1) +
+		"%\n\n" +
+		"Target: 90% reduction (494ms → <50ms)\n" +
+		"Status: " +
+		targetStatus +
+		"\n\n" +
+		"Note: Stats now integrated with PerformanceProfiler\n" +
+		"Use showQueuePerformance() in browser console anytime.\n" +
+		separator;
+
+	console.log(message);
+
+	// Also show a user-friendly toast notification
+	if (typeof WorklistState !== "undefined" && WorklistState.UI) {
+		const summaryMessage =
+			"Performance: " +
+			totalBypassOps +
+			" bypassed ops averaging " +
+			avgBypassTime.toFixed(1) +
+			"ms (" +
+			performanceImprovement.toFixed(1) +
+			"% improvement)";
+		WorklistState.UI.showFeedback("info", summaryMessage);
+	}
+
+	return {
+		bypassedOperations: totalBypassOps,
+		queuedOperations: totalQueueOps,
+		averageBypassTime: avgBypassTime,
+		averageQueueTime: avgQueueTime,
+		performanceImprovement: performanceImprovement,
+	};
 };

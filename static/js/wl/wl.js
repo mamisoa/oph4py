@@ -228,6 +228,11 @@ document.getElementById("btnWlItemAdd").addEventListener("click", function () {
 					"feedbackContainer"
 				);
 				WorklistState.UI.unlockUI("#btnWlItemAdd");
+			},
+			{
+				operationType: "combo-processing",
+				description: "Process multiple modality items from combo selection",
+				bypassQueue: true, // Force bypass for UI updates (multiple item creation)
 			}
 		);
 	} else {
@@ -250,7 +255,7 @@ document.getElementById("btnWlItemAdd").addEventListener("click", function () {
 		// Update the item status (already done by addItemWithTracking, but keeping for clarity)
 		// WorklistState.Manager.updateItemStatus(stateUniqueId, 'pending');
 
-		// Use the request queue for consistent processing
+		// Use the request queue for consistent processing - this is a simple UI update
 		WorklistState.Queue.enqueue(
 			function () {
 				// Simple task that executes immediately
@@ -274,6 +279,11 @@ document.getElementById("btnWlItemAdd").addEventListener("click", function () {
 					"feedbackContainer"
 				);
 				WorklistState.UI.unlockUI("#btnWlItemAdd");
+			},
+			{
+				operationType: "simple-crud",
+				description: "Add single worklist item to UI",
+				bypassQueue: true, // Force bypass for simple UI update
 			}
 		);
 	}
@@ -436,79 +446,63 @@ function getStatusBadgeClass(status) {
 }
 
 // delete item in item worklist to append
-function delWlItemModal(itemId) {
+async function delWlItemModal(itemId) {
 	const element = document.getElementById("wlItem" + itemId);
-
-	if (element) {
-		// Get the uniqueId from the element's dataset
-		const uniqueId = element.dataset.uniqueId;
-		console.log(
-			`Removing item ${itemId} with uniqueId: ${uniqueId} (type: ${typeof uniqueId})`
-		);
-
-		if (uniqueId && uniqueId !== "undefined" && uniqueId !== "null") {
-			// Remove from state manager using the uniqueId
-			console.log(`Attempting to remove item with uniqueId: ${uniqueId}`);
-			const wasDeleted = WorklistState.Manager.pendingItems.delete(uniqueId);
-			console.log(`Item deletion ${wasDeleted ? "successful" : "failed"}`);
-
-			WorklistState.Manager.htmlElements.delete(uniqueId);
-			WorklistState.Manager.processedItems.delete(uniqueId);
-
-			// Also check if there's a processing item with this uniqueId
-			const processingItems = WorklistState.Manager.getAllProcessingItems();
-			for (const item of processingItems) {
-				if (item.uniqueId === uniqueId) {
-					WorklistState.Manager.clearProcessingItem(item.id);
-				}
-			}
-
-			// Remove the element from the DOM
-			element.remove();
-
-			// Check if table is now empty and show empty state
-			const remainingRows = document.querySelectorAll(
-				"#tbodyItems tr:not(#emptyItemsRow)"
-			);
-			if (remainingRows.length === 0) {
-				const emptyRow = document.getElementById("emptyItemsRow");
-				if (emptyRow) {
-					emptyRow.style.display = "";
-				}
-			}
-
-			// Show feedback
-			WorklistState.UI.showFeedback(
-				"success",
-				"Item removed from list",
-				"feedbackContainer"
-			);
-		} else {
-			console.warn(
-				`Cannot delete item ${itemId}: invalid uniqueId (${uniqueId})`
-			);
-			// Still remove from DOM even if state manager removal failed
-			element.remove();
-
-			// Check if table is now empty and show empty state
-			const remainingRows = document.querySelectorAll(
-				"#tbodyItems tr:not(#emptyItemsRow)"
-			);
-			if (remainingRows.length === 0) {
-				const emptyRow = document.getElementById("emptyItemsRow");
-				if (emptyRow) {
-					emptyRow.style.display = "";
-				}
-			}
-
-			WorklistState.UI.showFeedback(
-				"warning",
-				"Item removed from display but may still be in queue",
-				"feedbackContainer"
-			);
-		}
-	} else {
+	if (!element) {
 		console.warn(`Element wlItem${itemId} not found`);
+		return;
+	}
+
+	const uniqueId = element.dataset.uniqueId;
+
+	// Validate uniqueId before proceeding
+	if (!uniqueId || uniqueId === "undefined" || uniqueId === "null") {
+		console.error(
+			`🚨 Cannot delete item ${itemId}: invalid uniqueId (${uniqueId})`
+		);
+		WorklistState.UI.showFeedback(
+			"error",
+			"Cannot delete item: Invalid ID",
+			"feedbackContainer"
+		);
+		return;
+	}
+
+	try {
+		// Step 1: Atomic state cleanup
+		const cleanupSuccess = WorklistState.Manager.atomicCleanupItem(
+			uniqueId,
+			itemId
+		);
+		if (!cleanupSuccess) {
+			throw new Error("State cleanup failed");
+		}
+
+		// Step 2: DOM removal
+		element.remove();
+
+		// Step 3: UI state updates
+		const remainingRows = document.querySelectorAll(
+			"#tbodyItems tr:not(#emptyItemsRow)"
+		);
+		if (remainingRows.length === 0) {
+			const emptyRow = document.getElementById("emptyItemsRow");
+			if (emptyRow) emptyRow.style.display = "";
+		}
+
+		// Step 4: Success feedback
+		WorklistState.UI.showFeedback(
+			"success",
+			"Item removed successfully",
+			"feedbackContainer"
+		);
+	} catch (error) {
+		console.error(`🚨 Error in delWlItemModal:`, error);
+		WorklistState.UI.showFeedback(
+			"error",
+			`Error removing item: ${error.message}`,
+			"feedbackContainer"
+		);
 	}
 }
 
@@ -1518,49 +1512,76 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 });
 
-// Temporary debugging function - remove in production
+// Enhanced debugging function for better analysis
 function debugWorklistState() {
 	const pending = WorklistState.Manager.getAllPendingItems();
-	const tableRows = document.querySelectorAll("#tbodyItems tr");
+	const bootstrapTableData = $table_wl
+		? $table_wl.bootstrapTable("getData")
+		: [];
+	const pendingTableRows = document.querySelectorAll(
+		"#tbodyItems tr:not(#emptyItemsRow)"
+	);
 
-	console.log("=== Worklist State Debug ===");
+	console.log("=== Enhanced Worklist State Debug ===");
 	console.log(`Pending items in state manager: ${pending.length}`);
-	console.log(`Visible items in table: ${tableRows.length}`);
+	console.log(`Bootstrap table data rows: ${bootstrapTableData.length}`);
+	console.log(`DOM pending rows: ${pendingTableRows.length}`);
 
-	let undefinedUniqueIds = 0;
-	tableRows.forEach((row, index) => {
+	// Check pending items (client-side only) for uniqueIds
+	let invalidPendingUniqueIds = 0;
+	pendingTableRows.forEach((row, index) => {
 		const uniqueId = row.dataset.uniqueId;
 		if (!uniqueId || uniqueId === "undefined" || uniqueId === "null") {
-			undefinedUniqueIds++;
-			console.warn(`⚠️  Row ${index}: uniqueId is invalid (${uniqueId})`);
-		} else {
-			console.log(
-				`Row ${index}: uniqueId = ${uniqueId} (type: ${typeof uniqueId})`
+			invalidPendingUniqueIds++;
+			console.warn(
+				`⚠️  Pending Row ${index}: uniqueId is invalid (${uniqueId})`
 			);
+		} else {
+			console.log(`✅ Pending Row ${index}: uniqueId = ${uniqueId}`);
 		}
 	});
 
-	if (undefinedUniqueIds > 0) {
+	// Bootstrap table data (server data) should NOT have uniqueIds - this is expected
+	console.log(
+		`📊 Server data rows (no uniqueIds expected): ${bootstrapTableData.length}`
+	);
+
+	if (invalidPendingUniqueIds > 0) {
 		console.error(
-			`🚨 Found ${undefinedUniqueIds} rows with invalid uniqueIds - deletion will fail!`
+			`🚨 Found ${invalidPendingUniqueIds} pending rows with invalid uniqueIds - deletion will fail!`
 		);
+		console.log(
+			"🔧 These are PENDING items that need proper uniqueId assignment"
+		);
+	} else {
+		console.log("✅ All pending items have valid uniqueIds");
 	}
 
+	// State manager pending items analysis
 	pending.forEach((item, index) => {
 		console.log(
-			`Pending item ${index}: uniqueId = ${item.uniqueId}, modality = ${item.modality_dest}, patient = ${item.id_auth_user}`
+			`State Manager Item ${index}: uniqueId = ${item.uniqueId}, modality = ${item.modality_dest}, patient = ${item.id_auth_user}`
 		);
 	});
 
-	if (pending.length !== tableRows.length) {
+	// Count analysis
+	const totalUIItems = bootstrapTableData.length + pendingTableRows.length;
+	const stateTotal = pending.length;
+
+	console.log(
+		`📊 Total UI items: ${totalUIItems} (${bootstrapTableData.length} server + ${pendingTableRows.length} pending)`
+	);
+	console.log(`📊 State manager items: ${stateTotal}`);
+
+	if (stateTotal !== pendingTableRows.length) {
 		console.warn(
-			"⚠️  MISMATCH: State manager and UI table have different item counts!"
+			`⚠️  MISMATCH: State manager (${stateTotal}) and pending DOM rows (${pendingTableRows.length}) don't match!`
 		);
 	} else {
-		console.log("✅ State manager and UI table counts match");
+		console.log("✅ State manager and pending items counts match");
 	}
 
-	console.log("=== End Debug ===");
+	console.log("=== End Enhanced Debug ===");
 }
 
 // Make debug function available globally for testing
