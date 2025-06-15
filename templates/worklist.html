@@ -919,6 +919,7 @@
 <script src="js/wl/wl-state-manager.js"></script>
 <script src="js/wl/wl_bt.js"></script>
 <script src="js/wl/wl.js"></script>
+<script src="js/profiling/performance-profiler.js"></script>
 <script>
     // Initialize worklist components after all dependencies are loaded
     $(document).ready(function () {
@@ -926,6 +927,13 @@
         if (typeof WorklistState !== 'undefined') {
             // Initialize the worklist
             initWorklist();
+
+            // Start performance profiling if needed
+            if (typeof PerformanceProfiler !== 'undefined') {
+                // Uncomment the next line to enable automatic profiling
+                // PerformanceProfiler.startProfiling();
+                console.log('📊 Performance Profiler available. Use PerformanceProfiler.startProfiling() to begin');
+            }
         } else {
             console.error('WorklistState not loaded! Cannot initialize worklist.');
         }

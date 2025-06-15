@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Profiler Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .results {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Performance Profiler Test Page</h1>
+
+    <div class="test-section">
+        <h2>Test Controls</h2>
+        <button onclick="startTest()">🚀 Start Profiling</button>
+        <button onclick="showResults()">📊 Show Results</button>
+        <button onclick="clearData()">🧹 Clear Data</button>
+        <button onclick="exportData()">💾 Export Data</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Mock Operations</h2>
+        <button onclick="mockCrudpOperation()">CRUDP Mock</button>
+        <button onclick="mockQueueOperation()">Queue Mock</button>
+        <button onclick="mockStateOperation()">State Mock</button>
+        <button onclick="mockUIOperation()">UI Mock</button>
+        <button onclick="runBatchTest()">🔥 Batch Test</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Instructions</h2>
+        <ol>
+            <li>Open Browser Developer Tools (F12)</li>
+            <li>Go to Console tab</li>
+            <li>Click "Start Profiling" above</li>
+            <li>Click various "Mock" buttons to simulate operations</li>
+            <li>Press Ctrl+Shift+P or click "Show Results" to see the performance report</li>
+        </ol>
+        <p><strong>Keyboard Shortcut:</strong> Ctrl+Shift+P to show performance report</p>
+    </div>
+
+    <div id="results" class="results" style="display:none;">
+        <h3>Latest Results</h3>
+        <div id="resultsContent"></div>
+    </div>
+
+    <!-- Mock jQuery for testing -->
+    <script>
+        // Mock jQuery and other dependencies for testing
+        window.$ = function (selector) {
+            return {
+                bootstrapTable: function () { return this; },
+                modal: function () { return this; },
+                val: function () { return 'mock'; },
+                serializeJSON: function () { return '{}'; }
+            };
+        };
+
+        // Mock CRUDP function
+        window.crudp = function (table, id, method, data) {
+            return new Promise((resolve) => {
+                // Simulate network delay
+                setTimeout(() => {
+                    resolve({ status: 'success', id: Math.random() });
+                }, Math.random() * 200 + 50);
+            });
+        };
+
+        window.crudpWithoutToast = window.crudp;
+
+        // Mock WorklistState
+        window.WorklistState = {
+            Manager: {
+                addItem: function (item) {
+                    // Simulate processing time
+                    const start = Date.now();
+                    while (Date.now() - start < Math.random() * 10) { }
+                    return 'mock-id-' + Math.random();
+                },
+                updateItemStatus: function (id, status) {
+                    const start = Date.now();
+                    while (Date.now() - start < Math.random() * 5) { }
+                },
+                trackProcessingItem: function (id) {
+                    const start = Date.now();
+                    while (Date.now() - start < Math.random() * 3) { }
+                },
+                pendingItems: new Map(),
+                processingItems: new Map()
+            },
+            Queue: {
+                queue: [],
+                processing: false,
+                enqueue: function (requestFn, successCallback, errorCallback) {
+                    this.queue.push({ requestFn, successCallback, errorCallback });
+                    if (!this.processing) {
+                        this.processNext();
+                    }
+                },
+                processNext: function () {
+                    if (this.queue.length === 0) {
+                        this.processing = false;
+                        return;
+                    }
+                    this.processing = true;
+                    const { requestFn, successCallback } = this.queue.shift();
+
+                    // Simulate processing time
+                    setTimeout(() => {
+                        const result = requestFn();
+                        if (result instanceof Promise) {
+                            result.then(data => {
+                                if (successCallback) successCallback(data);
+                                this.processNext();
+                            });
+                        } else {
+                            if (successCallback) successCallback(result);
+                            this.processNext();
+                        }
+                    }, Math.random() * 100 + 20);
+                }
+            },
+            UI: {
+                lockUI: function (selector) {
+                    const start = Date.now();
+                    while (Date.now() - start < Math.random() * 2) { }
+                },
+                unlockUI: function (selector) {
+                    const start = Date.now();
+                    while (Date.now() - start < Math.random() * 2) { }
+                },
+                showFeedback: function (type, message) {
+                    const start = Date.now();
+                    while (Date.now() - start < Math.random() * 5) { }
+                }
+            }
+        };
+    </script>
+
+    <!-- Load the performance profiler -->
+    <script src="static/js/profiling/performance-profiler.js"></script>
+
+    <script>
+        // Test functions
+        function startTest() {
+            if (typeof PerformanceProfiler !== 'undefined') {
+                PerformanceProfiler.startProfiling();
+                updateResults('Profiling started! 🚀');
+            } else {
+                updateResults('❌ PerformanceProfiler not loaded');
+            }
+        }
+
+        function showResults() {
+            if (typeof PerformanceProfiler !== 'undefined') {
+                PerformanceProfiler.showReport();
+                const stats = PerformanceProfiler.getStats();
+                updateResults('Report generated! Check console and new window. Total operations: ' +
+                    Object.values(stats).reduce((sum, cat) => sum + cat.total, 0));
+            } else {
+                updateResults('❌ PerformanceProfiler not loaded');
+            }
+        }
+
+        function clearData() {
+            if (typeof PerformanceProfiler !== 'undefined') {
+                PerformanceProfiler.clear();
+                updateResults('Data cleared! 🧹');
+            } else {
+                updateResults('❌ PerformanceProfiler not loaded');
+            }
+        }
+
+        function exportData() {
+            if (typeof PerformanceProfiler !== 'undefined') {
+                PerformanceProfiler.exportData();
+                updateResults('Data exported! Check downloads 💾');
+            } else {
+                updateResults('❌ PerformanceProfiler not loaded');
+            }
+        }
+
+        function mockCrudpOperation() {
+            crudp('test_table', '123', 'PUT', '{"field": "value"}').then(() => {
+                updateResults('CRUDP operation completed ✅');
+            });
+        }
+
+        function mockQueueOperation() {
+            WorklistState.Queue.enqueue(
+                () => new Promise(resolve => setTimeout(() => resolve('done'), 100)),
+                () => updateResults('Queue operation completed ✅')
+            );
+        }
+
+        function mockStateOperation() {
+            const id = WorklistState.Manager.addItem({ test: 'data' });
+            WorklistState.Manager.updateItemStatus(id, 'completed');
+            updateResults('State operation completed ✅');
+        }
+
+        function mockUIOperation() {
+            WorklistState.UI.lockUI('#test-button');
+            setTimeout(() => {
+                WorklistState.UI.unlockUI('#test-button');
+                WorklistState.UI.showFeedback('success', 'Test message');
+                updateResults('UI operation completed ✅');
+            }, 50);
+        }
+
+        function runBatchTest() {
+            updateResults('Running batch test... 🔥');
+
+            // Run multiple operations in sequence
+            const operations = [];
+            for (let i = 0; i < 10; i++) {
+                operations.push(() => mockCrudpOperation());
+                operations.push(() => mockQueueOperation());
+                operations.push(() => mockStateOperation());
+                operations.push(() => mockUIOperation());
+            }
+
+            let completed = 0;
+            operations.forEach((op, index) => {
+                setTimeout(() => {
+                    op();
+                    completed++;
+                    if (completed === operations.length) {
+                        updateResults(`Batch test completed! ${operations.length} operations ✨`);
+                    }
+                }, index * 20);
+            });
+        }
+
+        function updateResults(message) {
+            const resultsDiv = document.getElementById('results');
+            const contentDiv = document.getElementById('resultsContent');
+            resultsDiv.style.display = 'block';
+            contentDiv.innerHTML = `<p>${new Date().toLocaleTimeString()}: ${message}</p>` + contentDiv.innerHTML;
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', function () {
+            setTimeout(() => {
+                if (typeof PerformanceProfiler !== 'undefined') {
+                    updateResults('Performance Profiler loaded successfully! 🎯');
+                } else {
+                    updateResults('❌ Failed to load Performance Profiler');
+                }
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>
