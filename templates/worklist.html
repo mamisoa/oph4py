@@ -920,33 +920,46 @@
 <script>
     // Initialize worklist components after all dependencies are loaded
     $(document).ready(function () {
-        // Make sure state manager is properly initialized
-        if (typeof WorklistState !== 'undefined') {
-            // Initialize the worklist
-            initWorklist();
+        // Wait a moment for all scripts to fully load and avoid race conditions
+        setTimeout(function () {
+            console.log('🔧 Checking WorklistState availability...');
+            console.log('WorklistState type:', typeof WorklistState);
 
-            // Set up intelligent auto-refresh to replace basic timer
-            if (WorklistState.Manager) {
+            if (typeof WorklistState !== 'undefined') {
+                console.log('WorklistState.Manager type:', typeof WorklistState.Manager);
+                if (WorklistState.Manager) {
+                    console.log('startAutoRefresh method type:', typeof WorklistState.Manager.startAutoRefresh);
+                }
+            }
+
+            // Make sure state manager is properly initialized
+            if (typeof WorklistState !== 'undefined' && WorklistState.Manager && typeof WorklistState.Manager.startAutoRefresh === 'function') {
+                // Initialize the worklist
+                initWorklist();
+
+                // Set up intelligent auto-refresh to replace basic timer
                 WorklistState.Manager.startAutoRefresh(40000); // 40 seconds
-                console.log('🔄 Intelligent auto-refresh initialized');
+                console.log('🔄 Intelligent auto-refresh initialized successfully');
+
+                // Start performance profiling if needed
+                if (typeof PerformanceProfiler !== 'undefined') {
+                    // Uncomment the next line to enable automatic profiling
+                    // PerformanceProfiler.startProfiling();
+                    console.log('📊 Performance Profiler available. Use PerformanceProfiler.startProfiling() to begin');
+                }
             } else {
-                console.warn('WorklistState.Manager not available, using fallback timer');
+                console.error('WorklistState.Manager.startAutoRefresh not available! Using fallback.');
+
+                // Initialize worklist with basic functionality
+                initWorklist();
+
                 // Fallback to basic timer
                 window.setInterval(function () {
                     console.log("Refreshing wl table (fallback)!");
                     $('#table-wl').bootstrapTable('refresh');
                 }, 40000);
             }
-
-            // Start performance profiling if needed
-            if (typeof PerformanceProfiler !== 'undefined') {
-                // Uncomment the next line to enable automatic profiling
-                // PerformanceProfiler.startProfiling();
-                console.log('📊 Performance Profiler available. Use PerformanceProfiler.startProfiling() to begin');
-            }
-        } else {
-            console.error('WorklistState not loaded! Cannot initialize worklist.');
-        }
+        }, 1000); // Increased delay to ensure all scripts are fully loaded
     });
 </script>
 [[ end ]]

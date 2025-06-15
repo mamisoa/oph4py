@@ -1083,6 +1083,25 @@ window.WorklistState = {
 	UI: new UIManager(),
 };
 
+// Debug: Log the creation of WorklistState
+console.log("✅ WorklistState object created:", {
+	Manager: typeof window.WorklistState.Manager,
+	Queue: typeof window.WorklistState.Queue,
+	UI: typeof window.WorklistState.UI,
+	startAutoRefresh: typeof window.WorklistState.Manager.startAutoRefresh,
+});
+
+// Also make sure it's available globally
+if (typeof window.WorklistState.Manager.startAutoRefresh !== "function") {
+	console.error(
+		"❌ startAutoRefresh method not found on WorklistState.Manager!"
+	);
+	console.log(
+		"Available methods:",
+		Object.getOwnPropertyNames(window.WorklistState.Manager)
+	);
+}
+
 // Add global performance monitoring function
 window.showQueuePerformance = function () {
 	const stats = window.WorklistState.Queue.getPerformanceStats();
