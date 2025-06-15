@@ -16,6 +16,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 - **Impact**: Cleaner browser console, improved privacy, and production readiness for payment view.
 
 #### Files Modified
+
 - `static/js/billing/payment-manager.js`
 
 ## [2025-06-15T13:15:53.576538]
