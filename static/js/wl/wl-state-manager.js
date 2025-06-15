@@ -22,7 +22,7 @@ class WorklistStateManager {
 		this.autoRefreshInterval = 40000; // 40 seconds default
 		this.isRefreshPaused = false;
 		this.lastOperationTime = 0;
-		this.operationCooldownTime = 5000; // 5 seconds after operation before allowing auto-refresh
+		this.operationCooldownTime = 2000; // 2 seconds after operation before allowing auto-refresh
 		this.pendingAutoRefresh = false;
 
 		console.log("🎯 WorklistStateManager initialized");
@@ -633,7 +633,7 @@ class WorklistStateManager {
 	 * Schedule a refresh after operation completion
 	 * @param {number} delay - Delay in milliseconds before refresh
 	 */
-	scheduleRefreshAfterOperation(delay = 1500) {
+	scheduleRefreshAfterOperation(delay = 300) {
 		console.log(
 			`📅 Scheduling refresh in ${delay}ms after operation completion`
 		);

@@ -327,13 +327,14 @@ window.operateEvents_wl = {
 								// Track the item being processed
 								WorklistState.Manager.trackProcessingItem(row.id);
 
-								// Delete through the API
+								// DELETE: Do not show success until server confirms deletion
 								crudpWithoutToast("worklist", row.id, "DELETE")
 									.then(async (data) => {
-										// Critical: Wait a moment for database transaction to complete
-										await new Promise((resolve) => setTimeout(resolve, 100));
+										console.log(
+											`✅ Server confirmed deletion of item ${row.id}`
+										);
 
-										// Atomic cleanup of all state references
+										// Only cleanup state AFTER successful server deletion
 										const cleanupSuccess =
 											WorklistState.Manager.atomicCleanupItem(
 												row.uniqueId,
@@ -341,12 +342,13 @@ window.operateEvents_wl = {
 											);
 
 										if (!cleanupSuccess) {
-											console.warn(
-												"⚠️  State cleanup had issues, but proceeding with refresh"
-											);
+											console.warn("⚠️ State cleanup had issues");
 										}
 
-										// Now safe to refresh table
+										// Clear processing state
+										WorklistState.Manager.clearProcessingItem(row.id);
+
+										// Refresh table to show updated state
 										$table_wl.bootstrapTable("refresh");
 
 										resolve({
@@ -355,8 +357,28 @@ window.operateEvents_wl = {
 										});
 									})
 									.catch((err) => {
-										console.error("Error deleting worklist item:", err);
-										reject(err);
+										console.error("❌ Server deletion failed:", err);
+
+										// Clear processing state on error
+										WorklistState.Manager.clearProcessingItem(row.id);
+
+										// Show specific error message
+										if (err.status === 404) {
+											resolve({
+												message: "Item was already deleted",
+												data: null,
+											});
+										} else {
+											reject(
+												new Error(
+													`Deletion failed: ${
+														err.responseJSON?.message ||
+														err.statusText ||
+														"Unknown error"
+													}`
+												)
+											);
+										}
 									});
 							} else {
 								resolve({ canceled: true });
@@ -505,18 +527,18 @@ window.operateEvents_wl = {
 					// Enhanced refresh coordination to prevent race conditions
 					// 1. Schedule a delayed refresh to ensure database transaction commits
 					if (WorklistState.Manager.scheduleRefreshAfterOperation) {
-						WorklistState.Manager.scheduleRefreshAfterOperation(1500);
+						WorklistState.Manager.scheduleRefreshAfterOperation(300);
 					} else {
-						// Fallback with longer delay for database consistency
+						// Fallback with shorter delay for better performance
 						setTimeout(() => {
 							$table_wl.bootstrapTable("refresh");
-						}, 1500);
+						}, 300);
 					}
 
 					// 2. Immediate UI feedback without waiting for refresh
 					WorklistState.UI.showFeedback(
 						"success",
-						result.message + " (Updating table...)",
+						result.message,
 						"feedbackContainer"
 					);
 					WorklistState.UI.unlockUI(".done");
@@ -685,18 +707,18 @@ window.operateEvents_wl = {
 					// Enhanced refresh coordination to prevent race conditions
 					// 1. Schedule a delayed refresh to ensure database transaction commits
 					if (WorklistState.Manager.scheduleRefreshAfterOperation) {
-						WorklistState.Manager.scheduleRefreshAfterOperation(1500);
+						WorklistState.Manager.scheduleRefreshAfterOperation(300);
 					} else {
-						// Fallback with longer delay for database consistency
+						// Fallback with shorter delay for better performance
 						setTimeout(() => {
 							$table_wl.bootstrapTable("refresh");
-						}, 1500);
+						}, 300);
 					}
 
 					// 2. Immediate UI feedback without waiting for refresh
 					WorklistState.UI.showFeedback(
 						"success",
-						result.message + " (Updating table...)",
+						result.message,
 						"feedbackContainer"
 					);
 					WorklistState.UI.unlockUI(".unlock");
