@@ -179,10 +179,13 @@
 <script src="js/utils/useful.js"></script>
 <script src="js/billing/summary-manager.js"></script>
 
-<!-- Performance Profiler - For performance analysis -->
+<!-- Performance Optimization System - Universal queue system + profiler -->
+<script src="js/universal/universal-queue-manager.js"></script>
+<script src="js/billing/transaction-state-manager.js"></script>
+<script src="js/universal/universal-performance-monitor.js"></script>
 <script src="js/profiling/performance-profiler.js"></script>
 <script>
-    // Initialize performance profiler for Billing Summary view
+    // Initialize performance optimization for Billing Summary view
     $(document).ready(function () {
         if (typeof PerformanceProfiler !== 'undefined') {
             // Billing Summary view specific configuration
@@ -193,6 +196,14 @@
             console.log('🎯 Use PerformanceProfiler.startProfiling() to begin monitoring');
             console.log('🔍 Use PerformanceProfiler.startDebugging() for detailed analysis');
             console.log('📊 Press Ctrl+Shift+P to view performance report');
+        }
+
+        // Transaction Queue Performance System available
+        if (typeof TransactionState !== 'undefined') {
+            console.log('💰 Transaction Queue Performance System active (Billing Summary)');
+            console.log('🎯 Use showQueuePerformance("Transaction") for transaction-specific performance');
+            console.log('🎯 Use showTransactionPerformance() for detailed transaction metrics');
+            console.log('🎯 Use transactionApiCall() for optimized API calls');
         }
     });
 </script>

@@ -283,20 +283,48 @@ window.PerformanceProfiler = {
 		}
 	},
 
-	// Instrument the RequestQueue
+	// Instrument the RequestQueue (view-aware)
 	instrumentQueue: function () {
-		if (typeof WorklistState === "undefined" || !WorklistState.Queue) {
+		// Check for different view types and their queue systems
+		let queueState = null;
+		let viewName = "Unknown";
+
+		if (typeof WorklistState !== "undefined" && WorklistState.Queue) {
+			queueState = WorklistState.Queue;
+			viewName = "Worklist";
+		} else if (typeof PaymentState !== "undefined" && PaymentState.Queue) {
+			queueState = PaymentState.Queue;
+			viewName = "Payment";
+		} else if (
+			typeof window.PaymentState !== "undefined" &&
+			window.PaymentState.Queue
+		) {
+			queueState = window.PaymentState.Queue;
+			viewName = "Payment";
+		} else if (typeof MDState !== "undefined" && MDState.Queue) {
+			queueState = MDState.Queue;
+			viewName = "MD";
+		} else if (
+			typeof TransactionState !== "undefined" &&
+			TransactionState.Queue
+		) {
+			queueState = TransactionState.Queue;
+			viewName = "Transaction";
+		}
+
+		if (!queueState) {
 			console.warn(
-				"⚠️ WorklistState.Queue not found, skipping queue instrumentation"
+				`⚠️ No queue found for ${this.config.viewType} view, skipping queue instrumentation`
 			);
 			return;
 		}
 
-		const originalEnqueue = WorklistState.Queue.enqueue;
-		const originalProcessNext = WorklistState.Queue.processNext;
+		console.log(`✅ Found ${viewName} queue system, instrumenting...`);
+		const originalEnqueue = queueState.enqueue;
+		const originalProcessNext = queueState.processNext;
 
 		// Fix: Forward ALL parameters including the options parameter
-		WorklistState.Queue.enqueue = function (
+		queueState.enqueue = function (
 			requestFn,
 			successCallback,
 			errorCallback,
@@ -377,7 +405,7 @@ window.PerformanceProfiler = {
 			);
 		};
 
-		WorklistState.Queue.processNext = function () {
+		queueState.processNext = function () {
 			const startTime = performance.now();
 			const queueSize = this.queue.length;
 
@@ -395,11 +423,19 @@ window.PerformanceProfiler = {
 		console.log("✅ Queue instrumentation complete (with bypass support)");
 	},
 
-	// Instrument CRUDP operations
+	// Instrument CRUDP operations (safe mode for Payment view)
 	instrumentCrudp: function () {
 		if (typeof crudp === "undefined") {
 			console.warn(
 				"⚠️ crudp function not found, skipping crudp instrumentation"
+			);
+			return;
+		}
+
+		// Skip CRUDP instrumentation for Payment view to avoid interfering with payment operations
+		if (this.config.viewType === "Payment") {
+			console.log(
+				"ℹ️ Skipping CRUDP instrumentation for Payment view to avoid interference"
 			);
 			return;
 		}
@@ -480,16 +516,44 @@ window.PerformanceProfiler = {
 		console.log("✅ CRUDP instrumentation complete");
 	},
 
-	// Instrument State Manager operations
+	// Instrument State Manager operations (view-aware)
 	instrumentStateManager: function () {
-		if (typeof WorklistState === "undefined" || !WorklistState.Manager) {
+		// Check for different view types and their state managers
+		let stateManager = null;
+		let viewName = "Unknown";
+
+		if (typeof WorklistState !== "undefined" && WorklistState.Manager) {
+			stateManager = WorklistState.Manager;
+			viewName = "Worklist";
+		} else if (typeof PaymentState !== "undefined" && PaymentState.Manager) {
+			stateManager = PaymentState.Manager;
+			viewName = "Payment";
+		} else if (
+			typeof window.PaymentState !== "undefined" &&
+			window.PaymentState.Manager
+		) {
+			stateManager = window.PaymentState.Manager;
+			viewName = "Payment";
+		} else if (typeof MDState !== "undefined" && MDState.Manager) {
+			stateManager = MDState.Manager;
+			viewName = "MD";
+		} else if (
+			typeof TransactionState !== "undefined" &&
+			TransactionState.Manager
+		) {
+			stateManager = TransactionState.Manager;
+			viewName = "Transaction";
+		}
+
+		if (!stateManager) {
 			console.warn(
-				"⚠️ WorklistState.Manager not found, skipping state manager instrumentation"
+				`⚠️ No state manager found for ${this.config.viewType} view, skipping state manager instrumentation`
 			);
 			return;
 		}
 
-		const manager = WorklistState.Manager;
+		console.log(`✅ Found ${viewName} state manager, instrumenting...`);
+		const manager = stateManager;
 		const operations = [
 			"addItem",
 			"updateItemStatus",
@@ -519,16 +583,41 @@ window.PerformanceProfiler = {
 		console.log("✅ State Manager instrumentation complete");
 	},
 
-	// Instrument UI operations
+	// Instrument UI operations (view-aware)
 	instrumentUI: function () {
-		if (typeof WorklistState === "undefined" || !WorklistState.UI) {
+		// Check for different view types and their UI managers
+		let uiManager = null;
+		let viewName = "Unknown";
+
+		if (typeof WorklistState !== "undefined" && WorklistState.UI) {
+			uiManager = WorklistState.UI;
+			viewName = "Worklist";
+		} else if (typeof PaymentState !== "undefined" && PaymentState.UI) {
+			uiManager = PaymentState.UI;
+			viewName = "Payment";
+		} else if (
+			typeof window.PaymentState !== "undefined" &&
+			window.PaymentState.UI
+		) {
+			uiManager = window.PaymentState.UI;
+			viewName = "Payment";
+		} else if (typeof MDState !== "undefined" && MDState.UI) {
+			uiManager = MDState.UI;
+			viewName = "MD";
+		} else if (typeof TransactionState !== "undefined" && TransactionState.UI) {
+			uiManager = TransactionState.UI;
+			viewName = "Transaction";
+		}
+
+		if (!uiManager) {
 			console.warn(
-				"⚠️ WorklistState.UI not found, skipping UI instrumentation"
+				`⚠️ No UI manager found for ${this.config.viewType} view, skipping UI instrumentation`
 			);
 			return;
 		}
 
-		const ui = WorklistState.UI;
+		console.log(`✅ Found ${viewName} UI manager, instrumenting...`);
+		const ui = uiManager;
 		const operations = ["lockUI", "unlockUI", "showFeedback"];
 
 		operations.forEach((op) => {
