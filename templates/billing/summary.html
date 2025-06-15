@@ -178,4 +178,22 @@
 <script src="js/bootbox/bootbox.all.min.js"></script>
 <script src="js/utils/useful.js"></script>
 <script src="js/billing/summary-manager.js"></script>
+
+<!-- Performance Profiler - For performance analysis -->
+<script src="js/profiling/performance-profiler.js"></script>
+<script>
+    // Initialize performance profiler for Billing Summary view
+    $(document).ready(function () {
+        if (typeof PerformanceProfiler !== 'undefined') {
+            // Billing Summary view specific configuration
+            PerformanceProfiler.config.viewType = 'BillingSummary';
+            PerformanceProfiler.config.debugMode = false; // Enable for debugging
+
+            console.log('📊 Performance Profiler available for Billing Summary view');
+            console.log('🎯 Use PerformanceProfiler.startProfiling() to begin monitoring');
+            console.log('🔍 Use PerformanceProfiler.startDebugging() for detailed analysis');
+            console.log('📊 Press Ctrl+Shift+P to view performance report');
+        }
+    });
+</script>
 [[ end ]]

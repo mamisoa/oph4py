@@ -1,96 +1,134 @@
-# Current Status: Worklist/MD View Slowness After State Manager Update
+# Active Context: Worklist Critical Fixes Implementation
 
-## Context
+## Current Project Status
 
-- After updating the worklist state manager and introducing a request queue, operations such as updating a worklist item to 'done', editing fields, or adding medications in the MD view have become noticeably slower.
-- The new system has improved concurrency safety and eliminated transaction corruption, but at the cost of user-perceived performance.
+**Active Branch:** performance-tests
+**Primary Focus:** Resolving critical worklist system issues identified through performance analysis
 
-## Main Issues Identified
+## Critical Issues Being Addressed
 
-- **Serial request queue**: All operations are processed one after another, even when they could be parallel.
-- **Extra tracking and promise overhead**: Every operation is wrapped in additional logic for tracking and state management, even for simple updates.
-- **UI locking and feedback**: Each operation locks UI elements and generates feedback toasts, adding DOM and rendering overhead.
-- **Potential backend/API slowness**: If backend endpoints are slower due to new logging or transaction handling, all AJAX-based updates are affected.
+### 🚨 Issue 1: Deleted Items Re-appearing (CRITICAL)
 
-## Goal
+- **Problem**: Deleted worklist items reappear in UI after table refresh
+- **Root Cause**: State management synchronization failure between frontend state and database
+- **Impact**: Data integrity issues, user confusion
+- **Status**: Implementation plan defined, ready for development
 
-- Restore fast, responsive UI for common worklist and MD view operations, while retaining concurrency safety for batch/critical operations.
+### 🚨 Issue 2: Performance Degradation (CRITICAL)  
+
+- **Problem**: Queue operations averaging 494.84ms (max 1390.10ms)
+- **Root Cause**: Queue system adding massive overhead to simple operations
+- **Impact**: 36 queue operations showing severe slowness, poor user experience
+- **Status**: Performance analysis complete, optimization plan ready
+
+### 🚨 Issue 3: State Consistency Failures (CRITICAL)
+
+- **Problem**: Invalid uniqueIds preventing deletion, state manager/UI mismatches
+- **Root Cause**: UniqueId generation failures and inconsistent state tracking
+- **Impact**: 3 errors about invalid uniqueIds, 6 warnings about state mismatches
+- **Status**: Technical root cause identified, fixes planned
+
+## Implementation Plan Overview
+
+### Phase 1: Emergency Fixes (Priority: CRITICAL)
+
+**Timeline:** 1-2 days
+
+#### Key Files to Modify
+
+- `static/js/wl/wl.js` (lines 436-513) - Deletion workflow
+- `static/js/wl/wl-state-manager.js` - State management cleanup
+- `static/js/wl/wl_bt.js` (lines 333-365) - Table refresh synchronization
+
+#### Core Changes Required
+
+1. **Enhanced State Cleanup Function** - Atomic cleanup of all state maps
+2. **Synchronized Deletion Function** - Proper validation and error handling
+3. **Fixed UniqueId Generation** - Robust ID generation with validation
+4. **Synchronized Table Refresh** - Proper timing and state management
+
+### Phase 2: Performance Optimization (Priority: HIGH)
+
+**Timeline:** 2-3 days
+
+#### Key Optimizations
+
+1. **Queue Performance Analysis** - Profile and identify bottlenecks
+2. **Queue Bypass Implementation** - Direct execution for simple operations
+3. **Selective Queuing** - Only queue complex operations that need serialization
+
+## Technical Details
+
+### State Management Issues
+
+The worklist system uses multiple state storage mechanisms that are not synchronized:
+
+```javascript
+this.pendingItems = new Map();     // keyed by uniqueId
+this.processedItems = new Map();   // tracking processing status  
+this.htmlElements = new Map();     // DOM element references
+this.processingItems = new Map();  // tracking by database ID
+```
+
+### Performance Bottleneck Analysis
+
+| Operation                      | Average Time | Status     |
+| ------------------------------ | ------------ | ---------- |
+| queue:enqueue                  | 494.84ms     | 🚨 CRITICAL |
+| crudp:PUT-worklist-no-toast    | 6.65ms       | ✅ OK       |
+| crudp:DELETE-worklist-no-toast | 6.52ms       | ✅ OK       |
+
+## Success Criteria
+
+### Phase 1 Success Metrics
+
+- ✅ Zero "invalid uniqueId" errors in console logs
+- ✅ Zero state manager/UI count mismatch warnings  
+- ✅ Deleted items never reappear after table refresh
+- ✅ All deletion operations complete successfully
+
+### Phase 2 Success Metrics
+
+- ✅ Queue operations average < 50ms (down from 494ms)
+- ✅ No user-visible delays during normal operations
+- ✅ Maintain all existing functionality
+
+## Next Immediate Actions
+
+1. **Begin Phase 1 Implementation** - Address critical deletion and state issues
+2. **Implement atomic cleanup functions** - Ensure proper state synchronization
+3. **Add comprehensive error handling** - Prevent silent failures
+4. **Test thoroughly** - Manual testing checklist for each fix
+
+## Files Under Active Development
+
+### Modified Files
+
+- `memory-bank/activeContext.md` (this file)
+- `static/js/profiling/performance-profiler.js`
+- `templates/billing/daily_transactions.html`
+- `templates/billing/summary.html`
+- `templates/modalityCtr/md.html`
+
+### Planned Modifications
+
+- `static/js/wl/wl.js`
+- `static/js/wl/wl-state-manager.js`
+- `static/js/wl/wl_bt.js`
+
+## Documentation References
+
+- **Main Plan**: `docs/worklist-critical-fixes-plan.md`
+- **Performance Guide**: `docs/performance-profiling-multi-view-guide.md`
+- **Performance Plan**: `docs/performance-profiling-plan.md`
+
+## Current Status
+
+**Phase**: Planning Complete, Ready for Implementation
+**Priority**: CRITICAL - Emergency fixes needed immediately
+**Resources**: Development team allocated
+**Timeline**: Week 1 for emergency fixes, Week 2 for performance optimization
 
 ---
 
-# Plan to Fix Worklist/MD View Slowness
-
-## Step 1: Profile Current Performance
-
-- Use browser dev tools to measure time spent in frontend JS (queue, crudp, DOM updates).
-- Use backend logs to measure API response times for single and batch operations.
-
-## Step 2: Analyze Which Operations Need Serial Queuing
-
-- Identify which actions truly require serialization (e.g., batch operations on the same patient/item).
-- List actions that can safely be performed in parallel (e.g., single worklist item updates, most MD view edits).
-
-## Step 3: Refactor Request Queue Usage
-
-- Allow parallel AJAX requests for independent operations.
-- Restrict the queue to only those actions where concurrency could cause data corruption.
-- For simple updates, bypass the queue and call crudp/ajax directly.
-
-## Step 4: Optimize UI Locking and Feedback
-
-- Lock only the specific button or row being updated, not the whole UI.
-- Batch or throttle feedback toasts for rapid, repeated actions.
-
-## Step 5: Minimize Tracking/Logging for Simple Actions
-
-- Only use detailed tracking for batch or critical operations.
-- Reduce or throttle console logging in production.
-
-## Step 6: Backend/API Profiling and Optimization
-
-- If backend is a bottleneck, optimize endpoint logic and database transactions.
-- Ensure only necessary operations are performed per request.
-
-## Step 7: Test and Validate
-
-- Test all common workflows for responsiveness and correctness.
-- Ensure concurrency safety is preserved for batch/critical operations.
-- Gather user feedback on perceived performance.
-
----
-
-# Next Steps
-
-- [x] Complete Step 1: Profile current performance (frontend and backend)
-- [ ] Complete Step 2: Analyze which operations need queuing
-- [ ] Complete Step 3: Refactor queue usage for parallelism
-- [ ] Complete Step 4: Optimize UI locking/feedback
-- [ ] Complete Step 5: Minimize tracking/logging
-- [ ] Complete Step 6: Backend/API optimization (if needed)
-- [ ] Complete Step 7: Test and validate
-
-## Step 1 Implementation Status
-✅ **COMPLETED** - Performance profiling tools have been implemented and are ready for use:
-
-### Frontend Profiling Setup
-- Created comprehensive performance profiler script (`static/js/profiling/performance-profiler.js`)
-- Instruments queue operations, CRUDP calls, state manager operations, and UI operations
-- Provides detailed timing metrics with statistics (avg, min, max, median, 95th percentile)
-- Includes visual HTML report generation and data export capabilities
-- Added to worklist template for live profiling
-
-### Test Environment
-- Created test page (`test-performance.html`) with mock operations
-- Allows validation of profiling setup before live testing
-- Includes batch testing capabilities for performance benchmarking
-
-### Usage Instructions
-1. **Live Profiling**: Open worklist page, run `PerformanceProfiler.startProfiling()` in console
-2. **Test Environment**: Open `test-performance.html` to validate profiler setup
-3. **View Results**: Press Ctrl+Shift+P or call `PerformanceProfiler.showReport()`
-4. **Export Data**: Use `PerformanceProfiler.exportData()` for detailed analysis
-
-### Next Action Required
-- Run actual performance tests on the live application
-- Collect data on common operations (mark as done, edit fields, add medications)
-- Analyze the results to identify bottlenecks before proceeding to Step 2
+*Last Updated: Ready for immediate implementation of critical fixes*

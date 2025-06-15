@@ -8,6 +8,24 @@
 <script src="[[=URL('static', 'js/bootstrap-table_1.22/bootstrap-table.min.js')]]"></script>
 <script src="[[=URL('static', 'js/bootstrap-table_1.22/extensions/export/bootstrap-table-export.min.js')]]"></script>
 <script src="[[=URL('static', 'js/billing/daily_transactions.js')]]"></script>
+
+<!-- Performance Profiler - For performance analysis -->
+<script src="[[=URL('static', 'js/profiling/performance-profiler.js')]]"></script>
+<script>
+    // Initialize performance profiler for Daily Transactions view
+    $(document).ready(function () {
+        if (typeof PerformanceProfiler !== 'undefined') {
+            // Daily Transactions view specific configuration
+            PerformanceProfiler.config.viewType = 'DailyTransactions';
+            PerformanceProfiler.config.debugMode = false; // Enable for debugging
+
+            console.log('📊 Performance Profiler available for Daily Transactions view');
+            console.log('🎯 Use PerformanceProfiler.startProfiling() to begin monitoring');
+            console.log('🔍 Use PerformanceProfiler.startDebugging() for detailed analysis');
+            console.log('📊 Press Ctrl+Shift+P to view performance report');
+        }
+    });
+</script>
 [[ end ]]
 
 [[ block left_nav ]]

@@ -22,11 +22,16 @@ window.PerformanceProfiler = {
 		persistData: true,
 		storageKey: "performanceProfilerData",
 		debugMode: false,
+		captureConsoleLogs: true,
+		maxConsoleEntries: 500,
+		viewType: "Unknown", // Will be set by each view (Worklist, MD, DailyTransactions, etc.)
+		trackViewSpecificOperations: true,
 	},
 
 	// Track initialization to detect resets
 	initCount: 0,
 	lastInitTime: null,
+	consoleLogs: [],
 
 	// Initialize profiling
 	init: function () {
@@ -57,6 +62,11 @@ window.PerformanceProfiler = {
 		this.instrumentCrudp();
 		this.instrumentStateManager();
 		this.instrumentUI();
+
+		// Setup console log capturing
+		if (this.config.captureConsoleLogs) {
+			this.setupConsoleCapture();
+		}
 
 		// Add keyboard shortcut to view results (Ctrl+Shift+P)
 		document.addEventListener("keydown", (e) => {
@@ -89,6 +99,12 @@ window.PerformanceProfiler = {
 			this.metrics[category].shift();
 		}
 
+		// Add view type to metadata
+		if (this.config.trackViewSpecificOperations) {
+			entry.metadata.viewType = this.config.viewType;
+			entry.metadata.pageUrl = window.location.pathname;
+		}
+
 		// Auto-save data if persistence is enabled
 		if (this.config.persistData) {
 			this.saveData();
@@ -96,7 +112,9 @@ window.PerformanceProfiler = {
 
 		if (this.config.logToConsole) {
 			console.log(
-				`⏱️ ${category}:${operation} - ${duration.toFixed(2)}ms`,
+				`⏱️ [${
+					this.config.viewType
+				}] ${category}:${operation} - ${duration.toFixed(2)}ms`,
 				metadata
 			);
 		}
@@ -127,13 +145,24 @@ window.PerformanceProfiler = {
 						}
 					});
 
+					// Load console logs if available
+					if (data.consoleLogs && Array.isArray(data.consoleLogs)) {
+						this.consoleLogs = [...this.consoleLogs, ...data.consoleLogs];
+						// Trim to max entries
+						if (this.consoleLogs.length > this.config.maxConsoleEntries) {
+							this.consoleLogs = this.consoleLogs.slice(
+								-this.config.maxConsoleEntries
+							);
+						}
+					}
+
 					if (this.config.debugMode) {
 						const totalEntries = Object.values(this.metrics).reduce(
 							(sum, arr) => sum + arr.length,
 							0
 						);
 						console.log(
-							`📥 Loaded ${totalEntries} performance entries from storage`
+							`📥 Loaded ${totalEntries} performance entries and ${this.consoleLogs.length} console logs from storage`
 						);
 					}
 				}
@@ -153,6 +182,7 @@ window.PerformanceProfiler = {
 				initCount: this.initCount,
 				lastInitTime: this.lastInitTime,
 				metrics: this.metrics,
+				consoleLogs: this.consoleLogs,
 			};
 			sessionStorage.setItem(this.config.storageKey, JSON.stringify(data));
 		} catch (error) {
@@ -196,6 +226,60 @@ window.PerformanceProfiler = {
 					console.log("📋 Bootstrap table post-body event:", e.target.id);
 				}
 			});
+		}
+	},
+
+	// Setup console log capturing
+	setupConsoleCapture: function () {
+		const originalConsole = {
+			log: console.log,
+			warn: console.warn,
+			error: console.error,
+			info: console.info,
+		};
+
+		const captureLog = (level, originalMethod) => {
+			return function (...args) {
+				// Call original method first
+				originalMethod.apply(console, args);
+
+				// Capture the log entry
+				if (PerformanceProfiler.config.captureConsoleLogs) {
+					const logEntry = {
+						timestamp: Date.now(),
+						level: level,
+						message: args
+							.map((arg) =>
+								typeof arg === "object" ? JSON.stringify(arg) : String(arg)
+							)
+							.join(" "),
+						stack: level === "error" ? new Error().stack : null,
+					};
+
+					PerformanceProfiler.consoleLogs.push(logEntry);
+
+					// Limit console log entries
+					if (
+						PerformanceProfiler.consoleLogs.length >
+						PerformanceProfiler.config.maxConsoleEntries
+					) {
+						PerformanceProfiler.consoleLogs.shift();
+					}
+				}
+			};
+		};
+
+		// Override console methods
+		console.log = captureLog("log", originalConsole.log);
+		console.warn = captureLog("warn", originalConsole.warn);
+		console.error = captureLog("error", originalConsole.error);
+		console.info = captureLog("info", originalConsole.info);
+
+		// Store original methods for potential restoration
+		this.originalConsole = originalConsole;
+
+		if (this.config.debugMode) {
+			console.log("📝 Console log capturing enabled");
 		}
 	},
 
@@ -541,6 +625,14 @@ window.PerformanceProfiler = {
         <body>
             <h1>📊 Performance Report</h1>
             <p>Generated at: ${new Date().toLocaleString()}</p>
+            <div style="margin: 20px 0; text-align: center;">
+                <button onclick="exportCompleteReport()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                    💾 Export Complete Report & Logs
+                </button>
+                <button onclick="exportPerformanceOnly()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    📊 Export Performance Only
+                </button>
+            </div>
         `;
 
 		Object.keys(stats).forEach((category) => {
@@ -588,6 +680,23 @@ window.PerformanceProfiler = {
 
 		html += `
             <script>
+                // Export functions
+                function exportCompleteReport() {
+                    if (window.opener && window.opener.PerformanceProfiler) {
+                        window.opener.PerformanceProfiler.exportCompleteReport();
+                    } else {
+                        alert('Unable to access parent window. Use the console method instead.');
+                    }
+                }
+                
+                function exportPerformanceOnly() {
+                    if (window.opener && window.opener.PerformanceProfiler) {
+                        window.opener.PerformanceProfiler.exportData();
+                    } else {
+                        alert('Unable to access parent window. Use the console method instead.');
+                    }
+                }
+                
                 // Auto-refresh every 30 seconds
                 setTimeout(() => window.location.reload(), 30000);
             </script>
@@ -616,6 +725,251 @@ window.PerformanceProfiler = {
 		a.download = `performance-data-${Date.now()}.json`;
 		a.click();
 		URL.revokeObjectURL(url);
+	},
+
+	// Export complete report including performance data and console logs
+	exportCompleteReport: function () {
+		const timestamp = Date.now();
+		const dateStr = new Date(timestamp)
+			.toISOString()
+			.slice(0, 19)
+			.replace(/:/g, "-");
+
+		const data = {
+			exportInfo: {
+				timestamp: timestamp,
+				dateGenerated: new Date(timestamp).toLocaleString(),
+				version: "1.0",
+				description: "Complete performance report with console logs",
+			},
+			systemInfo: {
+				userAgent: navigator.userAgent,
+				url: window.location.href,
+				timestamp: timestamp,
+				initCount: this.initCount,
+				lastInitTime: this.lastInitTime,
+				sessionStorageSize: this.getStorageSize(),
+			},
+			config: this.config,
+			performance: {
+				metrics: this.metrics,
+				stats: this.getStats(),
+				summary: this.generateSummary(),
+			},
+			consoleLogs: {
+				total: this.consoleLogs.length,
+				logs: this.consoleLogs,
+				recentLogs: this.consoleLogs.slice(-50), // Last 50 logs for quick review
+				errorLogs: this.consoleLogs.filter((log) => log.level === "error"),
+				warningLogs: this.consoleLogs.filter((log) => log.level === "warn"),
+			},
+			diagnostics: this.getDiagnostics(),
+		};
+
+		// Create comprehensive report
+		const blob = new Blob([JSON.stringify(data, null, 2)], {
+			type: "application/json",
+		});
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `complete-performance-report-${dateStr}.json`;
+		a.click();
+		URL.revokeObjectURL(url);
+
+		// Also create a readable text summary
+		const textSummary = this.generateTextReport(data);
+		const textBlob = new Blob([textSummary], { type: "text/plain" });
+		const textUrl = URL.createObjectURL(textBlob);
+		const textA = document.createElement("a");
+		textA.href = textUrl;
+		textA.download = `performance-summary-${dateStr}.txt`;
+		textA.click();
+		URL.revokeObjectURL(textUrl);
+
+		console.log("📁 Complete report exported:", {
+			jsonFile: `complete-performance-report-${dateStr}.json`,
+			textFile: `performance-summary-${dateStr}.txt`,
+			totalMetrics: Object.values(this.metrics).reduce(
+				(sum, arr) => sum + arr.length,
+				0
+			),
+			totalConsoleLogs: this.consoleLogs.length,
+		});
+	},
+
+	// Generate performance summary
+	generateSummary: function () {
+		const stats = this.getStats();
+		const summary = {
+			totalOperations: Object.values(this.metrics).reduce(
+				(sum, arr) => sum + arr.length,
+				0
+			),
+			categoriesWithData: Object.keys(stats).filter(
+				(cat) => stats[cat].total > 0
+			),
+			slowestOperations: [],
+			fastestOperations: [],
+			averageResponseTimes: {},
+			viewBreakdown: this.getViewBreakdown(),
+			currentView: this.config.viewType,
+		};
+
+		// Find slowest and fastest operations
+		Object.keys(stats).forEach((category) => {
+			const operations = stats[category].operations;
+			Object.keys(operations).forEach((op) => {
+				const opStats = operations[op];
+				summary.slowestOperations.push({
+					operation: `${category}:${op}`,
+					avgTime: opStats.avg,
+					maxTime: opStats.max,
+					count: opStats.count,
+				});
+				summary.averageResponseTimes[`${category}:${op}`] = opStats.avg;
+			});
+		});
+
+		// Sort by average time
+		summary.slowestOperations.sort((a, b) => b.avgTime - a.avgTime);
+		summary.fastestOperations = [...summary.slowestOperations].reverse();
+
+		// Keep top 10 of each
+		summary.slowestOperations = summary.slowestOperations.slice(0, 10);
+		summary.fastestOperations = summary.fastestOperations.slice(0, 10);
+
+		return summary;
+	},
+
+	// Get performance breakdown by view type
+	getViewBreakdown: function () {
+		const breakdown = {};
+
+		Object.values(this.metrics).forEach((categoryMetrics) => {
+			categoryMetrics.forEach((entry) => {
+				const viewType = entry.metadata?.viewType || "Unknown";
+				if (!breakdown[viewType]) {
+					breakdown[viewType] = {
+						count: 0,
+						totalDuration: 0,
+						avgDuration: 0,
+						operations: {},
+					};
+				}
+
+				breakdown[viewType].count++;
+				breakdown[viewType].totalDuration += entry.duration;
+
+				if (!breakdown[viewType].operations[entry.operation]) {
+					breakdown[viewType].operations[entry.operation] = 0;
+				}
+				breakdown[viewType].operations[entry.operation]++;
+			});
+		});
+
+		// Calculate averages
+		Object.keys(breakdown).forEach((viewType) => {
+			if (breakdown[viewType].count > 0) {
+				breakdown[viewType].avgDuration =
+					breakdown[viewType].totalDuration / breakdown[viewType].count;
+			}
+		});
+
+		return breakdown;
+	},
+
+	// Generate readable text report
+	generateTextReport: function (data) {
+		const d = data;
+		let report = "";
+
+		report += "=".repeat(60) + "\n";
+		report += "           PERFORMANCE ANALYSIS REPORT\n";
+		report += "=".repeat(60) + "\n";
+		report += `Generated: ${d.exportInfo.dateGenerated}\n`;
+		report += `URL: ${d.systemInfo.url}\n`;
+		report += `User Agent: ${d.systemInfo.userAgent}\n\n`;
+
+		// Performance Summary
+		report += "PERFORMANCE SUMMARY\n";
+		report += "-".repeat(30) + "\n";
+		report += `Current View: ${d.performance.summary.currentView}\n`;
+		report += `Total Operations: ${d.performance.summary.totalOperations}\n`;
+		report += `Categories with Data: ${d.performance.summary.categoriesWithData.join(
+			", "
+		)}\n`;
+		report += `Console Logs Captured: ${d.consoleLogs.total}\n`;
+		report += `Errors: ${d.consoleLogs.errorLogs.length}\n`;
+		report += `Warnings: ${d.consoleLogs.warningLogs.length}\n\n`;
+
+		// View Breakdown
+		if (
+			d.performance.summary.viewBreakdown &&
+			Object.keys(d.performance.summary.viewBreakdown).length > 0
+		) {
+			report += "PERFORMANCE BY VIEW\n";
+			report += "-".repeat(30) + "\n";
+			Object.entries(d.performance.summary.viewBreakdown).forEach(
+				([viewType, data]) => {
+					report += `${viewType}:\n`;
+					report += `  Operations: ${data.count}\n`;
+					report += `  Avg Duration: ${data.avgDuration.toFixed(2)}ms\n`;
+					report += `  Total Duration: ${data.totalDuration.toFixed(2)}ms\n`;
+					const topOps = Object.entries(data.operations)
+						.sort(([, a], [, b]) => b - a)
+						.slice(0, 3)
+						.map(([op, count]) => `${op}(${count})`)
+						.join(", ");
+					report += `  Top Operations: ${topOps}\n\n`;
+				}
+			);
+		}
+
+		// Slowest Operations
+		if (d.performance.summary.slowestOperations.length > 0) {
+			report += "SLOWEST OPERATIONS\n";
+			report += "-".repeat(30) + "\n";
+			d.performance.summary.slowestOperations.forEach((op, i) => {
+				report += `${i + 1}. ${op.operation}\n`;
+				report += `   Average: ${op.avgTime.toFixed(2)}ms\n`;
+				report += `   Max: ${op.maxTime.toFixed(2)}ms\n`;
+				report += `   Count: ${op.count}\n\n`;
+			});
+		}
+
+		// Recent Errors
+		if (d.consoleLogs.errorLogs.length > 0) {
+			report += "RECENT ERRORS\n";
+			report += "-".repeat(30) + "\n";
+			d.consoleLogs.errorLogs.slice(-10).forEach((log, i) => {
+				report += `${i + 1}. [${new Date(log.timestamp).toLocaleString()}] ${
+					log.message
+				}\n`;
+			});
+			report += "\n";
+		}
+
+		// Recent Warnings
+		if (d.consoleLogs.warningLogs.length > 0) {
+			report += "RECENT WARNINGS\n";
+			report += "-".repeat(30) + "\n";
+			d.consoleLogs.warningLogs.slice(-10).forEach((log, i) => {
+				report += `${i + 1}. [${new Date(log.timestamp).toLocaleString()}] ${
+					log.message
+				}\n`;
+			});
+			report += "\n";
+		}
+
+		// Diagnostics
+		report += "SYSTEM DIAGNOSTICS\n";
+		report += "-".repeat(30) + "\n";
+		Object.entries(d.diagnostics).forEach(([key, value]) => {
+			report += `${key}: ${value}\n`;
+		});
+
+		return report;
 	},
 
 	// Clear collected data
