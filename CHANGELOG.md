@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-15T16:22:43.925645]
+
+### Removed - 2025-06-15T16:22:43.925645 - PAYMENT VIEW CONSOLE LOGS CLEANUP
+
+- **Removed**: All `console.log` statements from `static/js/billing/payment-manager.js`.
+- **Reason**: Prevent debug output in production, especially for sensitive payment and transaction data. This includes logs for initialization, transaction history refresh, and raw API responses.
+- **Impact**: Cleaner browser console, improved privacy, and production readiness for payment view.
+
+#### Files Modified
+- `static/js/billing/payment-manager.js`
+
 ## [2025-06-15T13:15:53.576538]
 
 ### Fixed - 2025-06-15T13:15:53.576538 - FINAL QUEUE PERFORMANCE OPTIMIZATION

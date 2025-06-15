@@ -26,7 +26,7 @@ class PaymentManager {
 	 * Initialize payment interface
 	 */
 	async init() {
-		console.log("Initializing Payment Manager for worklist:", this.worklistId);
+		// console.log("Initializing Payment Manager for worklist:", this.worklistId);
 
 		// Show loading state for transaction history
 		this.showTransactionHistoryLoading();
@@ -95,7 +95,7 @@ class PaymentManager {
 			// Bind events
 			this.bindEvents();
 
-			console.log("Payment Manager initialized successfully");
+			// console.log("Payment Manager initialized successfully");
 		} catch (error) {
 			console.error("Error initializing Payment Manager:", error);
 			displayToast(
@@ -259,7 +259,7 @@ class PaymentManager {
 			}
 
 			const result = await response.json();
-			console.log("Raw API response for transactions:", result);
+			// console.log("Raw API response for transactions:", result);
 
 			if (result.status === "success" && result.data) {
 				// Handle both old and new API response formats
@@ -597,9 +597,9 @@ class PaymentManager {
 	 */
 	async refreshTransactionHistory() {
 		try {
-			console.log("Refreshing transaction history...");
+			// console.log("Refreshing transaction history...");
 			await this.loadTransactionHistory();
-			console.log("Transaction history refreshed successfully");
+			// console.log("Transaction history refreshed successfully");
 		} catch (error) {
 			console.error("Error refreshing transaction history:", error);
 			this.showTransactionHistoryError(
