@@ -529,10 +529,11 @@ class WorklistStateManager {
 	}
 
 	/**
-	 * Start intelligent auto-refresh with operation coordination
-	 * @param {number} interval - Refresh interval in milliseconds (default: 40000)
+	 * Start polling-based auto-refresh for the worklist (every 20 seconds)
+	 * This avoids aggressive updates but keeps all users' worklists reasonably fresh.
+	 * Call this once on page load or when the worklist view is shown.
 	 */
-	startAutoRefresh(interval = 40000) {
+	startAutoRefresh(interval = 20000) {
 		this.autoRefreshInterval = interval;
 		this.stopAutoRefresh(); // Stop any existing timer
 
@@ -540,7 +541,9 @@ class WorklistStateManager {
 			this.performIntelligentRefresh();
 		}, this.autoRefreshInterval);
 
-		console.log(`🔄 Auto-refresh started with ${interval / 1000}s interval`);
+		console.log(
+			`🔄 Polling-based auto-refresh started with ${interval / 1000}s interval`
+		);
 	}
 
 	/**
@@ -1040,7 +1043,7 @@ class UIManager {
 
 		// Use the existing displayToast function
 		if (typeof displayToast === "function") {
-			displayToast(toastStatus, heading, message, false);
+			displayToast(toastStatus, heading, message, 4000);
 		} else {
 			// Fallback to console if displayToast is not available
 			console.warn(`Notification: ${heading} - ${message}`);
