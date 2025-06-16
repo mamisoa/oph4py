@@ -102,20 +102,43 @@ var wlItemsCounter = 0;
 var temp;
 
 // Add new item in worklist format
-document.getElementById("btnWlItemAdd").addEventListener("click", function () {
+document.getElementById("btnWlItemAdd").addEventListener("click", async function () {
 	// Lock the button during processing
-	WorklistState.UI.lockUI("#btnWlItemAdd", "Adding...");
+	const button = this;
+	button.disabled = true;
+	button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Adding...';
 
-	let formDataStr = $("#newWlItemForm").serializeJSON();
-	let formDataObj = JSON.parse(formDataStr);
+	try {
+		let formDataStr = $("#newWlItemForm").serializeJSON();
+		let formDataObj = JSON.parse(formDataStr);
 
-	// Clean up form data - remove fields that shouldn't be sent to the server
-	delete formDataObj["modality_destPut"]; // used for PUT request
-	delete formDataObj["idWl"]; // no Id when new Item
-	delete formDataObj["id"]; // Remove empty ID field
-	delete formDataObj["methodWlItemSubmit"]; // Remove method field
+		// Clean up form data - remove fields that shouldn't be sent to the server
+		delete formDataObj["modality_destPut"]; // used for PUT request
+		delete formDataObj["idWl"]; // no Id when new Item
+		delete formDataObj["id"]; // Remove empty ID field
+		delete formDataObj["methodWlItemSubmit"]; // Remove method field
 
-	// Store patient context
+		// Check if this is a multiple modality selection
+		if (formDataObj["modality_dest"] == multiplemod) {
+			// KEEP QUEUE SYSTEM FOR COMBO OPERATIONS (COMPLEX)
+			await handleComboInsertion(formDataObj, button);
+		} else {
+			// CONVERT TO DIRECT CRUDP FOR SINGLE ITEMS (SIMPLE)
+			await handleSingleItemInsertion(formDataObj);
+		}
+	} catch (error) {
+		console.error("Error adding item:", error);
+		displayToast('error', 'Error', `Error adding item: ${error.message}`);
+	} finally {
+		// Unlock UI
+		button.disabled = false;
+		button.innerHTML = '<i class="fa fa-plus"></i> Add Item';
+	}
+});
+
+// KEEP QUEUE SYSTEM FOR COMBO OPERATIONS (COMPLEX)
+async function handleComboInsertion(formDataObj, button) {
+	// Store patient context for combo operations
 	WorklistState.Manager.setPatientContext({
 		id: formDataObj["id_auth_user"],
 		sending_facility: $("#sendingFacilitySelect :selected").text(),
@@ -124,170 +147,126 @@ document.getElementById("btnWlItemAdd").addEventListener("click", function () {
 
 	let formDataObjMultiple = [];
 
-	// Check if this is a multiple modality selection
-	if (formDataObj["modality_dest"] == multiplemod) {
-		// modality_dest 13 is multiple
-		// Create a task function for the request queue
-		const comboTask = function () {
-			return getCombo(formDataObj["procedure"]).then(function (data) {
-				let arr = [];
-				for (let i in data.items) {
-					arr[data.items[i]["id_modality.modality_name"]] =
-						data.items[i]["id_modality.id"];
+	// Create a task function for the request queue
+	const comboTask = function () {
+		return getCombo(formDataObj["procedure"]).then(function (data) {
+			let arr = [];
+			for (let i in data.items) {
+				arr[data.items[i]["id_modality.modality_name"]] =
+					data.items[i]["id_modality.id"];
+			}
+
+			// For combo selection, we don't add the original 'multiple' item
+			// Instead, we add each specific modality item
+			for (let a in arr) {
+				// Create a new clean object with only the fields needed
+				let o = {
+					id_auth_user: formDataObj.id_auth_user,
+					procedure: formDataObj.procedure,
+					provider: formDataObj.provider,
+					senior: formDataObj.senior,
+					requested_time: formDataObj.requested_time,
+					sending_facility: formDataObj.sending_facility || 1,
+					receiving_facility: formDataObj.receiving_facility || 1,
+					laterality: formDataObj.laterality,
+					status_flag: formDataObj.status_flag,
+					counter: formDataObj.counter
+						? parseInt(formDataObj.counter, 10)
+						: 0,
+					warning: formDataObj.warning || "",
+					modality_dest: arr[a],
+					modality_name: a, // only used for display
+				};
+
+				// For MD modality, set counter to 1
+				if (a == "MD") {
+					o.counter = 1;
 				}
 
-				// For combo selection, we don't add the original 'multiple' item
-				// Instead, we add each specific modality item
-				for (let a in arr) {
-					// Create a new clean object with only the fields needed
-					let o = {
-						id_auth_user: formDataObj.id_auth_user,
-						procedure: formDataObj.procedure,
-						provider: formDataObj.provider,
-						senior: formDataObj.senior,
-						requested_time: formDataObj.requested_time,
-						sending_facility: formDataObj.sending_facility || 1,
-						receiving_facility: formDataObj.receiving_facility || 1,
-						laterality: formDataObj.laterality,
-						status_flag: formDataObj.status_flag,
-						counter: formDataObj.counter
-							? parseInt(formDataObj.counter, 10)
-							: 0,
-						warning: formDataObj.warning || "",
-						modality_dest: arr[a],
-						modality_name: a, // only used for display
-					};
+				// Add each item to state manager using standardized function
+				const modalityItemId = addItemWithTracking(o);
 
-					// For MD modality, set counter to 1
-					if (a == "MD") {
-						o.counter = 1;
-					}
+				// Store uniqueId from the return value of addItemWithTracking()
+				const itemUniqueId = modalityItemId;
 
-					// Add each item to state manager using standardized function
-					const modalityItemId = addItemWithTracking(o);
+				// Store for later reference in UI
+				o._uniqueId = itemUniqueId;
+				formDataObjMultiple.push(o);
+			}
 
-					// Store uniqueId from the return value of addItemWithTracking()
-					const itemUniqueId = modalityItemId;
-					// No need to delete o.uniqueId since it was never set on the original object
+			// Validate patient consistency before proceeding
+			if (!WorklistState.Manager.validatePatientConsistency()) {
+				displayToast('error', 'Error', 'Items belong to different patients');
+				return Promise.reject("Patient consistency validation failed");
+			}
 
-					// Store for later reference in UI
-					o._uniqueId = itemUniqueId;
-					formDataObjMultiple.push(o);
-				}
+			// Process the items for UI display
+			for (let f in formDataObjMultiple) {
+				let modalityName = formDataObjMultiple[f]["modality_name"];
 
-				// Validate patient consistency before proceeding
-				if (!WorklistState.Manager.validatePatientConsistency()) {
-					WorklistState.UI.showFeedback(
-						"error",
-						"Error: Items belong to different patients",
-						"feedbackContainer"
-					);
-					return Promise.reject("Patient consistency validation failed");
-				}
+				// Get the uniqueId we stored earlier
+				const uniqueId = formDataObjMultiple[f]._uniqueId;
+				delete formDataObjMultiple[f]._uniqueId;
 
-				// Process the items for UI display
-				for (let f in formDataObjMultiple) {
-					let modalityName = formDataObjMultiple[f]["modality_name"];
+				// Create a UI display version with the uniqueId
+				const itemWithUniqueId = { ...formDataObjMultiple[f], uniqueId };
+				let formDataObjMultipleStr = JSON.stringify(itemWithUniqueId);
 
-					// Get the uniqueId we stored earlier
-					const uniqueId = formDataObjMultiple[f]._uniqueId;
-					delete formDataObjMultiple[f]._uniqueId;
+				// Update status to reflect processing
+				WorklistState.Manager.updateItemStatus(uniqueId, "pending");
 
-					// Create a UI display version with the uniqueId
-					const itemWithUniqueId = { ...formDataObjMultiple[f], uniqueId };
-					let formDataObjMultipleStr = JSON.stringify(itemWithUniqueId);
+				appendWlItem(formDataObjMultipleStr, wlItemsCounter++, modalityName);
+			}
 
-					// Update status to reflect processing
-					WorklistState.Manager.updateItemStatus(uniqueId, "pending");
+			return formDataObjMultiple;
+		});
+	};
 
-					appendWlItem(formDataObjMultipleStr, wlItemsCounter++, modalityName);
-				}
-
-				return formDataObjMultiple;
-			});
-		};
-
-		// Add to request queue instead of immediate execution
+	// Use queue system for combo operations (KEEP THIS)
+	return new Promise((resolve, reject) => {
 		WorklistState.Queue.enqueue(
 			comboTask,
 			function (result) {
 				// Success callback
-				WorklistState.UI.showFeedback(
-					"success",
-					"Items added to worklist queue",
-					"feedbackContainer"
-				);
-				WorklistState.UI.unlockUI("#btnWlItemAdd");
+				displayToast('success', 'Success', 'Multiple items added to worklist successfully');
+				resolve(result);
 			},
 			function (error) {
 				// Error callback
 				console.error("Error in combo processing:", error);
-				WorklistState.UI.showFeedback(
-					"error",
-					"Error adding items: " + error,
-					"feedbackContainer"
-				);
-				WorklistState.UI.unlockUI("#btnWlItemAdd");
+				displayToast('error', 'Error', `Error adding items: ${error}`);
+				reject(error);
 			},
 			{
 				operationType: "combo-processing",
 				description: "Process multiple modality items from combo selection",
-				bypassQueue: true, // Force bypass for UI updates (multiple item creation)
 			}
 		);
-	} else {
-		// Single modality selection - clean up fields
-		delete formDataObj["modality_name"]; // only for display
+	});
+}
 
-		// Make sure counter is a number
-		if (typeof formDataObj.counter === "string") {
-			formDataObj.counter = parseInt(formDataObj.counter, 10) || 0;
-		}
+// CONVERT TO DIRECT CRUDP FOR SINGLE ITEMS (SIMPLE)
+async function handleSingleItemInsertion(formDataObj) {
+	// Clean up fields for single item
+	delete formDataObj["modality_name"]; // only for display
 
-		// Add item to state manager using standardized function
-		const itemId = addItemWithTracking(formDataObj);
-
-		// Get uniqueId for tracking in UI and add it to the object for appendWlItem
-		const stateUniqueId = itemId;
-		formDataObj.uniqueId = stateUniqueId;
-		formDataStr = JSON.stringify(formDataObj);
-
-		// Update the item status (already done by addItemWithTracking, but keeping for clarity)
-		// WorklistState.Manager.updateItemStatus(stateUniqueId, 'pending');
-
-		// Use the request queue for consistent processing - this is a simple UI update
-		WorklistState.Queue.enqueue(
-			function () {
-				// Simple task that executes immediately
-				return Promise.resolve(appendWlItem(formDataStr, wlItemsCounter++));
-			},
-			function () {
-				// Success callback
-				WorklistState.UI.showFeedback(
-					"success",
-					"Item added to worklist queue",
-					"feedbackContainer"
-				);
-				WorklistState.UI.unlockUI("#btnWlItemAdd");
-			},
-			function (error) {
-				// Error callback
-				console.error("Error adding item:", error);
-				WorklistState.UI.showFeedback(
-					"error",
-					"Error adding item: " + error,
-					"feedbackContainer"
-				);
-				WorklistState.UI.unlockUI("#btnWlItemAdd");
-			},
-			{
-				operationType: "simple-crud",
-				description: "Add single worklist item to UI",
-				bypassQueue: true, // Force bypass for simple UI update
-			}
-		);
+	// Ensure counter is a number
+	if (typeof formDataObj.counter === "string") {
+		formDataObj.counter = parseInt(formDataObj.counter, 10) || 0;
 	}
-});
+
+	// Add directly to UI with simple uniqueId (NO STATE MANAGER NEEDED)
+	const uniqueId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+	formDataObj.uniqueId = uniqueId;
+	const formDataStr = JSON.stringify(formDataObj);
+	
+	// Add to UI immediately - NO QUEUE
+	appendWlItem(formDataStr, wlItemsCounter++);
+	
+	displayToast('success', 'Success', 'Item added to worklist successfully');
+	
+	return { success: true, uniqueId: uniqueId };
+}
 
 async function getCombo(id_procedure) {
 	try {
