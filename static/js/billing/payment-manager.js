@@ -160,7 +160,7 @@ class PaymentManager {
 		);
 		if (refreshTransactionsBtn) {
 			refreshTransactionsBtn.addEventListener("click", async () => {
-				await this.refreshTransactionHistory();
+				await this.loadTransactionHistory();
 			});
 		}
 
@@ -595,19 +595,7 @@ class PaymentManager {
 	/**
 	 * Refresh transaction history data
 	 */
-	async refreshTransactionHistory() {
-		try {
-			// console.log("Refreshing transaction history...");
-			await this.loadTransactionHistory();
-			// console.log("Transaction history refreshed successfully");
-		} catch (error) {
-			console.error("Error refreshing transaction history:", error);
-			this.showTransactionHistoryError(
-				"Failed to refresh transactions: " + error.message
-			);
-			throw error; // Re-throw so caller can handle it
-		}
-	}
+
 
 	/**
 	 * Bind cancel button events
@@ -679,7 +667,7 @@ class PaymentManager {
 	}
 
 	/**
-	 * Cancel a transaction
+	 * Cancel a transaction - simplified direct approach
 	 */
 	async cancelTransaction() {
 		if (!this.cancelTransactionId) {
@@ -693,16 +681,14 @@ class PaymentManager {
 		}
 
 		const reason = document.getElementById("cancellation-reason").value.trim();
+		const confirmBtn = document.getElementById("confirm-cancel-transaction-btn");
 
 		try {
-			// Disable confirm button
-			const confirmBtn = document.getElementById(
-				"confirm-cancel-transaction-btn"
-			);
+			// Disable button and show processing state
 			confirmBtn.disabled = true;
-			confirmBtn.innerHTML =
-				'<i class="fas fa-spinner fa-spin me-1"></i>Cancelling...';
+			confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Cancelling...';
 
+			// Submit cancellation directly to API
 			const response = await fetch(
 				`${this.baseUrl}/api/worklist/${this.worklistId}/transactions/${this.cancelTransactionId}/cancel`,
 				{
@@ -723,7 +709,7 @@ class PaymentManager {
 				);
 				modal.hide();
 
-				// Show success message
+				// Show success notification
 				displayToast(
 					"success",
 					"Transaction Cancelled",
@@ -731,9 +717,9 @@ class PaymentManager {
 					5000
 				);
 
-				// Refresh data
+				// Refresh data directly
 				await this.loadPaymentSummary();
-				await this.refreshTransactionHistory();
+				await this.loadTransactionHistory();
 				this.updatePaymentButton();
 			} else {
 				throw new Error(result.message || "Failed to cancel transaction");
@@ -747,13 +733,9 @@ class PaymentManager {
 				6000
 			);
 		} finally {
-			// Re-enable confirm button
-			const confirmBtn = document.getElementById(
-				"confirm-cancel-transaction-btn"
-			);
+			// Re-enable button
 			confirmBtn.disabled = false;
-			confirmBtn.innerHTML =
-				'<i class="fas fa-ban me-1"></i>Cancel Transaction';
+			confirmBtn.innerHTML = '<i class="fas fa-ban me-1"></i>Cancel Transaction';
 		}
 	}
 
@@ -854,7 +836,7 @@ class PaymentManager {
 	}
 
 	/**
-	 * Process payment transaction
+	 * Process payment transaction - simplified direct approach
 	 */
 	async processPayment() {
 		const paymentData = {
@@ -870,12 +852,9 @@ class PaymentManager {
 				document.getElementById("payment-datetime").value || null,
 		};
 
-		if (
-			paymentData.amount_card +
-				paymentData.amount_cash +
-				paymentData.amount_invoice <=
-			0
-		) {
+		const totalAmount = paymentData.amount_card + paymentData.amount_cash + paymentData.amount_invoice;
+
+		if (totalAmount <= 0) {
 			displayToast(
 				"error",
 				"Payment Validation",
@@ -885,13 +864,14 @@ class PaymentManager {
 			return;
 		}
 
+		const confirmBtn = document.getElementById("confirm-payment-btn");
+		
 		try {
-			// Disable confirm button
-			const confirmBtn = document.getElementById("confirm-payment-btn");
+			// Disable button and show processing state
 			confirmBtn.disabled = true;
-			confirmBtn.innerHTML =
-				'<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+			confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
 
+			// Submit payment directly to API
 			const response = await fetch(
 				`${this.baseUrl}/api/worklist/${this.worklistId}/payment`,
 				{
@@ -906,61 +886,25 @@ class PaymentManager {
 			const result = await response.json();
 
 			if (result.status === "success" && result.data) {
-				// Close modal
+				// Close payment modal
 				const modal = bootstrap.Modal.getInstance(
 					document.getElementById("payment-modal")
 				);
 				modal.hide();
 
-				// Show success message
+				// Show success notification
 				displayToast(
 					"success",
 					"Payment Processed",
-					result.data.message || "Payment processed successfully",
+					result.data.message || `Payment of €${totalAmount.toFixed(2)} processed successfully`,
 					5000
 				);
 
-				// Add optimistic transaction to UI immediately
-				this.addOptimisticTransaction(paymentData, result.data);
+				// Refresh data directly
+				await this.loadPaymentSummary();
+				await this.loadTransactionHistory();
+				this.updatePaymentButton();
 
-				// Refresh data immediately with proper sequencing
-				try {
-					// First, refresh payment summary and transaction history in parallel
-					const [summaryResult, historyResult] = await Promise.allSettled([
-						this.loadPaymentSummary(),
-						this.refreshTransactionHistory(),
-					]);
-
-					// Log any errors but don't fail the process
-					if (summaryResult.status === "rejected") {
-						console.error(
-							"Failed to refresh payment summary:",
-							summaryResult.reason
-						);
-					}
-					if (historyResult.status === "rejected") {
-						console.error(
-							"Failed to refresh transaction history:",
-							historyResult.reason
-						);
-					}
-
-					// Update button state after both operations complete
-					this.updatePaymentButton();
-
-					console.log(
-						"Payment processing complete - transaction history updated"
-					);
-				} catch (refreshError) {
-					console.error("Error during post-payment refresh:", refreshError);
-					// Show error but don't fail since payment succeeded
-					displayToast(
-						"warning",
-						"Display Refresh Warning",
-						"Payment successful but failed to refresh display. Please refresh the page.",
-						8000
-					);
-				}
 			} else {
 				throw new Error(result.message || "Failed to process payment");
 			}
@@ -973,68 +917,13 @@ class PaymentManager {
 				6000
 			);
 		} finally {
-			// Re-enable confirm button
-			const confirmBtn = document.getElementById("confirm-payment-btn");
+			// Re-enable button
 			confirmBtn.disabled = false;
 			confirmBtn.innerHTML = '<i class="fas fa-check me-1"></i>Confirm Payment';
 		}
 	}
 
-	/**
-	 * Add optimistic transaction to UI before API refresh
-	 * @param {Object} paymentData - The original payment data submitted
-	 * @param {Object} responseData - The response data from payment API
-	 */
-	addOptimisticTransaction(paymentData, responseData) {
-		const tbody = document.getElementById("transaction-history-body");
-		if (!tbody) return;
 
-		// Remove "no transactions" message if present
-		const noTransactionsRow = tbody.querySelector('tr td[colspan="8"]');
-		if (noTransactionsRow) {
-			noTransactionsRow.parentElement.remove();
-		}
-
-		// Create optimistic transaction row
-		const now = new Date();
-		const totalAmount =
-			paymentData.amount_card +
-			paymentData.amount_cash +
-			paymentData.amount_invoice;
-
-		const optimisticRow = `
-			<tr class="table-success optimistic-transaction">
-				<td>${now.toLocaleDateString()}</td>
-				<td>€${paymentData.amount_card.toFixed(2)}</td>
-				<td>€${paymentData.amount_cash.toFixed(2)}</td>
-				<td>€${paymentData.amount_invoice.toFixed(2)}</td>
-				<td class="fw-bold">€${totalAmount.toFixed(2)}</td>
-				<td>
-					<span class="badge bg-success">
-						<i class="fas fa-spinner fa-spin me-1"></i>Updating...
-					</span>
-					<br><small class="text-muted">Balance: €${(
-						responseData.remaining_balance || 0
-					).toFixed(2)}</small>
-				</td>
-				<td><i class="fas fa-clock me-1"></i><small class="text-muted">Updating...</small></td>
-				<td><span class="badge bg-success">Just Processed</span></td>
-			</tr>
-		`;
-
-		// Prepend to table (newest first)
-		tbody.insertAdjacentHTML("afterbegin", optimisticRow);
-
-		// Update payment summary optimistically
-		if (this.paymentSummary) {
-			this.paymentSummary.total_paid += totalAmount;
-			this.paymentSummary.remaining_balance =
-				responseData.remaining_balance || 0;
-			this.paymentSummary.payment_status =
-				responseData.payment_status || "partial";
-			this.updateSummaryDisplay();
-		}
-	}
 
 	/**
 	 * Update payment button state
