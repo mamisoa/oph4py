@@ -7,7 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
-## [2025-06-22T22:21:06.430780] 
+## [2025-06-22T23:30:52.410661]
+
+### Fixed
+
+- A critical bug causing a 500 server error ("list index out of range") when filtering the worklist by date. The issue was resolved by changing the API query parameters from `gte`/`lte` to the `pydal`-compatible `ge`/`le` in `templates/worklist.html`.
+
+### Added
+
+- The worklist date filter now defaults to today's date on page load.
+- Auto-refresh functionality to the worklist date filter; the table now updates automatically when the start or end dates are changed.
+- Date validation to the worklist filter to ensure the start date cannot be set after the end date.
+
+### Changed
+
+- The provider and practitioner selectors on the worklist page now automatically adjust their width to fit their content, improving the layout.
+
+### Removed
+
+- The manual "Filter" button from the worklist page, as filtering is now automatic and triggered by date changes.
+
+## [2025-06-22T22:21:06.430780]
 
 ### Changed
 

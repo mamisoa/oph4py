@@ -290,16 +290,13 @@
                             <label for="endDate" class="form-label mb-0">To</label>
                             <input type="date" id="endDate" class="form-control me-2" />
                         </div>
-                        <div class="col-auto d-flex align-items-end" style="margin-left: 1.5rem;">
-                            <button type="button" id="btnDateFilter" class="btn btn-primary">Filter</button>
-                        </div>
-                        <div class="col">
+                        <div class="col-auto">
                             <label for="selectProvider" class="form-label mb-0">Select provider</label>
                             <select class="form-select" id="selectProvider">
                                 <option value="">No filter</option>
                             </select>
                         </div>
-                        <div class="col">
+                        <div class="col-auto">
                             <label for="selectPractitioner" class="form-label mb-0">Select practitioner</label>
                             <select class="form-select" id="selectPractitioner">
                                 <option value="">No filter</option>
@@ -832,6 +829,10 @@
     document.addEventListener("DOMContentLoaded", function (event) {
         // Lancer la fonction fillSelect
         fillSelect();
+
+        // Set today's date as default for date filters
+        document.getElementById('startDate').value = TODAY_DATE;
+        document.getElementById('endDate').value = TODAY_DATE;
     });
 
     // for timer
@@ -863,14 +864,52 @@
     // Define $table_wl in global scope
     var $table_wl;
 
+    function queryParams_wl(params) {
+        console.log("[queryParams_wl] INLINE: Received initial params:", JSON.parse(JSON.stringify(params)));
+        let query = {};
+        query['@limit'] = params.limit;
+        query['@offset'] = params.offset;
+        if (params.sort) {
+            let sortField = params.sort;
+            if (sortField === "modality") sortField = "modality_dest";
+            if (sortField === "patient") sortField = "id_auth_user";
+            query['@order'] = (params.order === 'desc' ? '~' : '') + sortField;
+        }
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const provider = document.getElementById("selectProvider").value;
+        const senior = document.getElementById("selectPractitioner").value;
+        if (startDate) query['requested_time.ge'] = `${startDate} 00:00:00`;
+        if (endDate) query['requested_time.le'] = `${endDate} 23:59:59`;
+        if (provider) query['provider.id'] = provider;
+        if (senior) query['senior.id'] = senior;
+        if (params.search) {
+            const searchTerms = params.search.split(",").map(term => term.trim());
+            if (searchTerms.length > 0 && searchTerms[0]) {
+                query['id_auth_user.last_name.contains'] = searchTerms[0];
+            }
+            if (searchTerms.length > 1 && searchTerms[1]) {
+                query['id_auth_user.first_name.startswith'] = capitalize(searchTerms[1]);
+            }
+            if (searchTerms.length > 2 && searchTerms[2]) {
+                query['procedure.exam_name.startswith'] = capitalize(searchTerms[2]);
+            }
+            if (searchTerms.length > 3 && searchTerms[3]) {
+                query['modality_dest.modality_name.startswith'] = capitalize(searchTerms[3]);
+            }
+        }
+        console.log("[queryParams_wl] INLINE: Returning final query object:", query);
+        return query;
+    }
+
     // Load all scripts first, then initialize tables
     function initWorklist() {
-        const defaultDateKey = getDefaultDateRangeKey();
         $table_wl = $('#table-wl').bootstrapTable({
-            url: API_PROCEDURE_LIST + defaultDateKey,
+            url: API_PROCEDURE_LIST, // Base URL, filters are now handled entirely by queryParams
             formatSearch: function () {
                 return 'Last name,first name,procedure,modality';
-            }
+            },
+            queryParams: queryParams_wl
         });
 
         // hide columns in wl table: id, sending_facility, receiving_facility
@@ -886,8 +925,6 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             });
         });
-
-        // Auto-refresh will be set up in the initialization section below
     }
 
     $(document).ready(function () {
@@ -896,76 +933,42 @@
         };
     });
 
-    // --- JS: Utility to build query string without empty values ---
-    function buildQueryString(params) {
-        return Object.entries(params)
-            .filter(([key, value]) => value !== undefined && value !== null && value !== "")
-            .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-            .join('&');
-    }
+    // The handlers now just refresh the table, letting queryParams do the work
+    const startDateInput = document.getElementById("startDate");
+    const endDateInput = document.getElementById("endDate");
 
-    // --- Update getCombinedFilterStatus to use this utility ---
-    function getCombinedFilterStatus() {
-        let params = {};
-        // Provider/practitioner
-        const provider = document.getElementById("selectProvider").value;
-        const senior = document.getElementById("selectPractitioner").value;
-        if (provider) params["provider.id"] = provider;
-        if (senior) params["senior.id"] = senior;
-        // Dates
-        const startDate = document.getElementById("startDate").value;
-        const endDate = document.getElementById("endDate").value;
-        if (startDate) params["requested_time.gte"] = startDate;
-        if (endDate) params["requested_time.lte"] = endDate;
-        // Build query string
-        return buildQueryString(params) ? "&" + buildQueryString(params) : "";
-    }
-
-    // Set both date inputs to today
-    function setDefaultDates() {
-        const today = new Date().toISOString().slice(0, 10);
-        document.getElementById("startDate").value = today;
-        document.getElementById("endDate").value = today;
-    }
-
-    document.addEventListener("DOMContentLoaded", function (event) {
-        fillSelect();
-        setDefaultDates();
+    startDateInput.addEventListener('change', () => {
+        // Enforce startDate <= endDate
+        if (startDateInput.value && endDateInput.value && startDateInput.value > endDateInput.value) {
+            endDateInput.value = startDateInput.value;
+        }
+        $('#table-wl').bootstrapTable('refresh');
     });
 
-    // Add handler for Filter button
-    $('#btnDateFilter').click(function () {
-        let key = getCombinedFilterStatus();
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST + key
-        });
+    endDateInput.addEventListener('change', () => {
+        // Enforce startDate <= endDate
+        if (startDateInput.value && endDateInput.value && endDateInput.value < startDateInput.value) {
+            startDateInput.value = endDateInput.value;
+        }
+        $('#table-wl').bootstrapTable('refresh');
     });
 
-    // Update provider/practitioner change handlers to use date filter too
     $('#selectPractitioner').change(function () {
-        let key = getCombinedFilterStatus();
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST + key
-        });
+        $('#table-wl').bootstrapTable('refresh');
     });
 
     $('#selectProvider').change(function () {
-        let key = getCombinedFilterStatus();
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST + key
-        });
+        $('#table-wl').bootstrapTable('refresh');
     });
 
-    // Get today's date as YYYY-MM-DD
-    function getTodayDateStr() {
-        return new Date().toISOString().slice(0, 10);
-    }
+    // The auto-refresh logic will also be simplified
+    WorklistState.Manager.startAutoRefresh(40000); // No longer needs a URL callback
 
-    // Get default date range query string for today
-    function getDefaultDateRangeKey() {
-        const today = getTodayDateStr();
-        return `&requested_time.gte=${today}&requested_time.lte=${today}`;
-    }
+    // Fallback timer also simplifies
+    window.setInterval(function () {
+        console.log("Refreshing wl table (fallback)!");
+        $('#table-wl').bootstrapTable('refresh');
+    }, 40000);
 
 </script>
 <script src="js/wl/wl-state-manager.js"></script>
@@ -994,7 +997,7 @@
                 initWorklist();
 
                 // Set up intelligent auto-refresh to replace basic timer
-                WorklistState.Manager.startAutoRefresh(40000); // 40 seconds
+                WorklistState.Manager.startAutoRefresh(40000, () => API_PROCEDURE_LIST + getCombinedFilterStatus());
                 console.log('🔄 Intelligent auto-refresh initialized successfully');
 
                 // Start performance profiling if needed
@@ -1012,7 +1015,9 @@
                 // Fallback to basic timer
                 window.setInterval(function () {
                     console.log("Refreshing wl table (fallback)!");
-                    $('#table-wl').bootstrapTable('refresh');
+                    $('#table-wl').bootstrapTable('refresh', {
+                        url: API_PROCEDURE_LIST + getCombinedFilterStatus()
+                    });
                 }, 40000);
             }
         }, 200); // Reasonable delay to ensure all scripts are fully loaded

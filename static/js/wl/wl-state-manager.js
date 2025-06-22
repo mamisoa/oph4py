@@ -24,6 +24,7 @@ class WorklistStateManager {
 		this.lastOperationTime = 0;
 		this.operationCooldownTime = 2000; // 2 seconds after operation before allowing auto-refresh
 		this.pendingAutoRefresh = false;
+		this.getUrlCallback = null; // Store the callback
 
 		console.log("🎯 WorklistStateManager initialized");
 	}
@@ -529,21 +530,20 @@ class WorklistStateManager {
 	}
 
 	/**
-	 * Start polling-based auto-refresh for the worklist (every 20 seconds)
-	 * This avoids aggressive updates but keeps all users' worklists reasonably fresh.
-	 * Call this once on page load or when the worklist view is shown.
+	 * Start the auto-refresh mechanism with intelligent checks
+	 * @param {Number} interval - Time in ms for refresh interval
+	 * @param {Function} getUrlCallback - A function that returns the full URL for refresh
 	 */
 	startAutoRefresh(interval = 20000) {
+		this.stopAutoRefresh();
 		this.autoRefreshInterval = interval;
-		this.stopAutoRefresh(); // Stop any existing timer
+		console.log(
+			`Polling-based auto-refresh started with ${interval / 1000}s interval`
+		);
 
 		this.autoRefreshTimer = setInterval(() => {
 			this.performIntelligentRefresh();
 		}, this.autoRefreshInterval);
-
-		console.log(
-			`🔄 Polling-based auto-refresh started with ${interval / 1000}s interval`
-		);
 	}
 
 	/**
@@ -623,7 +623,7 @@ class WorklistStateManager {
 	}
 
 	/**
-	 * Perform safe table refresh with logging
+	 * Perform the refresh only if no operations are in progress
 	 */
 	performSafeRefresh() {
 		if (typeof $table_wl !== "undefined" && $table_wl) {

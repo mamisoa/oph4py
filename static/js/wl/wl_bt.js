@@ -15,67 +15,9 @@ if (typeof WorklistState === "undefined") {
 	);
 }
 
-function queryParams_wl(params) {
-	search = params.search.split(",");
-	if (search == [""]) {
-		s_wl = "";
-	} else {
-		if (search[0] != undefined) {
-			s_wl = "id_auth_user.last_name.contains=" + search[0];
-		} else {
-			s_wl = "";
-		}
-		if (search[1] != undefined) {
-			s_wl += "&id_auth_user.first_name.startswith=" + capitalize(search[1]);
-		} else {
-			s_wl += "";
-		}
-		if (search[2] != undefined) {
-			s_wl += "&procedure.exam_name.startswith=" + capitalize(search[2]);
-		} else {
-			s_wl += "";
-		}
-		if (search[3] != undefined) {
-			s_wl +=
-				"&modality_dest.modality_name.startswith=" + capitalize(search[3]);
-		} else {
-			s_wl += "";
-		}
-	}
-	if (params.sort != undefined) {
-		if (params.sort == "id") {
-			params.sort = "id";
-		}
-		if (params.sort == "modality") {
-			params.sort = "modality_dest";
-		}
-		if (params.sort == "procedure") {
-			params.sort = "procedure";
-		}
-		if (params.sort == "patient") {
-			params.sort = "id_auth_user";
-		}
-		if (toggle_wl == "") {
-			s_wl += "&@order=" + params.sort;
-			toggle_wl = "~";
-		} else {
-			s_wl += "&@order=~" + params.sort;
-			toggle_wl = "";
-		}
-	}
-	if (params.offset != "0") {
-		console.log(params.offset);
-		s_wl += "&@offset=" + params.offset;
-	}
-	if (params.limit != "0") {
-		// console.log(params.offset);
-		s_wl += "&@limit=" + params.limit;
-	}
-	// console.log('s_wl',s_wl);
-	return decodeURI(encodeURI(s_wl));
-}
-
 function styleTimeslot(ts) {
+	let now = new Date().getTime();
+	let ts_time = new Date(ts).getTime();
 	let arr = ts.split(" ");
 	let res =
 		"<strong>" + arr[1] + "</strong> " + arr[0].split("-").reverse().join("/");
@@ -311,8 +253,8 @@ window.operateEvents_wl = {
 	"click .remove": async function (e, value, row, index) {
 		// CONVERTED TO DIRECT CRUDP - NO QUEUE
 		const button = e.currentTarget;
-		WorklistDirectOps.toggleButtonLock(button, true, 'Deleting...');
-		
+		WorklistDirectOps.toggleButtonLock(button, true, "Deleting...");
+
 		try {
 			await WorklistDirectOps.deleteWorklistItemDirect(row);
 		} catch (error) {
@@ -324,8 +266,8 @@ window.operateEvents_wl = {
 	"click .stopwatch": async function (e, value, row, index) {
 		// CONVERTED TO DIRECT CRUDP - NO QUEUE
 		const button = e.currentTarget;
-		WorklistDirectOps.toggleButtonLock(button, true, 'Processing...');
-		
+		WorklistDirectOps.toggleButtonLock(button, true, "Processing...");
+
 		try {
 			let dataObj = { laterality: row.laterality, id: row.id };
 
@@ -343,7 +285,11 @@ window.operateEvents_wl = {
 					`Counter updated for item ${row.id}`
 				);
 			} else {
-				displayToast('warning', 'Warning', 'Counter is already at zero or item is cancelled');
+				displayToast(
+					"warning",
+					"Warning",
+					"Counter is already at zero or item is cancelled"
+				);
 			}
 		} catch (error) {
 			console.error("Counter update failed:", error);
@@ -354,25 +300,29 @@ window.operateEvents_wl = {
 	"click .done": async function (e, value, row, index) {
 		// CONVERTED TO DIRECT CRUDP - NO QUEUE
 		const button = e.currentTarget;
-		WorklistDirectOps.toggleButtonLock(button, true, 'Processing...');
-		
+		WorklistDirectOps.toggleButtonLock(button, true, "Processing...");
+
 		try {
 			// Get fresh table data to avoid "Record not found" errors
 			const currentTableData = $table_wl.bootstrapTable("getData");
 			const freshRow = currentTableData.find((item) => item.id === row.id);
 
 			if (!freshRow) {
-				displayToast('warning', 'Warning', 'Data is stale, please refresh and try again');
+				displayToast(
+					"warning",
+					"Warning",
+					"Data is stale, please refresh and try again"
+				);
 				$table_wl.bootstrapTable("refresh");
 				return;
 			}
 
 			if (freshRow.status_flag != "done") {
-				let dataObj = { 
-					laterality: freshRow.laterality, 
+				let dataObj = {
+					laterality: freshRow.laterality,
 					id: freshRow.id,
 					status_flag: "done",
-					counter: 0
+					counter: 0,
 				};
 
 				await WorklistDirectOps.updateWorklistStatusDirect(
@@ -380,7 +330,7 @@ window.operateEvents_wl = {
 					`Item ${freshRow.id} marked as done successfully`
 				);
 			} else {
-				displayToast('info', 'Information', 'Item is already marked as done');
+				displayToast("info", "Information", "Item is already marked as done");
 			}
 		} catch (error) {
 			console.error("Done operation failed:", error);
@@ -465,15 +415,15 @@ window.operateEvents_wl = {
 	"click .unlock": async function (e, value, row, index) {
 		// CONVERTED TO DIRECT CRUDP - NO QUEUE
 		const button = e.currentTarget;
-		WorklistDirectOps.toggleButtonLock(button, true, 'Processing...');
-		
+		WorklistDirectOps.toggleButtonLock(button, true, "Processing...");
+
 		try {
 			if (row.status_flag == "done") {
-				let dataObj = { 
-					laterality: row.laterality, 
+				let dataObj = {
+					laterality: row.laterality,
 					id: row.id,
 					status_flag: "processing",
-					counter: 1
+					counter: 1,
 				};
 
 				await WorklistDirectOps.updateWorklistStatusDirect(
@@ -481,7 +431,11 @@ window.operateEvents_wl = {
 					`Item ${row.id} unlocked successfully`
 				);
 			} else {
-				displayToast('info', 'Information', 'Item is not in done status, cannot unlock');
+				displayToast(
+					"info",
+					"Information",
+					"Item is not in done status, cannot unlock"
+				);
 			}
 		} catch (error) {
 			console.error("Unlock operation failed:", error);
