@@ -358,7 +358,12 @@ $('#kmFormModal').submit(function(e) {
 
 function refreshMachine(machine='l80') {
   let API_R, API_L;
-  machine == 'l80'? [API_R,API_L] = [API_L80_R,API_L80_L] : [API_R,API_L] = [API_VX100_R,API_VX100_L];
+  [API_R,API_L] = [API_L80_R,API_L80_L];
+  if (machine == 'vx120') {
+    [API_R,API_L] = [API_VX120_R,API_VX120_L];
+  } else if (machine == 'vx100') { 
+    [API_R,API_L] = [API_VX100_R,API_VX100_L];
+  };
   $('#visionixRight_tbl').bootstrapTable(
     'refresh',
     {
@@ -382,6 +387,12 @@ $('#btnGetFromL80').click(function() {
 $('#btnGetFromVx100').click(function() {
   refreshMachine('vx100');
   document.getElementById('importMachineTitle').innerHTML = 'Import from VX100'
+  $('#machineModal').modal('show');
+});
+
+$('#btnGetFromVx120').click(function() {
+  refreshMachine('vx120');
+  document.getElementById('importMachineTitle').innerHTML = 'Import from VX120'
   $('#machineModal').modal('show');
 });
 

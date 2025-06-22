@@ -27,6 +27,7 @@
                 <button id="btnLink" class="btn btn-warning me-2" type="button"></button>
                 <button id="btnGetFromL80" class="btn btn-primary btn-sm" type="button">L80</button>
                 <button id="btnGetFromVx100" class="btn btn-primary btn-sm" type="button">VX100</button>
+                <button id="btnGetFromVx120" class="btn btn-primary btn-sm" type="button">VX120</button>
                 <button id="btnGetFromcv-iris" class="btn btn-primary btn-sm" type="button">CV5 Iris</button>
                 <button id="btnGetFromcv-crist" class="btn btn-primary btn-sm" type="button">CV5 Crist</button>
                 <button id="btnGetFromcv-cornea" class="btn btn-primary btn-sm" type="button">CV5 Cornea</button>
@@ -1639,6 +1640,8 @@
     const API_L80_L = HOSTURL + '/' + APP_NAME + '/rest/machines/l80?lastname=' + removeAccent(patientObj['last_name']) + '&firstname=' + removeAccent(patientObj['first_name']) + '&side=left'
     const API_VX100_R = HOSTURL + '/' + APP_NAME + '/rest/machines/vx100?lastname=' + removeAccent(patientObj['last_name']) + '&firstname=' + removeAccent(patientObj['first_name']) + '&side=right'
     const API_VX100_L = HOSTURL + '/' + APP_NAME + '/rest/machines/vx100?lastname=' + removeAccent(patientObj['last_name']) + '&firstname=' + removeAccent(patientObj['first_name']) + '&side=left'
+    const API_VX120_R = HOSTURL + '/' + APP_NAME + '/rest/machines/vx120?lastname=' + removeAccent(patientObj['last_name']) + '&firstname=' + removeAccent(patientObj['first_name']) + '&side=right'
+    const API_VX120_L = HOSTURL + '/' + APP_NAME + '/rest/machines/vx120?lastname=' + removeAccent(patientObj['last_name']) + '&firstname=' + removeAccent(patientObj['first_name']) + '&side=left'
     var $visionixright_tbl = $('#visionixRight_tbl').bootstrapTable({
         url: API_L80_R
     });

@@ -11,7 +11,14 @@ from py4web import (  # add response to throw http error 400
 )
 
 from ...common import T, auth, authenticated, cache, logger, session, unauthenticated
-from ...settings import L80_FOLDER, MACHINES_FOLDER, VX100_FOLDER, VX100_XML_FOLDER
+from ...settings import (
+    L80_FOLDER,
+    MACHINES_FOLDER,
+    VX100_FOLDER,
+    VX100_XML_FOLDER,
+    VX120_FOLDER,
+    VX120_XML_FOLDER,
+)
 
 
 def getWF(machine, path, filename, side, patient):
@@ -190,7 +197,7 @@ def scan_visionix(machine, lastname="", firstname=""):
 
     Check if patient exists in Visionix machines, if so send JSON response with corresponding file and path
     Args:
-        machine (str): machine 'l80' or 'vx100'
+        machine (str): machine 'l80' or 'vx100' or 'vx120'
         lastname (str): patient last name
         firstname (str): patient first name
     Returns:
@@ -213,10 +220,12 @@ def scan_visionix(machine, lastname="", firstname=""):
         firstname = ""
     searchList = [lastname, firstname]
     list = {"count": 0, "results": []}
-    if (machine == "l80") or (machine == "vx100"):
+    if (machine == "l80") or (machine == "vx100") or (machine == "vx120"):
         searchList = [searchList[0], searchList[1]]
         if machine == "l80":
             WORKING_FOLDER = L80_FOLDER
+        elif machine == "vx120":
+            WORKING_FOLDER = VX120_FOLDER
         elif machine == "vx100":
             WORKING_FOLDER = VX100_FOLDER
         with os.scandir(WORKING_FOLDER) as itr:
@@ -250,7 +259,8 @@ def createxml_vx100(id="", lastname="", firstname="", dob="", sex=""):
     """
     from xml.dom import minidom
 
-    xmlfolder = VX100_XML_FOLDER
+    xmlfolder_vx100 = VX100_XML_FOLDER
+    xmlfolder_vx120 = VX120_XML_FOLDER
     # set XML file
     root = minidom.Document()
     # root.setAttribute('standalone', 'yes')
@@ -302,12 +312,20 @@ def createxml_vx100(id="", lastname="", firstname="", dob="", sex=""):
     # generate xml
     xmlstr = root.toprettyxml(encoding="UTF-8", indent="\t")
     filename = id + "_" + lastname + "_" + firstname + "_" + dob
+    result = {}
     try:
-        with open(xmlfolder + "/" + filename + ".xml", "wb") as f:
+        with open(xmlfolder_vx100 + "/" + filename + ".xml", "wb") as f:
             f.write(xmlstr)
-        return {"result": "success"}
+        result['result']='Patient created in VX100 waiting list'
     except:
-        return {"result": "cannot create patient"}
+        result['result']='Error creating patient in VX100 waiting list'
+    try:
+        with open(xmlfolder_vx120 + "/" + filename + ".xml", "wb") as f:
+            f.write(xmlstr)
+        result['result']+='\nPatient created in VX120 waiting list'
+    except:
+        result['result']+='\nError creating patient in VX120 waiting list'
+    return result
 
 
 def addpatient_l80(firstname, lastname):
