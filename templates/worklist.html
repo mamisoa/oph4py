@@ -281,7 +281,7 @@
         <div class="col-md-12 mt-3">
             <div class="row">
                 <div class="col">
-                    <div class="row align-items-center g-2 mb-2" id="filterBar">
+                    <div class="row g-2 mb-2 align-items-end" id="filterBar">
                         <div class="col-auto">
                             <label for="startDate" class="form-label mb-0">From</label>
                             <input type="date" id="startDate" class="form-control me-2" />
@@ -290,7 +290,7 @@
                             <label for="endDate" class="form-label mb-0">To</label>
                             <input type="date" id="endDate" class="form-control me-2" />
                         </div>
-                        <div class="col-auto d-flex align-items-end ms-3">
+                        <div class="col-auto d-flex align-items-end" style="margin-left: 1.5rem;">
                             <button type="button" id="btnDateFilter" class="btn btn-primary">Filter</button>
                         </div>
                         <div class="col">
@@ -896,47 +896,29 @@
         };
     });
 
-    function getFilterStatus() {
-        let key = "";
-        if (document.getElementById("selectPractitioner").value != "") {
-            if (document.getElementById("selectProvider").value != "") {
-                // provider AND senior selected
-                key = "&senior.id=" + document.getElementById("selectPractitioner").value + "&provider.id=" + document.getElementById("selectProvider").value
-            } else {
-                // ONLY senior selected
-                key = "&senior.id=" + document.getElementById("selectPractitioner").value
-            }
-        } else {
-            // no senior selected
-            if (document.getElementById("selectProvider").value != "") {
-                // ONLY provider selected
-                key = "&provider.id=" + document.getElementById("selectProvider").value
-            } else {
-                // NO selection
-            }
-        }
-        return key;
+    // --- JS: Utility to build query string without empty values ---
+    function buildQueryString(params) {
+        return Object.entries(params)
+            .filter(([key, value]) => value !== undefined && value !== null && value !== "")
+            .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+            .join('&');
     }
 
-    // Date range filter bar: replaces Full list/Today's list buttons. Default: today to today.
-    function getDateFilterStatus() {
-        let key = "";
+    // --- Update getCombinedFilterStatus to use this utility ---
+    function getCombinedFilterStatus() {
+        let params = {};
+        // Provider/practitioner
+        const provider = document.getElementById("selectProvider").value;
+        const senior = document.getElementById("selectPractitioner").value;
+        if (provider) params["provider.id"] = provider;
+        if (senior) params["senior.id"] = senior;
+        // Dates
         const startDate = document.getElementById("startDate").value;
         const endDate = document.getElementById("endDate").value;
-        if (startDate) {
-            key += `&requested_time.gte=${startDate}`;
-        }
-        if (endDate) {
-            key += `&requested_time.lte=${endDate}`;
-        }
-        return key;
-    }
-
-    // Combine provider/practitioner and date filters
-    function getCombinedFilterStatus() {
-        let key = getFilterStatus(); // provider/practitioner
-        key += getDateFilterStatus();
-        return key;
+        if (startDate) params["requested_time.gte"] = startDate;
+        if (endDate) params["requested_time.lte"] = endDate;
+        // Build query string
+        return buildQueryString(params) ? "&" + buildQueryString(params) : "";
     }
 
     // Set both date inputs to today
