@@ -279,24 +279,24 @@
 <div class="container-fluid" id="worklistTable"> <!-- #table-wl list -->
     <div class="row">
         <div class="col-md-12 mt-3">
-            <div class="row">
-                <div class="col">
-                    <div class="row g-2 mb-2 align-items-end" id="filterBar">
-                        <div class="col-auto">
+            <div class="row align-items-center">
+                <div class="col-lg-9 col-md-12">
+                    <div class="d-flex flex-wrap align-items-end gap-2" id="filterBar">
+                        <div>
                             <label for="startDate" class="form-label mb-0">From</label>
-                            <input type="date" id="startDate" class="form-control me-2" />
+                            <input type="date" id="startDate" class="form-control" />
                         </div>
-                        <div class="col-auto">
+                        <div>
                             <label for="endDate" class="form-label mb-0">To</label>
-                            <input type="date" id="endDate" class="form-control me-2" />
+                            <input type="date" id="endDate" class="form-control" />
                         </div>
-                        <div class="col-auto">
+                        <div>
                             <label for="selectProvider" class="form-label mb-0">Select provider</label>
                             <select class="form-select" id="selectProvider">
                                 <option value="">No filter</option>
                             </select>
                         </div>
-                        <div class="col-auto">
+                        <div>
                             <label for="selectPractitioner" class="form-label mb-0">Select practitioner</label>
                             <select class="form-select" id="selectPractitioner">
                                 <option value="">No filter</option>
@@ -304,9 +304,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="col">
-                    <div id="toolbar-wl">
-                        <h2><span><i class="fas fa-list me-2"></i>Worklist</span></h2>
+                <div class="col-lg-3 col-md-12">
+                    <div id="toolbar-wl" class="mt-2 mt-lg-0">
+                        <h2 class="text-lg-end"><span><i class="fas fa-list me-2"></i>Worklist</span></h2>
                     </div>
                 </div>
             </div>
