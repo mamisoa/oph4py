@@ -238,6 +238,31 @@
             height: calc(100vh - 20px);
         }
     }
+
+    #filterBar .form-label {
+        font-size: 0.95rem;
+    }
+
+    #filterBar .form-control,
+    #filterBar .form-select {
+        min-width: 140px;
+    }
+
+    @media (max-width: 768px) {
+        #filterBar {
+            flex-direction: column !important;
+        }
+
+        #filterBar .col-auto,
+        #filterBar .col {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        #filterBar .d-flex {
+            justify-content: flex-start;
+        }
+    }
 </style>
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
 [[ end ]]
@@ -252,25 +277,31 @@
         <div class="col-md-12 mt-3">
             <div class="row">
                 <div class="col">
-                    <div class="input-group mx-2">
-                        <span class="input-group-text">From</span>
-                        <input type="date" id="startDate" class="form-control" />
-                        <span class="input-group-text">To</span>
-                        <input type="date" id="endDate" class="form-control" />
-                        <button type="button" id="btnDateFilter" class="btn btn-primary mx-2">Filter</button>
+                    <div class="row align-items-center g-2 mb-2" id="filterBar">
+                        <div class="col-auto">
+                            <label for="startDate" class="form-label mb-0">From</label>
+                            <input type="date" id="startDate" class="form-control" />
+                        </div>
+                        <div class="col-auto">
+                            <label for="endDate" class="form-label mb-0">To</label>
+                            <input type="date" id="endDate" class="form-control" />
+                        </div>
+                        <div class="col-auto d-flex align-items-end">
+                            <button type="button" id="btnDateFilter" class="btn btn-primary">Filter</button>
+                        </div>
+                        <div class="col">
+                            <label for="selectProvider" class="form-label mb-0">Select provider</label>
+                            <select class="form-select" id="selectProvider">
+                                <option value="">No filter</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="selectPractitioner" class="form-label mb-0">Select practitioner</label>
+                            <select class="form-select" id="selectPractitioner">
+                                <option value="">No filter</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="col form-floating">
-                    <select class="form-select" id="selectProvider" class="form-control">
-                        <option value="">No filter</option>"
-                    </select>
-                    <label for="selectProvider">Select provider</label>
-                </div>
-                <div class="col form-floating">
-                    <select class="form-select" id="selectPractitioner" class="form-control">
-                        <option value="">No filter</option>"
-                    </select>
-                    <label for="selectPractitioner">Select practitioner</label>
                 </div>
                 <div class="col">
                     <div id="toolbar-wl">
