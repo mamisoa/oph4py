@@ -263,6 +263,10 @@
             justify-content: flex-start;
         }
     }
+
+    #filterBar .ms-3 {
+        margin-left: 1rem !important;
+    }
 </style>
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
 [[ end ]]
@@ -280,13 +284,13 @@
                     <div class="row align-items-center g-2 mb-2" id="filterBar">
                         <div class="col-auto">
                             <label for="startDate" class="form-label mb-0">From</label>
-                            <input type="date" id="startDate" class="form-control" />
+                            <input type="date" id="startDate" class="form-control me-2" />
                         </div>
                         <div class="col-auto">
                             <label for="endDate" class="form-label mb-0">To</label>
-                            <input type="date" id="endDate" class="form-control" />
+                            <input type="date" id="endDate" class="form-control me-2" />
                         </div>
-                        <div class="col-auto d-flex align-items-end">
+                        <div class="col-auto d-flex align-items-end ms-3">
                             <button type="button" id="btnDateFilter" class="btn btn-primary">Filter</button>
                         </div>
                         <div class="col">
