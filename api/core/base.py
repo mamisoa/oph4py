@@ -155,15 +155,24 @@ def handle_rest_api_request(
         )
 
     except Exception as e:
-        # Handle unexpected errors
+        # Enhanced error logging
         logger.error(f"Unexpected Error: {str(e)}")
+        logger.error(f"Exception type: {type(e).__name__}")
+        logger.error(f"Exception args: {getattr(e, 'args', None)}")
+        logger.error(
+            f"Request context: method={method}, tablename={tablename}, rec_id={rec_id}, query={query}, request.json={request.json}"
+        )
         logger.error(traceback.format_exc())
         return APIResponse.error(
             message=str(e),
             status_code=500,
             error_type="server_error",
             details=(
-                {"traceback": traceback.format_exc()}
+                {
+                    "traceback": traceback.format_exc(),
+                    "exception_type": type(e).__name__,
+                    "exception_args": getattr(e, "args", None),
+                }
                 if APP_NAME.startswith("dev_")
                 else None
             ),
