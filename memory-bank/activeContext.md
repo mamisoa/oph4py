@@ -476,13 +476,13 @@ Users should now experience consistent behavior where:
 
 #### 📊 **EXPECTED PERFORMANCE IMPROVEMENT**
 
-| Operation | Before (Queue) | After (Direct CRUDP) | Improvement |
-|-----------|----------------|---------------------|-------------|
-| Delete Item | ~494ms | ~6ms | **98% faster** |
-| Set to Done | ~494ms | ~6ms | **98% faster** |
-| Counter Update | ~494ms | ~6ms | **98% faster** |
-| Single Item Add | ~494ms | ~6ms | **98% faster** |
-| **Combo Insert** | ~494ms | ~494ms | **No change (intentional)** |
+| Operation        | Before (Queue) | After (Direct CRUDP) | Improvement                 |
+| ---------------- | -------------- | -------------------- | --------------------------- |
+| Delete Item      | ~494ms         | ~6ms                 | **98% faster**              |
+| Set to Done      | ~494ms         | ~6ms                 | **98% faster**              |
+| Counter Update   | ~494ms         | ~6ms                 | **98% faster**              |
+| Single Item Add  | ~494ms         | ~6ms                 | **98% faster**              |
+| **Combo Insert** | ~494ms         | ~494ms               | **No change (intentional)** |
 
 #### 🎯 **QUEUE SYSTEM RESERVED FOR**
 
@@ -517,3 +517,9 @@ Users should now experience consistent behavior where:
 ---
 
 *Last Updated: 2025-01-09T16:00:00.000000 - Direct CRUDP implementation completed, queue reserved for combo operations only*
+
+## Current Status
+- worklist.html now uses a date range filter (start/end date inputs, default today-to-today) instead of 'Full list' and 'Today's list' buttons
+- JS logic updated to build API query with requested_time.gte/lte and provider/practitioner filters
+- Table refreshes based on date range and filters
+- No backend/API change required; uses py4web RestAPI filtering best practices

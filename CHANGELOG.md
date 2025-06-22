@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-22T22:21:06.430780] 
+
+### Changed
+
+- Replaced 'Full list' and 'Today's list' buttons in worklist.html with a date range filter (start/end date inputs, defaulting to today).
+- Updated JS logic to build API query with requested_time.gte/lte and provider/practitioner filters.
+- Table now refreshes based on date range and filters; default load is today-to-today.
+- No backend/API change required; uses py4web RestAPI filtering best practices.
+
 ## [2025-06-15T16:22:43.925645]
 
 ### Removed - 2025-06-15T16:22:43.925645 - PAYMENT VIEW CONSOLE LOGS CLEANUP

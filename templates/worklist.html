@@ -252,8 +252,13 @@
         <div class="col-md-12 mt-3">
             <div class="row">
                 <div class="col">
-                    <button type="button" id="btnFullList" class="btn btn-dark mx-2">Full list</button>
-                    <button type="button" id="btnTodaysList" class="btn btn-dark mx-2">Today's list</button>
+                    <div class="input-group mx-2">
+                        <span class="input-group-text">From</span>
+                        <input type="date" id="startDate" class="form-control" />
+                        <span class="input-group-text">To</span>
+                        <input type="date" id="endDate" class="form-control" />
+                        <button type="button" id="btnDateFilter" class="btn btn-primary mx-2">Filter</button>
+                    </div>
                 </div>
                 <div class="col form-floating">
                     <select class="form-select" id="selectProvider" class="form-control">
@@ -825,8 +830,9 @@
 
     // Load all scripts first, then initialize tables
     function initWorklist() {
+        const defaultDateKey = getDefaultDateRangeKey();
         $table_wl = $('#table-wl').bootstrapTable({
-            url: API_PROCEDURE_LIST_TODAY,
+            url: API_PROCEDURE_LIST + defaultDateKey,
             formatSearch: function () {
                 return 'Last name,first name,procedure,modality';
             }
@@ -877,40 +883,72 @@
         return key;
     }
 
-    $('#btnFullList').click(function () {
-        let key = getFilterStatus();
-        console.log("key: ", key)
+    // Date range filter bar: replaces Full list/Today's list buttons. Default: today to today.
+    function getDateFilterStatus() {
+        let key = "";
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        if (startDate) {
+            key += `&requested_time.gte=${startDate}`;
+        }
+        if (endDate) {
+            key += `&requested_time.lte=${endDate}`;
+        }
+        return key;
+    }
+
+    // Combine provider/practitioner and date filters
+    function getCombinedFilterStatus() {
+        let key = getFilterStatus(); // provider/practitioner
+        key += getDateFilterStatus();
+        return key;
+    }
+
+    // Set both date inputs to today
+    function setDefaultDates() {
+        const today = new Date().toISOString().slice(0, 10);
+        document.getElementById("startDate").value = today;
+        document.getElementById("endDate").value = today;
+    }
+
+    document.addEventListener("DOMContentLoaded", function (event) {
+        fillSelect();
+        setDefaultDates();
+    });
+
+    // Add handler for Filter button
+    $('#btnDateFilter').click(function () {
+        let key = getCombinedFilterStatus();
         $('#table-wl').bootstrapTable('refreshOptions', {
             url: API_PROCEDURE_LIST + key
-        })
+        });
     });
 
-    $('#btnTodaysList').click(function () {
-        let key = getFilterStatus();
-        console.log("key: ", key)
-        $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST_TODAY + key
-        })
-    });
-
+    // Update provider/practitioner change handlers to use date filter too
     $('#selectPractitioner').change(function () {
-        console.log('select senior change:', $(this).val());
-        let key = getFilterStatus();
-        console.log("key: ", key);
+        let key = getCombinedFilterStatus();
         $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST_TODAY + key
-        })
+            url: API_PROCEDURE_LIST + key
+        });
     });
 
     $('#selectProvider').change(function () {
-        console.log('select provider change:', $(this).val());
-        let key = getFilterStatus();
-        console.log("key: ", key);
+        let key = getCombinedFilterStatus();
         $('#table-wl').bootstrapTable('refreshOptions', {
-            url: API_PROCEDURE_LIST_TODAY + key
-        })
+            url: API_PROCEDURE_LIST + key
+        });
     });
 
+    // Get today's date as YYYY-MM-DD
+    function getTodayDateStr() {
+        return new Date().toISOString().slice(0, 10);
+    }
+
+    // Get default date range query string for today
+    function getDefaultDateRangeKey() {
+        const today = getTodayDateStr();
+        return `&requested_time.gte=${today}&requested_time.lte=${today}`;
+    }
 
 </script>
 <script src="js/wl/wl-state-manager.js"></script>
