@@ -312,7 +312,6 @@ def change_password():
 
         # Update the password in the database
         db(db.auth_user.id == target_user_id).update(password=new_password_hash)
-        db.commit()
 
         # Log the password change (optional)
         logger.info(f"Password changed for user ID: {target_user_id}")
@@ -823,6 +822,7 @@ def del_csv():
 
 @action("save_table")
 @action("save_table/<tablename>")
+@action.uses(db)
 def save_table(tablename):
     import os
     from datetime import datetime
@@ -845,6 +845,7 @@ def save_table(tablename):
 
 
 @action("save_all_tables")
+@action.uses(db)
 def save_all_tables():
     import os
     from datetime import datetime
@@ -866,6 +867,7 @@ def save_all_tables():
 
 
 @action("save_db")
+@action.uses(db)
 def save_db():
     import os
     from datetime import datetime
@@ -888,6 +890,7 @@ def save_db():
 
 
 @action("init_db")
+@action.uses(db)
 def init_db():
     import os
 
@@ -905,6 +908,7 @@ def init_db():
 
 
 @action("restore_db", method=["GET"])
+@action.uses(db)
 def restore_db():
     import os
 
@@ -927,6 +931,7 @@ def restore_db():
 
 
 @action("restore", method=["GET"])
+@action.uses(db)
 def restore():
     import os
 
