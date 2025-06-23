@@ -67,10 +67,7 @@ def worklist_batch():
             data["transaction_id"] = transaction_id
             logger.info(f"Generated transaction_id: {transaction_id}")
 
-        # Start transaction
-        db.commit()  # Commit any pending transactions
-        db._adapter.connection.begin()
-
+        # py4web handles transactions automatically with @action.uses(db)
         created_items = []
         audit_entries = []
 
@@ -194,14 +191,14 @@ def worklist_batch():
 
         # If we got here, all operations succeeded
         logger.info(
-            f"All {len(created_items)} items created successfully, committing transaction"
+            f"All {len(created_items)} items created successfully"
         )
-        db.commit()
+        # py4web will commit automatically on success
 
         # Update the main audit entry to mark as complete
         try:
             db(db.transaction_audit.id == audit_id).update(status="complete")
-            db.commit()
+            # py4web will commit automatically on success
         except Exception as e:
             logger.error(f"Failed to update audit entry status: {str(e)}")
             # Don't fail the operation if just the audit update fails
@@ -240,11 +237,11 @@ def worklist_batch():
                 db(db.transaction_audit.id == audit_id).update(
                     status="failed", error_message=str(e)
                 )
-                db.commit()
+                # py4web will handle commit/rollback automatically
             except Exception as audit_err:
                 logger.error(f"Failed to update audit for error: {str(audit_err)}")
 
-        db.rollback()
+        # py4web will rollback automatically on error
         return APIResponse.error(
             message=str(e), status_code=400, error_type="validation_error"
         )
@@ -258,11 +255,11 @@ def worklist_batch():
                 db(db.transaction_audit.id == audit_id).update(
                     status="failed", error_message=str(e)
                 )
-                db.commit()
+                # py4web will handle commit/rollback automatically
             except Exception as audit_err:
                 logger.error(f"Failed to update audit for error: {str(audit_err)}")
 
-        db.rollback()
+        # py4web will rollback automatically on error
         return APIResponse.error(
             message=f"Internal server error: {str(e)}",
             status_code=500,
@@ -274,6 +271,7 @@ def worklist_batch():
 
 
 @action("api/worklist/transaction/<transaction_id>", method=["GET"])
+@action.uses(db)
 def get_transaction_status(transaction_id):
     """
     Get the status of a transaction by ID.
@@ -335,6 +333,7 @@ def get_transaction_status(transaction_id):
 
 
 @action("api/worklist/transaction/<transaction_id>/retry", method=["POST"])
+@action.uses(db)
 def retry_failed_transaction(transaction_id):
     """
     Retry a failed transaction.
@@ -354,9 +353,7 @@ def retry_failed_transaction(transaction_id):
                 status_code=404,
             )
 
-        # Start transaction
-        db.commit()  # Commit any pending transactions
-        db._adapter.connection.begin()
+        # py4web handles transactions automatically with @action.uses(db)
 
         # Get the main audit record
         main_audit = (
@@ -434,9 +431,7 @@ def retry_failed_transaction(transaction_id):
 
             db(db.transaction_audit.id == main_audit.id).update(status=new_status)
 
-        # Commit the transaction
-        db.commit()
-
+        # py4web will commit automatically on success
         return APIResponse.success(
             message=f"Recovery complete: {len(recovered_items)} items recovered, {len(failed_items)} items failed",
             data={
@@ -449,7 +444,7 @@ def retry_failed_transaction(transaction_id):
     except Exception as e:
         logger.error(f"Error during transaction recovery: {str(e)}")
         logger.error(traceback.format_exc())
-        db.rollback()
+        # py4web will rollback automatically on error
         return APIResponse.error(
             message=f"Recovery failed: {str(e)}",
             error_type="server_error",

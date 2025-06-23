@@ -35,10 +35,10 @@ $('#mxModal input[name=medication]').autoComplete({
     },
     events: {
         searchPost: function(res) {
-            if (res.count == 0) {
+            if (!res || res.count == 0) {
                 $('#mxModal input[name=id_medic_ref]').val('');
             }
-            return res.items;
+            return res && res.items ? res.items : [];
         }   
     },
     formatResult: function(item) {
@@ -61,10 +61,10 @@ $('#axModal input[name=agent]').autoComplete({
     },
     events: {
         searchPost: function(res) {
-            if (res.count == 0) {
+            if (!res || res.count == 0) {
                 $('#axModal input[name=id_agent]').val('');
             }
-            return res.items;
+            return res && res.items ? res.items : [];
         }   
     },
     formatResult: function(item) {
@@ -85,11 +85,11 @@ $('#mHxModal input[name=title]').autoComplete({
     },
     events: {
         searchPost: function(res) {
-            if (res.count == 0) {
+            if (!res || res.count == 0) {
                 $('#mHxModal input[name=id_disease_ref]').val('');
                 console.log('Disease not in dict');
             }
-            return res.items;
+            return res && res.items ? res.items : [];
         }   
     },
     formatResult: function(item) {

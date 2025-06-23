@@ -146,6 +146,9 @@ def handle_rest_api_request(
 
         # Return the response (transaction commit is handled by @action.uses(db) decorator)
         if json_resp is not None:
+            # Set proper content type for AJAX compatibility
+            response.headers["Content-Type"] = "application/json"
+            
             # If the response is already a string (JSON), return it directly
             if isinstance(json_resp, str):
                 return json_resp
@@ -153,6 +156,7 @@ def handle_rest_api_request(
             else:
                 return json.dumps(json_resp, default=lambda obj: obj.strftime("%Y-%m-%d %H:%M:%S") if isinstance(obj, datetime.datetime) else obj.strftime("%Y-%m-%d") if isinstance(obj, datetime.date) else str(obj))
         else:
+            response.headers["Content-Type"] = "application/json"
             return ""
         
 

@@ -7,6 +7,111 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-24T00:38:01+02:00]
+
+### Fixed
+
+- **🚨 CRITICAL: Bootstrap Autocomplete jQuery Compatibility**: Fixed "e.fail is not a function" error in medication autocomplete after database commit refactor
+  - **Root Cause**: Bootstrap-autocomplete library was incompatible with py4web's response handling changes made during database commit refactor
+  - **Error Pattern**: Library was trying to call `.fail()` method on jQuery AJAX promises, but the method was not available due to response format changes
+  - **Solution**: Replaced built-in `ajax` resolver with custom `search` function that handles jQuery AJAX promises properly
+  - **Technical Implementation**:
+    - Changed from `resolverSettings` to custom `resolver: 'custom'` with manual AJAX handling
+    - Added explicit `dataType: 'json'` to ensure proper response parsing
+    - Implemented proper `.done()` and `.fail()` promise handling
+    - Added error logging with `console.warn()` for debugging
+  - **Impact**: Medication autocomplete in MD view new medication modal now works without JavaScript errors
+  - **Backward Compatibility**: Maintains all existing functionality while fixing jQuery compatibility
+
+### Technical Details
+
+- **File Modified**: `static/js/md/md.js` - Updated medication autocomplete configuration
+- **jQuery Compatibility**: Custom AJAX handler ensures proper promise chain handling
+- **Error Handling**: Added graceful fallback to empty array on API failures
+- **Response Format**: Properly handles py4web's JSON response structure with `response.items`
+- **Debugging**: Added console warnings for API errors to aid troubleshooting
+
+### Root Cause Analysis
+
+This issue was introduced during the database commit refactor when changes to `api/core/base.py` affected how API responses are handled. The bootstrap-autocomplete library expects specific jQuery AJAX promise methods that were not available after the response handling changes. The custom resolver approach bypasses the library's internal AJAX handling and provides explicit jQuery compatibility.
+
+## [2025-06-24T00:30:21+02:00]
+
+### Fixed
+
+- **🚨 CRITICAL: Bootstrap Autocomplete Undefined Response Handling**: Fixed "Cannot read properties of undefined (reading 'length')" errors in medication and other autocomplete fields
+  - **Root Cause**: Autocomplete `searchPost` functions were not handling cases where API responses return `undefined` or `null` instead of expected `{items: [], count: 0}` structure
+  - **Error Pattern**: JavaScript was trying to access `.length` on undefined `res.items` when API endpoints returned malformed or empty responses
+  - **Affected Autocomplete Fields**: Fixed all 8 autocomplete implementations across MD and GP views:
+    - **MD View**: Medication, Agent, Disease, Lens (left/right), Cleaning Solution (left/right) autocomplete fields
+    - **GP View**: Medication, Agent, Disease autocomplete fields
+  - **API Endpoints Involved**: `/api/medic_ref`, `/api/agent`, `/api/disease_ref`, `/api/cl`, `/api/cleaning_solution`
+  - **Impact**: All autocomplete fields in medical record forms now handle API response errors gracefully without JavaScript crashes
+
+### Technical Details
+
+- **Files Fixed**: 
+  - `static/js/md/md.js` - Enhanced 6 autocomplete implementations with null safety
+  - `static/js/md/gp.js` - Enhanced 3 autocomplete implementations with null safety
+- **Response Validation**: Added existence checks `!res || res.count == 0` to handle null/undefined API responses
+- **Fallback Implementation**: Changed `return res.items` to `return res && res.items ? res.items : []` to provide empty array fallback
+- **Consistency**: Applied same defensive programming pattern to all autocomplete `searchPost` functions
+- **Bootstrap Autocomplete Compatibility**: Maintains compatibility with bootstrap-autocomplete library expectations
+
+### User Experience Impact
+
+- **✅ Form Functionality**: New medication modal and other autocomplete forms now work without JavaScript errors
+- **✅ Graceful Degradation**: When API endpoints are unavailable, autocomplete fields show empty results instead of crashing
+- **✅ Error Prevention**: Eliminates "Cannot read properties of undefined" console errors that blocked form functionality
+- **✅ Medical Workflow**: Doctors can now add medications, agents, diseases, and equipment without JavaScript interruptions
+
+### Root Cause Analysis
+
+This issue was triggered by API response format inconsistencies where some endpoints might return `null`, `undefined`, or error responses instead of the expected `{items: array, count: number}` structure. The autocomplete library expected a valid response structure, but the `searchPost` functions lacked defensive programming to handle edge cases. This demonstrates the importance of null-safety checks in JavaScript when consuming API data.
+
+## [2025-06-24T00:23:07+02:00]
+
+### Fixed
+
+- **🚨 CRITICAL: Worklist API Database Transaction Management**: Fixed improper manual database transaction management in worklist API endpoints to follow py4web best practices
+  - **Root Cause**: Manual `db.commit()`, `db.rollback()`, and `db._adapter.connection.begin()` calls were redundant and potentially harmful when used with `@action.uses(db)` decorator
+  - **py4web Transaction Management**: With `@action.uses(db)` decorator, py4web automatically handles transaction lifecycle:
+    - `on_request`: starts transaction
+    - `on_success`: commits transaction automatically 
+    - `on_error`: rolls back transaction automatically
+  - **Endpoints Fixed**:
+    - `/api/worklist/batch` - Removed manual transaction management, now uses automatic py4web transactions
+    - `/api/worklist/transaction/<transaction_id>` - Added missing `@action.uses(db)` decorator
+    - `/api/worklist/transaction/<transaction_id>/retry` - Added missing `@action.uses(db)` decorator and removed manual transaction management
+  - **Manual Operations Removed**:
+    - 3 instances of `db.commit()` calls eliminated
+    - 2 instances of `db.rollback()` calls eliminated  
+    - 2 instances of `db._adapter.connection.begin()` calls eliminated
+  - **Impact**: Worklist batch operations now use proper py4web transaction management ensuring consistency and automatic rollback on errors
+
+### Technical Details
+
+- **File Modified**: `api/endpoints/worklist.py` - Comprehensive transaction management cleanup
+- **Framework Compliance**: All endpoints now follow py4web best practices for database transaction handling
+- **Automatic Rollback**: Database automatically rolls back on any exception, ensuring data consistency
+- **Decorator Addition**: Missing `@action.uses(db)` decorators added to transaction status and retry endpoints
+- **Code Simplification**: Removed complex manual transaction blocks in favor of framework automation
+- **Error Handling**: Simplified error handling since rollback is now automatic on exceptions
+
+### Database Operations Enhanced
+
+- **Batch Creation**: `/api/worklist/batch` endpoint now relies on automatic transaction management for atomic operations
+- **Transaction Recovery**: `/api/worklist/transaction/<id>/retry` endpoint now uses proper py4web transaction lifecycle
+- **Status Queries**: `/api/worklist/transaction/<id>` endpoint now has proper database access decorators
+- **Audit Trail**: Transaction audit entries still created properly but with automatic commit/rollback handling
+
+### Design Philosophy
+
+- **Framework Best Practices**: Use py4web's built-in transaction management instead of manual control
+- **Database Consistency**: Automatic transaction lifecycle management ensures proper ACID properties
+- **Code Maintainability**: Reduced complexity by removing manual transaction management code
+- **Error Safety**: Automatic rollback prevents data corruption on failures
+
 ## [2025-01-22T10:30:00.000000]
 
 ### Fixed

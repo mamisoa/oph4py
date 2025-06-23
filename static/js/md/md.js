@@ -29,16 +29,26 @@ $('#mxModal input[name=frequency]').autoComplete({
 $('#mxModal input[name=medication]').autoComplete({
     bootstrapVersion: '4',
     minLength: '1',
-    resolverSettings: {
-        url: API_MEDICATIONS,
-        queryKey: 'name.contains'
-    },
+    resolver: 'custom',
     events: {
+        search: function(searchText, callback) {
+            $.ajax({
+                url: API_MEDICATIONS,
+                method: 'GET',
+                data: {'name.contains': searchText},
+                dataType: 'json'
+            }).done(function(response) {
+                callback(response && response.items ? response.items : []);
+            }).fail(function(xhr, status, error) {
+                console.warn('Medication autocomplete API error:', error);
+                callback([]);
+            });
+        },
         searchPost: function(res) {
-            if (res.count == 0) {
+            if (!res || res.length == 0) {
                 $('#mxModal input[name=id_medic_ref]').val('');
             }
-            return res.items;
+            return res || [];
         }   
     },
     formatResult: function(item) {
@@ -61,10 +71,10 @@ $('#axModal input[name=agent]').autoComplete({
     },
     events: {
         searchPost: function(res) {
-            if (res.count == 0) {
+            if (!res || res.count == 0) {
                 $('#axModal input[name=id_agent]').val('');
             }
-            return res.items;
+            return res && res.items ? res.items : [];
         }   
     },
     formatResult: function(item) {
@@ -85,11 +95,11 @@ $('#mHxModal input[name=title]').autoComplete({
     },
     events: {
         searchPost: function(res) {
-            if (res.count == 0) {
+            if (!res || res.count == 0) {
                 $('#mHxModal input[name=id_disease_ref]').val('');
                 console.log('Disease not in dict');
             }
-            return res.items;
+            return res && res.items ? res.items : [];
         }   
     },
     formatResult: function(item) {
@@ -110,10 +120,10 @@ $('#CxRxFormModal input[name=lensnameR]').autoComplete({
     },
     events: {
         searchPost: function(res) {
-            if (res.count == 0) {
+            if (!res || res.count == 0) {
                 // $('#mxModal input[name=id_medic_ref]').val('');
             }
-            return res.items;
+            return res && res.items ? res.items : [];
         }   
     },
     formatResult: function(item) {
@@ -153,9 +163,9 @@ $('#CxRxFormModal input[name=lensnameL]').autoComplete({
     },
     events: {
         searchPost: function(res) {
-            if (res.count == 0) {
+            if (!res || res.count == 0) {
             }
-            return res.items;
+            return res && res.items ? res.items : [];
         }   
     },
     formatResult: function(item) {
@@ -196,9 +206,9 @@ $('#CxRxFormModal input[name=cleaningR]').autoComplete({
     },
     events: {
         searchPost: function(res) {
-            if (res.count == 0) {
+            if (!res || res.count == 0) {
             }
-            return res.items;
+            return res && res.items ? res.items : [];
         }   
     },
     formatResult: function(item) {
@@ -218,9 +228,9 @@ $('#CxRxFormModal input[name=cleaningL]').autoComplete({
     },
     events: {
         searchPost: function(res) {
-            if (res.count == 0) {
+            if (!res || res.count == 0) {
             }
-            return res.items;
+            return res && res.items ? res.items : [];
         }   
     },
     formatResult: function(item) {
