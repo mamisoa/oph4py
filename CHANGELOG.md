@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-23T02:33:23.213355]
+
+### Changed
+
+- **🔄 Worklist MD Modality Button Logic Update**: Modified summary and payment button display logic for MD modality in worklist
+  - **New Logic**: 
+    - When MD modality is **NOT done**: Show summary button, hide payment button
+    - When MD modality is **done**: Show payment button, hide summary button
+  - **Other Modalities**: GP and other main modalities maintain existing behavior (show summary when done)
+  - **User Experience**: Clearer workflow separation between examination summary (pre-completion) and payment processing (post-completion) for MD procedures
+  - **Impact**: Reduces button clutter and provides more intuitive workflow for medical staff
+
+### Technical Details
+
+- **File Modified**: `static/js/wl/wl_bt.js` - Updated `operateFormatter_wl()` function
+- **Implementation**: Replaced generic main modality check with specific MD modality handling
+- **Button Logic**: 
+  - MD + not done = summary button only
+  - MD + done = payment button only  
+  - GP + done = summary button (unchanged)
+- **Backward Compatibility**: No impact on existing GP or other modality workflows
+
 ## [2025-06-23T02:28:43.911450]
 
 ### Added

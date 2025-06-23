@@ -123,42 +123,52 @@ function operateFormatter_wl(value, row, index) {
 			'<a class="modality_ctr ms-1" href="javascript:void(0)" title="Execute task"><i class="fas fa-heartbeat"></i></a>'
 		);
 	}
-	if (mainModalityArr.includes(row.modality) && row.status_flag == "done") {
+	// Handle summary and payment buttons for MD modality with new logic
+	if (row.modality == "MD") {
+		if (row.status_flag != "done") {
+			// MD not done: show summary button, no payment button
+			html.push(
+				'<a class="summary ms-1" href="javascript:void(0)" title="Read summary"><i class="fas fa-th-list"></i></a>'
+			);
+		} else {
+			// MD done: show payment button, no summary button
+			// Determine payment button color based on payment status
+			let paymentStyle = 'style="color: #dc143c; font-weight: bold;"'; // Bright red (unpaid/incomplete)
+			let titleText = "Process payment";
+			let buttonClass = "payment payment-unpaid";
+
+			// Check if payment status is available in row data
+			if (row.payment_status) {
+				if (row.payment_status === "complete") {
+					paymentStyle = 'style="color: #ffd700; font-weight: bold;"'; // Gold for complete
+					titleText = "View payment details";
+					buttonClass = "payment payment-complete";
+				} else if (row.payment_status === "partial") {
+					paymentStyle = 'style="color: #ff8c00; font-weight: bold;"'; // Orange for partial
+					titleText = "Complete payment";
+					buttonClass = "payment payment-partial";
+				}
+			}
+
+			html.push(
+				'<a class="' +
+					buttonClass +
+					' ms-1" href="javascript:void(0)" title="' +
+					titleText +
+					'" ' +
+					paymentStyle +
+					' data-worklist-id="' +
+					row.id +
+					'"><i class="fas fa-dollar-sign"></i></a>'
+			);
+		}
+	} else if (
+		mainModalityArr.includes(row.modality) &&
+		row.status_flag == "done"
+	) {
+		// For other main modalities (GP), show summary when done
 		html.push(
 			'<a class="summary ms-1" href="javascript:void(0)" title="Read summary"><i class="fas fa-th-list"></i></a>'
-		);
-	} else {
-	}
-	// Add payment button for completed MD procedures only
-	if (row.status_flag == "done" && row.modality == "MD") {
-		// Determine payment button color based on payment status
-		let paymentStyle = 'style="color: #dc143c; font-weight: bold;"'; // Bright red (unpaid/incomplete)
-		let titleText = "Process payment";
-		let buttonClass = "payment payment-unpaid";
-
-		// Check if payment status is available in row data
-		if (row.payment_status) {
-			if (row.payment_status === "complete") {
-				paymentStyle = 'style="color: #ffd700; font-weight: bold;"'; // Gold for complete
-				titleText = "View payment details";
-				buttonClass = "payment payment-complete";
-			} else if (row.payment_status === "partial") {
-				paymentStyle = 'style="color: #ff8c00; font-weight: bold;"'; // Orange for partial
-				titleText = "Complete payment";
-				buttonClass = "payment payment-partial";
-			}
-		}
-
-		html.push(
-			'<a class="' +
-				buttonClass +
-				' ms-1" href="javascript:void(0)" title="' +
-				titleText +
-				'" ' +
-				paymentStyle +
-				' data-worklist-id="' +
-				row.id +
-				'"><i class="fas fa-dollar-sign"></i></a>'
 		);
 	}
 	html.push("</div>");
