@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-23T02:28:43.911450]
+
+### Added
+
+- **🔄 Bootstrap Table Refresh Buttons**: Added toolbar refresh buttons to all bootstrap tables in autorx and tono views
+  - **AutoRx Tables Enhanced**: 
+    - `rxRight_tbl` and `rxLeft_tbl` - Rx data tables now have refresh buttons
+    - `kmRight_tbl` and `kmLeft_tbl` - Keratometry tables now have refresh buttons
+    - `visionixRight_tbl` and `visionixLeft_tbl` - Machine import tables now have refresh buttons
+    - `cvRx_tbl` and `cvKm_tbl` - CV5000 import tables now have refresh buttons
+  - **Tono Tables Enhanced**:
+    - `airPachyRight_tbl` and `airPachyLeft_tbl` - Air tonometry/pachymetry tables now have refresh buttons
+    - `aplaRight_tbl` and `aplaLeft_tbl` - Aplanation tonometry tables now have refresh buttons
+  - **User Experience**: Manual refresh capability allows users to update table data without full page reload
+  - **Implementation**: Added `data-show-refresh="true"` and `data-buttons-align="right"` attributes to all bootstrap tables
+  - **Consistent UI**: Refresh buttons aligned to the right for consistent user interface across all tables
+
+### Technical Details
+
+- **Bootstrap Table Integration**: Uses built-in bootstrap-table refresh functionality with `data-show-refresh="true"`
+- **Button Alignment**: All refresh buttons positioned on the right side of tables for consistent UX
+- **Async Compatibility**: Refresh buttons work seamlessly with existing Promise-based refresh patterns
+- **No Backend Changes**: Pure frontend enhancement using bootstrap-table's native refresh capability
+- **Files Modified**: 
+  - `templates/modalityCtr/autorx.html` - Added refresh buttons to all 6 bootstrap tables
+  - `templates/modalityCtr/tono.html` - Added refresh buttons to all 4 bootstrap tables
+
+### Design Philosophy
+
+- **Manual Control**: Provides users with manual refresh capability alongside automatic refresh patterns
+- **Consistent Interface**: Standardized refresh button placement across all medical measurement tables
+- **Bootstrap Standards**: Uses bootstrap-table's built-in refresh functionality rather than custom implementations
+
 ## [2025-06-23T02:15:49.526789]
 
 ### Fixed
