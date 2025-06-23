@@ -78,6 +78,7 @@ def enhance_combo_response(record):
 
 @action("api/billing_codes", method=["GET", "POST"])
 @action("api/billing_codes/<rec_id:int>", method=["GET", "PUT", "DELETE"])
+@action.uses(db, auth.user)  # Add authentication requirement
 def billing_codes(rec_id: Optional[int] = None):
     """
     Enhanced CRUD operations for billing codes with secondary nomenclature support.
@@ -276,6 +277,7 @@ def enhance_billing_response(record):
 
 
 @action("api/billing_codes/by_worklist/<worklist_id:int>", method=["GET"])
+@action.uses(db, auth.user)  # Add authentication requirement
 def billing_codes_by_worklist(worklist_id: int):
     """
     Get all billing codes for a specific worklist item with enhanced secondary code support.
@@ -287,6 +289,7 @@ def billing_codes_by_worklist(worklist_id: int):
     - Secondary nomenclature code support
     - Total fee calculations including secondary fees
     - Enhanced response with computed fields
+    - User information for created_by and modified_by fields via @lookup parameter
 
     Returns:
         JSON response with billing codes for the worklist including totals
@@ -303,56 +306,82 @@ def billing_codes_by_worklist(worklist_id: int):
                 error_type="not_found",
             )
 
-        # Get billing codes with related data
-        codes = db(db.billing_codes.id_worklist == worklist_id).select(
-            db.billing_codes.ALL,
-            orderby=db.billing_codes.date_performed | db.billing_codes.id,
-        )
+        # Build query parameters for the standard REST API handler
+        query_params = dict(request.GET)
+        query_params["id_worklist.eq"] = str(worklist_id)
 
-        # Enhanced calculations including secondary fees
-        enhanced_codes = []
-        total_main_fee = 0
-        total_secondary_fee = 0
-        total_combined_fee = 0
-        codes_with_secondary = 0
+        # If @lookup parameter is not provided, add default user lookup
+        if "@lookup" not in query_params:
+            query_params["@lookup"] = (
+                "mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]"
+            )
 
-        for code in codes:
-            code_dict = code.as_dict()
+        # Add count and ordering
+        query_params["@count"] = "true"
+        query_params["@order"] = "date_performed,id"
 
-            # Enhance each record with computed fields
-            enhance_billing_response(code_dict)
-            enhanced_codes.append(code_dict)
+        # Use the standard REST API handler that properly handles @lookup
+        result = handle_rest_api_request("billing_codes", None, query_params)
 
-            # Calculate running totals
-            main_fee = float(code.fee or 0) * (code.quantity or 1)
-            secondary_fee = float(code.secondary_fee or 0) * (code.quantity or 1)
+        # If the result is a string (JSON), parse it
+        if isinstance(result, str):
+            import json
 
-            total_main_fee += main_fee
-            total_secondary_fee += secondary_fee
-            total_combined_fee += main_fee + secondary_fee
+            result = json.loads(result)
 
-            if code.secondary_nomen_code:
-                codes_with_secondary += 1
+        # Enhance response with calculated totals for individual records or lists
+        if isinstance(result, dict) and result.get("status") == "success":
+            data = result.get("items") or result.get("data")
+            if isinstance(data, list):
+                # Enhanced calculations including secondary fees
+                total_main_fee = 0
+                total_secondary_fee = 0
+                total_combined_fee = 0
+                codes_with_secondary = 0
 
-        logger.info(
-            f"Worklist {worklist_id} summary: {len(codes)} codes, "
-            f"{codes_with_secondary} with secondary, total: €{total_combined_fee:.2f}"
-        )
+                # Multiple records - enhance each
+                for record in data:
+                    enhance_billing_response(record)
 
-        return APIResponse.success(
-            data=enhanced_codes,
-            meta={
-                "total_codes": len(codes),
-                "codes_with_secondary": codes_with_secondary,
-                "total_main_fee": round(total_main_fee, 2),
-                "total_secondary_fee": round(total_secondary_fee, 2),
-                "total_combined_fee": round(total_combined_fee, 2),
-                "main_fee_formatted": f"€{total_main_fee:.2f}",
-                "secondary_fee_formatted": f"€{total_secondary_fee:.2f}",
-                "total_fee_formatted": f"€{total_combined_fee:.2f}",
-                "worklist_id": worklist_id,
-            },
-        )
+                    # Calculate running totals
+                    main_fee = float(record.get("fee") or 0) * (
+                        record.get("quantity") or 1
+                    )
+                    secondary_fee = float(record.get("secondary_fee") or 0) * (
+                        record.get("quantity") or 1
+                    )
+
+                    total_main_fee += main_fee
+                    total_secondary_fee += secondary_fee
+                    total_combined_fee += main_fee + secondary_fee
+
+                    if record.get("secondary_nomen_code"):
+                        codes_with_secondary += 1
+
+                # Add meta information to the result
+                if "meta" not in result:
+                    result["meta"] = {}
+
+                result["meta"].update(
+                    {
+                        "total_codes": len(data),
+                        "codes_with_secondary": codes_with_secondary,
+                        "total_main_fee": round(total_main_fee, 2),
+                        "total_secondary_fee": round(total_secondary_fee, 2),
+                        "total_combined_fee": round(total_combined_fee, 2),
+                        "main_fee_formatted": f"€{total_main_fee:.2f}",
+                        "secondary_fee_formatted": f"€{total_secondary_fee:.2f}",
+                        "total_fee_formatted": f"€{total_combined_fee:.2f}",
+                        "worklist_id": worklist_id,
+                    }
+                )
+
+                logger.info(
+                    f"Worklist {worklist_id} summary: {len(data)} codes, "
+                    f"{codes_with_secondary} with secondary, total: €{total_combined_fee:.2f}"
+                )
+
+        return result
 
     except Exception as e:
         logger.error(f"Error getting enhanced billing codes by worklist: {str(e)}")
@@ -680,6 +709,7 @@ def billing_combo(rec_id: Optional[int] = None):
 
 
 @action("api/billing_combo/<combo_id:int>/apply", method=["POST"])
+@action.uses(db, auth.user)  # Add authentication requirement
 def apply_billing_combo(combo_id: int):
     """
     Apply a billing combo to a worklist item with enhanced secondary code support.
@@ -1531,6 +1561,7 @@ def export_multiple_billing_combos():
 
 @action("api/billing_combo_usage", method=["GET", "POST"])
 @action("api/billing_combo_usage/<rec_id:int>", method=["GET", "PUT", "DELETE"])
+@action.uses(db, auth.user)  # Add authentication requirement
 def billing_combo_usage(rec_id: Optional[int] = None):
     """
     CRUD operations for billing combo usage records.

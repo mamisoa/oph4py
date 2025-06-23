@@ -10,12 +10,13 @@ import traceback
 
 from py4web import action, request
 
-from ...common import db, logger, session
+from ...common import auth, db, logger, session
 from ...models import str_uuid
 from ..core.base import APIResponse
 
 
 @action("api/worklist/batch", method=["POST"])
+@action.uses(auth.user, db)  # Require authenticated user - Option 1
 def worklist_batch():
     """
     Batch endpoint for atomic worklist operations.

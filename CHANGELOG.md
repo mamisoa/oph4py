@@ -7,6 +7,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-23T02:07:00.613046]
+
+### Fixed
+
+- **🔧 Billing Codes by Worklist Endpoint Auth Signature Support**: Fixed `/api/billing_codes/by_worklist/<id>` endpoint to properly return user information for Created by/Modified by fields
+  - **Root Cause**: Custom endpoint implementation was not handling `@lookup` parameter to join with `auth_user` table
+  - **Solution**: Replaced custom implementation with standard `handle_rest_api_request` function that properly handles `@lookup` parameters
+  - **API Enhancement**: Endpoint now automatically includes user lookups: `@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]`
+  - **Response Format**: API now returns `mod.first_name`, `mod.last_name`, `creator.first_name`, `creator.last_name` fields for proper user display
+  - **Backward Compatibility**: Maintains all existing functionality while adding user information support
+  - **Impact**: Bootstrap-table detail formatter in MD billing codes section can now properly display actual user names
+
+### Technical Details
+
+- **File Modified**: `api/endpoints/billing.py` - `billing_codes_by_worklist()` function
+- **Implementation**: Switched from custom pyDAL queries to standard REST API handler with `@lookup` support
+- **Database Joins**: Now properly performs LEFT JOINs with `auth_user` table using aliases (`mod` and `creator`)
+- **Query Parameters**: Automatically adds `@lookup`, `@count`, and `@order` parameters if not provided
+- **Meta Enhancement**: Preserves existing meta calculation functionality (totals, secondary codes count, etc.)
+- **Error Handling**: Maintains comprehensive error handling and logging for debugging
+
+## [2025-06-23T01:44:32.479649]
+
+### Fixed
+
+- **🔧 Billing Codes Auth Signature Display**: Fixed "undefined undefined" appearing in Created by/Modified by fields in billing codes detail view
+  - **Root Cause**: API call for billing codes was missing `@lookup` parameter to join with `auth_user` table
+  - **Solution**: Added `@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true` to billing codes API URL
+  - **Impact**: Detail view in MD billing codes section now properly displays actual user names instead of "undefined undefined"
+  - **API Enhancement**: Billing codes API now returns enriched data with user information for audit trail display
+  - **User Experience**: Healthcare professionals can now see who created/modified billing codes for proper audit tracking
+
+### Technical Details
+
+- **File Modified**: `templates/modalityCtr/js-sections/md-apis.html`
+- **API Pattern**: Aligned billing codes API call with other medical record APIs that properly display user information
+- **Database Joins**: Added LEFT JOIN with `auth_user` table to retrieve `first_name` and `last_name` for both created_by and modified_by fields
+- **Consistent Pattern**: Now follows same lookup pattern used by other medical record tables (allergies, medications, keratometry, etc.)
+
+## [2025-06-23T01:39:31.784648]
+
+### Fixed
+
+- **🚨 CRITICAL: Auth Signature Fields Not Populated**: Fixed missing authentication on API endpoints causing "undefined undefined" in Created by/Modified by fields
+  - **Root Cause**: Multiple API endpoints lacked `@action.uses(auth.user)` decorator, preventing py4web from populating `auth.signature` fields (`created_by`, `modified_by`, `created_on`, `modified_on`)
+  - **Endpoints Fixed**:
+    - `/api/worklist/batch` - Worklist creation now requires authentication
+    - `/api/billing_codes` - Billing codes CRUD operations now require authentication  
+    - `/api/billing_codes/by_worklist/<id>` - Billing codes retrieval now requires authentication
+    - `/api/billing_combo/<id>/apply` - Combo application now requires authentication
+    - `/api/billing_combo_usage` - Combo usage tracking now requires authentication
+  - **Impact**: All new records created through these endpoints will now properly track who created/modified them with authenticated user information
+  - **User Experience**: "Created by" and "Modified by" fields in MD view billing codes and other interfaces will now show actual user names instead of "undefined undefined"
+
+### Security
+
+- **Enhanced API Security**: All billing and worklist creation endpoints now require user authentication, improving audit trails and access control
+- **Data Integrity**: Auth signature fields now properly populated for all new records, ensuring complete audit history
+
+### Technical Details
+
+- **py4web Auth Integration**: Proper use of `@action.uses(auth.user, db)` decorator ensures authenticated user context is available during record creation
+- **Automatic Field Population**: py4web's `auth.signature` mechanism now works correctly to populate `created_by`, `modified_by`, `created_on`, and `modified_on` fields
+- **Backward Compatibility**: Existing records remain unchanged; only new records created after this fix will have proper auth signature data
+
 ## [2025-06-22T23:30:52.410661]
 
 ### Fixed

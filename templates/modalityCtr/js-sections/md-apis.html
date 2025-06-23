@@ -72,5 +72,6 @@
     const API_KMLEFT = HOSTURL + "/" + APP_NAME + "/api/km?id_auth_user.eq=" + patientId + "&laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";
 
     // table listing billing codes for current worklist
-    const API_BILLING = HOSTURL + "/" + APP_NAME + "/api/billing_codes/by_worklist/" + wlId;
+    const BILLING_LOOKUP = "@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true";
+    const API_BILLING = HOSTURL + "/" + APP_NAME + "/api/billing_codes/by_worklist/" + wlId + "?" + BILLING_LOOKUP;
 </script>
