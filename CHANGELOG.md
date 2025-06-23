@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-23T02:37:47.744546]
+
+### Fixed
+
+- **🔧 Username and Email Sanitization**: Fixed autofill functionality in new user modal to remove accents and illegal characters from username and email fields
+  - **Root Cause**: When first name contained accented characters (é, à, ç, etc.) or spaces, the auto-generated username and email contained invalid characters
+  - **Solution**: Added `sanitizeForUsername()` function that uses existing `norm()` utility to remove accents and filters out non-alphanumeric characters (except underscores)
+  - **Sanitization Process**:
+    - Converts text to lowercase
+    - Removes accents using Unicode normalization (`norm()` function from `useful.js`)
+    - Removes spaces and any characters that are not letters, numbers, or underscores
+    - Preserves timestamp suffix for uniqueness
+  - **Impact**: Username and email fields now contain only valid characters, preventing validation errors and database issues
+  - **User Experience**: Automatic username/email generation works reliably for users with accented names (common in French, Belgian, and other European contexts)
+
+### Technical Details
+
+- **File Modified**: `static/js/manage/users.js` - Enhanced autofill username functionality
+- **Function Added**: `sanitizeForUsername(text)` - Handles accent removal and character filtering
+- **Integration**: Works with both manual first name entry and Belgian ID card import (EID button)
+- **Dependencies**: Uses existing `norm()` function from `static/js/utils/useful.js` for Unicode normalization
+- **Pattern**: Follows existing codebase pattern of using utility functions for text processing
+- **Backward Compatibility**: No impact on existing user records; only affects new user creation workflow
+
+### Design Philosophy
+
+- **Input Sanitization**: Proactive cleaning of user input to prevent downstream validation issues
+- **Internationalization**: Proper handling of accented characters common in European names
+- **Consistent Data**: Ensures username fields contain only database-safe characters
+
 ## [2025-06-23T02:33:23.213355]
 
 ### Changed
