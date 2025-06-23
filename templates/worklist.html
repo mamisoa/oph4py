@@ -961,15 +961,6 @@
         $('#table-wl').bootstrapTable('refresh');
     });
 
-    // The auto-refresh logic will also be simplified
-    WorklistState.Manager.startAutoRefresh(40000); // No longer needs a URL callback
-
-    // Fallback timer also simplifies
-    window.setInterval(function () {
-        console.log("Refreshing wl table (fallback)!");
-        $('#table-wl').bootstrapTable('refresh');
-    }, 40000);
-
 </script>
 <script src="js/wl/wl-state-manager.js"></script>
 <script src="js/wl/wl-direct-operations.js"></script>

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-23T02:43:29.436622]
+
+### Fixed
+
+- **🚨 CRITICAL: WorklistState ReferenceError**: Fixed "ReferenceError: WorklistState is not defined" in worklist.html
+  - **Root Cause**: Premature call to `WorklistState.Manager.startAutoRefresh()` before `wl-state-manager.js` script was loaded
+  - **Solution**: Removed duplicate auto-refresh initialization from main script block (line 950)
+  - **Script Loading Order**: Now properly loads external scripts before attempting to use WorklistState object
+  - **Impact**: Eliminates JavaScript console errors and ensures proper worklist functionality
+  - **Preserved Functionality**: Correct auto-refresh initialization remains in place within the post-load setTimeout
+
+### Technical Details
+
+- **File Modified**: `templates/worklist.html` - Removed premature WorklistState call
+- **Script Loading Pattern**: External scripts → DOM ready → setTimeout → WorklistState usage
+- **Redundancy Removed**: Eliminated duplicate auto-refresh calls (kept the properly timed one)
+- **Error Prevention**: Ensures all dependencies are loaded before object method calls
+- **Fallback Preserved**: Maintains fallback timer logic for cases where WorklistState fails to load
+
 ## [2025-06-23T02:37:47.744546]
 
 ### Fixed
