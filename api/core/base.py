@@ -34,7 +34,7 @@ class APIResponse:
         data: Any = None,
         message: str = "Operation successful",
         status_code: int = 200,
-        meta: Dict = None,
+        meta: Optional[Dict] = None,
     ) -> str:
         """
         Format a successful API response.
@@ -143,9 +143,9 @@ def handle_rest_api_request(
         # Log the response
         logger.info(f"RestAPI Response: {json_resp}")
 
-        # Commit changes
-        db.commit()
-        return json_resp
+        # Return the response (transaction commit is handled by @action.uses(db) decorator)
+        return str(json_resp) if json_resp is not None else ""
+        
 
     except ValueError as e:
         # Handle validation errors
