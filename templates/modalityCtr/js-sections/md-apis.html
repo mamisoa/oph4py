@@ -49,9 +49,9 @@
     // table listing medication encoded for current worklist 
     const API_MXWLUSER = HOSTURL + "/" + APP_NAME + "/api/mx?id_worklist.eq=" + wlId + "&@lookup=medication!:id_medic_ref[id,name,brand,form],mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 
-    const API_TONORIGHT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user=" + patientId;
+    const API_TONORIGHT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=right&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 
-    const API_TONOLEFT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user=" + patientId;
+    const API_TONOLEFT = HOSTURL + "/" + APP_NAME + "/api/tono?laterality.eq=left&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id&id_auth_user.eq=" + patientId;
 
     // table listing refraction right eye by user
     const API_GXRX = HOSTURL + "/" + APP_NAME + "/api/glasses_rx_list?id_auth_user.eq=" + patientId + "&@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true&@order=~id";

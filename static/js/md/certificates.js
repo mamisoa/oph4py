@@ -108,19 +108,19 @@ $.when(getRightAutoRx(), getLeftAutoRx()).done(function (
 	autorxRight,
 	autorxLeft
 ) {
-	// console.log(autorxRight[0]['items']);
-	if (autorxRight[0]["items"].length > 0) {
-		// console.log(autorxRight[0]['items']);
-		autorxObjFill["sphR"] = autorxRight[0]["items"][0]["sph_far"];
-		autorxObjFill["cylR"] = autorxRight[0]["items"][0]["cyl_far"];
-		autorxObjFill["axisR"] = autorxRight[0]["items"][0]["axis_far"];
-		// console.log('right:',autorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
+	// console.log(autorxRight['items']);
+	if (autorxRight["items"] && autorxRight["items"].length > 0) {
+		// console.log(autorxRight['items']);
+		autorxObjFill["sphR"] = autorxRight["items"][0]["sph_far"];
+		autorxObjFill["cylR"] = autorxRight["items"][0]["cyl_far"];
+		autorxObjFill["axisR"] = autorxRight["items"][0]["axis_far"];
+		// console.log('right:',autorxRight['items'][0]['sph_far']); // gets NEWEST autorx
 	}
-	if (autorxLeft[0]["items"].length > 0) {
-		autorxObjFill["sphL"] = autorxLeft[0]["items"][0]["sph_far"];
-		autorxObjFill["cylL"] = autorxLeft[0]["items"][0]["cyl_far"];
-		autorxObjFill["axisL"] = autorxLeft[0]["items"][0]["axis_far"];
-		//console.log('right:',autorxLeft[0]['items'][0]['sph_far']);
+	if (autorxLeft["items"] && autorxLeft["items"].length > 0) {
+		autorxObjFill["sphL"] = autorxLeft["items"][0]["sph_far"];
+		autorxObjFill["cylL"] = autorxLeft["items"][0]["cyl_far"];
+		autorxObjFill["axisL"] = autorxLeft["items"][0]["axis_far"];
+		//console.log('right:',autorxLeft['items'][0]['sph_far']);
 	}
 	console.log(autorxObjFill);
 });
@@ -147,19 +147,19 @@ $.when(getRightCycloRx(), getLeftCycloRx()).done(function (
 	cyclorxRight,
 	cyclorxLeft
 ) {
-	// console.log(autorxRight[0]['items']);
-	if (cyclorxRight[0]["items"].length > 0) {
-		// console.log(autorxRight[0]['items']);
-		cyclorxObjFill["sphR"] = cyclorxRight[0]["items"][0]["sph_far"];
-		cyclorxObjFill["cylR"] = cyclorxRight[0]["items"][0]["cyl_far"];
-		cyclorxObjFill["axisR"] = cyclorxRight[0]["items"][0]["axis_far"];
-		// console.log('right:',cyclorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
+	// console.log(cyclorxRight['items']);
+	if (cyclorxRight["items"] && cyclorxRight["items"].length > 0) {
+		// console.log(cyclorxRight['items']);
+		cyclorxObjFill["sphR"] = cyclorxRight["items"][0]["sph_far"];
+		cyclorxObjFill["cylR"] = cyclorxRight["items"][0]["cyl_far"];
+		cyclorxObjFill["axisR"] = cyclorxRight["items"][0]["axis_far"];
+		// console.log('right:',cyclorxRight['items'][0]['sph_far']); // gets NEWEST autorx
 	}
-	if (cyclorxLeft[0]["items"].length > 0) {
-		cyclorxObjFill["sphL"] = cyclorxLeft[0]["items"][0]["sph_far"];
-		cyclorxObjFill["cylL"] = cyclorxLeft[0]["items"][0]["cyl_far"];
-		cyclorxObjFill["axisL"] = cyclorxLeft[0]["items"][0]["axis_far"];
-		//console.log('right:',cyclorxLeft[0]['items'][0]['sph_far']);
+	if (cyclorxLeft["items"] && cyclorxLeft["items"].length > 0) {
+		cyclorxObjFill["sphL"] = cyclorxLeft["items"][0]["sph_far"];
+		cyclorxObjFill["cylL"] = cyclorxLeft["items"][0]["cyl_far"];
+		cyclorxObjFill["axisL"] = cyclorxLeft["items"][0]["axis_far"];
+		//console.log('right:',cyclorxLeft['items'][0]['sph_far']);
 	}
 	console.log(cyclorxObjFill);
 });
@@ -185,21 +185,21 @@ $.when(getRightTrialRx(), getLeftTrialRx()).done(function (
 	trialrxRight,
 	trialrxLeft
 ) {
-	// console.log(autorxRight[0]['items']);
-	if (trialrxRight[0]["items"].length > 0) {
-		// console.log(autorxRight[0]['items']);
-		trialrxObjFill["sphR"] = trialrxRight[0]["items"][0]["sph_far"];
-		trialrxObjFill["cylR"] = trialrxRight[0]["items"][0]["cyl_far"];
-		trialrxObjFill["axisR"] = trialrxRight[0]["items"][0]["axis_far"];
-		trialrxObjFill["vafR"] = trialrxRight[0]["items"][0]["va_far"].toFixed(2);
-		// console.log('right:',cyclorxRight[0]['items'][0]['sph_far']); // gets NEWEST autorx
+	// console.log(trialrxRight['items']);
+	if (trialrxRight["items"] && trialrxRight["items"].length > 0) {
+		// console.log(trialrxRight['items']);
+		trialrxObjFill["sphR"] = trialrxRight["items"][0]["sph_far"];
+		trialrxObjFill["cylR"] = trialrxRight["items"][0]["cyl_far"];
+		trialrxObjFill["axisR"] = trialrxRight["items"][0]["axis_far"];
+		trialrxObjFill["vafR"] = trialrxRight["items"][0]["va_far"].toFixed(2);
+		// console.log('right:',trialrxRight['items'][0]['sph_far']); // gets NEWEST autorx
 	}
-	if (trialrxLeft[0]["items"].length > 0) {
-		trialrxObjFill["sphL"] = trialrxLeft[0]["items"][0]["sph_far"];
-		trialrxObjFill["cylL"] = trialrxLeft[0]["items"][0]["cyl_far"];
-		trialrxObjFill["axisL"] = trialrxLeft[0]["items"][0]["axis_far"];
-		trialrxObjFill["vafL"] = trialrxLeft[0]["items"][0]["va_far"].toFixed(2);
-		//console.log('right:',cyclorxLeft[0]['items'][0]['sph_far']);
+	if (trialrxLeft["items"] && trialrxLeft["items"].length > 0) {
+		trialrxObjFill["sphL"] = trialrxLeft["items"][0]["sph_far"];
+		trialrxObjFill["cylL"] = trialrxLeft["items"][0]["cyl_far"];
+		trialrxObjFill["axisL"] = trialrxLeft["items"][0]["axis_far"];
+		trialrxObjFill["vafL"] = trialrxLeft["items"][0]["va_far"].toFixed(2);
+		//console.log('right:',trialrxLeft['items'][0]['sph_far']);
 	}
 	console.log(trialrxObjFill);
 });
@@ -218,18 +218,18 @@ function getLeftTono() {
 	return $.get(API_TONOLEFT);
 }
 $.when(getRightTono(), getLeftTono()).done(function (tonoRight, tonoLeft) {
-	// console.log(autorxRight[0]['items']);
-	if (tonoRight[0]["items"].length > 0) {
-		// console.log(autorxRight[0]['items']);
-		tonoObjFill["tonoR"] = tonoRight[0]["items"][0]["tonometry"];
-		tonoObjFill["pachyR"] = tonoRight[0]["items"][0]["pachymetry"];
-		// console.log('right:',tonoRight[0]['items'][0]['tonometry']); // gets NEWEST tono
+	// console.log(tonoRight['items']);
+	if (tonoRight["items"] && tonoRight["items"].length > 0) {
+		// console.log(tonoRight['items']);
+		tonoObjFill["tonoR"] = tonoRight["items"][0]["tonometry"];
+		tonoObjFill["pachyR"] = tonoRight["items"][0]["pachymetry"];
+		// console.log('right:',tonoRight['items'][0]['tonometry']); // gets NEWEST tono
 	}
-	if (tonoLeft[0]["items"].length > 0) {
-		// console.log(autorxRight[0]['items']);
-		tonoObjFill["tonoL"] = tonoLeft[0]["items"][0]["tonometry"];
-		tonoObjFill["pachyL"] = tonoLeft[0]["items"][0]["pachymetry"];
-		// console.log('right:',tonoLeft[0]['items'][0]['tonometry']); // gets NEWEST tono
+	if (tonoLeft["items"] && tonoLeft["items"].length > 0) {
+		// console.log(tonoLeft['items']);
+		tonoObjFill["tonoL"] = tonoLeft["items"][0]["tonometry"];
+		tonoObjFill["pachyL"] = tonoLeft["items"][0]["pachymetry"];
+		// console.log('right:',tonoLeft['items'][0]['tonometry']); // gets NEWEST tono
 	}
 	console.log(tonoObjFill);
 });
