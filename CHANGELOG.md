@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-01-20T17:32:00.000000]
+
+### Fixed
+
+- **🚨 CRITICAL: Payment Transaction Processing Database Commit Issues**: Fixed payment processing endpoints not using py4web's automatic transaction management
+  - **Root Cause**: Payment API endpoints were missing `@action.uses(db)` decorator while manually calling `db.commit()` and `db.rollback()`, which is incorrect in py4web
+  - **py4web Transaction Management**: With `@action.uses(db)` decorator, py4web automatically handles transaction lifecycle:
+    - `on_request`: starts transaction
+    - `on_success`: commits transaction automatically 
+    - `on_error`: rolls back transaction automatically
+  - **Endpoints Fixed**:
+    - `/api/worklist/<worklist_id>/payment_summary` - Added `@action.uses(db)`
+    - `/api/worklist/<worklist_id>/billing_breakdown` - Added `@action.uses(db)`
+    - `/api/worklist/<worklist_id>/payment` - Added `@action.uses(db)` and removed manual `db.commit()`
+    - `/api/worklist/<worklist_id>/transactions` - Added `@action.uses(db)`
+    - `/api/worklist/<worklist_id>/transactions/<transaction_id>/cancel` - Added `@action.uses(db)` and removed manual commits/rollbacks
+    - `/api/worklist/<worklist_id>/md_summary` - Added `@action.uses(db)`
+    - `/api/worklist/<worklist_id>/md_summary_modal` - Added `@action.uses(db)`
+    - `/api/patient/<patient_id>/md_summary` - Added `@action.uses(db)`
+  - **Impact**: Payment transactions now process reliably with proper database consistency and automatic rollback on errors
+  - **Database Integrity**: Eliminates potential transaction state issues and ensures proper cleanup on failures
+
+### Technical Details
+
+- **File Modified**: `api/endpoints/payment.py` - Added proper py4web decorators and removed manual transaction management
+- **Framework Compliance**: Now follows py4web best practices for database transaction handling
+- **Automatic Rollback**: Database automatically rolls back on any exception, ensuring data consistency
+- **Performance**: Eliminates unnecessary manual transaction management overhead
+- **Error Handling**: Simplified error handling since rollback is now automatic
+
+### Design Philosophy
+
+- **Framework Best Practices**: Use py4web's built-in transaction management instead of manual control
+- **Database Consistency**: Automatic transaction lifecycle management ensures proper ACID properties
+- **Simplified Code**: Remove manual commit/rollback complexity and rely on framework automation
+
 ## [2025-06-23T02:43:29.436622]
 
 ### Fixed

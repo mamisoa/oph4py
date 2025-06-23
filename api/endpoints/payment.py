@@ -40,6 +40,7 @@ VALID_FEECODES = [
 
 
 @action("api/worklist/<worklist_id:int>/payment_summary", method=["GET"])
+@action.uses(db)
 def payment_summary(worklist_id: int):
     """
     Get payment summary for a specific worklist
@@ -138,6 +139,7 @@ def payment_summary(worklist_id: int):
 
 
 @action("api/worklist/<worklist_id:int>/billing_breakdown", method=["GET"])
+@action.uses(db)
 def billing_breakdown(worklist_id: int):
     """
     Get billing breakdown with fees and reimbursement calculations
@@ -260,6 +262,7 @@ def billing_breakdown(worklist_id: int):
 
 
 @action("api/worklist/<worklist_id:int>/payment", method=["POST"])
+@action.uses(db)
 def process_payment(worklist_id: int):
     """
     Process a payment transaction for a worklist
@@ -362,9 +365,7 @@ def process_payment(worklist_id: int):
             created_by=auth.current_user.get("id") if auth.current_user else None,
         )
 
-        # CRITICAL FIX: Commit the transaction to database
-        db.commit()
-        logger.info(f"Transaction {transaction_id} committed to database successfully")
+        logger.info(f"Transaction {transaction_id} created successfully")
 
         result = {
             "success": True,
@@ -378,13 +379,6 @@ def process_payment(worklist_id: int):
         return APIResponse.success(data=result)
 
     except Exception as e:
-        # CRITICAL FIX: Rollback on error to maintain database consistency
-        try:
-            db.rollback()
-            logger.info("Database transaction rolled back due to error")
-        except Exception as rollback_error:
-            logger.error(f"Error during rollback: {str(rollback_error)}")
-
         logger.error(f"Error in process_payment: {str(e)}")
         return APIResponse.error(
             message=f"Server error: {str(e)}",
@@ -394,6 +388,7 @@ def process_payment(worklist_id: int):
 
 
 @action("api/worklist/<worklist_id:int>/transactions", method=["GET"])
+@action.uses(db)
 def transaction_history(worklist_id: int):
     """
     Get transaction history for a worklist with pagination support
@@ -516,6 +511,7 @@ def transaction_history(worklist_id: int):
     "api/worklist/<worklist_id:int>/transactions/<transaction_id:int>/cancel",
     method=["PATCH"],
 )
+@action.uses(db)
 def cancel_transaction(worklist_id: int, transaction_id: int):
     """
     Cancel a payment transaction
@@ -590,11 +586,7 @@ def cancel_transaction(worklist_id: int, transaction_id: int):
             modified_by=current_user_id,
         )
 
-        # CRITICAL FIX: Commit the transaction cancellation to database
-        db.commit()
-        logger.info(
-            f"Transaction {transaction_id} cancellation committed to database successfully"
-        )
+        logger.info(f"Transaction {transaction_id} cancelled successfully")
 
         # Recalculate balance after cancellation
         billing_rows = db(db.billing_codes.id_worklist == worklist_id).select()
@@ -640,8 +632,6 @@ def cancel_transaction(worklist_id: int, transaction_id: int):
         return APIResponse.success(data=result)
 
     except Exception as e:
-        # CRITICAL FIX: Rollback on error
-        db.rollback()
         logger.error(f"Error in cancel_transaction: {str(e)}")
         return APIResponse.error(
             message=f"Server error: {str(e)}",
@@ -652,6 +642,7 @@ def cancel_transaction(worklist_id: int, transaction_id: int):
 
 @action("api/worklist/<worklist_id:int>/md_summary", method=["GET"])
 @action("api/worklist/<worklist_id:int>/md_summary/<offset:int>", method=["GET"])
+@action.uses(db)
 def md_summary(worklist_id: int, offset: int = 0):
     """
     Get patient's consultation history summary for MD review
@@ -782,6 +773,7 @@ def md_summary(worklist_id: int, offset: int = 0):
 
 
 @action("api/worklist/<worklist_id:int>/md_summary_modal", method=["GET"])
+@action.uses(db)
 def md_summary_modal(worklist_id: int):
     """
     Get all consultation history for modal display
@@ -907,6 +899,7 @@ def md_summary_modal(worklist_id: int):
 
 @action("api/patient/<patient_id:int>/md_summary", method=["GET"])
 @action("api/patient/<patient_id:int>/md_summary/<offset:int>", method=["GET"])
+@action.uses(db)
 def patient_md_summary(patient_id: int, offset: int = 0):
     """
     Get patient's consultation history summary for summary view
