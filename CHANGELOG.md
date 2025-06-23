@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-23T02:15:49.526789]
+
+### Fixed
+
+- **🔧 Worklist Actions Simplified**: Fixed race conditions and missing table refreshes across all worklist actions
+  - **Root Cause**: Complex async patterns with stale data checks and multiple refresh mechanisms were creating race conditions
+  - **Solution**: Reverted to simple synchronous approach using proven patterns from MD views
+  - **Actions Simplified**:
+    - `"click .done"` - Now uses simple `setWlItemStatus()` call with table refresh
+    - `"click .unlock"` - Reverted to synchronous pattern with table refresh
+    - `"click .stopwatch"` - Simplified counter updates with table refresh
+    - `"click .remove"` - Reverted to simple bootbox confirmation + crudp DELETE with table refresh
+  - **Impact**: Eliminates ghosting effect where UI shows "done" status that reverts on refresh
+  - **Performance**: Faster response for single operations, eliminates unnecessary complexity
+  - **User Experience**: Consistent status updates and table refreshes without confusing visual artifacts
+
+### Technical Details
+
+- **Pattern Change**: Moved from async/await with race condition checks back to proven synchronous pattern
+- **Removed Complexity**: Eliminated "fresh data" checks that were causing more problems than they solved  
+- **Simple Flow**: Click → Create data object → Call function → Function handles crudp + table refresh
+- **Race Condition Fix**: Single atomic operation instead of multiple async operations that could interfere
+- **Files Modified**: `static/js/wl/wl_bt.js` - Simplified event handlers for done, unlock, stopwatch, and remove actions
+- **Dependencies**: Uses existing `setWlItemStatus()` function from `useful.js` and `bootbox` confirmation dialogs
+- **Delete Pattern**: Uses same pattern as MD views: bootbox confirmation → crudp DELETE → table refresh
+
+### Design Philosophy
+
+- **Single Operations**: Use simple synchronous patterns for individual status changes
+- **Batch Operations**: Reserve complex async patterns only for multi-item operations where coordination is needed
+- **Proven Patterns**: Revert to working implementations rather than over-engineering simple operations
+
 ## [2025-06-23T02:07:00.613046]
 
 ### Fixed

@@ -250,92 +250,70 @@ window.operateEvents_wl = {
 		console.log("You click action EDIT on row: " + JSON.stringify(row));
 		putWlModal(row.id);
 	},
-	"click .remove": async function (e, value, row, index) {
-		// CONVERTED TO DIRECT CRUDP - NO QUEUE
-		const button = e.currentTarget;
-		WorklistDirectOps.toggleButtonLock(button, true, "Deleting...");
-
-		try {
-			await WorklistDirectOps.deleteWorklistItemDirect(row);
-		} catch (error) {
-			console.error("Delete operation failed:", error);
-		} finally {
-			WorklistDirectOps.toggleButtonLock(button, false);
-		}
-	},
-	"click .stopwatch": async function (e, value, row, index) {
-		// CONVERTED TO DIRECT CRUDP - NO QUEUE
-		const button = e.currentTarget;
-		WorklistDirectOps.toggleButtonLock(button, true, "Processing...");
-
-		try {
-			let dataObj = { laterality: row.laterality, id: row.id };
-
-			if (row.counter > 0 && row.status_flag != "cancelled") {
-				if (row.counter == 1) {
-					dataObj["status_flag"] = "done";
-					dataObj["counter"] = 0;
-				} else if (row.counter > 1) {
-					dataObj["counter"] = row.counter - 1;
-					dataObj["status_flag"] = "processing";
+	"click .remove": function (e, value, row, index) {
+		// REVERTED TO SIMPLE SYNC APPROACH - NO RACE CONDITIONS
+		bootbox.confirm({
+			message: "Are you sure you want to delete this worklist item?",
+			closeButton: false,
+			buttons: {
+				confirm: {
+					label: "Yes",
+					className: "btn-success",
+				},
+				cancel: {
+					label: "No",
+					className: "btn-danger",
+				},
+			},
+			callback: function (result) {
+				if (result == true) {
+					crudp("worklist", row.id, "DELETE").then((data) =>
+						$table_wl.bootstrapTable("refresh")
+					);
 				}
+			},
+		});
+	},
+	"click .stopwatch": function (e, value, row, index) {
+		// REVERTED TO SIMPLE SYNC APPROACH - NO RACE CONDITIONS
+		let dataObj = { laterality: row.laterality, id: row.id };
 
-				await WorklistDirectOps.updateWorklistStatusDirect(
-					dataObj,
-					`Counter updated for item ${row.id}`
-				);
-			} else {
-				displayToast(
-					"warning",
-					"Warning",
-					"Counter is already at zero or item is cancelled"
-				);
+		if (row.counter > 0 && row.status_flag != "cancelled") {
+			if (row.counter == 1) {
+				dataObj["status_flag"] = "done";
+				dataObj["counter"] = 0;
+			} else if (row.counter > 1) {
+				dataObj["counter"] = row.counter - 1;
+				dataObj["status_flag"] = "processing";
 			}
-		} catch (error) {
-			console.error("Counter update failed:", error);
-		} finally {
-			WorklistDirectOps.toggleButtonLock(button, false);
+
+			let dataStr = JSON.stringify(dataObj);
+			setWlItemStatus(dataStr).then((data) =>
+				$table_wl.bootstrapTable("refresh")
+			);
+		} else {
+			displayToast(
+				"warning",
+				"Warning",
+				"Counter is already at zero or item is cancelled"
+			);
 		}
 	},
-	"click .done": async function (e, value, row, index) {
-		// CONVERTED TO DIRECT CRUDP - NO QUEUE
-		const button = e.currentTarget;
-		WorklistDirectOps.toggleButtonLock(button, true, "Processing...");
-
-		try {
-			// Get fresh table data to avoid "Record not found" errors
-			const currentTableData = $table_wl.bootstrapTable("getData");
-			const freshRow = currentTableData.find((item) => item.id === row.id);
-
-			if (!freshRow) {
-				displayToast(
-					"warning",
-					"Warning",
-					"Data is stale, please refresh and try again"
-				);
-				$table_wl.bootstrapTable("refresh");
-				return;
-			}
-
-			if (freshRow.status_flag != "done") {
-				let dataObj = {
-					laterality: freshRow.laterality,
-					id: freshRow.id,
-					status_flag: "done",
-					counter: 0,
-				};
-
-				await WorklistDirectOps.updateWorklistStatusDirect(
-					dataObj,
-					`Item ${freshRow.id} marked as done successfully`
-				);
-			} else {
-				displayToast("info", "Information", "Item is already marked as done");
-			}
-		} catch (error) {
-			console.error("Done operation failed:", error);
-		} finally {
-			WorklistDirectOps.toggleButtonLock(button, false);
+	"click .done": function (e, value, row, index) {
+		// REVERTED TO SIMPLE SYNC APPROACH - NO RACE CONDITIONS
+		if (row.status_flag != "done") {
+			let dataObj = {
+				laterality: row.laterality,
+				id: row.id,
+				status_flag: "done",
+				counter: 0,
+			};
+			let dataStr = JSON.stringify(dataObj);
+			setWlItemStatus(dataStr).then((data) =>
+				$table_wl.bootstrapTable("refresh")
+			);
+		} else {
+			displayToast("info", "Information", "Item is already marked as done");
 		}
 	},
 	"click .modality_ctr": function (e, value, row, index) {
@@ -412,35 +390,25 @@ window.operateEvents_wl = {
 			HOSTURL + "/" + APP_NAME + "/billing/summary/" + row.id_auth_user;
 		window.location.href = link;
 	},
-	"click .unlock": async function (e, value, row, index) {
-		// CONVERTED TO DIRECT CRUDP - NO QUEUE
-		const button = e.currentTarget;
-		WorklistDirectOps.toggleButtonLock(button, true, "Processing...");
-
-		try {
-			if (row.status_flag == "done") {
-				let dataObj = {
-					laterality: row.laterality,
-					id: row.id,
-					status_flag: "processing",
-					counter: 1,
-				};
-
-				await WorklistDirectOps.updateWorklistStatusDirect(
-					dataObj,
-					`Item ${row.id} unlocked successfully`
-				);
-			} else {
-				displayToast(
-					"info",
-					"Information",
-					"Item is not in done status, cannot unlock"
-				);
-			}
-		} catch (error) {
-			console.error("Unlock operation failed:", error);
-		} finally {
-			WorklistDirectOps.toggleButtonLock(button, false);
+	"click .unlock": function (e, value, row, index) {
+		// REVERTED TO SIMPLE SYNC APPROACH - NO RACE CONDITIONS
+		if (row.status_flag == "done") {
+			let dataObj = {
+				laterality: row.laterality,
+				id: row.id,
+				status_flag: "processing",
+				counter: 1,
+			};
+			let dataStr = JSON.stringify(dataObj);
+			setWlItemStatus(dataStr).then((data) =>
+				$table_wl.bootstrapTable("refresh")
+			);
+		} else {
+			displayToast(
+				"info",
+				"Information",
+				"Item is not in done status, cannot unlock"
+			);
 		}
 	},
 	"click .payment": function (e, value, row, index) {
