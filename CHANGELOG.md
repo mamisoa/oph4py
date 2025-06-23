@@ -7,6 +7,87 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-01-21T22:05:00.000000]
+
+### Fixed
+
+- **🚨 CRITICAL: Modality Options API Broken After Database Refactor**: Fixed worklist modality dropdown not loading options due to JSON serialization issues introduced during database commit cleanup
+  - **Root Cause**: Database commit refactor accidentally broke JSON serialization in `handle_rest_api_request()` function by using `str()` on RestAPI response objects instead of proper JSON serialization
+  - **API Response Issue**: Server was returning Python dict representation with single quotes and datetime objects instead of valid JSON:
+    ```python
+    # Before Fix (Invalid JSON)
+    {'items': [{'created_on': datetime.datetime(2021, 4, 19, 2, 1, 29), ...}]}
+    
+    # After Fix (Valid JSON)  
+    {"items": [{"created_on": "2021-04-19 02:01:29", ...}]}
+    ```
+  - **Frontend Error**: JavaScript was receiving malformed JSON causing "Expected property name or '}' in JSON" parsing errors
+  - **Secondary Issue**: Lookup field access pattern required bracket notation for flattened field names with dots
+
+### Technical Details
+
+- **File Fixed**: `api/core/base.py` - `handle_rest_api_request()` function
+- **JSON Serialization**: Replaced `str(json_resp)` with proper `json.dumps()` with datetime handling
+- **Datetime Handling**: Added custom serializer for `datetime.datetime` and `datetime.date` objects
+- **Frontend Fix**: Updated field access pattern in `static/js/wl/wl.js` for py4web lookup fields
+- **Field Access Pattern**: Used bracket notation `item['id_modality.id']` for flattened lookup field names
+
+### API Endpoint Corrections
+
+- **Modality API Endpoint**: Changed from non-existent `/api/modality` to proper `/api/procedure_family` with lookup
+- **Database Relationships**: Correctly uses `procedure_family` junction table to get modalities for procedures  
+- **Lookup Syntax**: Added `@lookup=id_modality!:id_modality[id,modality_name]` for proper field joins
+- **Field Access**: Fixed JavaScript to handle py4web's flattened field naming convention
+
+### User Experience Impact
+
+- **✅ Modality Dropdown**: Now properly loads available modalities when procedure is selected
+- **✅ Form Validation**: Prevents API calls with undefined procedure IDs
+- **✅ Error Handling**: Enhanced debugging and user feedback for API failures
+- **✅ Worklist Creation**: Users can now create worklist items with proper modality selection
+
+### Root Cause Analysis
+
+This issue demonstrates the importance of comprehensive testing after framework-level changes. The database commit refactor, while correct for transaction management, inadvertently affected a core utility function used by multiple API endpoints. The fix ensures proper JSON serialization while maintaining the improved transaction management.
+
+## [2025-01-21T15:30:00.000000]
+
+### Fixed
+
+- **🚨 CRITICAL: Database Commit Implementation Fixes**: Comprehensive cleanup of manual database transaction management across multiple modules to follow py4web best practices
+  - **Root Cause**: Manual `db.commit()` calls were redundant and potentially harmful when used with `@action.uses(db)` decorator which provides automatic transaction management
+  - **py4web Transaction Management**: With `@action.uses(db)` decorator, py4web automatically handles transaction lifecycle:
+    - `on_request`: starts transaction
+    - `on_success`: commits transaction automatically 
+    - `on_error`: rolls back transaction automatically
+  - **Files Fixed**:
+    - **`manage.py`**: Removed manual `db.commit()` from `change_password()` function and added missing `@action.uses(db)` decorators to 6 database management functions
+    - **`api/core/base.py`**: Removed manual `db.commit()` from `handle_rest_api_request()` utility function and improved type safety
+    - **`api/endpoints/billing.py`**: Removed 4 manual `db.commit()` calls and eliminated manual transaction management in `apply_billing_combo()` function
+  - **Impact**: Database operations now use proper py4web transaction management ensuring consistency and automatic rollback on errors
+
+### Technical Details
+
+- **Manual Commits Removed**: 6 instances of `db.commit()` eliminated across 3 files
+- **Missing Decorators Added**: 6 functions in `manage.py` now have proper `@action.uses(db)` decorators
+- **Transaction Simplification**: Removed complex manual transaction blocks with `db.begin()`, `db.commit()`, and `db.rollback()`
+- **Type Safety Improvements**: Enhanced return type handling in `api/core/base.py`
+- **Framework Compliance**: All database operations now follow py4web best practices
+
+### Database Operations Enhanced
+
+- **Management Functions**: `save_table()`, `save_all_tables()`, `save_db()`, `init_db()`, `restore_db()`, `restore()` now have proper decorators
+- **Password Management**: `change_password()` function now relies on automatic transaction management
+- **API Utilities**: `handle_rest_api_request()` no longer performs manual commits, trusting endpoint decorators
+- **Billing Operations**: All CRUD operations in billing endpoints now use automatic transaction management
+
+### Design Philosophy
+
+- **Framework Best Practices**: Use py4web's built-in transaction management instead of manual control
+- **Database Consistency**: Automatic transaction lifecycle management ensures proper ACID properties
+- **Error Handling**: Simplified error handling since rollback is now automatic on exceptions
+- **Code Maintainability**: Reduced complexity by removing manual transaction management code
+
 ## [2025-01-20T17:32:00.000000]
 
 ### Fixed

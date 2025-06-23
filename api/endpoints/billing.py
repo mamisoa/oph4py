@@ -560,7 +560,6 @@ def billing_combo(rec_id: Optional[int] = None):
             if request.method == "DELETE":
                 # Delete the record
                 db(db.billing_combo.id == rec_id).delete()
-                db.commit()
                 return APIResponse.success(
                     message=f"Billing combo {rec_id} deleted successfully"
                 )
@@ -606,7 +605,6 @@ def billing_combo(rec_id: Optional[int] = None):
 
                 # Update the record
                 db(db.billing_combo.id == rec_id).update(**data)
-                db.commit()
 
                 # Return updated record with datetime serialization
                 updated_record = db(db.billing_combo.id == rec_id).select().first()
@@ -670,7 +668,6 @@ def billing_combo(rec_id: Optional[int] = None):
             # Create new record (auth.signature will automatically set created_by)
             new_id = db.billing_combo.insert(**data)
             logger.info(f"POST: Inserted new combo with ID: {new_id}")
-            db.commit()
 
             # Return created record with datetime serialization
             new_record = db(db.billing_combo.id == new_id).select().first()
@@ -786,140 +783,127 @@ def apply_billing_combo(combo_id: int):
                 error_type="validation_error",
             )
 
-        # Start transaction
-        db.commit()
-        db._adapter.connection.begin()
-
         created_codes = []
         nomenclature = NomenclatureClient()
         total_main_fees = 0
         total_secondary_fees = 0
         codes_with_secondary = 0
 
-        try:
-            # Enhanced combo code processing - supports both old and new formats
-            for code_def in combo_codes:
-                # Handle both old format (integer) and new format (object with secondary support)
-                if isinstance(code_def, int):
-                    # Old format: simple integer code
-                    nomen_code = code_def
-                    secondary_code = None
-                    logger.info(f"Processing legacy combo code: {nomen_code}")
-                elif isinstance(code_def, dict):
-                    # New format: object with potential secondary codes
-                    nomen_code = code_def.get("nomen_code")
-                    secondary_code = code_def.get("secondary_nomen_code")
-                    logger.info(
-                        f"Processing enhanced combo code: {nomen_code} + secondary: {secondary_code}"
-                    )
-                else:
-                    logger.warning(
-                        f"Skipping invalid combo code definition: {code_def}"
-                    )
-                    continue
+        # Enhanced combo code processing - supports both old and new formats
+        for code_def in combo_codes:
+            # Handle both old format (integer) and new format (object with secondary support)
+            if isinstance(code_def, int):
+                # Old format: simple integer code
+                nomen_code = code_def
+                secondary_code = None
+                logger.info(f"Processing legacy combo code: {nomen_code}")
+            elif isinstance(code_def, dict):
+                # New format: object with potential secondary codes
+                nomen_code = code_def.get("nomen_code")
+                secondary_code = code_def.get("secondary_nomen_code")
+                logger.info(
+                    f"Processing enhanced combo code: {nomen_code} + secondary: {secondary_code}"
+                )
+            else:
+                logger.warning(
+                    f"Skipping invalid combo code definition: {code_def}"
+                )
+                continue
 
-                if not nomen_code:
-                    logger.warning(
-                        f"Skipping combo code with missing nomen_code: {code_def}"
-                    )
-                    continue
+            if not nomen_code:
+                logger.warning(
+                    f"Skipping combo code with missing nomen_code: {code_def}"
+                )
+                continue
 
-                # Build base code data
-                code_data = {
-                    "id_auth_user": data["id_auth_user"],
-                    "id_worklist": data["id_worklist"],
-                    "nomen_code": nomen_code,
-                    "quantity": 1,
-                    "laterality": "both",
-                    "status": "draft",
-                    "date_performed": datetime.date.today(),
-                }
+            # Build base code data
+            code_data = {
+                "id_auth_user": data["id_auth_user"],
+                "id_worklist": data["id_worklist"],
+                "nomen_code": nomen_code,
+                "quantity": 1,
+                "laterality": "both",
+                "status": "draft",
+                "date_performed": datetime.date.today(),
+            }
 
-                # Try to get main nomenclature details
+            # Try to get main nomenclature details
+            try:
+                code_details = nomenclature.get_code_details(nomen_code)
+                if code_details is not None:
+                    code_data["nomen_desc_fr"] = code_details.get("description_fr")
+                    code_data["nomen_desc_nl"] = code_details.get("description_nl")
+                    code_data["fee"] = code_details.get("fee")
+                    code_data["feecode"] = code_details.get("feecode")
+                    total_main_fees += float(code_details.get("fee") or 0)
+            except Exception as e:
+                logger.warning(
+                    f"Could not fetch details for main code {nomen_code}: {str(e)}"
+                )
+
+            # Handle secondary code if present
+            if secondary_code:
                 try:
-                    code_details = nomenclature.get_code_details(nomen_code)
-                    if code_details is not None:
-                        code_data["nomen_desc_fr"] = code_details.get("description_fr")
-                        code_data["nomen_desc_nl"] = code_details.get("description_nl")
-                        code_data["fee"] = code_details.get("fee")
-                        code_data["feecode"] = code_details.get("feecode")
-                        total_main_fees += float(code_details.get("fee") or 0)
+                    secondary_details = nomenclature.get_code_details(
+                        secondary_code
+                    )
+                    if secondary_details is not None:
+                        code_data["secondary_nomen_code"] = secondary_code
+                        code_data["secondary_nomen_desc_fr"] = (
+                            secondary_details.get("description_fr")
+                        )
+                        code_data["secondary_nomen_desc_nl"] = (
+                            secondary_details.get("description_nl")
+                        )
+                        code_data["secondary_fee"] = secondary_details.get("fee")
+                        code_data["secondary_feecode"] = secondary_details.get(
+                            "feecode"
+                        )
+                        total_secondary_fees += float(
+                            secondary_details.get("fee") or 0
+                        )
+                        codes_with_secondary += 1
                 except Exception as e:
                     logger.warning(
-                        f"Could not fetch details for main code {nomen_code}: {str(e)}"
+                        f"Could not fetch details for secondary code {secondary_code}: {str(e)}"
                     )
 
-                # Handle secondary code if present
-                if secondary_code:
-                    try:
-                        secondary_details = nomenclature.get_code_details(
-                            secondary_code
-                        )
-                        if secondary_details is not None:
-                            code_data["secondary_nomen_code"] = secondary_code
-                            code_data["secondary_nomen_desc_fr"] = (
-                                secondary_details.get("description_fr")
-                            )
-                            code_data["secondary_nomen_desc_nl"] = (
-                                secondary_details.get("description_nl")
-                            )
-                            code_data["secondary_fee"] = secondary_details.get("fee")
-                            code_data["secondary_feecode"] = secondary_details.get(
-                                "feecode"
-                            )
-                            total_secondary_fees += float(
-                                secondary_details.get("fee") or 0
-                            )
-                            codes_with_secondary += 1
-                    except Exception as e:
-                        logger.warning(
-                            f"Could not fetch details for secondary code {secondary_code}: {str(e)}"
-                        )
+            # Create billing code
+            code_id = db.billing_codes.insert(**code_data)
+            created_code = db(db.billing_codes.id == code_id).select().first()
+            enhanced_code = created_code.as_dict()
+            enhance_billing_response(enhanced_code)
+            created_codes.append(enhanced_code)
 
-                # Create billing code
-                code_id = db.billing_codes.insert(**code_data)
-                created_code = db(db.billing_codes.id == code_id).select().first()
-                enhanced_code = created_code.as_dict()
-                enhance_billing_response(enhanced_code)
-                created_codes.append(enhanced_code)
+        # Create combo usage record
+        usage_id = db.billing_combo_usage.insert(
+            id_auth_user=data["id_auth_user"],
+            id_worklist=data["id_worklist"],
+            id_billing_combo=combo_id,
+            applied_date=datetime.datetime.now(),
+            note=data.get("note", ""),
+        )
 
-            # Create combo usage record
-            usage_id = db.billing_combo_usage.insert(
-                id_auth_user=data["id_auth_user"],
-                id_worklist=data["id_worklist"],
-                id_billing_combo=combo_id,
-                applied_date=datetime.datetime.now(),
-                note=data.get("note", ""),
-            )
+        total_combined_fees = total_main_fees + total_secondary_fees
 
-            # Commit transaction
-            db.commit()
+        logger.info(
+            f"Applied enhanced combo {combo_id}: created {len(created_codes)} billing codes, "
+            f"{codes_with_secondary} with secondary codes, "
+            f"total fees: €{total_combined_fees:.2f} (main: €{total_main_fees:.2f}, secondary: €{total_secondary_fees:.2f})"
+        )
 
-            total_combined_fees = total_main_fees + total_secondary_fees
-
-            logger.info(
-                f"Applied enhanced combo {combo_id}: created {len(created_codes)} billing codes, "
-                f"{codes_with_secondary} with secondary codes, "
-                f"total fees: €{total_combined_fees:.2f} (main: €{total_main_fees:.2f}, secondary: €{total_secondary_fees:.2f})"
-            )
-
-            return APIResponse.success(
-                data={
-                    "combo_usage_id": usage_id,
-                    "created_codes": created_codes,
-                    "combo_name": combo.combo_name,
-                    "codes_with_secondary": codes_with_secondary,
-                    "total_main_fees": round(total_main_fees, 2),
-                    "total_secondary_fees": round(total_secondary_fees, 2),
-                    "total_combined_fees": round(total_combined_fees, 2),
-                },
-                message=f"Successfully applied combo '{combo.combo_name}' with {len(created_codes)} codes (total: €{total_combined_fees:.2f})",
-            )
-
-        except Exception as e:
-            # Rollback on error
-            db.rollback()
-            raise e
+        return APIResponse.success(
+            data={
+                "combo_usage_id": usage_id,
+                "created_codes": created_codes,
+                "combo_name": combo.combo_name,
+                "codes_with_secondary": codes_with_secondary,
+                "total_main_fees": round(total_main_fees, 2),
+                "total_secondary_fees": round(total_secondary_fees, 2),
+                "total_combined_fees": round(total_combined_fees, 2),
+            },
+            message=f"Successfully applied combo '{combo.combo_name}' with {len(created_codes)} codes (total: €{total_combined_fees:.2f})",
+        )
 
     except Exception as e:
         logger.error(f"Error applying enhanced billing combo: {str(e)}")

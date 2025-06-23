@@ -27,35 +27,83 @@ $(".btn.counter_up").click(function () {
 
 // set modality options
 function setModalityOptions(procedureId) {
+	console.log("🎯 Setting modality options for procedure ID:", procedureId);
+	
+	if (!procedureId || procedureId === "" || procedureId === "undefined") {
+		console.warn("⚠️ Invalid procedure ID provided:", procedureId);
+		displayToast("warning", "Warning", "No procedure selected", "3000");
+		$("#modality_destSelect").html('<option value="">Select a procedure first</option>');
+		return;
+	}
+	
 	let modalityOptions = getModalityOptions(procedureId);
 	modalityOptions.then(function (data) {
 		if (data.status != "error") {
 			let items = data.items;
+			console.log("🔍 Raw items data:", items);
+			console.log("🔍 First item structure:", items[0]);
+			console.log("🔍 Item keys:", items[0] ? Object.keys(items[0]) : "No items");
+			
 			let html = "";
 			for (let item of items) {
-				html +=
-					'<option value="' + item.id + '">' + item.modality_name + "</option>";
+				console.log("🔍 Processing item:", item);
+				
+				// Check if the lookup data exists (flattened with dot notation)
+				if (item['id_modality.id'] && item['id_modality.modality_name']) {
+					console.log("✅ Found flattened modality fields with dot notation");
+					html +=
+						'<option value="' + item['id_modality.id'] + '">' + item['id_modality.modality_name'] + "</option>";
+				} else if (item.id_modality) {
+					console.log("✅ Found nested id_modality:", item.id_modality);
+					html +=
+						'<option value="' + item.id_modality.id + '">' + item.id_modality.modality_name + "</option>";
+				} else if (item.modality) {
+					console.log("✅ Found modality field:", item.modality);
+					html +=
+						'<option value="' + item.modality.id + '">' + item.modality.modality_name + "</option>";
+				} else {
+					console.warn("⚠️ Cannot determine modality structure for item:", item);
+					console.log("Available keys:", Object.keys(item));
+				}
 			}
-			// console.log(html);
+			console.log("📋 Generated HTML options:", html);
 			$("#modality_destSelect").html(html);
 		}
+	}).catch(function (error) {
+		console.error("❌ Error loading modality options:", error);
+		displayToast(
+			"error",
+			"Error",
+			"Failed to load modality options",
+			"6000"
+		);
 	});
 }
 
 // get json data for modality options
 function getModalityOptions(procedureId) {
-	return Promise.resolve(
+	return new Promise((resolve, reject) => {
+		// Use procedure_family table to get modalities for a specific procedure
+		const apiUrl = 
+			HOSTURL +
+			"/" +
+			APP_NAME +
+			"/api/procedure_family/?id_procedure.eq=" +
+			procedureId +
+			"&@lookup=id_modality!:id_modality[id,modality_name]";
+		
+		console.log("🔗 API URL:", apiUrl);
+		
 		$.ajax({
 			type: "GET",
-			url:
-				HOSTURL +
-				"/" +
-				APP_NAME +
-				"/api/modality?id_modality.procedure_family.id_procedure.eq=" +
-				procedureId,
+			url: apiUrl,
 			dataType: "json",
+			beforeSend: function(xhr) {
+				// Add any required headers
+				xhr.setRequestHeader('Accept', 'application/json');
+			},
 			success: function (data) {
-				// console.log(data);
+				console.log("✅ API Response:", data);
 				if (data.status == "error" || data.count == 0) {
 					displayToast(
 						"error",
@@ -63,6 +111,7 @@ function getModalityOptions(procedureId) {
 						"Cannot retrieve modality options",
 						"6000"
 					);
+					reject(new Error("Cannot retrieve modality options"));
 				} else {
 					displayToast(
 						"info",
@@ -70,17 +119,22 @@ function getModalityOptions(procedureId) {
 						"modality options for " + procedureId,
 						"6000"
 					);
+					resolve(data);
 				}
 			},
-			error: function (er) {
-				console.log(er);
+			error: function (xhr, status, error) {
+				console.error("🚨 AJAX error:", xhr, status, error);
+				console.error("🚨 Response text:", xhr.responseText);
+				console.error("🚨 Status code:", xhr.status);
+				reject(new Error(`Failed to fetch modality options: ${error}`));
 			},
-		})
-	);
+		});
+	});
 }
 
 // reset add new item in worklist modal
 function resetWlForm() {
+	console.log("🔄 resetWlForm() called");
 	// set default value for form
 	$("#requested_time").val(
 		new Date().addHours(timeOffsetInHours).toJSON().slice(0, 16)
@@ -88,8 +142,20 @@ function resetWlForm() {
 	$("[name=laterality]").val(["both"]);
 	$("[name=status_flag]").val(["requested"]);
 	$("[name=warning]").val([""]);
+	
+	// Get the selected procedure and add debugging
 	let choice = $("select#procedureSelect option:checked").val();
-	setModalityOptions(choice);
+	console.log("🔍 Reset form - selected procedure choice:", choice);
+	console.log("🔍 Procedure select element:", $("select#procedureSelect")[0]);
+	console.log("🔍 Procedure select options:", $("select#procedureSelect option").length);
+	
+	// Only try to set modality options if we have a valid procedure selected
+	if (choice && choice !== "" && choice !== "undefined") {
+		setModalityOptions(choice);
+	} else {
+		console.log("⚠️ No valid procedure selected, skipping modality options");
+		$("#modality_destSelect").html('<option value="">Select a procedure first</option>');
+	}
 
 	// Clear the state manager's pending items
 	WorklistState.Manager.clearPendingItems();

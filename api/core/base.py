@@ -6,6 +6,7 @@ It includes common imports, error handling, and configuration that all API endpo
 will depend on.
 """
 
+import datetime
 import json
 import traceback
 from typing import Any, Dict, Optional, Union
@@ -144,7 +145,15 @@ def handle_rest_api_request(
         logger.info(f"RestAPI Response: {json_resp}")
 
         # Return the response (transaction commit is handled by @action.uses(db) decorator)
-        return str(json_resp) if json_resp is not None else ""
+        if json_resp is not None:
+            # If the response is already a string (JSON), return it directly
+            if isinstance(json_resp, str):
+                return json_resp
+            # If it's a Python object, serialize it properly with datetime handling
+            else:
+                return json.dumps(json_resp, default=lambda obj: obj.strftime("%Y-%m-%d %H:%M:%S") if isinstance(obj, datetime.datetime) else obj.strftime("%Y-%m-%d") if isinstance(obj, datetime.date) else str(obj))
+        else:
+            return ""
         
 
     except ValueError as e:
