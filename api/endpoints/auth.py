@@ -15,6 +15,7 @@ from ..core.base import APIResponse, handle_rest_api_request
 
 @action("api/<tablename>/", method=["GET", "POST", "PUT"])
 @action("api/<tablename>/<rec_id>", method=["GET", "PUT", "DELETE"])
+@action.uses(db)
 def api(tablename, rec_id=None):
     """
     API endpoint for GET, POST, PUT, DELETE operations on database tables.
@@ -120,7 +121,6 @@ def api(tablename, rec_id=None):
                 db(db.auth_user.id == user_id).update(
                     **{k: v for k, v in data.items() if k in db.auth_user.fields}
                 )
-                db.commit()
                 logger.info("User update successful")
 
                 return APIResponse.success(
@@ -146,6 +146,7 @@ def api(tablename, rec_id=None):
 
 @action("octopus/api/<tablename>/", method=["GET", "POST", "PUT"])
 @action("octopus/api/<tablename>/<rec_id>", method=["GET", "PUT", "DELETE"])
+@action.uses(db)
 def octopus(tablename, rec_id=None):
     """
     Legacy compatibility endpoint for the Octopus API.

@@ -188,7 +188,6 @@ def facilities():
             facility_name=form.vars["facility_name"], hosp_id=form.vars["hosp_id"]
         )
         flash.set("Facility row added", sanitize=True)
-        db.commit()
         redirect(URL("index"))
     return dict(form=form, user=user)
 
@@ -209,7 +208,6 @@ def testtable():
             test_id=form.vars["test_id"],
             test_gender=form.vars["test_gender"],
         )
-        db.commit()
         flash.set("Testtable row added", sanitize=True)
         redirect(URL("index"))
     return dict(form=form, user=user, form_key=form_key)

@@ -12,6 +12,8 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 ### Fixed
 
 - **🚨 CRITICAL: Payment Transaction Processing Database Commit Issues**: Fixed payment processing endpoints not using py4web's automatic transaction management
+- **Controllers Transaction Management**: Removed manual `db.commit()` calls from `facilities()` and `testtable()` functions in `controllers.py` that already use `@action.uses(db)` decorator
+- **Auth API Transaction Management**: Fixed `api/endpoints/auth.py` by adding `@action.uses(db)` decorator to `api()` and `octopus()` functions and removing manual `db.commit()` call
   - **Root Cause**: Payment API endpoints were missing `@action.uses(db)` decorator while manually calling `db.commit()` and `db.rollback()`, which is incorrect in py4web
   - **py4web Transaction Management**: With `@action.uses(db)` decorator, py4web automatically handles transaction lifecycle:
     - `on_request`: starts transaction
