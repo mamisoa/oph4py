@@ -1951,6 +1951,23 @@ db._adapter.connection.begin()  # Begin explicit transaction
 db.commit()
 ```
 
+**❌ Anti-Pattern: Manual Transaction Management with @action.uses(db)**
+
+```python
+# INCORRECT: Redundant and potentially harmful with @action.uses(db)
+@action.uses(db, auth.user)
+def my_endpoint():
+    try:
+        # Database operations
+        db._adapter.connection.begin()  # Unnecessary!
+        result = db.table.insert(...)
+        db.commit()  # Redundant with @action.uses(db)!
+        return success_response(result)
+    except Exception as e:
+        db.rollback()  # Framework handles this automatically!
+        return error_response(str(e))
+```
+
 **❌ Anti-Pattern: Assuming Web2py Patterns Apply**
 
 ```python
@@ -1966,7 +1983,7 @@ db.commit()
 
 #### Correct py4web Transaction Pattern
 
-##### 1. Standard Transaction Management
+##### 1. Standard Transaction Management (Automatic)
 
 **✅ Correct Pattern: Official py4web Approach**
 
@@ -1982,20 +1999,13 @@ def process_payment(worklist_id: int):
             # ... other fields
         )
 
-        # Explicit commit for immediate persistence (when needed)
-        db.commit()
-        logger.info(f"Transaction {transaction_id} committed successfully")
+        # NO MANUAL COMMIT NEEDED - py4web handles this automatically!
+        logger.info(f"Transaction {transaction_id} will be committed automatically")
 
         return APIResponse.success(data=result)
 
     except Exception as e:
-        # Standard rollback pattern
-        try:
-            db.rollback()
-            logger.info("Database transaction rolled back due to error")
-        except Exception as rollback_error:
-            logger.error(f"Error during rollback: {str(rollback_error)}")
-        
+        # NO MANUAL ROLLBACK NEEDED - py4web handles this automatically!
         logger.error(f"Error in process_payment: {str(e)}")
         return APIResponse.error(message=f"Server error: {str(e)}")
 ```
@@ -2015,15 +2025,22 @@ else:
     save cookies, sessions and return the page
 ```
 
-##### 3. Manual Transaction Pattern (for special cases)
+**Key Points:**
+- **With `@action.uses(db)`**: py4web automatically starts, commits, and rolls back transactions
+- **Manual commits are redundant** and can interfere with framework's transaction management
+- **Manual rollbacks are unnecessary** - framework handles exceptions automatically
+
+##### 3. Manual Transaction Pattern (ONLY for special cases outside py4web actions)
 
 ```python
-def my_task():
+# ONLY use manual transaction management outside of py4web actions
+# (e.g., background tasks, scheduled jobs, etc.)
+def my_background_task():
     try:
         # do something
-        db.commit()
+        db.commit()  # Manual commit only when NOT using @action.uses(db)
     except Exception:
-        db.rollback()
+        db.rollback()  # Manual rollback only when NOT using @action.uses(db)
 ```
 
 #### Implementation Guidelines
@@ -2031,25 +2048,29 @@ def my_task():
 ##### 1. Use Standard py4web Decorators
 
 ```python
-@action.uses(session, auth.user, db)  # Let py4web manage transactions
+@action.uses(session, auth.user, db)  # Let py4web manage transactions automatically
 ```
 
-##### 2. Explicit Commits When Needed
+##### 2. Avoid Manual Transaction Management
 
 ```python
-# Use explicit commits for immediate persistence requirements
-db.commit()
-logger.info("Database changes committed successfully")
+# DO NOT use manual commits with @action.uses(db)
+# py4web handles transaction lifecycle automatically
+# Manual commits are redundant and can cause issues
 ```
 
-##### 3. Proper Error Handling
+##### 3. Simple Error Handling
 
 ```python
+# Simple error handling - no manual rollback needed
 try:
-    db.rollback()
-    logger.info("Database transaction rolled back due to error")
-except Exception as rollback_error:
-    logger.error(f"Error during rollback: {str(rollback_error)}")
+    # Database operations
+    result = db.table.insert(...)
+    return success_response(result)
+except Exception as e:
+    # py4web automatically rolls back on exceptions
+    logger.error(f"Database error: {str(e)}")
+    return error_response(str(e))
 ```
 
 #### Debugging Database Transaction Issues
@@ -2074,9 +2095,10 @@ logger.info(f"Existing transactions: {existing_count}")
 transaction_id = db.worklist_transactions.insert(...)
 logger.info(f"Inserted transaction: {transaction_id}")
 
-db.commit()
-logger.info(f"Transaction committed successfully")
+# py4web will commit automatically at the end of the action
+logger.info(f"Transaction will be committed automatically by py4web")
 
+# Query after insert (still within same transaction)
 new_count = db(db.worklist_transactions.id_worklist == worklist_id).count()
 logger.info(f"New transaction count: {new_count}")
 ```
@@ -2111,17 +2133,17 @@ DB_POOL_SIZE = 8  # in settings.py
 graph TD
     A["🌐 API Request"] --> B["🔧 @action.uses(db)<br/>py4web auto-transaction"]
     B --> C["💾 Database Operations<br/>INSERT/UPDATE/DELETE"]
-    C --> D["✅ Explicit db.commit()<br/>For immediate persistence"]
-    D --> E["📊 Return Success Response"]
+    C --> D["📊 Return Success Response"]
+    D --> E["✅ py4web auto-commit<br/>On successful completion"]
     
-    F["❌ Exception Occurs"] --> G["🔄 db.rollback()"]
+    F["❌ Exception Occurs"] --> G["🔄 py4web auto-rollback<br/>On any exception"]
     G --> H["📝 Log Error Details"]
     H --> I["❌ Return Error Response"]
     
     C --> F
     
     style B fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    style D fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    style E fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
     style G fill:#ffebee,stroke:#f44336,stroke-width:2px
 ```
 
@@ -2167,19 +2189,22 @@ graph TD
 #### Implementation Checklist
 
 1. **Framework Compliance**
-   - [ ] Use `@action.uses(db)` decorator
+   - [ ] Use `@action.uses(db)` decorator for all database operations
    - [ ] Let py4web handle automatic transaction management
    - [ ] Avoid manual connection management
+   - [ ] Remove any manual `db.commit()` calls when using `@action.uses(db)`
 
-2. **Explicit Persistence**
-   - [ ] Add `db.commit()` after critical database operations
-   - [ ] Include commit confirmation logging
-   - [ ] Handle commit errors appropriately
+2. **Simplified Error Handling**
+   - [ ] Remove manual `db.rollback()` calls - py4web handles automatically
+   - [ ] Add detailed error logging without transaction management
+   - [ ] Let framework handle transaction rollback on exceptions
+   - [ ] Use simple try/except blocks for business logic errors
 
-3. **Error Handling**
-   - [ ] Implement proper `db.rollback()` in exception handlers
-   - [ ] Add detailed error logging
-   - [ ] Handle rollback errors gracefully
+3. **Code Cleanup**
+   - [ ] Remove manual transaction management from existing endpoints
+   - [ ] Remove `db._adapter.connection.begin()` calls
+   - [ ] Simplify error handling by removing manual rollback logic
+   - [ ] Update logging to reflect automatic transaction management
 
 4. **Documentation Verification**
    - [ ] Verify patterns against official py4web documentation
@@ -2189,20 +2214,27 @@ graph TD
 
 #### Lessons Learned
 
-1. **Official Documentation is Authoritative**
+1. **Manual Transaction Management is Counterproductive**
+   - `@action.uses(db)` provides automatic transaction management
+   - Manual `db.commit()` and `db.rollback()` calls are redundant and can cause issues
+   - Framework-level transaction management is more reliable than manual control
+
+2. **py4web's Automatic Transaction Lifecycle**
+   - Transactions start automatically on request
+   - Commits happen automatically on successful completion
+   - Rollbacks happen automatically on any exception
+   - Manual intervention is unnecessary and potentially harmful
+
+3. **Code Simplification Through Framework Trust**
+   - Remove complex manual transaction blocks
+   - Trust the framework's transaction management
+   - Focus on business logic rather than transaction control
+   - Simplified error handling improves maintainability
+
+4. **Framework Migration Requires Pattern Updates**
+   - Web2py patterns don't directly apply to py4web
    - Always verify implementation patterns against official sources
-   - Framework-specific approaches may differ from similar frameworks
-   - Community examples may not always follow best practices
-
-2. **Connection Pooling Requires Special Consideration**
-   - Explicit commits ensure immediate data visibility
-   - py4web handles connection pool lifecycle automatically
-   - Manual connection management is usually unnecessary
-
-3. **Production Debugging Requires Systematic Approach**
-   - Implement comprehensive logging for transaction lifecycle
-   - Test transaction patterns in isolation
-   - Monitor transaction timing and consistency
+   - Systematic cleanup of manual transaction management improves reliability
 
 This pattern provides a systematic approach to implementing reliable database transactions in py4web applications while avoiding common pitfalls and ensuring consistency with framework best practices.
 
