@@ -19,6 +19,9 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
     - `getUserInfo()` - Updated to use Fetch API instead of jQuery promises
     - `refreshTables()` - Enhanced to work without jQuery while maintaining bootstrap-table compatibility
     - `disableBtn()` - Converted from jQuery element manipulation to native DOM methods
+    - `getVisionixData()` - Replaced jQuery AJAX with Fetch API for machine data retrieval
+    - `addPatientVisionix()` - Converted to vanilla JavaScript for L80/VX100 patient creation
+    - `addPatientEyesuite()` - Migrated from jQuery to Fetch API for Eyesuite worklist integration
   - **Technical Improvements**:
     - **Modern JavaScript**: All functions now use async/await, const/let, and ES6+ features
     - **Better Error Handling**: Enhanced try/catch blocks with descriptive error messages
@@ -30,7 +33,7 @@ NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTO
 
 ### Technical Details
 
-- **File Modified**: `static/js/utils/useful.js` - Comprehensive jQuery removal across 6 core functions
+- **File Modified**: `static/js/utils/useful.js` - Comprehensive jQuery removal across 9 core functions
 - **Fetch API Integration**: Modern HTTP client using native browser APIs instead of jQuery AJAX
 - **DOM Manipulation**: Direct use of `document.querySelector()` and native element properties
 - **Element Selection**: Functions accept both string selectors and DOM elements for flexibility

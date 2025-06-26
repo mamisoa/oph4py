@@ -427,7 +427,7 @@ function setWlItemStatus(dataStr) {
 
 //  use as promise
 async function getVisionixData(machine = "l80", lastname = "", firstname = "") {
-	let API_URL =
+	const API_URL =
 		HOSTURL +
 		"/" +
 		APP_NAME +
@@ -437,17 +437,23 @@ async function getVisionixData(machine = "l80", lastname = "", firstname = "") {
 		lastname +
 		"&firstname=" +
 		firstname;
-	return Promise.resolve(
-		$.ajax({
-			url: API_URL,
-			contentType: "application/json",
-			dataType: "json",
+
+	try {
+		const response = await fetch(API_URL, {
 			method: "GET",
-			success: function (data) {
-				// console.log(data);
+			headers: {
+				"Content-Type": "application/json",
 			},
-		})
-	);
+		});
+
+		const data = await response.json();
+		// console.log(data);
+
+		return data;
+	} catch (error) {
+		console.error("Error fetching Visionix data:", error);
+		throw error;
+	}
 }
 
 // use to populate patient in L80 or VX100
@@ -460,7 +466,7 @@ async function addPatientVisionix(
 	sex = ""
 ) {
 	sex == "Female" ? (sex = "f") : sex == "Male" ? (sex = "m") : (sex = "");
-	let API_URL =
+	const API_URL =
 		HOSTURL +
 		"/" +
 		APP_NAME +
@@ -476,20 +482,30 @@ async function addPatientVisionix(
 		sex +
 		"&dob=" +
 		dob;
-	$.ajax({
-		url: API_URL,
-		contentType: "application/json",
-		dataType: "json",
-		method: "GET",
-		success: function (data) {
-			if (data.result == "success") {
-				displayToast("success", "add L80/VX100", data.result, "3000");
-			} else {
-				displayToast("error", "add L80/VX100", data.result, "6000");
-				console.log("error message: ", data.result);
-			}
-		},
-	});
+
+	try {
+		const response = await fetch(API_URL, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		const data = await response.json();
+
+		if (data.result == "success") {
+			displayToast("success", "add L80/VX100", data.result, "3000");
+		} else {
+			displayToast("error", "add L80/VX100", data.result, "6000");
+			console.log("error message: ", data.result);
+		}
+
+		return data;
+	} catch (error) {
+		displayToast("error", "add L80/VX100", "Request failed", "6000");
+		console.error("Error adding patient to Visionix:", error);
+		throw error;
+	}
 }
 
 // use to add item to Eyesuite machines
@@ -501,7 +517,7 @@ async function addPatientEyesuite(
 	dob = "",
 	sex = ""
 ) {
-	let API_URL =
+	const API_URL =
 		HOSTURL +
 		"/" +
 		APP_NAME +
@@ -518,21 +534,31 @@ async function addPatientEyesuite(
 		"&dob=" +
 		dob;
 	console.log(API_URL);
-	$.ajax({
-		url: API_URL,
-		contentType: "application/json",
-		dataType: "json",
-		method: "POST",
-		success: function (data) {
-			if (data.result == "success") {
-				displayToast("success", "add wl to Eyesuite", data.result, "6000");
-			} else {
-				displayToast("error", "add wl to Eyesuite", data.result, "6000");
-				console.log("error message: ", data.result);
-			}
-			console.log(data.result);
-		},
-	});
+
+	try {
+		const response = await fetch(API_URL, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		const data = await response.json();
+
+		if (data.result == "success") {
+			displayToast("success", "add wl to Eyesuite", data.result, "6000");
+		} else {
+			displayToast("error", "add wl to Eyesuite", data.result, "6000");
+			console.log("error message: ", data.result);
+		}
+		console.log(data.result);
+
+		return data;
+	} catch (error) {
+		displayToast("error", "add wl to Eyesuite", "Request failed", "6000");
+		console.error("Error adding patient to Eyesuite:", error);
+		throw error;
+	}
 }
 
 // mapping month with beid
