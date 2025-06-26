@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-26T22:29:49.454092]
+
+### Changed
+
+- **JavaScript Code Organization - Worklist Bootstrap Table Functions**: Refactored worklist-related JavaScript code to improve maintainability and follow modular architecture principles
+  - **Code Consolidation**: Moved core worklist bootstrap-table functions from `templates/worklist.html` to centralized `static/js/wl/wl_bt.js` module:
+    - `queryParams_wl()` - Query parameter building and filtering logic
+    - `initWorklist()` - Bootstrap table initialization and configuration  
+    - `setupDateInputHandlers()` - Date range filter event handling with validation
+    - `setupDropdownHandlers()` - Practitioner and provider filter change handling
+  - **Modular Architecture**: All worklist bootstrap-table functionality now centralized in dedicated JavaScript module
+  - **Template Cleanup**: Removed 60+ lines of inline JavaScript from template, replacing with organized function calls
+  - **Better Separation of Concerns**: Template now handles only server-side data injection and page-specific initialization
+  - **Enhanced Maintainability**: Bootstrap table logic changes now require edits to only one file instead of template inspection
+
+### Technical Details
+
+- **Files Modified**:
+  - `templates/worklist.html` - Removed inline `queryParams_wl()`, `initWorklist()`, date handlers, and dropdown handlers
+  - `static/js/wl/wl_bt.js` - Added consolidated worklist bootstrap-table functions with proper documentation
+- **Function Organization**: All worklist table functions now colocated with related formatter and event handler functions
+- **Initialization Flow**: Template calls centralized functions `initWorklist()`, `setupDateInputHandlers()`, and `setupDropdownHandlers()` from wl_bt.js
+- **Code Documentation**: Added comprehensive JSDoc comments for all moved functions explaining purpose and dependencies
+- **Framework Integration**: Functions properly integrate with existing WorklistState management and performance profiling systems
+
+### User Experience Impact
+
+- **✅ No Functional Changes**: All worklist filtering, sorting, and table functionality remains identical
+- **✅ Improved Development**: Easier to maintain and enhance worklist table features
+- **✅ Better Debugging**: Bootstrap table issues can be debugged in dedicated JavaScript file
+- **✅ Code Reusability**: Worklist functions could potentially be reused by other components
+
+### Architecture Benefits
+
+- **Modular Design**: Follows project's modular code generation rules for maintainability
+- **Single Responsibility**: wl_bt.js now serves as the complete worklist bootstrap-table module
+- **Reduced Template Complexity**: Templates focus on server-side data and page structure
+- **Easier Testing**: Bootstrap table logic can be tested independently of template rendering
+- **Code Discovery**: Developers can find all worklist table code in one predictable location
+
 ## [2025-06-24T00:38:01+02:00]
 
 ### Fixed

@@ -770,3 +770,135 @@ function setupEnhancedRefresh() {
 
 	console.log("🎯 Enhanced refresh system initialized");
 }
+
+/**
+ * Query parameters function for worklist bootstrap table
+ * Handles filtering, sorting, and search parameters
+ */
+function queryParams_wl(params) {
+	let query = {};
+	query["@limit"] = params.limit;
+	query["@offset"] = params.offset;
+	if (params.sort) {
+		let sortField = params.sort;
+		if (sortField === "modality") sortField = "modality_dest";
+		if (sortField === "patient") sortField = "id_auth_user";
+		query["@order"] = (params.order === "desc" ? "~" : "") + sortField;
+	}
+	const startDate = document.getElementById("startDate").value;
+	const endDate = document.getElementById("endDate").value;
+	const provider = document.getElementById("selectProvider").value;
+	const senior = document.getElementById("selectPractitioner").value;
+	if (startDate) query["requested_time.ge"] = `${startDate} 00:00:00`;
+	if (endDate) query["requested_time.le"] = `${endDate} 23:59:59`;
+	if (provider) query["provider.id"] = provider;
+	if (senior) query["senior.id"] = senior;
+	if (params.search) {
+		const searchTerms = params.search.split(",").map((term) => term.trim());
+		if (searchTerms.length > 0 && searchTerms[0]) {
+			query["id_auth_user.last_name.contains"] = searchTerms[0];
+		}
+		if (searchTerms.length > 1 && searchTerms[1]) {
+			query["id_auth_user.first_name.startswith"] = capitalize(searchTerms[1]);
+		}
+		if (searchTerms.length > 2 && searchTerms[2]) {
+			query["procedure.exam_name.startswith"] = capitalize(searchTerms[2]);
+		}
+		if (searchTerms.length > 3 && searchTerms[3]) {
+			query["modality_dest.modality_name.startswith"] = capitalize(
+				searchTerms[3]
+			);
+		}
+	}
+	return query;
+}
+
+/**
+ * Initialize worklist bootstrap table
+ * Sets up the table configuration and event handlers
+ */
+function initWorklist() {
+	// Ensure API_PROCEDURE_LIST is available globally
+	if (typeof API_PROCEDURE_LIST === "undefined") {
+		console.error(
+			"API_PROCEDURE_LIST not defined! Make sure it is set in the template."
+		);
+		return;
+	}
+
+	$table_wl = $("#table-wl").bootstrapTable({
+		url: API_PROCEDURE_LIST,
+		formatSearch: function () {
+			return "Last name,first name,procedure,modality";
+		},
+		queryParams: queryParams_wl,
+	});
+
+	// hide columns in wl table: id, sending_facility, receiving_facility
+	$table_wl.bootstrapTable("hideColumn", "id");
+	$table_wl.bootstrapTable("hideColumn", "sending_facility");
+	$table_wl.bootstrapTable("hideColumn", "receiving_facility");
+
+	// Fires after the table body is rendered and available in the DOM
+	$("#table-wl").on("post-body.bs.table", function () {
+		set_timers(timer_id);
+		var tooltipTriggerList = [].slice.call(
+			document.querySelectorAll('[data-bs-toggle="tooltip"]')
+		);
+		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+			return new bootstrap.Tooltip(tooltipTriggerEl);
+		});
+	});
+}
+
+/**
+ * Setup date input event handlers
+ * Handles date range validation and table refresh on filter changes
+ */
+function setupDateInputHandlers() {
+	const startDateInput = document.getElementById("startDate");
+	const endDateInput = document.getElementById("endDate");
+
+	if (!startDateInput || !endDateInput) {
+		console.warn("Date input elements not found");
+		return;
+	}
+
+	startDateInput.addEventListener("change", () => {
+		// Enforce startDate <= endDate
+		if (
+			startDateInput.value &&
+			endDateInput.value &&
+			startDateInput.value > endDateInput.value
+		) {
+			endDateInput.value = startDateInput.value;
+		}
+		$("#table-wl").bootstrapTable("refresh");
+	});
+
+	endDateInput.addEventListener("change", () => {
+		// Enforce startDate <= endDate
+		if (
+			startDateInput.value &&
+			endDateInput.value &&
+			endDateInput.value < startDateInput.value
+		) {
+			startDateInput.value = endDateInput.value;
+		}
+		$("#table-wl").bootstrapTable("refresh");
+	});
+}
+
+/**
+ * Setup dropdown filter handlers
+ * Handles practitioner and provider filter changes
+ */
+function setupDropdownHandlers() {
+	$("#selectPractitioner").change(function () {
+		$("#table-wl").bootstrapTable("refresh");
+	});
+
+	$("#selectProvider").change(function () {
+		$("#table-wl").bootstrapTable("refresh");
+	});
+}
