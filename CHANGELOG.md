@@ -7,6 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-26T22:50:20.540561]
+
+### Changed
+
+- **JavaScript Modernization - jQuery Dependency Removal**: Completely eliminated jQuery dependencies from core utility functions in `useful.js` module
+  - **Functions Modernized**:
+    - `crudp()` - Converted from jQuery `$.ajax()` to native Fetch API with async/await
+    - `getUuid()` - Replaced jQuery AJAX with modern fetch() implementation
+    - `getTableInfo()` - Migrated from jQuery to vanilla JavaScript with proper error handling
+    - `getUserInfo()` - Updated to use Fetch API instead of jQuery promises
+    - `refreshTables()` - Enhanced to work without jQuery while maintaining bootstrap-table compatibility
+    - `disableBtn()` - Converted from jQuery element manipulation to native DOM methods
+  - **Technical Improvements**:
+    - **Modern JavaScript**: All functions now use async/await, const/let, and ES6+ features
+    - **Better Error Handling**: Enhanced try/catch blocks with descriptive error messages
+    - **Performance**: Eliminated jQuery overhead for these core utility functions
+    - **Framework Independence**: Functions no longer require jQuery to be loaded
+    - **Graceful Degradation**: Bootstrap-table refresh maintains compatibility when jQuery is available
+  - **API Consistency**: All functions maintain identical interfaces and return promises for backward compatibility
+  - **Documentation**: Updated JSDoc comments with proper parameter types and usage examples
+
+### Technical Details
+
+- **File Modified**: `static/js/utils/useful.js` - Comprehensive jQuery removal across 6 core functions
+- **Fetch API Integration**: Modern HTTP client using native browser APIs instead of jQuery AJAX
+- **DOM Manipulation**: Direct use of `document.querySelector()` and native element properties
+- **Element Selection**: Functions accept both string selectors and DOM elements for flexibility
+- **Error Handling**: Comprehensive error logging and graceful fallbacks for missing elements
+- **Bootstrap Compatibility**: Maintains bootstrap-table functionality while reducing jQuery dependency
+
+### User Experience Impact
+
+- **✅ No Functional Changes**: All existing functionality preserved with identical API interfaces
+- **✅ Improved Performance**: Faster execution without jQuery overhead for these utility functions
+- **✅ Better Error Messages**: Enhanced debugging with more descriptive error reporting
+- **✅ Framework Flexibility**: Reduced dependency on jQuery for core application functions
+
+### Code Quality Benefits
+
+- **Modern Standards**: Updated to current JavaScript best practices and ES6+ syntax
+- **Maintainability**: Cleaner, more readable code with consistent async/await patterns
+- **Type Safety**: Better parameter validation and null safety checks
+- **Documentation**: Comprehensive JSDoc comments with usage examples and parameter types
+- **Testing**: Functions can now be tested independently without jQuery dependency
+
+### Migration Strategy
+
+This modernization follows a gradual approach to reduce jQuery dependencies across the codebase while maintaining backward compatibility. Core utility functions have been updated first, with plans to modernize other modules based on usage patterns and dependencies.
+
 ## [2025-06-26T22:29:49.454092]
 
 ### Changed

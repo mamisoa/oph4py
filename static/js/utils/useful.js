@@ -134,42 +134,51 @@ function checkIfDataIsNull(data, dft = "n/a") {
 	return data == null || data == "" || data == "undefined" ? dft : data;
 }
 
-function getUuid() {
-	return Promise.resolve(
-		$.ajax({
-			type: "GET",
-			dataType: "json",
-			url: HOSTURL + "/" + APP_NAME + "/api/uuid",
-			success: function (data) {
-				if (data.unique_id != undefined) {
-					console.log("uuid generated");
-					// displayToast('success', 'GET uuid', 'GET uuid:'+data['unique_id'],6000);
-				} else {
-					displayToast("error", "GET error", "Cannot retrieve uuid");
-				}
-			}, // success
-			error: function (er) {
-				console.log(er);
+async function getUuid() {
+	try {
+		const response = await fetch(HOSTURL + "/" + APP_NAME + "/api/uuid", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
 			},
-		})
-	); // promise return data
+		});
+
+		const data = await response.json();
+
+		if (data.unique_id != undefined) {
+			console.log("uuid generated");
+			// displayToast('success', 'GET uuid', 'GET uuid:'+data['unique_id'],6000);
+		} else {
+			displayToast("error", "GET error", "Cannot retrieve uuid");
+		}
+
+		return data;
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
 }
 
-function getTableInfo(table, id) {
-	let API_URL = HOSTURL + "/" + APP_NAME + "/api/" + table + "/" + id;
-	return Promise.resolve(
-		$.ajax({
-			url: API_URL,
-			contentType: "application/json",
-			dataType: "json",
+async function getTableInfo(table, id) {
+	const API_URL = HOSTURL + "/" + APP_NAME + "/api/" + table + "/" + id;
+	try {
+		const response = await fetch(API_URL, {
 			method: "GET",
-			success: function (data) {
-				// console.log(data['items']);
-				// if modality = l80
-				// call
+			headers: {
+				"Content-Type": "application/json",
 			},
-		})
-	);
+		});
+
+		const data = await response.json();
+		// console.log(data['items']);
+		// if modality = l80
+		// call
+
+		return data;
+	} catch (error) {
+		console.error("Error fetching table info:", error);
+		throw error;
+	}
 }
 
 /**
@@ -177,151 +186,185 @@ function getTableInfo(table, id) {
  * from /api/<tablename/>/<rec_id> endpoint
  *
  * @param {int} id - user id.
- * @returns {string} JSON string with user informations.
+ * @returns {Promise} Promise that resolves with user information.
  *
  * @example
- * // Returns xxxx TO FILL xxx
- * const uniqueId = getUserInfo(1);
+ * // Returns promise with user data
+ * const userInfo = await getUserInfo(1);
  */
-function getUserInfo(id) {
-	let API_URL =
+async function getUserInfo(id) {
+	const API_URL =
 		HOSTURL +
 		"/" +
 		APP_NAME +
 		"/api/auth_user/" +
 		id +
 		"?@lookup=gender!:gender[sex]";
-	return Promise.resolve(
-		$.ajax({
-			url: API_URL,
-			contentType: "application/json",
-			dataType: "json",
+
+	try {
+		const response = await fetch(API_URL, {
 			method: "GET",
-			success: function (data) {
-				// console.log(data['items']);
-				// if modality = l80
-				// call
+			headers: {
+				"Content-Type": "application/json",
 			},
-		})
-	);
+		});
+
+		const data = await response.json();
+		// console.log(data['items']);
+		// if modality = l80
+		// call
+
+		return data;
+	} catch (error) {
+		console.error("Error fetching user info:", error);
+		throw error;
+	}
 }
 
 /**
- * Refresh bootrap-table table
+ * Refresh bootstrap-table tables
  *
- * @returns {string} JSON string with user informations.
+ * @param {Array} tablesArr - Array of table selectors or elements.
  *
  * @example
- * // Returns xxxx TO FILL xxx
- * const uniqueId = getUserInfo(1);
+ * // Refresh multiple tables
+ * refreshTables(['#table1', '#table2']);
  */
 
 function refreshTables(tablesArr) {
 	for (let tbl of tablesArr) {
-		// Check if 'bootstrapTable' function is defined for the current element
-		if (typeof $(tbl).bootstrapTable === "function") {
-			$(tbl).bootstrapTable("refresh");
+		// Get the DOM element if it's a string selector
+		const element = typeof tbl === "string" ? document.querySelector(tbl) : tbl;
+
+		if (element) {
+			// Check if element has jQuery and bootstrapTable function is available
+			if (window.jQuery && window.jQuery(element).bootstrapTable) {
+				window.jQuery(element).bootstrapTable("refresh");
+			} else {
+				// Handle the case where 'bootstrapTable' is not defined
+				console.error("bootstrapTable function not available for", tbl);
+				// Continue with the next iteration if desired
+			}
 		} else {
-			// Handle the case where 'bootstrapTable' is not defined
-			console.error("bootstrapTable function not defined for", tbl);
-			// Continue with the next iteration if desired
+			console.error("Element not found:", tbl);
 		}
 	}
 }
 
 /**
- * disable buttons in from an array of Document identifiers
- * @param {array} : array of button id
+ * Disable buttons from an array of Document identifiers
+ * @param {Array} buttonsArr - Array of button selectors or elements.
  *
+ * @example
+ * // Disable multiple buttons
+ * disableBtn(['#btn1', '#btn2', '.submit-btn']);
  */
 function disableBtn(buttonsArr) {
-	for (btn of buttonsArr) {
-		$(btn).attr("disabled", true);
+	for (const btn of buttonsArr) {
+		// Get the DOM element if it's a string selector
+		const element = typeof btn === "string" ? document.querySelector(btn) : btn;
+
+		if (element) {
+			element.disabled = true;
+		} else {
+			console.error("Button element not found:", btn);
+		}
 	}
 }
 
-/**
+/*
  * General promise CRUD function
  * from /api/<tablename/>/<rec_id> endpoint
  *
  * @param {string} table - table name.
  * @param {string} id - row id.
- * @returns {string} JSON string with response status.
+ * @param {string} req - HTTP method (POST, PUT, DELETE).
+ * @param {string|object} data - data payload.
+ * @returns {Promise} Promise that resolves with response data.
  *
  * @module displayToast
  *  to display a toast with the response status
  *
  * @example
- * // Returns xxxx TO FILL xxx
- * crudp(table,id,req);
+ * // Returns promise with response data
+ * crudp(table,id,req,data);
  * table = 'table' req = 'POST' without id,  'PUT' 'DELETE' with id, data in string
  */
-const crudp = function (table, id = "0", req = "POST", data) {
-	return new Promise((resolve, reject) => {
-		console.log("CRUDP Input:", { table, id, req, data });
+const crudp = async function (table, id = "0", req = "POST", data) {
+	console.log("CRUDP Input:", { table, id, req, data });
 
-		// Try to extract ID from data if id parameter is "0"
+	// Try to extract ID from data if id parameter is "0"
+	try {
+		if (id === "0" && data && req === "PUT") {
+			let dataObj = typeof data === "string" ? JSON.parse(data) : data;
+			if (dataObj.id) {
+				id = dataObj.id.toString();
+				console.log("Extracted ID from data:", id);
+			}
+		}
+	} catch (error) {
+		console.error("Error extracting ID from data:", error);
+	}
+
+	// Fix URL construction for PUT requests with ID
+	let API_URL = HOSTURL + "/" + APP_NAME + "/api/" + table;
+	if ((req === "PUT" || req === "DELETE") && id !== "0") {
+		API_URL += "/" + id;
+	}
+
+	// For PUT requests, remove id from payload to prevent validation conflicts
+	if (req === "PUT" && id !== "0" && data) {
 		try {
-			if (id === "0" && data && req === "PUT") {
-				let dataObj = typeof data === "string" ? JSON.parse(data) : data;
-				if (dataObj.id) {
-					id = dataObj.id.toString();
-					console.log("Extracted ID from data:", id);
-				}
+			let dataObj = typeof data === "string" ? JSON.parse(data) : data;
+			if (dataObj.id) {
+				delete dataObj.id;
+				data = JSON.stringify(dataObj);
 			}
 		} catch (error) {
-			console.error("Error extracting ID from data:", error);
+			console.error("Error processing data payload:", error);
 		}
+	}
 
-		// Fix URL construction for PUT requests with ID
-		let API_URL = HOSTURL + "/" + APP_NAME + "/api/" + table;
-		if ((req === "PUT" || req === "DELETE") && id !== "0") {
-			API_URL += "/" + id;
-		}
+	console.log("API URL:", API_URL);
+	let mode = req == "POST" ? " added" : req == "PUT" ? " edited" : " deleted";
 
-		// For PUT requests, remove id from payload to prevent validation conflicts
-		if (req === "PUT" && id !== "0" && data) {
-			try {
-				let dataObj = typeof data === "string" ? JSON.parse(data) : data;
-				if (dataObj.id) {
-					delete dataObj.id;
-					data = JSON.stringify(dataObj);
-				}
-			} catch (error) {
-				console.error("Error processing data payload:", error);
-			}
-		}
-
-		console.log("API URL:", API_URL);
-		let mode = req == "POST" ? " added" : req == "PUT" ? " edited" : " deleted";
-		$.ajax({
-			url: API_URL,
-			data: data,
-			contentType: "application/json",
-			dataType: "json",
+	try {
+		const fetchOptions = {
 			method: req,
-			success: function (data) {
-				console.log("CRUDP Response:", data);
-				errors = "";
-				if (data.status == "error") {
-					for (i in data.errors) {
-						errors += data.errors[i] + "</br>";
-					}
-					text = errors;
-					displayToast("error", data.message, errors, "6000");
-				}
-				if (data.status == "success") {
-					text = "User id: " + (req == "DELETE" ? id : data.id) + mode;
-					displayToast("success", table + " " + mode, text, "3000");
-				}
-				resolve(data); // sent when resolved
+			headers: {
+				"Content-Type": "application/json",
 			},
-			error: function (error) {
-				console.error("CRUDP Error:", error);
-				reject(error);
-			},
-		});
-	});
+		};
+
+		// Only add body for POST and PUT requests
+		if ((req === "POST" || req === "PUT") && data) {
+			fetchOptions.body =
+				typeof data === "string" ? data : JSON.stringify(data);
+		}
+
+		const response = await fetch(API_URL, fetchOptions);
+		const responseData = await response.json();
+
+		console.log("CRUDP Response:", responseData);
+
+		let errors = "";
+		if (responseData.status == "error") {
+			for (let i in responseData.errors) {
+				errors += responseData.errors[i] + "</br>";
+			}
+			let text = errors;
+			displayToast("error", responseData.message, errors, "6000");
+		}
+		if (responseData.status == "success") {
+			let text = "User id: " + (req == "DELETE" ? id : responseData.id) + mode;
+			displayToast("success", table + " " + mode, text, "3000");
+		}
+
+		return responseData;
+	} catch (error) {
+		console.error("CRUDP Error:", error);
+		throw error;
+	}
 };
 
 /**
@@ -612,32 +655,32 @@ async function addStudyMwl(data, dicom = false) {
 // Utility function to handle API requests with retries
 async function fetchWithRetry(url, options = {}, maxRetries = 3, delay = 1000) {
 	let lastError;
-	
+
 	for (let i = 0; i < maxRetries; i++) {
 		try {
 			const response = await fetch(url, {
 				...options,
 				headers: {
-					'Content-Type': 'application/json',
-					...(options.headers || {})
-				}
+					"Content-Type": "application/json",
+					...(options.headers || {}),
+				},
 			});
-			
+
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
-			
+
 			return await response.json();
 		} catch (error) {
 			lastError = error;
 			console.warn(`Attempt ${i + 1} failed:`, error);
-			
+
 			if (i < maxRetries - 1) {
-				await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+				await new Promise((resolve) => setTimeout(resolve, delay * (i + 1)));
 			}
 		}
 	}
-	
+
 	throw lastError;
 }
 
@@ -646,21 +689,21 @@ function debouncedFetch(key, url, options = {}) {
 	if (!window._fetchDebounceTimers) {
 		window._fetchDebounceTimers = new Map();
 	}
-	
+
 	if (!window._fetchPromises) {
 		window._fetchPromises = new Map();
 	}
-	
+
 	// Clear any existing timer for this key
 	if (window._fetchDebounceTimers.has(key)) {
 		clearTimeout(window._fetchDebounceTimers.get(key));
 	}
-	
+
 	// Return existing promise if one is in flight
 	if (window._fetchPromises.has(key)) {
 		return window._fetchPromises.get(key);
 	}
-	
+
 	const promise = new Promise((resolve, reject) => {
 		const timer = setTimeout(async () => {
 			try {
@@ -672,10 +715,10 @@ function debouncedFetch(key, url, options = {}) {
 				reject(error);
 			}
 		}, 100); // 100ms debounce delay
-		
+
 		window._fetchDebounceTimers.set(key, timer);
 	});
-	
+
 	window._fetchPromises.set(key, promise);
 	return promise;
 }
@@ -683,14 +726,14 @@ function debouncedFetch(key, url, options = {}) {
 // Helper function to make API requests
 async function makeAPIRequest(endpoint, params = {}) {
 	const queryString = new URLSearchParams(params).toString();
-	const url = `${endpoint}${queryString ? '?' + queryString : ''}`;
+	const url = `${endpoint}${queryString ? "?" + queryString : ""}`;
 	const requestKey = `${endpoint}-${queryString}`;
-	
+
 	try {
 		const data = await debouncedFetch(requestKey, url);
 		return data;
 	} catch (error) {
-		console.error('API request failed:', error);
+		console.error("API request failed:", error);
 		throw error;
 	}
 }
