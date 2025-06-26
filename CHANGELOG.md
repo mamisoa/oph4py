@@ -7,6 +7,97 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-26T23:20:21.432671]
+
+### Enhanced
+
+- **Billing Combo Search Filter - Multi-Field Search**: Expanded the combo filter functionality to search across multiple data fields
+  - **Enhanced Search Scope**: Filter now searches in combo names, nomenclature codes, secondary codes, and French descriptions
+  - **Comprehensive Code Matching**: Supports both old format (simple integer codes) and new format (object with secondary codes)
+  - **Description Search**: Includes French descriptions (`nomen_desc_fr`) in search results for better discoverability
+  - **Multi-Code Support**: Searches both main codes (`nomen_code`) and secondary codes (`secondary_nomen_code`)
+  - **Robust Parsing**: Handles both JSON and Python literal formats in combo code definitions
+  - **Updated UI**: Changed placeholder text to "Filter by name, codes, or descriptions..." to reflect expanded functionality
+
+### Technical Details
+
+- **JavaScript Enhancement**: Extended `filterCombos()` function in `static/js/md/md_bt.js`
+- **Search Algorithm**: Uses `Array.some()` for efficient code matching across combo definitions
+- **Format Compatibility**: Maintains compatibility with existing combo code formats (both integer arrays and enhanced objects)
+- **Error Handling**: Graceful degradation with console warnings for unparseable combo codes
+- **Performance**: Efficient filtering using native JavaScript string matching methods
+
+### User Experience Impact
+
+- **✅ Better Code Discovery**: Users can now find combos by typing nomenclature codes (e.g., "105755")
+- **✅ Description Search**: French descriptions are searchable for better multilingual support  
+- **✅ Secondary Code Finding**: Can locate combos containing specific secondary codes
+- **✅ Flexible Searching**: Partial matches work across all searchable fields
+- **✅ Intuitive Interface**: Clear placeholder text explains the expanded search capabilities
+
+### Search Examples
+
+Users can now filter combos using:
+
+- **Combo Names**: "consultation", "examination"
+- **Main Codes**: "105755", "102030" 
+- **Secondary Codes**: Any secondary nomenclature codes
+- **Descriptions**: French medical terminology
+- **Partial Matches**: Any substring in the above fields
+
+This enhancement significantly improves combo discoverability, especially for users who remember specific codes but not combo names.
+
+## [2025-06-26T23:17:13.187115]
+
+### Changed
+
+- **Billing Combo Modal UX Improvements**: Enhanced the billing combo selection modal with three major usability improvements
+  - **Search Filter**: Added name-based filtering input above the combo table to quickly find specific combos
+    - Real-time filtering as user types in combo name search field
+    - Case-insensitive search with automatic result updates
+    - Filter state cleared automatically when modal is closed
+  - **Click-to-Select Interface**: Removed action column and made entire table rows clickable for combo selection
+    - Eliminated separate "Select" buttons for cleaner interface
+    - Added visual hover effects with `table-active` class for better user feedback
+    - Improved accessibility with pointer cursor on selectable rows
+    - Maintained all existing combo preview and application functionality
+  - **Most-Used Ordering**: Modified backend API to order combos by usage frequency (most used first)
+    - Added LEFT JOIN with `billing_combo_usage` table to count usage records
+    - Combos now ordered by usage count (descending) then by ID (descending) for consistent fallback
+    - Backend includes usage count in response for potential future display enhancements
+
+### Technical Details
+
+- **Frontend Files Modified**:
+  - `templates/modalityCtr/modals/billing/billing-combo-modal.html` - Added search input, removed action column
+  - `static/js/md/md_bt.js` - Enhanced combo display with filtering and row-based selection
+- **Backend Enhancement**:
+  - `api/endpoints/billing.py` - Modified billing_combo endpoint with usage-based ordering using database JOINs
+- **JavaScript Enhancements**:
+  - New `filterCombos()` function for real-time search filtering
+  - Separated `renderComboTable()` for reusable table rendering
+  - Updated click handlers from button-based to row-based selection
+  - Added hover effects and visual feedback for better UX
+- **Database Query Optimization**:
+  - LEFT JOIN with billing_combo_usage table for usage statistics
+  - GROUP BY combo ID with COUNT aggregate for usage frequency
+  - Maintains performance while providing usage-based ordering
+
+### User Experience Impact
+
+- **✅ Faster Combo Discovery**: Search filter allows quick location of specific combos by name
+- **✅ Streamlined Selection**: Single-click row selection eliminates extra button clicks
+- **✅ Most Relevant First**: Most frequently used combos appear at top of list for faster access
+- **✅ Visual Feedback**: Clear hover states and pointer cursors improve interface clarity
+- **✅ Mobile Friendly**: Row-based selection works better on mobile devices than small buttons
+
+### API Compatibility
+
+- **Backward Compatible**: Existing API consumers continue to work unchanged
+- **Enhanced Response**: Backend now includes `usage_count` field in combo responses for future features
+- **Performance**: JOIN-based ordering maintains efficient query execution
+- **Scalability**: Usage counting approach scales well with growing combo usage data
+
 ## [2025-06-26T22:58:06.620240]
 
 ### Fixed

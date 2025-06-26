@@ -511,8 +511,19 @@ def billing_combo(rec_id: Optional[int] = None):
                 enhance_combo_response(result_data)
                 return APIResponse.success(data=result_data)
             else:
-                # Get list of accessible records
-                records = db(query_conditions).select(orderby=~db.billing_combo.id)
+                # Get list of accessible records with usage count for ordering
+                # Use LEFT JOIN to include usage count, ordering by most used first
+                usage_count = db.billing_combo_usage.id.count()
+                records = db(query_conditions).select(
+                    db.billing_combo.ALL,
+                    usage_count.with_alias("usage_count"),
+                    left=db.billing_combo_usage.on(
+                        db.billing_combo_usage.id_billing_combo == db.billing_combo.id
+                    ),
+                    groupby=db.billing_combo.id,
+                    orderby=~usage_count
+                    | ~db.billing_combo.id,  # Order by usage count DESC, then id DESC
+                )
                 logger.info(
                     f"GET: Found {len(records)} accessible combos for user {auth.user_id}"
                 )
@@ -520,7 +531,18 @@ def billing_combo(rec_id: Optional[int] = None):
                 # Convert to list of dicts with manual datetime serialization and user info
                 result_data = []
                 for record in records:
-                    record_dict = serialize_datetime_fields(record.as_dict())
+                    # Extract billing_combo fields and usage_count
+                    if hasattr(record, "billing_combo"):
+                        # When using joins, record has attributes for each table
+                        record_dict = serialize_datetime_fields(
+                            record.billing_combo.as_dict()
+                        )
+                        record_dict["usage_count"] = record.usage_count or 0
+                    else:
+                        # Fallback for simple select
+                        record_dict = serialize_datetime_fields(record.as_dict())
+                        record_dict["usage_count"] = 0
+
                     enhance_combo_response(record_dict)
                     result_data.append(record_dict)
 
@@ -805,9 +827,7 @@ def apply_billing_combo(combo_id: int):
                     f"Processing enhanced combo code: {nomen_code} + secondary: {secondary_code}"
                 )
             else:
-                logger.warning(
-                    f"Skipping invalid combo code definition: {code_def}"
-                )
+                logger.warning(f"Skipping invalid combo code definition: {code_def}")
                 continue
 
             if not nomen_code:
@@ -844,24 +864,20 @@ def apply_billing_combo(combo_id: int):
             # Handle secondary code if present
             if secondary_code:
                 try:
-                    secondary_details = nomenclature.get_code_details(
-                        secondary_code
-                    )
+                    secondary_details = nomenclature.get_code_details(secondary_code)
                     if secondary_details is not None:
                         code_data["secondary_nomen_code"] = secondary_code
-                        code_data["secondary_nomen_desc_fr"] = (
-                            secondary_details.get("description_fr")
+                        code_data["secondary_nomen_desc_fr"] = secondary_details.get(
+                            "description_fr"
                         )
-                        code_data["secondary_nomen_desc_nl"] = (
-                            secondary_details.get("description_nl")
+                        code_data["secondary_nomen_desc_nl"] = secondary_details.get(
+                            "description_nl"
                         )
                         code_data["secondary_fee"] = secondary_details.get("fee")
                         code_data["secondary_feecode"] = secondary_details.get(
                             "feecode"
                         )
-                        total_secondary_fees += float(
-                            secondary_details.get("fee") or 0
-                        )
+                        total_secondary_fees += float(secondary_details.get("fee") or 0)
                         codes_with_secondary += 1
                 except Exception as e:
                     logger.warning(

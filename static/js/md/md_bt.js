@@ -2679,6 +2679,7 @@ function loadBillingCombos() {
 
 // Global variable to store combo data to avoid HTML attribute corruption
 let loadedCombos = [];
+let filteredCombos = [];
 
 // display billing combos
 function displayBillingCombos(combos) {
@@ -2686,13 +2687,19 @@ function displayBillingCombos(combos) {
 
 	// Store combos in global variable for reliable access
 	loadedCombos = combos;
+	filteredCombos = combos; // Initialize filtered combos
 
+	renderComboTable(combos);
+}
+
+// Render combo table (used by both initial display and filtering)
+function renderComboTable(combos) {
 	let tbody = $("#comboTableBody");
 	tbody.empty();
 
 	if (combos.length === 0) {
 		tbody.append(
-			'<tr><td colspan="4" class="text-center">No active combos found</td></tr>'
+			'<tr><td colspan="3" class="text-center">No combos found</td></tr>'
 		);
 	} else {
 		combos.forEach(function (combo) {
@@ -2768,6 +2775,11 @@ function displayBillingCombos(combos) {
 			}
 
 			let row = $("<tr>");
+			// Make the entire row clickable and add some visual feedback
+			row.addClass("combo-row");
+			row.css("cursor", "pointer");
+			row.data("combo-id", combo.id); // Store combo ID for click handler
+
 			row.append("<td><strong>" + combo.combo_name + "</strong></td>");
 			row.append(
 				'<td><span class="badge bg-secondary">' +
@@ -2775,16 +2787,84 @@ function displayBillingCombos(combos) {
 					"</span></td>"
 			);
 			row.append("<td>" + codes.join(", ") + "</td>");
+			// Removed action column
 
-			// Store only the combo ID in data attribute, retrieve full data from loadedCombos array
-			row.append(
-				'<td><button class="btn btn-sm btn-success select-combo" data-combo-id="' +
-					combo.id +
-					'">Select</button></td>'
-			);
 			tbody.append(row);
 		});
 	}
+}
+
+// Filter combos based on search input (searches both name and codes)
+function filterCombos(searchTerm) {
+	searchTerm = searchTerm.toLowerCase().trim();
+
+	if (searchTerm === "") {
+		filteredCombos = loadedCombos;
+	} else {
+		filteredCombos = loadedCombos.filter((combo) => {
+			// Search in combo name
+			const nameMatch = combo.combo_name.toLowerCase().includes(searchTerm);
+
+			// Search in combo codes
+			let codesMatch = false;
+			try {
+				let codes = [];
+				if (combo.combo_codes && combo.combo_codes !== "[]") {
+					if (typeof combo.combo_codes === "string") {
+						try {
+							// First attempt: direct JSON parse
+							codes = JSON.parse(combo.combo_codes);
+						} catch (e) {
+							// Replace Python literals with JavaScript equivalents
+							let jsCode = combo.combo_codes
+								.replace(/True/g, "true")
+								.replace(/False/g, "false")
+								.replace(/None/g, "null");
+							try {
+								codes = eval("(" + jsCode + ")");
+							} catch (evalError) {
+								codes = [];
+							}
+						}
+					} else {
+						codes = combo.combo_codes;
+					}
+				}
+
+				// Search through codes for matches
+				if (Array.isArray(codes)) {
+					codesMatch = codes.some((code) => {
+						if (typeof code === "number") {
+							// Old format: simple integer code
+							return code.toString().includes(searchTerm);
+						} else if (typeof code === "object" && code.nomen_code) {
+							// New format: object with potential secondary codes
+							const mainCodeMatch = code.nomen_code
+								.toString()
+								.includes(searchTerm);
+							const secondaryCodeMatch = code.secondary_nomen_code
+								? code.secondary_nomen_code.toString().includes(searchTerm)
+								: false;
+							const descriptionMatch = code.nomen_desc_fr
+								? code.nomen_desc_fr.toLowerCase().includes(searchTerm)
+								: false;
+							return mainCodeMatch || secondaryCodeMatch || descriptionMatch;
+						} else {
+							// Fallback: treat as string
+							return code.toString().toLowerCase().includes(searchTerm);
+						}
+					});
+				}
+			} catch (e) {
+				console.warn("Error parsing combo codes for filtering:", e);
+				codesMatch = false;
+			}
+
+			return nameMatch || codesMatch;
+		});
+	}
+
+	renderComboTable(filteredCombos);
 }
 
 // apply billing combo
@@ -3497,9 +3577,24 @@ $(document).ready(function () {
 		loadBillingCombos();
 	});
 
-	// Select combo
-	$(document).on("click", ".select-combo", function () {
-		console.log("=== Combo Selection Clicked ===");
+	// Search filter for combos
+	$("#comboSearchFilter").on("input", function () {
+		const searchTerm = $(this).val();
+		filterCombos(searchTerm);
+	});
+
+	// Add hover effect for combo rows
+	$(document).on("mouseenter", ".combo-row", function () {
+		$(this).addClass("table-active");
+	});
+
+	$(document).on("mouseleave", ".combo-row", function () {
+		$(this).removeClass("table-active");
+	});
+
+	// Select combo by clicking on row
+	$(document).on("click", ".combo-row", function () {
+		console.log("=== Combo Row Selection Clicked ===");
 		let comboId = $(this).data("combo-id");
 		console.log("comboId:", comboId);
 
@@ -3628,6 +3723,7 @@ $(document).ready(function () {
 		document.getElementById("comboApplyForm").reset();
 		$("#comboPreview").hide();
 		$("#applyComboBtn").prop("disabled", true);
+		$("#comboSearchFilter").val(""); // Clear search filter
 	});
 
 	// Set default date from worklist when modal opens
