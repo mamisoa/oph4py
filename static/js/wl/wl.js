@@ -28,79 +28,96 @@ $(".btn.counter_up").click(function () {
 // set modality options
 function setModalityOptions(procedureId) {
 	console.log("🎯 Setting modality options for procedure ID:", procedureId);
-	
+
 	if (!procedureId || procedureId === "" || procedureId === "undefined") {
 		console.warn("⚠️ Invalid procedure ID provided:", procedureId);
 		displayToast("warning", "Warning", "No procedure selected", "3000");
-		$("#modality_destSelect").html('<option value="">Select a procedure first</option>');
+		$("#modality_destSelect").html(
+			'<option value="">Select a procedure first</option>'
+		);
 		return;
 	}
-	
+
 	let modalityOptions = getModalityOptions(procedureId);
-	modalityOptions.then(function (data) {
-		if (data.status != "error") {
-			let items = data.items;
-			console.log("🔍 Raw items data:", items);
-			console.log("🔍 First item structure:", items[0]);
-			console.log("🔍 Item keys:", items[0] ? Object.keys(items[0]) : "No items");
-			
-			let html = "";
-			for (let item of items) {
-				console.log("🔍 Processing item:", item);
-				
-				// Check if the lookup data exists (flattened with dot notation)
-				if (item['id_modality.id'] && item['id_modality.modality_name']) {
-					console.log("✅ Found flattened modality fields with dot notation");
-					html +=
-						'<option value="' + item['id_modality.id'] + '">' + item['id_modality.modality_name'] + "</option>";
-				} else if (item.id_modality) {
-					console.log("✅ Found nested id_modality:", item.id_modality);
-					html +=
-						'<option value="' + item.id_modality.id + '">' + item.id_modality.modality_name + "</option>";
-				} else if (item.modality) {
-					console.log("✅ Found modality field:", item.modality);
-					html +=
-						'<option value="' + item.modality.id + '">' + item.modality.modality_name + "</option>";
-				} else {
-					console.warn("⚠️ Cannot determine modality structure for item:", item);
-					console.log("Available keys:", Object.keys(item));
+	modalityOptions
+		.then(function (data) {
+			if (data.status != "error") {
+				let items = data.items;
+				console.log("🔍 Raw items data:", items);
+				console.log("🔍 First item structure:", items[0]);
+				console.log(
+					"🔍 Item keys:",
+					items[0] ? Object.keys(items[0]) : "No items"
+				);
+
+				let html = "";
+				for (let item of items) {
+					console.log("🔍 Processing item:", item);
+
+					// Check if the lookup data exists (flattened with dot notation)
+					if (item["id_modality.id"] && item["id_modality.modality_name"]) {
+						console.log("✅ Found flattened modality fields with dot notation");
+						html +=
+							'<option value="' +
+							item["id_modality.id"] +
+							'">' +
+							item["id_modality.modality_name"] +
+							"</option>";
+					} else if (item.id_modality) {
+						console.log("✅ Found nested id_modality:", item.id_modality);
+						html +=
+							'<option value="' +
+							item.id_modality.id +
+							'">' +
+							item.id_modality.modality_name +
+							"</option>";
+					} else if (item.modality) {
+						console.log("✅ Found modality field:", item.modality);
+						html +=
+							'<option value="' +
+							item.modality.id +
+							'">' +
+							item.modality.modality_name +
+							"</option>";
+					} else {
+						console.warn(
+							"⚠️ Cannot determine modality structure for item:",
+							item
+						);
+						console.log("Available keys:", Object.keys(item));
+					}
 				}
+				console.log("📋 Generated HTML options:", html);
+				$("#modality_destSelect").html(html);
 			}
-			console.log("📋 Generated HTML options:", html);
-			$("#modality_destSelect").html(html);
-		}
-	}).catch(function (error) {
-		console.error("❌ Error loading modality options:", error);
-		displayToast(
-			"error",
-			"Error",
-			"Failed to load modality options",
-			"6000"
-		);
-	});
+		})
+		.catch(function (error) {
+			console.error("❌ Error loading modality options:", error);
+			displayToast("error", "Error", "Failed to load modality options", "6000");
+		});
 }
 
 // get json data for modality options
 function getModalityOptions(procedureId) {
 	return new Promise((resolve, reject) => {
 		// Use procedure_family table to get modalities for a specific procedure
-		const apiUrl = 
+		const apiUrl =
 			HOSTURL +
 			"/" +
 			APP_NAME +
 			"/api/procedure_family/?id_procedure.eq=" +
 			procedureId +
 			"&@lookup=id_modality!:id_modality[id,modality_name]";
-		
+
 		console.log("🔗 API URL:", apiUrl);
-		
+
 		$.ajax({
 			type: "GET",
 			url: apiUrl,
 			dataType: "json",
-			beforeSend: function(xhr) {
+			beforeSend: function (xhr) {
 				// Add any required headers
-				xhr.setRequestHeader('Accept', 'application/json');
+				xhr.setRequestHeader("Accept", "application/json");
 			},
 			success: function (data) {
 				console.log("✅ API Response:", data);
@@ -142,19 +159,24 @@ function resetWlForm() {
 	$("[name=laterality]").val(["both"]);
 	$("[name=status_flag]").val(["requested"]);
 	$("[name=warning]").val([""]);
-	
+
 	// Get the selected procedure and add debugging
 	let choice = $("select#procedureSelect option:checked").val();
 	console.log("🔍 Reset form - selected procedure choice:", choice);
 	console.log("🔍 Procedure select element:", $("select#procedureSelect")[0]);
-	console.log("🔍 Procedure select options:", $("select#procedureSelect option").length);
-	
+	console.log(
+		"🔍 Procedure select options:",
+		$("select#procedureSelect option").length
+	);
+
 	// Only try to set modality options if we have a valid procedure selected
 	if (choice && choice !== "" && choice !== "undefined") {
 		setModalityOptions(choice);
 	} else {
 		console.log("⚠️ No valid procedure selected, skipping modality options");
-		$("#modality_destSelect").html('<option value="">Select a procedure first</option>');
+		$("#modality_destSelect").html(
+			'<option value="">Select a procedure first</option>'
+		);
 	}
 
 	// Clear the state manager's pending items
@@ -168,39 +190,41 @@ var wlItemsCounter = 0;
 var temp;
 
 // Add new item in worklist format
-document.getElementById("btnWlItemAdd").addEventListener("click", async function () {
-	// Lock the button during processing
-	const button = this;
-	button.disabled = true;
-	button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Adding...';
+document
+	.getElementById("btnWlItemAdd")
+	.addEventListener("click", async function () {
+		// Lock the button during processing
+		const button = this;
+		button.disabled = true;
+		button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Adding...';
 
-	try {
-		let formDataStr = $("#newWlItemForm").serializeJSON();
-		let formDataObj = JSON.parse(formDataStr);
+		try {
+			let formDataStr = $("#newWlItemForm").serializeJSON();
+			let formDataObj = JSON.parse(formDataStr);
 
-		// Clean up form data - remove fields that shouldn't be sent to the server
-		delete formDataObj["modality_destPut"]; // used for PUT request
-		delete formDataObj["idWl"]; // no Id when new Item
-		delete formDataObj["id"]; // Remove empty ID field
-		delete formDataObj["methodWlItemSubmit"]; // Remove method field
+			// Clean up form data - remove fields that shouldn't be sent to the server
+			delete formDataObj["modality_destPut"]; // used for PUT request
+			delete formDataObj["idWl"]; // no Id when new Item
+			delete formDataObj["id"]; // Remove empty ID field
+			delete formDataObj["methodWlItemSubmit"]; // Remove method field
 
-		// Check if this is a multiple modality selection
-		if (formDataObj["modality_dest"] == multiplemod) {
-			// KEEP QUEUE SYSTEM FOR COMBO OPERATIONS (COMPLEX)
-			await handleComboInsertion(formDataObj, button);
-		} else {
-			// CONVERT TO DIRECT CRUDP FOR SINGLE ITEMS (SIMPLE)
-			await handleSingleItemInsertion(formDataObj);
+			// Check if this is a multiple modality selection
+			if (formDataObj["modality_dest"] == multiplemod) {
+				// KEEP QUEUE SYSTEM FOR COMBO OPERATIONS (COMPLEX)
+				await handleComboInsertion(formDataObj, button);
+			} else {
+				// CONVERT TO DIRECT CRUDP FOR SINGLE ITEMS (SIMPLE)
+				await handleSingleItemInsertion(formDataObj);
+			}
+		} catch (error) {
+			console.error("Error adding item:", error);
+			displayToast("error", "Error", `Error adding item: ${error.message}`);
+		} finally {
+			// Unlock UI
+			button.disabled = false;
+			button.innerHTML = '<i class="fa fa-plus"></i> Add Item';
 		}
-	} catch (error) {
-		console.error("Error adding item:", error);
-		displayToast('error', 'Error', `Error adding item: ${error.message}`);
-	} finally {
-		// Unlock UI
-		button.disabled = false;
-		button.innerHTML = '<i class="fa fa-plus"></i> Add Item';
-	}
-});
+	});
 
 // KEEP QUEUE SYSTEM FOR COMBO OPERATIONS (COMPLEX)
 async function handleComboInsertion(formDataObj, button) {
@@ -236,9 +260,7 @@ async function handleComboInsertion(formDataObj, button) {
 					receiving_facility: formDataObj.receiving_facility || 1,
 					laterality: formDataObj.laterality,
 					status_flag: formDataObj.status_flag,
-					counter: formDataObj.counter
-						? parseInt(formDataObj.counter, 10)
-						: 0,
+					counter: formDataObj.counter ? parseInt(formDataObj.counter, 10) : 0,
 					warning: formDataObj.warning || "",
 					modality_dest: arr[a],
 					modality_name: a, // only used for display
@@ -262,7 +284,7 @@ async function handleComboInsertion(formDataObj, button) {
 
 			// Validate patient consistency before proceeding
 			if (!WorklistState.Manager.validatePatientConsistency()) {
-				displayToast('error', 'Error', 'Items belong to different patients');
+				displayToast("error", "Error", "Items belong to different patients");
 				return Promise.reject("Patient consistency validation failed");
 			}
 
@@ -294,13 +316,17 @@ async function handleComboInsertion(formDataObj, button) {
 			comboTask,
 			function (result) {
 				// Success callback
-				displayToast('success', 'Success', 'Multiple items added to worklist successfully');
+				displayToast(
+					"success",
+					"Success",
+					"Multiple items added to worklist successfully"
+				);
 				resolve(result);
 			},
 			function (error) {
 				// Error callback
 				console.error("Error in combo processing:", error);
-				displayToast('error', 'Error', `Error adding items: ${error}`);
+				displayToast("error", "Error", `Error adding items: ${error}`);
 				reject(error);
 			},
 			{
@@ -321,16 +347,18 @@ async function handleSingleItemInsertion(formDataObj) {
 		formDataObj.counter = parseInt(formDataObj.counter, 10) || 0;
 	}
 
-	// Add directly to UI with simple uniqueId (NO STATE MANAGER NEEDED)
-	const uniqueId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+	// FIX: Use addItemWithTracking to properly register with state manager
+	const uniqueId = addItemWithTracking(formDataObj);
+
+	// Add to UI with the proper uniqueId from state manager
 	formDataObj.uniqueId = uniqueId;
 	const formDataStr = JSON.stringify(formDataObj);
-	
-	// Add to UI immediately - NO QUEUE
+
+	// Add to UI immediately
 	appendWlItem(formDataStr, wlItemsCounter++);
-	
-	displayToast('success', 'Success', 'Item added to worklist successfully');
-	
+
+	displayToast("success", "Success", "Item added to worklist successfully");
+
 	return { success: true, uniqueId: uniqueId };
 }
 

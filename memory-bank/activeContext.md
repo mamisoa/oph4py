@@ -503,16 +503,15 @@ Users should now experience consistent behavior where:
 #### 🧪 **READY FOR TESTING**
 
 **Test Scenarios:**
-1. **Individual Operations** - Should be instant (~6ms response)
-2. **Combo Operations** - Should maintain queue coordination
-3. **Error Handling** - Proper toast notifications
-4. **UI Responsiveness** - No more sluggish button responses
+1. **✅ Single Item Addition**: Add non-combo item → Should appear in preview → Should save to database
+2. **✅ Combo Item Addition**: Add combo item → Should expand to multiple items → Should save all to database  
+3. **✅ Mixed Batch**: Add single + combo items → Should save all items to database
+4. **✅ State Debugging**: Run `debugWorklistState()` → Should show all pending items including singles
 
-**Expected User Experience:**
-- ✅ Instant feedback for common operations
-- ✅ Clear success/error messages via toast
-- ✅ Maintained safety for complex operations
-- ✅ Overall system feels 98% more responsive
+**Expected Behavior:**
+- All worklist items (single and combo) now persist to database
+- No more silent data loss for single modality items
+- Consistent behavior between combo and non-combo workflows
 
 ---
 
@@ -523,3 +522,79 @@ Users should now experience consistent behavior where:
 - JS logic updated to build API query with requested_time.gte/lte and provider/practitioner filters
 - Table refreshes based on date range and filters
 - No backend/API change required; uses py4web RestAPI filtering best practices
+
+### **CRITICAL BUG FIX - 2025-06-26T22:58:06.620240**
+
+#### 🚨 **SINGLE ITEM BATCH SUBMISSION ISSUE RESOLVED**
+
+**User Reported Issue:** When trying to add a worklist item that is not in a combo, it does not add to the batch items.
+
+**Root Cause Analysis:**
+- `handleSingleItemInsertion()` function was bypassing WorklistState.Manager completely
+- Single items were created with simple uniqueIds instead of being registered in pending items collection
+- Only combo items were properly tracked in `this.pendingItems` Map
+- `submitBatch()` only processes items from `getAllCleanPendingItems()` which only includes state-managed items
+
+**Critical Impact:**
+- ❌ Single modality worklist items appeared in UI preview but were never submitted to database
+- ❌ Only combo items (multiple modalities) were actually saved to database  
+- ❌ Users believed they were adding items but experienced silent data loss
+- ❌ Batch submission silently filtered out all non-combo items
+
+#### ✅ **TECHNICAL FIX IMPLEMENTED**
+
+**File Modified:** `static/js/wl/wl.js` - Fixed `handleSingleItemInsertion()` function
+
+**Before Fix:**
+```javascript
+// Add directly to UI with simple uniqueId (NO STATE MANAGER NEEDED)
+const uniqueId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+```
+
+**After Fix:**
+```javascript
+// FIX: Use addItemWithTracking to properly register with state manager
+const uniqueId = addItemWithTracking(formDataObj);
+```
+
+**State Manager Integration:**
+- ✅ Single items now use `addItemWithTracking()` to generate proper uniqueIds
+- ✅ Single items now registered with WorklistState.Manager in `this.pendingItems`
+- ✅ Single items now included in `getAllCleanPendingItems()` for batch submission
+- ✅ Single items now participate in transaction status updates and error recovery
+
+#### 🎯 **USER EXPERIENCE IMPACT**
+
+**Before Fix:**
+- Single items: Show in preview → Disappear on submission ❌
+- Combo items: Show in preview → Successfully saved ✅
+- User confusion: Why did my items disappear? ❌
+
+**After Fix:**
+- Single items: Show in preview → Successfully saved ✅  
+- Combo items: Show in preview → Successfully saved ✅
+- User confidence: All items behave consistently ✅
+
+#### 📊 **ARCHITECTURE BENEFITS**
+
+- **✅ Consistent State Management**: All worklist items (single and combo) use same state system
+- **✅ Transaction Integrity**: Single items participate in atomic batch transactions  
+- **✅ Error Recovery**: Single items included in transaction recovery mechanisms
+- **✅ Debugging Support**: Single items now visible in `debugWorklistState()` output
+
+#### 🧪 **TESTING VALIDATION**
+
+**Test Scenarios:**
+1. **✅ Single Item Addition**: Add non-combo item → Should appear in preview → Should save to database
+2. **✅ Combo Item Addition**: Add combo item → Should expand to multiple items → Should save all to database  
+3. **✅ Mixed Batch**: Add single + combo items → Should save all items to database
+4. **✅ State Debugging**: Run `debugWorklistState()` → Should show all pending items including singles
+
+**Expected Behavior:**
+- All worklist items (single and combo) now persist to database
+- No more silent data loss for single modality items
+- Consistent behavior between combo and non-combo workflows
+
+---
+
+*Last Updated: 2025-06-26T22:58:06.620240 - Critical single item batch submission bug resolved*

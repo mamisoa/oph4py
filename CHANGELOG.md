@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-26T22:58:06.620240]
+
+### Fixed
+
+- **🚨 CRITICAL: Worklist Single Item Batch Submission**: Fixed critical bug where non-combo worklist items were not being included in batch submissions to the database
+  - **Root Cause**: `handleSingleItemInsertion()` function was bypassing the WorklistState.Manager and creating items with simple uniqueIds instead of registering them in the pending items collection
+  - **Impact**: Single modality worklist items appeared in the UI preview but were never actually submitted to the database when the form was submitted
+  - **Affected Workflow**: 
+    - Adding individual modality items (non-combo procedures) to worklist
+    - Items showed in preview table but disappeared on form submission
+    - Only combo items (multiple modalities) were properly saved to database
+  - **Technical Fix**: Modified `handleSingleItemInsertion()` to use `addItemWithTracking()` function which properly registers items with the state manager
+  - **Batch Processing**: Single items now properly included in `submitBatch()` operation alongside combo items
+
+### Technical Details
+
+- **File Modified**: `static/js/wl/wl.js` - Fixed `handleSingleItemInsertion()` function on lines 314-331
+- **State Manager Integration**: Single items now use `addItemWithTracking()` to generate proper uniqueIds and register with WorklistState.Manager
+- **Pending Items Collection**: Single items are now added to `this.pendingItems` Map which is processed by `getAllCleanPendingItems()`
+- **Batch API Compatibility**: Single items now include proper uniqueId tracking for status updates and transaction management
+- **UI Consistency**: Maintains existing UI behavior while ensuring database persistence
+
+### User Experience Impact
+
+- **✅ Data Persistence**: Single modality worklist items now properly save to database
+- **✅ Batch Operations**: Single and combo items can be mixed in the same batch submission
+- **✅ State Tracking**: Single items now participate in transaction status updates and error recovery
+- **✅ No UI Changes**: Existing user interface behavior remains identical
+
+### Architecture Benefits
+
+- **Consistent State Management**: All worklist items (single and combo) now use the same state management system
+- **Transaction Integrity**: Single items participate in atomic batch transactions with proper rollback support
+- **Error Recovery**: Single items now included in transaction recovery and retry mechanisms
+- **Debugging Support**: Single items now visible in `debugWorklistState()` output for troubleshooting
+
+This fix resolves a critical data loss issue where users believed they were adding worklist items but only combo items were actually being saved to the database.
+
 ## [2025-06-26T22:50:20.540561]
 
 ### Changed
