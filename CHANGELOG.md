@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-26T23:41:09.231211]
+
+### Fixed
+
+- **🚨 CRITICAL: Billing Combo Usage Tracking**: Fixed critical issue where billing combo usage was never recorded, preventing proper usage-based ordering
+- **Frontend Response Parsing**: Fixed frontend parsing to correctly extract created billing codes from backend response (`created_codes` vs `billing_codes`)
+- **Backend Combo Code Parsing**: Enhanced parsing to handle Python-style combo codes with single quotes and `None` values instead of JSON format
+  - **Root Cause**: Frontend `applyBillingCombo()` function was making individual POST requests to `/api/billing_codes` instead of using the proper combo application endpoint
+  - **Impact**: 
+    - Combo usage was never recorded in `billing_combo_usage` table
+    - Usage-based ordering couldn't work (all combos had usage_count = 0)
+    - Combos were ordered by newest instead of most frequently used
+    - Backend combo application endpoint with usage tracking was bypassed completely
+  - **Technical Fix**: Completely rewrote `applyBillingCombo()` function to use single API call to `/api/billing_combo/<combo_id>/apply` endpoint
+  - **Backend Integration**: Now properly utilizes existing usage tracking system that was already implemented in the backend
+
+### Technical Details
+
+- **File Modified**: `static/js/md/md_bt.js` - Complete rewrite of `applyBillingCombo()` function (lines 2871-2946)
+- **API Endpoint Change**: 
+  - **Old Flow**: Multiple calls to `POST /api/billing_codes` (one per code) - no usage tracking
+  - **New Flow**: Single call to `POST /api/billing_combo/<combo_id>/apply` - includes usage tracking
+- **Response Handling**: Updated to process enhanced response with created billing codes and usage record
+- **Function Signature**: Enhanced `handleComboApplicationComplete()` to accept optional `createdCodes` parameter
+- **State Management**: Added combo list refresh after successful application to reflect new usage counts
+
+### Backend Integration Benefits
+
+- **Automatic Usage Recording**: Each combo application now creates record in `billing_combo_usage` table
+- **Enhanced Fee Calculations**: Backend handles complex fee aggregation for main and secondary codes
+- **Better Error Handling**: Centralized error handling in backend with transaction support
+- **Secondary Code Support**: Proper handling of enhanced combo definitions with secondary billing codes
+- **Atomic Operations**: All billing codes created in single transaction with proper rollback support
+
+### User Experience Impact
+
+- **✅ Usage-Based Ordering**: Combos now properly ordered by frequency of use (most used first)
+- **✅ Better Success Messages**: Enhanced notifications include secondary code counts and usage tracking confirmation
+- **✅ Real-Time Updates**: Combo list refreshes after application to show updated usage ordering
+- **✅ Improved Performance**: Single API call instead of multiple individual code creation requests
+- **✅ Consistent Behavior**: Combo application now behaves identically to other bulk operations
+
+### Data Consistency
+
+- **Usage Statistics**: Combo usage data will now accumulate correctly from this point forward
+- **Historical Data**: Previous combo applications (individual code entries) remain valid but won't count toward usage statistics
+- **Ordering Logic**: Most-used combos will appear at top as usage data accumulates
+- **Fallback Behavior**: When usage counts are equal, ordering falls back to newest combo first (by ID)
+
+This fix resolves a fundamental disconnect between the frontend implementation and the backend usage tracking system, enabling the intended most-used-first ordering behavior for billing combos.
+
 ## [2025-06-26T23:20:21.432671]
 
 ### Enhanced

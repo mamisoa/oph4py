@@ -2884,185 +2884,62 @@ function applyBillingCombo(comboId, note) {
 
 	console.log("Found combo data:", combo);
 
-	// Parse combo codes using the same robust logic as the preview
-	let codes = [];
-	try {
-		let comboCodes = combo.combo_codes;
-		console.log("Raw combo codes:", comboCodes);
+	// Prepare data for combo application endpoint
+	let comboApplicationData = {
+		id_auth_user: patientId,
+		id_worklist: wlId,
+		note: note || "",
+	};
 
-		if (!comboCodes || comboCodes === "[]") {
-			codes = [];
-		} else if (typeof comboCodes === "string") {
-			try {
-				// First attempt: direct JSON parse
-				codes = JSON.parse(comboCodes);
-				console.log("Successfully parsed codes with JSON.parse:", codes);
-			} catch (e) {
-				console.log(
-					"Direct JSON parse failed, attempting JavaScript evaluation..."
-				);
-
-				// Replace Python literals with JavaScript equivalents
-				let jsCode = comboCodes
-					.replace(/True/g, "true")
-					.replace(/False/g, "false")
-					.replace(/None/g, "null");
-
-				try {
-					// Use eval in a safe way (since this is controlled data from our own database)
-					codes = eval("(" + jsCode + ")");
-					console.log("Successfully parsed codes with eval:", codes);
-				} catch (evalError) {
-					console.error("Eval parsing failed:", evalError);
-					throw evalError;
-				}
-			}
-		} else {
-			codes = comboCodes;
-		}
-	} catch (e) {
-		console.error("Error parsing combo codes:", e);
-		bootbox.alert("Error: Could not parse combo codes. Please try again.");
-		return;
-	}
-
-	if (!Array.isArray(codes) || codes.length === 0) {
-		bootbox.alert("Error: No valid codes found in this combo.");
-		return;
-	}
-
-	console.log("Parsed codes array:", codes);
-
-	// Prepare individual billing code requests
-	let billingRequests = [];
-
-	codes.forEach((code, index) => {
-		let billingData = {
-			id_auth_user: patientId,
-			id_worklist: wlId,
-			note: note || "",
-		};
-
-		// Set date_performed from worklist if available
-		if (
-			typeof wlObj !== "undefined" &&
-			wlObj.worklist &&
-			wlObj.worklist.requested_time
-		) {
-			let wlDate = new Date(wlObj.worklist.requested_time);
-			billingData.date_performed = wlDate.toISOString().split("T")[0];
-		} else {
-			billingData.date_performed = new Date().toISOString().split("T")[0];
-		}
-
-		if (typeof code === "number") {
-			// Old format: simple integer code
-			billingData.nomen_code = code;
-		} else if (typeof code === "object" && code.nomen_code) {
-			// New format: object with potential secondary codes
-			billingData.nomen_code = parseInt(code.nomen_code);
-			billingData.nomen_desc_fr = code.nomen_desc_fr || null;
-
-			// Clean and convert fee fields - handle "N/A" values
-			billingData.fee =
-				code.fee === "N/A" || code.fee === "" || code.fee === undefined
-					? null
-					: parseFloat(code.fee) || null;
-			billingData.feecode =
-				code.feecode === "N/A" ||
-				code.feecode === "" ||
-				code.feecode === undefined
-					? null
-					: parseInt(code.feecode) || null;
-
-			// Add secondary code fields if present
-			if (code.secondary_nomen_code) {
-				// Convert secondary_nomen_code to integer
-				billingData.secondary_nomen_code = parseInt(code.secondary_nomen_code);
-				billingData.secondary_nomen_desc_fr =
-					code.secondary_nomen_desc_fr || null;
-
-				// Clean and convert secondary fee fields - handle "N/A" values
-				billingData.secondary_fee =
-					code.secondary_fee === "N/A" ||
-					code.secondary_fee === "" ||
-					code.secondary_fee === undefined
-						? null
-						: parseFloat(code.secondary_fee) || null;
-				billingData.secondary_feecode =
-					code.secondary_feecode === "N/A" ||
-					code.secondary_feecode === "" ||
-					code.secondary_feecode === undefined
-						? null
-						: parseInt(code.secondary_feecode) || null;
-			}
-		} else {
-			// Fallback: treat as simple code
-			billingData.nomen_code = parseInt(code);
-		}
-
-		console.log(`Prepared billing request ${index + 1}:`, billingData);
-		billingRequests.push(billingData);
-	});
-
-	console.log("Total billing requests to make:", billingRequests.length);
+	console.log("Combo application data:", comboApplicationData);
 
 	// Show progress indication
-	let progressMessage = `Applying combo "${combo.combo_name}" with ${billingRequests.length} codes...`;
+	let progressMessage = `Applying combo "${combo.combo_name}"...`;
 	console.log("INFO: " + progressMessage);
 
-	// Apply each code individually
-	let completedRequests = 0;
-	let failedRequests = 0;
-	let errors = [];
+	// Use the proper combo application endpoint that records usage
+	$.ajax({
+		url: HOSTURL + "/" + APP_NAME + "/api/billing_combo/" + comboId + "/apply",
+		method: "POST",
+		contentType: "application/json",
+		data: JSON.stringify(comboApplicationData),
+		success: function (response) {
+			console.log("Successfully applied combo:", response);
 
-	billingRequests.forEach((billingData, index) => {
-		$.ajax({
-			url: HOSTURL + "/" + APP_NAME + "/api/billing_codes",
-			method: "POST",
-			contentType: "application/json",
-			data: JSON.stringify(billingData),
-			success: function (response) {
-				completedRequests++;
-				console.log(
-					`Successfully applied code ${index + 1}/${billingRequests.length}:`,
-					response
-				);
+			// Extract billing codes from response
+			let createdCodes = response.data?.created_codes || [];
+			let usageRecord = response.data?.combo_usage_id || null;
 
-				// Check if all requests are complete
-				if (completedRequests + failedRequests === billingRequests.length) {
-					handleComboApplicationComplete(
-						completedRequests,
-						failedRequests,
-						errors,
-						combo.combo_name
-					);
-				}
-			},
-			error: function (xhr, status, error) {
-				failedRequests++;
-				let errorMsg = "Unknown error";
-				if (xhr.responseJSON && xhr.responseJSON.message) {
-					errorMsg = xhr.responseJSON.message;
-				}
-				errors.push(`Code ${billingData.nomen_code}: ${errorMsg}`);
-				console.error(
-					`Failed to apply code ${index + 1}/${billingRequests.length}:`,
-					error,
-					errorMsg
-				);
+			console.log("Created billing codes:", createdCodes);
+			console.log("Usage record:", usageRecord);
 
-				// Check if all requests are complete
-				if (completedRequests + failedRequests === billingRequests.length) {
-					handleComboApplicationComplete(
-						completedRequests,
-						failedRequests,
-						errors,
-						combo.combo_name
-					);
+			// Handle successful application
+			handleComboApplicationComplete(
+				createdCodes.length,
+				0,
+				[],
+				combo.combo_name,
+				createdCodes
+			);
+		},
+		error: function (xhr, status, error) {
+			console.error("Failed to apply combo:", error);
+
+			let errorMsg = "Unknown error";
+			if (xhr.responseJSON && xhr.responseJSON.message) {
+				errorMsg = xhr.responseJSON.message;
+			} else if (xhr.responseText) {
+				try {
+					let errorData = JSON.parse(xhr.responseText);
+					errorMsg = errorData.message || errorMsg;
+				} catch (e) {
+					errorMsg = xhr.responseText;
 				}
-			},
-		});
+			}
+
+			// Handle failed application
+			handleComboApplicationComplete(0, 1, [errorMsg], combo.combo_name);
+		},
 	});
 }
 
@@ -3071,10 +2948,15 @@ function handleComboApplicationComplete(
 	completedRequests,
 	failedRequests,
 	errors,
-	comboName
+	comboName,
+	createdCodes = null
 ) {
 	console.log("=== Combo Application Complete ===");
 	console.log("Completed:", completedRequests, "Failed:", failedRequests);
+
+	if (createdCodes) {
+		console.log("Created codes details:", createdCodes);
+	}
 
 	if (failedRequests === 0) {
 		// All codes applied successfully
@@ -3085,8 +2967,14 @@ function handleComboApplicationComplete(
 				completedRequests +
 				" codes!"
 		);
+
+		// Hide modal and refresh tables without showing alert
 		$("#billComboModal").modal("hide");
 		$bill_tbl.bootstrapTable("refresh");
+		// Also refresh combo list to reflect new usage count
+		if (typeof loadBillingCombos === "function") {
+			loadBillingCombos();
+		}
 	} else if (completedRequests > 0) {
 		// Partial success
 		let message = `Combo "${comboName}" partially applied.\n`;
@@ -3097,6 +2985,10 @@ function handleComboApplicationComplete(
 		bootbox.alert(message, function () {
 			$("#billComboModal").modal("hide");
 			$bill_tbl.bootstrapTable("refresh");
+			// Refresh combo list even on partial success
+			if (typeof loadBillingCombos === "function") {
+				loadBillingCombos();
+			}
 		});
 	} else {
 		// Complete failure

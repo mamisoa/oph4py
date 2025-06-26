@@ -480,7 +480,25 @@ def billing_combo(rec_id: Optional[int] = None):
                     # Handle direct field filters
                     if hasattr(db.billing_combo, key):
                         field = getattr(db.billing_combo, key)
-                        query_conditions &= field == value
+
+                        # Special handling for is_active boolean field
+                        if key == "is_active":
+                            # Convert JavaScript boolean to database format
+                            if isinstance(value, bool):
+                                db_value = "T" if value else "F"
+                            elif isinstance(value, str):
+                                # Handle string representations
+                                if value.lower() in ["true", "1", "t"]:
+                                    db_value = "T"
+                                elif value.lower() in ["false", "0", "f"]:
+                                    db_value = "F"
+                                else:
+                                    db_value = value  # Keep original value
+                            else:
+                                db_value = value
+                            query_conditions &= field == db_value
+                        else:
+                            query_conditions &= field == value
 
             # Handle search functionality manually if search parameter exists
             if "search" in query_params and query_params["search"]:
@@ -521,8 +539,10 @@ def billing_combo(rec_id: Optional[int] = None):
                         db.billing_combo_usage.id_billing_combo == db.billing_combo.id
                     ),
                     groupby=db.billing_combo.id,
-                    orderby=~usage_count
-                    | ~db.billing_combo.id,  # Order by usage count DESC, then id DESC
+                    orderby=[
+                        ~usage_count,
+                        ~db.billing_combo.id,
+                    ],  # Order by usage count DESC, then id DESC
                 )
                 logger.info(
                     f"GET: Found {len(records)} accessible combos for user {auth.user_id}"
@@ -546,8 +566,15 @@ def billing_combo(rec_id: Optional[int] = None):
                     enhance_combo_response(record_dict)
                     result_data.append(record_dict)
 
+                # Debug logging for usage count ordering
+                combo_info = []
+                for r in result_data:
+                    combo_info.append(
+                        f"{r.get('combo_name')} (usage: {r.get('usage_count', 0)})"
+                    )
+
                 logger.info(
-                    f"GET: Returning {len(result_data)} combos: {[r.get('combo_name') for r in result_data]}"
+                    f"GET: Returning {len(result_data)} combos ordered by usage: {combo_info}"
                 )
 
                 # Return in format expected by frontend
@@ -790,10 +817,42 @@ def apply_billing_combo(combo_id: int):
 
         # Parse combo codes with enhanced structure support
         try:
-            combo_codes = json.loads(combo.combo_codes) if combo.combo_codes else []
-        except json.JSONDecodeError:
+            if not combo.combo_codes:
+                combo_codes = []
+            elif isinstance(combo.combo_codes, str):
+                # First try direct JSON parsing
+                try:
+                    combo_codes = json.loads(combo.combo_codes)
+                except json.JSONDecodeError:
+                    # If JSON parsing fails, try handling Python-style format
+                    logger.info(
+                        f"JSON parsing failed, attempting Python literal evaluation for combo {combo_id}"
+                    )
+                    # Replace Python literals with JSON equivalents
+                    json_compatible = (
+                        combo.combo_codes.replace("None", "null")
+                        .replace("True", "true")
+                        .replace("False", "false")
+                        .replace("'", '"')  # Replace single quotes with double quotes
+                    )
+                    try:
+                        combo_codes = json.loads(json_compatible)
+                        logger.info(
+                            f"Successfully parsed combo codes after Python->JSON conversion"
+                        )
+                    except json.JSONDecodeError as e:
+                        logger.error(
+                            f"Failed to parse combo codes even after conversion: {str(e)}"
+                        )
+                        raise
+            else:
+                # Already parsed (list/dict)
+                combo_codes = combo.combo_codes
+        except Exception as e:
+            logger.error(f"Error parsing combo_codes for combo {combo_id}: {str(e)}")
+            logger.error(f"combo_codes preview: {str(combo.combo_codes)[:200]}...")
             return APIResponse.error(
-                message="Invalid combo_codes format in billing combo",
+                message=f"Invalid combo_codes format in billing combo: {str(e)}",
                 status_code=500,
                 error_type="server_error",
             )
