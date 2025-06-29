@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-06-30T00:51:06+02:00]
+
+### Fixed
+
+- **🚨 CRITICAL: Billing Combo Custom Fee Application**: Fixed critical issue where custom fees defined in billing combos were being overwritten with standard nomenclature fees during application
+  - **Root Cause**: The `apply_billing_combo` function was always fetching and using standard fees from the nomenclature service, completely ignoring custom fees saved in combo definitions
+  - **Impact**: 
+    - Custom fees like €31.11 for code 384230 were being replaced with standard fees during combo application
+    - Billing combos with negotiated or special pricing were not working as intended
+    - Healthcare providers were unable to use custom fee structures for specific procedures
+  - **Technical Fix**: Modified fee assignment logic in `api/endpoints/billing.py` to prioritize custom fees from combo definitions:
+    - **Main Codes**: Now checks if `code_def.get("fee")` exists before falling back to nomenclature service fee
+    - **Secondary Codes**: Same prioritization logic applied to `code_def.get("secondary_fee")`
+    - **Enhanced Logging**: Added detailed logging to show when custom vs standard fees are being used
+  - **User Experience**: 
+    - ✅ Custom fees in billing combos now properly applied (e.g., 384230 will use €31.11 instead of standard fee)
+    - ✅ Standard fees still used when no custom fee is defined in combo
+    - ✅ Both main and secondary code custom fees are respected
+    - ✅ Transparent logging shows which fee source is being used for each code
+
+### Technical Details
+
+- **File Modified**: `api/endpoints/billing.py` - Enhanced `apply_billing_combo()` function (lines 907-950)
+- **Logic Change**: 
+  - **Before**: Always use `nomenclature.get_code_details().fee` (overwrites custom fees)
+  - **After**: Use `code_def.get("fee")` if available, fallback to nomenclature service
+- **Backward Compatibility**: Legacy combos with integer-only codes still work (use standard fees)
+- **Enhanced Combos**: New format combos with custom fees now work correctly
+- **Logging Enhancement**: Clear distinction between custom and standard fee usage in logs
+
+### Data Integrity
+
+- **Fee Source Priority**: Custom combo fees → Standard nomenclature fees → 0.00 fallback
+- **Combo Definition Preservation**: Custom fees in combo definitions remain unchanged
+- **Billing Accuracy**: Healthcare providers can now rely on custom fee structures
+- **Audit Trail**: Enhanced logging provides clear audit trail of fee source decisions
+
+This fix resolves a fundamental issue where the billing combo system's custom fee functionality was completely bypassed, ensuring that healthcare providers can properly use negotiated or special pricing structures through billing combos.
+
 ## [2025-06-26T23:41:09.231211]
 
 ### Fixed
