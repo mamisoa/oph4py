@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-02T23:58:39.441105]
+
+### Fixed
+
+- **🔧 Billing Combo JSON Parsing Debug Enhancement**: Added comprehensive debugging to `apply_billing_combo` endpoint to diagnose malformed combo_codes JSON parsing issues
+  - **Enhanced Error Logging**: Added detailed debugging with 🔍 DEBUG and 🚨 ERROR prefixes to track exact parsing failures
+  - **Raw Data Analysis**: Logs show combo_codes type, length, and full content as retrieved from database
+  - **JSON Error Details**: Captures exact error position (line, column, character) when JSON parsing fails  
+  - **Context Display**: Shows content around error position to identify malformed characters or structure
+  - **Conversion Tracking**: Logs Python->JSON conversion attempts and results
+  - **Full Traceback**: Includes complete error stack trace for debugging
+  - **Impact**: Will help diagnose production issues where combo_codes contain malformed JSON causing "Expecting ',' delimiter" errors
+  - **User Experience**: Faster resolution of combo application failures through detailed error analysis
+
+### Technical Details
+
+- **File Enhanced**: `api/endpoints/billing.py` - Enhanced `apply_billing_combo()` function JSON parsing section
+- **Debugging Features**: 
+  - Raw combo_codes content logging with `repr()` to show hidden characters
+  - JSON error position tracking with line/column/character details
+  - Content context around error positions for visual debugging
+  - Python literal to JSON conversion attempt logging
+  - Full exception traceback capture
+- **Error Context**: Identifies malformed JSON at exact character positions mentioned in error messages
+- **Production Ready**: Debug logging helps resolve combo application failures without requiring database access
+
 ## [2025-06-30T00:51:06+02:00]
 
 ### Fixed
@@ -51,7 +77,7 @@ This fix resolves a fundamental issue where the billing combo system's custom fe
 ### Fixed
 
 - **🚨 CRITICAL: Billing Combo Usage Tracking**: Fixed critical issue where billing combo usage was never recorded, preventing proper usage-based ordering
-- **Frontend Response Parsing**: Fixed frontend parsing to correctly extract created billing codes from backend response (`created_codes` vs `billing_codes`)
+add- **Frontend Response Parsing**: Fixed frontend parsing to correctly extract created billing codes from backend response (`created_codes` vs `billing_codes`)
 - **Backend Combo Code Parsing**: Enhanced parsing to handle Python-style combo codes with single quotes and `None` values instead of JSON format
   - **Root Cause**: Frontend `applyBillingCombo()` function was making individual POST requests to `/api/billing_codes` instead of using the proper combo application endpoint
   - **Impact**: 

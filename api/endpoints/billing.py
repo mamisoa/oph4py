@@ -817,17 +817,44 @@ def apply_billing_combo(combo_id: int):
 
         # Parse combo codes with enhanced structure support
         try:
+            # Enhanced debugging: Log the full combo_codes content
+            logger.info(
+                f"🔍 DEBUG: Combo {combo_id} - Raw combo_codes type: {type(combo.combo_codes)}"
+            )
+            logger.info(
+                f"🔍 DEBUG: Combo {combo_id} - Raw combo_codes length: {len(str(combo.combo_codes)) if combo.combo_codes else 0}"
+            )
+            logger.info(
+                f"🔍 DEBUG: Combo {combo_id} - Raw combo_codes content: {repr(combo.combo_codes)}"
+            )
+
             if not combo.combo_codes:
+                logger.info(
+                    f"🔍 DEBUG: Combo {combo_id} - Empty combo_codes, returning empty list"
+                )
                 combo_codes = []
             elif isinstance(combo.combo_codes, str):
+                logger.info(
+                    f"🔍 DEBUG: Combo {combo_id} - combo_codes is string, attempting JSON parsing"
+                )
                 # First try direct JSON parsing
                 try:
                     combo_codes = json.loads(combo.combo_codes)
-                except json.JSONDecodeError:
-                    # If JSON parsing fails, try handling Python-style format
                     logger.info(
-                        f"JSON parsing failed, attempting Python literal evaluation for combo {combo_id}"
+                        f"🔍 DEBUG: Combo {combo_id} - Successfully parsed as JSON"
                     )
+                except json.JSONDecodeError as json_error:
+                    # If JSON parsing fails, try handling Python-style format
+                    logger.error(
+                        f"🔍 DEBUG: Combo {combo_id} - JSON parsing failed: {str(json_error)}"
+                    )
+                    logger.error(
+                        f"🔍 DEBUG: Combo {combo_id} - JSON error position: line {getattr(json_error, 'lineno', 'unknown')} column {getattr(json_error, 'colno', 'unknown')} char {getattr(json_error, 'pos', 'unknown')}"
+                    )
+                    logger.info(
+                        f"🔍 DEBUG: Combo {combo_id} - Attempting Python literal evaluation"
+                    )
+
                     # Replace Python literals with JSON equivalents
                     json_compatible = (
                         combo.combo_codes.replace("None", "null")
@@ -835,22 +862,61 @@ def apply_billing_combo(combo_id: int):
                         .replace("False", "false")
                         .replace("'", '"')  # Replace single quotes with double quotes
                     )
+                    logger.info(
+                        f"🔍 DEBUG: Combo {combo_id} - After Python->JSON conversion: {repr(json_compatible)}"
+                    )
+
                     try:
                         combo_codes = json.loads(json_compatible)
                         logger.info(
-                            f"Successfully parsed combo codes after Python->JSON conversion"
+                            f"🔍 DEBUG: Combo {combo_id} - Successfully parsed after Python->JSON conversion"
                         )
-                    except json.JSONDecodeError as e:
+                    except json.JSONDecodeError as converted_error:
                         logger.error(
-                            f"Failed to parse combo codes even after conversion: {str(e)}"
+                            f"🔍 DEBUG: Combo {combo_id} - Failed to parse even after conversion: {str(converted_error)}"
                         )
-                        raise
+                        logger.error(
+                            f"🔍 DEBUG: Combo {combo_id} - Converted JSON error position: line {getattr(converted_error, 'lineno', 'unknown')} column {getattr(converted_error, 'colno', 'unknown')} char {getattr(converted_error, 'pos', 'unknown')}"
+                        )
+
+                        # Show content around the error position for debugging
+                        if hasattr(converted_error, "pos") and converted_error.pos:
+                            error_pos = converted_error.pos
+                            start_pos = max(0, error_pos - 50)
+                            end_pos = min(len(json_compatible), error_pos + 50)
+                            context = json_compatible[start_pos:end_pos]
+                            logger.error(
+                                f"🔍 DEBUG: Combo {combo_id} - Content around error position {error_pos}: {repr(context)}"
+                            )
+
+                        raise converted_error
             else:
                 # Already parsed (list/dict)
+                logger.info(
+                    f"🔍 DEBUG: Combo {combo_id} - combo_codes already parsed as {type(combo.combo_codes)}"
+                )
                 combo_codes = combo.combo_codes
+
+            logger.info(
+                f"🔍 DEBUG: Combo {combo_id} - Final parsed combo_codes type: {type(combo_codes)}, length: {len(combo_codes) if combo_codes else 0}"
+            )
+
         except Exception as e:
-            logger.error(f"Error parsing combo_codes for combo {combo_id}: {str(e)}")
-            logger.error(f"combo_codes preview: {str(combo.combo_codes)[:200]}...")
+            logger.error(
+                f"🚨 ERROR: Parsing combo_codes for combo {combo_id}: {str(e)}"
+            )
+            logger.error(
+                f"🚨 ERROR: combo_codes full content: {repr(combo.combo_codes)}"
+            )
+            logger.error(
+                f"🚨 ERROR: combo_codes length: {len(str(combo.combo_codes)) if combo.combo_codes else 0}"
+            )
+
+            # Additional error context
+            import traceback
+
+            logger.error(f"🚨 ERROR: Full traceback: {traceback.format_exc()}")
+
             return APIResponse.error(
                 message=f"Invalid combo_codes format in billing combo: {str(e)}",
                 status_code=500,
@@ -913,20 +979,24 @@ def apply_billing_combo(combo_id: int):
                     code_data["nomen_desc_fr"] = code_details.get("description_fr")
                     code_data["nomen_desc_nl"] = code_details.get("description_nl")
                     code_data["feecode"] = code_details.get("feecode")
-                    
+
                     # Prioritize custom fee from combo definition over standard nomenclature fee
                     if isinstance(code_def, dict) and code_def.get("fee") is not None:
                         # Use custom fee from combo definition
                         custom_fee = code_def.get("fee")
                         code_data["fee"] = custom_fee
                         total_main_fees += float(custom_fee or 0)
-                        logger.info(f"Using custom fee €{custom_fee} for code {nomen_code} (standard: €{code_details.get('fee', '0.00')})")
+                        logger.info(
+                            f"Using custom fee €{custom_fee} for code {nomen_code} (standard: €{code_details.get('fee', '0.00')})"
+                        )
                     else:
                         # Use standard fee from nomenclature service
                         standard_fee = code_details.get("fee")
                         code_data["fee"] = standard_fee
                         total_main_fees += float(standard_fee or 0)
-                        logger.info(f"Using standard fee €{standard_fee} for code {nomen_code}")
+                        logger.info(
+                            f"Using standard fee €{standard_fee} for code {nomen_code}"
+                        )
             except Exception as e:
                 logger.warning(
                     f"Could not fetch details for main code {nomen_code}: {str(e)}"
@@ -947,21 +1017,28 @@ def apply_billing_combo(combo_id: int):
                         code_data["secondary_feecode"] = secondary_details.get(
                             "feecode"
                         )
-                        
+
                         # Prioritize custom secondary fee from combo definition over standard nomenclature fee
-                        if isinstance(code_def, dict) and code_def.get("secondary_fee") is not None:
+                        if (
+                            isinstance(code_def, dict)
+                            and code_def.get("secondary_fee") is not None
+                        ):
                             # Use custom secondary fee from combo definition
                             custom_secondary_fee = code_def.get("secondary_fee")
                             code_data["secondary_fee"] = custom_secondary_fee
                             total_secondary_fees += float(custom_secondary_fee or 0)
-                            logger.info(f"Using custom secondary fee €{custom_secondary_fee} for code {secondary_code} (standard: €{secondary_details.get('fee', '0.00')})")
+                            logger.info(
+                                f"Using custom secondary fee €{custom_secondary_fee} for code {secondary_code} (standard: €{secondary_details.get('fee', '0.00')})"
+                            )
                         else:
                             # Use standard secondary fee from nomenclature service
                             standard_secondary_fee = secondary_details.get("fee")
                             code_data["secondary_fee"] = standard_secondary_fee
                             total_secondary_fees += float(standard_secondary_fee or 0)
-                            logger.info(f"Using standard secondary fee €{standard_secondary_fee} for code {secondary_code}")
-                        
+                            logger.info(
+                                f"Using standard secondary fee €{standard_secondary_fee} for code {secondary_code}"
+                            )
+
                         codes_with_secondary += 1
                 except Exception as e:
                     logger.warning(
