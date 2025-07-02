@@ -119,6 +119,11 @@ function operateFormatter(value, row, index) {
 		'<a class="edit" href="javascript:void(0)" title="Edit rx"><i class="fas fa-edit"></i></a>'
 	);
 	html.push(
+		'<a class="set ms-1" href="javascript:void(0)" title="Set values to ' +
+			capitalize(row.laterality) +
+			' eye form"><i class="fas fa-arrow-up"></i></a>'
+	);
+	html.push(
 		'<a class="remove ms-1" href="javascript:void(0)" title="Delete rx"><i class="fas fa-trash-alt"></i></a>'
 	);
 	html.push("</div>");
@@ -166,6 +171,61 @@ window.operateEvents = {
 		$("#rxFormModal [name=add_close]").val(add_close).trigger("change");
 		$("#rxFormModal [name=methodRxModalSubmit]").val("PUT");
 		$("#rxModal").modal("show");
+	},
+	"click .set": function (e, value, row, index) {
+		console.log("Setting values to form for row: " + JSON.stringify(row));
+		let targetForm = "#id" + capitalize(row.laterality) + "Rx";
+
+		// Check if target form exists
+		if ($(targetForm).length === 0) {
+			console.error("Target form not found: " + targetForm);
+			return;
+		}
+
+		// Set rx_origin and trigger change (establishes base behavior)
+		$(targetForm + ' input[name=rx_origin][value="' + row.rx_origin + '"]')
+			.prop("checked", true)
+			.trigger("change");
+
+		// Set glass_type and trigger change (establishes section visibility)
+		$(targetForm + ' input[name=glass_type][value="' + row.glass_type + '"]')
+			.prop("checked", true)
+			.trigger("change");
+
+		// Set far values and trigger changes (base values for calculations)
+		$(targetForm + " [name=sph_far]")
+			.val(row.sph_far)
+			.trigger("change");
+		$(targetForm + " [name=cyl_far]")
+			.val(row.cyl_far)
+			.trigger("change");
+		$(targetForm + " [name=axis_far]")
+			.val(row.axis_far)
+			.trigger("change");
+
+		// Set add values if applicable (only for glass/trial) and trigger changes
+		if (row.rx_origin === "glass" || row.rx_origin === "trial") {
+			let add_int = round2dec(
+				parseFloat(row.sph_int) - parseFloat(row.sph_far)
+			);
+			let add_close = round2dec(
+				parseFloat(row.sph_close) - parseFloat(row.sph_far)
+			);
+
+			$(targetForm + " [name=add_int]")
+				.val(add_int)
+				.trigger("change");
+			$(targetForm + " [name=add_close]")
+				.val(add_close)
+				.trigger("change");
+		}
+
+		// Set remaining fields
+		$(targetForm + " [name=va_far]").val(row.va_far);
+		$(targetForm + " [name=opto_far]").val(row.opto_far);
+		$(targetForm + " [name=pd05]").val(row.pd05);
+
+		console.log("Values set to " + targetForm);
 	},
 	"click .remove": function (e, value, row, index) {
 		console.log("You click action DELETE on row: " + JSON.stringify(row));
@@ -260,6 +320,11 @@ function operateFormatter_km(value, row, index) {
 		'<a class="edit" href="javascript:void(0)" title="Edit tono/pachy"><i class="fas fa-edit"></i></a>'
 	);
 	html.push(
+		'<a class="set ms-1" href="javascript:void(0)" title="Set values to ' +
+			capitalize(row.laterality) +
+			' eye form"><i class="fas fa-arrow-up"></i></a>'
+	);
+	html.push(
 		'<a class="remove ms-1" href="javascript:void(0)" title="Delete keratometry"><i class="fas fa-trash-alt"></i></a>'
 	);
 	html.push("</div>");
@@ -284,6 +349,35 @@ window.operateEvents_km = {
 		$("#kmFormModal [name=axis2]").val(row.axis2);
 		$("#kmFormModal [name=note]").val(row.note);
 		$("#kmModal").modal("show");
+	},
+	"click .set": function (e, value, row, index) {
+		console.log(
+			"Setting keratometry values to form for row: " + JSON.stringify(row)
+		);
+		let targetForm = "#id" + capitalize(row.laterality) + "Km";
+
+		// Check if target form exists
+		if ($(targetForm).length === 0) {
+			console.error("Target keratometry form not found: " + targetForm);
+			return;
+		}
+
+		// Set keratometry values and trigger changes
+		$(targetForm + " [name=k1]")
+			.val(row.k1)
+			.trigger("change");
+		$(targetForm + " [name=k2]")
+			.val(row.k2)
+			.trigger("change");
+		$(targetForm + " [name=axis1]")
+			.val(row.axis1)
+			.trigger("change");
+		$(targetForm + " [name=axis2]")
+			.val(row.axis2)
+			.trigger("change");
+		$(targetForm + " [name=note]").val(row.note);
+
+		console.log("Keratometry values set to " + targetForm);
 	},
 	"click .remove": function (e, value, row, index) {
 		// console.log('You click action DELETE on row: ' + JSON.stringify(row));

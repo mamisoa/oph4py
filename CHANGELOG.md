@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-03T01:40:57.589390]
+
+### Added
+
+- **📥 AutoRx Bootstrap Tables - "Set to Form" Action Button**: Added new action button to autorx bootstrap tables allowing users to quickly populate laterality forms with table data
+  - **New Action Button**: Added "Set to Form" button (down arrow icon) alongside existing edit/delete buttons in both Rx and Keratometry tables
+  - **Smart Form Targeting**: Right eye table data populates right eye form (`#idRightRx`), left eye table data populates left eye form (`#idLeftRx`)
+  - **Intelligent Field Population Strategy**:
+    - **Core Fields**: Sets `rx_origin` and `glass_type` with `.trigger("change")` to activate existing listeners
+    - **Far Values**: Populates `sph_far`, `cyl_far`, `axis_far` as base values for automatic calculations
+    - **Add Values**: For glass/trial origins, sets `add_int` and `add_close` with triggers - listeners automatically calculate intermediate/close sphere, cylinder, and axis values
+    - **Supporting Fields**: Sets `va_far`, `opto_far`, `pd05` directly
+  - **Leverages Existing Listeners**: Minimal direct field manipulation - lets existing calculation and visibility logic handle:
+    - Automatic calculation of intermediate/close values from far + add values
+    - Show/hide of intermediate/close sections based on rx_origin and glass_type
+    - Spherical equivalent (SE) calculations and updates
+    - Form synchronization and validation
+  - **Keratometry Support**: Same functionality added to keratometry tables for K1/K2/axis values
+  - **Error Handling**: Validates target form existence before attempting to populate fields
+  - **User Experience**: 
+    - ✅ One-click population of forms from historical data
+    - ✅ Respects existing form logic and calculations
+    - ✅ Consistent behavior across Rx and Keratometry tables
+    - ✅ Clear visual feedback with descriptive tooltips
+
+### Technical Details
+
+- **Files Modified**: 
+  - `static/js/controllers/autorx_bt.js` - Enhanced `operateFormatter()` and `operateFormatter_km()` functions
+  - Added new `"click .set"` event handlers to `window.operateEvents` and `window.operateEvents_km`
+- **Implementation Strategy**:
+  - **Trigger-Based**: Uses `.trigger("change")` on key fields to activate existing listeners
+  - **Conditional Logic**: Only sets add values for glass/trial origins (autorx/cyclo/dil don't need them)
+  - **Form Validation**: Checks target form existence before population
+  - **Utility Integration**: Uses existing `capitalize()` and `round2dec()` helper functions
+- **Event Sequence**:
+  1. Set `rx_origin` and trigger (establishes base behavior)
+  2. Set `glass_type` and trigger (establishes section visibility)
+  3. Set far values and trigger (base for calculations)
+  4. Set add values if applicable and trigger (automatic int/close calculations)
+  5. Set remaining supporting fields
+- **Bootstrap Table Integration**: Seamlessly integrates with existing table action system
+- **Backward Compatibility**: No changes to existing edit/delete functionality
+
+### Medical Workflow Enhancement
+
+- **Clinical Efficiency**: Reduces manual data entry by allowing quick reuse of previous measurements
+- **Data Consistency**: Ensures form calculations and validations are properly applied to imported data
+- **Historical Data Access**: Easy way to populate forms with previous autorx, glass, or trial measurements
+- **Bilateral Symmetry**: Facilitates copying similar measurements between eyes when clinically appropriate
+- **Quality Assurance**: Leverages existing form validation and calculation logic for data integrity
+
+This enhancement significantly improves the clinical workflow by allowing healthcare providers to quickly populate refraction forms with previously measured data, while maintaining all existing form logic and calculations.
+
 ## [2025-07-03T01:24:32.880306]
 
 ### Fixed
