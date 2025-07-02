@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-03T00:09:19.958339]
+
+### Fixed
+
+- **🚨 CRITICAL: Billing Combo Escaped Quote Parsing**: Enhanced Python literal parsing to handle escaped quotes in French medical descriptions
+  - **Additional Issue**: Combo codes with escaped quotes `\"` in medical descriptions were breaking both ast.literal_eval and JSON parsing
+  - **Specific Pattern**: French text like `\"[Catégorie 3] Prestations ne donnant pas lieu à une intervention de l'assurance obligatoire (ex. UBM)\"` caused parsing failures
+  - **Enhanced Cleaning**: Added pre-processing to convert escaped quotes `\"` to regular quotes `"` before parsing attempts
+  - **Dual Protection**: Applied escaped quote cleaning to both ast.literal_eval and fallback JSON conversion methods
+  - **Impact**: Resolves remaining combo application failures on production system with specific French medical terminology
+
 ## [2025-07-03T00:05:02.685529]
 
 ### Fixed

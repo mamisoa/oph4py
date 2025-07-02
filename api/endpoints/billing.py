@@ -862,7 +862,15 @@ def apply_billing_combo(combo_id: int):
                         logger.info(
                             f"🔍 DEBUG: Combo {combo_id} - Attempting ast.literal_eval for Python literal parsing"
                         )
-                        combo_codes = ast.literal_eval(combo.combo_codes)
+                        # Clean up common issues before ast.literal_eval
+                        cleaned_codes = combo.combo_codes
+                        # Fix escaped quotes in strings that can break parsing
+                        cleaned_codes = cleaned_codes.replace('\\"', '"')
+                        logger.info(
+                            f"🔍 DEBUG: Combo {combo_id} - Cleaned combo_codes: {repr(cleaned_codes)}"
+                        )
+
+                        combo_codes = ast.literal_eval(cleaned_codes)
                         logger.info(
                             f"🔍 DEBUG: Combo {combo_id} - Successfully parsed with ast.literal_eval"
                         )
@@ -875,8 +883,12 @@ def apply_billing_combo(combo_id: int):
                         )
 
                         # Fallback: Replace Python literals with JSON equivalents
+                        # First fix escaped quotes that can break JSON parsing
+                        json_compatible = combo.combo_codes.replace('\\"', '"')
+
+                        # Then replace Python literals with JSON equivalents
                         json_compatible = (
-                            combo.combo_codes.replace("None", "null")
+                            json_compatible.replace("None", "null")
                             .replace("True", "true")
                             .replace("False", "false")
                             .replace(
