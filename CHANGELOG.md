@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-03T00:05:02.685529]
+
+### Fixed
+
+- **🚨 CRITICAL: Billing Combo Python Literal Parsing**: Fixed JSON parsing errors for combo_codes containing Python dictionary syntax with single quotes
+  - **Root Cause**: Combo codes stored as Python literal format `[{'key': 'value'}]` instead of JSON format `[{"key": "value"}]` were failing to parse
+  - **Error Pattern**: "Expecting ',' delimiter" errors occurred when simple string replacement corrupted French text containing apostrophes
+  - **Enhanced Parser**: Implemented robust two-stage parsing approach:
+    1. **Primary**: Uses `ast.literal_eval()` for safe Python literal parsing
+    2. **Fallback**: String replacement method for JSON conversion if ast parsing fails
+  - **French Text Safe**: Preserves apostrophes and accented characters in medical descriptions (e.g., "ophtalmologie accrédité, y compris")
+  - **Impact**: Resolves all combo application failures caused by Python-style combo_codes data format
+  - **User Experience**: Combo applications now work regardless of whether combo_codes are stored in Python or JSON format
+
+### Technical Details
+
+- **File Enhanced**: `api/endpoints/billing.py` - Enhanced `apply_billing_combo()` function Python literal parsing
+- **Primary Solution**: `ast.literal_eval()` safely parses Python literals without corrupting string content
+- **Fallback Mechanism**: Original JSON conversion method maintained for edge cases
+- **Error Context**: Comprehensive debugging shows exact parsing attempts and failure points
+- **Data Format Support**: Now handles both Python `[{'key': 'value'}]` and JSON `[{"key": "value"}]` formats
+- **Internationalization**: Properly preserves French medical terminology with apostrophes and special characters
+
 ## [2025-07-02T23:58:39.441105]
 
 ### Fixed

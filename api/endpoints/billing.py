@@ -855,41 +855,62 @@ def apply_billing_combo(combo_id: int):
                         f"🔍 DEBUG: Combo {combo_id} - Attempting Python literal evaluation"
                     )
 
-                    # Replace Python literals with JSON equivalents
-                    json_compatible = (
-                        combo.combo_codes.replace("None", "null")
-                        .replace("True", "true")
-                        .replace("False", "false")
-                        .replace("'", '"')  # Replace single quotes with double quotes
-                    )
-                    logger.info(
-                        f"🔍 DEBUG: Combo {combo_id} - After Python->JSON conversion: {repr(json_compatible)}"
-                    )
+                    # Try using ast.literal_eval for safe Python literal parsing
+                    import ast
 
                     try:
-                        combo_codes = json.loads(json_compatible)
                         logger.info(
-                            f"🔍 DEBUG: Combo {combo_id} - Successfully parsed after Python->JSON conversion"
+                            f"🔍 DEBUG: Combo {combo_id} - Attempting ast.literal_eval for Python literal parsing"
                         )
-                    except json.JSONDecodeError as converted_error:
-                        logger.error(
-                            f"🔍 DEBUG: Combo {combo_id} - Failed to parse even after conversion: {str(converted_error)}"
+                        combo_codes = ast.literal_eval(combo.combo_codes)
+                        logger.info(
+                            f"🔍 DEBUG: Combo {combo_id} - Successfully parsed with ast.literal_eval"
                         )
+                    except (ValueError, SyntaxError) as ast_error:
                         logger.error(
-                            f"🔍 DEBUG: Combo {combo_id} - Converted JSON error position: line {getattr(converted_error, 'lineno', 'unknown')} column {getattr(converted_error, 'colno', 'unknown')} char {getattr(converted_error, 'pos', 'unknown')}"
+                            f"🔍 DEBUG: Combo {combo_id} - ast.literal_eval failed: {str(ast_error)}"
+                        )
+                        logger.info(
+                            f"🔍 DEBUG: Combo {combo_id} - Falling back to string replacement method"
                         )
 
-                        # Show content around the error position for debugging
-                        if hasattr(converted_error, "pos") and converted_error.pos:
-                            error_pos = converted_error.pos
-                            start_pos = max(0, error_pos - 50)
-                            end_pos = min(len(json_compatible), error_pos + 50)
-                            context = json_compatible[start_pos:end_pos]
+                        # Fallback: Replace Python literals with JSON equivalents
+                        json_compatible = (
+                            combo.combo_codes.replace("None", "null")
+                            .replace("True", "true")
+                            .replace("False", "false")
+                            .replace(
+                                "'", '"'
+                            )  # Replace single quotes with double quotes
+                        )
+                        logger.info(
+                            f"🔍 DEBUG: Combo {combo_id} - After Python->JSON conversion: {repr(json_compatible)}"
+                        )
+
+                        try:
+                            combo_codes = json.loads(json_compatible)
+                            logger.info(
+                                f"🔍 DEBUG: Combo {combo_id} - Successfully parsed after Python->JSON conversion"
+                            )
+                        except json.JSONDecodeError as converted_error:
                             logger.error(
-                                f"🔍 DEBUG: Combo {combo_id} - Content around error position {error_pos}: {repr(context)}"
+                                f"🔍 DEBUG: Combo {combo_id} - Failed to parse even after conversion: {str(converted_error)}"
+                            )
+                            logger.error(
+                                f"🔍 DEBUG: Combo {combo_id} - Converted JSON error position: line {getattr(converted_error, 'lineno', 'unknown')} column {getattr(converted_error, 'colno', 'unknown')} char {getattr(converted_error, 'pos', 'unknown')}"
                             )
 
-                        raise converted_error
+                            # Show content around the error position for debugging
+                            if hasattr(converted_error, "pos") and converted_error.pos:
+                                error_pos = converted_error.pos
+                                start_pos = max(0, error_pos - 50)
+                                end_pos = min(len(json_compatible), error_pos + 50)
+                                context = json_compatible[start_pos:end_pos]
+                                logger.error(
+                                    f"🔍 DEBUG: Combo {combo_id} - Content around error position {error_pos}: {repr(context)}"
+                                )
+
+                            raise converted_error
             else:
                 # Already parsed (list/dict)
                 logger.info(
