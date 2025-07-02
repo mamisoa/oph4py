@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-03T01:24:32.880306]
+
+### Fixed
+
+- **🔧 AutoRx Modal Edit Table Refresh Fix**: Fixed autorx bootstrap tables (left/right) not refreshing after editing Rx records via modal
+  - **Root Cause**: Modal submit handler was using incorrect laterality detection and missing fallback parameter for `refreshTables()` function
+  - **Issue Pattern**: 
+    - Editing left eye records would refresh the right table instead of left table
+    - `refreshTables()` fallback was called without required `tablesArr` parameter
+    - Form laterality value reading had potential timing/scoping issues
+  - **Technical Fix**: Enhanced modal submit handler in `static/js/controllers/autorx.js`:
+    - **Improved Laterality Detection**: Added dual-source laterality reading from both serialized form data (`dataObj.laterality`) and form field value with fallback logic
+    - **Fixed Fallback Function**: Added missing `tablesArr` parameter to `refreshTables()` call
+    - **Enhanced Debugging**: Added comprehensive console logging to track laterality values, data types, and refresh decisions
+  - **Table Refresh Logic**: 
+    - **Right eye records**: Only refreshes `#rxRight_tbl` bootstrap table
+    - **Left eye records**: Only refreshes `#rxLeft_tbl` bootstrap table  
+    - **Fallback**: Refreshes all tables if laterality cannot be determined
+  - **User Experience**: 
+    - ✅ Editing left eye Rx records now properly refreshes left table only
+    - ✅ Editing right eye Rx records continues to work correctly
+    - ✅ Table updates are immediate and targeted for better performance
+    - ✅ No more manual table refresh needed after modal edits
+
+### Technical Details
+
+- **File Modified**: `static/js/controllers/autorx.js` - Enhanced `#rxFormModal` submit handler (lines 455-482)
+- **Laterality Detection**: Primary source is `dataObj.laterality` from serialized form data, fallback to direct form field reading
+- **Bootstrap Table Integration**: Uses proper bootstrap-table refresh API with correct table selectors
+- **Error Recovery**: Comprehensive fallback to refresh all tables if laterality detection fails
+- **Debugging Support**: Detailed console logging for troubleshooting laterality detection issues
+
+### Data Flow Enhancement
+
+- **Form Serialization**: Modal form data properly serialized and laterality extracted reliably
+- **Table Targeting**: Specific table refresh based on actual record laterality rather than generic refresh
+- **Performance**: Single table refresh instead of refreshing all autorx/keratometry tables
+- **Consistency**: Same refresh pattern used by other modal edit operations in the application
+
+This fix resolves a user experience issue where medical staff had to manually refresh tables after editing refraction records, ensuring immediate visual feedback when Rx data is updated.
+
 ## [2025-07-03T00:36:48.989167]
 
 ### Fixed
