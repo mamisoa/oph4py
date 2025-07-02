@@ -7,39 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
-## [2025-07-03T00:09:19.958339]
+## [2025-07-03T00:36:48.989167]
 
 ### Fixed
 
-- **🚨 CRITICAL: Billing Combo Escaped Quote Parsing**: Enhanced Python literal parsing to handle escaped quotes in French medical descriptions
-  - **Additional Issue**: Combo codes with escaped quotes `\"` in medical descriptions were breaking both ast.literal_eval and JSON parsing
-  - **Specific Pattern**: French text like `\"[Catégorie 3] Prestations ne donnant pas lieu à une intervention de l'assurance obligatoire (ex. UBM)\"` caused parsing failures
-  - **Enhanced Cleaning**: Added pre-processing to convert escaped quotes `\"` to regular quotes `"` before parsing attempts
-  - **Dual Protection**: Applied escaped quote cleaning to both ast.literal_eval and fallback JSON conversion methods
-  - **Impact**: Resolves remaining combo application failures on production system with specific French medical terminology
-
-## [2025-07-03T00:05:02.685529]
-
-### Fixed
-
-- **🚨 CRITICAL: Billing Combo Python Literal Parsing**: Fixed JSON parsing errors for combo_codes containing Python dictionary syntax with single quotes
-  - **Root Cause**: Combo codes stored as Python literal format `[{'key': 'value'}]` instead of JSON format `[{"key": "value"}]` were failing to parse
-  - **Error Pattern**: "Expecting ',' delimiter" errors occurred when simple string replacement corrupted French text containing apostrophes
-  - **Enhanced Parser**: Implemented robust two-stage parsing approach:
-    1. **Primary**: Uses `ast.literal_eval()` for safe Python literal parsing
-    2. **Fallback**: String replacement method for JSON conversion if ast parsing fails
-  - **French Text Safe**: Preserves apostrophes and accented characters in medical descriptions (e.g., "ophtalmologie accrédité, y compris")
-  - **Impact**: Resolves all combo application failures caused by Python-style combo_codes data format
-  - **User Experience**: Combo applications now work regardless of whether combo_codes are stored in Python or JSON format
-
-### Technical Details
-
-- **File Enhanced**: `api/endpoints/billing.py` - Enhanced `apply_billing_combo()` function Python literal parsing
-- **Primary Solution**: `ast.literal_eval()` safely parses Python literals without corrupting string content
-- **Fallback Mechanism**: Original JSON conversion method maintained for edge cases
-- **Error Context**: Comprehensive debugging shows exact parsing attempts and failure points
-- **Data Format Support**: Now handles both Python `[{'key': 'value'}]` and JSON `[{"key": "value"}]` formats
-- **Internationalization**: Properly preserves French medical terminology with apostrophes and special characters
+- **🚨 Legacy Combo Codes Python-Literal Bug Fixed**: Resolved a critical issue where some `billing_combo.combo_codes` entries were stored as Python literals (single quotes, `None`, etc.) instead of valid JSON, causing backend errors on combo application and inconsistent behavior between environments.
+  - **Symptoms**: Combo application failed with errors like `Expecting ',' delimiter` or `Invalid combo_codes format` on systems where the backend strictly required JSON. Some combos worked on one server but not another due to data format differences.
+  - **Root Cause**: Legacy combos were created or imported using Python's `str()`/`repr()` instead of `json.dumps()`, resulting in non-JSON data in the database. The current combo creation endpoint is robust and only allows valid JSON, but old data persisted.
+  - **Fix**: Ran a Python script across the remote database to:
+    - Detect combos with non-JSON `combo_codes` fields
+    - Parse them safely using `ast.literal_eval`
+    - Re-serialize and update them as valid JSON using `json.dumps`
+    - Leave already-correct combos untouched
+  - **Outcome**: All combos are now stored as valid JSON. Combo application and import/export are now robust and consistent across all environments. The system now guarantees only valid JSON is accepted for new combos.
+  - **Technical Details**: See `fix_combos.py` script for implementation. The script logs all fixes and skips combos that are already correct or cannot be safely converted.
 
 ## [2025-07-02T23:58:39.441105]
 
@@ -595,8 +576,8 @@ This issue demonstrates the importance of comprehensive testing after framework-
 
 - **Framework Best Practices**: Use py4web's built-in transaction management instead of manual control
 - **Database Consistency**: Automatic transaction lifecycle management ensures proper ACID properties
-- **Error Handling**: Simplified error handling since rollback is now automatic on exceptions
 - **Code Maintainability**: Reduced complexity by removing manual transaction management code
+- **Error Safety**: Automatic rollback prevents data corruption on failures
 
 ## [2025-01-20T17:32:00.000000]
 
