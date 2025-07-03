@@ -7,6 +7,99 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-03T02:28:30.191598]
+
+### Changed
+
+- **🎨 Combo Management UI Complete Refactor**: Completely redesigned the procedure-modality management interface with modern two-panel layout and comprehensive functionality
+  - **Modern Two-Panel Design**: 
+    - **Left Panel**: Procedure browser with real-time search functionality and modality count badges
+    - **Right Panel**: Dynamic modality management for selected procedure with visual association indicators
+    - **Responsive Layout**: Full-height panels with proper scrolling and mobile-friendly design
+  - **Enhanced User Experience**:
+    - **Visual Associations**: Clear distinction between associated (green) and available (white) modalities
+    - **Procedure Search**: Real-time search filtering with 300ms debounce for smooth performance
+    - **Count Badges**: Each procedure shows number of associated modalities at a glance
+    - **One-Click Operations**: Add/remove individual associations with immediate visual feedback
+  - **Bulk Operations**:
+    - **Bulk Add Modal**: Select multiple modalities to add to a procedure simultaneously
+    - **Copy From Procedure**: Copy all modality associations from another procedure
+    - **Source Preview**: Shows which modalities will be copied before confirmation
+  - **Complete CRUD Operations**:
+    - **Add New Procedure**: Green "Add New Procedure" button with modal form for creating procedures
+    - **Procedure Creation**: Form with name, description, and optional modality associations
+    - **Delete Procedure**: Red delete button with confirmation dialog and cascade cleanup
+    - **Validation**: Required fields, duplicate name detection, and safety confirmations
+  - **Smart Functionality**:
+    - **Duplicate Prevention**: Bulk operations automatically exclude already-associated modalities
+    - **Real-time Updates**: Procedure counts and lists update immediately after changes
+    - **Error Handling**: Comprehensive error handling with user-friendly toast notifications
+    - **Confirmation Dialogs**: Bootbox confirmations positioned below navigation for destructive operations
+  - **Technical Architecture**:
+    - **Class-Based JavaScript**: New `ComboManager` class with modular design (654 lines)
+    - **API Integration**: Uses existing combo, procedure, and modality endpoints
+    - **Backward Compatibility**: Maintains compatibility with existing combo system
+    - **Performance Optimized**: Parallel API calls and efficient DOM updates
+
+### Fixed
+
+- **🔧 Count Display Issue**: Fixed all procedures showing "0" associations despite existing data
+  - **Root Cause**: Complex API query with grouping wasn't working properly
+  - **Solution**: Simplified to fetch all combo records and count in JavaScript
+  - **API URL Fix**: Corrected from `[[=URL()]]` syntax to direct format
+  - **Debugging**: Added console logs to track API responses and count calculations
+- **🔧 Modal Positioning**: Fixed modals being covered by navigation bar
+  - **Solution**: Added CSS with `padding-top: 80px` for all modals
+  - **Responsive Design**: Different padding for mobile devices
+  - **Global Application**: All modals (Add Procedure, Bulk Add, Copy From) benefit
+- **🔧 Template Syntax**: Fixed URL generation syntax error in template
+  - **Corrected**: Changed from `[[=URL('api','combo')]]` to proper py4web format
+
+### Technical Details
+
+- **Files Modified**:
+  - `templates/manage/combo.html` - Complete UI redesign with two-panel layout and modal positioning fixes
+  - `static/js/settings/combo-manager.js` - New comprehensive management class with full CRUD operations
+  - `static/js/settings/combo.js` - Updated for backward compatibility with legacy forms
+- **New Features**:
+  - **Modern CSS**: Custom styles for procedure/modality items, search, and responsive design
+  - **Modal Dialogs**: Add Procedure, Bulk Add, and Copy From modals with proper positioning
+  - **Search System**: Debounced search with empty state handling
+  - **Count System**: Real-time modality count tracking and display with debugging
+  - **Toast Notifications**: Success/error feedback using existing toast system
+  - **Delete Operations**: Procedure deletion with cascade cleanup and confirmations
+- **API Usage**:
+  - Leverages existing `/api/combo`, `/api/procedure`, `/api/modality` endpoints
+  - Uses proper CRUD operations with `crudp()` function
+  - Implements lookups for associated data display
+  - Fixed count calculation through JavaScript aggregation
+- **User Interface**:
+  - **Color Coding**: Green for associated, white for available modalities
+  - **Icon System**: FontAwesome icons for actions and status indicators
+  - **Button States**: Proper disabled/enabled states for modal actions
+  - **Loading States**: Spinner indicators during data loading
+  - **Modal Positioning**: Proper positioning below navigation bar
+
+### Medical Workflow Enhancement
+
+- **Clinical Efficiency**: Dramatically improved workflow for managing procedure-modality relationships
+- **Visual Clarity**: Clear overview of which procedures have which modalities configured
+- **Bulk Management**: Efficient setup of new procedures by copying from existing ones
+- **Search Capability**: Quick location of specific procedures in large lists
+- **Complete Management**: Full CRUD operations for procedures and their associations
+- **Error Prevention**: Confirmation dialogs prevent accidental deletions
+- **Audit Trail**: Console logging for all operations for debugging and audit purposes
+
+### Migration Notes
+
+- **Backward Compatible**: Existing combo data and APIs unchanged
+- **Legacy Support**: Old form-based interface code preserved for compatibility
+- **No Database Changes**: Uses existing combo table structure
+- **API Unchanged**: All existing API endpoints continue to work as before
+- **Seamless Transition**: Users can immediately use new interface without data migration
+
+This major UI enhancement transforms the basic dropdown-based combo management into a modern, efficient interface that significantly improves the user experience for managing procedure-modality relationships while maintaining full compatibility with the existing system. The interface now provides complete CRUD operations with proper visual feedback and error handling.
+
 ## [2025-07-03T01:40:57.589390]
 
 ### Added
