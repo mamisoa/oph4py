@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Fixed] - 2025-07-03T20:14:28.723278
+
+### Fixed
+- **Billing Combo Descriptions**: Fixed critical issue where main and secondary descriptions were not being displayed when applying combos. The problem was that the system was prioritizing external nomenclature API data over combo-stored descriptions. Changed logic to always prioritize descriptions and fees stored in the combo definition first, falling back to external API data only when combo data is not available. This ensures that custom descriptions and fees defined in combos are properly preserved and displayed in the billing codes table.
+
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
 ## [2025-07-03T02:28:30.191598]

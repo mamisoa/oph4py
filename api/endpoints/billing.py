@@ -1008,75 +1008,190 @@ def apply_billing_combo(combo_id: int):
             # Try to get main nomenclature details
             try:
                 code_details = nomenclature.get_code_details(nomen_code)
-                if code_details is not None:
-                    code_data["nomen_desc_fr"] = code_details.get("description_fr")
-                    code_data["nomen_desc_nl"] = code_details.get("description_nl")
-                    code_data["feecode"] = code_details.get("feecode")
 
-                    # Prioritize custom fee from combo definition over standard nomenclature fee
-                    if isinstance(code_def, dict) and code_def.get("fee") is not None:
-                        # Use custom fee from combo definition
+                # Always prioritize combo-stored descriptions if available
+                if isinstance(code_def, dict):
+                    # Use descriptions from combo definition if available
+                    if code_def.get("nomen_desc_fr"):
+                        code_data["nomen_desc_fr"] = code_def.get("nomen_desc_fr")
+                        logger.info(
+                            f"Using combo-stored description for code {nomen_code}"
+                        )
+                    elif code_details and code_details.get("description_fr"):
+                        code_data["nomen_desc_fr"] = code_details.get("description_fr")
+                        logger.info(f"Using API description for code {nomen_code}")
+
+                    if code_def.get("nomen_desc_nl"):
+                        code_data["nomen_desc_nl"] = code_def.get("nomen_desc_nl")
+                    elif code_details and code_details.get("description_nl"):
+                        code_data["nomen_desc_nl"] = code_details.get("description_nl")
+
+                    # Handle feecode - prefer combo definition
+                    if code_def.get("feecode"):
+                        code_data["feecode"] = code_def.get("feecode")
+                    elif code_details and code_details.get("feecode"):
+                        code_data["feecode"] = code_details.get("feecode")
+
+                    # Handle fee - prefer combo definition
+                    if code_def.get("fee") is not None:
                         custom_fee = code_def.get("fee")
                         code_data["fee"] = custom_fee
                         total_main_fees += float(custom_fee or 0)
                         logger.info(
-                            f"Using custom fee €{custom_fee} for code {nomen_code} (standard: €{code_details.get('fee', '0.00')})"
+                            f"Using combo-defined fee €{custom_fee} for code {nomen_code}"
                         )
-                    else:
-                        # Use standard fee from nomenclature service
+                    elif code_details and code_details.get("fee"):
                         standard_fee = code_details.get("fee")
                         code_data["fee"] = standard_fee
                         total_main_fees += float(standard_fee or 0)
                         logger.info(
-                            f"Using standard fee €{standard_fee} for code {nomen_code}"
+                            f"Using API fee €{standard_fee} for code {nomen_code}"
                         )
+                else:
+                    # No combo definition - use API data if available
+                    if code_details:
+                        code_data["nomen_desc_fr"] = code_details.get("description_fr")
+                        code_data["nomen_desc_nl"] = code_details.get("description_nl")
+                        code_data["feecode"] = code_details.get("feecode")
+                        code_data["fee"] = code_details.get("fee")
+                        total_main_fees += float(code_details.get("fee") or 0)
+                        logger.info(f"Using API data for code {nomen_code}")
+                    else:
+                        logger.warning(f"No data available for code {nomen_code}")
             except Exception as e:
                 logger.warning(
                     f"Could not fetch details for main code {nomen_code}: {str(e)}"
                 )
+                # Use combo definition data as fallback
+                if isinstance(code_def, dict):
+                    logger.info(
+                        f"Using combo definition data as fallback for code {nomen_code}"
+                    )
+                    if code_def.get("nomen_desc_fr"):
+                        code_data["nomen_desc_fr"] = code_def.get("nomen_desc_fr")
+                    if code_def.get("nomen_desc_nl"):
+                        code_data["nomen_desc_nl"] = code_def.get("nomen_desc_nl")
+                    if code_def.get("feecode"):
+                        code_data["feecode"] = code_def.get("feecode")
+                    if code_def.get("fee") is not None:
+                        fee_value = code_def.get("fee")
+                        code_data["fee"] = fee_value
+                        total_main_fees += float(fee_value or 0)
 
             # Handle secondary code if present
             if secondary_code:
                 try:
                     secondary_details = nomenclature.get_code_details(secondary_code)
-                    if secondary_details is not None:
-                        code_data["secondary_nomen_code"] = secondary_code
-                        code_data["secondary_nomen_desc_fr"] = secondary_details.get(
-                            "description_fr"
-                        )
-                        code_data["secondary_nomen_desc_nl"] = secondary_details.get(
-                            "description_nl"
-                        )
-                        code_data["secondary_feecode"] = secondary_details.get(
-                            "feecode"
-                        )
+                    code_data["secondary_nomen_code"] = secondary_code
 
-                        # Prioritize custom secondary fee from combo definition over standard nomenclature fee
-                        if (
-                            isinstance(code_def, dict)
-                            and code_def.get("secondary_fee") is not None
-                        ):
-                            # Use custom secondary fee from combo definition
-                            custom_secondary_fee = code_def.get("secondary_fee")
-                            code_data["secondary_fee"] = custom_secondary_fee
-                            total_secondary_fees += float(custom_secondary_fee or 0)
-                            logger.info(
-                                f"Using custom secondary fee €{custom_secondary_fee} for code {secondary_code} (standard: €{secondary_details.get('fee', '0.00')})"
+                    # Always prioritize combo-stored secondary descriptions if available
+                    if isinstance(code_def, dict):
+                        # Use descriptions from combo definition if available
+                        if code_def.get("secondary_nomen_desc_fr"):
+                            code_data["secondary_nomen_desc_fr"] = code_def.get(
+                                "secondary_nomen_desc_fr"
                             )
-                        else:
-                            # Use standard secondary fee from nomenclature service
+                            logger.info(
+                                f"Using combo-stored secondary description for code {secondary_code}"
+                            )
+                        elif secondary_details and secondary_details.get(
+                            "description_fr"
+                        ):
+                            code_data["secondary_nomen_desc_fr"] = (
+                                secondary_details.get("description_fr")
+                            )
+                            logger.info(
+                                f"Using API secondary description for code {secondary_code}"
+                            )
+
+                        if code_def.get("secondary_nomen_desc_nl"):
+                            code_data["secondary_nomen_desc_nl"] = code_def.get(
+                                "secondary_nomen_desc_nl"
+                            )
+                        elif secondary_details and secondary_details.get(
+                            "description_nl"
+                        ):
+                            code_data["secondary_nomen_desc_nl"] = (
+                                secondary_details.get("description_nl")
+                            )
+
+                        # Handle secondary feecode - prefer combo definition
+                        if code_def.get("secondary_feecode"):
+                            code_data["secondary_feecode"] = code_def.get(
+                                "secondary_feecode"
+                            )
+                        elif secondary_details and secondary_details.get("feecode"):
+                            code_data["secondary_feecode"] = secondary_details.get(
+                                "feecode"
+                            )
+
+                        # Handle secondary fee - prefer combo definition
+                        if code_def.get("secondary_fee") is not None:
+                            secondary_fee_value = code_def.get("secondary_fee")
+                            code_data["secondary_fee"] = secondary_fee_value
+                            total_secondary_fees += float(secondary_fee_value or 0)
+                            logger.info(
+                                f"Using combo-defined secondary fee €{secondary_fee_value} for code {secondary_code}"
+                            )
+                        elif secondary_details and secondary_details.get("fee"):
                             standard_secondary_fee = secondary_details.get("fee")
                             code_data["secondary_fee"] = standard_secondary_fee
                             total_secondary_fees += float(standard_secondary_fee or 0)
                             logger.info(
-                                f"Using standard secondary fee €{standard_secondary_fee} for code {secondary_code}"
+                                f"Using API secondary fee €{standard_secondary_fee} for code {secondary_code}"
+                            )
+                    else:
+                        # No combo definition - use API data if available
+                        if secondary_details:
+                            code_data["secondary_nomen_desc_fr"] = (
+                                secondary_details.get("description_fr")
+                            )
+                            code_data["secondary_nomen_desc_nl"] = (
+                                secondary_details.get("description_nl")
+                            )
+                            code_data["secondary_feecode"] = secondary_details.get(
+                                "feecode"
+                            )
+                            code_data["secondary_fee"] = secondary_details.get("fee")
+                            total_secondary_fees += float(
+                                secondary_details.get("fee") or 0
+                            )
+                            logger.info(
+                                f"Using API secondary data for code {secondary_code}"
+                            )
+                        else:
+                            logger.warning(
+                                f"No secondary data available for code {secondary_code}"
                             )
 
-                        codes_with_secondary += 1
+                    codes_with_secondary += 1
                 except Exception as e:
                     logger.warning(
                         f"Could not fetch details for secondary code {secondary_code}: {str(e)}"
                     )
+                    # Use combo definition data as fallback
+                    if isinstance(code_def, dict):
+                        logger.info(
+                            f"Using combo definition data as fallback for secondary code {secondary_code}"
+                        )
+                        code_data["secondary_nomen_code"] = secondary_code
+                        if code_def.get("secondary_nomen_desc_fr"):
+                            code_data["secondary_nomen_desc_fr"] = code_def.get(
+                                "secondary_nomen_desc_fr"
+                            )
+                        if code_def.get("secondary_nomen_desc_nl"):
+                            code_data["secondary_nomen_desc_nl"] = code_def.get(
+                                "secondary_nomen_desc_nl"
+                            )
+                        if code_def.get("secondary_feecode"):
+                            code_data["secondary_feecode"] = code_def.get(
+                                "secondary_feecode"
+                            )
+                        if code_def.get("secondary_fee") is not None:
+                            secondary_fee_value = code_def.get("secondary_fee")
+                            code_data["secondary_fee"] = secondary_fee_value
+                            total_secondary_fees += float(secondary_fee_value or 0)
+                        codes_with_secondary += 1
 
             # Create billing code
             code_id = db.billing_codes.insert(**code_data)
