@@ -1028,7 +1028,15 @@ def apply_billing_combo(combo_id: int):
 
                     # Handle feecode - prefer combo definition
                     if code_def.get("feecode"):
-                        code_data["feecode"] = code_def.get("feecode")
+                        feecode_value = code_def.get("feecode")
+                        # Only use feecode if it's a valid value (not N/A)
+                        if feecode_value and str(feecode_value).strip() not in (
+                            "N/A",
+                            "null",
+                            "None",
+                            "",
+                        ):
+                            code_data["feecode"] = feecode_value
                     elif code_details and code_details.get("feecode"):
                         code_data["feecode"] = code_details.get("feecode")
 
@@ -1072,7 +1080,15 @@ def apply_billing_combo(combo_id: int):
                     if code_def.get("nomen_desc_nl"):
                         code_data["nomen_desc_nl"] = code_def.get("nomen_desc_nl")
                     if code_def.get("feecode"):
-                        code_data["feecode"] = code_def.get("feecode")
+                        feecode_value = code_def.get("feecode")
+                        # Only use feecode if it's a valid value (not N/A)
+                        if feecode_value and str(feecode_value).strip() not in (
+                            "N/A",
+                            "null",
+                            "None",
+                            "",
+                        ):
+                            code_data["feecode"] = feecode_value
                     if code_def.get("fee") is not None:
                         fee_value = code_def.get("fee")
                         code_data["fee"] = fee_value
@@ -1117,9 +1133,12 @@ def apply_billing_combo(combo_id: int):
 
                         # Handle secondary feecode - prefer combo definition
                         if code_def.get("secondary_feecode"):
-                            code_data["secondary_feecode"] = code_def.get(
-                                "secondary_feecode"
-                            )
+                            secondary_feecode_value = code_def.get("secondary_feecode")
+                            # Only use secondary feecode if it's a valid value (not N/A)
+                            if secondary_feecode_value and str(
+                                secondary_feecode_value
+                            ).strip() not in ("N/A", "null", "None", ""):
+                                code_data["secondary_feecode"] = secondary_feecode_value
                         elif secondary_details and secondary_details.get("feecode"):
                             code_data["secondary_feecode"] = secondary_details.get(
                                 "feecode"
@@ -1184,9 +1203,12 @@ def apply_billing_combo(combo_id: int):
                                 "secondary_nomen_desc_nl"
                             )
                         if code_def.get("secondary_feecode"):
-                            code_data["secondary_feecode"] = code_def.get(
-                                "secondary_feecode"
-                            )
+                            secondary_feecode_value = code_def.get("secondary_feecode")
+                            # Only use secondary feecode if it's a valid value (not N/A)
+                            if secondary_feecode_value and str(
+                                secondary_feecode_value
+                            ).strip() not in ("N/A", "null", "None", ""):
+                                code_data["secondary_feecode"] = secondary_feecode_value
                         if code_def.get("secondary_fee") is not None:
                             secondary_fee_value = code_def.get("secondary_fee")
                             code_data["secondary_fee"] = secondary_fee_value

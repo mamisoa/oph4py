@@ -61,4 +61,4 @@ Oph4py is a comprehensive ophthalmology electronic medical records (EMR) system 
 
 ## Project Scope
 
-The system must handle all aspects of an ophthalmology practice, from patient registration to clinical documentation, prescription management, and administrative tasks. It should be scalable, maintainable, and user-friendly while ensuring the highest standards of medical data security and privacy. 
+The system must handle all aspects of an ophthalmology practice, from patient registration to clinical documentation, prescription management, and administrative tasks. It should be scalable, maintainable, and user-friendly while ensuring the highest standards of medical data security and privacy.

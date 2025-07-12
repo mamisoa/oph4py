@@ -1,0 +1,1041 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Fixed] - 2025-07-03T20:14:28.723278
+
+### Fixed
+- **Billing Combo Descriptions**: Fixed critical issue where main and secondary descriptions were not being displayed when applying combos. The problem was that the system was prioritizing external nomenclature API data over combo-stored descriptions. Changed logic to always prioritize descriptions and fees stored in the combo definition first, falling back to external API data only when combo data is not available. This ensures that custom descriptions and fees defined in combos are properly preserved and displayed in the billing codes table.
+
+NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
+
+## [2025-07-03T02:28:30.191598]
+
+### Changed
+
+- **🎨 Combo Management UI Complete Refactor**: Completely redesigned the procedure-modality management interface with modern two-panel layout and comprehensive functionality
+  - **Modern Two-Panel Design**: 
+    - **Left Panel**: Procedure browser with real-time search functionality and modality count badges
+    - **Right Panel**: Dynamic modality management for selected procedure with visual association indicators
+    - **Responsive Layout**: Full-height panels with proper scrolling and mobile-friendly design
+  - **Enhanced User Experience**:
+    - **Visual Associations**: Clear distinction between associated (green) and available (white) modalities
+    - **Procedure Search**: Real-time search filtering with 300ms debounce for smooth performance
+    - **Count Badges**: Each procedure shows number of associated modalities at a glance
+    - **One-Click Operations**: Add/remove individual associations with immediate visual feedback
+  - **Bulk Operations**:
+    - **Bulk Add Modal**: Select multiple modalities to add to a procedure simultaneously
+    - **Copy From Procedure**: Copy all modality associations from another procedure
+    - **Source Preview**: Shows which modalities will be copied before confirmation
+  - **Complete CRUD Operations**:
+    - **Add New Procedure**: Green "Add New Procedure" button with modal form for creating procedures
+    - **Procedure Creation**: Form with name, description, and optional modality associations
+    - **Delete Procedure**: Red delete button with confirmation dialog and cascade cleanup
+    - **Validation**: Required fields, duplicate name detection, and safety confirmations
+  - **Smart Functionality**:
+    - **Duplicate Prevention**: Bulk operations automatically exclude already-associated modalities
+    - **Real-time Updates**: Procedure counts and lists update immediately after changes
+    - **Error Handling**: Comprehensive error handling with user-friendly toast notifications
+    - **Confirmation Dialogs**: Bootbox confirmations positioned below navigation for destructive operations
+  - **Technical Architecture**:
+    - **Class-Based JavaScript**: New `ComboManager` class with modular design (654 lines)
+    - **API Integration**: Uses existing combo, procedure, and modality endpoints
+    - **Backward Compatibility**: Maintains compatibility with existing combo system
+    - **Performance Optimized**: Parallel API calls and efficient DOM updates
+
+### Fixed
+
+- **🔧 Count Display Issue**: Fixed all procedures showing "0" associations despite existing data
+  - **Root Cause**: Complex API query with grouping wasn't working properly
+  - **Solution**: Simplified to fetch all combo records and count in JavaScript
+  - **API URL Fix**: Corrected from `[[=URL()]]` syntax to direct format
+  - **Debugging**: Added console logs to track API responses and count calculations
+- **🔧 Modal Positioning**: Fixed modals being covered by navigation bar
+  - **Solution**: Added CSS with `padding-top: 80px` for all modals
+  - **Responsive Design**: Different padding for mobile devices
+  - **Global Application**: All modals (Add Procedure, Bulk Add, Copy From) benefit
+- **🔧 Template Syntax**: Fixed URL generation syntax error in template
+  - **Corrected**: Changed from `[[=URL('api','combo')]]` to proper py4web format
+
+### Technical Details
+
+- **Files Modified**:
+  - `templates/manage/combo.html` - Complete UI redesign with two-panel layout and modal positioning fixes
+  - `static/js/settings/combo-manager.js` - New comprehensive management class with full CRUD operations
+  - `static/js/settings/combo.js` - Updated for backward compatibility with legacy forms
+- **New Features**:
+  - **Modern CSS**: Custom styles for procedure/modality items, search, and responsive design
+  - **Modal Dialogs**: Add Procedure, Bulk Add, and Copy From modals with proper positioning
+  - **Search System**: Debounced search with empty state handling
+  - **Count System**: Real-time modality count tracking and display with debugging
+  - **Toast Notifications**: Success/error feedback using existing toast system
+  - **Delete Operations**: Procedure deletion with cascade cleanup and confirmations
+- **API Usage**:
+  - Leverages existing `/api/combo`, `/api/procedure`, `/api/modality` endpoints
+  - Uses proper CRUD operations with `crudp()` function
+  - Implements lookups for associated data display
+  - Fixed count calculation through JavaScript aggregation
+- **User Interface**:
+  - **Color Coding**: Green for associated, white for available modalities
+  - **Icon System**: FontAwesome icons for actions and status indicators
+  - **Button States**: Proper disabled/enabled states for modal actions
+  - **Loading States**: Spinner indicators during data loading
+  - **Modal Positioning**: Proper positioning below navigation bar
+
+### Medical Workflow Enhancement
+
+- **Clinical Efficiency**: Dramatically improved workflow for managing procedure-modality relationships
+- **Visual Clarity**: Clear overview of which procedures have which modalities configured
+- **Bulk Management**: Efficient setup of new procedures by copying from existing ones
+- **Search Capability**: Quick location of specific procedures in large lists
+- **Complete Management**: Full CRUD operations for procedures and their associations
+- **Error Prevention**: Confirmation dialogs prevent accidental deletions
+- **Audit Trail**: Console logging for all operations for debugging and audit purposes
+
+### Migration Notes
+
+- **Backward Compatible**: Existing combo data and APIs unchanged
+- **Legacy Support**: Old form-based interface code preserved for compatibility
+- **No Database Changes**: Uses existing combo table structure
+- **API Unchanged**: All existing API endpoints continue to work as before
+- **Seamless Transition**: Users can immediately use new interface without data migration
+
+This major UI enhancement transforms the basic dropdown-based combo management into a modern, efficient interface that significantly improves the user experience for managing procedure-modality relationships while maintaining full compatibility with the existing system. The interface now provides complete CRUD operations with proper visual feedback and error handling.
+
+## [2025-07-03T01:40:57.589390]
+
+### Added
+
+- **📥 AutoRx Bootstrap Tables - "Set to Form" Action Button**: Added new action button to autorx bootstrap tables allowing users to quickly populate laterality forms with table data
+  - **New Action Button**: Added "Set to Form" button (down arrow icon) alongside existing edit/delete buttons in both Rx and Keratometry tables
+  - **Smart Form Targeting**: Right eye table data populates right eye form (`#idRightRx`), left eye table data populates left eye form (`#idLeftRx`)
+  - **Intelligent Field Population Strategy**:
+    - **Core Fields**: Sets `rx_origin` and `glass_type` with `.trigger("change")` to activate existing listeners
+    - **Far Values**: Populates `sph_far`, `cyl_far`, `axis_far` as base values for automatic calculations
+    - **Add Values**: For glass/trial origins, sets `add_int` and `add_close` with triggers - listeners automatically calculate intermediate/close sphere, cylinder, and axis values
+    - **Supporting Fields**: Sets `va_far`, `opto_far`, `pd05` directly
+  - **Leverages Existing Listeners**: Minimal direct field manipulation - lets existing calculation and visibility logic handle:
+    - Automatic calculation of intermediate/close values from far + add values
+    - Show/hide of intermediate/close sections based on rx_origin and glass_type
+    - Spherical equivalent (SE) calculations and updates
+    - Form synchronization and validation
+  - **Keratometry Support**: Same functionality added to keratometry tables for K1/K2/axis values
+  - **Error Handling**: Validates target form existence before attempting to populate fields
+  - **User Experience**: 
+    - ✅ One-click population of forms from historical data
+    - ✅ Respects existing form logic and calculations
+    - ✅ Consistent behavior across Rx and Keratometry tables
+    - ✅ Clear visual feedback with descriptive tooltips
+
+### Technical Details
+
+- **Files Modified**: 
+  - `static/js/controllers/autorx_bt.js` - Enhanced `operateFormatter()` and `operateFormatter_km()` functions
+  - Added new `"click .set"` event handlers to `window.operateEvents` and `window.operateEvents_km`
+- **Implementation Strategy**:
+  - **Trigger-Based**: Uses `.trigger("change")` on key fields to activate existing listeners
+  - **Conditional Logic**: Only sets add values for glass/trial origins (autorx/cyclo/dil don't need them)
+  - **Form Validation**: Checks target form existence before population
+  - **Utility Integration**: Uses existing `capitalize()` and `round2dec()` helper functions
+- **Event Sequence**:
+  1. Set `rx_origin` and trigger (establishes base behavior)
+  2. Set `glass_type` and trigger (establishes section visibility)
+  3. Set far values and trigger (base for calculations)
+  4. Set add values if applicable and trigger (automatic int/close calculations)
+  5. Set remaining supporting fields
+- **Bootstrap Table Integration**: Seamlessly integrates with existing table action system
+- **Backward Compatibility**: No changes to existing edit/delete functionality
+
+### Medical Workflow Enhancement
+
+- **Clinical Efficiency**: Reduces manual data entry by allowing quick reuse of previous measurements
+- **Data Consistency**: Ensures form calculations and validations are properly applied to imported data
+- **Historical Data Access**: Easy way to populate forms with previous autorx, glass, or trial measurements
+- **Bilateral Symmetry**: Facilitates copying similar measurements between eyes when clinically appropriate
+- **Quality Assurance**: Leverages existing form validation and calculation logic for data integrity
+
+This enhancement significantly improves the clinical workflow by allowing healthcare providers to quickly populate refraction forms with previously measured data, while maintaining all existing form logic and calculations.
+
+## [2025-07-03T01:24:32.880306]
+
+### Fixed
+
+- **🔧 AutoRx Modal Edit Table Refresh Fix**: Fixed autorx bootstrap tables (left/right) not refreshing after editing Rx records via modal
+  - **Root Cause**: Modal submit handler was using incorrect laterality detection and missing fallback parameter for `refreshTables()` function
+  - **Issue Pattern**: 
+    - Editing left eye records would refresh the right table instead of left table
+    - `refreshTables()` fallback was called without required `tablesArr` parameter
+    - Form laterality value reading had potential timing/scoping issues
+  - **Technical Fix**: Enhanced modal submit handler in `static/js/controllers/autorx.js`:
+    - **Improved Laterality Detection**: Added dual-source laterality reading from both serialized form data (`dataObj.laterality`) and form field value with fallback logic
+    - **Fixed Fallback Function**: Added missing `tablesArr` parameter to `refreshTables()` call
+    - **Enhanced Debugging**: Added comprehensive console logging to track laterality values, data types, and refresh decisions
+  - **Table Refresh Logic**: 
+    - **Right eye records**: Only refreshes `#rxRight_tbl` bootstrap table
+    - **Left eye records**: Only refreshes `#rxLeft_tbl` bootstrap table  
+    - **Fallback**: Refreshes all tables if laterality cannot be determined
+  - **User Experience**: 
+    - ✅ Editing left eye Rx records now properly refreshes left table only
+    - ✅ Editing right eye Rx records continues to work correctly
+    - ✅ Table updates are immediate and targeted for better performance
+    - ✅ No more manual table refresh needed after modal edits
+
+### Technical Details
+
+- **File Modified**: `static/js/controllers/autorx.js` - Enhanced `#rxFormModal` submit handler (lines 455-482)
+- **Laterality Detection**: Primary source is `dataObj.laterality` from serialized form data, fallback to direct form field reading
+- **Bootstrap Table Integration**: Uses proper bootstrap-table refresh API with correct table selectors
+- **Error Recovery**: Comprehensive fallback to refresh all tables if laterality detection fails
+- **Debugging Support**: Detailed console logging for troubleshooting laterality detection issues
+
+### Data Flow Enhancement
+
+- **Form Serialization**: Modal form data properly serialized and laterality extracted reliably
+- **Table Targeting**: Specific table refresh based on actual record laterality rather than generic refresh
+- **Performance**: Single table refresh instead of refreshing all autorx/keratometry tables
+- **Consistency**: Same refresh pattern used by other modal edit operations in the application
+
+This fix resolves a user experience issue where medical staff had to manually refresh tables after editing refraction records, ensuring immediate visual feedback when Rx data is updated.
+
+## [2025-07-03T00:36:48.989167]
+
+### Fixed
+
+- **🚨 Legacy Combo Codes Python-Literal Bug Fixed**: Resolved a critical issue where some `billing_combo.combo_codes` entries were stored as Python literals (single quotes, `None`, etc.) instead of valid JSON, causing backend errors on combo application and inconsistent behavior between environments.
+  - **Symptoms**: Combo application failed with errors like `Expecting ',' delimiter` or `Invalid combo_codes format` on systems where the backend strictly required JSON. Some combos worked on one server but not another due to data format differences.
+  - **Root Cause**: Legacy combos were created or imported using Python's `str()`/`repr()` instead of `json.dumps()`, resulting in non-JSON data in the database. The current combo creation endpoint is robust and only allows valid JSON, but old data persisted.
+  - **Fix**: Ran a Python script across the remote database to:
+    - Detect combos with non-JSON `combo_codes` fields
+    - Parse them safely using `ast.literal_eval`
+    - Re-serialize and update them as valid JSON using `json.dumps`
+    - Leave already-correct combos untouched
+  - **Outcome**: All combos are now stored as valid JSON. Combo application and import/export are now robust and consistent across all environments. The system now guarantees only valid JSON is accepted for new combos.
+  - **Technical Details**: See `fix_combos.py` script for implementation. The script logs all fixes and skips combos that are already correct or cannot be safely converted.
+
+## [2025-07-02T23:58:39.441105]
+
+### Fixed
+
+- **🔧 Billing Combo JSON Parsing Debug Enhancement**: Added comprehensive debugging to `apply_billing_combo` endpoint to diagnose malformed combo_codes JSON parsing issues
+  - **Enhanced Error Logging**: Added detailed debugging with 🔍 DEBUG and 🚨 ERROR prefixes to track exact parsing failures
+  - **Raw Data Analysis**: Logs show combo_codes type, length, and full content as retrieved from database
+  - **JSON Error Details**: Captures exact error position (line, column, character) when JSON parsing fails  
+  - **Context Display**: Shows content around error position to identify malformed characters or structure
+  - **Conversion Tracking**: Logs Python->JSON conversion attempts and results
+  - **Full Traceback**: Includes complete error stack trace for debugging
+  - **Impact**: Will help diagnose production issues where combo_codes contain malformed JSON causing "Expecting ',' delimiter" errors
+  - **User Experience**: Faster resolution of combo application failures through detailed error analysis
+
+### Technical Details
+
+- **File Enhanced**: `api/endpoints/billing.py` - Enhanced `apply_billing_combo()` function JSON parsing section
+- **Debugging Features**: 
+  - Raw combo_codes content logging with `repr()` to show hidden characters
+  - JSON error position tracking with line/column/character details
+  - Content context around error positions for visual debugging
+  - Python literal to JSON conversion attempt logging
+  - Full exception traceback capture
+- **Error Context**: Identifies malformed JSON at exact character positions mentioned in error messages
+- **Production Ready**: Debug logging helps resolve combo application failures without requiring database access
+
+## [2025-06-30T00:51:06+02:00]
+
+### Fixed
+
+- **🚨 CRITICAL: Billing Combo Custom Fee Application**: Fixed critical issue where custom fees defined in billing combos were being overwritten with standard nomenclature fees during application
+  - **Root Cause**: The `apply_billing_combo` function was always fetching and using standard fees from the nomenclature service, completely ignoring custom fees saved in combo definitions
+  - **Impact**: 
+    - Custom fees like €31.11 for code 384230 were being replaced with standard fees during combo application
+    - Billing combos with negotiated or special pricing were not working as intended
+    - Healthcare providers were unable to use custom fee structures for specific procedures
+  - **Technical Fix**: Modified fee assignment logic in `api/endpoints/billing.py` to prioritize custom fees from combo definitions:
+    - **Main Codes**: Now checks if `code_def.get("fee")` exists before falling back to nomenclature service fee
+    - **Secondary Codes**: Same prioritization logic applied to `code_def.get("secondary_fee")`
+    - **Enhanced Logging**: Added detailed logging to show when custom vs standard fees are being used
+  - **User Experience**: 
+    - ✅ Custom fees in billing combos now properly applied (e.g., 384230 will use €31.11 instead of standard fee)
+    - ✅ Standard fees still used when no custom fee is defined in combo
+    - ✅ Both main and secondary code custom fees are respected
+    - ✅ Transparent logging shows which fee source is being used for each code
+
+### Technical Details
+
+- **File Modified**: `api/endpoints/billing.py` - Enhanced `apply_billing_combo()` function (lines 907-950)
+- **Logic Change**: 
+  - **Before**: Always use `nomenclature.get_code_details().fee` (overwrites custom fees)
+  - **After**: Use `code_def.get("fee")` if available, fallback to nomenclature service
+- **Backward Compatibility**: Legacy combos with integer-only codes still work (use standard fees)
+- **Enhanced Combos**: New format combos with custom fees now work correctly
+- **Logging Enhancement**: Clear distinction between custom and standard fee usage in logs
+
+### Data Integrity
+
+- **Fee Source Priority**: Custom combo fees → Standard nomenclature fees → 0.00 fallback
+- **Combo Definition Preservation**: Custom fees in combo definitions remain unchanged
+- **Billing Accuracy**: Healthcare providers can now rely on custom fee structures
+- **Audit Trail**: Enhanced logging provides clear audit trail of fee source decisions
+
+This fix resolves a fundamental issue where the billing combo system's custom fee functionality was completely bypassed, ensuring that healthcare providers can properly use negotiated or special pricing structures through billing combos.
+
+## [2025-06-26T23:41:09.231211]
+
+### Fixed
+
+- **🚨 CRITICAL: Billing Combo Usage Tracking**: Fixed critical issue where billing combo usage was never recorded, preventing proper usage-based ordering
+add- **Frontend Response Parsing**: Fixed frontend parsing to correctly extract created billing codes from backend response (`created_codes` vs `billing_codes`)
+- **Backend Combo Code Parsing**: Enhanced parsing to handle Python-style combo codes with single quotes and `None` values instead of JSON format
+  - **Root Cause**: Frontend `applyBillingCombo()` function was making individual POST requests to `/api/billing_codes` instead of using the proper combo application endpoint
+  - **Impact**: 
+    - Combo usage was never recorded in `billing_combo_usage` table
+    - Usage-based ordering couldn't work (all combos had usage_count = 0)
+    - Combos were ordered by newest instead of most frequently used
+    - Backend combo application endpoint with usage tracking was bypassed completely
+  - **Technical Fix**: Completely rewrote `applyBillingCombo()` function to use single API call to `/api/billing_combo/<combo_id>/apply` endpoint
+  - **Backend Integration**: Now properly utilizes existing usage tracking system that was already implemented in the backend
+
+### Technical Details
+
+- **File Modified**: `static/js/md/md_bt.js` - Complete rewrite of `applyBillingCombo()` function (lines 2871-2946)
+- **API Endpoint Change**: 
+  - **Old Flow**: Multiple calls to `POST /api/billing_codes` (one per code) - no usage tracking
+  - **New Flow**: Single call to `POST /api/billing_combo/<combo_id>/apply` - includes usage tracking
+- **Response Handling**: Updated to process enhanced response with created billing codes and usage record
+- **Function Signature**: Enhanced `handleComboApplicationComplete()` to accept optional `createdCodes` parameter
+- **State Management**: Added combo list refresh after successful application to reflect new usage counts
+
+### Backend Integration Benefits
+
+- **Automatic Usage Recording**: Each combo application now creates record in `billing_combo_usage` table
+- **Enhanced Fee Calculations**: Backend handles complex fee aggregation for main and secondary codes
+- **Better Error Handling**: Centralized error handling in backend with transaction support
+- **Secondary Code Support**: Proper handling of enhanced combo definitions with secondary billing codes
+- **Atomic Operations**: All billing codes created in single transaction with proper rollback support
+
+### User Experience Impact
+
+- **✅ Usage-Based Ordering**: Combos now properly ordered by frequency of use (most used first)
+- **✅ Better Success Messages**: Enhanced notifications include secondary code counts and usage tracking confirmation
+- **✅ Real-Time Updates**: Combo list refreshes after application to show updated usage ordering
+- **✅ Improved Performance**: Single API call instead of multiple individual code creation requests
+- **✅ Consistent Behavior**: Combo application now behaves identically to other bulk operations
+
+### Data Consistency
+
+- **Usage Statistics**: Combo usage data will now accumulate correctly from this point forward
+- **Historical Data**: Previous combo applications (individual code entries) remain valid but won't count toward usage statistics
+- **Ordering Logic**: Most-used combos will appear at top as usage data accumulates
+- **Fallback Behavior**: When usage counts are equal, ordering falls back to newest combo first (by ID)
+
+This fix resolves a fundamental disconnect between the frontend implementation and the backend usage tracking system, enabling the intended most-used-first ordering behavior for billing combos.
+
+## [2025-06-26T23:20:21.432671]
+
+### Enhanced
+
+- **Billing Combo Search Filter - Multi-Field Search**: Expanded the combo filter functionality to search across multiple data fields
+  - **Enhanced Search Scope**: Filter now searches in combo names, nomenclature codes, secondary codes, and French descriptions
+  - **Comprehensive Code Matching**: Supports both old format (simple integer codes) and new format (object with secondary codes)
+  - **Description Search**: Includes French descriptions (`nomen_desc_fr`) in search results for better discoverability
+  - **Multi-Code Support**: Searches both main codes (`nomen_code`) and secondary codes (`secondary_nomen_code`)
+  - **Robust Parsing**: Handles both JSON and Python literal formats in combo code definitions
+  - **Updated UI**: Changed placeholder text to "Filter by name, codes, or descriptions..." to reflect expanded functionality
+
+### Technical Details
+
+- **JavaScript Enhancement**: Extended `filterCombos()` function in `static/js/md/md_bt.js`
+- **Search Algorithm**: Uses `Array.some()` for efficient code matching across combo definitions
+- **Format Compatibility**: Maintains compatibility with existing combo code formats (both integer arrays and enhanced objects)
+- **Error Handling**: Graceful degradation with console warnings for unparseable combo codes
+- **Performance**: Efficient filtering using native JavaScript string matching methods
+
+### User Experience Impact
+
+- **✅ Better Code Discovery**: Users can now find combos by typing nomenclature codes (e.g., "105755")
+- **✅ Description Search**: French descriptions are searchable for better multilingual support  
+- **✅ Secondary Code Finding**: Can locate combos containing specific secondary codes
+- **✅ Flexible Searching**: Partial matches work across all searchable fields
+- **✅ Intuitive Interface**: Clear placeholder text explains the expanded search capabilities
+
+### Search Examples
+
+Users can now filter combos using:
+
+- **Combo Names**: "consultation", "examination"
+- **Main Codes**: "105755", "102030" 
+- **Secondary Codes**: Any secondary nomenclature codes
+- **Descriptions**: French medical terminology
+- **Partial Matches**: Any substring in the above fields
+
+This enhancement significantly improves combo discoverability, especially for users who remember specific codes but not combo names.
+
+## [2025-06-26T23:17:13.187115]
+
+### Changed
+
+- **Billing Combo Modal UX Improvements**: Enhanced the billing combo selection modal with three major usability improvements
+  - **Search Filter**: Added name-based filtering input above the combo table to quickly find specific combos
+    - Real-time filtering as user types in combo name search field
+    - Case-insensitive search with automatic result updates
+    - Filter state cleared automatically when modal is closed
+  - **Click-to-Select Interface**: Removed action column and made entire table rows clickable for combo selection
+    - Eliminated separate "Select" buttons for cleaner interface
+    - Added visual hover effects with `table-active` class for better user feedback
+    - Improved accessibility with pointer cursor on selectable rows
+    - Maintained all existing combo preview and application functionality
+  - **Most-Used Ordering**: Modified backend API to order combos by usage frequency (most used first)
+    - Added LEFT JOIN with `billing_combo_usage` table to count usage records
+    - Combos now ordered by usage count (descending) then by ID (descending) for consistent fallback
+    - Backend includes usage count in response for potential future display enhancements
+
+### Technical Details
+
+- **Frontend Files Modified**:
+  - `templates/modalityCtr/modals/billing/billing-combo-modal.html` - Added search input, removed action column
+  - `static/js/md/md_bt.js` - Enhanced combo display with filtering and row-based selection
+- **Backend Enhancement**:
+  - `api/endpoints/billing.py` - Modified billing_combo endpoint with usage-based ordering using database JOINs
+- **JavaScript Enhancements**:
+  - New `filterCombos()` function for real-time search filtering
+  - Separated `renderComboTable()` for reusable table rendering
+  - Updated click handlers from button-based to row-based selection
+  - Added hover effects and visual feedback for better UX
+- **Database Query Optimization**:
+  - LEFT JOIN with billing_combo_usage table for usage statistics
+  - GROUP BY combo ID with COUNT aggregate for usage frequency
+  - Maintains performance while providing usage-based ordering
+
+### User Experience Impact
+
+- **✅ Faster Combo Discovery**: Search filter allows quick location of specific combos by name
+- **✅ Streamlined Selection**: Single-click row selection eliminates extra button clicks
+- **✅ Most Relevant First**: Most frequently used combos appear at top of list for faster access
+- **✅ Visual Feedback**: Clear hover states and pointer cursors improve interface clarity
+- **✅ Mobile Friendly**: Row-based selection works better on mobile devices than small buttons
+
+### API Compatibility
+
+- **Backward Compatible**: Existing API consumers continue to work unchanged
+- **Enhanced Response**: Backend now includes `usage_count` field in combo responses for future features
+- **Performance**: JOIN-based ordering maintains efficient query execution
+- **Scalability**: Usage counting approach scales well with growing combo usage data
+
+## [2025-06-26T22:58:06.620240]
+
+### Fixed
+
+- **🚨 CRITICAL: Worklist Single Item Batch Submission**: Fixed critical bug where non-combo worklist items were not being included in batch submissions to the database
+  - **Root Cause**: `handleSingleItemInsertion()` function was bypassing the WorklistState.Manager and creating items with simple uniqueIds instead of registering them in the pending items collection
+  - **Impact**: Single modality worklist items appeared in the UI preview but were never actually submitted to the database when the form was submitted
+  - **Affected Workflow**: 
+    - Adding individual modality items (non-combo procedures) to worklist
+    - Items showed in preview table but disappeared on form submission
+    - Only combo items (multiple modalities) were properly saved to database
+  - **Technical Fix**: Modified `handleSingleItemInsertion()` to use `addItemWithTracking()` function which properly registers items with the state manager
+  - **Batch Processing**: Single items now properly included in `submitBatch()` operation alongside combo items
+
+### Technical Details
+
+- **File Modified**: `static/js/wl/wl.js` - Fixed `handleSingleItemInsertion()` function on lines 314-331
+- **State Manager Integration**: Single items now use `addItemWithTracking()` to generate proper uniqueIds and register with WorklistState.Manager
+- **Pending Items Collection**: Single items are now added to `this.pendingItems` Map which is processed by `getAllCleanPendingItems()`
+- **Batch API Compatibility**: Single items now include proper uniqueId tracking for status updates and transaction management
+- **UI Consistency**: Maintains existing UI behavior while ensuring database persistence
+
+### User Experience Impact
+
+- **✅ Data Persistence**: Single modality worklist items now properly save to database
+- **✅ Batch Operations**: Single and combo items can be mixed in the same batch submission
+- **✅ State Tracking**: Single items now participate in transaction status updates and error recovery
+- **✅ No UI Changes**: Existing user interface behavior remains identical
+
+### Architecture Benefits
+
+- **Consistent State Management**: All worklist items (single and combo) now use the same state management system
+- **Transaction Integrity**: Single items participate in atomic batch transactions with proper rollback support
+- **Error Recovery**: Single items now included in transaction recovery and retry mechanisms
+- **Debugging Support**: Single items now visible in `debugWorklistState()` output for troubleshooting
+
+This fix resolves a critical data loss issue where users believed they were adding worklist items but only combo items were actually being saved to the database.
+
+## [2025-06-26T22:50:20.540561]
+
+### Changed
+
+- **JavaScript Modernization - jQuery Dependency Removal**: Completely eliminated jQuery dependencies from core utility functions in `useful.js` module
+  - **Functions Modernized**:
+    - `crudp()` - Converted from jQuery `$.ajax()` to native Fetch API with async/await
+    - `getUuid()` - Replaced jQuery AJAX with modern fetch() implementation
+    - `getTableInfo()` - Migrated from jQuery to vanilla JavaScript with proper error handling
+    - `getUserInfo()` - Updated to use Fetch API instead of jQuery promises
+    - `refreshTables()` - Enhanced to work without jQuery while maintaining bootstrap-table compatibility
+    - `disableBtn()` - Converted from jQuery element manipulation to native DOM methods
+    - `getVisionixData()` - Replaced jQuery AJAX with Fetch API for machine data retrieval
+    - `addPatientVisionix()` - Converted to vanilla JavaScript for L80/VX100 patient creation
+    - `addPatientEyesuite()` - Migrated from jQuery to Fetch API for Eyesuite worklist integration
+  - **Technical Improvements**:
+    - **Modern JavaScript**: All functions now use async/await, const/let, and ES6+ features
+    - **Better Error Handling**: Enhanced try/catch blocks with descriptive error messages
+    - **Performance**: Eliminated jQuery overhead for these core utility functions
+    - **Framework Independence**: Functions no longer require jQuery to be loaded
+    - **Graceful Degradation**: Bootstrap-table refresh maintains compatibility when jQuery is available
+  - **API Consistency**: All functions maintain identical interfaces and return promises for backward compatibility
+  - **Documentation**: Updated JSDoc comments with proper parameter types and usage examples
+
+### Technical Details
+
+- **File Modified**: `static/js/utils/useful.js` - Comprehensive jQuery removal across 9 core functions
+- **Fetch API Integration**: Modern HTTP client using native browser APIs instead of jQuery AJAX
+- **DOM Manipulation**: Direct use of `document.querySelector()` and native element properties
+- **Element Selection**: Functions accept both string selectors and DOM elements for flexibility
+- **Error Handling**: Comprehensive error logging and graceful fallbacks for missing elements
+- **Bootstrap Compatibility**: Maintains bootstrap-table functionality while reducing jQuery dependency
+
+### User Experience Impact
+
+- **✅ No Functional Changes**: All existing functionality preserved with identical API interfaces
+- **✅ Improved Performance**: Faster execution without jQuery overhead for these utility functions
+- **✅ Better Error Messages**: Enhanced debugging with more descriptive error reporting
+- **✅ Framework Flexibility**: Reduced dependency on jQuery for core application functions
+
+### Code Quality Benefits
+
+- **Modern Standards**: Updated to current JavaScript best practices and ES6+ syntax
+- **Maintainability**: Cleaner, more readable code with consistent async/await patterns
+- **Type Safety**: Better parameter validation and null safety checks
+- **Documentation**: Comprehensive JSDoc comments with usage examples and parameter types
+- **Testing**: Functions can now be tested independently without jQuery dependency
+
+### Migration Strategy
+
+This modernization follows a gradual approach to reduce jQuery dependencies across the codebase while maintaining backward compatibility. Core utility functions have been updated first, with plans to modernize other modules based on usage patterns and dependencies.
+
+## [2025-06-26T22:29:49.454092]
+
+### Changed
+
+- **JavaScript Code Organization - Worklist Bootstrap Table Functions**: Refactored worklist-related JavaScript code to improve maintainability and follow modular architecture principles
+  - **Code Consolidation**: Moved core worklist bootstrap-table functions from `templates/worklist.html` to centralized `static/js/wl/wl_bt.js` module:
+    - `queryParams_wl()` - Query parameter building and filtering logic
+    - `initWorklist()` - Bootstrap table initialization and configuration  
+    - `setupDateInputHandlers()` - Date range filter event handling with validation
+    - `setupDropdownHandlers()` - Practitioner and provider filter change handling
+  - **Modular Architecture**: All worklist bootstrap-table functionality now centralized in dedicated JavaScript module
+  - **Template Cleanup**: Removed 60+ lines of inline JavaScript from template, replacing with organized function calls
+  - **Better Separation of Concerns**: Template now handles only server-side data injection and page-specific initialization
+  - **Enhanced Maintainability**: Bootstrap table logic changes now require edits to only one file instead of template inspection
+
+### Technical Details
+
+- **Files Modified**:
+  - `templates/worklist.html` - Removed inline `queryParams_wl()`, `initWorklist()`, date handlers, and dropdown handlers
+  - `static/js/wl/wl_bt.js` - Added consolidated worklist bootstrap-table functions with proper documentation
+- **Function Organization**: All worklist table functions now colocated with related formatter and event handler functions
+- **Initialization Flow**: Template calls centralized functions `initWorklist()`, `setupDateInputHandlers()`, and `setupDropdownHandlers()` from wl_bt.js
+- **Code Documentation**: Added comprehensive JSDoc comments for all moved functions explaining purpose and dependencies
+- **Framework Integration**: Functions properly integrate with existing WorklistState management and performance profiling systems
+
+### User Experience Impact
+
+- **✅ No Functional Changes**: All worklist filtering, sorting, and table functionality remains identical
+- **✅ Improved Development**: Easier to maintain and enhance worklist table features
+- **✅ Better Debugging**: Bootstrap table issues can be debugged in dedicated JavaScript file
+- **✅ Code Reusability**: Worklist functions could potentially be reused by other components
+
+### Architecture Benefits
+
+- **Modular Design**: Follows project's modular code generation rules for maintainability
+- **Single Responsibility**: wl_bt.js now serves as the complete worklist bootstrap-table module
+- **Reduced Template Complexity**: Templates focus on server-side data and page structure
+- **Easier Testing**: Bootstrap table logic can be tested independently of template rendering
+- **Code Discovery**: Developers can find all worklist table code in one predictable location
+
+## [2025-06-24T00:38:01+02:00]
+
+### Fixed
+
+- **🚨 CRITICAL: Bootstrap Autocomplete jQuery Compatibility**: Fixed "e.fail is not a function" error in medication autocomplete after database commit refactor
+  - **Root Cause**: Bootstrap-autocomplete library was incompatible with py4web's response handling changes made during database commit refactor
+  - **Error Pattern**: Library was trying to call `.fail()` method on jQuery AJAX promises, but the method was not available due to response format changes
+  - **Solution**: Replaced built-in `ajax` resolver with custom `search` function that handles jQuery AJAX promises properly
+  - **Technical Implementation**:
+    - Changed from `resolverSettings` to custom `resolver: 'custom'` with manual AJAX handling
+    - Added explicit `dataType: 'json'` to ensure proper response parsing
+    - Implemented proper `.done()` and `.fail()` promise handling
+    - Added error logging with `console.warn()` for debugging
+  - **Impact**: Medication autocomplete in MD view new medication modal now works without JavaScript errors
+  - **Backward Compatibility**: Maintains all existing functionality while fixing jQuery compatibility
+
+### Technical Details
+
+- **File Modified**: `static/js/md/md.js` - Updated medication autocomplete configuration
+- **jQuery Compatibility**: Custom AJAX handler ensures proper promise chain handling
+- **Error Handling**: Added graceful fallback to empty array on API failures
+- **Response Format**: Properly handles py4web's JSON response structure with `response.items`
+- **Debugging**: Added console warnings for API errors to aid troubleshooting
+
+### Root Cause Analysis
+
+This issue was introduced during the database commit refactor when changes to `api/core/base.py` affected how API responses are handled. The bootstrap-autocomplete library expects specific jQuery AJAX promise methods that were not available after the response handling changes. The custom resolver approach bypasses the library's internal AJAX handling and provides explicit jQuery compatibility.
+
+## [2025-06-24T00:30:21+02:00]
+
+### Fixed
+
+- **🚨 CRITICAL: Bootstrap Autocomplete Undefined Response Handling**: Fixed "Cannot read properties of undefined (reading 'length')" errors in medication and other autocomplete fields
+  - **Root Cause**: Autocomplete `searchPost` functions were not handling cases where API responses return `undefined` or `null` instead of expected `{items: [], count: 0}` structure
+  - **Error Pattern**: JavaScript was trying to access `.length` on undefined `res.items` when API endpoints returned malformed or empty responses
+  - **Affected Autocomplete Fields**: Fixed all 8 autocomplete implementations across MD and GP views:
+    - **MD View**: Medication, Agent, Disease, Lens (left/right), Cleaning Solution (left/right) autocomplete fields
+    - **GP View**: Medication, Agent, Disease autocomplete fields
+  - **API Endpoints Involved**: `/api/medic_ref`, `/api/agent`, `/api/disease_ref`, `/api/cl`, `/api/cleaning_solution`
+  - **Impact**: All autocomplete fields in medical record forms now handle API response errors gracefully without JavaScript crashes
+
+### Technical Details
+
+- **Files Fixed**: 
+  - `static/js/md/md.js` - Enhanced 6 autocomplete implementations with null safety
+  - `static/js/md/gp.js` - Enhanced 3 autocomplete implementations with null safety
+- **Response Validation**: Added existence checks `!res || res.count == 0` to handle null/undefined API responses
+- **Fallback Implementation**: Changed `return res.items` to `return res && res.items ? res.items : []` to provide empty array fallback
+- **Consistency**: Applied same defensive programming pattern to all autocomplete `searchPost` functions
+- **Bootstrap Autocomplete Compatibility**: Maintains compatibility with bootstrap-autocomplete library expectations
+
+### User Experience Impact
+
+- **✅ Form Functionality**: New medication modal and other autocomplete forms now work without JavaScript errors
+- **✅ Graceful Degradation**: When API endpoints are unavailable, autocomplete fields show empty results instead of crashing
+- **✅ Error Prevention**: Eliminates "Cannot read properties of undefined" console errors that blocked form functionality
+- **✅ Medical Workflow**: Doctors can now add medications, agents, diseases, and equipment without JavaScript interruptions
+
+### Root Cause Analysis
+
+This issue was triggered by API response format inconsistencies where some endpoints might return `null`, `undefined`, or error responses instead of the expected `{items: array, count: number}` structure. The autocomplete library expected a valid response structure, but the `searchPost` functions lacked defensive programming to handle edge cases. This demonstrates the importance of null-safety checks in JavaScript when consuming API data.
+
+## [2025-06-24T00:23:07+02:00]
+
+### Fixed
+
+- **🚨 CRITICAL: Worklist API Database Transaction Management**: Fixed improper manual database transaction management in worklist API endpoints to follow py4web best practices
+  - **Root Cause**: Manual `db.commit()`, `db.rollback()`, and `db._adapter.connection.begin()` calls were redundant and potentially harmful when used with `@action.uses(db)` decorator
+  - **py4web Transaction Management**: With `@action.uses(db)` decorator, py4web automatically handles transaction lifecycle:
+    - `on_request`: starts transaction
+    - `on_success`: commits transaction automatically 
+    - `on_error`: rolls back transaction automatically
+  - **Endpoints Fixed**:
+    - `/api/worklist/batch` - Removed manual transaction management, now uses automatic py4web transactions
+    - `/api/worklist/transaction/<transaction_id>` - Added missing `@action.uses(db)` decorator
+    - `/api/worklist/transaction/<transaction_id>/retry` - Added missing `@action.uses(db)` decorator and removed manual transaction management
+  - **Manual Operations Removed**:
+    - 3 instances of `db.commit()` calls eliminated
+    - 2 instances of `db.rollback()` calls eliminated  
+    - 2 instances of `db._adapter.connection.begin()` calls eliminated
+  - **Impact**: Worklist batch operations now use proper py4web transaction management ensuring consistency and automatic rollback on errors
+
+### Technical Details
+
+- **File Modified**: `api/endpoints/worklist.py` - Comprehensive transaction management cleanup
+- **Framework Compliance**: All endpoints now follow py4web best practices for database transaction handling
+- **Automatic Rollback**: Database automatically rolls back on any exception, ensuring data consistency
+- **Decorator Addition**: Missing `@action.uses(db)` decorators added to transaction status and retry endpoints
+- **Code Simplification**: Removed complex manual transaction blocks in favor of framework automation
+- **Error Handling**: Simplified error handling since rollback is now automatic on exceptions
+
+### Database Operations Enhanced
+
+- **Batch Creation**: `/api/worklist/batch` endpoint now relies on automatic transaction management for atomic operations
+- **Transaction Recovery**: `/api/worklist/transaction/<id>/retry` endpoint now uses proper py4web transaction lifecycle
+- **Status Queries**: `/api/worklist/transaction/<id>` endpoint now has proper database access decorators
+- **Audit Trail**: Transaction audit entries still created properly but with automatic commit/rollback handling
+
+### Design Philosophy
+
+- **Framework Best Practices**: Use py4web's built-in transaction management instead of manual control
+- **Database Consistency**: Automatic transaction lifecycle management ensures proper ACID properties
+- **Code Maintainability**: Reduced complexity by removing manual transaction management code
+- **Error Safety**: Automatic rollback prevents data corruption on failures
+
+## [2025-01-22T10:30:00.000000]
+
+### Fixed
+
+- **🚨 CRITICAL: Certificates JS Module API Response Handling**: Fixed "Cannot read properties of undefined (reading 'length')" errors in certificates.js module after database refactor
+  - **Root Cause**: After API response format changes, certificates.js was still using jQuery response array format `response[0]["items"]` instead of direct JSON object access `response["items"]`
+  - **Error Pattern**: JavaScript was trying to access `.length` on undefined objects when API responses were in the new direct JSON format
+  - **Affected Functions**: Fixed all 4 data fetching patterns:
+    - `getRightAutoRx()` / `getLeftAutoRx()` - AutoRx data for certificate generation
+    - `getRightCycloRx()` / `getLeftCycloRx()` - Cycloplegic refraction data  
+    - `getRightTrialRx()` / `getLeftTrialRx()` - Trial lens refraction data
+    - `getRightTono()` / `getLeftTono()` - Tonometry/pachymetry data
+  - **API Parameter Fix**: Fixed tono API endpoints to use proper pyDAL syntax `id_auth_user.eq=` instead of `id_auth_user=`
+  - **Impact**: Certificate generation in MD view now works correctly with proper data population from examination results
+
+### Technical Details
+
+- **File Fixed**: `static/js/md/certificates.js` - Updated all API response handling patterns
+- **Response Format Change**: Changed from `response[0]["items"]` to `response["items"]` to match new JSON serialization
+- **Null Safety**: Added existence checks with `response["items"] && response["items"].length > 0` pattern
+- **API Parameters**: Fixed `templates/modalityCtr/js-sections/md-apis.html` tono endpoints to use correct query syntax
+- **Data Flow**: Certificate generation objects (`autorxObjFill`, `cyclorxObjFill`, `trialrxObjFill`, `tonoObjFill`) now populate correctly
+
+### User Experience Impact
+
+- **✅ Certificate Generation**: Doctors can now generate certificates with proper examination data inclusion
+- **✅ Data Integration**: AutoRx, cyclo, trial lens, and tonometry measurements properly appear in certificates
+- **✅ Error Elimination**: Removed JavaScript console errors that were preventing certificate functionality
+- **✅ Medical Workflow**: Complete certificate workflow restoration for MD examinations
+
+### Root Cause Analysis
+
+This issue was a follow-on effect from the API JSON serialization fixes. While the main API endpoints were corrected to return proper JSON, the certificates.js module was still using the older jQuery response array format. This demonstrates the importance of comprehensive testing across all JavaScript modules that consume API data after framework-level changes.
+
+## [2025-01-21T22:05:00.000000]
+
+### Fixed
+
+- **🚨 CRITICAL: Modality Options API Broken After Database Refactor**: Fixed worklist modality dropdown not loading options due to JSON serialization issues introduced during database commit cleanup
+  - **Root Cause**: Database commit refactor accidentally broke JSON serialization in `handle_rest_api_request()` function by using `str()` on RestAPI response objects instead of proper JSON serialization
+  - **API Response Issue**: Server was returning Python dict representation with single quotes and datetime objects instead of valid JSON:
+    ```python
+    # Before Fix (Invalid JSON)
+    {'items': [{'created_on': datetime.datetime(2021, 4, 19, 2, 1, 29), ...}]}
+    
+    # After Fix (Valid JSON)  
+    {"items": [{"created_on": "2021-04-19 02:01:29", ...}]}
+    ```
+  - **Frontend Error**: JavaScript was receiving malformed JSON causing "Expected property name or '}' in JSON" parsing errors
+  - **Secondary Issue**: Lookup field access pattern required bracket notation for flattened field names with dots
+
+### Technical Details
+
+- **File Fixed**: `api/core/base.py` - `handle_rest_api_request()` function
+- **JSON Serialization**: Replaced `str(json_resp)` with proper `json.dumps()` with datetime handling
+- **Datetime Handling**: Added custom serializer for `datetime.datetime` and `datetime.date` objects
+- **Frontend Fix**: Updated field access pattern in `static/js/wl/wl.js` for py4web lookup fields
+- **Field Access Pattern**: Used bracket notation `item['id_modality.id']` for flattened lookup field names
+
+### API Endpoint Corrections
+
+- **Modality API Endpoint**: Changed from non-existent `/api/modality` to proper `/api/procedure_family` with lookup
+- **Database Relationships**: Correctly uses `procedure_family` junction table to get modalities for procedures  
+- **Lookup Syntax**: Added `@lookup=id_modality!:id_modality[id,modality_name]` for proper field joins
+- **Field Access**: Fixed JavaScript to handle py4web's flattened field naming convention
+
+### User Experience Impact
+
+- **✅ Modality Dropdown**: Now properly loads available modalities when procedure is selected
+- **✅ Form Validation**: Prevents API calls with undefined procedure IDs
+- **✅ Error Handling**: Enhanced debugging and user feedback for API failures
+- **✅ Worklist Creation**: Users can now create worklist items with proper modality selection
+
+### Root Cause Analysis
+
+This issue demonstrates the importance of comprehensive testing after framework-level changes. The database commit refactor, while correct for transaction management, inadvertently affected a core utility function used by multiple API endpoints. The fix ensures proper JSON serialization while maintaining the improved transaction management.
+
+## [2025-01-21T15:30:00.000000]
+
+### Fixed
+
+- **🚨 CRITICAL: Database Commit Implementation Fixes**: Comprehensive cleanup of manual database transaction management across multiple modules to follow py4web best practices
+  - **Root Cause**: Manual `db.commit()` calls were redundant and potentially harmful when used with `@action.uses(db)` decorator which provides automatic transaction management
+  - **py4web Transaction Management**: With `@action.uses(db)` decorator, py4web automatically handles transaction lifecycle:
+    - `on_request`: starts transaction
+    - `on_success`: commits transaction automatically 
+    - `on_error`: rolls back transaction automatically
+  - **Files Fixed**:
+    - **`manage.py`**: Removed manual `db.commit()` from `change_password()` function and added missing `@action.uses(db)` decorators to 6 database management functions
+    - **`api/core/base.py`**: Removed manual `db.commit()` from `handle_rest_api_request()` utility function and improved type safety
+    - **`api/endpoints/billing.py`**: Removed 4 manual `db.commit()` calls and eliminated manual transaction management in `apply_billing_combo()` function
+  - **Impact**: Database operations now use proper py4web transaction management ensuring consistency and automatic rollback on errors
+
+### Technical Details
+
+- **Manual Commits Removed**: 6 instances of `db.commit()` eliminated across 3 files
+- **Missing Decorators Added**: 6 functions in `manage.py` now have proper `@action.uses(db)` decorators
+- **Transaction Simplification**: Removed complex manual transaction blocks with `db.begin()`, `db.commit()`, and `db.rollback()`
+- **Type Safety Improvements**: Enhanced return type handling in `api/core/base.py`
+- **Framework Compliance**: All database operations now follow py4web best practices
+
+### Database Operations Enhanced
+
+- **Management Functions**: `save_table()`, `save_all_tables()`, `save_db()`, `init_db()`, `restore_db()`, `restore()` now have proper decorators
+- **Password Management**: `change_password()` function now relies on automatic transaction management
+- **API Utilities**: `handle_rest_api_request()` no longer performs manual commits, trusting endpoint decorators
+- **Billing Operations**: All CRUD operations in billing endpoints now use automatic transaction management
+
+### Design Philosophy
+
+- **Framework Best Practices**: Use py4web's built-in transaction management instead of manual control
+- **Database Consistency**: Automatic transaction lifecycle management ensures proper ACID properties
+- **Code Maintainability**: Reduced complexity by removing manual transaction management code
+- **Error Safety**: Automatic rollback prevents data corruption on failures
+
+## [2025-01-20T17:32:00.000000]
+
+### Fixed
+
+- **🚨 CRITICAL: Payment Transaction Processing Database Commit Issues**: Fixed payment processing endpoints not using py4web's automatic transaction management
+- **Controllers Transaction Management**: Removed manual `db.commit()` calls from `facilities()` and `testtable()` functions in `controllers.py` that already use `@action.uses(db)` decorator
+- **Auth API Transaction Management**: Fixed `api/endpoints/auth.py` by adding `@action.uses(db)` decorator to `api()` and `octopus()` functions and removing manual `db.commit()` call
+  - **Root Cause**: Payment API endpoints were missing `@action.uses(db)` decorator while manually calling `db.commit()` and `db.rollback()`, which is incorrect in py4web
+  - **py4web Transaction Management**: With `@action.uses(db)` decorator, py4web automatically handles transaction lifecycle:
+    - `on_request`: starts transaction
+    - `on_success`: commits transaction automatically 
+    - `on_error`: rolls back transaction automatically
+  - **Endpoints Fixed**:
+    - `/api/worklist/<worklist_id>/payment_summary` - Added `@action.uses(db)`
+    - `/api/worklist/<worklist_id>/billing_breakdown` - Added `@action.uses(db)`
+    - `/api/worklist/<worklist_id>/payment` - Added `@action.uses(db)` and removed manual `db.commit()`
+    - `/api/worklist/<worklist_id>/transactions` - Added `@action.uses(db)`
+    - `/api/worklist/<worklist_id>/transactions/<transaction_id>/cancel` - Added `@action.uses(db)` and removed manual commits/rollbacks
+    - `/api/worklist/<worklist_id>/md_summary` - Added `@action.uses(db)`
+    - `/api/worklist/<worklist_id>/md_summary_modal` - Added `@action.uses(db)`
+    - `/api/patient/<patient_id>/md_summary` - Added `@action.uses(db)`
+  - **Impact**: Payment transactions now process reliably with proper database consistency and automatic rollback on errors
+  - **Database Integrity**: Eliminates potential transaction state issues and ensures proper cleanup on failures
+
+### Technical Details
+
+- **File Modified**: `api/endpoints/payment.py` - Added proper py4web decorators and removed manual transaction management
+- **Framework Compliance**: Now follows py4web best practices for database transaction handling
+- **Automatic Rollback**: Database automatically rolls back on any exception, ensuring data consistency
+- **Performance**: Eliminates unnecessary manual transaction management overhead
+- **Error Handling**: Simplified error handling since rollback is now automatic
+
+### Design Philosophy
+
+- **Framework Best Practices**: Use py4web's built-in transaction management instead of manual control
+- **Database Consistency**: Automatic transaction lifecycle management ensures proper ACID properties
+- **Simplified Code**: Remove manual commit/rollback complexity and rely on framework automation
+
+## [2025-06-23T02:43:29.436622]
+
+### Fixed
+
+- **🚨 CRITICAL: WorklistState ReferenceError**: Fixed "ReferenceError: WorklistState is not defined" in worklist.html
+  - **Root Cause**: Premature call to `WorklistState.Manager.startAutoRefresh()` before `wl-state-manager.js` script was loaded
+  - **Solution**: Removed duplicate auto-refresh initialization from main script block (line 950)
+  - **Script Loading Order**: Now properly loads external scripts before attempting to use WorklistState object
+  - **Impact**: Eliminates JavaScript console errors and ensures proper worklist functionality
+  - **Preserved Functionality**: Correct auto-refresh initialization remains in place within the post-load setTimeout
+
+### Technical Details
+
+- **File Modified**: `templates/worklist.html` - Removed premature WorklistState call
+- **Script Loading Pattern**: External scripts → DOM ready → setTimeout → WorklistState usage
+- **Redundancy Removed**: Eliminated duplicate auto-refresh calls (kept the properly timed one)
+- **Error Prevention**: Ensures all dependencies are loaded before object method calls
+- **Fallback Preserved**: Maintains fallback timer logic for cases where WorklistState fails to load
+
+## [2025-06-23T02:37:47.744546]
+
+### Fixed
+
+- **🔧 Username and Email Sanitization**: Fixed autofill functionality in new user modal to remove accents and illegal characters from username and email fields
+  - **Root Cause**: When first name contained accented characters (é, à, ç, etc.) or spaces, the auto-generated username and email contained invalid characters
+  - **Solution**: Added `sanitizeForUsername()` function that uses existing `norm()` utility to remove accents and filters out non-alphanumeric characters (except underscores)
+  - **Sanitization Process**:
+    - Converts text to lowercase
+    - Removes accents using Unicode normalization (`norm()` function from `useful.js`)
+    - Removes spaces and any characters that are not letters, numbers, or underscores
+    - Preserves timestamp suffix for uniqueness
+  - **Impact**: Username and email fields now contain only valid characters, preventing validation errors and database issues
+  - **User Experience**: Automatic username/email generation works reliably for users with accented names (common in French, Belgian, and other European contexts)
+
+### Technical Details
+
+- **File Modified**: `static/js/manage/users.js` - Enhanced autofill username functionality
+- **Function Added**: `sanitizeForUsername(text)` - Handles accent removal and character filtering
+- **Integration**: Works with both manual first name entry and Belgian ID card import (EID button)
+- **Dependencies**: Uses existing `norm()` function from `static/js/utils/useful.js` for Unicode normalization
+- **Pattern**: Follows existing codebase pattern of using utility functions for text processing
+- **Backward Compatibility**: No impact on existing user records; only affects new user creation workflow
+
+### Design Philosophy
+
+- **Input Sanitization**: Proactive cleaning of user input to prevent downstream validation issues
+- **Internationalization**: Proper handling of accented characters common in European names
+- **Consistent Data**: Ensures username fields contain only database-safe characters
+
+## [2025-06-23T02:33:23.213355]
+
+### Changed
+
+- **🔄 Worklist MD Modality Button Logic Update**: Modified summary and payment button display logic for MD modality in worklist
+  - **New Logic**: 
+    - When MD modality is **NOT done**: Show summary button, hide payment button
+    - When MD modality is **done**: Show payment button, hide summary button
+  - **Other Modalities**: GP and other main modalities maintain existing behavior (show summary when done)
+  - **User Experience**: Clearer workflow separation between examination summary (pre-completion) and payment processing (post-completion) for MD procedures
+  - **Impact**: Reduces button clutter and provides more intuitive workflow for medical staff
+
+### Technical Details
+
+- **File Modified**: `static/js/wl/wl_bt.js` - Updated `operateFormatter_wl()` function
+- **Implementation**: Replaced generic main modality check with specific MD modality handling
+- **Button Logic**: 
+  - MD + not done = summary button only
+  - MD + done = payment button only  
+  - GP + done = summary button (unchanged)
+- **Backward Compatibility**: No impact on existing GP or other modality workflows
+
+## [2025-06-23T02:28:43.911450]
+
+### Added
+
+- **🔄 Bootstrap Table Refresh Buttons**: Added toolbar refresh buttons to all bootstrap tables in autorx and tono views
+  - **AutoRx Tables Enhanced**: 
+    - `rxRight_tbl` and `rxLeft_tbl` - Rx data tables now have refresh buttons
+    - `kmRight_tbl` and `kmLeft_tbl` - Keratometry tables now have refresh buttons
+    - `visionixRight_tbl` and `visionixLeft_tbl` - Machine import tables now have refresh buttons
+    - `cvRx_tbl` and `cvKm_tbl` - CV5000 import tables now have refresh buttons
+  - **Tono Tables Enhanced**:
+    - `airPachyRight_tbl` and `airPachyLeft_tbl` - Air tonometry/pachymetry tables now have refresh buttons
+    - `aplaRight_tbl` and `aplaLeft_tbl` - Aplanation tonometry tables now have refresh buttons
+  - **User Experience**: Manual refresh capability allows users to update table data without full page reload
+  - **Implementation**: Added `data-show-refresh="true"` and `data-buttons-align="right"` attributes to all bootstrap tables
+  - **Consistent UI**: Refresh buttons aligned to the right for consistent user interface across all tables
+
+### Technical Details
+
+- **Bootstrap Table Integration**: Uses built-in bootstrap-table refresh functionality with `data-show-refresh="true"`
+- **Button Alignment**: All refresh buttons positioned on the right side of tables for consistent UX
+- **Async Compatibility**: Refresh buttons work seamlessly with existing Promise-based refresh patterns
+- **No Backend Changes**: Pure frontend enhancement using bootstrap-table's native refresh capability
+- **Files Modified**: 
+  - `templates/modalityCtr/autorx.html` - Added refresh buttons to all 6 bootstrap tables
+  - `templates/modalityCtr/tono.html` - Added refresh buttons to all 4 bootstrap tables
+
+### Design Philosophy
+
+- **Manual Control**: Provides users with manual refresh capability alongside automatic refresh patterns
+- **Consistent Interface**: Standardized refresh button placement across all medical measurement tables
+- **Bootstrap Standards**: Uses bootstrap-table's built-in refresh functionality rather than custom implementations
+
+## [2025-06-23T02:15:49.526789]
+
+### Fixed
+
+- **🔧 Worklist Actions Simplified**: Fixed race conditions and missing table refreshes across all worklist actions
+  - **Root Cause**: Complex async patterns with stale data checks and multiple refresh mechanisms were creating race conditions
+  - **Solution**: Reverted to simple synchronous approach using proven patterns from MD views
+  - **Actions Simplified**:
+    - `"click .done"` - Now uses simple `setWlItemStatus()` call with table refresh
+    - `"click .unlock"` - Reverted to synchronous pattern with table refresh
+    - `"click .stopwatch"` - Simplified counter updates with table refresh
+    - `"click .remove"` - Reverted to simple bootbox confirmation + crudp DELETE with table refresh
+  - **Impact**: Eliminates ghosting effect where UI shows "done" status that reverts on refresh
+  - **Performance**: Faster response for single operations, eliminates unnecessary complexity
+  - **User Experience**: Consistent status updates and table refreshes without confusing visual artifacts
+
+### Technical Details
+
+- **Pattern Change**: Moved from async/await with race condition checks back to proven synchronous pattern
+- **Removed Complexity**: Eliminated "fresh data" checks that were causing more problems than they solved  
+- **Simple Flow**: Click → Create data object → Call function → Function handles crudp + table refresh
+- **Race Condition Fix**: Single atomic operation instead of multiple async operations that could interfere
+- **Files Modified**: `static/js/wl/wl_bt.js` - Simplified event handlers for done, unlock, stopwatch, and remove actions
+- **Dependencies**: Uses existing `setWlItemStatus()` function from `useful.js` and `bootbox` confirmation dialogs
+- **Delete Pattern**: Uses same pattern as MD views: bootbox confirmation → crudp DELETE → table refresh
+
+### Design Philosophy
+
+- **Single Operations**: Use simple synchronous patterns for individual status changes
+- **Batch Operations**: Reserve complex async patterns only for multi-item operations where coordination is needed
+- **Proven Patterns**: Revert to working implementations rather than over-engineering simple operations
+
+## [2025-06-23T02:07:00.613046]
+
+### Fixed
+
+- **🔧 Billing Codes by Worklist Endpoint Auth Signature Support**: Fixed `/api/billing_codes/by_worklist/<id>` endpoint to properly return user information for Created by/Modified by fields
+  - **Root Cause**: Custom endpoint implementation was not handling `@lookup` parameter to join with `auth_user` table
+  - **Solution**: Replaced custom implementation with standard `handle_rest_api_request` function that properly handles `@lookup` parameters
+  - **API Enhancement**: Endpoint now automatically includes user lookups: `@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]`
+  - **Response Format**: API now returns `mod.first_name`, `mod.last_name`, `creator.first_name`, `creator.last_name` fields for proper user display
+  - **Backward Compatibility**: Maintains all existing functionality while adding user information support
+  - **Impact**: Bootstrap-table detail formatter in MD billing codes section can now properly display actual user names
+
+### Technical Details
+
+- **File Modified**: `api/endpoints/billing.py` - `billing_codes_by_worklist()` function
+- **Implementation**: Switched from custom pyDAL queries to standard REST API handler with `@lookup` support
+- **Database Joins**: Now properly performs LEFT JOINs with `auth_user` table using aliases (`mod` and `creator`)
+- **Query Parameters**: Automatically adds `@lookup`, `@count`, and `@order` parameters if not provided
+- **Meta Enhancement**: Preserves existing meta calculation functionality (totals, secondary codes count, etc.)
+- **Error Handling**: Maintains comprehensive error handling and logging for debugging
+
+## [2025-06-23T01:44:32.479649]
+
+### Fixed
+
+- **🔧 Billing Codes Auth Signature Display**: Fixed "undefined undefined" appearing in Created by/Modified by fields in billing codes detail view
+  - **Root Cause**: API call for billing codes was missing `@lookup` parameter to join with `auth_user` table
+  - **Solution**: Added `@lookup=mod!:modified_by[id,first_name,last_name],creator!:created_by[id,first_name,last_name]&@count=true` to billing codes API URL
+  - **Impact**: Detail view in MD billing codes section now properly displays actual user names instead of "undefined undefined"
+  - **API Enhancement**: Billing codes API now returns enriched data with user information for audit trail display
+  - **User Experience**: Healthcare professionals can now see who created/modified billing codes for proper audit tracking
+
+### Technical Details
+
+- **File Modified**: `templates/modalityCtr/js-sections/md-apis.html`
+- **API Pattern**: Aligned billing codes API call with other medical record APIs that properly display user information
+- **Database Joins**: Added LEFT JOIN with `auth_user` table to retrieve `first_name` and `last_name` for both created_by and modified_by fields
+- **Consistent Pattern**: Now follows same lookup pattern used by other medical record tables (allergies, medications, keratometry, etc.)
+
+## [2025-06-23T01:39:31.784648]
+
+### Fixed
+
+- **🚨 CRITICAL: Auth Signature Fields Not Populated**: Fixed missing authentication on API endpoints causing "undefined undefined" in Created by/Modified by fields
+  - **Root Cause**: Multiple API endpoints lacked `@action.uses(auth.user)` decorator, preventing py4web from populating `auth.signature` fields (`created_by`, `modified_by`, `created_on`, `modified_on`)
+  - **Endpoints Fixed**:
+    - `/api/worklist/batch` - Worklist creation now requires authentication
+    - `/api/billing_codes` - Billing codes CRUD operations now require authentication  
+    - `/api/billing_codes/by_worklist/<id>` - Billing codes retrieval now requires authentication
+    - `/api/billing_combo/<id>/apply` - Combo application now requires authentication
+    - `/api/billing_combo_usage` - Combo usage tracking now requires authentication
+  - **Impact**: All new records created through these endpoints will now properly track who created/modified them with authenticated user information
+  - **User Experience**: "Created by" and "Modified by" fields in MD view billing codes and other interfaces will now show actual user names instead of "undefined undefined"
+
+### Security
+
+- **Enhanced API Security**: All billing and worklist creation endpoints now require user authentication, improving audit trails and access control
+- **Data Integrity**: Auth signature fields now properly populated for all new records, ensuring complete audit history
+
+### Technical Details
+
+- **py4web Auth Integration**: Proper use of `@action.uses(auth.user, db)` decorator ensures authenticated user context is available during record creation
+- **Automatic Field Population**: py4web's `auth.signature` mechanism now works correctly to populate `created_by`, `modified_by`, `created_on`, and `modified_on` fields
+- **Backward Compatibility**: Existing records remain unchanged; only new records created after this fix will have proper auth signature data
+
+## [2025-06-22T23:30:52.410661]
+
+### Fixed
+
+- A critical bug causing a 500 server error ("list index out of range") when filtering the worklist by date. The issue was resolved by changing the API query parameters from `gte`/`lte` to the `pydal`-compatible `ge`/`le` in `templates/worklist.html`.
+
+### Added
+
+- The worklist date filter now defaults to today's date on page load.
+- Auto-refresh functionality to the worklist date filter; the table now updates automatically when the start or end dates are changed.
+- Date validation to the worklist filter to ensure the start date cannot be set after the end date.
+
+### Changed
+
+- The provider and practitioner selectors on the worklist page now automatically adjust their width to fit their content, improving the layout.
+
+### Removed
+
+- The manual "Filter" button from the worklist page, as filtering is now automatic and triggered by date changes.
+
+## [2025-06-22T22:21:06.430780]
+
+### Changed
+
+- Replaced 'Full list' and 'Today's list' buttons in worklist.html with a date range filter (start/end date inputs, defaulting to today).
+- Updated JS logic to build API query with requested_time.gte/lte and provider/practitioner filters.
+- Table now refreshes based on date range and filters; default load is today-to-today.
+- No backend/API change required; uses py4web RestAPI filtering best practices.
