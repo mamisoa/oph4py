@@ -214,6 +214,42 @@ def initFields(wlId, table, lat=""):
     return items
 
 
+def initMultipleFields(wlId, table, lat=""):
+    """
+    Initialize multiple fields for tables that can have multiple records per worklist/laterality
+    (e.g., ccx conclusions that can have multiple entries)
+
+    Args:
+        wlId (str): The ID of the worklist from which to retrieve information.
+        table(str): table containing fields content
+        lat(str): laterality if applicable, "" if not
+
+    Returns:
+        items(list): List of dictionaries containing field content
+                    Each dictionary represents one record
+                    Empty list if no records found
+    """
+    fieldsArr = db[table].fields
+    if lat == "":
+        query = db(db[table].id_worklist == wlId)
+    else:
+        query = db((db[table].id_worklist == wlId) & (db[table].laterality == lat))
+
+    items = []
+    if query.count() > 0:
+        records = query.select(orderby=db[table].created_on)
+        for record in records:
+            item = {}
+            for field in record:
+                if record[field] == None:
+                    item[field] = ""
+                else:
+                    item[field] = record[field]
+            items.append(item)
+
+    return items
+
+
 ### md controller
 
 
@@ -308,9 +344,41 @@ def md(wlId):
     motility = initFields(wlId, "motility")
     phoria = initFields(wlId, "phoria")
     pupils = initFields(wlId, "pupils")
-    ccx = initFields(wlId, "ccx")
-    ccxR = initFields(wlId, "ccx", "right")
-    ccxL = initFields(wlId, "ccx", "left")
+    # Use multiple fields for conclusions to support multiple entries per laterality
+    ccx = initMultipleFields(wlId, "ccx", "na")
+    ccxR = initMultipleFields(wlId, "ccx", "right")
+    ccxL = initMultipleFields(wlId, "ccx", "left")
+    # Keep backward compatibility - if no records exist, provide empty single record
+    if not ccx:
+        ccx = [
+            {
+                "id": "",
+                "description": "",
+                "laterality": "na",
+                "id_auth_user": "",
+                "id_worklist": "",
+            }
+        ]
+    if not ccxR:
+        ccxR = [
+            {
+                "id": "",
+                "description": "",
+                "laterality": "right",
+                "id_auth_user": "",
+                "id_worklist": "",
+            }
+        ]
+    if not ccxL:
+        ccxL = [
+            {
+                "id": "",
+                "description": "",
+                "laterality": "left",
+                "id_auth_user": "",
+                "id_worklist": "",
+            }
+        ]
     followup = initFields(wlId, "followup")
     billing = initFields(wlId, "billing")
     mddb = (
@@ -444,7 +512,19 @@ def gp(wlId):
     motility = initFields(wlId, "motility")
     phoria = initFields(wlId, "phoria")
     pupils = initFields(wlId, "pupils")
-    ccx = initFields(wlId, "ccx")
+    # Use multiple fields for conclusions to support multiple entries per laterality
+    ccx = initMultipleFields(wlId, "ccx", "na")
+    # Keep backward compatibility - if no records exist, provide empty single record
+    if not ccx:
+        ccx = [
+            {
+                "id": "",
+                "description": "",
+                "laterality": "na",
+                "id_auth_user": "",
+                "id_worklist": "",
+            }
+        ]
     followup = initFields(wlId, "followup")
     billing = initFields(wlId, "billing")
     mddb = db.md_params

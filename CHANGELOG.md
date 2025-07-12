@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2025-07-13T01:45:40.177521]
+
+### Added
+
+- **🔄 Auto-Save Functionality for Conclusions**: Enhanced the multiple conclusions interface with automatic saving when textarea loses focus
+  - **Auto-Save on Blur**: Conclusions automatically save when user clicks outside the textarea or moves to another field
+  - **Visual Feedback**: Submit buttons turn red when content changes, indicating unsaved changes
+  - **Smart Triggering**: Auto-save only triggers when there's actual content and the form isn't already saving
+  - **Consistent Pattern**: Follows the same auto-save pattern used throughout the application
+
+### Fixed
+
+- **🎨 Button Styling Consistency**: Standardized button styling across all conclusion forms to match application-wide patterns
+  - **Consistent Classes**: All buttons now use `btn btn-{color} btn-sm` pattern
+  - **State Management**: Improved button state transitions (secondary → danger → warning → success → secondary)
+  - **Event Delegation**: Fixed event handling for all laterality forms (general, right eye, left eye)
+  - **Color Coordination**: Submit buttons use secondary (default), danger (changed), warning (saving), success (saved) states
+
 ## [2025-07-13T01:23:05.861088]
 
 ### Fixed

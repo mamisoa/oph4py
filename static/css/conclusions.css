@@ -1,0 +1,170 @@
+/* Multiple Conclusions Styling */
+
+.conclusions-list {
+	min-height: 50px;
+}
+
+.conclusion-item {
+	background-color: #f8f9fa;
+	border: 1px solid #dee2e6;
+	border-radius: 0.375rem;
+	transition: all 0.2s ease-in-out;
+}
+
+.conclusion-item:hover {
+	border-color: #86b7fe;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.conclusion-item .input-group {
+	margin-bottom: 0.5rem;
+}
+
+.conclusion-item textarea {
+	border: 1px solid #ced4da;
+	border-radius: 0.375rem;
+	transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.conclusion-item textarea:focus {
+	border-color: #86b7fe;
+	outline: 0;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Button styling for conclusion actions */
+.conclusion-item .btn-sm {
+	padding: 0.25rem 0.5rem;
+	font-size: 0.875rem;
+	border-radius: 0.25rem;
+}
+
+.conclusion-item .ccxFormSubmit,
+.conclusion-item .ccxRFormSubmit,
+.conclusion-item .ccxLFormSubmit {
+	min-width: 80px;
+}
+
+.conclusion-item .ccxDeleteBtn,
+.conclusion-item .ccxRDeleteBtn,
+.conclusion-item .ccxLDeleteBtn {
+	min-width: 70px;
+}
+
+/* Add conclusion button styling */
+#btnAddCcx,
+#btnAddCcxR,
+#btnAddCcxL {
+	transition: all 0.2s ease-in-out;
+}
+
+#btnAddCcx:hover,
+#btnAddCcxR:hover,
+#btnAddCcxL:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Empty state styling */
+.conclusions-list:empty::before {
+	content: "No conclusions yet. Click 'Add Conclusion' to get started.";
+	display: block;
+	text-align: center;
+	color: #6c757d;
+	font-style: italic;
+	padding: 2rem;
+	border: 2px dashed #dee2e6;
+	border-radius: 0.375rem;
+	background-color: #f8f9fa;
+}
+
+/* Loading states */
+.conclusion-item .btn.loading {
+	position: relative;
+	pointer-events: none;
+}
+
+.conclusion-item .btn.loading .fa-spinner {
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* Success state */
+.conclusion-item .btn-success {
+	background-color: #198754;
+	border-color: #198754;
+}
+
+/* Error state */
+.conclusion-item .btn-danger {
+	background-color: #dc3545;
+	border-color: #dc3545;
+}
+
+/* Warning state */
+.conclusion-item .btn-warning {
+	background-color: #ffc107;
+	border-color: #ffc107;
+	color: #000;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.conclusion-item .input-group {
+		flex-direction: column;
+	}
+
+	.conclusion-item .input-group .btn {
+		margin-bottom: 0.5rem;
+		border-radius: 0.375rem !important;
+	}
+
+	.conclusion-item .input-group textarea {
+		margin-bottom: 0.5rem;
+	}
+
+	.d-flex.justify-content-between {
+		flex-direction: column;
+		align-items: flex-start !important;
+	}
+
+	.d-flex.justify-content-between .btn {
+		margin-top: 0.5rem;
+		align-self: flex-end;
+	}
+}
+
+/* Animation for adding/removing conclusions */
+.conclusion-item {
+	animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Focus styles for better accessibility */
+.conclusion-item:focus-within {
+	border-color: #86b7fe;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+/* Ensure proper spacing between conclusion items */
+.conclusion-item + .conclusion-item {
+	margin-top: 1rem;
+}
