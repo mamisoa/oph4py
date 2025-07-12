@@ -8,13 +8,14 @@
 <li class="nav-item">
     <a href="[[=URL('manage/files')]]" class="nav-link">Files</a>
 </li>
-<li class="nav-item">
+[[ if userHierarchy <= 1:]] <li class="nav-item">
     <a href="[[=URL('daily_transactions')]]" class="nav-link">
         <i class="fas fa-receipt me-1"></i>Transactions
     </a>
-</li>
-[[ pass ]]
-<!--<li class="nav-item">
+    </li>
+    [[ pass ]]
+    [[ pass ]]
+    <!--<li class="nav-item">
     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasCache" role="button" aria-controls="offcanvasCache">
         Cache
     </a>
