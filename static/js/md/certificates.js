@@ -520,7 +520,7 @@ function preopCert() {
 	preopdefault.push("<p>L'examen montre:");
 	preopdefault.push("<ul>");
 	preopdefault.push(
-		"<li>la réfraction objective suivante sous <strong>cyloplégie</strong>:</li>"
+		"<li>la réfraction objective suivante sous <strong>cyloplégie</strong>:"
 	);
 	preopdefault.push("<ul>");
 	preopdefault.push(
@@ -532,7 +532,7 @@ function preopCert() {
 	preopdefault.push("</ul>");
 	preopdefault.push("</li>");
 	preopdefault.push(
-		"<li>une acuité visuelle <strong>avec la correction optimale</strong>:</li>"
+		"<li>une acuité visuelle <strong>avec la correction optimale</strong>:"
 	);
 	preopdefault.push("<ul>");
 	preopdefault.push(`<li> OD: ${trialrxObjFill["vafR"]}</li>`);
@@ -586,7 +586,9 @@ function postopCert() {
 			datecreation +
 			"</strong>.</p>"
 	);
-	postopdefault.push("<p>L'examen préopératoire <strong>du 01/01/2025</strong> montrait:");
+	postopdefault.push(
+		"<p>L'examen préopératoire <strong>du 01/01/2025</strong> montrait:"
+	);
 	postopdefault.push("<ul>");
 	postopdefault.push("<li>la réfraction cycloplégique suivante:</li>");
 	postopdefault.push("<ul>");
@@ -611,7 +613,7 @@ function postopCert() {
 	postopdefault.push("</ul>");
 	postopdefault.push("</li>");
 	postopdefault.push(
-		"<li>une acuité visuelle <strong>sans correction</strong>:</li>"
+		"<li>une acuité visuelle <strong>sans correction</strong>:"
 	);
 	postopdefault.push("<ul>");
 	postopdefault.push(`<li> OD: 1.0</li>`);
@@ -638,7 +640,6 @@ function postopCert() {
 
 var certificateModal = document.getElementById("certificateModal");
 certificateModal.addEventListener("show.bs.modal", function (event) {
-	let certdefault = ['<div style="text-align:left">'];
 	let btn = event.relatedTarget;
 	// set default form values
 	let today = new Date().addHours(timeOffsetInHours).toJSON().slice(0, 10);
@@ -648,45 +649,184 @@ certificateModal.addEventListener("show.bs.modal", function (event) {
 	$("#certificateTitle").val("CERTIFICAT MEDICAL");
 	// Add hidden input for actionType with default "print"
 	$("#certificateActionType").val("print");
-	// check certificate category
-	if ($(btn).data("certFlag") == "presence") {
-		console.log("presence cert!");
-		certdefault.push(presenceCert());
-	} else if ($(btn).data("certFlag") == "sick") {
-		console.log("sick leave cert!");
-		let onset = $("#onsetsick").val(),
-			ended = $("#endedsick").val(),
-			exit = $("#sickFormModal input[name=exit]:checked").val();
-		$("#certificateOnset").val(onset);
-		$("#certificateEnded").val(ended);
-		certdefault.push(sickCert(onset, ended, exit));
-	} else if ($(btn).data("certFlag") == "doc") {
-		console.log("doc cert!");
-		$("#certificateDest").val("AU MEDECIN DE DROIT");
-		$("#certificateTitle").val("RAPPORT MEDICAL");
-		certdefault.push(docCert());
-	} else if ($(btn).data("certFlag") == "ortho") {
-		$("#certificateDest").val("AU MEDECIN CONSEIL");
-		$("#certificateTitle").val("PRESCRIPTION");
-		certdefault.push(orthoCert());
-	} else if ($(btn).data("certFlag") == "preop") {
-		$("#certificateDest").val("AU MEDECIN CONSEIL");
-		$("#certificateTitle").val("RAPPORT MEDICAL");
-		certdefault.push(preopCert());
-	} else if ($(btn).data("certFlag") == "postop") {
-		$("#certificateDest").val("AU MEDECIN CONSEIL");
-		$("#certificateTitle").val("RAPPORT MEDICAL");
-		certdefault.push(postopCert());
-	} else {
-		console.log("free cert");
-		certdefault.push(freeCert());
-	}
-	$("#certificateFormModal input[name=category]").val($(btn).data("certFlag"));
-	// set default text
-	certdefault.push("</div>");
-	let certhtml = certdefault.join("");
-	console.log("certhtml:", certhtml);
-	tinymce.get("certificateContent").setContent(certhtml);
+
+	// Show loading message while fetching data
+	let loadingContent =
+		'<div style="text-align:center"><p>Loading examination data...</p></div>';
+	tinymce.get("certificateContent").setContent(loadingContent);
+
+	// Fetch fresh data for certificates
+	console.log("Fetching fresh examination data for certificate...");
+
+	// Fetch all required data in parallel
+	Promise.all([
+		// AutoRx data
+		$.get(API_RXRIGHT + "&rx_origin.eq=autorx"),
+		$.get(API_RXLEFT + "&rx_origin.eq=autorx"),
+		// CycloRx data
+		$.get(API_RXRIGHT + "&rx_origin.eq=cyclo"),
+		$.get(API_RXLEFT + "&rx_origin.eq=cyclo"),
+		// TrialRx data
+		$.get(API_RXRIGHT + "&rx_origin.eq=trial"),
+		$.get(API_RXLEFT + "&rx_origin.eq=trial"),
+		// Tono data
+		$.get(API_TONORIGHT),
+		$.get(API_TONOLEFT),
+	])
+		.then(function ([
+			autorxRight,
+			autorxLeft,
+			cyclorxRight,
+			cyclorxLeft,
+			trialrxRight,
+			trialrxLeft,
+			tonoRight,
+			tonoLeft,
+		]) {
+			console.log("All examination data fetched successfully");
+
+			// Update autorxObjFill
+			autorxObjFill = {
+				sphR: "",
+				cylR: "",
+				axisR: "",
+				vafR: "",
+				sphL: "",
+				cylL: "",
+				axisL: "",
+				vafL: "",
+			};
+			if (autorxRight["items"] && autorxRight["items"].length > 0) {
+				autorxObjFill["sphR"] = autorxRight["items"][0]["sph_far"];
+				autorxObjFill["cylR"] = autorxRight["items"][0]["cyl_far"];
+				autorxObjFill["axisR"] = autorxRight["items"][0]["axis_far"];
+			}
+			if (autorxLeft["items"] && autorxLeft["items"].length > 0) {
+				autorxObjFill["sphL"] = autorxLeft["items"][0]["sph_far"];
+				autorxObjFill["cylL"] = autorxLeft["items"][0]["cyl_far"];
+				autorxObjFill["axisL"] = autorxLeft["items"][0]["axis_far"];
+			}
+
+			// Update cyclorxObjFill
+			cyclorxObjFill = {
+				sphR: "",
+				cylR: "",
+				axisR: "",
+				vafR: "",
+				sphL: "",
+				cylL: "",
+				axisL: "",
+				vafL: "",
+			};
+			if (cyclorxRight["items"] && cyclorxRight["items"].length > 0) {
+				cyclorxObjFill["sphR"] = cyclorxRight["items"][0]["sph_far"];
+				cyclorxObjFill["cylR"] = cyclorxRight["items"][0]["cyl_far"];
+				cyclorxObjFill["axisR"] = cyclorxRight["items"][0]["axis_far"];
+			}
+			if (cyclorxLeft["items"] && cyclorxLeft["items"].length > 0) {
+				cyclorxObjFill["sphL"] = cyclorxLeft["items"][0]["sph_far"];
+				cyclorxObjFill["cylL"] = cyclorxLeft["items"][0]["cyl_far"];
+				cyclorxObjFill["axisL"] = cyclorxLeft["items"][0]["axis_far"];
+			}
+
+			// Update trialrxObjFill
+			trialrxObjFill = {
+				sphR: "",
+				cylR: "",
+				axisR: "",
+				vafR: "",
+				sphL: "",
+				cylL: "",
+				axisL: "",
+				vafL: "",
+			};
+			if (trialrxRight["items"] && trialrxRight["items"].length > 0) {
+				trialrxObjFill["sphR"] = trialrxRight["items"][0]["sph_far"];
+				trialrxObjFill["cylR"] = trialrxRight["items"][0]["cyl_far"];
+				trialrxObjFill["axisR"] = trialrxRight["items"][0]["axis_far"];
+				trialrxObjFill["vafR"] = trialrxRight["items"][0]["va_far"]
+					? trialrxRight["items"][0]["va_far"].toFixed(2)
+					: "";
+			}
+			if (trialrxLeft["items"] && trialrxLeft["items"].length > 0) {
+				trialrxObjFill["sphL"] = trialrxLeft["items"][0]["sph_far"];
+				trialrxObjFill["cylL"] = trialrxLeft["items"][0]["cyl_far"];
+				trialrxObjFill["axisL"] = trialrxLeft["items"][0]["axis_far"];
+				trialrxObjFill["vafL"] = trialrxLeft["items"][0]["va_far"]
+					? trialrxLeft["items"][0]["va_far"].toFixed(2)
+					: "";
+			}
+
+			// Update tonoObjFill
+			tonoObjFill = { tonoR: "", pachyR: "", tonoL: "", pachyL: "" };
+			if (tonoRight["items"] && tonoRight["items"].length > 0) {
+				tonoObjFill["tonoR"] = tonoRight["items"][0]["tonometry"];
+				tonoObjFill["pachyR"] = tonoRight["items"][0]["pachymetry"];
+			}
+			if (tonoLeft["items"] && tonoLeft["items"].length > 0) {
+				tonoObjFill["tonoL"] = tonoLeft["items"][0]["tonometry"];
+				tonoObjFill["pachyL"] = tonoLeft["items"][0]["pachymetry"];
+			}
+
+			console.log("Updated certificate data objects:", {
+				autorxObjFill,
+				cyclorxObjFill,
+				trialrxObjFill,
+				tonoObjFill,
+			});
+
+			// Now generate the certificate content with fresh data
+			let certdefault = ['<div style="text-align:left">'];
+
+			// check certificate category
+			if ($(btn).data("certFlag") == "presence") {
+				console.log("presence cert!");
+				certdefault.push(presenceCert());
+			} else if ($(btn).data("certFlag") == "sick") {
+				console.log("sick leave cert!");
+				let onset = $("#onsetsick").val(),
+					ended = $("#endedsick").val(),
+					exit = $("#sickFormModal input[name=exit]:checked").val();
+				$("#certificateOnset").val(onset);
+				$("#certificateEnded").val(ended);
+				certdefault.push(sickCert(onset, ended, exit));
+			} else if ($(btn).data("certFlag") == "doc") {
+				console.log("doc cert!");
+				$("#certificateDest").val("AU MEDECIN DE DROIT");
+				$("#certificateTitle").val("RAPPORT MEDICAL");
+				certdefault.push(docCert());
+			} else if ($(btn).data("certFlag") == "ortho") {
+				$("#certificateDest").val("AU MEDECIN CONSEIL");
+				$("#certificateTitle").val("PRESCRIPTION");
+				certdefault.push(orthoCert());
+			} else if ($(btn).data("certFlag") == "preop") {
+				$("#certificateDest").val("AU MEDECIN CONSEIL");
+				$("#certificateTitle").val("RAPPORT MEDICAL");
+				certdefault.push(preopCert());
+			} else if ($(btn).data("certFlag") == "postop") {
+				$("#certificateDest").val("AU MEDECIN CONSEIL");
+				$("#certificateTitle").val("RAPPORT MEDICAL");
+				certdefault.push(postopCert());
+			} else {
+				console.log("free cert");
+				certdefault.push(freeCert());
+			}
+
+			$("#certificateFormModal input[name=category]").val(
+				$(btn).data("certFlag")
+			);
+			// set default text
+			certdefault.push("</div>");
+			let certhtml = certdefault.join("");
+			console.log("certhtml:", certhtml);
+			tinymce.get("certificateContent").setContent(certhtml);
+		})
+		.catch(function (error) {
+			console.error("Error fetching examination data:", error);
+			let errorContent =
+				'<div style="text-align:center"><p>Error loading examination data. Please try again.</p></div>';
+			tinymce.get("certificateContent").setContent(errorContent);
+		});
 });
 
 // Add event listener for the email button
@@ -1026,10 +1166,10 @@ $("#certificateFormModal").submit(function (e) {
 						}
 					} else if (actionType === "email") {
 						console.log("Preparing certificate for email...");
-						
+
 						// Get email from input field
 						const emailAddress = $("#certificateEmailInput").val().trim();
-						
+
 						// Validate email
 						if (!emailAddress || !emailAddress.includes("@")) {
 							console.error("Invalid email address provided");
