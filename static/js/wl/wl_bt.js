@@ -118,7 +118,10 @@ function operateFormatter_wl(value, row, index) {
 			'<a class="unlock ms-1" href="javascript:void(0)" title="Set to process"><i class="fas fa-unlock"></i></a>'
 		);
 	}
-	if (modalityDict[row.modality] != "none") {
+	if (
+		modalityDict[row.modality] != "none" &&
+		currentUserMembership == "Doctor"
+	) {
 		html.push(
 			'<a class="modality_ctr ms-1" href="javascript:void(0)" title="Execute task"><i class="fas fa-heartbeat"></i></a>'
 		);
