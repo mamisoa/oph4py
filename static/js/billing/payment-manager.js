@@ -452,13 +452,13 @@ class PaymentManager {
 		if (!transactions || !Array.isArray(transactions)) {
 			console.error("Invalid transactions data:", transactions);
 			tbody.innerHTML =
-				'<tr><td colspan="8" class="text-center text-danger">Error: Invalid transaction data format</td></tr>';
+				'<tr><td colspan="9" class="text-center text-danger">Error: Invalid transaction data format</td></tr>';
 			return;
 		}
 
 		if (transactions.length === 0) {
 			tbody.innerHTML =
-				'<tr><td colspan="8" class="text-center text-muted">No transactions found</td></tr>';
+				'<tr><td colspan="9" class="text-center text-muted">No transactions found</td></tr>';
 			return;
 		}
 
@@ -468,19 +468,23 @@ class PaymentManager {
 				"Payment summary not available for transaction history calculations"
 			);
 			tbody.innerHTML =
-				'<tr><td colspan="8" class="text-center text-warning">Loading payment summary...</td></tr>';
+				'<tr><td colspan="9" class="text-center text-warning">Loading payment summary...</td></tr>';
 			return;
 		}
 
-		// Sort transactions by date (newest first for display)
-		// The API already provides correct remaining_balance for each transaction
+		// Sort transactions by creation date (newest first for display)
+		// This shows the actual chronological order of when transactions were created
 		const displayTransactions = [...transactions].sort(
-			(a, b) => new Date(b.transaction_date) - new Date(a.transaction_date)
+			(a, b) =>
+				new Date(b.created_on || b.transaction_date) -
+				new Date(a.created_on || a.transaction_date)
 		);
 
 		let html = "";
 		displayTransactions.forEach((transaction) => {
-			const date = new Date(transaction.transaction_date).toLocaleDateString();
+			// Always show when the transaction was created for proper chronological order
+			const dateToShow = transaction.created_on || transaction.transaction_date;
+			const date = new Date(dateToShow).toLocaleString();
 
 			// Determine row styling based on transaction status
 			const rowClass =
@@ -538,6 +542,9 @@ class PaymentManager {
 						}
 						<br><small class="text-muted">Balance: €${balanceToShow.toFixed(2)}</small>
 					</td>
+                    <td class="text-muted small">${this.formatTransactionNotes(
+											transaction.notes
+										)}</td>
                     <td>${transaction.processed_by}</td>
                     <td>${actionButton}</td>
                 </tr>
@@ -1037,7 +1044,7 @@ class PaymentManager {
 		if (tbody) {
 			tbody.innerHTML = `
 				<tr>
-					<td colspan="8" class="text-center">
+					<td colspan="9" class="text-center">
 						<div class="d-flex align-items-center justify-content-center">
 							<div class="spinner-border spinner-border-sm text-primary me-2" role="status">
 								<span class="visually-hidden">Loading...</span>
@@ -1058,7 +1065,7 @@ class PaymentManager {
 		if (tbody) {
 			tbody.innerHTML = `
 				<tr>
-					<td colspan="8" class="text-center text-danger">
+					<td colspan="9" class="text-center text-danger">
 						<div class="d-flex align-items-center justify-content-center">
 							<i class="fas fa-exclamation-triangle me-2"></i>
 							${message}
@@ -1378,6 +1385,46 @@ class PaymentManager {
 		const div = document.createElement("div");
 		div.innerHTML = text;
 		return div.textContent || div.innerText || "";
+	}
+
+	/**
+	 * Format transaction notes for display
+	 * @param {string} notes - Transaction notes
+	 * @returns {string} - Formatted notes HTML
+	 */
+	formatTransactionNotes(notes) {
+		if (!notes || notes.trim() === "") {
+			return '<span class="text-muted">-</span>';
+		}
+
+		// Split notes by lines to handle cancellation notes
+		const lines = notes.split("\n").filter((line) => line.trim() !== "");
+		let formattedNotes = "";
+
+		for (const line of lines) {
+			if (line.includes("[CANCELLED")) {
+				// Format cancellation notes with danger styling
+				formattedNotes += `<div class="text-danger small"><i class="fas fa-ban me-1"></i>${this.escapeHtml(
+					line
+				)}</div>`;
+			} else {
+				// Format regular notes
+				formattedNotes += `<div>${this.escapeHtml(line)}</div>`;
+			}
+		}
+
+		return formattedNotes || '<span class="text-muted">-</span>';
+	}
+
+	/**
+	 * Escape HTML characters to prevent XSS
+	 * @param {string} text - Text to escape
+	 * @returns {string} - Escaped text
+	 */
+	escapeHtml(text) {
+		const div = document.createElement("div");
+		div.textContent = text;
+		return div.innerHTML;
 	}
 }
 

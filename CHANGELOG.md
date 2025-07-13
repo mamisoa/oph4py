@@ -2,6 +2,97 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-07-13T04:40:17.641862]
+
+### Fixed
+
+- **🔄 Transaction History True Chronological Order**: Fixed ordering to show actual sequence of when transactions were created
+  - **Issue**: Using `modified_on` for ordering caused active transactions to appear out of chronological order
+  - **Root Cause**: Active transactions have `modified_on` = `created_on`, but cancelled transactions have `modified_on` = cancellation time
+  - **Database Analysis**: Revealed active transactions were created earlier (02:32:xx) but showing later due to `modified_on` ordering
+  - **Solution**: Changed ordering to use `created_on` field for true chronological sequence
+  - **API Changes**: 
+    - Updated ordering from `~db.worklist_transactions.modified_on` to `~db.worklist_transactions.created_on`
+    - Added `created_on` field to API response
+  - **Frontend Changes**: 
+    - Updated JavaScript sorting to use `created_on` for chronological order
+    - Date display now shows when transaction was created (not when cancelled)
+  - **Result**: Transaction history now shows proper sequence:
+    1. Most recent payments first (when they were created)
+    2. Earlier payments next
+    3. Cancellations show in their proper chronological position
+  - **User Experience**: True audit trail showing when events actually occurred in the payment workflow
+
+## [2025-07-13T04:36:30.471736]
+
+### Enhanced
+
+- **🕐 Transaction History Date & Time Display**: Enhanced date column to show both date and time for better chronological visibility
+  - **Column Header**: Changed from "Date" to "Date & Time" to reflect new functionality
+  - **Time Display**: Now shows full date and time (e.g., "13/07/2025, 10:30:45 AM") instead of just date
+  - **Smart Date Logic**: 
+    - **Active Transactions**: Shows `transaction_date` (when payment was made)
+    - **Cancelled Transactions**: Shows `modified_on` (when transaction was cancelled)
+  - **Formatting**: Uses `toLocaleString()` for user-friendly date/time display
+  - **Chronological Clarity**: Users can now see the exact time sequence of all payment events
+  - **Audit Trail**: Provides precise timestamps for compliance and debugging purposes
+  - **User Experience**: Eliminates confusion when multiple transactions occur on the same day
+
+## [2025-07-13T04:35:18.681466]
+
+### Fixed
+
+- **📅 Transaction History Chronological Order**: Fixed transaction ordering to show actual sequence of events
+  - **Issue**: Transactions were ordered by `transaction_date` (original payment date), causing cancelled transactions to appear out of chronological order
+  - **Root Cause**: When transactions are cancelled, the `transaction_date` doesn't change, but `modified_on` reflects the cancellation time
+  - **Solution**: Changed ordering to use `modified_on` field instead of `transaction_date`
+  - **API Changes**: 
+    - Updated `transaction_history` endpoint to order by `~db.worklist_transactions.modified_on`
+    - Added `modified_on` field to API response for frontend sorting
+  - **Frontend Changes**: Updated JavaScript sorting to use `modified_on` with fallback to `transaction_date`
+  - **Impact**: Transaction history now shows proper chronological sequence:
+    - Recent cancellations appear first (based on when they were cancelled)
+    - Recent payments appear next (based on when they were created/modified)
+    - Provides accurate audit trail of actual event sequence
+  - **User Experience**: Users can now see the true timeline of payment events, not just original payment dates
+
+## [2025-07-13T04:30:54.440188]
+
+### Added
+
+- **📝 Transaction Notes Column**: Added "Notes" column to transaction history table for better audit trail visibility
+  - **Column Position**: Positioned between "Status" and "Processed By" columns
+  - **Enhanced Display**: Shows both regular transaction notes and cancellation information
+  - **Cancellation Notes**: Displays cancellation details with red styling and ban icon for cancelled transactions
+  - **Formatting**: Multi-line notes are properly formatted with line breaks
+  - **Safety**: HTML content is escaped to prevent XSS attacks
+  - **Empty State**: Shows "-" for transactions without notes
+  - **Responsive**: Maintains table layout across different screen sizes
+  - **Methods Added**: 
+    - `formatTransactionNotes()` - Formats notes with proper styling
+    - `escapeHtml()` - Prevents XSS by escaping HTML characters
+  - **Template Updates**: Updated HTML table structure to accommodate new column
+  - **Column Count**: All colspan attributes updated from 8 to 9 columns
+
+## [2025-07-13T04:26:02.396806]
+
+### Fixed
+
+- **🔧 Payment Transaction User Tracking**: Fixed "Processed by" field showing "None None" in transaction history
+  - **Root Cause**: Payment API endpoints were missing `auth.user` decorator, causing `auth.current_user` to be unavailable
+  - **Solution**: Added `auth.user` decorator to all payment-related endpoints:
+    - `payment_summary` - Get payment summary for worklist
+    - `billing_breakdown` - Get billing codes with reimbursement calculations  
+    - `process_payment` - Process payment transactions
+    - `transaction_history` - Get transaction history with pagination
+    - `cancel_transaction` - Cancel payment transactions
+    - `md_summary` - Get consultation history summary
+    - `md_summary_modal` - Get detailed consultation history for modal
+    - `patient_md_summary` - Get patient-specific consultation history
+  - **Impact**: Transaction history now properly shows authenticated user names instead of "None None"
+  - **Authentication**: All payment endpoints now require authenticated user access
+  - **Previous Issue**: This was previously fixed in [2025-06-02T03:34:56.792744] but auth decorators were missing
+
 ## [2025-07-13T04:21:08.937027]
 
 ### Changed

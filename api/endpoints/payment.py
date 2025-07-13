@@ -40,7 +40,7 @@ VALID_FEECODES = [
 
 
 @action("api/worklist/<worklist_id:int>/payment_summary", method=["GET"])
-@action.uses(db)
+@action.uses(db, auth.user)
 def payment_summary(worklist_id: int):
     """
     Get payment summary for a specific worklist
@@ -139,7 +139,7 @@ def payment_summary(worklist_id: int):
 
 
 @action("api/worklist/<worklist_id:int>/billing_breakdown", method=["GET"])
-@action.uses(db)
+@action.uses(db, auth.user)
 def billing_breakdown(worklist_id: int):
     """
     Get billing breakdown with fees and reimbursement calculations
@@ -262,7 +262,7 @@ def billing_breakdown(worklist_id: int):
 
 
 @action("api/worklist/<worklist_id:int>/payment", method=["POST"])
-@action.uses(db)
+@action.uses(db, auth.user)
 def process_payment(worklist_id: int):
     """
     Process a payment transaction for a worklist
@@ -388,7 +388,7 @@ def process_payment(worklist_id: int):
 
 
 @action("api/worklist/<worklist_id:int>/transactions", method=["GET"])
-@action.uses(db)
+@action.uses(db, auth.user)
 def transaction_history(worklist_id: int):
     """
     Get transaction history for a worklist with pagination support
@@ -423,7 +423,7 @@ def transaction_history(worklist_id: int):
             left=db.auth_user.on(
                 db.worklist_transactions.created_by == db.auth_user.id
             ),
-            orderby=~db.worklist_transactions.transaction_date,
+            orderby=~db.worklist_transactions.created_on,
             limitby=(offset, offset + limit),
         )
 
@@ -443,6 +443,16 @@ def transaction_history(worklist_id: int):
                     "transaction_date": (
                         transaction.transaction_date.isoformat()
                         if transaction.transaction_date
+                        else None
+                    ),
+                    "modified_on": (
+                        transaction.modified_on.isoformat()
+                        if transaction.modified_on
+                        else None
+                    ),
+                    "created_on": (
+                        transaction.created_on.isoformat()
+                        if transaction.created_on
                         else None
                     ),
                     "amount_card": (
@@ -511,7 +521,7 @@ def transaction_history(worklist_id: int):
     "api/worklist/<worklist_id:int>/transactions/<transaction_id:int>/cancel",
     method=["PATCH"],
 )
-@action.uses(db)
+@action.uses(db, auth.user)
 def cancel_transaction(worklist_id: int, transaction_id: int):
     """
     Cancel a payment transaction
@@ -642,7 +652,7 @@ def cancel_transaction(worklist_id: int, transaction_id: int):
 
 @action("api/worklist/<worklist_id:int>/md_summary", method=["GET"])
 @action("api/worklist/<worklist_id:int>/md_summary/<offset:int>", method=["GET"])
-@action.uses(db)
+@action.uses(db, auth.user)
 def md_summary(worklist_id: int, offset: int = 0):
     """
     Get patient's consultation history summary for MD review
@@ -798,7 +808,7 @@ def md_summary(worklist_id: int, offset: int = 0):
 
 
 @action("api/worklist/<worklist_id:int>/md_summary_modal", method=["GET"])
-@action.uses(db)
+@action.uses(db, auth.user)
 def md_summary_modal(worklist_id: int):
     """
     Get all consultation history for modal display
@@ -949,7 +959,7 @@ def md_summary_modal(worklist_id: int):
 
 @action("api/patient/<patient_id:int>/md_summary", method=["GET"])
 @action("api/patient/<patient_id:int>/md_summary/<offset:int>", method=["GET"])
-@action.uses(db)
+@action.uses(db, auth.user)
 def patient_md_summary(patient_id: int, offset: int = 0):
     """
     Get patient's consultation history summary for summary view
