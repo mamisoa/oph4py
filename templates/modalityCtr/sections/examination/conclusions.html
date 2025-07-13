@@ -30,7 +30,7 @@
                                         <div class="form-floating">
                                             <select class="form-select" id="newConclusionLaterality"
                                                 style="height: 58px;">
-                                                <option value="general" selected>Both</option>
+                                                <option value="na" selected>Both</option>
                                                 <option value="right">Right Eye</option>
                                                 <option value="left">Left Eye</option>
                                             </select>
@@ -54,21 +54,11 @@
                             <small class="text-muted">Click to edit or delete conclusions</small>
                         </div>
                         <div class="card-body p-0">
-                            <table id="conclusionsTable" data-toggle="table" data-url="" data-side-pagination="client"
-                                data-pagination="false" data-search="true" data-show-refresh="true"
-                                data-show-toggle="false" data-show-columns="false" data-sort-name="id"
-                                data-sort-order="desc" data-toolbar="" data-classes="table table-striped table-hover"
-                                data-row-style="conclusionRowStyle" data-no-matches="No conclusions found">
-                                <thead>
-                                    <tr>
-                                        <th data-field="conclusion" data-sortable="true" data-width="60%">Conclusion
-                                        </th>
-                                        <th data-field="laterality" data-sortable="true" data-width="20%">Laterality
-                                        </th>
-                                        <th data-field="actions" data-formatter="conclusionActionsFormatter"
-                                            data-width="20%">Actions</th>
-                                    </tr>
-                                </thead>
+                            <table id="conclusionsTable" data-side-pagination="client" data-pagination="false"
+                                data-search="false" data-show-refresh="false" data-show-toggle="false"
+                                data-show-columns="false" data-sort-name="id" data-sort-order="desc" data-toolbar=""
+                                data-classes="table table-striped table-hover" data-row-style="conclusionRowStyle"
+                                data-no-matches="No conclusions found">
                             </table>
                         </div>
                     </div>
@@ -102,7 +92,7 @@
                     <div class="mb-3">
                         <div class="form-floating">
                             <select class="form-select" id="editConclusionLaterality">
-                                <option value="general">Both</option>
+                                <option value="na">Both</option>
                                 <option value="right">Right Eye</option>
                                 <option value="left">Left Eye</option>
                             </select>

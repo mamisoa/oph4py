@@ -36,27 +36,55 @@ function notifyUser(message, type) {
 	}, 5000);
 }
 
-prescRxObj["doctorfirst"] = userObj["first_name"];
-prescRxObj["doctorlast"] = userObj["last_name"];
-prescRxObj["doctortitle"] =
-	"Dr " + userObj["last_name"].toUpperCase() + " " + userObj["first_name"];
-prescRxObj["doctorinami"] = usermdObj["inami"]; // keep separations
-prescRxObj["doctoremail"] = usermdObj["email"];
-prescRxObj["centername"] =
-	usermdObj["officename"] +
-	"\n" +
-	usermdObj["officeaddress"] +
-	"\n" +
-	usermdObj["officezip"] +
-	" " +
-	usermdObj["officetown"];
-prescRxObj["centerphone"] = usermdObj["officephone"];
-prescRxObj["centerurl"] = usermdObj["officeurl"];
+// Initialize prescription object when global variables are available
+function initializeGlassesPrescriptionObject() {
+	// Check if required global variables are available
+	if (
+		typeof userObj === "undefined" ||
+		typeof usermdObj === "undefined" ||
+		typeof prescRxObj === "undefined"
+	) {
+		console.warn(
+			"userObj, usermdObj, or prescRxObj not available yet, deferring glasses prescription initialization"
+		);
+		return false;
+	}
 
-prescRxObj["bifocal"] = "o";
-prescRxObj["art30yes"] = "[x]";
-prescRxObj["art30no"] = "[ ]";
-prescRxObj["qrcode"] = "Signed by " + prescRxObj["doctortitle"] + " uuid:";
+	prescRxObj["doctorfirst"] = userObj["first_name"];
+	prescRxObj["doctorlast"] = userObj["last_name"];
+	prescRxObj["doctortitle"] =
+		"Dr " + userObj["last_name"].toUpperCase() + " " + userObj["first_name"];
+	prescRxObj["doctorinami"] = usermdObj["inami"]; // keep separations
+	prescRxObj["doctoremail"] = usermdObj["email"];
+	prescRxObj["centername"] =
+		usermdObj["officename"] +
+		"\n" +
+		usermdObj["officeaddress"] +
+		"\n" +
+		usermdObj["officezip"] +
+		" " +
+		usermdObj["officetown"];
+	prescRxObj["centerphone"] = usermdObj["officephone"];
+	prescRxObj["centerurl"] = usermdObj["officeurl"];
+
+	prescRxObj["bifocal"] = "o";
+	prescRxObj["art30yes"] = "[x]";
+	prescRxObj["art30no"] = "[ ]";
+	prescRxObj["qrcode"] = "Signed by " + prescRxObj["doctortitle"] + " uuid:";
+
+	return true;
+}
+
+// Try to initialize immediately, or defer until DOM ready
+if (!initializeGlassesPrescriptionObject()) {
+	$(document).ready(function () {
+		// Try again when DOM is ready
+		if (!initializeGlassesPrescriptionObject()) {
+			// If still not available, try after a short delay
+			setTimeout(initializeGlassesPrescriptionObject, 100);
+		}
+	});
+}
 
 // remove unecessary elements
 function filterGxRx(dataObj) {
@@ -992,7 +1020,7 @@ $("#GxRxFormModal").submit(function (e) {
 			if (formObj.actionType === "email") {
 				// Get email from input field
 				const emailAddress = $("#GxRxemailInput").val().trim();
-				
+
 				// Validate email
 				if (!emailAddress || !emailAddress.includes("@")) {
 					notifyUser("Veuillez fournir une adresse email valide", "danger");

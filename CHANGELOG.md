@@ -2,6 +2,129 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-07-13T03:42:57.331607]
+
+### Changed
+
+- **🎨 Conclusions Actions Buttons Style Standardization**: Updated conclusions table action buttons to match tonometry table styling
+  - **Icon Consistency**: Changed delete icon from `fas fa-trash` to `fas fa-trash-alt` to match tonometry tables
+  - **Layout Standardization**: Changed button layout from `justify-content-center` to `justify-content-between` for consistent spacing
+  - **Element Type**: Switched from `<button>` elements to `<a>` elements with `href="javascript:void(0)"` following project patterns
+  - **Spacing**: Added `ms-1` class for proper margin spacing between action buttons
+  - **Code Style**: Updated formatter to use array join pattern consistent with other table formatters in the project
+  - **User Experience**: Maintains all existing functionality while providing visual consistency across all bootstrap tables
+
+## [2025-07-13T03:39:07.625850]
+
+### Fixed
+
+- **🔧 Bootstrap Table Column Width Configuration**: Fixed column width settings not being applied properly
+  - **Root Cause**: Conflicting table initialization between HTML data attributes and JavaScript configuration
+  - **Solution**: Removed HTML `data-toggle="table"` and `<thead>` definitions, moved to full JavaScript initialization
+  - **Column Configuration**: Properly configured columns with `width` and `widthUnit` properties
+    - **Conclusion**: 60% width with percentage unit
+    - **Laterality**: 20% width with percentage unit  
+    - **Actions**: 20% width with percentage unit
+  - **Formatter References**: Fixed formatter references to use function objects instead of strings
+  - **Bootstrap Table Options**: Consolidated all table options in JavaScript for consistent configuration
+
+## [2025-07-13T03:35:37.742379]
+
+### Fixed
+
+- **🎨 Conclusions Table Row Colors & Column Proportions**: Corrected styling implementation to match user specifications
+  - **Row Background Colors**: Implemented proper laterality-based row background colors
+    - **Right Eye**: Blue background (#D5E3EE) for right eye conclusions
+    - **Left Eye**: Pink background (#EED9D5) for left eye conclusions  
+    - **Both**: White background for bilateral conclusions
+  - **Column Proportions**: Adjusted to proper 3/5 and 1/5 ratios as requested
+    - **Conclusion**: 60% width (3/5 of table)
+    - **Laterality**: 20% width (1/5 of table)
+    - **Actions**: 20% width (1/5 of table)
+  - **Badge Styling**: Maintained white background badges with colored borders for clear visibility against row backgrounds
+
+## [2025-07-13T03:31:32.196263]
+
+### Changed
+
+- **🎨 Conclusions Table Styling Refinements**: Further improved table layout and badge styling based on user feedback
+  - **Badge Background**: Changed all laterality badges to use white background for consistency and better readability
+  - **Column Width Optimization**: Made laterality and action columns much narrower for better space utilization
+    - **Conclusion**: 80% width (increased from 70%)
+    - **Laterality**: 12% width (reduced from 15%)
+    - **Actions**: 8% width (reduced from 15%)
+  - **Row Background**: Removed yellow/colored row backgrounds, using consistent light background for all rows
+  - **Badge Colors**: Maintained color-coded borders and text while using white background
+    - **Right Eye**: Blue border/text (#0056b3) with white background
+    - **Left Eye**: Red border/text (#dc3545) with white background
+    - **Both**: Grey border/text (#6c757d) with white background
+
+## [2025-07-13T03:27:03.960240]
+
+### Changed
+
+- **🎨 Conclusions Table UI Enhancement**: Updated conclusions bootstrap-table styling to match overall application design
+  - **Removed Clutter**: Removed search bar and refresh button from table toolbar for cleaner interface
+  - **Optimized Layout**: Adjusted column widths - conclusion (70%), laterality (15%), actions (15%) for better content distribution
+  - **Color-Coded Laterality Badges**: 
+    - **Right Eye**: Blue badge with application's standard blue color scheme (#D5E3EE background, #0056b3 text/border)
+    - **Left Eye**: Pink badge with application's standard pink color scheme (#EED9D5 background, #dc3545 text/border)  
+    - **Both**: Grey badge for bilateral conclusions
+  - **Consistent Action Buttons**: Updated button styling to match application patterns with centered alignment and proper spacing
+
+## [2025-07-13T03:22:40.608199]
+
+### Fixed
+
+- **🔧 API Validation Error Detection**: Fixed conclusions API error handling where validation errors were showing success toasts instead of error messages
+  - **Root Cause**: JavaScript was checking `response.errors` which was truthy for empty objects `{}`, causing false positive error detection
+  - **Solution**: Updated error detection to check if errors object has actual content: `(response.errors && Object.keys(response.errors).length > 0)`
+  - **Enhanced Success Detection**: Changed from `response.success !== false` to explicit `response.status === "success"` check
+  - **User Feedback**: API validation errors now properly display error toasts with specific validation messages
+
+- **🔧 Laterality Value Validation**: Fixed "Value not allowed" validation error when adding conclusions
+  - **Root Cause**: Database constraint expects `("right", "left", "na")` but HTML forms were sending "general" value
+  - **Database Constraint**: `db.ccx.laterality.requires = IS_IN_SET(("right", "left", "na"))`
+  - **Solution**: Changed "general" laterality value to "na" in both add and edit conclusion forms
+  - **JavaScript Mapping**: Updated laterality mapping to use "na" for "Both" option in bootstrap-table interface
+  - **Template Updates**: Fixed both `templates/modalityCtr/sections/examination/conclusions.html` form values
+  - **Backward Compatibility**: Maintained existing display labels while fixing underlying data values
+
+### Enhanced
+
+- **🛡️ Robust Error Handling**: Improved API response validation with proper object content checking
+- **📝 Form Validation**: Enhanced form validation to match database constraints exactly
+- **🎯 User Experience**: Clear error messages now display for validation failures instead of misleading success messages
+
+## [2025-07-13T03:09:02.003404]
+
+### Fixed
+
+- **🔧 JavaScript Global Variable Conflicts**: Fixed multiple JavaScript errors caused by duplicate variable declarations and timing issues
+  - **Root Cause**: `APP_NAME` and `HOSTURL` were declared in both `baseof.html` and `md-globals.html`, causing "Identifier already declared" errors
+  - **Solution**: Removed duplicate declarations from `md-globals.html` since variables are already available from `baseof.html`
+  - **Enhanced Error Handling**: Updated `conclusions-bt.js` to use fallback pattern for global variables with proper error checking
+  - **Improved Robustness**: Added checks for both direct variable access and window object fallbacks
+  - **Timing Issues**: Fixed immediate variable access in multiple JavaScript files that tried to use variables before they were loaded
+  - **Affected Files**: Fixed undefined variable errors in multiple scripts including:
+    - `patient-bar.js`: Wrapped patient object initialization in deferred function
+    - `prescription.js`: Added initialization function for `prescObj` using `userObj` and `usermdObj`
+    - `glasses.js`: Added initialization function for `prescRxObj` 
+    - `contacts.js`: Added initialization function for `prescCxObj`
+    - `certificates.js`: Added initialization function for `certificateObj`
+    - `conclusions-bt.js`: Enhanced with fallback patterns for API variables
+  - **Fallback Strategy**: All scripts now use progressive fallback: immediate → DOM ready → setTimeout delay
+
+### Changed
+
+- **📋 Conclusions Management**: Enhanced bootstrap-table conclusions interface with better error handling
+  - **Variable Safety**: All API calls now use safe variable access patterns
+  - **Debugging Support**: Added comprehensive logging for troubleshooting global variable availability
+  - **Fallback Mechanisms**: Implemented robust fallback patterns for missing global variables
+  - **Initialization Pattern**: Standardized deferred initialization pattern across all medical prescription modules
+
+## [2025-01-05T23:26:19.628972]
+
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 

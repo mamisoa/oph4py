@@ -1,114 +1,147 @@
 // Patient bar JavaScript
 (function () {
-	// Initialize patient information display
-	$("input[name=id_auth_user]").val(patientObj["id"]); // set patient id in forms
-	$("input[name=id_worklist]").val(wlObj["worklist"]["id"]); // set worklist id in forms
+	// Initialize patient bar when global variables are available
+	function initializePatientBar() {
+		// Check if required global variables are available
+		if (
+			typeof patientObj === "undefined" ||
+			typeof wlObj === "undefined" ||
+			typeof genderIdObj === "undefined" ||
+			typeof providerObj === "undefined" ||
+			typeof seniorObj === "undefined"
+		) {
+			console.warn(
+				"Required patient bar variables not available yet, deferring initialization"
+			);
+			return false;
+		}
 
-	// Set patient details
-	$("#wlItemDetails .patientName").html(
-		patientObj["last_name"].toUpperCase() + " " + patientObj["first_name"]
-	);
+		// Initialize patient information display
+		$("input[name=id_auth_user]").val(patientObj["id"]); // set patient id in forms
+		$("input[name=id_worklist]").val(wlObj["worklist"]["id"]); // set worklist id in forms
 
-	// Handle DOB display with age calculation
-	if (patientObj["dob"] != null) {
-		$("#wlItemDetails .patientDob").html(
-			patientObj["dob"].split("-").reverse().join("/") +
-				" (" +
-				getAge(patientObj["dob"]) +
-				"yo)"
+		// Set patient details
+		$("#wlItemDetails .patientName").html(
+			patientObj["last_name"].toUpperCase() + " " + patientObj["first_name"]
 		);
-	} else {
-		$("#wlItemDetails .patientDob").html("DOB: n/a");
-	}
 
-	// Set other patient details
-	$("#wlItemDetails .patientGender").html(
-		"Gender: " + genderIdObj[patientObj["gender"]]
-	);
-	$("#wlItemDetails .patientSsn").html(
-		"NISS #" + checkIfDataIsNull(patientObj["ssn"])
-	);
-	$("#wlItemDetails .patientCard").html(
-		"Card #" + checkIfDataIsNull(patientObj["idc_num"])
-	);
-	$("#wlItemDetails .patientEmail").html(
-		"Email: " + checkIfDataIsNull(patientObj["email"])
-	);
+		// Handle DOB display with age calculation
+		if (patientObj["dob"] != null) {
+			$("#wlItemDetails .patientDob").html(
+				patientObj["dob"].split("-").reverse().join("/") +
+					" (" +
+					getAge(patientObj["dob"]) +
+					"yo)"
+			);
+		} else {
+			$("#wlItemDetails .patientDob").html("DOB: n/a");
+		}
 
-	// Display phone number if available
-	if (phoneDict && phoneDict.length > 0) {
-		// Use the first phone number if multiple exist
-		const phone = phoneDict[0];
-		$("#wlItemDetails .patientPhone").html(
-			"Phone: +" + phone.phone_prefix + " " + phone.phone
+		// Set other patient details
+		$("#wlItemDetails .patientGender").html(
+			"Gender: " + genderIdObj[patientObj["gender"]]
 		);
-	} else {
-		$("#wlItemDetails .patientPhone").html("Phone: n/a");
-	}
-
-	$("#wlItemDetails .patientId").html("ID #" + patientObj["id"]);
-	$("#wlItemDetails .timeslot").html(
-		datetime2eu(wlObj["worklist"]["requested_time"])
-	);
-
-	// Display user notes if available
-	if (patientObj["user_notes"] != null) {
-		$("#wlItemDetails .user_notes").html(patientObj["user_notes"]);
-	} else {
-		$("#wlItemDetails .user_notes").removeClass("whitebg");
-	}
-
-	// Set worklist details
-	$("#wlItemDetails .modality").html(wlObj["modality"]["modality_name"]);
-	$("#wlItemDetails .laterality").html(wlObj["worklist"]["laterality"]);
-	$("#wlItemDetails .provider").html(
-		providerObj["first_name"] + " " + providerObj["last_name"]
-	);
-	$("#wlItemDetails .senior").html(
-		seniorObj["first_name"] + " " + seniorObj["last_name"]
-	);
-	$("#wlItemDetails .status").html(wlObj["worklist"]["status_flag"]);
-
-	// Handle task status controls
-	if (wlObj["worklist"]["status_flag"] == "done") {
-		$("#btnTaskDone").addClass("visually-hidden");
-		// Define buttons to disable only when needed
-		const buttonsToDisable = document.querySelectorAll(
-			".btn-action, .form-control"
+		$("#wlItemDetails .patientSsn").html(
+			"NISS #" + checkIfDataIsNull(patientObj["ssn"])
 		);
-		disableTaskButtons(buttonsToDisable);
-	} else {
-		$("#btnUnlockTask").addClass("visually-hidden");
-	}
-
-	// Display warning if available
-	if (wlObj["worklist"]["warning"] != null) {
-		$("#wlItemDetails .warning").html(
-			'<i class="fas fa-exclamation-circle"></i> ' +
-				wlObj["worklist"]["warning"]
+		$("#wlItemDetails .patientCard").html(
+			"Card #" + checkIfDataIsNull(patientObj["idc_num"])
 		);
-	} else {
-		$("#wlItemDetails .warning").html("").removeClass("bg-danger text-wrap");
+		$("#wlItemDetails .patientEmail").html(
+			"Email: " + checkIfDataIsNull(patientObj["email"])
+		);
+
+		// Display phone number if available
+		if (typeof phoneDict !== "undefined" && phoneDict && phoneDict.length > 0) {
+			// Use the first phone number if multiple exist
+			const phone = phoneDict[0];
+			$("#wlItemDetails .patientPhone").html(
+				"Phone: +" + phone.phone_prefix + " " + phone.phone
+			);
+		} else {
+			$("#wlItemDetails .patientPhone").html("Phone: n/a");
+		}
+
+		$("#wlItemDetails .patientId").html("ID #" + patientObj["id"]);
+		$("#wlItemDetails .timeslot").html(
+			datetime2eu(wlObj["worklist"]["requested_time"])
+		);
+
+		// Display user notes if available
+		if (patientObj["user_notes"] != null) {
+			$("#wlItemDetails .user_notes").html(patientObj["user_notes"]);
+		} else {
+			$("#wlItemDetails .user_notes").removeClass("whitebg");
+		}
+
+		// Set worklist details
+		$("#wlItemDetails .modality").html(wlObj["modality"]["modality_name"]);
+		$("#wlItemDetails .laterality").html(wlObj["worklist"]["laterality"]);
+		$("#wlItemDetails .provider").html(
+			providerObj["first_name"] + " " + providerObj["last_name"]
+		);
+		$("#wlItemDetails .senior").html(
+			seniorObj["first_name"] + " " + seniorObj["last_name"]
+		);
+		$("#wlItemDetails .status").html(wlObj["worklist"]["status_flag"]);
+
+		// Handle task status controls
+		if (wlObj["worklist"]["status_flag"] == "done") {
+			$("#btnTaskDone").addClass("visually-hidden");
+			// Define buttons to disable only when needed
+			const buttonsToDisable = document.querySelectorAll(
+				".btn-action, .form-control"
+			);
+			disableTaskButtons(buttonsToDisable);
+		} else {
+			$("#btnUnlockTask").addClass("visually-hidden");
+		}
+
+		// Display warning if available
+		if (wlObj["worklist"]["warning"] != null) {
+			$("#wlItemDetails .warning").html(
+				'<i class="fas fa-exclamation-circle"></i> ' +
+					wlObj["worklist"]["warning"]
+			);
+		} else {
+			$("#wlItemDetails .warning").html("").removeClass("bg-danger text-wrap");
+		}
+
+		// Handle patient photo display
+		if (patientObj["photob64"] == null) {
+			const photoEl = document.getElementById("photoId");
+			photoEl.setAttribute("height", 200);
+			photoEl.setAttribute("width", 150);
+
+			// Set default avatar based on gender
+			const hostUrl = typeof HOSTURL !== "undefined" ? HOSTURL : window.HOSTURL;
+			const appName =
+				typeof APP_NAME !== "undefined" ? APP_NAME : window.APP_NAME;
+			const avatarPath =
+				hostUrl + "/" + appName + "/static/images/assets/avatar/";
+			const avatarFile =
+				genderIdObj[patientObj["gender"]] == "Male"
+					? "mini-man.svg"
+					: "mini-woman.svg";
+			photoEl.setAttribute("src", avatarPath + avatarFile);
+		} else {
+			document
+				.getElementById("photoId")
+				.setAttribute("src", patientObj["photob64"]);
+		}
+
+		return true;
 	}
 
-	// Handle patient photo display
-	if (patientObj["photob64"] == null) {
-		const photoEl = document.getElementById("photoId");
-		photoEl.setAttribute("height", 200);
-		photoEl.setAttribute("width", 150);
-
-		// Set default avatar based on gender
-		const avatarPath =
-			HOSTURL + "/" + APP_NAME + "/static/images/assets/avatar/";
-		const avatarFile =
-			genderIdObj[patientObj["gender"]] == "Male"
-				? "mini-man.svg"
-				: "mini-woman.svg";
-		photoEl.setAttribute("src", avatarPath + avatarFile);
-	} else {
-		document
-			.getElementById("photoId")
-			.setAttribute("src", patientObj["photob64"]);
+	// Try to initialize immediately, or defer until DOM ready
+	if (!initializePatientBar()) {
+		$(document).ready(function () {
+			// Try again when DOM is ready
+			if (!initializePatientBar()) {
+				// If still not available, try after a short delay
+				setTimeout(initializePatientBar, 100);
+			}
+		});
 	}
 
 	/**

@@ -28,31 +28,60 @@ function initConclusionsBootstrapTable() {
 		return;
 	}
 
-	// Check if table is already initialized by data-toggle="table"
-	const tableData = $("#conclusionsTable").data("bootstrap.table");
-	if (tableData) {
-		console.log(
-			"Table already initialized by data-toggle, using existing instance"
-		);
-		$conclusionsTable = $("#conclusionsTable");
-	} else {
-		// Initialize bootstrap table manually
-		$conclusionsTable = $("#conclusionsTable").bootstrapTable({
-			formatSearch: function () {
-				return "Search conclusions...";
+	// Initialize bootstrap table manually with proper column configuration
+	$conclusionsTable = $("#conclusionsTable").bootstrapTable({
+		columns: [
+			{
+				field: "conclusion",
+				title: "Conclusion",
+				sortable: true,
+				width: "60%",
+				widthUnit: "%",
 			},
-			onLoadingTemplate: function () {
-				return '<div class="text-center p-3"><i class="fas fa-spinner fa-spin"></i> Loading conclusions...</div>';
+			{
+				field: "laterality",
+				title: "Laterality",
+				sortable: true,
+				width: "20%",
+				widthUnit: "%",
+				formatter: lateralityBadgeFormatter,
 			},
-			onLoadError: function (status) {
-				console.error("Error loading conclusions:", status);
-				showToast("Error loading conclusions", "error");
+			{
+				field: "actions",
+				title: "Actions",
+				width: "20%",
+				widthUnit: "%",
+				align: "center",
+				formatter: conclusionActionsFormatter,
 			},
-			onRefresh: function () {
-				loadConclusionsData();
-			},
-		});
-	}
+		],
+		sidePagination: "client",
+		pagination: false,
+		search: false,
+		showRefresh: false,
+		showToggle: false,
+		showColumns: false,
+		sortName: "id",
+		sortOrder: "desc",
+		classes: "table table-striped table-hover",
+		rowStyle: conclusionRowStyle,
+		formatNoMatches: function () {
+			return "No conclusions found";
+		},
+		formatSearch: function () {
+			return "Search conclusions...";
+		},
+		onLoadingTemplate: function () {
+			return '<div class="text-center p-3"><i class="fas fa-spinner fa-spin"></i> Loading conclusions...</div>';
+		},
+		onLoadError: function (status) {
+			console.error("Error loading conclusions:", status);
+			showToast("Error loading conclusions", "error");
+		},
+		onRefresh: function () {
+			loadConclusionsData();
+		},
+	});
 
 	conclusionsInitialized = true;
 
@@ -182,54 +211,74 @@ function formatConclusionsData(data) {
  */
 function formatLateralityDisplay(laterality) {
 	const lateralityMap = {
-		general: "Both",
+		na: "Both",
 		right: "Right Eye",
 		left: "Left Eye",
-		na: "Both", // Legacy support
+		general: "Both", // Legacy support for old data
 	};
 	return lateralityMap[laterality] || "Both";
+}
+
+/**
+ * Format laterality with colored badges
+ */
+function lateralityBadgeFormatter(value, row, index) {
+	const laterality = row.laterality_code || row.laterality;
+
+	if (laterality === "right") {
+		return '<span class="badge" style="background-color: white; color: #0056b3; border: 1px solid #0056b3;">Right Eye</span>';
+	} else if (laterality === "left") {
+		return '<span class="badge" style="background-color: white; color: #dc3545; border: 1px solid #dc3545;">Left Eye</span>';
+	} else {
+		return '<span class="badge" style="background-color: white; color: #6c757d; border: 1px solid #6c757d;">Both</span>';
+	}
 }
 
 /**
  * Bootstrap-table row style formatter
  */
 function conclusionRowStyle(row, index) {
-	const classes = ["conclusion-row"];
-
-	// Add laterality-based styling
+	// Add laterality-based row background styling
 	if (row.laterality_code === "right") {
-		classes.push("table-warning");
+		return {
+			css: { "background-color": "#D5E3EE" }, // Blue background for right eye
+		};
 	} else if (row.laterality_code === "left") {
-		classes.push("table-info");
+		return {
+			css: { "background-color": "#EED9D5" }, // Pink background for left eye
+		};
 	} else {
-		classes.push("table-light");
+		return {
+			css: { "background-color": "white" }, // White background for both
+		};
 	}
-
-	return {
-		classes: classes.join(" "),
-	};
 }
 
 /**
  * Bootstrap-table actions formatter
  */
 function conclusionActionsFormatter(value, row, index) {
-	return `
-        <div class="btn-group btn-group-sm" role="group">
-            <button type="button" class="btn btn-outline-primary btn-edit-conclusion" 
-                    data-id="${row.id}" 
-                    data-conclusion="${escapeHtml(row.conclusion)}"
-                    data-laterality="${row.laterality_code}"
-                    title="Edit conclusion">
-                <i class="fas fa-edit"></i>
-            </button>
-            <button type="button" class="btn btn-outline-danger btn-delete-conclusion" 
-                    data-id="${row.id}"
-                    title="Delete conclusion">
-                <i class="fas fa-trash"></i>
-            </button>
-        </div>
-    `;
+	let html = ['<div class="d-flex justify-content-between">'];
+	html.push(
+		'<a class="btn-edit-conclusion" href="javascript:void(0)" title="Edit conclusion" ' +
+			'data-id="' +
+			row.id +
+			'" ' +
+			'data-conclusion="' +
+			escapeHtml(row.conclusion) +
+			'" ' +
+			'data-laterality="' +
+			row.laterality_code +
+			'"><i class="fas fa-edit"></i></a>'
+	);
+	html.push(
+		'<a class="btn-delete-conclusion ms-1" href="javascript:void(0)" title="Delete conclusion" ' +
+			'data-id="' +
+			row.id +
+			'"><i class="fas fa-trash-alt"></i></a>'
+	);
+	html.push("</div>");
+	return html.join("");
 }
 
 /**
@@ -309,13 +358,24 @@ function handleAddConclusion() {
 		success: function (response) {
 			console.log("Add conclusion response:", response);
 
-			if (response && response.success !== false) {
+			// Check for API error responses (PyDAL RestAPI format)
+			if (
+				response &&
+				(response.status === "error" ||
+					(response.errors && Object.keys(response.errors).length > 0) ||
+					response.success === false)
+			) {
+				const errorMessage = response.message || "Error adding conclusion";
+				console.error("API returned error:", response);
+				showToast(errorMessage, "error");
+			} else if (response && (response.id || response.status === "success")) {
 				showToast("Conclusion added successfully", "success");
 				$("#newConclusionForm")[0].reset();
-				$("#newConclusionLaterality").val("general"); // Reset to default
+				$("#newConclusionLaterality").val("na"); // Reset to default
 				loadConclusionsData(); // Reload table
 			} else {
-				showToast(response.message || "Error adding conclusion", "error");
+				console.error("Unexpected response format:", response);
+				showToast("Unexpected response from server", "error");
 			}
 		},
 		error: function (xhr, status, error) {
@@ -332,7 +392,7 @@ function handleAddConclusion() {
 function openEditModal(id, conclusion, laterality) {
 	$("#editConclusionId").val(id);
 	$("#editConclusionText").val(conclusion);
-	$("#editConclusionLaterality").val(laterality || "general");
+	$("#editConclusionLaterality").val(laterality || "na");
 
 	$("#editConclusionModal").modal("show");
 }
@@ -370,12 +430,23 @@ function handleSaveEditedConclusion() {
 		success: function (response) {
 			console.log("Update conclusion response:", response);
 
-			if (response && response.success !== false) {
+			// Check for API error responses (PyDAL RestAPI format)
+			if (
+				response &&
+				(response.status === "error" ||
+					(response.errors && Object.keys(response.errors).length > 0) ||
+					response.success === false)
+			) {
+				const errorMessage = response.message || "Error updating conclusion";
+				console.error("API returned error:", response);
+				showToast(errorMessage, "error");
+			} else if (response && (response.id || response.status === "success")) {
 				showToast("Conclusion updated successfully", "success");
 				$("#editConclusionModal").modal("hide");
 				loadConclusionsData(); // Reload table
 			} else {
-				showToast(response.message || "Error updating conclusion", "error");
+				console.error("Unexpected response format:", response);
+				showToast("Unexpected response from server", "error");
 			}
 		},
 		error: function (xhr, status, error) {
@@ -436,11 +507,19 @@ function deleteConclusion(id) {
 		success: function (response) {
 			console.log("Delete conclusion response:", response);
 
-			if (response && response.success !== false) {
+			// Check for API error responses (PyDAL RestAPI format)
+			if (
+				response &&
+				(response.status === "error" ||
+					(response.errors && Object.keys(response.errors).length > 0) ||
+					response.success === false)
+			) {
+				const errorMessage = response.message || "Error deleting conclusion";
+				console.error("API returned error:", response);
+				showToast(errorMessage, "error");
+			} else {
 				showToast("Conclusion deleted successfully", "success");
 				loadConclusionsData(); // Reload table
-			} else {
-				showToast(response.message || "Error deleting conclusion", "error");
 			}
 		},
 		error: function (xhr, status, error) {

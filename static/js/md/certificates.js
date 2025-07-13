@@ -64,25 +64,49 @@ function notifyUser(message, type) {
 
 var certificateObj = {};
 
-certificateObj["doctorfirst"] = userObj["first_name"];
-certificateObj["doctorlast"] = userObj["last_name"];
-certificateObj["doctortitle"] =
-	"Dr " + userObj["last_name"].toUpperCase() + " " + userObj["first_name"];
-certificateObj["doctorinami"] = usermdObj["inami"]; // keep separations
-certificateObj["doctoremail"] = usermdObj["email"];
-certificateObj["centername"] =
-	usermdObj["officename"] +
-	"\n" +
-	usermdObj["officeaddress"] +
-	"\n" +
-	usermdObj["officezip"] +
-	" " +
-	usermdObj["officetown"];
-certificateObj["centerphone"] = usermdObj["officephone"];
-certificateObj["centerurl"] = usermdObj["officeurl"];
+// Initialize certificate object when global variables are available
+function initializeCertificateObject() {
+	// Check if required global variables are available
+	if (typeof userObj === "undefined" || typeof usermdObj === "undefined") {
+		console.warn(
+			"userObj or usermdObj not available yet, deferring certificate initialization"
+		);
+		return false;
+	}
 
-certificateObj["qrcode"] =
-	"Signed by " + certificateObj["doctortitle"] + " uuid:";
+	certificateObj["doctorfirst"] = userObj["first_name"];
+	certificateObj["doctorlast"] = userObj["last_name"];
+	certificateObj["doctortitle"] =
+		"Dr " + userObj["last_name"].toUpperCase() + " " + userObj["first_name"];
+	certificateObj["doctorinami"] = usermdObj["inami"]; // keep separations
+	certificateObj["doctoremail"] = usermdObj["email"];
+	certificateObj["centername"] =
+		usermdObj["officename"] +
+		"\n" +
+		usermdObj["officeaddress"] +
+		"\n" +
+		usermdObj["officezip"] +
+		" " +
+		usermdObj["officetown"];
+	certificateObj["centerphone"] = usermdObj["officephone"];
+	certificateObj["centerurl"] = usermdObj["officeurl"];
+
+	certificateObj["qrcode"] =
+		"Signed by " + certificateObj["doctortitle"] + " uuid:";
+
+	return true;
+}
+
+// Try to initialize immediately, or defer until DOM ready
+if (!initializeCertificateObject()) {
+	$(document).ready(function () {
+		// Try again when DOM is ready
+		if (!initializeCertificateObject()) {
+			// If still not available, try after a short delay
+			setTimeout(initializeCertificateObject, 100);
+		}
+	});
+}
 
 var reportObj = {};
 

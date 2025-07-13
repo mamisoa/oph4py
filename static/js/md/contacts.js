@@ -38,26 +38,50 @@ function notifyUser(message, type) {
 
 var prescCxObj = {};
 
-prescCxObj["doctorfirst"] = userObj["first_name"];
-prescCxObj["doctorlast"] = userObj["last_name"];
-prescCxObj["doctortitle"] =
-	"Dr " + userObj["last_name"].toUpperCase() + " " + userObj["first_name"];
-prescCxObj["doctorinami"] = usermdObj["inami"]; // keep separations
-prescCxObj["doctoremail"] = usermdObj["email"];
-prescCxObj["centername"] =
-	usermdObj["officename"] +
-	"\n" +
-	usermdObj["officeaddress"] +
-	"\n" +
-	usermdObj["officezip"] +
-	" " +
-	usermdObj["officetown"];
-prescCxObj["centerphone"] = usermdObj["officephone"];
-prescCxObj["centerurl"] = usermdObj["officeurl"];
+// Initialize prescription object when global variables are available
+function initializeContactsPrescriptionObject() {
+	// Check if required global variables are available
+	if (typeof userObj === "undefined" || typeof usermdObj === "undefined") {
+		console.warn(
+			"userObj or usermdObj not available yet, deferring contacts prescription initialization"
+		);
+		return false;
+	}
 
-prescCxObj["art30yes"] = "[x]";
-prescCxObj["art30no"] = "[ ]";
-prescCxObj["qrcode"] = "Signed by " + prescCxObj["doctortitle"] + " uuid:";
+	prescCxObj["doctorfirst"] = userObj["first_name"];
+	prescCxObj["doctorlast"] = userObj["last_name"];
+	prescCxObj["doctortitle"] =
+		"Dr " + userObj["last_name"].toUpperCase() + " " + userObj["first_name"];
+	prescCxObj["doctorinami"] = usermdObj["inami"]; // keep separations
+	prescCxObj["doctoremail"] = usermdObj["email"];
+	prescCxObj["centername"] =
+		usermdObj["officename"] +
+		"\n" +
+		usermdObj["officeaddress"] +
+		"\n" +
+		usermdObj["officezip"] +
+		" " +
+		usermdObj["officetown"];
+	prescCxObj["centerphone"] = usermdObj["officephone"];
+	prescCxObj["centerurl"] = usermdObj["officeurl"];
+
+	prescCxObj["art30yes"] = "[x]";
+	prescCxObj["art30no"] = "[ ]";
+	prescCxObj["qrcode"] = "Signed by " + prescCxObj["doctortitle"] + " uuid:";
+
+	return true;
+}
+
+// Try to initialize immediately, or defer until DOM ready
+if (!initializeContactsPrescriptionObject()) {
+	$(document).ready(function () {
+		// Try again when DOM is ready
+		if (!initializeContactsPrescriptionObject()) {
+			// If still not available, try after a short delay
+			setTimeout(initializeContactsPrescriptionObject, 100);
+		}
+	});
+}
 
 function vertex2cornea(power, vertex = 0.0125) {
 	return round2qter(power / (1 - vertex * power));
@@ -1175,7 +1199,7 @@ $("#CxRxFormModal").submit(function (e) {
 
 				// Get email from input field
 				const emailAddress = $("#CxRxemailInput").val().trim();
-				
+
 				// Validate email
 				if (!emailAddress || !emailAddress.includes("@")) {
 					notifyUser("Veuillez fournir une adresse email valide", "danger");
