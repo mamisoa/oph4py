@@ -296,15 +296,9 @@ class SummaryManager {
 						? new Date(item.requested_time).toLocaleString()
 						: "-"
 				}</td>
-				<td title="${escapeHtml(item.procedure)}">${truncateText(
-				item.procedure,
-				50
-			)}</td>
-				<td title="${escapeHtml(item.history)}">${truncateText(item.history, 80)}</td>
-				<td title="${escapeHtml(item.conclusion)}">${truncateText(
-				item.conclusion,
-				80
-			)}</td>
+				<td title="${escapeHtml(item.procedure)}">${item.procedure || "-"}</td>
+				<td title="${escapeHtml(item.history)}">${truncateText(item.history, 40)}</td>
+				<td title="${this.stripHtml(item.conclusion)}">${item.conclusion || "-"}</td>
 				<td title="${escapeHtml(item.followup)}">${truncateText(item.followup, 70)}</td>
 				<td title="${escapeHtml(item.billing_desc)}">${truncateText(
 				item.billing_desc,
@@ -338,6 +332,33 @@ class SummaryManager {
 		this.elements.retryButton.addEventListener("click", () =>
 			this.loadSummary()
 		);
+	}
+
+	/**
+	 * Strip HTML tags from a string and convert badges to readable text for tooltip display
+	 */
+	stripHtml(html) {
+		if (!html) return "";
+
+		// Convert custom badge HTML to readable text for tooltips
+		let text = html
+			.replace(
+				/<span class="badge" style="background-color: #D5E3EE; color: #0056b3; border: 1px solid #0056b3;">right<\/span>/g,
+				"[right]"
+			)
+			.replace(
+				/<span class="badge" style="background-color: #EED9D5; color: #dc3545; border: 1px solid #dc3545;">left<\/span>/g,
+				"[left]"
+			)
+			.replace(
+				/<span class="badge" style="background-color: white; color: #6c757d; border: 1px solid #6c757d;">both<\/span>/g,
+				"[both]"
+			);
+
+		// Strip remaining HTML tags
+		const div = document.createElement("div");
+		div.innerHTML = text;
+		return div.textContent || div.innerText || "";
 	}
 }
 

@@ -596,7 +596,6 @@ class PaymentManager {
 	 * Refresh transaction history data
 	 */
 
-
 	/**
 	 * Bind cancel button events
 	 */
@@ -681,12 +680,15 @@ class PaymentManager {
 		}
 
 		const reason = document.getElementById("cancellation-reason").value.trim();
-		const confirmBtn = document.getElementById("confirm-cancel-transaction-btn");
+		const confirmBtn = document.getElementById(
+			"confirm-cancel-transaction-btn"
+		);
 
 		try {
 			// Disable button and show processing state
 			confirmBtn.disabled = true;
-			confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Cancelling...';
+			confirmBtn.innerHTML =
+				'<i class="fas fa-spinner fa-spin me-1"></i>Cancelling...';
 
 			// Submit cancellation directly to API
 			const response = await fetch(
@@ -735,7 +737,8 @@ class PaymentManager {
 		} finally {
 			// Re-enable button
 			confirmBtn.disabled = false;
-			confirmBtn.innerHTML = '<i class="fas fa-ban me-1"></i>Cancel Transaction';
+			confirmBtn.innerHTML =
+				'<i class="fas fa-ban me-1"></i>Cancel Transaction';
 		}
 	}
 
@@ -852,7 +855,10 @@ class PaymentManager {
 				document.getElementById("payment-datetime").value || null,
 		};
 
-		const totalAmount = paymentData.amount_card + paymentData.amount_cash + paymentData.amount_invoice;
+		const totalAmount =
+			paymentData.amount_card +
+			paymentData.amount_cash +
+			paymentData.amount_invoice;
 
 		if (totalAmount <= 0) {
 			displayToast(
@@ -865,11 +871,12 @@ class PaymentManager {
 		}
 
 		const confirmBtn = document.getElementById("confirm-payment-btn");
-		
+
 		try {
 			// Disable button and show processing state
 			confirmBtn.disabled = true;
-			confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+			confirmBtn.innerHTML =
+				'<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
 
 			// Submit payment directly to API
 			const response = await fetch(
@@ -896,7 +903,8 @@ class PaymentManager {
 				displayToast(
 					"success",
 					"Payment Processed",
-					result.data.message || `Payment of €${totalAmount.toFixed(2)} processed successfully`,
+					result.data.message ||
+						`Payment of €${totalAmount.toFixed(2)} processed successfully`,
 					5000
 				);
 
@@ -904,7 +912,6 @@ class PaymentManager {
 				await this.loadPaymentSummary();
 				await this.loadTransactionHistory();
 				this.updatePaymentButton();
-
 			} else {
 				throw new Error(result.message || "Failed to process payment");
 			}
@@ -922,8 +929,6 @@ class PaymentManager {
 			confirmBtn.innerHTML = '<i class="fas fa-check me-1"></i>Confirm Payment';
 		}
 	}
-
-
 
 	/**
 	 * Update payment button state
@@ -1053,7 +1058,6 @@ class PaymentManager {
 		const errorDiv = document.getElementById("md-summary-error");
 		const contentDiv = document.getElementById("md-summary-content");
 		const emptyDiv = document.getElementById("md-summary-empty");
-		const viewMoreBtn = document.getElementById("view-more-md-summary-btn");
 
 		// Hide loading and error states
 		if (loadingDiv) loadingDiv.style.display = "none";
@@ -1063,18 +1067,12 @@ class PaymentManager {
 			// Show empty state
 			if (contentDiv) contentDiv.style.display = "none";
 			if (emptyDiv) emptyDiv.style.display = "block";
-			if (viewMoreBtn) viewMoreBtn.style.display = "none";
 			return;
 		}
 
 		// Show content
 		if (contentDiv) contentDiv.style.display = "block";
 		if (emptyDiv) emptyDiv.style.display = "none";
-
-		// Show view more button if there are more records
-		if (viewMoreBtn) {
-			viewMoreBtn.style.display = data.has_more ? "inline-block" : "none";
-		}
 
 		// Update stats
 		const showingSpan = document.getElementById("md-summary-showing");
@@ -1091,18 +1089,14 @@ class PaymentManager {
 					(item) => `
 				<tr>
 					<td>${this.formatDateTime(item.requested_time)}</td>
-					<td title="${item.procedure || "-"}">${this.truncateText(
-						item.procedure || "-",
-						15
-					)}</td>
+					<td title="${item.procedure || "-"}">${item.procedure || "-"}</td>
 					<td title="${item.history || "-"}">${this.truncateText(
 						item.history || "-",
-						25
+						40
 					)}</td>
-					<td title="${item.conclusion || "-"}">${this.truncateText(
-						item.conclusion || "-",
-						25
-					)}</td>
+					<td title="${this.stripHtml(item.conclusion || "-")}">${
+						item.conclusion || "-"
+					}</td>
 					<td title="${item.followup || "-"}">${this.truncateText(
 						item.followup || "-",
 						20
@@ -1198,8 +1192,13 @@ class PaymentManager {
 				<tr>
 					<td>${this.formatDateTime(item.requested_time)}</td>
 					<td title="${item.procedure || "-"}">${item.procedure || "-"}</td>
-					<td title="${item.history || "-"}">${item.history || "-"}</td>
-					<td title="${item.conclusion || "-"}">${item.conclusion || "-"}</td>
+					<td title="${item.history || "-"}">${this.truncateText(
+						item.history || "-",
+						40
+					)}</td>
+					<td title="${this.stripHtml(item.conclusion || "-")}">${
+						item.conclusion || "-"
+					}</td>
 					<td title="${item.followup || "-"}">${item.followup || "-"}</td>
 					<td title="${item.billing_desc || "-"}">${item.billing_desc || "-"}</td>
 					<td title="${item.billing_codes || "-"}">${item.billing_codes || "-"}</td>
@@ -1300,6 +1299,33 @@ class PaymentManager {
 		if (!text || text === "-") return text;
 		if (text.length <= maxLength) return text;
 		return text.substring(0, maxLength - 3) + "...";
+	}
+
+	/**
+	 * Strip HTML tags from a string and convert badges to readable text
+	 */
+	stripHtml(html) {
+		if (!html) return "";
+
+		// Convert custom badge HTML to readable text for tooltips
+		let text = html
+			.replace(
+				/<span class="badge" style="background-color: #D5E3EE; color: #0056b3; border: 1px solid #0056b3;">right<\/span>/g,
+				"[right]"
+			)
+			.replace(
+				/<span class="badge" style="background-color: #EED9D5; color: #dc3545; border: 1px solid #dc3545;">left<\/span>/g,
+				"[left]"
+			)
+			.replace(
+				/<span class="badge" style="background-color: white; color: #6c757d; border: 1px solid #6c757d;">both<\/span>/g,
+				"[both]"
+			);
+
+		// Strip remaining HTML tags
+		const div = document.createElement("div");
+		div.innerHTML = text;
+		return div.textContent || div.innerText || "";
 	}
 }
 

@@ -84,13 +84,13 @@
                             <table class="table table-striped table-hover table-sm" id="md-summary-table">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th style="width: 12%;">Date/Time</th>
-                                        <th style="width: 12%;">Procedure</th>
-                                        <th style="width: 18%;">History</th>
-                                        <th style="width: 18%;">Conclusion</th>
-                                        <th style="width: 15%;">Follow-up</th>
-                                        <th style="width: 12%;">Billing</th>
-                                        <th style="width: 13%;">Billing Codes</th>
+                                        <th>Date/Time</th>
+                                        <th>Procedure</th>
+                                        <th>History</th>
+                                        <th>Conclusion</th>
+                                        <th>Follow-up</th>
+                                        <th>Billing</th>
+                                        <th>Billing Codes</th>
                                     </tr>
                                 </thead>
                                 <tbody id="md-summary-body">
@@ -258,13 +258,13 @@
                         <table class="table table-striped table-hover table-sm" id="md-summary-modal-table">
                             <thead class="table-dark sticky-top">
                                 <tr>
-                                    <th style="width: 12%;">Date/Time</th>
-                                    <th style="width: 12%;">Procedure</th>
-                                    <th style="width: 18%;">History</th>
-                                    <th style="width: 18%;">Conclusion</th>
-                                    <th style="width: 15%;">Follow-up</th>
-                                    <th style="width: 12%;">Billing</th>
-                                    <th style="width: 13%;">Billing Codes</th>
+                                    <th>Date/Time</th>
+                                    <th>Procedure</th>
+                                    <th>History</th>
+                                    <th>Conclusion</th>
+                                    <th>Follow-up</th>
+                                    <th>Billing</th>
+                                    <th>Billing Codes</th>
                                 </tr>
                             </thead>
                             <tbody id="md-summary-modal-body">
@@ -481,5 +481,79 @@
         .modal.show .modal-dialog {
             margin-top: 30px !important;
         }
+    }
+
+    /* MD Summary Table Column Adjustments */
+    #md-summary-table th:nth-child(1),
+    /* Date/Time */
+    #md-summary-modal-table th:nth-child(1) {
+        width: auto !important;
+        min-width: 120px;
+        white-space: nowrap;
+    }
+
+    #md-summary-table th:nth-child(2),
+    /* Procedure */
+    #md-summary-modal-table th:nth-child(2) {
+        width: auto !important;
+        min-width: 100px;
+    }
+
+    #md-summary-table th:nth-child(3),
+    /* History */
+    #md-summary-modal-table th:nth-child(3) {
+        width: 200px !important;
+        max-width: 200px;
+    }
+
+    #md-summary-table td:nth-child(3),
+    /* History content */
+    #md-summary-modal-table td:nth-child(3) {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        word-wrap: break-word;
+    }
+
+    #md-summary-table th:nth-child(4),
+    /* Conclusion */
+    #md-summary-modal-table th:nth-child(4) {
+        width: auto !important;
+        min-width: 150px;
+    }
+
+    #md-summary-table th:nth-child(5),
+    /* Follow-up */
+    #md-summary-modal-table th:nth-child(5) {
+        width: auto !important;
+        min-width: 120px;
+    }
+
+    #md-summary-table th:nth-child(6),
+    /* Billing */
+    #md-summary-modal-table th:nth-child(6) {
+        width: auto !important;
+        min-width: 80px;
+    }
+
+    #md-summary-table th:nth-child(7),
+    /* Billing Codes */
+    #md-summary-modal-table th:nth-child(7) {
+        width: auto !important;
+        min-width: 120px;
+    }
+
+    /* Ensure table fits content properly */
+    #md-summary-table,
+    #md-summary-modal-table {
+        table-layout: auto !important;
+        width: 100%;
+    }
+
+    /* Add tooltip for truncated history */
+    #md-summary-table td:nth-child(3)[title],
+    #md-summary-modal-table td:nth-child(3)[title] {
+        cursor: help;
     }
 </style>

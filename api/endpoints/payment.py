@@ -707,19 +707,31 @@ def md_summary(worklist_id: int, offset: int = 0):
         for row in rows:
             worklist_row_id = row.worklist_id
 
-            # Get all conclusions for this worklist and aggregate them
+            # Get all conclusions for this worklist and format them with laterality
             conclusions = db(db.ccx.id_worklist == worklist_row_id).select(
-                db.ccx.description, orderby=db.ccx.id
+                db.ccx.description, db.ccx.laterality, orderby=db.ccx.id
             )
 
-            # Combine all conclusions into a single string
-            conclusion_texts = [
-                c.description
-                for c in conclusions
-                if c.description and c.description.strip()
-            ]
+            # Format conclusions with laterality tags, one per line
+            conclusion_lines = []
+            for c in conclusions:
+                if c.description and c.description.strip():
+                    # Map laterality to colored display tags
+                    if c.laterality == "right":
+                        tag = '<span class="badge" style="background-color: #D5E3EE; color: #0056b3; border: 1px solid #0056b3;">right</span>'
+                    elif c.laterality == "left":
+                        tag = '<span class="badge" style="background-color: #EED9D5; color: #dc3545; border: 1px solid #dc3545;">left</span>'
+                    elif c.laterality == "na":
+                        tag = '<span class="badge" style="background-color: white; color: #6c757d; border: 1px solid #6c757d;">both</span>'
+                    else:
+                        tag = ""
+
+                    conclusion_lines.append(
+                        f"{tag} {c.description}" if tag else c.description
+                    )
+
             conclusion_combined = (
-                "; ".join(conclusion_texts) if conclusion_texts else "-"
+                "<br>".join(conclusion_lines) if conclusion_lines else "-"
             )
 
             # Get billing codes for this worklist and aggregate them
@@ -851,19 +863,31 @@ def md_summary_modal(worklist_id: int):
         for row in rows:
             worklist_row_id = row.worklist_id
 
-            # Get all conclusions for this worklist and aggregate them
+            # Get all conclusions for this worklist and format them with laterality
             conclusions = db(db.ccx.id_worklist == worklist_row_id).select(
-                db.ccx.description, orderby=db.ccx.id
+                db.ccx.description, db.ccx.laterality, orderby=db.ccx.id
             )
 
-            # Combine all conclusions into a single string
-            conclusion_texts = [
-                c.description
-                for c in conclusions
-                if c.description and c.description.strip()
-            ]
+            # Format conclusions with laterality tags, one per line
+            conclusion_lines = []
+            for c in conclusions:
+                if c.description and c.description.strip():
+                    # Map laterality to colored display tags
+                    if c.laterality == "right":
+                        tag = '<span class="badge" style="background-color: #D5E3EE; color: #0056b3; border: 1px solid #0056b3;">right</span>'
+                    elif c.laterality == "left":
+                        tag = '<span class="badge" style="background-color: #EED9D5; color: #dc3545; border: 1px solid #dc3545;">left</span>'
+                    elif c.laterality == "na":
+                        tag = '<span class="badge" style="background-color: white; color: #6c757d; border: 1px solid #6c757d;">both</span>'
+                    else:
+                        tag = ""
+
+                    conclusion_lines.append(
+                        f"{tag} {c.description}" if tag else c.description
+                    )
+
             conclusion_combined = (
-                "; ".join(conclusion_texts) if conclusion_texts else "-"
+                "<br>".join(conclusion_lines) if conclusion_lines else "-"
             )
 
             # Get billing codes for this worklist
@@ -990,19 +1014,31 @@ def patient_md_summary(patient_id: int, offset: int = 0):
         for row in rows:
             worklist_row_id = row.worklist_id
 
-            # Get all conclusions for this worklist and aggregate them
+            # Get all conclusions for this worklist and format them with laterality
             conclusions = db(db.ccx.id_worklist == worklist_row_id).select(
-                db.ccx.description, orderby=db.ccx.id
+                db.ccx.description, db.ccx.laterality, orderby=db.ccx.id
             )
 
-            # Combine all conclusions into a single string
-            conclusion_texts = [
-                c.description
-                for c in conclusions
-                if c.description and c.description.strip()
-            ]
+            # Format conclusions with laterality tags, one per line
+            conclusion_lines = []
+            for c in conclusions:
+                if c.description and c.description.strip():
+                    # Map laterality to colored display tags
+                    if c.laterality == "right":
+                        tag = '<span class="badge" style="background-color: #D5E3EE; color: #0056b3; border: 1px solid #0056b3;">right</span>'
+                    elif c.laterality == "left":
+                        tag = '<span class="badge" style="background-color: #EED9D5; color: #dc3545; border: 1px solid #dc3545;">left</span>'
+                    elif c.laterality == "na":
+                        tag = '<span class="badge" style="background-color: white; color: #6c757d; border: 1px solid #6c757d;">both</span>'
+                    else:
+                        tag = ""
+
+                    conclusion_lines.append(
+                        f"{tag} {c.description}" if tag else c.description
+                    )
+
             conclusion_combined = (
-                "; ".join(conclusion_texts) if conclusion_texts else "-"
+                "<br>".join(conclusion_lines) if conclusion_lines else "-"
             )
 
             # Get billing codes for this worklist and aggregate them
