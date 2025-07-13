@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-07-13T04:52:27.371539]
+
+### Changed
+
+- **🔍 Enhanced User Search with Fuzzy Matching**: Improved existing user search to use fuzzy matching for better results
+  - **Fuzzy Search**: Changed from `first_name.startswith` to `first_name.contains` for more flexible matching
+  - **Consistent Matching**: Both first name and last name now use `.contains` for partial string matching
+  - **Better Results**: Users can now find matches even with partial or misspelled names
+  - **API Parameters**: Updated search to use `first_name.contains` and `last_name.contains`
+
+## [2025-07-13T04:50:25.276163]
+
+### Added
+
+- **🔍 Dynamic Existing User Search in New User Modal**: Added intelligent search functionality to prevent duplicate user creation
+  - **Real-time Search**: Searches existing users as firstname and lastname are typed (300ms debounce)
+  - **Smart Triggers**: Activates when both fields have at least 2 characters and on blur events
+  - **Visual Feedback**: Shows up to 3 matching users with lastname, firstname, and date of birth
+  - **Bootstrap Styling**: Used Bootstrap classes for consistent modal styling with warning-themed cards
+  - **Loading States**: Added spinner during search and "No matches found" message
+  - **API Integration**: Leverages existing `/api/auth_user` endpoint with proper search parameters
+  - **User Experience**: Clear visual distinction with FontAwesome icons and hover effects
+  - **Responsive Design**: Properly styled for mobile and desktop views
+  - **Optional Enhancement**: Click handlers ready for future form population functionality
+
 ## [2025-07-13T04:40:17.641862]
 
 ### Fixed

@@ -267,6 +267,64 @@
     #filterBar .ms-3 {
         margin-left: 1rem !important;
     }
+
+    /* Existing Users List Styles */
+    #existingUsersContainer .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border: 1px solid #ffc107 !important;
+    }
+
+    #existingUsersContainer .card-header {
+        background-color: #fff3cd !important;
+        border-bottom: 1px solid #ffc107;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    #existingUsersList .list-group-item {
+        border: none;
+        border-bottom: 1px solid #f8f9fa;
+        padding: 0.5rem 0.75rem;
+        background-color: transparent;
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out;
+    }
+
+    #existingUsersList .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    #existingUsersList .list-group-item:last-child {
+        border-bottom: none;
+    }
+
+    #existingUsersList .user-info {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+
+    #existingUsersList .user-name {
+        font-weight: 500;
+        color: #495057;
+    }
+
+    #existingUsersList .user-dob {
+        color: #6c757d;
+        font-size: 0.85rem;
+        margin-left: auto;
+    }
+
+    #existingUsersList .user-icon {
+        color: #6c757d;
+        width: 16px;
+        margin-right: 0.5rem;
+    }
+
+    #searchSpinner {
+        width: 1rem;
+        height: 1rem;
+    }
 </style>
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
 [[ end ]]
@@ -355,9 +413,6 @@
                         data-bs-target="#newUserModal">
                         New [[=group]]
                     </button>
-                    <button type="button" id="btnCheckUser" class="btn btn-secondary">
-                        Check existing user
-                    </button>
                 </div>
             </div>
             <table id="table" data-toolbar="#toolbar" data-id-field="id" data-side-pagination="server"
@@ -407,8 +462,34 @@
                                     </div>
                                     <div class="col">
                                         <label for="lastName" class="form-label">Last name:</label>
-                                        <input id="lastName" type="text" class="form-control" name="last_name">
+                                        <input id="lastName" type="text" class="form-control" name="last_name"
+                                            autocomplete="off">
                                         <div id="lastNameHelp" class="form-text">Enter your last name</div>
+                                    </div>
+                                </div>
+                                <!-- Existing Users List -->
+                                <div class="row mb-3" id="existingUsersContainer" style="display: none;">
+                                    <div class="col">
+                                        <div class="card border-warning">
+                                            <div class="card-header bg-warning text-dark d-flex align-items-center">
+                                                <i class="fas fa-users me-2"></i>
+                                                <span>Possible Existing Users</span>
+                                                <div class="spinner-border spinner-border-sm ms-auto" role="status"
+                                                    id="searchSpinner" style="display: none;">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                            <div class="card-body p-2">
+                                                <div id="existingUsersList" class="list-group list-group-flush">
+                                                    <!-- Dynamic user list will be populated here -->
+                                                </div>
+                                                <div id="noMatchesMessage" class="text-muted text-center py-2"
+                                                    style="display: none;">
+                                                    <i class="fas fa-search me-1"></i>
+                                                    No matching users found
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -825,6 +906,141 @@
         }
     }
 
+    // Existing Users Search Functionality
+    let searchTimeout;
+
+    function debounce(func, delay) {
+        return function (...args) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
+    async function searchExistingUsers(firstName, lastName) {
+        // Only search if both fields have at least 2 characters
+        if (!firstName || !lastName || firstName.length < 2 || lastName.length < 2) {
+            clearUserMatches();
+            return;
+        }
+
+        showSearchSpinner(true);
+
+        try {
+            // Build search URL using fuzzy matching with contains for both fields
+            const searchParams = new URLSearchParams();
+            searchParams.append('first_name.contains', firstName);
+            searchParams.append('last_name.contains', lastName);
+            searchParams.append('@limit', '5');
+            searchParams.append('@lookup', 'gender:gender[id,sex]');
+            searchParams.append('@order', 'last_name,first_name');
+
+            const searchUrl = `${HOSTURL}[[=URL('api','auth_user')]]?${searchParams.toString()}`;
+
+            const response = await fetch(searchUrl);
+            const data = await response.json();
+
+            if (data.items && data.items.length > 0) {
+                displayUserMatches(data.items);
+            } else {
+                showNoMatches();
+            }
+        } catch (error) {
+            console.error('Error searching users:', error);
+            showNoMatches();
+        } finally {
+            showSearchSpinner(false);
+        }
+    }
+
+    function displayUserMatches(users) {
+        const container = document.getElementById('existingUsersContainer');
+        const usersList = document.getElementById('existingUsersList');
+        const noMatchesMsg = document.getElementById('noMatchesMessage');
+
+        // Clear previous results
+        usersList.innerHTML = '';
+        noMatchesMsg.style.display = 'none';
+
+        // Create list items for each user
+        users.forEach(user => {
+            const listItem = document.createElement('div');
+            listItem.className = 'list-group-item';
+
+            const userInfo = document.createElement('div');
+            userInfo.className = 'user-info';
+
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-user user-icon';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'user-name';
+            nameSpan.textContent = `${user.last_name}, ${user.first_name}`;
+
+            const dobSpan = document.createElement('span');
+            dobSpan.className = 'user-dob';
+            if (user.dob) {
+                const dobDate = new Date(user.dob);
+                dobSpan.textContent = dobDate.toLocaleDateString();
+            } else {
+                dobSpan.textContent = 'No DOB';
+            }
+
+            userInfo.appendChild(icon);
+            userInfo.appendChild(nameSpan);
+            userInfo.appendChild(dobSpan);
+            listItem.appendChild(userInfo);
+
+            // Add click handler to populate form (optional functionality)
+            listItem.addEventListener('click', function () {
+                populateFormWithUser(user);
+            });
+
+            usersList.appendChild(listItem);
+        });
+
+        // Show the container
+        container.style.display = 'block';
+    }
+
+    function showNoMatches() {
+        const container = document.getElementById('existingUsersContainer');
+        const usersList = document.getElementById('existingUsersList');
+        const noMatchesMsg = document.getElementById('noMatchesMessage');
+
+        usersList.innerHTML = '';
+        noMatchesMsg.style.display = 'block';
+        container.style.display = 'block';
+    }
+
+    function clearUserMatches() {
+        const container = document.getElementById('existingUsersContainer');
+        const usersList = document.getElementById('existingUsersList');
+        const noMatchesMsg = document.getElementById('noMatchesMessage');
+
+        container.style.display = 'none';
+        usersList.innerHTML = '';
+        noMatchesMsg.style.display = 'none';
+    }
+
+    function showSearchSpinner(show) {
+        const spinner = document.getElementById('searchSpinner');
+        spinner.style.display = show ? 'block' : 'none';
+    }
+
+    function populateFormWithUser(user) {
+        // Optional: populate form with selected user data
+        // This could be used to pre-fill form for editing existing users
+        console.log('Selected user:', user);
+        // Example: document.getElementById('firstName').value = user.first_name;
+    }
+
+    // Debounced search function
+    const debouncedSearch = debounce(function () {
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        searchExistingUsers(firstName, lastName);
+    }, 300);
+
     // Load when DOM is loaded
     document.addEventListener("DOMContentLoaded", function (event) {
         // Lancer la fonction fillSelect
@@ -833,6 +1049,31 @@
         // Set today's date as default for date filters
         document.getElementById('startDate').value = TODAY_DATE;
         document.getElementById('endDate').value = TODAY_DATE;
+
+        // Add event listeners for existing user search
+        const firstNameInput = document.getElementById('firstName');
+        const lastNameInput = document.getElementById('lastName');
+
+        // Add blur event listeners
+        firstNameInput.addEventListener('blur', debouncedSearch);
+        lastNameInput.addEventListener('blur', debouncedSearch);
+
+        // Also trigger search on input for real-time feedback
+        firstNameInput.addEventListener('input', debouncedSearch);
+        lastNameInput.addEventListener('input', debouncedSearch);
+
+        // Clear results when fields are emptied
+        firstNameInput.addEventListener('input', function () {
+            if (this.value.trim().length === 0) {
+                clearUserMatches();
+            }
+        });
+
+        lastNameInput.addEventListener('input', function () {
+            if (this.value.trim().length === 0) {
+                clearUserMatches();
+            }
+        });
     });
 
     // for timer
