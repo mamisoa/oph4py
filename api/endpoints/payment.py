@@ -684,19 +684,17 @@ def md_summary(worklist_id: int, offset: int = 0):
         # Get total count for pagination
         total_count = db(query).count()
 
-        # Complex join query to get consultation history
+        # Query to get consultation history without joining conclusions (to avoid duplicates)
         rows = db(query).select(
             db.worklist.requested_time.with_alias("requested_time"),
             db.worklist.id.with_alias("worklist_id"),
             db.procedure.exam_name.with_alias("procedure_name"),
             db.current_hx.description.with_alias("current_hx_desc"),
-            db.ccx.description.with_alias("conclusion_desc"),
             db.followup.description.with_alias("followup_desc"),
             db.billing.description.with_alias("billing_desc"),
             left=[
                 db.procedure.on(db.worklist.procedure == db.procedure.id),
                 db.current_hx.on(db.worklist.id == db.current_hx.id_worklist),
-                db.ccx.on(db.worklist.id == db.ccx.id_worklist),
                 db.followup.on(db.worklist.id == db.followup.id_worklist),
                 db.billing.on(db.worklist.id == db.billing.id_worklist),
             ],
@@ -708,6 +706,21 @@ def md_summary(worklist_id: int, offset: int = 0):
         summary_data = []
         for row in rows:
             worklist_row_id = row.worklist_id
+
+            # Get all conclusions for this worklist and aggregate them
+            conclusions = db(db.ccx.id_worklist == worklist_row_id).select(
+                db.ccx.description, orderby=db.ccx.id
+            )
+
+            # Combine all conclusions into a single string
+            conclusion_texts = [
+                c.description
+                for c in conclusions
+                if c.description and c.description.strip()
+            ]
+            conclusion_combined = (
+                "; ".join(conclusion_texts) if conclusion_texts else "-"
+            )
 
             # Get billing codes for this worklist and aggregate them
             billing_codes = db(db.billing_codes.id_worklist == worklist_row_id).select()
@@ -742,7 +755,7 @@ def md_summary(worklist_id: int, offset: int = 0):
                 "worklist_id": worklist_row_id,
                 "procedure": (row.procedure_name if row.procedure_name else "-"),
                 "history": (row.current_hx_desc if row.current_hx_desc else "-"),
-                "conclusion": (row.conclusion_desc if row.conclusion_desc else "-"),
+                "conclusion": conclusion_combined,
                 "followup": (row.followup_desc if row.followup_desc else "-"),
                 "billing_desc": (row.billing_desc if row.billing_desc else "-"),
                 "billing_codes": billing_codes_text,
@@ -821,13 +834,11 @@ def md_summary_modal(worklist_id: int):
             db.worklist.id.with_alias("worklist_id"),
             db.procedure.exam_name.with_alias("procedure_name"),
             db.current_hx.description.with_alias("current_hx_desc"),
-            db.ccx.description.with_alias("conclusion_desc"),
             db.followup.description.with_alias("followup_desc"),
             db.billing.description.with_alias("billing_desc"),
             left=[
                 db.procedure.on(db.worklist.procedure == db.procedure.id),
                 db.current_hx.on(db.worklist.id == db.current_hx.id_worklist),
-                db.ccx.on(db.worklist.id == db.ccx.id_worklist),
                 db.followup.on(db.worklist.id == db.followup.id_worklist),
                 db.billing.on(db.worklist.id == db.billing.id_worklist),
             ],
@@ -839,6 +850,21 @@ def md_summary_modal(worklist_id: int):
         summary_data = []
         for row in rows:
             worklist_row_id = row.worklist_id
+
+            # Get all conclusions for this worklist and aggregate them
+            conclusions = db(db.ccx.id_worklist == worklist_row_id).select(
+                db.ccx.description, orderby=db.ccx.id
+            )
+
+            # Combine all conclusions into a single string
+            conclusion_texts = [
+                c.description
+                for c in conclusions
+                if c.description and c.description.strip()
+            ]
+            conclusion_combined = (
+                "; ".join(conclusion_texts) if conclusion_texts else "-"
+            )
 
             # Get billing codes for this worklist
             billing_codes = db(db.billing_codes.id_worklist == worklist_row_id).select()
@@ -872,7 +898,7 @@ def md_summary_modal(worklist_id: int):
                 "worklist_id": worklist_row_id,
                 "procedure": (row.procedure_name if row.procedure_name else "-"),
                 "history": (row.current_hx_desc if row.current_hx_desc else "-"),
-                "conclusion": (row.conclusion_desc if row.conclusion_desc else "-"),
+                "conclusion": conclusion_combined,
                 "followup": (row.followup_desc if row.followup_desc else "-"),
                 "billing_desc": (row.billing_desc if row.billing_desc else "-"),
                 "billing_codes": billing_codes_text,
@@ -941,19 +967,17 @@ def patient_md_summary(patient_id: int, offset: int = 0):
         # Get total count for pagination
         total_count = db(query).count()
 
-        # Complex join query to get consultation history
+        # Query to get consultation history without joining conclusions (to avoid duplicates)
         rows = db(query).select(
             db.worklist.requested_time.with_alias("requested_time"),
             db.worklist.id.with_alias("worklist_id"),
             db.procedure.exam_name.with_alias("procedure_name"),
             db.current_hx.description.with_alias("current_hx_desc"),
-            db.ccx.description.with_alias("conclusion_desc"),
             db.followup.description.with_alias("followup_desc"),
             db.billing.description.with_alias("billing_desc"),
             left=[
                 db.procedure.on(db.worklist.procedure == db.procedure.id),
                 db.current_hx.on(db.worklist.id == db.current_hx.id_worklist),
-                db.ccx.on(db.worklist.id == db.ccx.id_worklist),
                 db.followup.on(db.worklist.id == db.followup.id_worklist),
                 db.billing.on(db.worklist.id == db.billing.id_worklist),
             ],
@@ -965,6 +989,21 @@ def patient_md_summary(patient_id: int, offset: int = 0):
         summary_data = []
         for row in rows:
             worklist_row_id = row.worklist_id
+
+            # Get all conclusions for this worklist and aggregate them
+            conclusions = db(db.ccx.id_worklist == worklist_row_id).select(
+                db.ccx.description, orderby=db.ccx.id
+            )
+
+            # Combine all conclusions into a single string
+            conclusion_texts = [
+                c.description
+                for c in conclusions
+                if c.description and c.description.strip()
+            ]
+            conclusion_combined = (
+                "; ".join(conclusion_texts) if conclusion_texts else "-"
+            )
 
             # Get billing codes for this worklist and aggregate them
             billing_codes = db(db.billing_codes.id_worklist == worklist_row_id).select()
@@ -999,7 +1038,7 @@ def patient_md_summary(patient_id: int, offset: int = 0):
                 "worklist_id": worklist_row_id,
                 "procedure": (row.procedure_name if row.procedure_name else "-"),
                 "history": (row.current_hx_desc if row.current_hx_desc else "-"),
-                "conclusion": (row.conclusion_desc if row.conclusion_desc else "-"),
+                "conclusion": conclusion_combined,
                 "followup": (row.followup_desc if row.followup_desc else "-"),
                 "billing_desc": (row.billing_desc if row.billing_desc else "-"),
                 "billing_codes": billing_codes_text,

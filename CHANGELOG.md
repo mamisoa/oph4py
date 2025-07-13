@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2025-07-13T02:06:58.292543]
+
+### Fixed
+
+- **🔧 Eye Header Text Visibility**: Fixed RIGHT EYE and LEFT EYE headers visibility issue
+  - **Problem**: White text (`text-white`) was invisible on light background colors (`bg-right` #F0F8FF and `bg-left` #FFF5EE)
+  - **Solution**: Changed text color from `text-white` to `text-dark` for proper contrast
+  - **Result**: Eye section headers are now clearly visible with dark text on light backgrounds
+
+## [2025-07-13T02:04:42.760845]
+
+### Changed
+
+- **🎨 Conclusions UI Style Improvements**: Updated conclusions interface to better match the previous version styling
+  - **Removed Redundant Header**: Eliminated "General Conclusions" header as it was redundant under the main "CONCLUSIONS" section
+  - **Centered Eye Headers**: "RIGHT EYE" and "LEFT EYE" headers are now centered with full-width background colors
+  - **Consistent Background Colors**: Eye section headers now use `bg-right` and `bg-left` classes with white text for better visibility
+  - **Improved Layout**: Add Conclusion buttons are now right-aligned for cleaner appearance
+  - **Enhanced Typography**: Eye headers use uppercase text and proper spacing for better visual hierarchy
+
+## [2025-07-13T01:55:44.827050]
+
+### Fixed
+
+- **🔧 Consultation History Summary Aggregation**: Fixed consultation history summary to show one row per consultation instead of multiple rows per conclusion
+  - **Root Cause**: Multiple conclusions functionality was causing LEFT JOIN on `ccx` table to create duplicate rows for each conclusion
+  - **Solution**: Removed `ccx` LEFT JOIN from main query and implemented separate conclusion aggregation for each consultation
+  - **Impact**: Consultation history now properly displays one row per consultation with all conclusions combined in a single field
+  - **API Endpoints Fixed**: 
+    - `md_summary` (worklist-based, 5 records per page)
+    - `md_summary_modal` (worklist-based, up to 50 records)
+    - `patient_md_summary` (patient-based, 10 records per page)
+  - **Conclusion Display**: Multiple conclusions are now combined using semicolon separator (e.g., "Conclusion 1; Conclusion 2; Conclusion 3")
+  - **Backward Compatibility**: Maintains existing API response format and frontend compatibility
+
 ## [2025-07-13T01:45:40.177521]
 
 ### Added

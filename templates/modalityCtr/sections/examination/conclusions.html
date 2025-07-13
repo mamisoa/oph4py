@@ -2,18 +2,16 @@
     <div class="row mb-3">
         <div class="col">
             <div class="row">
-                <div class="col big-title bg-primary">
+                <div class="col big-title bg-primary d-flex justify-content-between align-items-center">
+                    <span></span>
                     <h2><a role="button" data-bs-toggle="collapse" href=".dx">Conclusions</a></h2>
+                    <button id="btnAddCcx" type="button" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus me-1"></i>Add Conclusion
+                    </button>
                 </div>
             </div>
             <div class="row bg-right py-3 dx">
                 <div class="col">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h4 class="mb-0">General Conclusions</h4>
-                        <button id="btnAddCcx" type="button" class="btn btn-success btn-sm">
-                            <i class="fas fa-plus me-1"></i>Add Conclusion
-                        </button>
-                    </div>
                     <div id="ccxList" class="conclusions-list">
                         [[ for idx, conclusion in enumerate(ccx): ]]
                         <div class="conclusion-item mb-3 p-3 border rounded" data-laterality="na"
@@ -46,13 +44,12 @@
             <div class="row">
                 <div class="col">
                     <div class="row">
-                        <div class="col">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h3 class="title-right mb-0">Right eye</h3>
-                                <button id="btnAddCcxR" type="button" class="btn btn-success btn-sm">
-                                    <i class="fas fa-plus me-1"></i>Add Conclusion
-                                </button>
-                            </div>
+                        <div class="col bg-right text-center py-1 d-flex justify-content-between align-items-center">
+                            <span></span>
+                            <h3 class="mb-0 text-dark">RIGHT EYE</h3>
+                            <button id="btnAddCcxR" type="button" class="btn btn-success btn-sm">
+                                <i class="fas fa-plus me-1"></i>Add Conclusion
+                            </button>
                         </div>
                     </div>
                     <div class="row bg-right py-3">
@@ -86,13 +83,12 @@
                 </div>
                 <div class="col">
                     <div class="row">
-                        <div class="col">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h3 class="title-left mb-0">Left eye</h3>
-                                <button id="btnAddCcxL" type="button" class="btn btn-success btn-sm">
-                                    <i class="fas fa-plus me-1"></i>Add Conclusion
-                                </button>
-                            </div>
+                        <div class="col bg-left text-center py-1 d-flex justify-content-between align-items-center">
+                            <span></span>
+                            <h3 class="mb-0 text-dark">LEFT EYE</h3>
+                            <button id="btnAddCcxL" type="button" class="btn btn-success btn-sm">
+                                <i class="fas fa-plus me-1"></i>Add Conclusion
+                            </button>
                         </div>
                     </div>
                     <div class="row bg-left py-3">
