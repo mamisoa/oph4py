@@ -2,7 +2,7 @@
 
 [[ block page_head]]
 <link href="js/bootstrap-table_1.22/bootstrap-table.min.css" rel="stylesheet">
-<link href="css/conclusions.css" rel="stylesheet">
+<link href="css/conclusions-bt.css" rel="stylesheet">
 <style>
     /* overide when topnavbar is not fixed-top */
     section#main {
@@ -752,82 +752,39 @@
         </div>
     </div>
 </div>
-<div id="cc-container" class="container-fluid mb-3"> <!-- container conclusions -->
-    <div class="row mb-3">
-        <div class="col">
-            <div class="row">
-                <div class="col big-title bg-primary">
-                    <h2><a role="button" data-bs-toggle="collapse" href=".dx">Conclusions</a></h2>
-                </div>
-            </div>
-            <div class="row bg-right py-3 dx">
-                <div class="col">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h4 class="mb-0">General Conclusions</h4>
-                        <button id="btnAddCcx" type="button" class="btn btn-success btn-sm">
-                            <i class="fas fa-plus me-1"></i>Add Conclusion
-                        </button>
-                    </div>
-                    <div id="ccxList" class="conclusions-list">
-                        [[ for idx, conclusion in enumerate(ccx): ]]
-                        <div class="conclusion-item mb-3 p-3 border rounded" data-laterality="na"
-                            data-index="[[= idx ]]">
-                            <form class="ccxForm" enctype="multipart/form-data" method="POST">
-                                <div class="input-group mb-2">
-                                    <button type="submit" class="btn btn-secondary btn-sm ccxFormSubmit">
-                                        <i class="fas fa-save me-1"></i>Update
-                                    </button>
-                                    <textarea class="form-control" name="description" placeholder="Enter conclusion..."
-                                        rows="2">[[ = XML(conclusion['description']) ]]</textarea>
-                                    <button type="button" class="btn btn-danger btn-sm ccxDeleteBtn">
-                                        <i class="fas fa-trash me-1"></i>Delete
-                                    </button>
-                                </div>
-                                <input type="hidden" name="laterality" value="na" />
-                                <input type="hidden" name="id" value="[[ = XML(conclusion['id']) ]]" />
-                                <input type="hidden" name="id_auth_user" value="[[=patientId]]" />
-                                <input type="hidden" name="id_worklist" value="[[=wlId]]" />
-                            </form>
-                        </div>
-                        [[ pass ]]
-                    </div>
-                </div>
+[[ include 'modalityCtr/sections/examination/conclusions.html' ]]
+<div class="row mb-3 dx">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h3 class="title-right">Coding</h3>
             </div>
         </div>
-    </div>
-    <div class="row mb-3 dx">
-        <div class="col">
-            <div class="row">
-                <div class="col">
-                    <h3 class="title-right">Coding</h3>
-                </div>
-            </div>
-            <div class="row bg-right">
-                <div class="col ">
-                    <button type="button" id="btnNewCoding" class="btn btn-dark btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#mHxModal" data-category-flag="medical" data-mhx-flag="code">Add code<i
-                            class="mx-2 fas fa-plus"></i></button>
-                    <table id="coding_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
-                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_msHx"
-                        data-detail-formatter="detailFormatter_msHx" data-detail-view="true"
-                        data-detail-view-icon="true">
-                        <thead>
-                            <tr>
-                                <th data-field="onset" data-sortable="true">Onset</th>
-                                <th data-field="ended" data-sortable="false">Ended</th>
-                                <th data-field="title" data-sortable="true">Title</th>
-                                <th data-field="icd10" data-sortable="true">ICD-10</th>
-                                <th data-field="site" data-sortable="true">Side</th>
-                                <th data-field="note" data-sortable="true">Note</th>
-                                <th data-field="operate" data-formatter="operateFormatter_msHx"
-                                    data-events="operateEvents_msHx">Action</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div> <!-- end coding col-->
-            </div>
+        <div class="row bg-right">
+            <div class="col ">
+                <button type="button" id="btnNewCoding" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#mHxModal" data-category-flag="medical" data-mhx-flag="code">Add code<i
+                        class="mx-2 fas fa-plus"></i></button>
+                <table id="coding_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
+                    data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_msHx"
+                    data-detail-formatter="detailFormatter_msHx" data-detail-view="true" data-detail-view-icon="true">
+                    <thead>
+                        <tr>
+                            <th data-field="onset" data-sortable="true">Onset</th>
+                            <th data-field="ended" data-sortable="false">Ended</th>
+                            <th data-field="title" data-sortable="true">Title</th>
+                            <th data-field="icd10" data-sortable="true">ICD-10</th>
+                            <th data-field="site" data-sortable="true">Side</th>
+                            <th data-field="note" data-sortable="true">Note</th>
+                            <th data-field="operate" data-formatter="operateFormatter_msHx"
+                                data-events="operateEvents_msHx">Action</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div> <!-- end coding col-->
         </div>
     </div>
+</div>
 </div>
 <div id="x-container" class="container-fluid mb-3"> <!-- container actions -->
     <div class="row mb-3 big-title bg-warning">
@@ -1564,6 +1521,16 @@
 <script type="text/javascript">
     // Global variables
     const HOSTURL = "[[ = hosturl ]]";
+    const APP_NAME = "[[ = app_name ]]";
+
+    // Core identifiers - CRITICAL for all medical examination functionality
+    const wlId = [[= wlId]];
+    const patientId = [[= patientId]];
+
+    // Make them available on window object for backward compatibility
+    window.wlId = wlId;
+    window.patientId = patientId;
+
     let usermdObj = [[ =XML(mdParams)]];
     let userObj = [[ =XML(userDict)]];
     // for timer
@@ -1713,5 +1680,5 @@
 <script src="js/gp.js"></script>
 <script src="js/md/prescription.js"></script>
 <script src="js/md/certificates_gp.js"></script>
-<script src="js/md/conclusions.js"></script>
+<script src="js/md/conclusions-bt.js"></script>
 [[ end ]]

@@ -1,0 +1,204 @@
+/* Bootstrap-Table Conclusions Styling */
+
+/* New Conclusion Form Card */
+#cc-container .card {
+	border: 1px solid #dee2e6;
+	border-radius: 0.375rem;
+	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+	transition: box-shadow 0.15s ease-in-out;
+}
+
+#cc-container .card:hover {
+	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+#cc-container .card-header {
+	background-color: #f8f9fa;
+	border-bottom: 1px solid #dee2e6;
+	font-weight: 600;
+}
+
+/* Form styling - ensure all elements are same height */
+#newConclusionForm .row {
+	align-items: end;
+}
+
+#newConclusionForm .form-floating textarea,
+#newConclusionForm .form-floating select,
+#newConclusionForm .btn {
+	height: 58px !important;
+}
+
+#newConclusionForm .form-floating textarea {
+	resize: none;
+	min-height: 58px;
+	max-height: 58px;
+	padding-top: 1.625rem;
+	padding-bottom: 0.625rem;
+}
+
+#newConclusionForm .form-floating select {
+	padding-top: 1.625rem;
+	padding-bottom: 0.625rem;
+}
+
+#newConclusionForm .form-floating label {
+	padding: 1rem 0.75rem;
+}
+
+/* Button styling */
+#newConclusionForm .btn-success {
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25rem;
+}
+
+/* Bootstrap Table Styling */
+#conclusionsTable {
+	font-size: 0.9rem;
+}
+
+#conclusionsTable th {
+	background-color: #f8f9fa;
+	border-bottom: 2px solid #dee2e6;
+	font-weight: 600;
+	color: #495057;
+}
+
+#conclusionsTable td {
+	vertical-align: middle;
+	padding: 0.75rem;
+}
+
+/* Row styling based on laterality */
+.conclusion-row.table-light {
+	background-color: #f8f9fa !important;
+}
+
+.conclusion-row.table-warning {
+	background-color: #fff3cd !important;
+}
+
+.conclusion-row.table-info {
+	background-color: #d1ecf1 !important;
+}
+
+/* Action buttons styling */
+.btn-group-sm .btn {
+	padding: 0.25rem 0.5rem;
+	font-size: 0.875rem;
+	border-radius: 0.2rem;
+}
+
+.btn-outline-primary:hover {
+	color: #fff;
+	background-color: #0d6efd;
+	border-color: #0d6efd;
+}
+
+.btn-outline-danger:hover {
+	color: #fff;
+	background-color: #dc3545;
+	border-color: #dc3545;
+}
+
+/* Bootstrap table search styling */
+.bootstrap-table .fixed-table-toolbar {
+	padding: 0.75rem;
+	border-bottom: 1px solid #dee2e6;
+}
+
+.bootstrap-table .fixed-table-toolbar .search input {
+	border-radius: 0.375rem;
+	border: 1px solid #ced4da;
+	padding: 0.375rem 0.75rem;
+}
+
+/* Modal styling */
+#editConclusionModal .form-floating textarea {
+	min-height: 120px;
+	resize: vertical;
+}
+
+#editConclusionModal .modal-header {
+	background-color: #f8f9fa;
+	border-bottom: 1px solid #dee2e6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	#newConclusionForm .row {
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	#newConclusionForm .col-md-7,
+	#newConclusionForm .col-md-3,
+	#newConclusionForm .col-md-2 {
+		width: 100%;
+		max-width: 100%;
+	}
+
+	#newConclusionForm .form-floating textarea,
+	#newConclusionForm .form-floating select,
+	#newConclusionForm .btn {
+		height: auto !important;
+		min-height: 48px;
+	}
+
+	.btn-group-sm {
+		display: flex;
+		gap: 0.25rem;
+	}
+}
+
+/* Table responsive wrapper */
+.bootstrap-table .fixed-table-container {
+	border: 1px solid #dee2e6;
+	border-radius: 0.375rem;
+}
+
+/* No matches message styling */
+.bootstrap-table .fixed-table-container .fixed-table-body .no-matches-found {
+	text-align: center;
+	padding: 2rem;
+	color: #6c757d;
+	font-style: italic;
+}
+
+/* Loading spinner styling */
+.bootstrap-table .fixed-table-loading {
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem;
+	color: #6c757d;
+}
+
+/* Search and refresh controls */
+.bootstrap-table .fixed-table-toolbar .columns,
+.bootstrap-table .fixed-table-toolbar .search,
+.bootstrap-table .fixed-table-toolbar .refresh {
+	margin: 0.25rem;
+}
+
+.bootstrap-table .fixed-table-toolbar .search .search-input {
+	width: 250px;
+	max-width: 100%;
+}
+
+/* Hide toolbar when data-toolbar is empty */
+.bootstrap-table .fixed-table-toolbar:empty {
+	display: none;
+}
+
+/* Ensure proper spacing in cards */
+#cc-container .card-body {
+	padding: 1.25rem;
+}
+
+#cc-container .card + .card {
+	margin-top: 1rem;
+}

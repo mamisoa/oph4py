@@ -5,154 +5,117 @@
                 <div class="col big-title bg-primary d-flex justify-content-between align-items-center">
                     <span></span>
                     <h2><a role="button" data-bs-toggle="collapse" href=".dx">Conclusions</a></h2>
-                    <button id="btnAddCcx" type="button" class="btn btn-success btn-sm">
-                        <i class="fas fa-plus me-1"></i>Add Conclusion
-                    </button>
+                    <span></span>
                 </div>
             </div>
             <div class="row bg-right py-3 dx">
                 <div class="col">
-                    <div id="ccxList" class="conclusions-list">
-                        [[ for idx, conclusion in enumerate(ccx): ]]
-                        <div class="conclusion-item mb-3 p-3 border rounded" data-laterality="na"
-                            data-index="[[= idx ]]">
-                            <form class="ccxForm" enctype="multipart/form-data" method="POST">
-                                <div class="input-group mb-2">
-                                    <button type="submit" class="btn btn-secondary btn-sm ccxFormSubmit">
-                                        <i class="fas fa-save me-1"></i>Update
-                                    </button>
-                                    <textarea class="form-control" name="description" placeholder="Enter conclusion..."
-                                        rows="2">[[ = XML(conclusion['description']) ]]</textarea>
-                                    <button type="button" class="btn btn-danger btn-sm ccxDeleteBtn">
-                                        <i class="fas fa-trash me-1"></i>Delete
-                                    </button>
+                    <!-- Add New Conclusion Form -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <i class="fas fa-plus me-2"></i>Add New Conclusion
+                        </div>
+                        <div class="card-body">
+                            <form id="newConclusionForm">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-7">
+                                        <div class="form-floating">
+                                            <textarea class="form-control" id="newConclusionText"
+                                                placeholder="Enter conclusion text..."
+                                                style="height: 58px; resize: none;" required></textarea>
+                                            <label for="newConclusionText">Conclusion Text</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="newConclusionLaterality"
+                                                style="height: 58px;">
+                                                <option value="general" selected>Both</option>
+                                                <option value="right">Right Eye</option>
+                                                <option value="left">Left Eye</option>
+                                            </select>
+                                            <label for="newConclusionLaterality">Laterality</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-success w-100" style="height: 58px;">
+                                            <i class="fas fa-plus me-1"></i>Add conclusion +
+                                        </button>
+                                    </div>
                                 </div>
-                                <input type="hidden" name="laterality" value="na" />
-                                <input type="hidden" name="id" value="[[ = XML(conclusion['id']) ]]" />
-                                <input type="hidden" name="id_auth_user" value="[[=patientId]]" />
-                                <input type="hidden" name="id_worklist" value="[[=wlId]]" />
                             </form>
                         </div>
-                        [[ pass ]]
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row mb-3 dx">
-        <div class="col">
-            <div class="row">
-                <div class="col">
-                    <div class="row">
-                        <div class="col bg-right text-center py-1 d-flex justify-content-between align-items-center">
-                            <span></span>
-                            <h3 class="mb-0 text-dark">RIGHT EYE</h3>
-                            <button id="btnAddCcxR" type="button" class="btn btn-success btn-sm">
-                                <i class="fas fa-plus me-1"></i>Add Conclusion
-                            </button>
+
+                    <!-- Bootstrap Table for Existing Conclusions -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-list me-2"></i>Existing Conclusions</span>
+                            <small class="text-muted">Click to edit or delete conclusions</small>
                         </div>
-                    </div>
-                    <div class="row bg-right py-3">
-                        <div class="col">
-                            <div id="ccxRList" class="conclusions-list">
-                                [[ for idx, conclusion in enumerate(ccxR): ]]
-                                <div class="conclusion-item mb-3 p-3 border rounded" data-laterality="right"
-                                    data-index="[[= idx ]]">
-                                    <form class="ccxRForm" enctype="multipart/form-data" method="POST">
-                                        <div class="input-group mb-2">
-                                            <button type="submit" class="btn btn-secondary btn-sm ccxRFormSubmit">
-                                                <i class="fas fa-save me-1"></i>Update
-                                            </button>
-                                            <textarea class="form-control" name="description"
-                                                placeholder="Enter right eye conclusion..."
-                                                rows="2">[[ = XML(conclusion['description']) ]]</textarea>
-                                            <button type="button" class="btn btn-danger btn-sm ccxRDeleteBtn">
-                                                <i class="fas fa-trash me-1"></i>Delete
-                                            </button>
-                                        </div>
-                                        <input type="hidden" name="laterality" value="right" />
-                                        <input type="hidden" name="id" value="[[ = XML(conclusion['id']) ]]" />
-                                        <input type="hidden" name="id_auth_user" value="[[=patientId]]" />
-                                        <input type="hidden" name="id_worklist" value="[[=wlId]]" />
-                                    </form>
-                                </div>
-                                [[ pass ]]
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="row">
-                        <div class="col bg-left text-center py-1 d-flex justify-content-between align-items-center">
-                            <span></span>
-                            <h3 class="mb-0 text-dark">LEFT EYE</h3>
-                            <button id="btnAddCcxL" type="button" class="btn btn-success btn-sm">
-                                <i class="fas fa-plus me-1"></i>Add Conclusion
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row bg-left py-3">
-                        <div class="col">
-                            <div id="ccxLList" class="conclusions-list">
-                                [[ for idx, conclusion in enumerate(ccxL): ]]
-                                <div class="conclusion-item mb-3 p-3 border rounded" data-laterality="left"
-                                    data-index="[[= idx ]]">
-                                    <form class="ccxLForm" enctype="multipart/form-data" method="POST">
-                                        <div class="input-group mb-2">
-                                            <button type="submit" class="btn btn-secondary btn-sm ccxLFormSubmit">
-                                                <i class="fas fa-save me-1"></i>Update
-                                            </button>
-                                            <textarea class="form-control" name="description"
-                                                placeholder="Enter left eye conclusion..."
-                                                rows="2">[[ = XML(conclusion['description']) ]]</textarea>
-                                            <button type="button" class="btn btn-danger btn-sm ccxLDeleteBtn">
-                                                <i class="fas fa-trash me-1"></i>Delete
-                                            </button>
-                                        </div>
-                                        <input type="hidden" name="laterality" value="left" />
-                                        <input type="hidden" name="id" value="[[ = XML(conclusion['id']) ]]" />
-                                        <input type="hidden" name="id_auth_user" value="[[=patientId]]" />
-                                        <input type="hidden" name="id_worklist" value="[[=wlId]]" />
-                                    </form>
-                                </div>
-                                [[ pass ]]
-                            </div>
+                        <div class="card-body p-0">
+                            <table id="conclusionsTable" data-toggle="table" data-url="" data-side-pagination="client"
+                                data-pagination="false" data-search="true" data-show-refresh="true"
+                                data-show-toggle="false" data-show-columns="false" data-sort-name="id"
+                                data-sort-order="desc" data-toolbar="" data-classes="table table-striped table-hover"
+                                data-row-style="conclusionRowStyle" data-no-matches="No conclusions found">
+                                <thead>
+                                    <tr>
+                                        <th data-field="conclusion" data-sortable="true" data-width="60%">Conclusion
+                                        </th>
+                                        <th data-field="laterality" data-sortable="true" data-width="20%">Laterality
+                                        </th>
+                                        <th data-field="actions" data-formatter="conclusionActionsFormatter"
+                                            data-width="20%">Actions</th>
+                                    </tr>
+                                </thead>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row mb-3 dx">
-        <div class="col">
-            <div class="row">
-                <div class="col">
-                    <h3 class="title-right">Coding</h3>
-                </div>
+</div>
+
+<!-- Edit Conclusion Modal -->
+<div class="modal fade" id="editConclusionModal" tabindex="-1" aria-labelledby="editConclusionModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editConclusionModalLabel">
+                    <i class="fas fa-edit me-2"></i>Edit Conclusion
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="row bg-right">
-                <div class="col ">
-                    <button type="button" id="btnNewCoding" class="btn btn-dark btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#mHxModal" data-category-flag="medical" data-mhx-flag="code">Add code<i
-                            class="mx-2 fas fa-plus"></i></button>
-                    <table id="coding_tbl" data-side-pagination="server" data-pagination="true" data-page-size="5"
-                        data-search="false" data-query-params="queryParams" data-response-handler="responseHandler_msHx"
-                        data-detail-formatter="detailFormatter_msHx" data-detail-view="true"
-                        data-detail-view-icon="true">
-                        <thead>
-                            <tr>
-                                <th data-field="onset" data-sortable="true">Onset</th>
-                                <th data-field="ended" data-sortable="false">Ended</th>
-                                <th data-field="title" data-sortable="true">Title</th>
-                                <th data-field="icd10" data-sortable="true">ICD-10</th>
-                                <th data-field="site" data-sortable="true">Side</th>
-                                <th data-field="note" data-sortable="true">Note</th>
-                                <th data-field="operate" data-formatter="operateFormatter_msHx"
-                                    data-events="operateEvents_msHx">Action</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div> <!-- end coding col-->
+            <div class="modal-body">
+                <form id="editConclusionForm">
+                    <input type="hidden" id="editConclusionId">
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <textarea class="form-control" id="editConclusionText"
+                                placeholder="Enter conclusion text..." style="height: 120px;" required></textarea>
+                            <label for="editConclusionText">Conclusion Text</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <select class="form-select" id="editConclusionLaterality">
+                                <option value="general">Both</option>
+                                <option value="right">Right Eye</option>
+                                <option value="left">Left Eye</option>
+                            </select>
+                            <label for="editConclusionLaterality">Laterality</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEditedConclusion">
+                    <i class="fas fa-save me-1"></i>Save Changes
+                </button>
             </div>
         </div>
     </div>

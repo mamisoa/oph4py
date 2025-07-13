@@ -16,6 +16,11 @@
 
     // Document ready handlers
     $(document).ready(function () {
+        // Initialize conclusions bootstrap-table
+        if (typeof initConclusionsBootstrapTable === 'function') {
+            initConclusionsBootstrapTable();
+        }
+
         if (document.referrer.includes('modalityCtr/autorx')) {
             refreshTables(['#rxRight_tbl', '#rxLeft_tbl']);
             console.log('rx tables should be refreshed');

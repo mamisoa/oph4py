@@ -1,6 +1,41 @@
 <script type="text/javascript">
-    // Global variables
+    // Global variables - APP_NAME is already declared in baseof.html
     const HOSTURL = "[[ = hosturl ]]";
+
+    // Make base configuration available globally (APP_NAME already exists)
+    window.HOSTURL = HOSTURL;
+    // window.APP_NAME is already set by baseof.html
+
+    // Core identifiers - CRITICAL for all medical examination functionality
+    const wlId = [[= wlId]];
+    const patientId = [[= patientId]];
+
+    // Make them available on window object for backward compatibility
+    window.wlId = wlId;
+    window.patientId = patientId;
+
+    // Patient-bar specific variables
+    const wlDict = [[ = XML(wlDict)]];
+    const wlObj = wlDict[0];
+    const providerDict = [[ = XML(providerDict)]];
+    const providerObj = providerDict[0];
+    const seniorDict = [[ = XML(seniorDict)]];
+    const seniorObj = seniorDict[0];
+    const patientObj = wlDict[0]['auth_user'];
+    const phoneDict =
+        [[ if 'phoneDict' in locals():]]
+    [[ = XML(phoneDict)]]
+    [[ else: ]]
+    [[='[]']]
+    [[pass]];
+    const mdHistory =
+        [[ if 'mdHistory' in locals():]]
+    [[ = XML(mdHistory)]]
+    [[ else: ]]
+    [[='[]']]
+    [[pass]];
+    const genderIdObj = [[ = XML(genderObj)]];
+
     var usermdObj = [[ =XML(mdParams)]];
     var userObj = [[ =XML(userDict)]];
     // for timer

@@ -53,28 +53,3 @@
         </div>
     </div>
 </div>
-
-<script type="text/javascript">
-    const wlId = [[= wlId]];
-    const wlDict = [[ = XML(wlDict)]];
-    const wlObj = wlDict[0];
-    const providerDict = [[ = XML(providerDict)]];
-    const providerObj = providerDict[0];
-    const seniorDict = [[ = XML(seniorDict)]];
-    const seniorObj = seniorDict[0];
-    const patientObj = wlDict[0]['auth_user'];
-    const patientId = patientObj['id'];
-    const phoneDict =
-        [[ if 'phoneDict' in locals():]]
-    [[ = XML(phoneDict)]]
-    [[ else: ]]
-    [[='[]']]
-    [[pass]];
-    const mdHistory =
-        [[ if 'mdHistory' in locals():]]
-    [[ = XML(mdHistory)]]
-    [[ else: ]]
-    [[='[]']]
-    [[pass]];
-    const genderIdObj = [[ = XML(genderObj)]];
-</script>
