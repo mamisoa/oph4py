@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-07-13T04:21:08.937027]
+
+### Changed
+
+- **🎨 Billing Totals Row Styling Enhancement**: Updated totals row visual appearance for better readability
+  - **Background Color**: Changed from dark theme to clean white background
+  - **Text Color**: Updated "Totals:" label to black text for better contrast
+  - **Font Weight**: Maintained bold font styling for emphasis
+  - **Color Coding**: Preserved color-coded monetary values (blue for fee, green for reimbursement, amber for patient pays)
+  - **CSS Improvements**: Added explicit styling with `!important` declarations to override Bootstrap defaults
+  - **Visual Consistency**: Totals row now stands out clearly while maintaining professional appearance
+
+## [2025-07-13T04:14:30.781653]
+
+### Added
+
+- **💰 Dynamic Billing Totals in Payment View**: Enhanced billing breakdown table with real-time totals calculation
+  - **Totals Footer**: Added table footer displaying total fee, reimbursement, and patient payment amounts
+  - **Dynamic Updates**: Totals automatically recalculate when reimbursement type (feecode) is changed
+  - **Color Coding**: Used distinct colors for different total types (blue for fee, green for reimbursement, amber for patient pays)
+  - **Secondary Code Support**: Totals include both primary and secondary billing codes when present
+  - **Responsive Display**: Footer automatically hides when no billing codes are present
+  - **Visual Enhancement**: Added prominent styling with bold fonts and clear borders for better visibility
+
 ## [2025-07-13T04:08:45.240979]
 
 ### Changed

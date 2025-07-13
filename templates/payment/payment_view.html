@@ -124,6 +124,15 @@
                                     </td>
                                 </tr>
                             </tbody>
+                            <tfoot id="billing-codes-footer" class="bg-white">
+                                <tr>
+                                    <th colspan="3" class="text-end text-dark">Totals:</th>
+                                    <th class="text-primary">€<span id="total-fee">0.00</span></th>
+                                    <th class="text-success">€<span id="total-reimbursement">0.00</span></th>
+                                    <th class="text-warning">€<span id="total-patient-pays">0.00</span></th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -363,5 +372,32 @@
         .payment-modal-positioned {
             margin-top: 30px !important;
         }
+    }
+
+    /* Billing totals styling */
+    #billing-codes-footer {
+        background-color: white !important;
+    }
+
+    #billing-codes-footer th {
+        font-weight: bold;
+        border-top: 2px solid #dee2e6;
+        background-color: white !important;
+    }
+
+    #billing-codes-footer .text-dark {
+        color: #212529 !important;
+    }
+
+    #billing-codes-footer .text-primary {
+        color: #0d6efd !important;
+    }
+
+    #billing-codes-footer .text-success {
+        color: #198754 !important;
+    }
+
+    #billing-codes-footer .text-warning {
+        color: #ffc107 !important;
     }
 </style>

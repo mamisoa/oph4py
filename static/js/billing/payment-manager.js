@@ -336,6 +336,8 @@ class PaymentManager {
 		if (this.billingCodes.length === 0) {
 			tbody.innerHTML =
 				'<tr><td colspan="7" class="text-center text-muted">No billing codes found</td></tr>';
+			// Update totals for empty state
+			this.updateBillingTotals();
 			return;
 		}
 
@@ -384,6 +386,56 @@ class PaymentManager {
 		});
 
 		tbody.innerHTML = html;
+
+		// Update totals after displaying billing codes
+		this.updateBillingTotals();
+	}
+
+	/**
+	 * Calculate and display billing totals
+	 */
+	updateBillingTotals() {
+		let totalFee = 0;
+		let totalReimbursement = 0;
+		let totalPatientPays = 0;
+
+		// Calculate totals from billing codes
+		this.billingCodes.forEach((billing) => {
+			totalFee += billing.fee;
+			totalReimbursement += billing.reimbursement;
+			totalPatientPays += billing.patient_pays;
+
+			// Add secondary code amounts if present
+			if (billing.secondary_code) {
+				totalFee += billing.secondary_fee;
+				totalReimbursement += billing.secondary_reimbursement;
+				totalPatientPays += billing.secondary_patient_pays;
+			}
+		});
+
+		// Update the totals display
+		const totalFeeElement = document.getElementById("total-fee");
+		const totalReimbursementElement = document.getElementById(
+			"total-reimbursement"
+		);
+		const totalPatientPaysElement =
+			document.getElementById("total-patient-pays");
+
+		if (totalFeeElement) {
+			totalFeeElement.textContent = totalFee.toFixed(2);
+		}
+		if (totalReimbursementElement) {
+			totalReimbursementElement.textContent = totalReimbursement.toFixed(2);
+		}
+		if (totalPatientPaysElement) {
+			totalPatientPaysElement.textContent = totalPatientPays.toFixed(2);
+		}
+
+		// Show/hide footer based on whether there are billing codes
+		const footer = document.getElementById("billing-codes-footer");
+		if (footer) {
+			footer.style.display = this.billingCodes.length > 0 ? "" : "none";
+		}
 	}
 
 	/**
