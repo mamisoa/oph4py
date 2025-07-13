@@ -1,0 +1,230 @@
+<!-- Consultation History Summary Component -->
+<!-- This component can be included in any template that needs to display consultation history -->
+<!-- Required global variables: HOSTURL, APP_NAME -->
+<!-- Optional parameters: show_view_more_button (default: true) -->
+
+[[ if 'show_view_more_button' not in locals(): ]]
+[[ show_view_more_button = True ]]
+[[ pass ]]
+
+<!-- MD Summary Table -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-file-medical me-2"></i>Consultation History Summary</h5>
+                [[ if show_view_more_button: ]]
+                <button class="btn btn-outline-light btn-sm" id="view-more-md-summary-btn" style="display: none;">
+                    <i class="fas fa-eye me-1"></i>View More
+                </button>
+                [[ pass ]]
+            </div>
+            <div class="card-body">
+                <div id="md-summary-loading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Loading consultation history...</p>
+                </div>
+                <div id="md-summary-error" class="alert alert-warning" style="display: none;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> Unable to load consultation history.
+                    <button class="btn btn-sm btn-outline-warning ms-2" id="retry-md-summary-btn">
+                        <i class="fas fa-redo me-1"></i>Retry
+                    </button>
+                </div>
+                <div id="md-summary-content" style="display: none;">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-sm" id="md-summary-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Date/Time</th>
+                                    <th>Procedure</th>
+                                    <th>History</th>
+                                    <th>Conclusion</th>
+                                    <th>Follow-up</th>
+                                    <th>Billing</th>
+                                    <th>Billing Codes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="md-summary-body">
+                                <!-- Content will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="md-summary-stats" class="mt-3">
+                        <small class="text-muted">
+                            Showing <span id="md-summary-showing">0</span> of <span id="md-summary-total">0</span>
+                            consultations
+                        </small>
+                    </div>
+                    [[ if show_view_more_button: ]]
+                    <div id="md-summary-view-more-container" class="text-center mt-3" style="display: none;">
+                        <button class="btn btn-primary" id="btn-md-summary-view-more">
+                            <i class="fas fa-plus me-1"></i>View More
+                        </button>
+                    </div>
+                    [[ pass ]]
+                    <div id="md-summary-empty" class="text-center py-4 text-muted" style="display: none;">
+                        <i class="fas fa-clipboard me-2"></i>
+                        No consultation history found for this patient.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+[[ if show_view_more_button: ]]
+<!-- MD Summary Modal -->
+<div class="modal fade" id="md-summary-modal" tabindex="-1" aria-labelledby="mdSummaryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable mt-5">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="mdSummaryModalLabel">
+                    <i class="fas fa-file-medical me-2"></i>Complete Consultation History
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="md-summary-modal-loading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Loading complete consultation history...</p>
+                </div>
+                <div id="md-summary-modal-error" class="alert alert-danger" style="display: none;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error:</strong> Unable to load complete consultation history.
+                    <button class="btn btn-sm btn-outline-danger ms-2" id="retry-md-summary-modal-btn">
+                        <i class="fas fa-redo me-1"></i>Retry
+                    </button>
+                </div>
+                <div id="md-summary-modal-content" style="display: none;">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-sm" id="md-summary-modal-table">
+                            <thead class="table-dark sticky-top">
+                                <tr>
+                                    <th>Date/Time</th>
+                                    <th>Procedure</th>
+                                    <th>History</th>
+                                    <th>Conclusion</th>
+                                    <th>Follow-up</th>
+                                    <th>Billing</th>
+                                    <th>Billing Codes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="md-summary-modal-body">
+                                <!-- Content will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="md-summary-modal-stats" class="mt-3">
+                        <small class="text-muted">
+                            Total: <span id="md-summary-modal-total">0</span> consultations
+                        </small>
+                    </div>
+                    <div id="md-summary-modal-empty" class="text-center py-4 text-muted" style="display: none;">
+                        <i class="fas fa-clipboard me-2"></i>
+                        No additional consultation history found for this patient.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+[[ pass ]]
+
+<!-- Component Styles -->
+<style>
+    /* Ensures all modals have enough top margin to clear the navbar */
+    .modal.show .modal-dialog {
+        margin-top: 70px !important;
+    }
+
+    @media (max-width: 576px) {
+        .modal.show .modal-dialog {
+            margin-top: 30px !important;
+        }
+    }
+
+    /* MD Summary Table Column Adjustments */
+    #md-summary-table th:nth-child(1),
+    /* Date/Time */
+    #md-summary-modal-table th:nth-child(1) {
+        width: auto !important;
+        min-width: 120px;
+        white-space: nowrap;
+    }
+
+    #md-summary-table th:nth-child(2),
+    /* Procedure */
+    #md-summary-modal-table th:nth-child(2) {
+        width: auto !important;
+        min-width: 100px;
+    }
+
+    #md-summary-table th:nth-child(3),
+    /* History */
+    #md-summary-modal-table th:nth-child(3) {
+        width: 200px !important;
+        max-width: 200px;
+    }
+
+    #md-summary-table td:nth-child(3),
+    /* History content */
+    #md-summary-modal-table td:nth-child(3) {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        word-wrap: break-word;
+    }
+
+    #md-summary-table th:nth-child(4),
+    /* Conclusion */
+    #md-summary-modal-table th:nth-child(4) {
+        width: auto !important;
+        min-width: 150px;
+    }
+
+    #md-summary-table th:nth-child(5),
+    /* Follow-up */
+    #md-summary-modal-table th:nth-child(5) {
+        width: auto !important;
+        min-width: 120px;
+    }
+
+    #md-summary-table th:nth-child(6),
+    /* Billing */
+    #md-summary-modal-table th:nth-child(6) {
+        width: auto !important;
+        min-width: 80px;
+    }
+
+    #md-summary-table th:nth-child(7),
+    /* Billing Codes */
+    #md-summary-modal-table th:nth-child(7) {
+        width: auto !important;
+        min-width: 120px;
+    }
+
+    /* Ensure table fits content properly */
+    #md-summary-table,
+    #md-summary-modal-table {
+        table-layout: auto !important;
+        width: 100%;
+    }
+
+    /* Add tooltip for truncated history */
+    #md-summary-table td:nth-child(3)[title],
+    #md-summary-modal-table td:nth-child(3)[title] {
+        cursor: help;
+    }
+</style>

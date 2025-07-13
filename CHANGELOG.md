@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-07-13T04:08:45.240979]
+
+### Changed
+
+- **🎨 Consultation History Summary Component Refactoring**: Extracted duplicate consultation history table into reusable component
+  - **Component Creation**: Created `templates/partials/consultation-history-summary.html` as reusable component
+  - **DRY Principle**: Eliminated code duplication between payment and billing summary views
+  - **Maintainability**: Single source of truth for consultation history table structure and styling
+  - **Consistency**: Ensures identical behavior and appearance across all views
+  - **Configurability**: Component accepts `show_view_more_button` parameter for customization
+  - **Self-Contained**: Component includes all necessary HTML, CSS, and JavaScript hooks
+  - **Modal Integration**: Includes expandable modal for complete consultation history when needed
+  - **Responsive Design**: Maintains all existing responsive behavior and column adjustments
+  - **Updated Views**: Modified `payment_view.html` and `billing/summary.html` to use component
+  - **CSS Cleanup**: Removed duplicate CSS styles from individual views
+
 ## [2025-07-13T04:01:15.389479]
 
 ### Changed
