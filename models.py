@@ -880,35 +880,6 @@ db.define_table(
 #               NEW BILLING MODULE TABLES                     #
 ################################################################
 
-# Billing codes table - stores individual nomenclature codes for worklist items
-db.define_table(
-    "billing_codes",
-    Field("id_auth_user", "reference auth_user", required=True),
-    Field("id_worklist", "reference worklist", required=True),
-    # Main nomenclature code (existing)
-    Field("nomen_code", "integer", required=True),
-    Field("nomen_desc_fr", "string"),
-    Field("nomen_desc_nl", "string"),
-    Field("fee", "decimal(6,2)"),
-    Field("feecode", "integer"),
-    # Secondary nomenclature code (new)
-    Field("secondary_nomen_code", "integer"),
-    Field("secondary_nomen_desc_fr", "string"),
-    Field("secondary_nomen_desc_nl", "string"),
-    Field("secondary_fee", "decimal(6,2)"),
-    Field("secondary_feecode", "integer"),
-    # Common fields (existing)
-    Field("laterality", "string", default="both"),
-    Field("quantity", "integer", default=1),
-    Field("date_performed", "date"),
-    Field("note", "string"),
-    Field("status", "string", default="draft"),
-    auth.signature,
-)
-
-db.billing_codes.laterality.requires = IS_IN_SET(["both", "right", "left", "none"])
-db.billing_codes.status.requires = IS_IN_SET(["draft", "validated", "billed", "paid"])
-
 # Billing combo definitions - reusable combinations of nomenclature codes
 db.define_table(
     "billing_combo",
@@ -934,6 +905,38 @@ db.define_table(
     Field("note", "string"),
     auth.signature,
 )
+
+# Billing codes table - stores individual nomenclature codes for worklist items
+db.define_table(
+    "billing_codes",
+    Field("id_auth_user", "reference auth_user", required=True),
+    Field("id_worklist", "reference worklist", required=True),
+    Field(
+        "id_billing_combo_usage", "reference billing_combo_usage"
+    ),  # Links codes to combo applications
+    # Main nomenclature code (existing)
+    Field("nomen_code", "integer", required=True),
+    Field("nomen_desc_fr", "string"),
+    Field("nomen_desc_nl", "string"),
+    Field("fee", "decimal(6,2)"),
+    Field("feecode", "integer"),
+    # Secondary nomenclature code (new)
+    Field("secondary_nomen_code", "integer"),
+    Field("secondary_nomen_desc_fr", "string"),
+    Field("secondary_nomen_desc_nl", "string"),
+    Field("secondary_fee", "decimal(6,2)"),
+    Field("secondary_feecode", "integer"),
+    # Common fields (existing)
+    Field("laterality", "string", default="both"),
+    Field("quantity", "integer", default=1),
+    Field("date_performed", "date"),
+    Field("note", "string"),
+    Field("status", "string", default="draft"),
+    auth.signature,
+)
+
+db.billing_codes.laterality.requires = IS_IN_SET(["both", "right", "left", "none"])
+db.billing_codes.status.requires = IS_IN_SET(["draft", "validated", "billed", "paid"])
 
 ################################################################
 #               PAYMENT SYSTEM TABLES                         #

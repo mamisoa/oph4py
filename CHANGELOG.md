@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-14T23:21:09.306792]
+
+### Added
+
+- **🔗 Direct Relationship Between Billing Codes and Combo Applications**: Implemented reliable tracking of which billing codes were created by combo applications
+  - **Database Schema**: Added `id_billing_combo_usage` foreign key field to `billing_codes` table for direct traceability
+  - **Improved Combo Application**: Modified combo application logic to create usage record first, then link all generated billing codes to it
+  - **Reliable Combo Removal**: Replaced unreliable timing-based code matching with direct foreign key relationship lookup
+    - **Before**: Used 10-minute time windows and fallback strategies to guess which codes belonged to a combo
+    - **After**: Direct SQL query `WHERE id_billing_combo_usage = ?` for precise code identification
+  - **Benefits**:
+    - **100% Accurate Removal**: No more orphaned billing codes when removing combo applications
+    - **Better Data Integrity**: Clear audit trail of which codes came from which combo applications
+    - **Performance**: Faster queries using foreign key index instead of time range scans
+    - **Foundation**: Enables future combo analytics and reporting features
+
+### Fixed
+
+- **🐛 Combo Removal Reliability**: Fixed issue where combo removal would fail to delete associated billing codes
+  - **Root Cause**: Time-based matching was unreliable due to transaction timing variations
+  - **Solution**: Direct foreign key relationship ensures 100% accurate code-to-combo association
+
 ## [2025-07-14T22:36:33.268927]
 
 ### Fixed

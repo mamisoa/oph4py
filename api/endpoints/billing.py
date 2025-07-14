@@ -1215,14 +1215,10 @@ def apply_billing_combo(combo_id: int):
                             total_secondary_fees += float(secondary_fee_value or 0)
                         codes_with_secondary += 1
 
-            # Create billing code
-            code_id = db.billing_codes.insert(**code_data)
-            created_code = db(db.billing_codes.id == code_id).select().first()
-            enhanced_code = created_code.as_dict()
-            enhance_billing_response(enhanced_code)
-            created_codes.append(enhanced_code)
+            # Store code data for batch creation after usage record
+            created_codes.append(code_data)
 
-        # Create combo usage record
+        # Create combo usage record first
         usage_id = db.billing_combo_usage.insert(
             id_auth_user=data["id_auth_user"],
             id_worklist=data["id_worklist"],
@@ -1231,10 +1227,23 @@ def apply_billing_combo(combo_id: int):
             note=data.get("note", ""),
         )
 
+        # Now create billing codes with reference to the combo usage
+        final_created_codes = []
+        for code_data in created_codes:
+            # Add the combo usage reference
+            code_data["id_billing_combo_usage"] = usage_id
+
+            # Create billing code
+            code_id = db.billing_codes.insert(**code_data)
+            created_code = db(db.billing_codes.id == code_id).select().first()
+            enhanced_code = created_code.as_dict()
+            enhance_billing_response(enhanced_code)
+            final_created_codes.append(enhanced_code)
+
         total_combined_fees = total_main_fees + total_secondary_fees
 
         logger.info(
-            f"Applied enhanced combo {combo_id}: created {len(created_codes)} billing codes, "
+            f"Applied enhanced combo {combo_id}: created {len(final_created_codes)} billing codes, "
             f"{codes_with_secondary} with secondary codes, "
             f"total fees: €{total_combined_fees:.2f} (main: €{total_main_fees:.2f}, secondary: €{total_secondary_fees:.2f})"
         )
@@ -1242,7 +1251,7 @@ def apply_billing_combo(combo_id: int):
         return APIResponse.success(
             data={
                 "combo_usage_id": usage_id,
-                "created_codes": created_codes,
+                "created_codes": final_created_codes,
                 "combo_name": combo.combo_name,
                 "codes_with_secondary": codes_with_secondary,
                 "total_main_fees": round(total_main_fees, 2),
@@ -1921,6 +1930,148 @@ def billing_combo_usage(rec_id: Optional[int] = None):
 
     except Exception as e:
         logger.error(f"Error in billing_combo_usage endpoint: {str(e)}")
+        return APIResponse.error(
+            message=str(e), status_code=500, error_type="server_error"
+        )
+
+
+@action("api/worklist/<worklist_id:int>/applied_combos", method=["GET"])
+@action.uses(db, auth.user)
+def get_applied_combos(worklist_id: int):
+    """
+    Get all applied billing combos for a specific worklist.
+
+    Returns:
+        JSON response with applied combo data including combo names and usage IDs
+    """
+    try:
+        logger.info(f"Getting applied combos for worklist {worklist_id}")
+
+        # Get applied combos with combo details via JOIN
+        applied_combos = db(
+            (db.billing_combo_usage.id_worklist == worklist_id)
+            & (db.billing_combo_usage.id_billing_combo == db.billing_combo.id)
+        ).select(
+            db.billing_combo_usage.id,
+            db.billing_combo_usage.applied_date,
+            db.billing_combo_usage.note,
+            db.billing_combo.id,
+            db.billing_combo.combo_name,
+            db.billing_combo.combo_description,
+            orderby=~db.billing_combo_usage.applied_date,
+        )
+
+        result_data = []
+        for record in applied_combos:
+            result_data.append(
+                {
+                    "usage_id": record.billing_combo_usage.id,
+                    "combo_id": record.billing_combo.id,
+                    "combo_name": record.billing_combo.combo_name,
+                    "combo_description": record.billing_combo.combo_description,
+                    "applied_date": (
+                        record.billing_combo_usage.applied_date.isoformat()
+                        if record.billing_combo_usage.applied_date
+                        else None
+                    ),
+                    "note": record.billing_combo_usage.note,
+                }
+            )
+
+        logger.info(
+            f"Found {len(result_data)} applied combos for worklist {worklist_id}"
+        )
+
+        return APIResponse.success(
+            data=result_data, message=f"Found {len(result_data)} applied combos"
+        )
+
+    except Exception as e:
+        logger.error(
+            f"Error getting applied combos for worklist {worklist_id}: {str(e)}"
+        )
+        return APIResponse.error(
+            message=str(e), status_code=500, error_type="server_error"
+        )
+
+
+@action("api/billing_combo_usage/<usage_id:int>/remove", method=["DELETE"])
+@action.uses(db, auth.user)
+def remove_combo_application(usage_id: int):
+    """
+    Remove a combo application and optionally its associated billing codes.
+
+    Query parameters:
+    - remove_codes=true: Also remove the billing codes created by this combo application
+
+    Returns:
+        JSON response confirming removal
+    """
+    try:
+        logger.info(f"Removing combo application {usage_id}")
+
+        # Get the usage record first to get worklist and combo info
+        usage_record = db(db.billing_combo_usage.id == usage_id).select().first()
+        if not usage_record:
+            return APIResponse.error(
+                message=f"Combo usage record not found with ID: {usage_id}",
+                status_code=404,
+                error_type="not_found",
+            )
+
+        remove_codes = request.query.get("remove_codes", "false").lower() == "true"
+        logger.info(f"Remove codes option: {remove_codes}")
+
+        # If requested, remove associated billing codes using direct relationship
+        removed_codes_count = 0
+        if remove_codes:
+            logger.info(
+                f"Attempting to remove codes directly linked to combo usage {usage_id}"
+            )
+
+            # Get billing codes directly linked to this combo usage
+            related_codes = db(
+                (db.billing_codes.id_billing_combo_usage == usage_id)
+                & (db.billing_codes.status == "draft")  # Only remove draft codes
+            ).select()
+
+            logger.info(f"Found {len(related_codes)} directly linked codes to remove")
+            for code in related_codes:
+                logger.info(
+                    f"Linked code: ID={code.id}, nomen_code={code.nomen_code}, combo_usage_id={code.id_billing_combo_usage}"
+                )
+
+            # Remove the codes
+            for code_record in related_codes:
+                db(db.billing_codes.id == code_record.id).delete()
+                removed_codes_count += 1
+                logger.info(
+                    f"Removed billing code {code_record.id} (nomen_code: {code_record.nomen_code})"
+                )
+
+        # Remove the usage record
+        db(db.billing_combo_usage.id == usage_id).delete()
+
+        logger.info(f"Successfully removed combo application {usage_id}")
+        if remove_codes:
+            logger.info(f"Also removed {removed_codes_count} associated billing codes")
+
+        return APIResponse.success(
+            data={
+                "usage_id": usage_id,
+                "removed_codes_count": removed_codes_count,
+                "combo_name": (
+                    usage_record.id_billing_combo.combo_name
+                    if usage_record.id_billing_combo
+                    else "Unknown"
+                ),
+            },
+            message=f"Successfully removed combo application"
+            + (f" and {removed_codes_count} billing codes" if remove_codes else ""),
+        )
+
+    except Exception as e:
+        logger.error(f"Error removing combo application {usage_id}: {str(e)}")
         return APIResponse.error(
             message=str(e), status_code=500, error_type="server_error"
         )

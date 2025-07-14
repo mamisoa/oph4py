@@ -2921,6 +2921,9 @@ function applyBillingCombo(comboId, note) {
 				combo.combo_name,
 				createdCodes
 			);
+
+			// Refresh applied combos display
+			loadAppliedCombos();
 		},
 		error: function (xhr, status, error) {
 			console.error("Failed to apply combo:", error);
@@ -2939,6 +2942,274 @@ function applyBillingCombo(comboId, note) {
 
 			// Handle failed application
 			handleComboApplicationComplete(0, 1, [errorMsg], combo.combo_name);
+		},
+	});
+}
+
+// Load and display applied combos for the current worklist
+function loadAppliedCombos() {
+	console.log("🔄 loadAppliedCombos() called");
+	console.log("wlId:", wlId);
+	console.log("HOSTURL:", HOSTURL);
+	console.log("APP_NAME:", APP_NAME);
+
+	if (!wlId) {
+		console.log("❌ No worklist ID available, skipping applied combos load");
+		return;
+	}
+
+	const url =
+		HOSTURL + "/" + APP_NAME + "/api/worklist/" + wlId + "/applied_combos";
+	console.log("📡 Making request to:", url);
+
+	$.ajax({
+		url: url,
+		method: "GET",
+		dataType: "json",
+		success: function (response) {
+			console.log("✅ Successfully loaded applied combos:", response);
+			console.log("Response data type:", typeof response.data);
+			console.log("Response data:", response.data);
+
+			// Handle different response formats
+			let appliedCombos = [];
+			if (response.data && Array.isArray(response.data)) {
+				appliedCombos = response.data;
+			} else if (Array.isArray(response)) {
+				appliedCombos = response;
+			} else {
+				console.warn("Unexpected response format:", response);
+				appliedCombos = [];
+			}
+
+			console.log("Extracted applied combos:", appliedCombos);
+			displayAppliedCombos(appliedCombos);
+		},
+		error: function (xhr, status, error) {
+			console.error("❌ Error loading applied combos:", error);
+			console.error("Status:", status);
+			console.error("Response:", xhr.responseText);
+			console.error("Status code:", xhr.status);
+			// Don't show error to user as this is not critical, but still try to show empty state
+			displayAppliedCombos([]);
+		},
+	});
+}
+
+// Display applied combos as removable tags
+function displayAppliedCombos(appliedCombos) {
+	console.log("🎨 displayAppliedCombos() called with:", appliedCombos);
+
+	const container = $("#appliedCombosContainer");
+	const tagsContainer = $("#appliedCombosTags");
+
+	console.log("Container found:", container.length > 0);
+	console.log("Tags container found:", tagsContainer.length > 0);
+
+	if (!appliedCombos || appliedCombos.length === 0) {
+		console.log("📭 No applied combos to display, hiding container");
+		container.hide();
+		return;
+	}
+
+	console.log(`🏷️ Creating ${appliedCombos.length} combo tags`);
+
+	// Clear existing tags
+	tagsContainer.empty();
+
+	// Create tags for each applied combo
+	appliedCombos.forEach(function (combo, index) {
+		console.log(`Creating tag ${index + 1}: ${combo.combo_name}`);
+
+		const tag = $(`
+			<span class="badge bg-info d-flex align-items-center gap-2 applied-combo-tag" 
+				  data-usage-id="${combo.usage_id}" 
+				  data-combo-name="${combo.combo_name}"
+				  title="Applied on ${new Date(combo.applied_date).toLocaleString()}${
+			combo.note ? " - " + combo.note : ""
+		}">
+				<i class="fas fa-layer-group"></i>
+				<span>${combo.combo_name}</span>
+				<button type="button" class="btn-close btn-close-white btn-sm remove-combo-btn" 
+						data-usage-id="${combo.usage_id}" 
+						data-combo-name="${combo.combo_name}"
+						title="Remove this combo application"
+						style="font-size: 0.6em; padding: 0;">
+				</button>
+			</span>
+		`);
+
+		tagsContainer.append(tag);
+	});
+
+	// Show the container
+	console.log("👁️ Showing applied combos container");
+	container.show();
+
+	// Add click handlers for remove buttons
+	$(".remove-combo-btn").on("click", function (e) {
+		e.stopPropagation();
+		const usageId = $(this).data("usage-id");
+		const comboName = $(this).data("combo-name");
+		console.log(
+			`🗑️ Remove button clicked for: ${comboName} (usage ID: ${usageId})`
+		);
+		removeAppliedCombo(usageId, comboName);
+	});
+
+	console.log("✅ Applied combos display complete");
+}
+
+// Test function to manually trigger applied combos loading (for debugging)
+window.testAppliedCombos = function () {
+	console.log("🧪 Manual test of applied combos feature");
+	console.log(
+		"Current wlId:",
+		typeof wlId !== "undefined" ? wlId : "undefined"
+	);
+	console.log("Container exists:", $("#appliedCombosContainer").length > 0);
+
+	if (typeof wlId !== "undefined" && wlId) {
+		loadAppliedCombos();
+	} else {
+		console.log("❌ Cannot test: wlId not available");
+		// Show a test with fake data
+		console.log("🧪 Testing with fake data...");
+		displayAppliedCombos([
+			{
+				usage_id: 999,
+				combo_name: "Test Combo",
+				applied_date: new Date().toISOString(),
+				note: "Test note",
+			},
+		]);
+	}
+};
+
+// Remove an applied combo
+function removeAppliedCombo(usageId, comboName) {
+	console.log("Removing applied combo:", usageId, comboName);
+
+	// Show confirmation dialog with options
+	bootbox.confirm({
+		title: "Remove Applied Combo",
+		message: `
+			<div class="mb-3">
+				<p>Remove the applied combo "<strong>${comboName}</strong>"?</p>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="removeBillingCodes" checked>
+					<label class="form-check-label" for="removeBillingCodes">
+						Also remove associated billing codes (only draft codes will be removed)
+					</label>
+				</div>
+			</div>
+		`,
+		buttons: {
+			confirm: {
+				label: '<i class="fas fa-trash"></i> Remove',
+				className: "btn-danger",
+			},
+			cancel: {
+				label: "Cancel",
+				className: "btn-secondary",
+			},
+		},
+		callback: function (result) {
+			if (result) {
+				const removeCodes = $("#removeBillingCodes").is(":checked");
+				performComboRemoval(usageId, comboName, removeCodes);
+			}
+		},
+	});
+}
+
+// Perform the actual combo removal
+function performComboRemoval(usageId, comboName, removeCodes) {
+	const removeCodesParam = removeCodes ? "?remove_codes=true" : "";
+	const url =
+		HOSTURL +
+		"/" +
+		APP_NAME +
+		"/api/billing_combo_usage/" +
+		usageId +
+		"/remove" +
+		removeCodesParam;
+
+	console.log("🗑️ Attempting to delete combo application:");
+	console.log("URL:", url);
+	console.log("Usage ID:", usageId);
+	console.log("Remove codes:", removeCodes);
+
+	$.ajax({
+		url: url,
+		method: "DELETE",
+		success: function (response) {
+			console.log("Successfully removed combo application:", response);
+
+			// Show success message
+			let message = `Combo "${comboName}" removed successfully`;
+			if (response.data && response.data.removed_codes_count > 0) {
+				message += ` (${response.data.removed_codes_count} billing codes also removed)`;
+			}
+
+			// Show success message using displayToast
+			if (typeof displayToast === "function") {
+				displayToast("success", "Combo Removed", message, "4000");
+			} else {
+				console.log("SUCCESS: " + message);
+			}
+
+			// Refresh displays
+			loadAppliedCombos();
+			$bill_tbl.bootstrapTable("refresh");
+		},
+		error: function (xhr, status, error) {
+			console.error("Error removing combo application:", error);
+			console.error("Trying fallback method...");
+
+			// Fallback: try using standard REST API for billing_combo_usage
+			const fallbackUrl =
+				HOSTURL + "/" + APP_NAME + "/api/billing_combo_usage/" + usageId;
+			console.log("Fallback URL:", fallbackUrl);
+
+			$.ajax({
+				url: fallbackUrl,
+				method: "DELETE",
+				success: function (fallbackResponse) {
+					console.log("Fallback deletion successful:", fallbackResponse);
+
+					// Show success message
+					let message = `Combo "${comboName}" removed successfully (fallback method)`;
+					if (typeof displayToast === "function") {
+						displayToast("success", "Combo Removed", message, "4000");
+					} else {
+						console.log("SUCCESS: " + message);
+					}
+
+					// Refresh displays
+					loadAppliedCombos();
+					$bill_tbl.bootstrapTable("refresh");
+				},
+				error: function (fallbackXhr, fallbackStatus, fallbackError) {
+					console.error("Fallback deletion also failed:", fallbackError);
+
+					let errorMsg =
+						"Failed to remove combo application (both methods failed)";
+					if (xhr.responseJSON && xhr.responseJSON.message) {
+						errorMsg = xhr.responseJSON.message;
+					}
+
+					// Show error message using bootbox instead of showNotification
+					if (typeof bootbox !== "undefined") {
+						bootbox.alert({
+							message: errorMsg,
+							backdrop: true,
+						});
+					} else {
+						console.error("ERROR: " + errorMsg);
+					}
+				},
+			});
 		},
 	});
 }
@@ -3474,6 +3745,33 @@ $(document).ready(function () {
 		const searchTerm = $(this).val();
 		filterCombos(searchTerm);
 	});
+
+	// Load applied combos when the billing section is available
+	// Try multiple times with different delays to ensure page is ready
+	setTimeout(function () {
+		console.log("Attempting to load applied combos...");
+		console.log("wlId:", typeof wlId !== "undefined" ? wlId : "undefined");
+		console.log(
+			"Applied combo container exists:",
+			$("#appliedCombosContainer").length > 0
+		);
+
+		if (typeof wlId !== "undefined" && wlId) {
+			loadAppliedCombos();
+		} else {
+			console.log("⚠️ wlId not available yet, will retry...");
+			// Try again after a longer delay
+			setTimeout(function () {
+				console.log(
+					"Retry - wlId:",
+					typeof wlId !== "undefined" ? wlId : "undefined"
+				);
+				if (typeof wlId !== "undefined" && wlId) {
+					loadAppliedCombos();
+				}
+			}, 2000);
+		}
+	}, 1000);
 
 	// Add hover effect for combo rows
 	$(document).on("mouseenter", ".combo-row", function () {

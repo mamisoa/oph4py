@@ -1,4 +1,29 @@
 <!-- Billing Section - Contains bill_tbl table + action buttons + summary -->
+<style>
+    .applied-combo-tag {
+        transition: all 0.2s ease;
+        cursor: default;
+    }
+
+    .applied-combo-tag:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    .applied-combo-tag .remove-combo-btn {
+        transition: opacity 0.2s ease;
+        opacity: 0.7;
+    }
+
+    .applied-combo-tag:hover .remove-combo-btn {
+        opacity: 1;
+    }
+
+    .applied-combo-tag .remove-combo-btn:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+    }
+</style>
 [[ if userMembership == 'Doctor':]]
 <div id="bill-container" class="container-fluid mb-3"> <!-- container billing -->
     <div class="row mb-3 big-title bg-success">
@@ -27,6 +52,17 @@
                                         data-bs-toggle="modal" data-bs-target="#billComboModal">
                                         Apply Combo<i class="mx-2 fas fa-layer-group"></i>
                                     </button>
+                                </div>
+                            </div>
+                            <!-- Applied Combos Tags Container -->
+                            <div class="row mb-2" id="appliedCombosContainer" style="display: none;">
+                                <div class="col">
+                                    <div class="d-flex align-items-center flex-wrap gap-2">
+                                        <span class="text-muted small me-2">Applied Combos:</span>
+                                        <div id="appliedCombosTags" class="d-flex flex-wrap gap-2">
+                                            <!-- Applied combo tags will be inserted here -->
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row bg-neutral">
