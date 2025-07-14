@@ -23,6 +23,34 @@
         background-color: rgba(255, 255, 255, 0.2);
         border-radius: 50%;
     }
+
+    .combo-tags-container {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 0.375rem 0.75rem;
+        background-color: #f8f9fa;
+        min-height: 31px;
+        /* Match btn-sm height */
+        display: flex;
+        align-items: center;
+        transition: border-color 0.15s ease-in-out;
+        flex: 1;
+        max-width: none;
+    }
+
+    .combo-tags-container:hover {
+        border-color: #adb5bd;
+    }
+
+    .combo-tags-container:empty {
+        display: none !important;
+    }
+
+    /* Ensure proper flexbox behavior */
+    .d-flex.align-items-center.gap-3.flex-wrap {
+        min-height: 31px;
+        /* Match btn-sm height */
+    }
 </style>
 [[ if userMembership == 'Doctor':]]
 <div id="bill-container" class="container-fluid mb-3"> <!-- container billing -->
@@ -44,23 +72,24 @@
                         <div class="col">
                             <div class="row mb-2">
                                 <div class="col">
-                                    <button type="button" id="btnNewBillCode" class="btn btn-dark btn-sm me-2"
-                                        data-bs-toggle="modal" data-bs-target="#billCodeModal">
-                                        Add Code<i class="mx-2 fas fa-plus"></i>
-                                    </button>
-                                    <button type="button" id="btnApplyCombo" class="btn btn-success btn-sm"
-                                        data-bs-toggle="modal" data-bs-target="#billComboModal">
-                                        Apply Combo<i class="mx-2 fas fa-layer-group"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- Applied Combos Tags Container -->
-                            <div class="row mb-2" id="appliedCombosContainer" style="display: none;">
-                                <div class="col">
-                                    <div class="d-flex align-items-center flex-wrap gap-2">
-                                        <span class="text-muted small me-2">Applied Combos:</span>
-                                        <div id="appliedCombosTags" class="d-flex flex-wrap gap-2">
-                                            <!-- Applied combo tags will be inserted here -->
+                                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                                        <!-- Action Buttons -->
+                                        <div class="d-flex gap-2">
+                                            <button type="button" id="btnNewBillCode" class="btn btn-dark btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#billCodeModal">
+                                                Add Code<i class="mx-2 fas fa-plus"></i>
+                                            </button>
+                                            <button type="button" id="btnApplyCombo" class="btn btn-success btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#billComboModal">
+                                                Apply Combo<i class="mx-2 fas fa-layer-group"></i>
+                                            </button>
+                                        </div>
+                                        <!-- Applied Combos Tags Container -->
+                                        <div id="appliedCombosContainer" class="combo-tags-container"
+                                            style="display: none;">
+                                            <div id="appliedCombosTags" class="d-flex flex-wrap gap-2">
+                                                <!-- Applied combo tags will be inserted here -->
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

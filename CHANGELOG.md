@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-14T23:49:06.579318]
+
+### Changed
+
+- **🎨 Billing Combo Tags UI Enhancement**: Improved the layout and interaction of applied combo tags in the billing section
+  - **Inline Layout**: Moved combo tags inline with "Add Code +" and "Apply Combo" buttons for better space utilization
+  - **Bordered Container**: Added bordered container for combo tags with consistent height matching button elements
+  - **Streamlined Removal**: Removed confirmation dialog for combo tag deletion - tags now delete immediately with associated codes
+  - **Visual Consistency**: Applied consistent styling with proper alignment and hover effects
+  - **Automatic Visibility**: Container automatically hides when no combo tags are present
+  - **Enhanced UX**: Faster workflow with direct deletion and better visual organization
+
 ## [2025-07-14T23:39:37.392912]
 
 ### Fixed

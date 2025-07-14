@@ -3114,41 +3114,13 @@ window.testAppliedCombos = function () {
 	}
 };
 
-// Remove an applied combo
+// Remove an applied combo (direct removal without confirmation)
 function removeAppliedCombo(usageId, comboName) {
 	console.log("Removing applied combo:", usageId, comboName);
 
-	// Show confirmation dialog with options
-	bootbox.confirm({
-		title: "Remove Applied Combo",
-		message: `
-			<div class="mb-3">
-				<p>Remove the applied combo "<strong>${comboName}</strong>"?</p>
-				<div class="form-check">
-					<input class="form-check-input" type="checkbox" id="removeBillingCodes" checked>
-					<label class="form-check-label" for="removeBillingCodes">
-						Also remove associated billing codes (only draft codes will be removed)
-					</label>
-				</div>
-			</div>
-		`,
-		buttons: {
-			confirm: {
-				label: '<i class="fas fa-trash"></i> Remove',
-				className: "btn-danger",
-			},
-			cancel: {
-				label: "Cancel",
-				className: "btn-secondary",
-			},
-		},
-		callback: function (result) {
-			if (result) {
-				const removeCodes = $("#removeBillingCodes").is(":checked");
-				performComboRemoval(usageId, comboName, removeCodes);
-			}
-		},
-	});
+	// Direct removal with associated billing codes (default behavior)
+	// This bypasses the confirmation dialog as requested
+	performComboRemoval(usageId, comboName, true);
 }
 
 // Perform the actual combo removal
