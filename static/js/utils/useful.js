@@ -232,6 +232,9 @@ async function getUserInfo(id) {
  */
 
 function refreshTables(tablesArr) {
+	let refreshedCount = 0;
+	let skippedCount = 0;
+
 	for (let tbl of tablesArr) {
 		// Get the DOM element if it's a string selector
 		const element = typeof tbl === "string" ? document.querySelector(tbl) : tbl;
@@ -239,15 +242,28 @@ function refreshTables(tablesArr) {
 		if (element) {
 			// Check if element has jQuery and bootstrapTable function is available
 			if (window.jQuery && window.jQuery(element).bootstrapTable) {
-				window.jQuery(element).bootstrapTable("refresh");
+				try {
+					window.jQuery(element).bootstrapTable("refresh");
+					refreshedCount++;
+				} catch (error) {
+					console.warn(`Failed to refresh table ${tbl}: ${error.message}`);
+				}
 			} else {
 				// Handle the case where 'bootstrapTable' is not defined
-				console.error("bootstrapTable function not available for", tbl);
-				// Continue with the next iteration if desired
+				console.warn(`bootstrapTable function not available for ${tbl}`);
+				skippedCount++;
 			}
 		} else {
-			console.error("Element not found:", tbl);
+			// Element not found - this is expected for some tables depending on the page context
+			skippedCount++;
 		}
+	}
+
+	// Only log summary if there were actual refresh attempts
+	if (refreshedCount > 0 || skippedCount > 0) {
+		console.log(
+			`Table refresh summary: ${refreshedCount} refreshed, ${skippedCount} skipped (not present on page)`
+		);
 	}
 }
 

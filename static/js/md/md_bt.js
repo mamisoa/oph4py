@@ -2068,7 +2068,35 @@ window.operateEvents_billing = {
 	},
 	"click .remove": function (e, value, row, index) {
 		console.log("Delete billing code: " + JSON.stringify(row));
-		delItem(row.id, "billing_codes", "billing code");
+
+		// Use specific billing code deletion instead of generic delItem
+		bootbox.confirm({
+			message: "Are you sure you want to delete this billing code?",
+			closeButton: false,
+			buttons: {
+				confirm: {
+					label: "Yes",
+					className: "btn-success",
+				},
+				cancel: {
+					label: "No",
+					className: "btn-danger",
+				},
+			},
+			callback: function (result) {
+				if (result == true) {
+					// Use crudp to delete the billing code and only refresh the billing table
+					crudp("billing_codes", row.id, "DELETE").then((data) => {
+						// Only refresh the billing table, not all tables
+						if (typeof $bill_tbl !== "undefined" && $bill_tbl) {
+							$bill_tbl.bootstrapTable("refresh");
+						}
+					});
+				} else {
+					console.log("This was logged in the callback: " + result);
+				}
+			},
+		});
 	},
 };
 

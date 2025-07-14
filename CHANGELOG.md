@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-14T23:39:37.392912]
+
+### Fixed
+
+- **🐛 Billing Code Deletion Error Fix**: Fixed "Element not found: #coding_tbl" error when deleting billing codes
+  - **Root Cause**: Generic `delItem` function was trying to refresh all tables including `#coding_tbl` which doesn't exist on all pages
+  - **Solution**: Replaced generic deletion with specific billing code deletion that only refreshes the billing table
+  - **Impact**: Eliminates console errors and improves user experience during billing code deletion
+  - **Enhanced RefreshTables Function**: Improved `refreshTables()` utility to handle missing table elements gracefully with better error reporting
+
 ## [2025-07-14T23:21:09.306792]
 
 ### Added
