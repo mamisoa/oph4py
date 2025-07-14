@@ -1596,11 +1596,13 @@
 
 [[ block js_scripts]]
 
+<!-- Include shared global variables for all modality controllers -->
+[[ include 'modalityCtr/js-sections/shared-globals.html' ]]
+
 <script type="text/javascript">
-    // Global variables
-    const HOSTURL = "[[ = hosturl ]]";
+    // AutoRx specific variables
     const statusRxIndex = [[ =XML(statusRxIndex)]];
-    // submit btn to disable when done
+    // submit btn to disable when done - override the shared btnArr for autorx specific buttons
     const btnArr = ['#btnAddKmRight', '#btnAddKmLeft', '#btnAddRxRight', '#btnAddRxLeft', '#btnTaskDone', '#btnAddBothRx'];
 </script>
 <script src="js/bootstrap-table_1.22/bootstrap-table.min.js"></script>

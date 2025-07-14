@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-07-14T08:45:30.000000]
+
+### Fixed
+
+- **🔧 Critical JavaScript Global Variable Dependencies**: Fixed "ReferenceError: patientObj is not defined" and related variable errors in autorx and tono views
+  - **Root Cause**: Recent modularization of `md-globals.html` removed global variables that autorx.html and tono.html controllers depend on
+  - **Issue**: The variable consolidation in [2025-07-13T03:09:02.003404] moved variables to `md-globals.html` but autorx/tono templates couldn't access them
+  - **Solution**: Created shared global variables architecture:
+    - **New File**: `templates/modalityCtr/js-sections/shared-globals.html` (103 lines) - Contains core variables needed by all modality controllers
+    - **Template Conditional Logic**: Added proper py4web template conditionals for missing context variables
+    - **Fallback Handling**: Graceful fallbacks for templates without worklist/patient context
+  - **Updated Templates**:
+    - **autorx.html**: Now includes shared-globals.html, provides APP_NAME, patientObj, genderIdObj, and other missing variables
+    - **tono.html**: Now includes shared-globals.html, ensures patient-bar.js has required variables
+  - **Variable Coverage**:
+    - Core IDs: `wlId`, `patientId`, `APP_NAME`, `HOSTURL`
+    - Patient data: `patientObj`, `wlObj`, `genderIdObj`, `providerObj`, `seniorObj`
+    - Medical data: `userObj`, `usermdObj`, `prescRxObj`, `phoneDict`, `mdHistory`
+    - Window object exposure: All critical variables available via `window.variableName` for fallback access
+  - **Backward Compatibility**: Maintains existing functionality while providing shared variable access
+  - **Modular Architecture**: Preserves the benefits of modularization while fixing cross-template dependencies
+
+### Enhanced
+
+- **🌐 Template Variable Safety**: All modality controllers now have safe access to essential global variables
+- **🛡️ Graceful Degradation**: Templates without full context (patient/worklist data) now handle missing variables gracefully
+- **🔄 Consistent Variable Access**: Standardized variable access pattern across md.html, autorx.html, and tono.html templates
+
 ## [2025-07-13T04:52:27.371539]
 
 ### Changed

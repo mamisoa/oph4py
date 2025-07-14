@@ -356,12 +356,15 @@
 </div>
 
 [[ block js_scripts]]
-<!-- Global variables and utilities first -->
+
+<!-- Include shared global variables for all modality controllers -->
+[[ include 'modalityCtr/js-sections/shared-globals.html' ]]
+
+<!-- Tono specific variables and utilities -->
 <script type="text/javascript">
-    // Global variables - define only once
-    window.HOSTURL = "[[ = hosturl ]]";
-    window.APP_NAME = "[[ = app_name ]]";
+    // Base API URL for tono
     window.BASE_API = `${HOSTURL}/${APP_NAME}/api`;
+    // Ensure wlId is properly set for tono
     window.wlId = "[[= wlId ]]";
 
     // Tables configuration

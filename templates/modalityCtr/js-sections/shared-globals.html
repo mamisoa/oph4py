@@ -1,0 +1,103 @@
+<script type="text/javascript">
+    // SHARED GLOBAL VARIABLES - Core variables needed by all modality controllers
+    // This file provides the minimum essential variables required by patient-bar.js and other shared scripts
+    
+    // Base configuration - these are available from baseof.html
+    const HOSTURL = "[[ = hosturl ]]";
+    // APP_NAME is already declared in baseof.html
+    
+    // Make base configuration available globally for fallback access
+    window.HOSTURL = HOSTURL;
+    window.APP_NAME = typeof APP_NAME !== 'undefined' ? APP_NAME : "[[ = app_name ]]";
+    
+    // Core identifiers - CRITICAL for all medical examination functionality
+    [[ if 'wlId' in locals(): ]]
+    const wlId = [[= wlId]];
+    [[ else: ]]
+    const wlId = null;
+    [[ pass ]]
+    
+    [[ if 'patientId' in locals(): ]]
+    const patientId = [[= patientId]];
+    [[ else: ]]
+    const patientId = null;
+    [[ pass ]]
+    
+    // Make them available on window object for backward compatibility
+    window.wlId = wlId;
+    window.patientId = patientId;
+    
+    // Patient and worklist data - essential for patient-bar.js
+    [[ if 'wlDict' in locals(): ]]
+    const wlDict = [[ = XML(wlDict)]];
+    const wlObj = wlDict[0];
+    const patientObj = wlDict[0]['auth_user'];
+    [[ else: ]]
+    // Fallback for templates without worklist context
+    const wlDict = [];
+    const wlObj = null;
+    const patientObj = null;
+    [[ pass ]]
+    
+    [[ if 'providerDict' in locals(): ]]
+    const providerDict = [[ = XML(providerDict)]];
+    const providerObj = providerDict[0];
+    [[ else: ]]
+    const providerDict = [];
+    const providerObj = null;
+    [[ pass ]]
+    
+    [[ if 'seniorDict' in locals(): ]]
+    const seniorDict = [[ = XML(seniorDict)]];
+    const seniorObj = seniorDict[0];
+    [[ else: ]]
+    const seniorDict = [];
+    const seniorObj = null;
+    [[ pass ]]
+    
+    [[ if 'genderObj' in locals(): ]]
+    const genderIdObj = [[ = XML(genderObj)]];
+    [[ else: ]]
+    const genderIdObj = {};
+    [[ pass ]]
+    
+    [[ if 'phoneDict' in locals(): ]]
+    const phoneDict = [[ = XML(phoneDict)]];
+    [[ else: ]]
+    const phoneDict = [];
+    [[ pass ]]
+    
+    [[ if 'mdHistory' in locals(): ]]
+    const mdHistory = [[ = XML(mdHistory)]];
+    [[ else: ]]
+    const mdHistory = [];
+    [[ pass ]]
+    
+    // User and medical parameters - needed by prescription scripts
+    [[ if 'userDict' in locals(): ]]
+    var userObj = [[ =XML(userDict)]];
+    [[ else: ]]
+    var userObj = {};
+    [[ pass ]]
+    
+    [[ if 'mdParams' in locals(): ]]
+    var usermdObj = [[ =XML(mdParams)]];
+    [[ else: ]]
+    var usermdObj = {};
+    [[ pass ]]
+    
+    // Initialize prescription object for scripts that need it
+    var prescRxObj = {};
+    
+    // Make essential variables globally available
+    window.patientObj = patientObj;
+    window.wlObj = wlObj;
+    window.genderIdObj = genderIdObj;
+    window.providerObj = providerObj;
+    window.seniorObj = seniorObj;
+    window.phoneDict = phoneDict;
+    window.mdHistory = mdHistory;
+    window.userObj = userObj;
+    window.usermdObj = usermdObj;
+    window.prescRxObj = prescRxObj;
+</script> 
