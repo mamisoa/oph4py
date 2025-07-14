@@ -1082,6 +1082,82 @@ class PaymentManager {
 	}
 
 	/**
+	 * Enhanced markdown renderer for consultation history conclusions
+	 * Handles existing laterality badges and applies markdown formatting
+	 * Supports: **bold**, *italic*, ~~strikethrough~~, `code`, [links](url)
+	 * @param {string} text - The text/HTML to render with markdown
+	 * @returns {string} - HTML string
+	 */
+	renderMarkdown(text) {
+		if (!text || text === "-") return "";
+
+		// If text is already HTML (contains <span class="badge"), handle it carefully
+		if (text.includes('<span class="badge"')) {
+			// Split by <br> to handle each conclusion line separately
+			const lines = text.split("<br>");
+			const processedLines = lines.map((line) => {
+				// Extract badge HTML and text content separately
+				const badgeMatch = line.match(
+					/^(<span class="badge"[^>]*>[^<]*<\/span>)\s*(.*)/
+				);
+				if (badgeMatch) {
+					const badge = badgeMatch[1];
+					const content = badgeMatch[2];
+					// Apply markdown to content only, preserve badge HTML
+					return badge + " " + this.applyMarkdownToText(content);
+				} else {
+					// No badge, apply markdown to entire line
+					return this.applyMarkdownToText(line);
+				}
+			});
+			// Wrap each line in a div for better spacing between badges
+			return processedLines
+				.map((line) => `<div class="conclusion-line">${line}</div>`)
+				.join("");
+		} else {
+			// Plain text, apply markdown normally
+			return this.applyMarkdownToText(text);
+		}
+	}
+
+	/**
+	 * Apply markdown formatting to plain text (with HTML escaping)
+	 * @param {string} text - Plain text to format
+	 * @returns {string} - HTML string with markdown applied
+	 */
+	applyMarkdownToText(text) {
+		if (!text) return "";
+
+		// Escape HTML first to prevent XSS
+		let html = text
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#39;");
+
+		// Apply markdown formatting (using browser-compatible regex patterns)
+		html = html
+			// Bold: **text** or __text__
+			.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+			.replace(/__(.*?)__/g, "<strong>$1</strong>")
+			// Strikethrough: ~~text~~ (process before italic to avoid conflicts)
+			.replace(/~~(.*?)~~/g, "<del>$1</del>")
+			// Italic: *text* or _text_ (more conservative patterns for browser compatibility)
+			.replace(/\*([^*\n]+?)\*/g, "<em>$1</em>")
+			.replace(/\b_([^_\n]+?)_\b/g, "<em>$1</em>")
+			// Inline code: `text`
+			.replace(/`([^`]+?)`/g, "<code>$1</code>")
+			// Links: [text](url)
+			.replace(
+				/\[([^\]]+?)\]\(([^)]+?)\)/g,
+				'<a href="$2" target="_blank">$1</a>'
+			);
+
+		return html;
+	}
+
+	/**
 	 * Load MD Summary data (last 5 consultations)
 	 */
 	async loadMDSummary() {
@@ -1153,9 +1229,11 @@ class PaymentManager {
 						item.history || "-",
 						40
 					)}</td>
-					<td title="${this.stripHtml(item.conclusion || "-")}">${
+					<td title="${this.stripHtml(
 						item.conclusion || "-"
-					}</td>
+					)}"><div class="markdown-content">${
+						this.renderMarkdown(item.conclusion) || "-"
+					}</div></td>
 					<td title="${item.followup || "-"}">${this.truncateText(
 						item.followup || "-",
 						20
@@ -1255,9 +1333,11 @@ class PaymentManager {
 						item.history || "-",
 						40
 					)}</td>
-					<td title="${this.stripHtml(item.conclusion || "-")}">${
+					<td title="${this.stripHtml(
 						item.conclusion || "-"
-					}</td>
+					)}"><div class="markdown-content">${
+						this.renderMarkdown(item.conclusion) || "-"
+					}</div></td>
 					<td title="${item.followup || "-"}">${item.followup || "-"}</td>
 					<td title="${item.billing_desc || "-"}">${item.billing_desc || "-"}</td>
 					<td title="${item.billing_codes || "-"}">${item.billing_codes || "-"}</td>

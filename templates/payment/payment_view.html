@@ -6,6 +6,87 @@
 
 [[ block head ]]
 <link rel="stylesheet" href="[[=URL('static/css/payment-styles.css')]]">
+<style>
+    /* Markdown Content Styling for Consultation History */
+    .markdown-content {
+        line-height: 1.4;
+        word-wrap: break-word;
+        font-size: 1.1rem;
+    }
+
+    .markdown-content strong {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .markdown-content em {
+        font-style: italic;
+        color: #495057;
+    }
+
+    .markdown-content del {
+        text-decoration: line-through;
+        color: #6c757d;
+    }
+
+    .markdown-content code {
+        background-color: #f8f9fa;
+        color: #e83e8c;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.875em;
+    }
+
+    .markdown-content a {
+        color: #0d6efd;
+        text-decoration: none;
+    }
+
+    .markdown-content a:hover {
+        color: #0a58ca;
+        text-decoration: underline;
+    }
+
+    /* Ensure markdown content doesn't break table layout */
+    .markdown-content br {
+        line-height: 1.2;
+    }
+
+    /* Add spacing between conclusion lines for better badge separation */
+    .markdown-content .conclusion-line {
+        margin-bottom: 0.25rem;
+        display: block;
+    }
+
+    .markdown-content .conclusion-line:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Style for markdown elements within table cells */
+    #md-summary-table .markdown-content,
+    #md-summary-modal-table .markdown-content {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        font-size: 1.1rem;
+    }
+
+    #md-summary-table .markdown-content strong,
+    #md-summary-modal-table .markdown-content strong {
+        font-weight: 600;
+    }
+
+    #md-summary-table .markdown-content em,
+    #md-summary-modal-table .markdown-content em {
+        font-style: italic;
+    }
+
+    #md-summary-table .markdown-content code,
+    #md-summary-modal-table .markdown-content code {
+        font-size: 0.8em;
+        white-space: nowrap;
+    }
+</style>
 [[ end]]
 
 <div class="container-fluid">

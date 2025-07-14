@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file.
 
+NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
+
+## [2025-07-14T22:36:33.268927]
+
+### Fixed
+
+- **🔧 Consultation History Markdown Rendering**: Fixed issue where consultation history was displaying raw HTML instead of rendered markdown
+  - **Root Cause**: API returns conclusions with existing HTML `<span class="badge">` elements for laterality indicators, but markdown renderer was escaping all HTML first
+  - **Solution**: Enhanced markdown renderer to handle mixed HTML/markdown content intelligently
+    - **Preservation**: Laterality badges (right/left/both) are preserved as-is from the API
+    - **Selective Processing**: Markdown formatting is applied only to text content, not existing HTML elements
+    - **Line-by-Line Processing**: Each conclusion line is processed separately to handle multiple conclusions properly
+  - **Files Modified**:
+    - **Payment Manager**: `static/js/billing/payment-manager.js` - Updated `renderMarkdown()` and added `applyMarkdownToText()`
+    - **Summary Manager**: `static/js/billing/summary-manager.js` - Updated `renderMarkdown()` and added `applyMarkdownToText()`
+    - **Conclusions Manager**: `static/js/md/conclusions-bt.js` - Refactored for consistency and better structure
+  - **Technical Improvements**:
+    - **Smart HTML Detection**: Detects existing HTML structure and processes accordingly
+    - **XSS Protection**: Maintains HTML escaping for user-generated content while preserving system-generated HTML
+    - **Consistent API**: All three managers now use the same markdown processing approach
+
+## [2025-07-14T22:25:31.704294]
+
+### Added
+
+- **✨ Markdown Support for Conclusions Display**: Enhanced the conclusions table with full markdown rendering support
+  - **Markdown Features**: Supports **bold**, *italic*, ~~strikethrough~~, `inline code`, and [links](url)
+  - **Implementation Details**:
+    - **New Function**: `renderMarkdown()` - Lightweight markdown parser with XSS protection
+    - **Column Formatter**: `conclusionMarkdownFormatter()` - Renders markdown in conclusion column
+    - **Enhanced CSS**: Added `.markdown-content` styling for proper display in table cells
+    - **User Interface**: Added helpful markdown syntax hints in form headers
+  - **Files Modified**:
+    - **JavaScript**: `static/js/md/conclusions-bt.js` - Added markdown renderer and column formatter
+    - **CSS**: `static/css/conclusions-bt.css` - Added markdown-specific styling
+    - **Template**: `templates/modalityCtr/sections/examination/conclusions.html` - Added help text
+  - **Technical Features**:
+    - **XSS Protection**: HTML escaping before markdown processing
+    - **Browser Compatibility**: Compatible regex patterns for all modern browsers
+    - **Data Preservation**: Raw markdown text preserved for editing while displaying rendered HTML
+    - **Table Integration**: Styled to work seamlessly within Bootstrap Table cells
+
+- **✨ Markdown Support for Consultation History Summary**: Extended markdown rendering to consultation history tables in payment and summary views
+  - **Enhanced Views**: Payment management and billing summary consultation history tables now render markdown in conclusion columns
+  - **Implementation Details**:
+    - **Payment Manager**: `static/js/billing/payment-manager.js` - Added `renderMarkdown()` method and updated conclusion rendering
+    - **Summary Manager**: `static/js/billing/summary-manager.js` - Added `renderMarkdown()` method and updated conclusion rendering
+    - **Template Styling**: Added markdown CSS to both `templates/payment/payment_view.html` and `templates/billing/summary.html`
+  - **Technical Features**:
+    - **Consistent Rendering**: Same markdown parser used across all consultation views
+    - **Table Optimization**: Special styling for table cell constraints and responsive design
+    - **Modal Support**: Markdown rendering works in both summary tables and detailed modal views
+    - **Font Enhancement**: Increased font size (1.1rem) for better readability in consultation history
+
 ## [2025-07-14T08:45:30.000000]
 
 ### Fixed

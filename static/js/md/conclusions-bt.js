@@ -11,6 +11,59 @@ let $conclusionsTable;
 let conclusionsInitialized = false;
 
 /**
+ * Enhanced markdown renderer for conclusions
+ * Supports: **bold**, *italic*, ~~strikethrough~~, `code`, [links](url)
+ * @param {string} text - The markdown text to render
+ * @returns {string} - HTML string
+ */
+function renderMarkdown(text) {
+	if (!text) return "";
+
+	// For conclusions table, we expect plain text (no existing HTML badges)
+	// So we can apply standard markdown processing
+	return applyMarkdownToText(text);
+}
+
+/**
+ * Apply markdown formatting to plain text (with HTML escaping)
+ * @param {string} text - Plain text to format
+ * @returns {string} - HTML string with markdown applied
+ */
+function applyMarkdownToText(text) {
+	if (!text) return "";
+
+	// Escape HTML first to prevent XSS
+	let html = text
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;");
+
+	// Apply markdown formatting (using more compatible regex patterns)
+	html = html
+		// Bold: **text** or __text__
+		.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+		.replace(/__(.*?)__/g, "<strong>$1</strong>")
+		// Strikethrough: ~~text~~ (process before italic to avoid conflicts)
+		.replace(/~~(.*?)~~/g, "<del>$1</del>")
+		// Italic: *text* or _text_ (more conservative patterns for browser compatibility)
+		.replace(/\*([^*\n]+?)\*/g, "<em>$1</em>")
+		.replace(/\b_([^_\n]+?)_\b/g, "<em>$1</em>")
+		// Inline code: `text`
+		.replace(/`([^`]+?)`/g, "<code>$1</code>")
+		// Links: [text](url)
+		.replace(
+			/\[([^\]]+?)\]\(([^)]+?)\)/g,
+			'<a href="$2" target="_blank">$1</a>'
+		)
+		// Line breaks
+		.replace(/\n/g, "<br>");
+
+	return html;
+}
+
+/**
  * Initialize conclusions bootstrap-table management
  */
 function initConclusionsBootstrapTable() {
@@ -37,6 +90,7 @@ function initConclusionsBootstrapTable() {
 				sortable: true,
 				width: "60%",
 				widthUnit: "%",
+				formatter: conclusionMarkdownFormatter,
 			},
 			{
 				field: "laterality",
@@ -200,6 +254,7 @@ function formatConclusionsData(data) {
 	return data.map((item) => ({
 		id: item.id,
 		conclusion: item.description || "",
+		conclusion_raw: item.description || "", // Keep raw markdown for editing
 		laterality: formatLateralityDisplay(item.laterality),
 		laterality_code: item.laterality, // Keep original for editing
 		actions: "", // Will be handled by formatter
@@ -265,7 +320,7 @@ function conclusionActionsFormatter(value, row, index) {
 			row.id +
 			'" ' +
 			'data-conclusion="' +
-			escapeHtml(row.conclusion) +
+			escapeHtml(row.conclusion_raw || row.conclusion) +
 			'" ' +
 			'data-laterality="' +
 			row.laterality_code +
@@ -279,6 +334,16 @@ function conclusionActionsFormatter(value, row, index) {
 	);
 	html.push("</div>");
 	return html.join("");
+}
+
+/**
+ * Conclusion column formatter with markdown support
+ */
+function conclusionMarkdownFormatter(value, row, index) {
+	const renderedHtml = renderMarkdown(value || "");
+
+	// Wrap in a div with markdown-specific styling
+	return `<div class="markdown-content" style="line-height: 1.4; word-wrap: break-word;">${renderedHtml}</div>`;
 }
 
 /**

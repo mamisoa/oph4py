@@ -12,8 +12,10 @@
                 <div class="col">
                     <!-- Add New Conclusion Form -->
                     <div class="card mb-3">
-                        <div class="card-header">
-                            <i class="fas fa-plus me-2"></i>Add New Conclusion
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-plus me-2"></i>Add New Conclusion</span>
+                            <small class="text-muted">Supports markdown: **bold**, *italic*, ~~strikethrough~~,
+                                `code`</small>
                         </div>
                         <div class="card-body">
                             <form id="newConclusionForm">
@@ -76,6 +78,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="editConclusionModalLabel">
                     <i class="fas fa-edit me-2"></i>Edit Conclusion
+                    <small class="text-muted ms-2">Supports markdown formatting</small>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
