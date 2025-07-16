@@ -130,7 +130,192 @@
 				.setAttribute("src", patientObj["photob64"]);
 		}
 
+		// Setup clipboard functionality after patient data is loaded
+		setupClipboardListeners();
+
 		return true;
+	}
+
+	/**
+	 * Setup clipboard functionality for patient information elements
+	 */
+	function setupClipboardListeners() {
+		// Helper function to copy text to clipboard
+		function copyToClipboard(text, elementName) {
+			// Use the modern clipboard API if available
+			if (navigator.clipboard && window.isSecureContext) {
+				navigator.clipboard
+					.writeText(text)
+					.then(function () {
+						displayToast(
+							"success",
+							"Copied to clipboard",
+							`${elementName}: ${text}`,
+							2000
+						);
+					})
+					.catch(function (error) {
+						console.error("Failed to copy to clipboard:", error);
+						displayToast(
+							"error",
+							"Copy failed",
+							"Unable to copy to clipboard",
+							3000
+						);
+					});
+			} else {
+				// Fallback for older browsers or non-secure contexts
+				// Use a more robust approach to avoid TypeScript deprecation warnings
+				copyToClipboardFallback(text, elementName);
+			}
+		}
+
+		// Fallback function for copying to clipboard in older browsers
+		function copyToClipboardFallback(text, elementName) {
+			try {
+				const textArea = document.createElement("textarea");
+				textArea.value = text;
+				textArea.style.position = "fixed";
+				textArea.style.left = "-999999px";
+				textArea.style.top = "-999999px";
+				textArea.style.opacity = "0";
+				textArea.setAttribute("readonly", "");
+				document.body.appendChild(textArea);
+
+				// Focus and select the text
+				textArea.focus();
+				textArea.select();
+				textArea.setSelectionRange(0, 99999); // For mobile devices
+
+				// Use execCommand with suppressed deprecation warning
+				let successful = false;
+				try {
+					// @ts-ignore - Suppressing deprecation warning for fallback
+					successful = document.execCommand("copy");
+				} catch (execError) {
+					console.warn("execCommand failed:", execError);
+					successful = false;
+				}
+
+				if (successful) {
+					displayToast(
+						"success",
+						"Copied to clipboard",
+						`${elementName}: ${text}`,
+						2000
+					);
+				} else {
+					throw new Error("Copy command was unsuccessful");
+				}
+			} catch (error) {
+				console.error("Failed to copy to clipboard:", error);
+				displayToast(
+					"error",
+					"Copy failed",
+					"Unable to copy to clipboard",
+					3000
+				);
+			} finally {
+				// Always clean up the temporary element
+				const tempElements = document.querySelectorAll(
+					'textarea[style*="position: fixed"]'
+				);
+				tempElements.forEach(function (element) {
+					if (element.parentNode) {
+						element.parentNode.removeChild(element);
+					}
+				});
+			}
+		}
+
+		// Add visual cursor pointer and click listeners for clipboard functionality
+		const clipboardElements = [
+			{
+				selector: "#wlItemDetails .patientName",
+				getValue: () =>
+					patientObj["first_name"] + " " + patientObj["last_name"],
+				name: "Patient Name",
+			},
+			{
+				selector: "#wlItemDetails .patientDob",
+				getValue: () => {
+					if (patientObj["dob"] != null) {
+						return patientObj["dob"].split("-").reverse().join("/");
+					}
+					return "n/a";
+				},
+				name: "Date of Birth",
+			},
+			{
+				selector: "#wlItemDetails .patientSsn",
+				getValue: () => checkIfDataIsNull(patientObj["ssn"]),
+				name: "NISS",
+			},
+			{
+				selector: "#wlItemDetails .patientCard",
+				getValue: () => checkIfDataIsNull(patientObj["idc_num"]),
+				name: "Card Number",
+			},
+			{
+				selector: "#wlItemDetails .patientEmail",
+				getValue: () => checkIfDataIsNull(patientObj["email"]),
+				name: "Email",
+			},
+			{
+				selector: "#wlItemDetails .patientPhone",
+				getValue: () => {
+					if (
+						typeof phoneDict !== "undefined" &&
+						phoneDict &&
+						phoneDict.length > 0
+					) {
+						const phone = phoneDict[0];
+						return "+" + phone.phone_prefix + " " + phone.phone;
+					}
+					return "n/a";
+				},
+				name: "Phone",
+			},
+		];
+
+		clipboardElements.forEach(function (element) {
+			const $elem = $(element.selector);
+
+			// Add visual indicator that element is clickable
+			$elem.css({
+				cursor: "pointer",
+				"user-select": "none",
+			});
+
+			// Add title tooltip
+			$elem.attr(
+				"title",
+				`Click to copy ${element.name.toLowerCase()} to clipboard`
+			);
+
+			// Add click listener
+			$elem.off("click.clipboard").on("click.clipboard", function (e) {
+				e.preventDefault();
+				const value = element.getValue();
+
+				// Only copy if there's a valid value
+				if (
+					value &&
+					value !== "n/a" &&
+					value !== "undefined" &&
+					value.trim() !== ""
+				) {
+					copyToClipboard(value, element.name);
+				} else {
+					displayToast(
+						"warning",
+						"No data to copy",
+						`${element.name} is not available`,
+						2000
+					);
+				}
+			});
+		});
 	}
 
 	// Try to initialize immediately, or defer until DOM ready

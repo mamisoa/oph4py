@@ -4,6 +4,46 @@ All notable changes to this project will be documented in this file.
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-17T00:43:11.225742]
+
+### Fixed
+
+- **🔧 Complete ExecCommand Deprecation Resolution**: Fully resolved all TypeScript deprecation warnings for clipboard functionality
+  - **TypeScript Compatibility**: Added `@ts-ignore` directive to suppress deprecation warnings in fallback code
+  - **Robust Fallback Function**: Separated fallback logic into dedicated function with enhanced error handling
+  - **Mobile Device Support**: Added `setSelectionRange()` for better mobile device compatibility
+  - **Enhanced Cleanup**: Improved cleanup mechanism to handle multiple temporary elements
+  - **Readonly Protection**: Added readonly attribute to temporary textarea elements
+
+### Added
+
+- **📅 Date of Birth Clipboard Support**: Extended clipboard functionality to include patient date of birth
+  - **DOB Click-to-Copy**: Added clipboard functionality for patient date of birth field
+  - **Formatted Output**: DOB copied in DD/MM/YYYY format for user convenience
+  - **Complete Patient Info**: Now supports copying all key patient data fields (Name, DOB, NISS, Card, Email, Phone)
+
+## [2025-07-17T00:40:06.850783]
+
+### Fixed
+
+- **🔧 Patient Bar Clipboard Improvements**: Enhanced clipboard functionality with better error handling and additional field support
+  - **Deprecated API Warning**: Fixed TypeScript warning for deprecated `document.execCommand` by adding proper error handling and success validation
+  - **Enhanced Fallback**: Improved fallback mechanism with try-catch-finally pattern and better cleanup
+  - **Card Number Support**: Added clipboard functionality for patient card number field
+  - **Better Error Handling**: More robust error handling for both modern and legacy clipboard APIs
+
+## [2025-07-17T00:36:01.854047]
+
+### Added
+
+- **📋 Patient Bar Clipboard Functionality**: Enhanced patient information accessibility with one-click clipboard copying
+  - **Click-to-Copy**: Added click listeners to patient name, NISS, email, and phone number elements
+  - **Visual Indicators**: Elements now show pointer cursor and tooltips indicating clipboard functionality
+  - **Modern Clipboard API**: Uses navigator.clipboard for secure copying with fallback to document.execCommand for older browsers
+  - **User Feedback**: Toast notifications confirm successful copy operations or warn when no data is available
+  - **Data Validation**: Only copies valid data, preventing copy of empty or placeholder values
+  - **Cross-Browser Support**: Handles both modern and legacy browser environments gracefully
+
 ## [2025-07-14T23:49:06.579318]
 
 ### Changed
