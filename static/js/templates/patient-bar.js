@@ -329,6 +329,20 @@
 		});
 	}
 
+	// Initialize consultation history functionality
+	// This is separate from patient bar initialization to handle different loading times
+	function initHistoryManager() {
+		if (typeof initializePatientBarHistory === "function") {
+			initializePatientBarHistory();
+		} else {
+			// History manager script might not be loaded yet, try again
+			setTimeout(initHistoryManager, 200);
+		}
+	}
+
+	// Try to initialize history manager after a short delay to ensure all scripts are loaded
+	setTimeout(initHistoryManager, 300);
+
 	/**
 	 * Enhanced function to safely disable UI elements
 	 * @param {NodeList|HTMLElement|Array} elements - Elements to disable

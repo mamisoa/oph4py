@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-17T01:24:55.745177]
+
+### Fixed
+
+- **🔧 Enhanced Patient Bar Consultation History Markdown Rendering**: Upgraded markdown support in patient bar history modal to match other consultation views
+  - **Comprehensive Markdown Support**: Now supports **bold**, *italic*, ~~strikethrough~~, `inline code`, and [links](url)
+  - **Badge Preservation**: Properly handles existing laterality badges (right/left/both) from API without breaking formatting
+  - **XSS Protection**: HTML escaping prevents security vulnerabilities while preserving legitimate HTML elements
+  - **Consistent Experience**: Patient bar history modal now has identical markdown rendering to payment and summary views
+  - **Visual Enhancement**: Added comprehensive CSS styling for all markdown elements
+  - **Smart Processing**: Detects mixed HTML/markdown content and processes each appropriately
+
+## [2025-07-17T00:59:24.566126]
+
+### Added
+
+- **🏥 Patient Bar Consultation History Button**: Added consultation history access directly from patient bar across all modality interfaces
+  - **New History Button**: Added "History" button with medical file icon in patient bar action area
+  - **Modal Integration**: Clicking button opens consultation history modal showing complete patient consultation record
+  - **Dedicated Manager**: Created `PatientBarHistoryManager` class to handle modal functionality independently
+  - **Reusable Component**: Enhanced consultation history component to support modal-only mode for patient bar context
+  - **API Integration**: Uses existing `/api/patient/{patient_id}/md_summary` endpoint for data loading
+  - **Responsive Design**: Modal maintains all existing responsive features and column adjustments
+  - **Multi-Template Support**: Integrated across MD, GP, AutoRx, and Tonometry interfaces
+  - **Error Handling**: Includes loading states, error handling, and retry functionality
+  - **Patient Context**: Automatically extracts patient ID from existing patient bar global variables
+
+### Changed
+
+- **🔧 Consultation History Component Enhancement**: Modified component to always include modal regardless of `show_view_more_button` setting
+  - **Modal Availability**: Modal is now always available for programmatic access from other UI components
+  - **Conditional Features**: Only inline "View More" button controlled by parameter, not entire modal
+  - **Patient Bar Integration**: Component can be used in modal-only mode without inline table display
+
 ## [2025-07-17T00:43:11.225742]
 
 ### Fixed
