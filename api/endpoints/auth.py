@@ -9,13 +9,13 @@ import traceback
 
 from py4web import action, request, response
 
-from ...common import db, logger, session
+from ...common import auth, db, logger, session
 from ..core.base import APIResponse, handle_rest_api_request
 
 
 @action("api/<tablename>/", method=["GET", "POST", "PUT"])
 @action("api/<tablename>/<rec_id>", method=["GET", "PUT", "DELETE"])
-@action.uses(db)
+@action.uses(db, auth.user)
 def api(tablename, rec_id=None):
     """
     API endpoint for GET, POST, PUT, DELETE operations on database tables.

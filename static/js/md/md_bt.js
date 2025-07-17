@@ -1158,9 +1158,20 @@ function cellStyle_k2(value, row) {
 // response handler for tono table
 // TODO: add search to select techo
 function responseHandler_tono(res) {
+	console.log("🔍 responseHandler_tono called with response:", res);
 	let list = res.items;
+	console.log("📋 tono items list:", list);
 	let display = [];
 	$.each(list, function (i) {
+		console.log(`🏥 Processing tono item ${i}:`, list[i]);
+		console.log(
+			`👤 Creator data: creator.last_name="${list[i]["creator.last_name"]}", creator.first_name="${list[i]["creator.first_name"]}"`
+		);
+		console.log(
+			`✏️ Modifier data: mod.last_name="${list[i]["mod.last_name"]}", mod.first_name="${list[i]["mod.first_name"]}"`
+		);
+		console.log(`🆔 Raw created_by field:`, list[i]["created_by"]);
+		console.log(`🆔 Raw modified_by field:`, list[i]["modified_by"]);
 		display.push({
 			id: list[i].id,
 			id_auth_user: list[i].id_auth_user,
@@ -1173,13 +1184,47 @@ function responseHandler_tono(res) {
 					? " "
 					: highlightValue(list[i]["pachymetry"], 525, 500, "low"),
 			timestamp: list[i]["timestamp"].split("T").join(" "),
-			modified_by: list[i]["mod.last_name"] + " " + list[i]["mod.first_name"],
+			modified_by: (() => {
+				const lastName = list[i]["mod.last_name"];
+				const firstName = list[i]["mod.first_name"];
+				console.log(
+					`🔍 Modifier name check: lastName="${lastName}", firstName="${firstName}"`
+				);
+				console.log(`🔍 Condition result: ${lastName && firstName}`);
+				if (lastName && firstName) {
+					const fullName = lastName + " " + firstName;
+					console.log(`✅ Modified fullName: "${fullName}"`);
+					return fullName;
+				} else {
+					console.log(`❌ Using N/A for modifier`);
+					return "N/A";
+				}
+			})(),
 			modified_on: list[i]["modified_on"],
-			created_by:
-				list[i]["creator.last_name"] + " " + list[i]["creator.first_name"],
+			created_by: (() => {
+				const lastName = list[i]["creator.last_name"];
+				const firstName = list[i]["creator.first_name"];
+				console.log(
+					`🔍 Creator name check: lastName="${lastName}", firstName="${firstName}"`
+				);
+				console.log(`🔍 Condition result: ${lastName && firstName}`);
+				if (lastName && firstName) {
+					const fullName = lastName + " " + firstName;
+					console.log(`✅ Created fullName: "${fullName}"`);
+					return fullName;
+				} else {
+					console.log(`❌ Using N/A for creator`);
+					return "N/A";
+				}
+			})(),
 			created_on: list[i]["created_on"],
 		});
+		console.log(
+			`✅ Final display object for item ${i}:`,
+			display[display.length - 1]
+		);
 	});
+	console.log("📤 Final display array:", display);
 	return { rows: display, total: res.count };
 }
 
@@ -1283,14 +1328,14 @@ function detailFormatter_tono(index, row) {
 	);
 	html.push(
 		'<p class=""><span class="fw-bold">Created by: </span>' +
-			row.created_by_name +
+			row.created_by +
 			" on " +
 			row.created_on +
 			"</p>"
 	);
 	html.push(
 		'<p class=""><span class="fw-bold">Modified by: </span>' +
-			row.modified_by_name +
+			row.modified_by +
 			" on " +
 			row.modified_on +
 			"</p>"

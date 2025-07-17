@@ -4,6 +4,55 @@ All notable changes to this project will be documented in this file.
 
 NEW CHANGLOG ENTRIES SHOULD BE **NEWEST AT THE TOP OF THE FILE, OLDEST  AT BOTTOM**.
 
+## [2025-07-17T02:07:50.720067]
+
+### Fixed
+
+- **🔧 Tonometry Creator/Modifier Display Enhancement**: Fixed creator and modifier information display in both dedicated tonometry page and MD page tonometry tables
+  - **Root Cause Analysis**: Multiple interconnected issues affecting different pages:
+    - **MD Page**: Response handler was working correctly but missing table columns to display creator information
+    - **Tono Page**: Wrong response handler being referenced, malformed HTML in highlighting function
+    - **Detail View**: Field name mismatch between response handler and detail formatter
+  - **HTML Tag Malformation Fix**: Fixed `highlightValue()` function with incorrect closing tags:
+    - Changed `<strong>` closing tags to `</strong>`
+    - Changed `<span>` closing tags to `</span>`
+    - Prevented HTML rendering errors in Bootstrap Table
+  - **Response Handler Corrections**: 
+    - **MD Page**: Fixed `detailFormatter_tono` to use correct field names (`created_by` instead of `created_by_name`)
+    - **Tono Page**: Created `detailFormatter_airPachy` function and `extractNumericValue()` helper for clean data processing
+    - **Data Extraction**: Added logic to extract numeric values from HTML-wrapped server responses
+  - **Table Configuration Enhancement**:
+    - **MD Page**: Removed "Created By" column from main view, enhanced detail view to show creator information
+    - **Tono Page**: Added detail view support (`data-detail-view="true"`) to all four tonometry tables and removed "Created By" columns
+    - **Clean UI**: Creator/modifier information now properly displayed in expandable detail view instead of cluttering main table
+  - **Function Improvements**:
+    - **extractNumericValue()**: Helper function to handle both plain numeric values and HTML-wrapped values from API
+    - **Smart Detail Display**: Only shows pachymetry for air tonometry (not aplanation) in detail view
+    - **Error-Free Processing**: Fixed double HTML encoding issues that caused display problems
+
+### Added
+
+- **📋 Comprehensive Detail View for Tonometry**: Enhanced all tonometry tables with expandable detail views containing complete record information
+  - **Detail View Features**: 
+    - **Left Column**: Tonometry value, method, pachymetry (air only), timestamp
+    - **Right Column**: Record ID, Patient ID, Worklist ID, created by, modified by
+    - **Smart Display**: Conditionally shows pachymetry only for air tonometry records
+    - **Clean Data**: Extracts numeric values from HTML formatting for proper display
+  - **Table Coverage**: Applied to all tonometry tables:
+    - Air tonometry right/left eye (MD and dedicated tono pages)
+    - Aplanation tonometry right/left eye (MD and dedicated tono pages)
+  - **User Experience**: 
+    - Click expandable arrow (►) to view complete record details
+    - Maintains clean, compact main table view
+    - Shows "Andriantafika Raberahona Mamisoa" for valid records, "N/A" for missing data
+
+### Enhanced
+
+- **🔍 Multi-Page Tonometry Support**: Standardized tonometry display across both MD examination page and dedicated tonometry page
+  - **Consistent Experience**: Both pages now show creator/modifier information in detail views
+  - **Responsive Design**: Detail views work seamlessly on both desktop and mobile
+  - **Data Integrity**: Proper handling of both valid user data and null/missing creator information
+
 ## [2025-07-17T01:24:55.745177]
 
 ### Fixed
